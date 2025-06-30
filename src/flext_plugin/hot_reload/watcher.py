@@ -1,6 +1,6 @@
 """File system watcher for plugin hot reload functionality.
 
-Copyright (c) 2025 FLX Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
 from __future__ import annotations
@@ -12,9 +12,12 @@ import logging
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 

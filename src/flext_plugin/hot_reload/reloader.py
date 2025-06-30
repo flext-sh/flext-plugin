@@ -1,6 +1,6 @@
 """Hot reload orchestration for enterprise plugin system.
 
-Copyright (c) 2025 FLX Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
 from __future__ import annotations
@@ -10,13 +10,16 @@ import logging
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
-from flx_plugin.core.manager import PluginManager
-from flx_plugin.hot_reload.rollback import RollbackManager
-from flx_plugin.hot_reload.state_manager import StateManager
-from flx_plugin.hot_reload.watcher import PluginWatcher, WatchEvent, WatchEventType
+from flext_plugin.hot_reload.rollback import RollbackManager
+from flext_plugin.hot_reload.state_manager import StateManager
+from flext_plugin.hot_reload.watcher import PluginWatcher, WatchEvent, WatchEventType
+
+if TYPE_CHECKING:
+    from flext_plugin.core.manager import PluginManager
 
 logger = logging.getLogger(__name__)
 
@@ -274,7 +277,8 @@ class HotReloadManager:
             # Find the entry point for this plugin
             discovered = self.plugin_manager.get_discovered_plugin(plugin_id)
             if not discovered:
-                raise ValueError(f"Plugin {plugin_id} not in discovered plugins")
+                msg = f"Plugin {plugin_id} not in discovered plugins"
+                raise ValueError(msg)
 
             # Load the new version
             loaded = await self.plugin_manager.load_plugin(

@@ -1,6 +1,6 @@
 """Plugin state management for hot reload functionality.
 
-Copyright (c) 2025 FLX Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
 from __future__ import annotations
@@ -10,11 +10,12 @@ import logging
 import pickle
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from flx_plugin.core.base import Plugin
+if TYPE_CHECKING:
+    from flext_plugin.core.base import Plugin
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +105,8 @@ class StateManager:
 
         # Check if plugin supports state preservation
         if not hasattr(plugin, "get_state") and not force:
-            raise ValueError(f"Plugin {plugin_id} does not support state preservation")
+            msg = f"Plugin {plugin_id} does not support state preservation"
+            raise ValueError(msg)
 
         # Extract state
         state_data = {}
@@ -267,7 +269,8 @@ class StateManager:
             snapshot = await self._load_snapshot(snapshot_id)
 
         if snapshot is None:
-            raise ValueError(f"Snapshot {snapshot_id} not found")
+            msg = f"Snapshot {snapshot_id} not found"
+            raise ValueError(msg)
 
         results = {}
 
@@ -338,7 +341,7 @@ class StateManager:
             # Convert saved_at back to datetime
             if "saved_at" in state_dict:
                 state_dict["saved_at"] = datetime.fromisoformat(
-                    state_dict["saved_at"].replace("Z", "+00:00")
+                    state_dict["saved_at"]
                 )
 
             return PluginState(**state_dict)
@@ -438,16 +441,9 @@ class StateManager:
             List of snapshot summaries
 
         """
-        snapshots = []
-
-        for snapshot in self._snapshots.values():
-            snapshots.append(
-                {
+        return [{
                     "snapshot_id": snapshot.snapshot_id,
                     "created_at": snapshot.created_at,
                     "description": snapshot.description,
                     "plugin_count": len(snapshot.plugin_states),
-                }
-            )
-
-        return snapshots
+                } for snapshot in self._snapshots.values()]

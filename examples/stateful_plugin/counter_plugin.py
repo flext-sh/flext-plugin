@@ -3,7 +3,7 @@
 Demonstrates state preservation and hot reload capabilities.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from flx_plugin import Plugin, PluginMetadata, PluginType
 
@@ -62,7 +62,7 @@ class CounterPlugin(Plugin):
 
         self.logger.info(f"Counter initialized at {self.counter}")
 
-    async def execute(self, input_data: Any, context: Dict[str, Any]) -> Any:
+    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
         """Execute counter operation.
 
         Args:
@@ -120,7 +120,7 @@ class CounterPlugin(Plugin):
 
         return result
 
-    async def get_state(self) -> Dict[str, Any]:
+    async def get_state(self) -> dict[str, Any]:
         """Get plugin state for preservation.
 
         Returns
@@ -134,7 +134,7 @@ class CounterPlugin(Plugin):
             "last_reset_at": self.last_reset_at,
         }
 
-    async def set_state(self, state: Dict[str, Any]) -> None:
+    async def set_state(self, state: dict[str, Any]) -> None:
         """Restore plugin state.
 
         Args:
@@ -151,7 +151,7 @@ class CounterPlugin(Plugin):
             f"operations={self.total_operations}"
         )
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check."""
         return {
             "status": "healthy",

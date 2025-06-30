@@ -4,7 +4,7 @@ Demonstrates integration with Singer protocol for data extraction.
 """
 
 from datetime import UTC, datetime
-from typing import Any, Dict, List
+from typing import Any
 
 from flx_plugin import Plugin, PluginCapability, PluginMetadata, PluginType
 
@@ -66,7 +66,7 @@ class TapExamplePlugin(Plugin):
         self.state = {}
         self.catalog = None
 
-    async def execute(self, input_data: Any, context: Dict[str, Any]) -> Any:
+    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
         """Execute tap operation.
 
         Args:
@@ -95,7 +95,7 @@ class TapExamplePlugin(Plugin):
         else:
             raise ValueError(f"Unknown command: {command}")
 
-    async def _discover(self) -> Dict[str, Any]:
+    async def _discover(self) -> dict[str, Any]:
         """Discover available streams and schemas.
 
         Returns
@@ -162,7 +162,7 @@ class TapExamplePlugin(Plugin):
 
         return catalog
 
-    async def _sync(self, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _sync(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         """Sync data from source.
 
         Args:
@@ -233,8 +233,8 @@ class TapExamplePlugin(Plugin):
         return messages
 
     async def _fetch_records(
-        self, stream_id: str, context: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, stream_id: str, context: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Fetch records for a stream (simulated).
 
         Args:
@@ -278,15 +278,15 @@ class TapExamplePlugin(Plugin):
 
         return records
 
-    async def get_state(self) -> Dict[str, Any]:
+    async def get_state(self) -> dict[str, Any]:
         """Get tap state for preservation."""
         return {"tap_state": self.state}
 
-    async def set_state(self, state: Dict[str, Any]) -> None:
+    async def set_state(self, state: dict[str, Any]) -> None:
         """Restore tap state."""
         self.state = state.get("tap_state", {})
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check."""
         return {
             "status": "healthy",

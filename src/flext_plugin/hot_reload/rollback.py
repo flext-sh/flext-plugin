@@ -1,6 +1,6 @@
 """Rollback management for plugin hot reload functionality.
 
-Copyright (c) 2025 FLX Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
 from __future__ import annotations
@@ -8,12 +8,13 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from flx_plugin.core.base import Plugin
-from flx_plugin.hot_reload.state_manager import StateManager
+if TYPE_CHECKING:
+    from flext_plugin.core.base import Plugin
+    from flext_plugin.hot_reload.state_manager import StateManager
 
 logger = logging.getLogger(__name__)
 
@@ -205,7 +206,8 @@ class RollbackManager:
         # Get rollback history
         history = self._histories.get(plugin_id)
         if not history:
-            raise ValueError(f"No rollback history for plugin {plugin_id}")
+            msg = f"No rollback history for plugin {plugin_id}"
+            raise ValueError(msg)
 
         # Get rollback point
         if rollback_id:
@@ -214,7 +216,8 @@ class RollbackManager:
             point = history.get_latest_point()
 
         if not point:
-            raise ValueError(f"Rollback point not found: {rollback_id}")
+            msg = f"Rollback point not found: {rollback_id}"
+            raise ValueError(msg)
 
         result = {
             "rollback_id": point.rollback_id,
@@ -282,11 +285,13 @@ class RollbackManager:
 
         plugin_module = inspect.getmodule(plugin.__class__)
         if not plugin_module or not hasattr(plugin_module, "__file__"):
-            raise ValueError("Cannot determine plugin module file")
+            msg = "Cannot determine plugin module file"
+            raise ValueError(msg)
 
         source_file = Path(plugin_module.__file__)
         if not source_file.exists():
-            raise ValueError(f"Plugin source file not found: {source_file}")
+            msg = f"Plugin source file not found: {source_file}"
+            raise ValueError(msg)
 
         # Create backup directory
         plugin_backup_dir = self.backup_directory / plugin.metadata.id
@@ -325,11 +330,13 @@ class RollbackManager:
             plugin_id not in self._plugin_backups
             or rollback_id not in self._plugin_backups[plugin_id]
         ):
-            raise ValueError(f"No code backup found for rollback {rollback_id}")
+            msg = f"No code backup found for rollback {rollback_id}"
+            raise ValueError(msg)
 
         backup_file = self._plugin_backups[plugin_id][rollback_id]
         if not backup_file.exists():
-            raise ValueError(f"Backup file not found: {backup_file}")
+            msg = f"Backup file not found: {backup_file}"
+            raise ValueError(msg)
 
         # Determine target path
         # This is simplified - in reality would need to track original location
@@ -383,17 +390,14 @@ class RollbackManager:
             if plugin_id and pid != plugin_id:
                 continue
 
-            for point in history.rollback_points:
-                points.append(
-                    {
+            points.extend({
                         "rollback_id": point.rollback_id,
                         "plugin_id": point.plugin_id,
                         "created_at": point.created_at,
                         "description": point.description,
                         "version": point.plugin_version,
                         "has_code_backup": point.metadata.get("code_backed_up", False),
-                    }
-                )
+                    } for point in history.rollback_points)
 
         return points
 

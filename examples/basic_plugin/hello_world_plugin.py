@@ -3,7 +3,7 @@
 Demonstrates the minimal plugin implementation with FLX plugin system.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from flx_plugin import Plugin, PluginMetadata, PluginType
 
@@ -50,7 +50,7 @@ class HelloWorldPlugin(Plugin):
         self.greeting = self.config.get("greeting", "Hello")
         self.name = self.config.get("name", "World")
 
-    async def execute(self, input_data: Any, context: Dict[str, Any]) -> Any:
+    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
         """Execute the plugin functionality.
 
         Args:
@@ -80,7 +80,7 @@ class HelloWorldPlugin(Plugin):
             "timestamp": context.get("execution_time"),
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check."""
         return {
             "status": "healthy",

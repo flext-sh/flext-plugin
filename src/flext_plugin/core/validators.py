@@ -1,21 +1,23 @@
 """Plugin validation system for comprehensive plugin verification.
 
-Copyright (c) 2025 FLX Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
 from __future__ import annotations
 
 import inspect
 import re
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from flx_plugin.core.base import Plugin
-from flx_plugin.core.types import (
+from flext_plugin.core.base import Plugin
+from flext_plugin.core.types import (
     PluginCapability,
     PluginType,
     PluginValidationError,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class ValidationRule:
@@ -47,7 +49,8 @@ class ValidationRule:
             Tuple of (passed, error_message)
 
         """
-        raise NotImplementedError("Validation rule must implement validate method")
+        msg = "Validation rule must implement validate method"
+        raise NotImplementedError(msg)
 
 
 class MetadataValidationRule(ValidationRule):
@@ -67,16 +70,12 @@ class MetadataValidationRule(ValidationRule):
                 return False, "Plugin class missing get_metadata() method"
             # For class validation, we can't call get_metadata
             return True, None
-        else:
-            metadata = plugin.metadata
+        metadata = plugin.metadata
 
         # Validate required fields
         required_fields = ["id", "name", "version", "plugin_type"]
-        missing_fields = []
 
-        for field in required_fields:
-            if not getattr(metadata, field, None):
-                missing_fields.append(field)
+        missing_fields = [field for field in required_fields if not getattr(metadata, field, None)]
 
         if missing_fields:
             return (
@@ -85,7 +84,7 @@ class MetadataValidationRule(ValidationRule):
             )
 
         # Validate version format (semantic versioning)
-        version_pattern = re.compile(r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$")
+        version_pattern = re.compile(r"^\\\1+\\\\1\\\1+\\\\1\\\1+(-[a-zA-Z0-9]+)?$")
         if not version_pattern.match(metadata.version):
             return (
                 False,
@@ -206,7 +205,7 @@ class CapabilityValidationRule(ValidationRule):
 
         # Check if plugin has at least one expected capability
         plugin_caps = set(capabilities)
-        expected_caps = set(cap.value for cap in expected)
+        expected_caps = {cap.value for cap in expected}
 
         if not plugin_caps.intersection(expected_caps):
             return False, (
@@ -249,12 +248,12 @@ class SecurityValidationRule(ValidationRule):
 
         # Check for dangerous patterns
         dangerous_patterns = [
-            (r"\beval\s*\(", "Use of eval() function"),
-            (r"\bexec\s*\(", "Use of exec() function"),
-            (r"\b__import__\s*\(", "Dynamic imports detected"),
-            (r"\bsubprocess\.", "Subprocess execution detected"),
-            (r"\bos\.system\s*\(", "System command execution detected"),
-            (r"\bopen\s*\([^,)]*,\s*['\"]w", "File write operations detected"),
+            (r"\beval\\\1*\\\1", "Use of eval() function"),
+            (r"\bexec\\\1*\\\1", "Use of exec() function"),
+            (r"\b__import__\\\1*\\\1", "Dynamic imports detected"),
+            (r"\bsubprocess\\\\1", "Subprocess execution detected"),
+            (r"\bos\\\\1system\\\1*\\\1", "System command execution detected"),
+            (r"\bopen\\\1*\\\1[^,)]*,\\\1*['\"]w", "File write operations detected"),
         ]
 
         security_issues = []
@@ -266,9 +265,8 @@ class SecurityValidationRule(ValidationRule):
         if security_issues:
             if self.strict_mode:
                 return False, f"Security violations: {'; '.join(security_issues)}"
-            else:
-                # In non-strict mode, we just warn
-                return True, f"Security warnings: {'; '.join(security_issues)}"
+            # In non-strict mode, we just warn
+            return True, f"Security warnings: {'; '.join(security_issues)}"
 
         return True, None
 
@@ -495,8 +493,9 @@ class ValidationResult:
 
         """
         if not self.is_valid:
+            msg = f"Plugin validation failed for {plugin_id}"
             raise PluginValidationError(
-                f"Plugin validation failed for {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 validation_failures=self.errors,
             )
@@ -567,16 +566,12 @@ def validate_plugin_config(
         Tuple of (is_valid, errors)
 
     """
-    errors = []
-
     # Basic validation without jsonschema dependency
     required = schema.get("required", [])
     properties = schema.get("properties", {})
 
     # Check required fields
-    for field in required:
-        if field not in config:
-            errors.append(f"Missing required field: {field}")
+    errors = [f"Missing required field: {field}" for field in required if field not in config]
 
     # Check field types
     for field, value in config.items():
