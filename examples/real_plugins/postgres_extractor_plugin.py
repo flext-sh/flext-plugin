@@ -14,15 +14,19 @@ from flext_plugin.types import PluginError, PluginType
 
 try:
     import asyncpg
+
     ASYNCPG_AVAILABLE = True
 except ImportError:
     ASYNCPG_AVAILABLE = False
+
     # Create mock asyncpg for type hints
     class MockAsyncpg:
         class Connection:
             pass
+
         class Pool:
             pass
+
     asyncpg = MockAsyncpg()
 
 
@@ -54,72 +58,60 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             "batch_processing",
             "schema_introspection",
             "incremental_extraction",
-            "connection_pooling"
+            "connection_pooling",
         ],
         configuration_schema={
             "type": "object",
             "properties": {
-                "host": {
-                    "type": "string",
-                    "description": "PostgreSQL host"
-                },
+                "host": {"type": "string", "description": "PostgreSQL host"},
                 "port": {
                     "type": "integer",
                     "default": 5432,
-                    "description": "PostgreSQL port"
+                    "description": "PostgreSQL port",
                 },
-                "database": {
-                    "type": "string",
-                    "description": "Database name"
-                },
-                "username": {
-                    "type": "string",
-                    "description": "Database username"
-                },
-                "password": {
-                    "type": "string",
-                    "description": "Database password"
-                },
+                "database": {"type": "string", "description": "Database name"},
+                "username": {"type": "string", "description": "Database username"},
+                "password": {"type": "string", "description": "Database password"},
                 "table_name": {
                     "type": "string",
-                    "description": "Table to extract (if not using custom query)"
+                    "description": "Table to extract (if not using custom query)",
                 },
                 "query": {
                     "type": "string",
-                    "description": "Custom SQL query to execute"
+                    "description": "Custom SQL query to execute",
                 },
                 "batch_size": {
                     "type": "integer",
                     "default": 1000,
-                    "description": "Number of rows per batch"
+                    "description": "Number of rows per batch",
                 },
                 "max_connections": {
                     "type": "integer",
                     "default": 10,
-                    "description": "Maximum database connections in pool"
+                    "description": "Maximum database connections in pool",
                 },
                 "query_timeout": {
                     "type": "integer",
                     "default": 300,
-                    "description": "Query timeout in seconds"
+                    "description": "Query timeout in seconds",
                 },
                 "incremental_column": {
                     "type": "string",
-                    "description": "Column for incremental extraction (e.g., updated_at)"
+                    "description": "Column for incremental extraction (e.g., updated_at)",
                 },
                 "incremental_value": {
                     "type": "string",
-                    "description": "Last extracted value for incremental extraction"
-                }
+                    "description": "Last extracted value for incremental extraction",
+                },
             },
-            "required": ["host", "database", "username", "password"]
+            "required": ["host", "database", "username", "password"],
         },
         default_configuration={
             "port": 5432,
             "batch_size": 1000,
             "max_connections": 10,
-            "query_timeout": 300
-        }
+            "query_timeout": 300,
+        },
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -145,7 +137,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "asyncpg library is required but not installed",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_DEPENDENCY"
+                error_code="MISSING_DEPENDENCY",
             )
 
         # Load configuration
@@ -167,14 +159,14 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "Missing required database connection parameters",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         if not self._table_name and not self._query:
             raise PluginError(
                 "Either table_name or query must be specified",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Create connection pool
@@ -187,14 +179,14 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 password=self._password,
                 min_size=1,
                 max_size=self._max_connections,
-                command_timeout=self._query_timeout
+                command_timeout=self._query_timeout,
             )
         except Exception as e:
             raise PluginError(
                 f"Failed to create database connection pool: {e}",
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_FAILED",
-                cause=e
+                cause=e,
             )
 
         # Test connection
@@ -206,7 +198,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 f"Database connection test failed: {e}",
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_TEST_FAILED",
-                cause=e
+                cause=e,
             )
 
         self._initialized = True
@@ -227,15 +219,19 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with source_config
         query = source_config.get("query", self._query)
         table_name = source_config.get("table_name", self._table_name)
         batch_size = source_config.get("batch_size", self._batch_size)
-        incremental_column = source_config.get("incremental_column", self._incremental_column)
-        incremental_value = source_config.get("incremental_value", self._incremental_value)
+        incremental_column = source_config.get(
+            "incremental_column", self._incremental_column
+        )
+        incremental_value = source_config.get(
+            "incremental_value", self._incremental_value
+        )
 
         try:
             # Build final query
@@ -243,7 +239,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 query=query,
                 table_name=table_name,
                 incremental_column=incremental_column,
-                incremental_value=incremental_value
+                incremental_value=incremental_value,
             )
 
             # Execute query and collect results
@@ -289,15 +285,15 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 "database_info": {
                     "host": self._host,
                     "port": self._port,
-                    "database": self._database
-                }
+                    "database": self._database,
+                },
             }
 
             return {
                 "data": records,
                 "metadata": metadata,
                 "schema": schema_info.get("columns", {}),
-                "success": True
+                "success": True,
             }
 
         except Exception as e:
@@ -305,10 +301,12 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 f"Failed to extract data from PostgreSQL: {e}",
                 plugin_id=self.metadata.id,
                 error_code="EXTRACTION_FAILED",
-                cause=e
+                cause=e,
             )
 
-    async def extract_stream(self, source_config: dict[str, Any]) -> AsyncIterator[dict[str, Any]]:
+    async def extract_stream(
+        self, source_config: dict[str, Any]
+    ) -> AsyncIterator[dict[str, Any]]:
         """Extract data as a stream for large datasets.
 
         Args:
@@ -324,21 +322,25 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         query = source_config.get("query", self._query)
         table_name = source_config.get("table_name", self._table_name)
         batch_size = source_config.get("batch_size", self._batch_size)
-        incremental_column = source_config.get("incremental_column", self._incremental_column)
-        incremental_value = source_config.get("incremental_value", self._incremental_value)
+        incremental_column = source_config.get(
+            "incremental_column", self._incremental_column
+        )
+        incremental_value = source_config.get(
+            "incremental_value", self._incremental_value
+        )
 
         try:
             final_query = await self._build_query(
                 query=query,
                 table_name=table_name,
                 incremental_column=incremental_column,
-                incremental_value=incremental_value
+                incremental_value=incremental_value,
             )
 
             async with self._connection_pool.acquire() as connection:
@@ -358,7 +360,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 f"Failed to stream data from PostgreSQL: {e}",
                 plugin_id=self.metadata.id,
                 error_code="STREAM_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -369,7 +371,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             "initialized": self._initialized,
             "connection_pool_status": None,
             "database_accessible": False,
-            "checks": []
+            "checks": [],
         }
 
         # Check connection pool
@@ -378,9 +380,11 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 pool_size = self._connection_pool.get_size()
                 health["connection_pool_status"] = {
                     "size": pool_size,
-                    "max_size": self._max_connections
+                    "max_size": self._max_connections,
                 }
-                health["checks"].append(f"Connection pool healthy ({pool_size}/{self._max_connections})")
+                health["checks"].append(
+                    f"Connection pool healthy ({pool_size}/{self._max_connections})"
+                )
             except Exception as e:
                 health["checks"].append(f"Connection pool check failed: {e}")
                 health["status"] = "degraded"
@@ -414,7 +418,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
         query: Optional[str] = None,
         table_name: Optional[str] = None,
         incremental_column: Optional[str] = None,
-        incremental_value: Optional[str] = None
+        incremental_value: Optional[str] = None,
     ) -> str:
         """Build final SQL query with incremental logic."""
         if query:
@@ -427,7 +431,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "No query or table_name specified",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_QUERY"
+                error_code="MISSING_QUERY",
             )
 
         # Add incremental extraction logic
@@ -467,10 +471,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
 
                 columns = await connection.fetch(column_query, table_name)
 
-                schema_info = {
-                    "table_name": table_name,
-                    "columns": {}
-                }
+                schema_info = {"table_name": table_name, "columns": {}}
 
                 for column in columns:
                     column_name = column["column_name"]
@@ -480,7 +481,7 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                         "default": column["column_default"],
                         "max_length": column["character_maximum_length"],
                         "precision": column["numeric_precision"],
-                        "scale": column["numeric_scale"]
+                        "scale": column["numeric_scale"],
                     }
 
                 return schema_info

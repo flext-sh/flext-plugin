@@ -45,7 +45,6 @@ class PluginIntegrationTest:
         # Create a mock container for the plugin manager
         self.mock_container = None  # In a real scenario, this would be the DI container
 
-
     def create_sample_data(self) -> None:
         """Create sample CSV data for testing."""
         sample_data = [
@@ -59,12 +58,11 @@ class PluginIntegrationTest:
             "7,Grace Lee,26,HR,55000,false",
             "8,Henry Davis,33,Engineering,78000,true",
             "9,Iris Taylor,30,Marketing,60000,true",
-            "10,Jack Anderson,32,Engineering,76000,true"
+            "10,Jack Anderson,32,Engineering,76000,true",
         ]
 
-        with open(self.input_file, 'w') as f:
-            f.write('\n'.join(sample_data))
-
+        with open(self.input_file, "w") as f:
+            f.write("\n".join(sample_data))
 
     async def setup_plugin_manager(self) -> PluginManager:
         """Set up plugin manager with real plugins."""
@@ -72,7 +70,7 @@ class PluginIntegrationTest:
         plugin_manager = create_plugin_manager(
             container=self.mock_container,
             auto_discover=False,  # We'll manually register plugins
-            security_enabled=False  # Disable for testing
+            security_enabled=False,  # Disable for testing
         )
 
         # Initialize plugin manager
@@ -88,61 +86,49 @@ class PluginIntegrationTest:
         # Create plugin instances with test configurations
 
         # CSV Extractor
-        csv_extractor = CSVExtractorPlugin({
-            "file_path": str(self.input_file),
-            "delimiter": ",",
-            "has_header": True,
-            "infer_schema": True
-        })
+        csv_extractor = CSVExtractorPlugin(
+            {
+                "file_path": str(self.input_file),
+                "delimiter": ",",
+                "has_header": True,
+                "infer_schema": True,
+            }
+        )
         await csv_extractor.initialize()
 
         # Data Filter Transformer
-        filter_transformer = DataFilterTransformerPlugin({
-            "filter_rules": [
-                {
-                    "field": "active",
-                    "operator": "equals",
-                    "value": "true"
-                },
-                {
-                    "field": "age",
-                    "operator": "greater_than",
-                    "value": "25"
-                }
-            ],
-            "logic_operator": "AND"
-        })
+        filter_transformer = DataFilterTransformerPlugin(
+            {
+                "filter_rules": [
+                    {"field": "active", "operator": "equals", "value": "true"},
+                    {"field": "age", "operator": "greater_than", "value": "25"},
+                ],
+                "logic_operator": "AND",
+            }
+        )
         await filter_transformer.initialize()
 
         # Data Aggregator Transformer
-        aggregator_transformer = DataAggregatorTransformerPlugin({
-            "group_by": ["department"],
-            "aggregations": [
-                {
-                    "field": "salary",
-                    "function": "avg",
-                    "alias": "avg_salary"
-                },
-                {
-                    "field": "salary",
-                    "function": "count",
-                    "alias": "employee_count"
-                },
-                {
-                    "field": "age",
-                    "function": "avg",
-                    "alias": "avg_age"
-                }
-            ]
-        })
+        aggregator_transformer = DataAggregatorTransformerPlugin(
+            {
+                "group_by": ["department"],
+                "aggregations": [
+                    {"field": "salary", "function": "avg", "alias": "avg_salary"},
+                    {"field": "salary", "function": "count", "alias": "employee_count"},
+                    {"field": "age", "function": "avg", "alias": "avg_age"},
+                ],
+            }
+        )
         await aggregator_transformer.initialize()
 
         # CSV Loader
-        csv_loader = CSVLoaderPlugin({
-            "output_path": str(self.output_file),
-            "delimiter": ",",
-            "include_header": True
-        })
+        csv_loader = CSVLoaderPlugin(
+            {
+                "output_path": str(self.output_file),
+                "delimiter": ",",
+                "include_header": True,
+            }
+        )
         await csv_loader.initialize()
 
         # Register plugins in the manager's registry
@@ -150,9 +136,8 @@ class PluginIntegrationTest:
             "csv-extractor": csv_extractor,
             "data-filter": filter_transformer,
             "data-aggregator": aggregator_transformer,
-            "csv-loader": csv_loader
+            "csv-loader": csv_loader,
         }
-
 
     def create_test_pipeline(self) -> Pipeline:
         """Create a test pipeline with real plugin steps."""
@@ -162,11 +147,8 @@ class PluginIntegrationTest:
                 step_id="extract_csv",
                 plugin_id="csv-extractor",
                 step_type=PluginType.EXTRACTOR,
-                configuration={
-                    "file_path": str(self.input_file)
-                }
+                configuration={"file_path": str(self.input_file)},
             ),
-
             # Step 2: Filter active employees over 25
             PipelineStep(
                 step_id="filter_active_employees",
@@ -174,16 +156,11 @@ class PluginIntegrationTest:
                 step_type=PluginType.TRANSFORMER,
                 configuration={
                     "filter_rules": [
-                        {
-                            "field": "active",
-                            "operator": "equals",
-                            "value": "true"
-                        }
+                        {"field": "active", "operator": "equals", "value": "true"}
                     ]
                 },
-                dependencies=["extract_csv"]
+                dependencies=["extract_csv"],
             ),
-
             # Step 3: Aggregate by department
             PipelineStep(
                 step_id="aggregate_by_department",
@@ -192,31 +169,20 @@ class PluginIntegrationTest:
                 configuration={
                     "group_by": ["department"],
                     "aggregations": [
-                        {
-                            "field": "salary",
-                            "function": "avg",
-                            "alias": "avg_salary"
-                        },
-                        {
-                            "field": "id",
-                            "function": "count",
-                            "alias": "employee_count"
-                        }
-                    ]
+                        {"field": "salary", "function": "avg", "alias": "avg_salary"},
+                        {"field": "id", "function": "count", "alias": "employee_count"},
+                    ],
                 },
-                dependencies=["filter_active_employees"]
+                dependencies=["filter_active_employees"],
             ),
-
             # Step 4: Load aggregated data to CSV
             PipelineStep(
                 step_id="load_to_csv",
                 plugin_id="csv-loader",
                 step_type=PluginType.LOADER,
-                configuration={
-                    "output_path": str(self.output_file)
-                },
-                dependencies=["aggregate_by_department"]
-            )
+                configuration={"output_path": str(self.output_file)},
+                dependencies=["aggregate_by_department"],
+            ),
         ]
 
         pipeline = Pipeline(
@@ -225,8 +191,8 @@ class PluginIntegrationTest:
             steps=steps,
             configuration={
                 "description": "End-to-end test of plugin integration",
-                "version": "1.0.0"
-            }
+                "version": "1.0.0",
+            },
         )
 
         return pipeline
@@ -248,7 +214,7 @@ class PluginIntegrationTest:
             pipeline=pipeline,
             user_id="test_user",
             environment="test",
-            global_variables={"test_mode": True}
+            global_variables={"test_mode": True},
         )
 
         return result
@@ -265,15 +231,12 @@ class PluginIntegrationTest:
 
         # Check output file exists
         if self.output_file.exists():
-
             # Read and validate output data
             with open(self.output_file) as f:
                 output_content = f.read()
-                lines = output_content.strip().split('\n')
-
+                lines = output_content.strip().split("\n")
 
                 if len(lines) > 1:  # Header + data rows
-
                     # Print sample of output data
                     for _i, _line in enumerate(lines[:5]):  # Show first 5 lines
                         pass
@@ -295,20 +258,21 @@ class PluginIntegrationTest:
         try:
             # Remove test files
             import shutil
+
             shutil.rmtree(self.temp_dir)
         except Exception:
             pass
 
-    def print_test_summary(self, success: bool, execution_result: dict[str, Any]) -> None:
+    def print_test_summary(
+        self, success: bool, execution_result: dict[str, Any]
+    ) -> None:
         """Print test summary."""
         if success:
-
             # Print what was demonstrated
             pass
 
         else:
             pass
-
 
         final_data = execution_result.get("final_data")
         if final_data:
@@ -336,6 +300,7 @@ async def main():
 
     except Exception:
         import traceback
+
         traceback.print_exc()
         return False
 

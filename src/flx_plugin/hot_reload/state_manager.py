@@ -197,7 +197,7 @@ class StateManager:
     async def create_snapshot(
         self,
         description: str = "",
-        plugin_ids: List[str] | None = None,
+        plugin_ids: list[str] | None = None,
     ) -> str:
         """Create a state snapshot.
 
@@ -430,7 +430,7 @@ class StateManager:
         """
         return self._plugin_states.get(plugin_id)
 
-    def list_snapshots(self) -> List[dict[str, Any]]:
+    def list_snapshots(self) -> list[dict[str, Any]]:
         """List available snapshots.
 
         Returns

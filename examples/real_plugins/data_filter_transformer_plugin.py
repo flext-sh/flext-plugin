@@ -38,7 +38,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             "condition_evaluation",
             "logical_operators",
             "type_aware_comparison",
-            "statistics_tracking"
+            "statistics_tracking",
         ],
         configuration_schema={
             "type": "object",
@@ -51,51 +51,62 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                         "properties": {
                             "field": {
                                 "type": "string",
-                                "description": "Field name to filter on"
+                                "description": "Field name to filter on",
                             },
                             "operator": {
                                 "type": "string",
-                                "enum": ["equals", "not_equals", "contains", "not_contains",
-                                        "starts_with", "ends_with", "regex", "greater_than",
-                                        "less_than", "between", "in", "not_in", "is_null", "is_not_null"],
-                                "description": "Filter operator"
+                                "enum": [
+                                    "equals",
+                                    "not_equals",
+                                    "contains",
+                                    "not_contains",
+                                    "starts_with",
+                                    "ends_with",
+                                    "regex",
+                                    "greater_than",
+                                    "less_than",
+                                    "between",
+                                    "in",
+                                    "not_in",
+                                    "is_null",
+                                    "is_not_null",
+                                ],
+                                "description": "Filter operator",
                             },
-                            "value": {
-                                "description": "Value to compare against"
-                            },
+                            "value": {"description": "Value to compare against"},
                             "case_sensitive": {
                                 "type": "boolean",
                                 "default": True,
-                                "description": "Case sensitive comparison for string operations"
-                            }
+                                "description": "Case sensitive comparison for string operations",
+                            },
                         },
-                        "required": ["field", "operator"]
-                    }
+                        "required": ["field", "operator"],
+                    },
                 },
                 "logic_operator": {
                     "type": "string",
                     "enum": ["AND", "OR"],
                     "default": "AND",
-                    "description": "Logical operator to combine multiple rules"
+                    "description": "Logical operator to combine multiple rules",
                 },
                 "include_statistics": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Include filtering statistics in output metadata"
+                    "description": "Include filtering statistics in output metadata",
                 },
                 "fail_on_missing_field": {
                     "type": "boolean",
                     "default": False,
-                    "description": "Fail transformation if filter field is missing from record"
-                }
+                    "description": "Fail transformation if filter field is missing from record",
+                },
             },
-            "required": ["filter_rules"]
+            "required": ["filter_rules"],
         },
         default_configuration={
             "logic_operator": "AND",
             "include_statistics": True,
-            "fail_on_missing_field": False
-        }
+            "fail_on_missing_field": False,
+        },
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -118,7 +129,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             raise PluginError(
                 "At least one filter rule must be specified",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Validate filter rules
@@ -127,27 +138,40 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 raise PluginError(
                     f"Filter rule {i} missing required fields (field, operator)",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_FILTER_RULE"
+                    error_code="INVALID_FILTER_RULE",
                 )
 
             # Validate operator
             valid_operators = {
-                "equals", "not_equals", "contains", "not_contains",
-                "starts_with", "ends_with", "regex", "greater_than",
-                "less_than", "between", "in", "not_in", "is_null", "is_not_null"
+                "equals",
+                "not_equals",
+                "contains",
+                "not_contains",
+                "starts_with",
+                "ends_with",
+                "regex",
+                "greater_than",
+                "less_than",
+                "between",
+                "in",
+                "not_in",
+                "is_null",
+                "is_not_null",
             }
             if rule["operator"] not in valid_operators:
                 raise PluginError(
                     f"Invalid operator '{rule['operator']}' in filter rule {i}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_OPERATOR"
+                    error_code="INVALID_OPERATOR",
                 )
 
         # Reset statistics
         self._reset_statistics()
         self._initialized = True
 
-    async def transform(self, data: Any, transform_config: dict[str, Any]) -> dict[str, Any]:
+    async def transform(
+        self, data: Any, transform_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Transform data by applying filter rules.
 
         Args:
@@ -164,7 +188,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with transform_config
@@ -193,7 +217,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 raise PluginError(
                     f"Unsupported input data type: {type(data)}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_INPUT_TYPE"
+                    error_code="INVALID_INPUT_TYPE",
                 )
 
             # Apply filters
@@ -210,7 +234,8 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             # Calculate statistics
             self._statistics["filter_rate"] = (
                 self._statistics["filtered_records"] / self._statistics["total_records"]
-                if self._statistics["total_records"] > 0 else 0
+                if self._statistics["total_records"] > 0
+                else 0
             )
 
             # Build result metadata
@@ -219,7 +244,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 "transformer": self.metadata.name,
                 "filter_rules_applied": len(filter_rules),
                 "logic_operator": logic_operator,
-                "input_metadata": input_metadata
+                "input_metadata": input_metadata,
             }
 
             if self._include_statistics:
@@ -228,7 +253,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             return {
                 "data": filtered_records,
                 "metadata": output_metadata,
-                "success": True
+                "success": True,
             }
 
         except Exception as e:
@@ -236,7 +261,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 f"Failed to apply data filters: {e}",
                 plugin_id=self.metadata.id,
                 error_code="TRANSFORMATION_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -247,7 +272,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             "initialized": self._initialized,
             "filter_rules_count": len(self._filter_rules),
             "logic_operator": self._logic_operator,
-            "checks": []
+            "checks": [],
         }
 
         # Check filter rules
@@ -255,7 +280,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             health["checks"].append("No filter rules configured")
             health["status"] = "degraded"
         else:
-            health["checks"].append(f"Filter rules configured: {len(self._filter_rules)}")
+            health["checks"].append(
+                f"Filter rules configured: {len(self._filter_rules)}"
+            )
 
         # Validate each filter rule
         invalid_rules = 0
@@ -281,7 +308,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         self,
         record: dict[str, Any],
         filter_rules: list[dict[str, Any]],
-        logic_operator: str
+        logic_operator: str,
     ) -> bool:
         """Evaluate if a record passes the filter rules."""
         if not filter_rules:
@@ -298,7 +325,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                         f"Filter evaluation failed: {e}",
                         plugin_id=self.metadata.id,
                         error_code="FILTER_EVALUATION_FAILED",
-                        cause=e
+                        cause=e,
                     )
                 # If not failing on missing fields, treat as False
                 results.append(False)
@@ -312,10 +339,12 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             raise PluginError(
                 f"Invalid logic operator: {logic_operator}",
                 plugin_id=self.metadata.id,
-                error_code="INVALID_LOGIC_OPERATOR"
+                error_code="INVALID_LOGIC_OPERATOR",
             )
 
-    def _evaluate_filter_rule(self, record: dict[str, Any], rule: dict[str, Any]) -> bool:
+    def _evaluate_filter_rule(
+        self, record: dict[str, Any], rule: dict[str, Any]
+    ) -> bool:
         """Evaluate a single filter rule against a record."""
         field = rule["field"]
         operator = rule["operator"]
@@ -348,8 +377,11 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         except Exception as e:
             raise ValueError(f"Filter comparison failed: {e}")
 
-    def _get_comparison_function(self, operator: str, case_sensitive: bool) -> Callable[[Any, Any], bool]:
+    def _get_comparison_function(
+        self, operator: str, case_sensitive: bool
+    ) -> Callable[[Any, Any], bool]:
         """Get the appropriate comparison function for an operator."""
+
         def prepare_string_values(actual, expected):
             """Prepare string values for comparison based on case sensitivity."""
             if not case_sensitive:
@@ -389,10 +421,14 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             return bool(pattern.search(str(actual)))
 
         def greater_than(actual, expected):
-            return self._convert_for_comparison(actual) > self._convert_for_comparison(expected)
+            return self._convert_for_comparison(actual) > self._convert_for_comparison(
+                expected
+            )
 
         def less_than(actual, expected):
-            return self._convert_for_comparison(actual) < self._convert_for_comparison(expected)
+            return self._convert_for_comparison(actual) < self._convert_for_comparison(
+                expected
+            )
 
         def between(actual, expected):
             if not isinstance(expected, (list, tuple)) or len(expected) != 2:
@@ -407,7 +443,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             if not isinstance(expected, (list, tuple)):
                 raise ValueError("'in' operator requires a list/tuple of values")
             if not case_sensitive and isinstance(actual, str):
-                expected = [str(v).lower() if isinstance(v, str) else v for v in expected]
+                expected = [
+                    str(v).lower() if isinstance(v, str) else v for v in expected
+                ]
                 actual = actual.lower()
             return actual in expected
 
@@ -427,7 +465,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             "less_than": less_than,
             "between": between,
             "in": in_values,
-            "not_in": not_in_values
+            "not_in": not_in_values,
         }
 
         if operator not in operators:
@@ -440,14 +478,14 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         if isinstance(value, str):
             # Try to convert to number
             try:
-                if '.' in value:
+                if "." in value:
                     return float(value)
                 else:
                     return int(value)
             except ValueError:
                 # Try to parse as date
                 try:
-                    return datetime.fromisoformat(value.replace('Z', '+00:00'))
+                    return datetime.fromisoformat(value.replace("Z", "+00:00"))
                 except ValueError:
                     return value
         return value
@@ -464,9 +502,18 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
 
         # Operators that require a value
         operators_requiring_value = {
-            "equals", "not_equals", "contains", "not_contains",
-            "starts_with", "ends_with", "regex", "greater_than",
-            "less_than", "between", "in", "not_in"
+            "equals",
+            "not_equals",
+            "contains",
+            "not_contains",
+            "starts_with",
+            "ends_with",
+            "regex",
+            "greater_than",
+            "less_than",
+            "between",
+            "in",
+            "not_in",
         }
 
         if operator in operators_requiring_value and value is None:
@@ -479,7 +526,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
 
         if operator in ["in", "not_in"]:
             if not isinstance(value, (list, tuple)):
-                raise ValueError(f"'{operator}' operator requires a list/tuple of values")
+                raise ValueError(
+                    f"'{operator}' operator requires a list/tuple of values"
+                )
 
     def _reset_statistics(self) -> None:
         """Reset filtering statistics."""
@@ -487,7 +536,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             "total_records": 0,
             "passed_records": 0,
             "filtered_records": 0,
-            "filter_rate": 0.0
+            "filter_rate": 0.0,
         }
 
 

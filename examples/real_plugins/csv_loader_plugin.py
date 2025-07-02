@@ -39,67 +39,67 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             "csv_formatting",
             "custom_delimiters",
             "append_mode",
-            "data_validation"
+            "data_validation",
         ],
         configuration_schema={
             "type": "object",
             "properties": {
                 "output_path": {
                     "type": "string",
-                    "description": "Output file path for CSV"
+                    "description": "Output file path for CSV",
                 },
                 "output_directory": {
                     "type": "string",
-                    "description": "Output directory (alternative to output_path)"
+                    "description": "Output directory (alternative to output_path)",
                 },
                 "filename_template": {
                     "type": "string",
                     "default": "output_{timestamp}.csv",
-                    "description": "Filename template with placeholders"
+                    "description": "Filename template with placeholders",
                 },
                 "delimiter": {
                     "type": "string",
                     "default": ",",
-                    "description": "CSV delimiter character"
+                    "description": "CSV delimiter character",
                 },
                 "encoding": {
                     "type": "string",
                     "default": "utf-8",
-                    "description": "File encoding"
+                    "description": "File encoding",
                 },
                 "include_header": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Include header row in CSV"
+                    "description": "Include header row in CSV",
                 },
                 "append_mode": {
                     "type": "boolean",
                     "default": False,
-                    "description": "Append to existing file instead of overwriting"
+                    "description": "Append to existing file instead of overwriting",
                 },
                 "create_directories": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Create output directories if they don't exist"
+                    "description": "Create output directories if they don't exist",
                 },
                 "date_format": {
                     "type": "string",
                     "default": "%Y-%m-%d %H:%M:%S",
-                    "description": "Date format for timestamp formatting"
+                    "description": "Date format for timestamp formatting",
                 },
                 "null_value": {
                     "type": "string",
                     "default": "",
-                    "description": "String representation for null values"
+                    "description": "String representation for null values",
                 },
                 "quoting": {
                     "type": "string",
                     "enum": ["minimal", "all", "non_numeric", "none"],
                     "default": "minimal",
-                    "description": "CSV quoting behavior"
-                }
+                    "description": "CSV quoting behavior",
+                },
             },
-            "required": []
+            "required": [],
         },
         default_configuration={
             "delimiter": ",",
@@ -110,8 +110,8 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             "filename_template": "output_{timestamp}.csv",
             "date_format": "%Y-%m-%d %H:%M:%S",
             "null_value": "",
-            "quoting": "minimal"
-        }
+            "quoting": "minimal",
+        },
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -134,7 +134,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         """Initialize plugin with configuration."""
         self._output_path = self._config.get("output_path")
         self._output_directory = self._config.get("output_directory")
-        self._filename_template = self._config.get("filename_template", "output_{timestamp}.csv")
+        self._filename_template = self._config.get(
+            "filename_template", "output_{timestamp}.csv"
+        )
         self._delimiter = self._config.get("delimiter", ",")
         self._encoding = self._config.get("encoding", "utf-8")
         self._include_header = self._config.get("include_header", True)
@@ -149,7 +151,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 "Either output_path or output_directory must be specified",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Validate quoting parameter
@@ -158,13 +160,15 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 f"Invalid quoting option: {self._quoting}",
                 plugin_id=self.metadata.id,
-                error_code="INVALID_CONFIG"
+                error_code="INVALID_CONFIG",
             )
 
         self._reset_statistics()
         self._initialized = True
 
-    async def load(self, data: Any, destination_config: dict[str, Any]) -> dict[str, Any]:
+    async def load(
+        self, data: Any, destination_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Load data to CSV file.
 
         Args:
@@ -181,13 +185,17 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with destination_config
         output_path = destination_config.get("output_path", self._output_path)
-        output_directory = destination_config.get("output_directory", self._output_directory)
-        filename_template = destination_config.get("filename_template", self._filename_template)
+        output_directory = destination_config.get(
+            "output_directory", self._output_directory
+        )
+        filename_template = destination_config.get(
+            "filename_template", self._filename_template
+        )
         append_mode = destination_config.get("append_mode", self._append_mode)
 
         try:
@@ -209,7 +217,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 raise PluginError(
                     f"Unsupported input data type: {type(data)}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_INPUT_TYPE"
+                    error_code="INVALID_INPUT_TYPE",
                 )
 
             if not records:
@@ -217,7 +225,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                     "success": True,
                     "message": "No data to load",
                     "records_loaded": 0,
-                    "output_path": None
+                    "output_path": None,
                 }
 
             # Determine final output path
@@ -237,7 +245,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
 
             self._load_statistics["records_loaded"] = loaded_records
             self._load_statistics["output_path"] = str(final_output_path)
-            self._load_statistics["file_size_bytes"] = Path(final_output_path).stat().st_size
+            self._load_statistics["file_size_bytes"] = (
+                Path(final_output_path).stat().st_size
+            )
 
             # Build result
             result = {
@@ -247,7 +257,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 "file_size_bytes": self._load_statistics["file_size_bytes"],
                 "load_timestamp": datetime.now().isoformat(),
                 "input_metadata": input_metadata,
-                "load_statistics": self._load_statistics.copy()
+                "load_statistics": self._load_statistics.copy(),
             }
 
             return result
@@ -257,7 +267,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 f"Failed to load data to CSV: {e}",
                 plugin_id=self.metadata.id,
                 error_code="LOAD_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -267,7 +277,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             "plugin_id": self.metadata.id,
             "initialized": self._initialized,
             "output_writable": False,
-            "checks": []
+            "checks": [],
         }
 
         # Check output path configuration
@@ -299,7 +309,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                     health["output_writable"] = True
                     health["checks"].append("Output directory is writable")
                 else:
-                    health["checks"].append("Output directory does not exist and create_directories is False")
+                    health["checks"].append(
+                        "Output directory does not exist and create_directories is False"
+                    )
                     health["status"] = "degraded"
 
             except Exception as e:
@@ -317,7 +329,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         self,
         output_path: str | None,
         output_directory: str | None,
-        filename_template: str
+        filename_template: str,
     ) -> Path:
         """Determine the final output file path."""
         if output_path:
@@ -331,7 +343,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         raise PluginError(
             "No output path could be determined",
             plugin_id=self.metadata.id,
-            error_code="INVALID_OUTPUT_PATH"
+            error_code="INVALID_OUTPUT_PATH",
         )
 
     def _format_filename_template(self, template: str) -> str:
@@ -348,7 +360,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             "day": now.strftime("%d"),
             "hour": now.strftime("%H"),
             "minute": now.strftime("%M"),
-            "second": now.strftime("%S")
+            "second": now.strftime("%S"),
         }
 
         # Replace placeholders
@@ -359,10 +371,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         return formatted
 
     async def _write_csv_file(
-        self,
-        records: list[dict[str, Any]],
-        output_path: Path,
-        append_mode: bool
+        self, records: list[dict[str, Any]], output_path: Path, append_mode: bool
     ) -> int:
         """Write records to CSV file."""
         if not records:
@@ -373,7 +382,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             "minimal": csv.QUOTE_MINIMAL,
             "all": csv.QUOTE_ALL,
             "non_numeric": csv.QUOTE_NONNUMERIC,
-            "none": csv.QUOTE_NONE
+            "none": csv.QUOTE_NONE,
         }
         quoting = quoting_map.get(self._quoting, csv.QUOTE_MINIMAL)
 
@@ -385,13 +394,13 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         fieldnames = list(records[0].keys()) if records else []
 
         # Open file and write data
-        mode = 'a' if append_mode else 'w'
-        with open(output_path, mode, newline='', encoding=self._encoding) as csvfile:
+        mode = "a" if append_mode else "w"
+        with open(output_path, mode, newline="", encoding=self._encoding) as csvfile:
             writer = csv.DictWriter(
                 csvfile,
                 fieldnames=fieldnames,
                 delimiter=self._delimiter,
-                quoting=quoting
+                quoting=quoting,
             )
 
             # Write header if needed
@@ -420,6 +429,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             elif isinstance(value, (list, dict)):
                 # Convert complex types to JSON string
                 import json
+
                 formatted[field] = json.dumps(value)
             else:
                 formatted[field] = str(value)
@@ -431,7 +441,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         self._load_statistics = {
             "records_loaded": 0,
             "output_path": None,
-            "file_size_bytes": 0
+            "file_size_bytes": 0,
         }
 
 

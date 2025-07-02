@@ -40,54 +40,54 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             "schema_inference",
             "data_validation",
             "streaming_output",
-            "configurable_parsing"
+            "configurable_parsing",
         ],
         configuration_schema={
             "type": "object",
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "description": "Path to the CSV file to extract"
+                    "description": "Path to the CSV file to extract",
                 },
                 "delimiter": {
                     "type": "string",
                     "default": ",",
-                    "description": "CSV delimiter character"
+                    "description": "CSV delimiter character",
                 },
                 "encoding": {
                     "type": "string",
                     "default": "utf-8",
-                    "description": "File encoding"
+                    "description": "File encoding",
                 },
                 "has_header": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Whether CSV has header row"
+                    "description": "Whether CSV has header row",
                 },
                 "skip_rows": {
                     "type": "integer",
                     "default": 0,
-                    "description": "Number of rows to skip at start"
+                    "description": "Number of rows to skip at start",
                 },
                 "max_rows": {
                     "type": "integer",
-                    "description": "Maximum number of rows to extract (optional)"
+                    "description": "Maximum number of rows to extract (optional)",
                 },
                 "infer_schema": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Automatically infer data types"
-                }
+                    "description": "Automatically infer data types",
+                },
             },
-            "required": ["file_path"]
+            "required": ["file_path"],
         },
         default_configuration={
             "delimiter": ",",
             "encoding": "utf-8",
             "has_header": True,
             "skip_rows": 0,
-            "infer_schema": True
-        }
+            "infer_schema": True,
+        },
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -117,7 +117,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "file_path configuration is required",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Validate file exists and is readable
@@ -126,14 +126,14 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 f"File not found: {self._file_path}",
                 plugin_id=self.metadata.id,
-                error_code="FILE_NOT_FOUND"
+                error_code="FILE_NOT_FOUND",
             )
 
         if not file_path.is_file():
             raise PluginError(
                 f"Path is not a file: {self._file_path}",
                 plugin_id=self.metadata.id,
-                error_code="INVALID_FILE"
+                error_code="INVALID_FILE",
             )
 
         # Try to open file to validate access
@@ -145,7 +145,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                 f"Cannot read file: {e}",
                 plugin_id=self.metadata.id,
                 error_code="FILE_ACCESS_ERROR",
-                cause=e
+                cause=e,
             )
 
         # Infer schema if enabled
@@ -171,7 +171,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with source_config if provided
@@ -188,14 +188,15 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                 "total_rows_extracted": 0,
                 "has_header": self._has_header,
                 "delimiter": self._delimiter,
-                "encoding": self._encoding
+                "encoding": self._encoding,
             }
 
-            with open(file_path, encoding=self._encoding, newline='') as csvfile:
-                reader = csv.DictReader(
-                    csvfile,
-                    delimiter=self._delimiter
-                ) if self._has_header else csv.reader(csvfile, delimiter=self._delimiter)
+            with open(file_path, encoding=self._encoding, newline="") as csvfile:
+                reader = (
+                    csv.DictReader(csvfile, delimiter=self._delimiter)
+                    if self._has_header
+                    else csv.reader(csvfile, delimiter=self._delimiter)
+                )
 
                 # Skip initial rows if configured
                 for _ in range(self._skip_rows):
@@ -225,7 +226,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                 "data": records,
                 "metadata": metadata,
                 "schema": self._schema,
-                "success": True
+                "success": True,
             }
 
             return result
@@ -235,10 +236,12 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                 f"Failed to extract data from CSV: {e}",
                 plugin_id=self.metadata.id,
                 error_code="EXTRACTION_FAILED",
-                cause=e
+                cause=e,
             )
 
-    async def extract_stream(self, source_config: dict[str, Any]) -> Iterator[dict[str, Any]]:
+    async def extract_stream(
+        self, source_config: dict[str, Any]
+    ) -> Iterator[dict[str, Any]]:
         """Extract data as a stream for large files.
 
         Args:
@@ -254,18 +257,19 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         file_path = source_config.get("file_path", self._file_path)
         max_rows = source_config.get("max_rows", self._max_rows)
 
         try:
-            with open(file_path, encoding=self._encoding, newline='') as csvfile:
-                reader = csv.DictReader(
-                    csvfile,
-                    delimiter=self._delimiter
-                ) if self._has_header else csv.reader(csvfile, delimiter=self._delimiter)
+            with open(file_path, encoding=self._encoding, newline="") as csvfile:
+                reader = (
+                    csv.DictReader(csvfile, delimiter=self._delimiter)
+                    if self._has_header
+                    else csv.reader(csvfile, delimiter=self._delimiter)
+                )
 
                 # Skip initial rows
                 for _ in range(self._skip_rows):
@@ -292,7 +296,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                 f"Failed to stream data from CSV: {e}",
                 plugin_id=self.metadata.id,
                 error_code="STREAM_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -303,7 +307,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             "initialized": self._initialized,
             "file_accessible": False,
             "schema_inferred": bool(self._schema),
-            "checks": []
+            "checks": [],
         }
 
         # Check file accessibility
@@ -338,8 +342,12 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             return
 
         try:
-            with open(self._file_path, encoding=self._encoding, newline='') as csvfile:
-                reader = csv.DictReader(csvfile, delimiter=self._delimiter) if self._has_header else csv.reader(csvfile, delimiter=self._delimiter)
+            with open(self._file_path, encoding=self._encoding, newline="") as csvfile:
+                reader = (
+                    csv.DictReader(csvfile, delimiter=self._delimiter)
+                    if self._has_header
+                    else csv.reader(csvfile, delimiter=self._delimiter)
+                )
 
                 # Skip initial rows
                 for _ in range(self._skip_rows):
@@ -362,7 +370,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                     # Infer types for each field
                     for field_name in field_names:
                         self._schema[field_name] = self._infer_field_type(
-                            [row.get(field_name, '') for row in sample_rows]
+                            [row.get(field_name, "") for row in sample_rows]
                         )
                 elif sample_rows:
                     # No header, create generic field names
@@ -370,7 +378,7 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                     for i in range(len(first_row)):
                         field_name = f"column_{i}"
                         self._schema[field_name] = self._infer_field_type(
-                            [row[i] if i < len(row) else '' for row in sample_rows]
+                            [row[i] if i < len(row) else "" for row in sample_rows]
                         )
 
         except Exception:
@@ -414,7 +422,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
     def _looks_like_date(self, value: str) -> bool:
         """Basic check if string looks like a date."""
         date_indicators = ["-", "/", ":", "T", "Z"]
-        return any(indicator in value for indicator in date_indicators) and len(value) >= 8
+        return (
+            any(indicator in value for indicator in date_indicators) and len(value) >= 8
+        )
 
     def _process_row_with_schema(self, row: dict[str, str]) -> dict[str, Any]:
         """Process row data using inferred schema."""
@@ -426,7 +436,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
 
         return processed
 
-    def _process_row_without_header(self, row: list[str], row_index: int) -> dict[str, Any]:
+    def _process_row_without_header(
+        self, row: list[str], row_index: int
+    ) -> dict[str, Any]:
         """Process row data without header."""
         processed = {}
 

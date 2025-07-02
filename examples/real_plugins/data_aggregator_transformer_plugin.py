@@ -38,7 +38,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             "grouping",
             "statistical_functions",
             "custom_expressions",
-            "type_aware_aggregation"
+            "type_aware_aggregation",
         ],
         configuration_schema={
             "type": "object",
@@ -46,7 +46,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 "group_by": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Fields to group by"
+                    "description": "Fields to group by",
                 },
                 "aggregations": {
                     "type": "array",
@@ -56,50 +56,59 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                         "properties": {
                             "field": {
                                 "type": "string",
-                                "description": "Field to aggregate"
+                                "description": "Field to aggregate",
                             },
                             "function": {
                                 "type": "string",
-                                "enum": ["sum", "count", "avg", "min", "max", "median",
-                                        "std", "var", "first", "last", "concat", "unique_count"],
-                                "description": "Aggregation function"
+                                "enum": [
+                                    "sum",
+                                    "count",
+                                    "avg",
+                                    "min",
+                                    "max",
+                                    "median",
+                                    "std",
+                                    "var",
+                                    "first",
+                                    "last",
+                                    "concat",
+                                    "unique_count",
+                                ],
+                                "description": "Aggregation function",
                             },
                             "alias": {
                                 "type": "string",
-                                "description": "Alias for the aggregated field"
+                                "description": "Alias for the aggregated field",
                             },
                             "filter": {
                                 "type": "object",
                                 "description": "Optional filter to apply before aggregation",
                                 "properties": {
                                     "operator": {"type": "string"},
-                                    "value": {}
-                                }
-                            }
+                                    "value": {},
+                                },
+                            },
                         },
-                        "required": ["field", "function"]
-                    }
+                        "required": ["field", "function"],
+                    },
                 },
                 "include_group_stats": {
                     "type": "boolean",
                     "default": True,
-                    "description": "Include group statistics in output"
+                    "description": "Include group statistics in output",
                 },
                 "sort_by": {
                     "type": "object",
                     "description": "Sort aggregated results",
                     "properties": {
                         "field": {"type": "string"},
-                        "direction": {"type": "string", "enum": ["asc", "desc"]}
-                    }
-                }
+                        "direction": {"type": "string", "enum": ["asc", "desc"]},
+                    },
+                },
             },
-            "required": ["aggregations"]
+            "required": ["aggregations"],
         },
-        default_configuration={
-            "group_by": [],
-            "include_group_stats": True
-        }
+        default_configuration={"group_by": [], "include_group_stats": True},
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -122,7 +131,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             raise PluginError(
                 "At least one aggregation must be specified",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Validate aggregations
@@ -131,25 +140,37 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 raise PluginError(
                     f"Aggregation {i} missing required fields (field, function)",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_AGGREGATION"
+                    error_code="INVALID_AGGREGATION",
                 )
 
             # Validate function
             valid_functions = {
-                "sum", "count", "avg", "min", "max", "median",
-                "std", "var", "first", "last", "concat", "unique_count"
+                "sum",
+                "count",
+                "avg",
+                "min",
+                "max",
+                "median",
+                "std",
+                "var",
+                "first",
+                "last",
+                "concat",
+                "unique_count",
             }
             if agg["function"] not in valid_functions:
                 raise PluginError(
                     f"Invalid aggregation function '{agg['function']}' in aggregation {i}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_FUNCTION"
+                    error_code="INVALID_FUNCTION",
                 )
 
         self._reset_statistics()
         self._initialized = True
 
-    async def transform(self, data: Any, transform_config: dict[str, Any]) -> dict[str, Any]:
+    async def transform(
+        self, data: Any, transform_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Transform data by applying aggregations.
 
         Args:
@@ -166,7 +187,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with transform_config
@@ -193,7 +214,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 raise PluginError(
                     f"Unsupported input data type: {type(data)}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_INPUT_TYPE"
+                    error_code="INVALID_INPUT_TYPE",
                 )
 
             self._statistics["total_input_records"] = len(records)
@@ -213,7 +234,11 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                         aggregated_record[group_by[0]] = group_key
                     else:
                         for i, field in enumerate(group_by):
-                            aggregated_record[field] = group_key[i] if isinstance(group_key, tuple) else group_key
+                            aggregated_record[field] = (
+                                group_key[i]
+                                if isinstance(group_key, tuple)
+                                else group_key
+                            )
 
                 # Apply each aggregation
                 for agg_config in aggregations:
@@ -225,7 +250,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                     # Filter records if filter is specified
                     filtered_records = group_records
                     if filter_config:
-                        filtered_records = self._filter_records(group_records, field, filter_config)
+                        filtered_records = self._filter_records(
+                            group_records, field, filter_config
+                        )
 
                     # Apply aggregation function
                     aggregated_value = self._apply_aggregation_function(
@@ -245,8 +272,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             if sort_by and "field" in sort_by:
                 reverse = sort_by.get("direction", "asc") == "desc"
                 aggregated_results.sort(
-                    key=lambda x: x.get(sort_by["field"], 0),
-                    reverse=reverse
+                    key=lambda x: x.get(sort_by["field"], 0), reverse=reverse
                 )
 
             self._statistics["total_output_records"] = len(aggregated_results)
@@ -258,13 +284,13 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 "group_by_fields": group_by,
                 "aggregations_applied": len(aggregations),
                 "input_metadata": input_metadata,
-                "aggregation_statistics": self._statistics.copy()
+                "aggregation_statistics": self._statistics.copy(),
             }
 
             return {
                 "data": aggregated_results,
                 "metadata": output_metadata,
-                "success": True
+                "success": True,
             }
 
         except Exception as e:
@@ -272,7 +298,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 f"Failed to apply data aggregations: {e}",
                 plugin_id=self.metadata.id,
                 error_code="TRANSFORMATION_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -283,7 +309,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             "initialized": self._initialized,
             "group_by_fields": len(self._group_by),
             "aggregations_count": len(self._aggregations),
-            "checks": []
+            "checks": [],
         }
 
         # Check aggregations configuration
@@ -291,7 +317,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             health["checks"].append("No aggregations configured")
             health["status"] = "degraded"
         else:
-            health["checks"].append(f"Aggregations configured: {len(self._aggregations)}")
+            health["checks"].append(
+                f"Aggregations configured: {len(self._aggregations)}"
+            )
 
         # Validate each aggregation
         invalid_aggregations = 0
@@ -314,7 +342,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         self._reset_statistics()
         self._initialized = False
 
-    def _group_records(self, records: list[dict[str, Any]], group_by: list[str]) -> dict[Any, list[dict[str, Any]]]:
+    def _group_records(
+        self, records: list[dict[str, Any]], group_by: list[str]
+    ) -> dict[Any, list[dict[str, Any]]]:
         """Group records by specified fields."""
         if not group_by:
             # No grouping, return all records in single group
@@ -334,10 +364,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         return dict(groups)
 
     def _filter_records(
-        self,
-        records: list[dict[str, Any]],
-        field: str,
-        filter_config: dict[str, Any]
+        self, records: list[dict[str, Any]], field: str, filter_config: dict[str, Any]
     ) -> list[dict[str, Any]]:
         """Apply filter to records before aggregation."""
         operator = filter_config.get("operator", "equals")
@@ -352,16 +379,22 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
 
         return filtered
 
-    def _evaluate_filter(self, actual_value: Any, operator: str, expected_value: Any) -> bool:
+    def _evaluate_filter(
+        self, actual_value: Any, operator: str, expected_value: Any
+    ) -> bool:
         """Evaluate filter condition."""
         if operator == "equals":
             return actual_value == expected_value
         elif operator == "not_equals":
             return actual_value != expected_value
         elif operator == "greater_than":
-            return self._convert_for_comparison(actual_value) > self._convert_for_comparison(expected_value)
+            return self._convert_for_comparison(
+                actual_value
+            ) > self._convert_for_comparison(expected_value)
         elif operator == "less_than":
-            return self._convert_for_comparison(actual_value) < self._convert_for_comparison(expected_value)
+            return self._convert_for_comparison(
+                actual_value
+            ) < self._convert_for_comparison(expected_value)
         elif operator == "is_null":
             return actual_value is None
         elif operator == "is_not_null":
@@ -370,10 +403,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             return True
 
     def _apply_aggregation_function(
-        self,
-        records: list[dict[str, Any]],
-        field: str,
-        function: str
+        self, records: list[dict[str, Any]], field: str, function: str
     ) -> Any:
         """Apply aggregation function to field values."""
         if not records:
@@ -399,7 +429,11 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
 
             elif function == "avg":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
-                return sum(numeric_values) / len(numeric_values) if numeric_values else None
+                return (
+                    sum(numeric_values) / len(numeric_values)
+                    if numeric_values
+                    else None
+                )
 
             elif function == "min":
                 return min(values)
@@ -413,24 +447,28 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 if n == 0:
                     return None
                 elif n % 2 == 0:
-                    return (sorted_values[n//2 - 1] + sorted_values[n//2]) / 2
+                    return (sorted_values[n // 2 - 1] + sorted_values[n // 2]) / 2
                 else:
-                    return sorted_values[n//2]
+                    return sorted_values[n // 2]
 
             elif function == "std":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
                 if len(numeric_values) < 2:
                     return None
                 mean = sum(numeric_values) / len(numeric_values)
-                variance = sum((x - mean) ** 2 for x in numeric_values) / len(numeric_values)
-                return variance ** 0.5
+                variance = sum((x - mean) ** 2 for x in numeric_values) / len(
+                    numeric_values
+                )
+                return variance**0.5
 
             elif function == "var":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
                 if len(numeric_values) < 2:
                     return None
                 mean = sum(numeric_values) / len(numeric_values)
-                return sum((x - mean) ** 2 for x in numeric_values) / len(numeric_values)
+                return sum((x - mean) ** 2 for x in numeric_values) / len(
+                    numeric_values
+                )
 
             elif function == "first":
                 return values[0] if values else None
@@ -470,7 +508,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         """Convert value for comparison operations."""
         if isinstance(value, str):
             try:
-                if '.' in value:
+                if "." in value:
                     return float(value)
                 else:
                     return int(value)
@@ -487,8 +525,18 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
 
         function = agg["function"]
         valid_functions = {
-            "sum", "count", "avg", "min", "max", "median",
-            "std", "var", "first", "last", "concat", "unique_count"
+            "sum",
+            "count",
+            "avg",
+            "min",
+            "max",
+            "median",
+            "std",
+            "var",
+            "first",
+            "last",
+            "concat",
+            "unique_count",
         }
 
         if function not in valid_functions:
@@ -499,7 +547,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         self._statistics = {
             "total_input_records": 0,
             "total_output_records": 0,
-            "groups_created": 0
+            "groups_created": 0,
         }
 
 

@@ -12,15 +12,19 @@ from flext_plugin.types import PluginError, PluginType
 
 try:
     import asyncpg
+
     ASYNCPG_AVAILABLE = True
 except ImportError:
     ASYNCPG_AVAILABLE = False
+
     # Create mock asyncpg for type hints
     class MockAsyncpg:
         class Connection:
             pass
+
         class Pool:
             pass
+
     asyncpg = MockAsyncpg()
 
 
@@ -52,79 +56,64 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             "upsert_operations",
             "transaction_management",
             "schema_validation",
-            "connection_pooling"
+            "connection_pooling",
         ],
         configuration_schema={
             "type": "object",
             "properties": {
-                "host": {
-                    "type": "string",
-                    "description": "PostgreSQL host"
-                },
+                "host": {"type": "string", "description": "PostgreSQL host"},
                 "port": {
                     "type": "integer",
                     "default": 5432,
-                    "description": "PostgreSQL port"
+                    "description": "PostgreSQL port",
                 },
-                "database": {
-                    "type": "string",
-                    "description": "Database name"
-                },
-                "username": {
-                    "type": "string",
-                    "description": "Database username"
-                },
-                "password": {
-                    "type": "string",
-                    "description": "Database password"
-                },
-                "table_name": {
-                    "type": "string",
-                    "description": "Target table name"
-                },
+                "database": {"type": "string", "description": "Database name"},
+                "username": {"type": "string", "description": "Database username"},
+                "password": {"type": "string", "description": "Database password"},
+                "table_name": {"type": "string", "description": "Target table name"},
                 "schema_name": {
                     "type": "string",
                     "default": "public",
-                    "description": "Database schema name"
+                    "description": "Database schema name",
                 },
                 "batch_size": {
                     "type": "integer",
                     "default": 1000,
-                    "description": "Number of rows per batch"
+                    "description": "Number of rows per batch",
                 },
                 "max_connections": {
                     "type": "integer",
                     "default": 10,
-                    "description": "Maximum database connections in pool"
+                    "description": "Maximum database connections in pool",
                 },
                 "operation": {
                     "type": "string",
                     "enum": ["insert", "upsert", "update"],
                     "default": "insert",
-                    "description": "Load operation type"
+                    "description": "Load operation type",
                 },
                 "conflict_columns": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Columns for conflict resolution in upsert operations"
+                    "description": "Columns for conflict resolution in upsert operations",
                 },
                 "create_table": {
                     "type": "boolean",
                     "default": False,
-                    "description": "Create table if it doesn't exist"
+                    "description": "Create table if it doesn't exist",
                 },
                 "truncate_before_load": {
                     "type": "boolean",
                     "default": False,
-                    "description": "Truncate table before loading data"
+                    "description": "Truncate table before loading data",
                 },
                 "transaction_timeout": {
                     "type": "integer",
                     "default": 300,
-                    "description": "Transaction timeout in seconds"
-                }
+                    "description": "Transaction timeout in seconds",
+                },
             },
-            "required": ["host", "database", "username", "password", "table_name"]
+            "required": ["host", "database", "username", "password", "table_name"],
         },
         default_configuration={
             "port": 5432,
@@ -134,8 +123,8 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             "operation": "insert",
             "create_table": False,
             "truncate_before_load": False,
-            "transaction_timeout": 300
-        }
+            "transaction_timeout": 300,
+        },
     )
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -164,7 +153,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 "asyncpg library is required but not installed",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_DEPENDENCY"
+                error_code="MISSING_DEPENDENCY",
             )
 
         # Load configuration
@@ -184,11 +173,19 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         self._transaction_timeout = self._config.get("transaction_timeout", 300)
 
         # Validate required configuration
-        if not all([self._host, self._database, self._username, self._password, self._table_name]):
+        if not all(
+            [
+                self._host,
+                self._database,
+                self._username,
+                self._password,
+                self._table_name,
+            ]
+        ):
             raise PluginError(
                 "Missing required database connection parameters",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Validate operation
@@ -196,7 +193,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 f"Invalid operation: {self._operation}",
                 plugin_id=self.metadata.id,
-                error_code="INVALID_CONFIG"
+                error_code="INVALID_CONFIG",
             )
 
         # Validate upsert configuration
@@ -204,7 +201,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 "conflict_columns must be specified for upsert operations",
                 plugin_id=self.metadata.id,
-                error_code="MISSING_CONFIG"
+                error_code="MISSING_CONFIG",
             )
 
         # Create connection pool
@@ -217,14 +214,14 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 password=self._password,
                 min_size=1,
                 max_size=self._max_connections,
-                command_timeout=self._transaction_timeout
+                command_timeout=self._transaction_timeout,
             )
         except Exception as e:
             raise PluginError(
                 f"Failed to create database connection pool: {e}",
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_FAILED",
-                cause=e
+                cause=e,
             )
 
         # Test connection
@@ -236,13 +233,15 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 f"Database connection test failed: {e}",
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_TEST_FAILED",
-                cause=e
+                cause=e,
             )
 
         self._reset_statistics()
         self._initialized = True
 
-    async def load(self, data: Any, destination_config: dict[str, Any]) -> dict[str, Any]:
+    async def load(
+        self, data: Any, destination_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Load data to PostgreSQL database.
 
         Args:
@@ -259,7 +258,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             raise PluginError(
                 "Plugin not initialized",
                 plugin_id=self.metadata.id,
-                error_code="NOT_INITIALIZED"
+                error_code="NOT_INITIALIZED",
             )
 
         # Override config with destination_config
@@ -267,7 +266,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         schema_name = destination_config.get("schema_name", self._schema_name)
         operation = destination_config.get("operation", self._operation)
         batch_size = destination_config.get("batch_size", self._batch_size)
-        truncate_before_load = destination_config.get("truncate_before_load", self._truncate_before_load)
+        truncate_before_load = destination_config.get(
+            "truncate_before_load", self._truncate_before_load
+        )
 
         try:
             # Reset statistics
@@ -288,14 +289,14 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 raise PluginError(
                     f"Unsupported input data type: {type(data)}",
                     plugin_id=self.metadata.id,
-                    error_code="INVALID_INPUT_TYPE"
+                    error_code="INVALID_INPUT_TYPE",
                 )
 
             if not records:
                 return {
                     "success": True,
                     "message": "No data to load",
-                    "records_loaded": 0
+                    "records_loaded": 0,
                 }
 
             self._load_statistics["total_input_records"] = len(records)
@@ -321,21 +322,28 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                     batch_count = 0
 
                     for i in range(0, len(records), batch_size):
-                        batch = records[i:i + batch_size]
+                        batch = records[i : i + batch_size]
 
                         if operation == "insert":
-                            loaded = await self._insert_batch(connection, full_table_name, batch)
+                            loaded = await self._insert_batch(
+                                connection, full_table_name, batch
+                            )
                         elif operation == "upsert":
                             loaded = await self._upsert_batch(
-                                connection, full_table_name, batch, self._conflict_columns
+                                connection,
+                                full_table_name,
+                                batch,
+                                self._conflict_columns,
                             )
                         elif operation == "update":
-                            loaded = await self._update_batch(connection, full_table_name, batch)
+                            loaded = await self._update_batch(
+                                connection, full_table_name, batch
+                            )
                         else:
                             raise PluginError(
                                 f"Unsupported operation: {operation}",
                                 plugin_id=self.metadata.id,
-                                error_code="INVALID_OPERATION"
+                                error_code="INVALID_OPERATION",
                             )
 
                         total_loaded += loaded
@@ -353,7 +361,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 "operation": operation,
                 "load_timestamp": datetime.now().isoformat(),
                 "input_metadata": input_metadata,
-                "load_statistics": self._load_statistics.copy()
+                "load_statistics": self._load_statistics.copy(),
             }
 
             return result
@@ -363,7 +371,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 f"Failed to load data to PostgreSQL: {e}",
                 plugin_id=self.metadata.id,
                 error_code="LOAD_FAILED",
-                cause=e
+                cause=e,
             )
 
     async def health_check(self) -> dict[str, Any]:
@@ -375,7 +383,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             "connection_pool_status": None,
             "database_accessible": False,
             "table_accessible": False,
-            "checks": []
+            "checks": [],
         }
 
         # Check connection pool
@@ -384,9 +392,11 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 pool_size = self._connection_pool.get_size()
                 health["connection_pool_status"] = {
                     "size": pool_size,
-                    "max_size": self._max_connections
+                    "max_size": self._max_connections,
                 }
-                health["checks"].append(f"Connection pool healthy ({pool_size}/{self._max_connections})")
+                health["checks"].append(
+                    f"Connection pool healthy ({pool_size}/{self._max_connections})"
+                )
             except Exception as e:
                 health["checks"].append(f"Connection pool check failed: {e}")
                 health["status"] = "degraded"
@@ -434,18 +444,22 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         connection: asyncpg.Connection,
         table_name: str,
         schema_name: str,
-        sample_record: dict[str, Any]
+        sample_record: dict[str, Any],
     ) -> None:
         """Create table if it doesn't exist based on sample record."""
         full_table_name = f"{schema_name}.{table_name}"
 
         # Check if table exists
-        exists = await connection.fetchval("""
+        exists = await connection.fetchval(
+            """
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_schema = $1 AND table_name = $2
             )
-        """, schema_name, table_name)
+        """,
+            schema_name,
+            table_name,
+        )
 
         if not exists:
             # Infer column types from sample record
@@ -468,7 +482,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         self,
         connection: asyncpg.Connection,
         table_name: str,
-        batch: list[dict[str, Any]]
+        batch: list[dict[str, Any]],
     ) -> int:
         """Insert batch of records."""
         if not batch:
@@ -476,8 +490,8 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
 
         # Get field names from first record
         fields = list(batch[0].keys())
-        placeholders = ', '.join(f'${i+1}' for i in range(len(fields)))
-        field_names = ', '.join(f'"{field}"' for field in fields)
+        placeholders = ", ".join(f"${i + 1}" for i in range(len(fields)))
+        field_names = ", ".join(f'"{field}"' for field in fields)
 
         insert_sql = f"""
             INSERT INTO {table_name} ({field_names})
@@ -498,22 +512,24 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         connection: asyncpg.Connection,
         table_name: str,
         batch: list[dict[str, Any]],
-        conflict_columns: list[str]
+        conflict_columns: list[str],
     ) -> int:
         """Upsert batch of records using ON CONFLICT."""
         if not batch:
             return 0
 
         fields = list(batch[0].keys())
-        placeholders = ', '.join(f'${i+1}' for i in range(len(fields)))
-        field_names = ', '.join(f'"{field}"' for field in fields)
+        placeholders = ", ".join(f"${i + 1}" for i in range(len(fields)))
+        field_names = ", ".join(f'"{field}"' for field in fields)
 
         # Build conflict columns
-        conflict_cols = ', '.join(f'"{col}"' for col in conflict_columns)
+        conflict_cols = ", ".join(f'"{col}"' for col in conflict_columns)
 
         # Build update clause for non-conflict columns
         update_fields = [f for f in fields if f not in conflict_columns]
-        update_clause = ', '.join(f'"{field}" = EXCLUDED."{field}"' for field in update_fields)
+        update_clause = ", ".join(
+            f'"{field}" = EXCLUDED."{field}"' for field in update_fields
+        )
 
         upsert_sql = f"""
             INSERT INTO {table_name} ({field_names})
@@ -535,7 +551,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         self,
         connection: asyncpg.Connection,
         table_name: str,
-        batch: list[dict[str, Any]]
+        batch: list[dict[str, Any]],
     ) -> int:
         """Update batch of records (requires primary key)."""
         # This is a simplified update - in practice, you'd need to identify
@@ -543,7 +559,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         raise PluginError(
             "Update operation not fully implemented - requires primary key configuration",
             plugin_id=self.metadata.id,
-            error_code="NOT_IMPLEMENTED"
+            error_code="NOT_IMPLEMENTED",
         )
 
     def _infer_postgres_type(self, value: Any) -> str:
@@ -570,7 +586,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             "records_loaded": 0,
             "batches_processed": 0,
             "table_created": False,
-            "table_truncated": False
+            "table_truncated": False,
         }
 
 
