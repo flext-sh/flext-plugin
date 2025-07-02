@@ -19,15 +19,15 @@ from flx_plugin.core.validators import PluginValidator
 
 __all__ = [
     "Plugin",
-    "PluginMetadata",
-    "PluginDiscovery",
-    "PluginLoader",
-    "PluginManager",
-    "PluginValidator",
-    "PluginType",
     "PluginCapability",
-    "PluginLifecycle",
-    "PluginStatus",
+    "PluginDiscovery",
     "PluginError",
     "PluginExecutionResult",
+    "PluginLifecycle",
+    "PluginLoader",
+    "PluginManager",
+    "PluginMetadata",
+    "PluginStatus",
+    "PluginType",
+    "PluginValidator",
 ]

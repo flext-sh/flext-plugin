@@ -316,7 +316,7 @@ class PluginLoader:
             try:
                 await loaded.cleanup()
             except Exception as e:
-                logger.error(f"Error during plugin cleanup: {plugin_id}", exc_info=e)
+                logger.exception(f"Error during plugin cleanup: {plugin_id}", exc_info=e)
 
         # Remove from loaded plugins
         del self._loaded_plugins[plugin_id]

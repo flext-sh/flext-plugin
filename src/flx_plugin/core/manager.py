@@ -8,8 +8,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flx_plugin.core.discovery import DiscoveredPlugin, PluginDiscovery
 from flx_plugin.core.loader import LoadedPlugin, PluginLoader
@@ -21,6 +20,9 @@ from flx_plugin.core.types import (
     PluginType,
 )
 from flx_plugin.core.validators import PluginValidator
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -107,8 +109,9 @@ class PluginManager:
                 await self.discover_plugins()
 
             if plugin_id not in self._discovered_plugins:
+                msg = f"Plugin not found: {plugin_id}"
                 raise PluginError(
-                    f"Plugin not found: {plugin_id}",
+                    msg,
                     plugin_id=plugin_id,
                     error_code="NOT_FOUND",
                 )
@@ -154,8 +157,9 @@ class PluginManager:
 
         """
         if plugin_id not in self._discovered_plugins:
+            msg = f"Plugin not found: {plugin_id}"
             raise PluginError(
-                f"Plugin not found: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 error_code="NOT_FOUND",
             )
@@ -225,8 +229,9 @@ class PluginManager:
             result.success = False
             result.error = str(e)
 
+            msg = f"Plugin execution failed: {plugin_id}"
             raise PluginExecutionError(
-                f"Plugin execution failed: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 execution_id=execution_id,
                 cause=e,
@@ -428,6 +433,6 @@ class PluginManager:
             try:
                 await self.unload_plugin(plugin_id)
             except Exception as e:
-                logger.error(f"Error unloading plugin {plugin_id}: {e}")
+                logger.exception(f"Error unloading plugin {plugin_id}: {e}")
 
         logger.info("Plugin manager shutdown complete")

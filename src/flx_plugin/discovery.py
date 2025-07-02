@@ -74,7 +74,7 @@ class PluginDiscoveryResult(BaseModel):
     total_discovered: int = Field(default=0)
     discovery_errors: list[str] = Field(default_factory=list)
 
-    def model_post_init(self, __context: Any) -> None:
+    def model_post_init(self, __context: Any, /) -> None:
         """Calculate totals after initialization."""
         self.total_discovered = len(self.discovered_plugins)
 

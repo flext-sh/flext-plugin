@@ -7,10 +7,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from flx_plugin.core.base import Plugin, PluginMetadata
-from flx_plugin.core.discovery import DiscoveredPlugin
 from flx_plugin.core.types import (
     PluginDependencyError,
     PluginError,
@@ -21,6 +19,10 @@ from flx_plugin.core.types import (
     PluginValidationError,
 )
 from flx_plugin.core.validators import PluginValidator
+
+if TYPE_CHECKING:
+    from flx_plugin.core.base import Plugin, PluginMetadata
+    from flx_plugin.core.discovery import DiscoveredPlugin
 
 logger = logging.getLogger(__name__)
 
@@ -130,8 +132,9 @@ class PluginLoader:
 
         # Check if already loading
         if plugin_id in self._loading_plugins:
+            msg = f"Plugin is already being loaded: {plugin_id}"
             raise PluginLoadError(
-                f"Plugin is already being loaded: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
             )
 
@@ -153,9 +156,10 @@ class PluginLoader:
             logger.info(f"Successfully loaded plugin: {plugin_id}")
             return loaded
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
+            msg = f"Plugin loading timed out after {self.max_load_time}s"
             raise PluginLoadError(
-                f"Plugin loading timed out after {self.max_load_time}s",
+                msg,
                 plugin_id=plugin_id,
             )
 
@@ -182,8 +186,9 @@ class PluginLoader:
         if self.security_enabled:
             security_violations = await self.validator.validate_security(metadata)
             if security_violations:
+                msg = f"Plugin failed security validation: {plugin_id}"
                 raise PluginSecurityError(
-                    f"Plugin failed security validation: {plugin_id}",
+                    msg,
                     plugin_id=plugin_id,
                     security_violations=security_violations,
                 )
@@ -191,8 +196,9 @@ class PluginLoader:
         # Validate dependencies
         missing_deps = await self._check_dependencies(metadata)
         if missing_deps:
+            msg = f"Plugin has missing dependencies: {plugin_id}"
             raise PluginDependencyError(
-                f"Plugin has missing dependencies: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 missing_dependencies=missing_deps,
             )
@@ -201,8 +207,9 @@ class PluginLoader:
         try:
             instance = plugin_class(config=final_config)
         except Exception as e:
+            msg = f"Failed to create plugin instance: {plugin_id}"
             raise PluginLoadError(
-                f"Failed to create plugin instance: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 cause=e,
             )
@@ -213,8 +220,9 @@ class PluginLoader:
         # Validate configuration
         config_errors = await instance.validate_configuration(final_config)
         if config_errors:
+            msg = f"Plugin configuration validation failed: {plugin_id}"
             raise PluginValidationError(
-                f"Plugin configuration validation failed: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 validation_failures=config_errors,
             )
@@ -232,8 +240,9 @@ class PluginLoader:
             try:
                 await loaded.initialize()
             except Exception as e:
+                msg = f"Plugin initialization failed: {plugin_id}"
                 raise PluginLoadError(
-                    f"Plugin initialization failed: {plugin_id}",
+                    msg,
                     plugin_id=plugin_id,
                     cause=e,
                 )
@@ -269,9 +278,7 @@ class PluginLoader:
         # Check Meltano plugin dependencies
         if metadata.meltano_dependencies:
             # Check if required plugins are loaded
-            for dep_id in metadata.meltano_dependencies:
-                if dep_id not in self._loaded_plugins:
-                    missing_deps.append(f"meltano:{dep_id}")
+            missing_deps.extend(f"meltano:{dep_id}" for dep_id in metadata.meltano_dependencies if dep_id not in self._loaded_plugins)
 
         return missing_deps
 
@@ -288,8 +295,9 @@ class PluginLoader:
 
         """
         if plugin_id not in self._loaded_plugins:
+            msg = f"Plugin not loaded: {plugin_id}"
             raise PluginError(
-                f"Plugin not loaded: {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 error_code="NOT_LOADED",
             )
@@ -304,7 +312,7 @@ class PluginLoader:
             try:
                 await loaded.cleanup()
             except Exception as e:
-                logger.error(f"Error during plugin cleanup: {plugin_id}", exc_info=e)
+                logger.exception(f"Error during plugin cleanup: {plugin_id}", exc_info=e)
 
         # Remove from loaded plugins
         del self._loaded_plugins[plugin_id]

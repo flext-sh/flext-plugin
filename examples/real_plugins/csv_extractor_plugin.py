@@ -114,8 +114,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
         self._infer_schema = self._config.get("infer_schema", True)
 
         if not self._file_path:
+            msg = "file_path configuration is required"
             raise PluginError(
-                "file_path configuration is required",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -123,15 +124,17 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
         # Validate file exists and is readable
         file_path = Path(self._file_path)
         if not file_path.exists():
+            msg = f"File not found: {self._file_path}"
             raise PluginError(
-                f"File not found: {self._file_path}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="FILE_NOT_FOUND",
             )
 
         if not file_path.is_file():
+            msg = f"Path is not a file: {self._file_path}"
             raise PluginError(
-                f"Path is not a file: {self._file_path}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="INVALID_FILE",
             )
@@ -141,8 +144,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
             with open(file_path, encoding=self._encoding) as f:
                 f.read(1)  # Read one character to test access
         except (OSError, UnicodeDecodeError) as e:
+            msg = f"Cannot read file: {e}"
             raise PluginError(
-                f"Cannot read file: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="FILE_ACCESS_ERROR",
                 cause=e,
@@ -168,8 +172,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
 
         """
         if not self._initialized:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -222,18 +227,17 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
 
                 metadata["total_rows_extracted"] = row_count
 
-            result = {
+            return {
                 "data": records,
                 "metadata": metadata,
                 "schema": self._schema,
                 "success": True,
             }
 
-            return result
-
         except Exception as e:
+            msg = f"Failed to extract data from CSV: {e}"
             raise PluginError(
-                f"Failed to extract data from CSV: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="EXTRACTION_FAILED",
                 cause=e,
@@ -254,8 +258,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
 
         """
         if not self._initialized:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -292,8 +297,9 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
                     row_count += 1
 
         except Exception as e:
+            msg = f"Failed to stream data from CSV: {e}"
             raise PluginError(
-                f"Failed to stream data from CSV: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="STREAM_FAILED",
                 cause=e,
@@ -458,15 +464,14 @@ class CSVExtractorPlugin(BaseExtractorPlugin):
         try:
             if field_type == "integer":
                 return int(value)
-            elif field_type == "number":
+            if field_type == "number":
                 return float(value)
-            elif field_type == "boolean":
+            if field_type == "boolean":
                 return value.lower() in {"true", "1", "yes", "y"}
-            elif field_type == "date":
+            if field_type == "date":
                 # Basic date parsing - could be enhanced
                 return value  # Keep as string for now
-            else:
-                return value.strip()
+            return value.strip()
         except (ValueError, TypeError):
             # If conversion fails, return as string
             return value.strip()

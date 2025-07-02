@@ -10,11 +10,13 @@ import importlib.metadata
 import inspect
 import logging
 import os
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flx_plugin.core.base import Plugin, PluginMetadata
 from flx_plugin.core.types import PluginError, PluginType
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -286,16 +288,18 @@ class PluginDiscovery:
 
         """
         if not self._validate_plugin_class(plugin_class):
+            msg = f"Invalid plugin class: {plugin_class.__name__}"
             raise PluginError(
-                f"Invalid plugin class: {plugin_class.__name__}",
+                msg,
                 error_code="INVALID_PLUGIN",
             )
 
         metadata = plugin_class.METADATA
 
         if metadata.id in self._discovered_plugins and not override:
+            msg = f"Plugin already registered: {metadata.id}"
             raise PluginError(
-                f"Plugin already registered: {metadata.id}",
+                msg,
                 plugin_id=metadata.id,
                 error_code="DUPLICATE_PLUGIN",
             )

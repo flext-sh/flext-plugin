@@ -455,7 +455,7 @@ class PluginValidator:
                         info.append(f"{rule.name}: {message}")
 
             except Exception as e:
-                errors.append(f"{rule.name}: Validation error - {str(e)}")
+                errors.append(f"{rule.name}: Validation error - {e!s}")
 
         return ValidationResult(
             is_valid=len(errors) == 0, errors=errors, warnings=warnings, info=info
@@ -544,7 +544,7 @@ def validate_plugin_path(path: Path) -> bool:
         return False
 
     # Check if file looks like a plugin
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         content = f.read()
 
     # Basic heuristics

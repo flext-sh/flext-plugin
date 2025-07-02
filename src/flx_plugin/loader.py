@@ -64,6 +64,8 @@ class PluginLoadResult(BaseModel):
     warnings: list[str] = Field(default_factory=list, description="Loading warnings")
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 

@@ -6,8 +6,9 @@ for flexible data processing pipelines.
 """
 
 import re
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any
 
 from flext_plugin.base import BaseTransformerPlugin, PluginMetadata
 from flext_plugin.types import PluginError, PluginType
@@ -126,8 +127,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         self._fail_on_missing_field = self._config.get("fail_on_missing_field", False)
 
         if not self._filter_rules:
+            msg = "At least one filter rule must be specified"
             raise PluginError(
-                "At least one filter rule must be specified",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -135,8 +137,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         # Validate filter rules
         for i, rule in enumerate(self._filter_rules):
             if not all(key in rule for key in ["field", "operator"]):
+                msg = f"Filter rule {i} missing required fields (field, operator)"
                 raise PluginError(
-                    f"Filter rule {i} missing required fields (field, operator)",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_FILTER_RULE",
                 )
@@ -159,8 +162,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 "is_not_null",
             }
             if rule["operator"] not in valid_operators:
+                msg = f"Invalid operator '{rule['operator']}' in filter rule {i}"
                 raise PluginError(
-                    f"Invalid operator '{rule['operator']}' in filter rule {i}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_OPERATOR",
                 )
@@ -185,8 +189,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
 
         """
         if not self._initialized:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -214,8 +219,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 records = data
                 input_metadata = {}
             else:
+                msg = f"Unsupported input data type: {type(data)}"
                 raise PluginError(
-                    f"Unsupported input data type: {type(data)}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_INPUT_TYPE",
                 )
@@ -257,8 +263,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             }
 
         except Exception as e:
+            msg = f"Failed to apply data filters: {e}"
             raise PluginError(
-                f"Failed to apply data filters: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="TRANSFORMATION_FAILED",
                 cause=e,
@@ -321,8 +328,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
                 results.append(result)
             except Exception as e:
                 if self._fail_on_missing_field:
+                    msg = f"Filter evaluation failed: {e}"
                     raise PluginError(
-                        f"Filter evaluation failed: {e}",
+                        msg,
                         plugin_id=self.metadata.id,
                         error_code="FILTER_EVALUATION_FAILED",
                         cause=e,
@@ -333,14 +341,14 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         # Apply logic operator
         if logic_operator == "AND":
             return all(results)
-        elif logic_operator == "OR":
+        if logic_operator == "OR":
             return any(results)
-        else:
-            raise PluginError(
-                f"Invalid logic operator: {logic_operator}",
-                plugin_id=self.metadata.id,
-                error_code="INVALID_LOGIC_OPERATOR",
-            )
+        msg = f"Invalid logic operator: {logic_operator}"
+        raise PluginError(
+            msg,
+            plugin_id=self.metadata.id,
+            error_code="INVALID_LOGIC_OPERATOR",
+        )
 
     def _evaluate_filter_rule(
         self, record: dict[str, Any], rule: dict[str, Any]
@@ -354,7 +362,8 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         # Get field value from record
         if field not in record:
             if self._fail_on_missing_field:
-                raise ValueError(f"Field '{field}' not found in record")
+                msg = f"Field '{field}' not found in record"
+                raise ValueError(msg)
             return False
 
         actual_value = record[field]
@@ -362,7 +371,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         # Handle null checks first
         if operator == "is_null":
             return actual_value is None
-        elif operator == "is_not_null":
+        if operator == "is_not_null":
             return actual_value is not None
 
         # For other operators, if actual value is None, return False
@@ -375,7 +384,8 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         try:
             return comparison_func(actual_value, expected_value)
         except Exception as e:
-            raise ValueError(f"Filter comparison failed: {e}")
+            msg = f"Filter comparison failed: {e}"
+            raise ValueError(msg)
 
     def _get_comparison_function(
         self, operator: str, case_sensitive: bool
@@ -431,8 +441,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             )
 
         def between(actual, expected):
-            if not isinstance(expected, (list, tuple)) or len(expected) != 2:
-                raise ValueError("'between' operator requires a list/tuple of 2 values")
+            if not isinstance(expected, list | tuple) or len(expected) != 2:
+                msg = "'between' operator requires a list/tuple of 2 values"
+                raise ValueError(msg)
             min_val, max_val = expected
             actual_val = self._convert_for_comparison(actual)
             min_val = self._convert_for_comparison(min_val)
@@ -440,8 +451,9 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             return min_val <= actual_val <= max_val
 
         def in_values(actual, expected):
-            if not isinstance(expected, (list, tuple)):
-                raise ValueError("'in' operator requires a list/tuple of values")
+            if not isinstance(expected, list | tuple):
+                msg = "'in' operator requires a list/tuple of values"
+                raise ValueError(msg)
             if not case_sensitive and isinstance(actual, str):
                 expected = [
                     str(v).lower() if isinstance(v, str) else v for v in expected
@@ -469,7 +481,8 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         }
 
         if operator not in operators:
-            raise ValueError(f"Unsupported operator: {operator}")
+            msg = f"Unsupported operator: {operator}"
+            raise ValueError(msg)
 
         return operators[operator]
 
@@ -480,8 +493,7 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
             try:
                 if "." in value:
                     return float(value)
-                else:
-                    return int(value)
+                return int(value)
             except ValueError:
                 # Try to parse as date
                 try:
@@ -495,7 +507,8 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         required_fields = ["field", "operator"]
         for field in required_fields:
             if field not in rule:
-                raise ValueError(f"Missing required field: {field}")
+                msg = f"Missing required field: {field}"
+                raise ValueError(msg)
 
         operator = rule["operator"]
         value = rule.get("value")
@@ -517,18 +530,20 @@ class DataFilterTransformerPlugin(BaseTransformerPlugin):
         }
 
         if operator in operators_requiring_value and value is None:
-            raise ValueError(f"Operator '{operator}' requires a value")
+            msg = f"Operator '{operator}' requires a value"
+            raise ValueError(msg)
 
         # Special validation for specific operators
         if operator == "between":
-            if not isinstance(value, (list, tuple)) or len(value) != 2:
-                raise ValueError("'between' operator requires a list/tuple of 2 values")
+            if not isinstance(value, list | tuple) or len(value) != 2:
+                msg = "'between' operator requires a list/tuple of 2 values"
+                raise ValueError(msg)
 
-        if operator in ["in", "not_in"]:
-            if not isinstance(value, (list, tuple)):
-                raise ValueError(
-                    f"'{operator}' operator requires a list/tuple of values"
-                )
+        if operator in {"in", "not_in"} and not isinstance(value, list | tuple):
+            msg = f"'{operator}' operator requires a list/tuple of values"
+            raise ValueError(
+                msg
+            )
 
     def _reset_statistics(self) -> None:
         """Reset filtering statistics."""

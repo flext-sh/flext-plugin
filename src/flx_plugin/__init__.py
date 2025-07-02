@@ -21,19 +21,19 @@ from flx_plugin.core.types import (
 )
 
 __all__ = [
-    # Types
-    "PluginType",
-    "PluginCapability",
-    "PluginLifecycle",
-    "PluginStatus",
-    "PluginError",
-    "PluginExecutionResult",
     # Core
     "Plugin",
-    "PluginMetadata",
+    "PluginCapability",
     "PluginDiscovery",
+    "PluginError",
+    "PluginExecutionResult",
+    "PluginLifecycle",
     "PluginLoader",
     "PluginManager",
+    "PluginMetadata",
+    "PluginStatus",
+    # Types
+    "PluginType",
     # Version
     "__version__",
 ]

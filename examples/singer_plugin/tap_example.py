@@ -90,10 +90,10 @@ class TapExamplePlugin(Plugin):
 
         if command == "discover":
             return await self._discover()
-        elif command == "sync":
+        if command == "sync":
             return await self._sync(context)
-        else:
-            raise ValueError(f"Unknown command: {command}")
+        msg = f"Unknown command: {command}"
+        raise ValueError(msg)
 
     async def _discover(self) -> dict[str, Any]:
         """Discover available streams and schemas.
@@ -106,7 +106,7 @@ class TapExamplePlugin(Plugin):
         self.logger.info("Discovering schemas")
 
         # Example catalog with two streams
-        catalog = {
+        return {
             "streams": [
                 {
                     "tap_stream_id": "users",
@@ -160,8 +160,6 @@ class TapExamplePlugin(Plugin):
             ]
         }
 
-        return catalog
-
     async def _sync(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         """Sync data from source.
 
@@ -203,16 +201,13 @@ class TapExamplePlugin(Plugin):
             # Generate sample data
             records = await self._fetch_records(stream_id, context)
 
-            for record in records:
-                # Write record message
-                messages.append(
-                    {
+            # Write record message
+            messages.extend({
                         "type": "RECORD",
                         "stream": stream_id,
                         "record": record,
                         "time_extracted": datetime.now(UTC).isoformat(),
-                    }
-                )
+                    } for record in records)
 
             # Update state
             if metadata.get("replication-method") == "INCREMENTAL":
@@ -253,28 +248,22 @@ class TapExamplePlugin(Plugin):
         records = []
 
         if stream_id == "users":
-            for i in range(5):
-                records.append(
-                    {
+            records.extend({
                         "id": i + 1,
                         "name": f"User {i + 1}",
                         "email": f"user{i + 1}@example.com",
                         "created_at": "2024-01-01T00:00:00Z",
                         "updated_at": datetime.now(UTC).isoformat(),
-                    }
-                )
+                    } for i in range(5))
 
         elif stream_id == "orders":
-            for i in range(10):
-                records.append(
-                    {
+            records.extend({
                         "id": i + 1,
                         "user_id": (i % 5) + 1,
                         "total": 100.0 + (i * 10),
                         "status": "completed" if i % 2 == 0 else "pending",
                         "created_at": datetime.now(UTC).isoformat(),
-                    }
-                )
+                    } for i in range(10))
 
         return records
 

@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from flext_plugin.types import PluginExecutionResult, PluginType
+if TYPE_CHECKING:
+    from flext_plugin.types import PluginExecutionResult, PluginType
 
 
 class DataFlowContext(BaseModel):
@@ -98,7 +99,7 @@ class DataPacket(BaseModel):
     )
 
     def update_data(
-        self, new_data: Any, plugin_id: str, processing_info: dict[str, Any] = None
+        self, new_data: Any, plugin_id: str, processing_info: dict[str, Any] | None = None
     ) -> None:
         """Update data payload and tracking information."""
         self.data = new_data
@@ -140,7 +141,7 @@ class DataPacket(BaseModel):
             # Estimate size in bytes
             if isinstance(self.data, str):
                 self.size_bytes = len(self.data.encode("utf-8"))
-            elif isinstance(self.data, (list, dict)):
+            elif isinstance(self.data, list | dict):
                 # Rough estimate using JSON serialization
                 self.size_bytes = len(
                     json.dumps(self.data, default=str).encode("utf-8")
@@ -355,7 +356,7 @@ class DataValidator:
         if isinstance(packet.data, dict):
             if "data" in packet.data:
                 # Plugin result format
-                if not isinstance(packet.data["data"], (list, dict)):
+                if not isinstance(packet.data["data"], list | dict):
                     errors.append("Invalid data format in plugin result")
             elif "error" in packet.data:
                 errors.append(f"Data contains error: {packet.data['error']}")
@@ -378,15 +379,13 @@ class DataValidator:
                 errors.append(f"Expected array, got {type(data).__name__}")
             elif schema_type == "string" and not isinstance(data, str):
                 errors.append(f"Expected string, got {type(data).__name__}")
-            elif schema_type == "number" and not isinstance(data, (int, float)):
+            elif schema_type == "number" and not isinstance(data, int | float):
                 errors.append(f"Expected number, got {type(data).__name__}")
 
             # Validate required fields for objects
             if schema_type == "object" and isinstance(data, dict):
                 required_fields = schema.get("required", [])
-                for field in required_fields:
-                    if field not in data:
-                        errors.append(f"Required field '{field}' is missing")
+                errors.extend(f"Required field '{field}' is missing" for field in required_fields if field not in data)
 
         except Exception as e:
             errors.append(f"Schema validation error: {e}")
@@ -463,9 +462,9 @@ class DataFlowManager:
 # Export all classes
 __all__ = [
     "DataFlowContext",
-    "DataPacket",
-    "StepResult",
-    "PipelineDataFlow",
-    "DataValidator",
     "DataFlowManager",
+    "DataPacket",
+    "DataValidator",
+    "PipelineDataFlow",
+    "StepResult",
 ]

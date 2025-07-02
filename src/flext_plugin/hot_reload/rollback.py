@@ -240,7 +240,7 @@ class RollbackManager:
                 f"Error restoring state for plugin {plugin_id}: {e}",
                 exc_info=True,
             )
-            result["errors"].append(f"State restoration failed: {str(e)}")
+            result["errors"].append(f"State restoration failed: {e!s}")
 
         # Restore code if requested
         if restore_code and point.metadata.get("code_backed_up"):
@@ -252,7 +252,7 @@ class RollbackManager:
                     f"Error restoring code for plugin {plugin_id}: {e}",
                     exc_info=True,
                 )
-                result["errors"].append(f"Code restoration failed: {str(e)}")
+                result["errors"].append(f"Code restoration failed: {e!s}")
 
         logger.info(
             f"Rolled back plugin {plugin_id}",

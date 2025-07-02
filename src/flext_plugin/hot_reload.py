@@ -3,8 +3,9 @@
 import asyncio
 import importlib
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel
 from pydantic import Field
@@ -41,9 +42,9 @@ class HotReloadManager(DomainBaseModel):
     observer: Observer | None = Field(default=None)
     loaded_plugins: dict[str, Any] = Field(default_factory=dict)
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def model_post_init(self, __context: Any) -> None:
+    def model_post_init(self, __context: Any, /) -> None:
         """Initialize components after creation."""
         self.discovery = PluginDiscovery(plugin_directory=self.plugin_directory)
         self.loader = PluginLoader()
@@ -53,7 +54,8 @@ class HotReloadManager(DomainBaseModel):
     async def start_watching(self) -> None:
         """Start watching plugin directory for changes."""
         if self.observer is None:
-            raise RuntimeError("Observer not initialized")
+            msg = "Observer not initialized"
+            raise RuntimeError(msg)
 
         handler = PluginFileHandler(self._on_plugin_file_changed)
         self.observer.schedule(handler, self.plugin_directory, recursive=True)
@@ -79,7 +81,8 @@ class HotReloadManager(DomainBaseModel):
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
         """Handle plugin file changes."""
-        asyncio.create_task(self._reload_plugin(file_path))
+        task = asyncio.create_task(self._reload_plugin(file_path))
+        task.add_done_callback(lambda _: None)  # Prevent dangling task warning
 
     async def _reload_plugin(self, file_path: Path) -> None:
         """Reload a specific plugin."""

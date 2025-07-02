@@ -13,11 +13,11 @@ from flx_plugin.hot_reload.watcher import PluginWatcher, WatchEvent
 
 __all__ = [
     "HotReloadManager",
-    "ReloadEvent",
-    "StateManager",
     "PluginState",
     "PluginWatcher",
-    "WatchEvent",
+    "ReloadEvent",
     "RollbackManager",
     "RollbackPoint",
+    "StateManager",
+    "WatchEvent",
 ]

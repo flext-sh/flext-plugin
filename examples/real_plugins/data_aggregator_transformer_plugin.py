@@ -128,8 +128,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         self._sort_by = self._config.get("sort_by", {})
 
         if not self._aggregations:
+            msg = "At least one aggregation must be specified"
             raise PluginError(
-                "At least one aggregation must be specified",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -137,8 +138,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         # Validate aggregations
         for i, agg in enumerate(self._aggregations):
             if not all(key in agg for key in ["field", "function"]):
+                msg = f"Aggregation {i} missing required fields (field, function)"
                 raise PluginError(
-                    f"Aggregation {i} missing required fields (field, function)",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_AGGREGATION",
                 )
@@ -159,8 +161,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 "unique_count",
             }
             if agg["function"] not in valid_functions:
+                msg = f"Invalid aggregation function '{agg['function']}' in aggregation {i}"
                 raise PluginError(
-                    f"Invalid aggregation function '{agg['function']}' in aggregation {i}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_FUNCTION",
                 )
@@ -184,8 +187,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
 
         """
         if not self._initialized:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -211,8 +215,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 records = data
                 input_metadata = {}
             else:
+                msg = f"Unsupported input data type: {type(data)}"
                 raise PluginError(
-                    f"Unsupported input data type: {type(data)}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_INPUT_TYPE",
                 )
@@ -294,8 +299,9 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             }
 
         except Exception as e:
+            msg = f"Failed to apply data aggregations: {e}"
             raise PluginError(
-                f"Failed to apply data aggregations: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="TRANSFORMATION_FAILED",
                 cause=e,
@@ -385,22 +391,21 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         """Evaluate filter condition."""
         if operator == "equals":
             return actual_value == expected_value
-        elif operator == "not_equals":
+        if operator == "not_equals":
             return actual_value != expected_value
-        elif operator == "greater_than":
+        if operator == "greater_than":
             return self._convert_for_comparison(
                 actual_value
             ) > self._convert_for_comparison(expected_value)
-        elif operator == "less_than":
+        if operator == "less_than":
             return self._convert_for_comparison(
                 actual_value
             ) < self._convert_for_comparison(expected_value)
-        elif operator == "is_null":
+        if operator == "is_null":
             return actual_value is None
-        elif operator == "is_not_null":
+        if operator == "is_not_null":
             return actual_value is not None
-        else:
-            return True
+        return True
 
     def _apply_aggregation_function(
         self, records: list[dict[str, Any]], field: str, function: str
@@ -416,10 +421,10 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         values = [record.get(field) for record in records]
 
         # Filter None values for most functions (except count and first/last)
-        if function not in ["first", "last", "concat"]:
+        if function not in {"first", "last", "concat"}:
             values = [v for v in values if v is not None]
 
-        if not values and function not in ["count"]:
+        if not values and function != "count":
             return None
 
         # Apply aggregation function
@@ -427,7 +432,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             if function == "sum":
                 return sum(self._convert_to_numeric(v) for v in values)
 
-            elif function == "avg":
+            if function == "avg":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
                 return (
                     sum(numeric_values) / len(numeric_values)
@@ -435,23 +440,22 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                     else None
                 )
 
-            elif function == "min":
+            if function == "min":
                 return min(values)
 
-            elif function == "max":
+            if function == "max":
                 return max(values)
 
-            elif function == "median":
+            if function == "median":
                 sorted_values = sorted(self._convert_to_numeric(v) for v in values)
                 n = len(sorted_values)
                 if n == 0:
                     return None
-                elif n % 2 == 0:
+                if n % 2 == 0:
                     return (sorted_values[n // 2 - 1] + sorted_values[n // 2]) / 2
-                else:
-                    return sorted_values[n // 2]
+                return sorted_values[n // 2]
 
-            elif function == "std":
+            if function == "std":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
                 if len(numeric_values) < 2:
                     return None
@@ -461,7 +465,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                 )
                 return variance**0.5
 
-            elif function == "var":
+            if function == "var":
                 numeric_values = [self._convert_to_numeric(v) for v in values]
                 if len(numeric_values) < 2:
                     return None
@@ -470,30 +474,31 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
                     numeric_values
                 )
 
-            elif function == "first":
+            if function == "first":
                 return values[0] if values else None
 
-            elif function == "last":
+            if function == "last":
                 return values[-1] if values else None
 
-            elif function == "concat":
+            if function == "concat":
                 return ", ".join(str(v) for v in values if v is not None)
 
-            elif function == "unique_count":
-                return len(set(v for v in values if v is not None))
+            if function == "unique_count":
+                return len({v for v in values if v is not None})
 
-            else:
-                raise ValueError(f"Unknown aggregation function: {function}")
+            msg = f"Unknown aggregation function: {function}"
+            raise ValueError(msg)
 
         except Exception as e:
-            raise ValueError(f"Aggregation function '{function}' failed: {e}")
+            msg = f"Aggregation function '{function}' failed: {e}"
+            raise ValueError(msg)
 
     def _convert_to_numeric(self, value: Any) -> float:
         """Convert value to numeric for mathematical operations."""
         if value is None:
             return 0.0
 
-        if isinstance(value, (int, float)):
+        if isinstance(value, int | float):
             return float(value)
 
         if isinstance(value, str):
@@ -510,8 +515,7 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
             try:
                 if "." in value:
                     return float(value)
-                else:
-                    return int(value)
+                return int(value)
             except ValueError:
                 return value
         return value
@@ -521,7 +525,8 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         required_fields = ["field", "function"]
         for field in required_fields:
             if field not in agg:
-                raise ValueError(f"Missing required field: {field}")
+                msg = f"Missing required field: {field}"
+                raise ValueError(msg)
 
         function = agg["function"]
         valid_functions = {
@@ -540,7 +545,8 @@ class DataAggregatorTransformerPlugin(BaseTransformerPlugin):
         }
 
         if function not in valid_functions:
-            raise ValueError(f"Invalid aggregation function: {function}")
+            msg = f"Invalid aggregation function: {function}"
+            raise ValueError(msg)
 
     def _reset_statistics(self) -> None:
         """Reset aggregation statistics."""

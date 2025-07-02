@@ -1,7 +1,7 @@
 """Plugin discovery system for scanning and finding plugins."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel
 
@@ -11,7 +11,7 @@ class PluginDiscovery(DomainBaseModel):
 
     plugin_directory: str
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     async def scan(self) -> list[dict[str, Any]]:
         """Scan plugin directory for Python plugin files.

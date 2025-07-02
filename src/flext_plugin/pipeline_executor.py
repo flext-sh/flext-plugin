@@ -9,15 +9,17 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from flext_plugin.base import PluginInterface
 from flext_plugin.data_flow import (
     DataFlowContext,
     DataFlowManager,
 )
-from flext_plugin.manager import PluginManager
 from flext_plugin.types import PluginError, PluginType
+
+if TYPE_CHECKING:
+    from flext_plugin.base import PluginInterface
+    from flext_plugin.manager import PluginManager
 
 
 class PipelineStep:
@@ -28,8 +30,8 @@ class PipelineStep:
         step_id: str,
         plugin_id: str,
         step_type: PluginType,
-        configuration: dict[str, Any] = None,
-        dependencies: list[str] = None,
+        configuration: dict[str, Any] | None = None,
+        dependencies: list[str] | None = None,
     ) -> None:
         """Initialize pipeline step.
 
@@ -57,7 +59,7 @@ class Pipeline:
         pipeline_id: str,
         name: str,
         steps: list[PipelineStep],
-        configuration: dict[str, Any] = None,
+        configuration: dict[str, Any] | None = None,
     ) -> None:
         """Initialize pipeline.
 
@@ -84,8 +86,9 @@ class Pipeline:
         for step in self.steps:
             for dep_id in step.dependencies:
                 if dep_id not in step_ids:
+                    msg = f"Step {step.step_id} depends on non-existent step {dep_id}"
                     raise ValueError(
-                        f"Step {step.step_id} depends on non-existent step {dep_id}"
+                        msg
                     )
 
 
@@ -112,7 +115,7 @@ class RealPluginPipelineExecutor:
         pipeline: Pipeline,
         user_id: str | None = None,
         environment: str = "development",
-        global_variables: dict[str, Any] = None,
+        global_variables: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Execute a complete pipeline with real plugin integration.
 
@@ -162,7 +165,7 @@ class RealPluginPipelineExecutor:
             execution_summary = flow_manager.get_execution_summary()
             final_data = flow_manager.get_current_data()
 
-            result = {
+            return {
                 "execution_id": execution_id,
                 "pipeline_id": pipeline.pipeline_id,
                 "success": flow_manager.should_continue_execution()
@@ -172,8 +175,6 @@ class RealPluginPipelineExecutor:
                 "output_data": final_data.data if final_data else None,
                 "completed_at": datetime.now(UTC).isoformat(),
             }
-
-            return result
 
         except Exception as e:
             # Handle execution errors
@@ -212,8 +213,9 @@ class RealPluginPipelineExecutor:
             # Get plugin instance from manager
             plugin = await self._get_plugin_instance(step.plugin_id)
             if not plugin:
+                msg = f"Plugin {step.plugin_id} not found or not loaded"
                 raise PluginError(
-                    f"Plugin {step.plugin_id} not found or not loaded",
+                    msg,
                     plugin_id=step.plugin_id,
                     error_code="PLUGIN_NOT_FOUND",
                 )
@@ -234,8 +236,9 @@ class RealPluginPipelineExecutor:
                     plugin, step, input_data, execution_context
                 )
             else:
+                msg = f"Unsupported plugin type: {step.step_type}"
                 raise PluginError(
-                    f"Unsupported plugin type: {step.step_type}",
+                    msg,
                     plugin_id=step.plugin_id,
                     error_code="UNSUPPORTED_PLUGIN_TYPE",
                 )
@@ -260,11 +263,10 @@ class RealPluginPipelineExecutor:
         if hasattr(plugin, "extract"):
             # Use specialized extractor method
             return await plugin.extract(source_config)
-        else:
-            # Fall back to generic execute method
-            return await plugin.execute(
-                None, {"source_config": source_config, **context}
-            )
+        # Fall back to generic execute method
+        return await plugin.execute(
+            None, {"source_config": source_config, **context}
+        )
 
     async def _execute_transformer(
         self,
@@ -280,11 +282,10 @@ class RealPluginPipelineExecutor:
         if hasattr(plugin, "transform"):
             # Use specialized transformer method
             return await plugin.transform(input_data, transform_config)
-        else:
-            # Fall back to generic execute method
-            return await plugin.execute(
-                input_data, {"transform_config": transform_config, **context}
-            )
+        # Fall back to generic execute method
+        return await plugin.execute(
+            input_data, {"transform_config": transform_config, **context}
+        )
 
     async def _execute_loader(
         self,
@@ -300,11 +301,10 @@ class RealPluginPipelineExecutor:
         if hasattr(plugin, "load"):
             # Use specialized loader method
             return await plugin.load(input_data, destination_config)
-        else:
-            # Fall back to generic execute method
-            return await plugin.execute(
-                input_data, {"destination_config": destination_config, **context}
-            )
+        # Fall back to generic execute method
+        return await plugin.execute(
+            input_data, {"destination_config": destination_config, **context}
+        )
 
     async def _get_plugin_instance(self, plugin_id: str) -> PluginInterface | None:
         """Get plugin instance from the plugin manager."""
@@ -357,8 +357,9 @@ class RealPluginPipelineExecutor:
         for dep_step_id in step.dependencies:
             dep_step = flow_manager.pipeline_flow.get_step_by_id(dep_step_id)
             if not dep_step or not dep_step.success:
+                msg = f"Dependency step {dep_step_id} not completed successfully"
                 raise PluginError(
-                    f"Dependency step {dep_step_id} not completed successfully",
+                    msg,
                     plugin_id=step.plugin_id,
                     error_code="DEPENDENCY_FAILED",
                 )
@@ -403,8 +404,8 @@ def create_pipeline_executor(
 
 # Export all classes
 __all__ = [
-    "PipelineStep",
     "Pipeline",
+    "PipelineStep",
     "RealPluginPipelineExecutor",
     "create_pipeline_executor",
 ]

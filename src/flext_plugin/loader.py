@@ -3,7 +3,7 @@
 import importlib
 import inspect
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel
 
@@ -12,10 +12,10 @@ class PluginLoader(DomainBaseModel):
     """Simple plugin loader for development and hot reload."""
 
     security_enabled: bool = True
-    loaded_plugins: dict[str, Any] = {}
-    plugin_modules: dict[str, Any] = {}
+    loaded_plugins: ClassVar[dict[str, Any]] = {}
+    plugin_modules: ClassVar[dict[str, Any]] = {}
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     async def load_plugin_from_file(self, file_path: str) -> Any:
         """Load plugin directly from a Python file.
@@ -35,7 +35,8 @@ class PluginLoader(DomainBaseModel):
             path = Path(file_path)
             spec = importlib.util.spec_from_file_location(path.stem, file_path)
             if spec is None or spec.loader is None:
-                raise ImportError(f"Cannot load module from {file_path}")
+                msg = f"Cannot load module from {file_path}"
+                raise ImportError(msg)
 
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -57,10 +58,11 @@ class PluginLoader(DomainBaseModel):
                     self.loaded_plugins[path.stem] = plugin
                     return plugin
 
-            raise ValueError(f"No valid plugin class found in {file_path}")
-
-        except Exception:
-            raise
+            msg = f"No valid plugin class found in {file_path}"
+            raise ValueError(msg)
+        except (ImportError, AttributeError, OSError) as e:
+            msg = f"Failed to load plugin from {file_path}: {e}"
+            raise ImportError(msg) from e
 
     async def unload_plugin(self, plugin_name: str) -> None:
         """Unload a plugin by name."""

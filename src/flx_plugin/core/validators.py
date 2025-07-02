@@ -7,8 +7,7 @@ from __future__ import annotations
 
 import inspect
 import re
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flx_plugin.core.base import Plugin
 from flx_plugin.core.types import (
@@ -16,6 +15,9 @@ from flx_plugin.core.types import (
     PluginType,
     PluginValidationError,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class ValidationRule:
@@ -69,16 +71,12 @@ class MetadataValidationRule(ValidationRule):
                 return False, "Plugin class missing get_metadata() method"
             # For class validation, we can't call get_metadata
             return True, None
-        else:
-            metadata = plugin.metadata
+        metadata = plugin.metadata
 
         # Validate required fields
         required_fields = ["id", "name", "version", "plugin_type"]
-        missing_fields = []
 
-        for field in required_fields:
-            if not getattr(metadata, field, None):
-                missing_fields.append(field)
+        missing_fields = [field for field in required_fields if not getattr(metadata, field, None)]
 
         if missing_fields:
             return (
@@ -208,7 +206,7 @@ class CapabilityValidationRule(ValidationRule):
 
         # Check if plugin has at least one expected capability
         plugin_caps = set(capabilities)
-        expected_caps = set(cap.value for cap in expected)
+        expected_caps = {cap.value for cap in expected}
 
         if not plugin_caps.intersection(expected_caps):
             return False, (
@@ -268,9 +266,8 @@ class SecurityValidationRule(ValidationRule):
         if security_issues:
             if self.strict_mode:
                 return False, f"Security violations: {'; '.join(security_issues)}"
-            else:
-                # In non-strict mode, we just warn
-                return True, f"Security warnings: {'; '.join(security_issues)}"
+            # In non-strict mode, we just warn
+            return True, f"Security warnings: {'; '.join(security_issues)}"
 
         return True, None
 
@@ -456,7 +453,7 @@ class PluginValidator:
                         info.append(f"{rule.name}: {message}")
 
             except Exception as e:
-                errors.append(f"{rule.name}: Validation error - {str(e)}")
+                errors.append(f"{rule.name}: Validation error - {e!s}")
 
         return ValidationResult(
             is_valid=len(errors) == 0, errors=errors, warnings=warnings, info=info
@@ -497,8 +494,9 @@ class ValidationResult:
 
         """
         if not self.is_valid:
+            msg = f"Plugin validation failed for {plugin_id}"
             raise PluginValidationError(
-                f"Plugin validation failed for {plugin_id}",
+                msg,
                 plugin_id=plugin_id,
                 validation_failures=self.errors,
             )
@@ -544,7 +542,7 @@ def validate_plugin_path(path: Path) -> bool:
         return False
 
     # Check if file looks like a plugin
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         content = f.read()
 
     # Basic heuristics
@@ -569,16 +567,12 @@ def validate_plugin_config(
         Tuple of (is_valid, errors)
 
     """
-    errors = []
-
     # Basic validation without jsonschema dependency
     required = schema.get("required", [])
     properties = schema.get("properties", {})
 
     # Check required fields
-    for field in required:
-        if field not in config:
-            errors.append(f"Missing required field: {field}")
+    errors = [f"Missing required field: {field}" for field in required if field not in config]
 
     # Check field types
     for field, value in config.items():

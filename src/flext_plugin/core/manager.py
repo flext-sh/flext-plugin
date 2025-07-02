@@ -433,6 +433,6 @@ class PluginManager:
             try:
                 await self.unload_plugin(plugin_id)
             except Exception as e:
-                logger.error(f"Error unloading plugin {plugin_id}: {e}")
+                logger.exception(f"Error unloading plugin {plugin_id}: {e}")
 
         logger.info("Plugin manager shutdown complete")

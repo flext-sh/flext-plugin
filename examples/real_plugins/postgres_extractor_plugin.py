@@ -7,7 +7,7 @@ query optimization, and batch processing capabilities.
 
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
-from typing import Any, Optional
+from typing import Any
 
 from flext_plugin.base import BaseExtractorPlugin, PluginMetadata
 from flext_plugin.types import PluginError, PluginType
@@ -117,25 +117,26 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize PostgreSQL extractor plugin."""
         super().__init__(config)
-        self._connection_pool: Optional[asyncpg.Pool] = None
+        self._connection_pool: asyncpg.Pool | None = None
         self._host: str = ""
         self._port: int = 5432
         self._database: str = ""
         self._username: str = ""
         self._password: str = ""
-        self._table_name: Optional[str] = None
-        self._query: Optional[str] = None
+        self._table_name: str | None = None
+        self._query: str | None = None
         self._batch_size: int = 1000
         self._max_connections: int = 10
         self._query_timeout: int = 300
-        self._incremental_column: Optional[str] = None
-        self._incremental_value: Optional[str] = None
+        self._incremental_column: str | None = None
+        self._incremental_value: str | None = None
 
     async def initialize(self) -> None:
         """Initialize plugin with database connection."""
         if not ASYNCPG_AVAILABLE:
+            msg = "asyncpg library is required but not installed"
             raise PluginError(
-                "asyncpg library is required but not installed",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_DEPENDENCY",
             )
@@ -156,15 +157,17 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
 
         # Validate required configuration
         if not all([self._host, self._database, self._username, self._password]):
+            msg = "Missing required database connection parameters"
             raise PluginError(
-                "Missing required database connection parameters",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
 
         if not self._table_name and not self._query:
+            msg = "Either table_name or query must be specified"
             raise PluginError(
-                "Either table_name or query must be specified",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -182,8 +185,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                 command_timeout=self._query_timeout,
             )
         except Exception as e:
+            msg = f"Failed to create database connection pool: {e}"
             raise PluginError(
-                f"Failed to create database connection pool: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_FAILED",
                 cause=e,
@@ -194,8 +198,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             async with self._connection_pool.acquire() as connection:
                 await connection.execute("SELECT 1")
         except Exception as e:
+            msg = f"Database connection test failed: {e}"
             raise PluginError(
-                f"Database connection test failed: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_TEST_FAILED",
                 cause=e,
@@ -216,8 +221,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
 
         """
         if not self._initialized or not self._connection_pool:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -297,8 +303,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             }
 
         except Exception as e:
+            msg = f"Failed to extract data from PostgreSQL: {e}"
             raise PluginError(
-                f"Failed to extract data from PostgreSQL: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="EXTRACTION_FAILED",
                 cause=e,
@@ -319,8 +326,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
 
         """
         if not self._initialized or not self._connection_pool:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -356,8 +364,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
                             yield dict(record)
 
         except Exception as e:
+            msg = f"Failed to stream data from PostgreSQL: {e}"
             raise PluginError(
-                f"Failed to stream data from PostgreSQL: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="STREAM_FAILED",
                 cause=e,
@@ -415,10 +424,10 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
 
     async def _build_query(
         self,
-        query: Optional[str] = None,
-        table_name: Optional[str] = None,
-        incremental_column: Optional[str] = None,
-        incremental_value: Optional[str] = None,
+        query: str | None = None,
+        table_name: str | None = None,
+        incremental_column: str | None = None,
+        incremental_value: str | None = None,
     ) -> str:
         """Build final SQL query with incremental logic."""
         if query:
@@ -428,8 +437,9 @@ class PostgreSQLExtractorPlugin(BaseExtractorPlugin):
             # Build query from table name
             final_query = f"SELECT * FROM {table_name}"
         else:
+            msg = "No query or table_name specified"
             raise PluginError(
-                "No query or table_name specified",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_QUERY",
             )

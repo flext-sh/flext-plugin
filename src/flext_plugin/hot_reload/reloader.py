@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import aiofiles
 from pydantic import BaseModel, Field
 
 from flext_plugin.hot_reload.rollback import RollbackManager
@@ -36,6 +37,8 @@ class ReloadEvent(BaseModel):
     duration_ms: float | None = Field(default=None, description="Reload duration")
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 
@@ -246,7 +249,7 @@ class HotReloadManager:
                         backup_code=True,
                     )
                 except Exception as e:
-                    logger.error(f"Failed to create rollback point: {e}")
+                    logger.exception(f"Failed to create rollback point: {e}")
                     # Continue anyway
 
             # Step 2: Save state if configured
@@ -257,7 +260,7 @@ class HotReloadManager:
                         force=True,
                     )
                 except Exception as e:
-                    logger.error(f"Failed to save plugin state: {e}")
+                    logger.exception(f"Failed to save plugin state: {e}")
                     # Continue anyway
 
             # Step 3: Unload current plugin
@@ -291,7 +294,7 @@ class HotReloadManager:
                 try:
                     await self.state_manager.restore_plugin_state(loaded.instance)
                 except Exception as e:
-                    logger.error(f"Failed to restore plugin state: {e}")
+                    logger.exception(f"Failed to restore plugin state: {e}")
                     # Continue anyway
 
             # Step 7: Reload dependencies if configured
@@ -352,7 +355,7 @@ class HotReloadManager:
                     self._plugin_paths[path] = plugin_id
 
             except Exception as e:
-                logger.error(f"Error mapping path for plugin {plugin_id}: {e}")
+                logger.exception(f"Error mapping path for plugin {plugin_id}: {e}")
 
     async def _identify_plugin_from_path(self, path: Path) -> str | None:
         """Try to identify plugin from file path.
@@ -371,8 +374,8 @@ class HotReloadManager:
 
         # Check if file contains a plugin class
         try:
-            with open(path) as f:
-                content = f.read()
+            async with aiofiles.open(path, encoding="utf-8") as f:
+                content = await f.read()
 
             # Look for plugin class definition
             if "class" in content and (
@@ -391,7 +394,7 @@ class HotReloadManager:
                         return plugin_id
 
         except Exception as e:
-            logger.error(f"Error identifying plugin from {path}: {e}")
+            logger.exception(f"Error identifying plugin from {path}: {e}")
 
         return None
 

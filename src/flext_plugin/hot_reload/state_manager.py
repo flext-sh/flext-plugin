@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import aiofiles
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
@@ -34,6 +35,8 @@ class PluginState(BaseModel):
     )
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 
@@ -308,8 +311,8 @@ class StateManager:
             state_dict = state.model_dump(mode="json")
 
             # Write to file
-            with open(state_file, "w") as f:
-                json.dump(state_dict, f, indent=2, default=str)
+            async with aiofiles.open(state_file, "w", encoding="utf-8") as f:
+                await f.write(json.dumps(state_dict, indent=2, default=str))
 
         except Exception as e:
             logger.error(
@@ -335,8 +338,9 @@ class StateManager:
             return None
 
         try:
-            with open(state_file) as f:
-                state_dict = json.load(f)
+            async with aiofiles.open(state_file, encoding="utf-8") as f:
+                content = await f.read()
+                state_dict = json.loads(content)
 
             # Convert saved_at back to datetime
             if "saved_at" in state_dict:
@@ -362,8 +366,9 @@ class StateManager:
         snapshot_file = self.state_directory / f"snapshot_{snapshot.snapshot_id}.pkl"
 
         try:
-            with open(snapshot_file, "wb") as f:
-                pickle.dump(snapshot, f)
+            async with aiofiles.open(snapshot_file, "wb") as f:
+                data = pickle.dumps(snapshot)
+                await f.write(data)
 
         except Exception as e:
             logger.error(
@@ -389,8 +394,9 @@ class StateManager:
             return None
 
         try:
-            with open(snapshot_file, "rb") as f:
-                return pickle.load(f)
+            async with aiofiles.open(snapshot_file, "rb") as f:
+                data = await f.read()
+                return pickle.loads(data)  # noqa: S301
 
         except Exception as e:
             logger.error(

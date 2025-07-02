@@ -64,6 +64,8 @@ class PluginConfiguration(BaseModel):
     priority: int = Field(default=100, description="Plugin loading priority")
 
     class Config:
+        """Pydantic model configuration."""
+
         extra = "allow"  # Allow additional configuration fields
 
 
@@ -83,6 +85,8 @@ class PluginExecutionContext(BaseModel):
     timeout_seconds: int | None = Field(default=None, description="Execution timeout")
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 

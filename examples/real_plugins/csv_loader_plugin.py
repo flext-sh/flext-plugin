@@ -148,8 +148,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
 
         # Validate configuration
         if not self._output_path and not self._output_directory:
+            msg = "Either output_path or output_directory must be specified"
             raise PluginError(
-                "Either output_path or output_directory must be specified",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -157,8 +158,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
         # Validate quoting parameter
         valid_quoting = {"minimal", "all", "non_numeric", "none"}
         if self._quoting not in valid_quoting:
+            msg = f"Invalid quoting option: {self._quoting}"
             raise PluginError(
-                f"Invalid quoting option: {self._quoting}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="INVALID_CONFIG",
             )
@@ -182,8 +184,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
 
         """
         if not self._initialized:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -214,8 +217,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 records = data
                 input_metadata = {}
             else:
+                msg = f"Unsupported input data type: {type(data)}"
                 raise PluginError(
-                    f"Unsupported input data type: {type(data)}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_INPUT_TYPE",
                 )
@@ -250,7 +254,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             )
 
             # Build result
-            result = {
+            return {
                 "success": True,
                 "records_loaded": loaded_records,
                 "output_path": str(final_output_path),
@@ -260,11 +264,10 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 "load_statistics": self._load_statistics.copy(),
             }
 
-            return result
-
         except Exception as e:
+            msg = f"Failed to load data to CSV: {e}"
             raise PluginError(
-                f"Failed to load data to CSV: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="LOAD_FAILED",
                 cause=e,
@@ -340,8 +343,9 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
             filename = self._format_filename_template(filename_template)
             return Path(output_directory) / filename
 
+        msg = "No output path could be determined"
         raise PluginError(
-            "No output path could be determined",
+            msg,
             plugin_id=self.metadata.id,
             error_code="INVALID_OUTPUT_PATH",
         )
@@ -426,7 +430,7 @@ class CSVLoaderPlugin(BaseLoaderPlugin):
                 formatted[field] = self._null_value
             elif isinstance(value, datetime):
                 formatted[field] = value.strftime(self._date_format)
-            elif isinstance(value, (list, dict)):
+            elif isinstance(value, list | dict):
                 # Convert complex types to JSON string
                 import json
 

@@ -5,7 +5,7 @@ and loads data with batch processing, upsert capabilities, and transaction manag
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from flext_plugin.base import BaseLoaderPlugin, PluginMetadata
 from flext_plugin.types import PluginError, PluginType
@@ -130,7 +130,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize PostgreSQL loader plugin."""
         super().__init__(config)
-        self._connection_pool: Optional[asyncpg.Pool] = None
+        self._connection_pool: asyncpg.Pool | None = None
         self._host: str = ""
         self._port: int = 5432
         self._database: str = ""
@@ -150,8 +150,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
     async def initialize(self) -> None:
         """Initialize plugin with database connection."""
         if not ASYNCPG_AVAILABLE:
+            msg = "asyncpg library is required but not installed"
             raise PluginError(
-                "asyncpg library is required but not installed",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_DEPENDENCY",
             )
@@ -182,24 +183,27 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 self._table_name,
             ]
         ):
+            msg = "Missing required database connection parameters"
             raise PluginError(
-                "Missing required database connection parameters",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
 
         # Validate operation
-        if self._operation not in ["insert", "upsert", "update"]:
+        if self._operation not in {"insert", "upsert", "update"}:
+            msg = f"Invalid operation: {self._operation}"
             raise PluginError(
-                f"Invalid operation: {self._operation}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="INVALID_CONFIG",
             )
 
         # Validate upsert configuration
         if self._operation == "upsert" and not self._conflict_columns:
+            msg = "conflict_columns must be specified for upsert operations"
             raise PluginError(
-                "conflict_columns must be specified for upsert operations",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="MISSING_CONFIG",
             )
@@ -217,8 +221,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 command_timeout=self._transaction_timeout,
             )
         except Exception as e:
+            msg = f"Failed to create database connection pool: {e}"
             raise PluginError(
-                f"Failed to create database connection pool: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_FAILED",
                 cause=e,
@@ -229,8 +234,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
             async with self._connection_pool.acquire() as connection:
                 await connection.execute("SELECT 1")
         except Exception as e:
+            msg = f"Database connection test failed: {e}"
             raise PluginError(
-                f"Database connection test failed: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="CONNECTION_TEST_FAILED",
                 cause=e,
@@ -255,8 +261,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
 
         """
         if not self._initialized or not self._connection_pool:
+            msg = "Plugin not initialized"
             raise PluginError(
-                "Plugin not initialized",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="NOT_INITIALIZED",
             )
@@ -286,8 +293,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 records = data
                 input_metadata = {}
             else:
+                msg = f"Unsupported input data type: {type(data)}"
                 raise PluginError(
-                    f"Unsupported input data type: {type(data)}",
+                    msg,
                     plugin_id=self.metadata.id,
                     error_code="INVALID_INPUT_TYPE",
                 )
@@ -340,8 +348,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                                 connection, full_table_name, batch
                             )
                         else:
+                            msg = f"Unsupported operation: {operation}"
                             raise PluginError(
-                                f"Unsupported operation: {operation}",
+                                msg,
                                 plugin_id=self.metadata.id,
                                 error_code="INVALID_OPERATION",
                             )
@@ -353,7 +362,7 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                         self._load_statistics["records_loaded"] = total_loaded
 
             # Build result
-            result = {
+            return {
                 "success": True,
                 "records_loaded": total_loaded,
                 "batches_processed": batch_count,
@@ -364,11 +373,10 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
                 "load_statistics": self._load_statistics.copy(),
             }
 
-            return result
-
         except Exception as e:
+            msg = f"Failed to load data to PostgreSQL: {e}"
             raise PluginError(
-                f"Failed to load data to PostgreSQL: {e}",
+                msg,
                 plugin_id=self.metadata.id,
                 error_code="LOAD_FAILED",
                 cause=e,
@@ -556,8 +564,9 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         """Update batch of records (requires primary key)."""
         # This is a simplified update - in practice, you'd need to identify
         # which columns constitute the primary key for the WHERE clause
+        msg = "Update operation not fully implemented - requires primary key configuration"
         raise PluginError(
-            "Update operation not fully implemented - requires primary key configuration",
+            msg,
             plugin_id=self.metadata.id,
             error_code="NOT_IMPLEMENTED",
         )
@@ -566,18 +575,17 @@ class PostgreSQLLoaderPlugin(BaseLoaderPlugin):
         """Infer PostgreSQL data type from Python value."""
         if value is None:
             return "TEXT"
-        elif isinstance(value, bool):
+        if isinstance(value, bool):
             return "BOOLEAN"
-        elif isinstance(value, int):
+        if isinstance(value, int):
             return "BIGINT"
-        elif isinstance(value, float):
+        if isinstance(value, float):
             return "DOUBLE PRECISION"
-        elif isinstance(value, datetime):
+        if isinstance(value, datetime):
             return "TIMESTAMP"
-        elif isinstance(value, (list, dict)):
+        if isinstance(value, list | dict):
             return "JSONB"
-        else:
-            return "TEXT"
+        return "TEXT"
 
     def _reset_statistics(self) -> None:
         """Reset load statistics."""

@@ -14,6 +14,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import aiofiles
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
@@ -40,6 +41,8 @@ class WatchEvent(BaseModel):
     old_path: Path | None = Field(default=None, description="Old path for move events")
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 
@@ -53,6 +56,8 @@ class FileMetadata(BaseModel):
     last_checked: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     class Config:
+        """Pydantic model configuration."""
+
         arbitrary_types_allowed = True
 
 
@@ -225,7 +230,7 @@ class PluginWatcher:
             if path in self._file_metadata:
                 await self._handle_deleted(path)
         except Exception as e:
-            logger.error(f"Error checking file {path}: {e}")
+            logger.exception(f"Error checking file {path}: {e}")
 
     async def _calculate_file_hash(self, path: Path) -> str:
         """Calculate file hash.
@@ -242,11 +247,11 @@ class PluginWatcher:
         hasher = hashlib.sha256()
 
         try:
-            with open(path, "rb") as f:
-                while chunk := f.read(8192):
+            async with aiofiles.open(path, "rb") as f:
+                while chunk := await f.read(8192):
                     hasher.update(chunk)
         except Exception as e:
-            logger.error(f"Error hashing file {path}: {e}")
+            logger.exception(f"Error hashing file {path}: {e}")
             return ""
 
         return hasher.hexdigest()
