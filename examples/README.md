@@ -7,6 +7,7 @@ This directory contains example plugins demonstrating various features of the FL
 ### 1. Basic Plugin (`basic_plugin/`)
 
 A simple "Hello World" plugin that demonstrates:
+
 - Minimal plugin implementation
 - Plugin metadata definition
 - Configuration schema
@@ -14,6 +15,7 @@ A simple "Hello World" plugin that demonstrates:
 - Health check implementation
 
 **Run example:**
+
 ```python
 from flx_plugin.examples.basic_plugin.hello_world_plugin import HelloWorldPlugin
 
@@ -29,12 +31,14 @@ print(result)  # {"message": "Hi, Developer!", ...}
 ### 2. Stateful Plugin (`stateful_plugin/`)
 
 A counter plugin that demonstrates:
+
 - State preservation across reloads
 - `get_state()` and `set_state()` methods
 - Hot reload support
 - Stateful operations
 
 **Run example:**
+
 ```python
 from flx_plugin.examples.stateful_plugin.counter_plugin import CounterPlugin
 
@@ -62,6 +66,7 @@ await new_plugin.execute("increment", {})  # Counter: 15
 ### 3. Singer Plugin (`singer_plugin/`)
 
 A Singer tap plugin that demonstrates:
+
 - Singer protocol integration
 - Schema discovery
 - Data extraction
@@ -69,6 +74,7 @@ A Singer tap plugin that demonstrates:
 - Stream selection
 
 **Run example:**
+
 ```python
 from flx_plugin.examples.singer_plugin.tap_example import TapExamplePlugin
 

@@ -390,14 +390,17 @@ class RollbackManager:
             if plugin_id and pid != plugin_id:
                 continue
 
-            points.extend({
-                        "rollback_id": point.rollback_id,
-                        "plugin_id": point.plugin_id,
-                        "created_at": point.created_at,
-                        "description": point.description,
-                        "version": point.plugin_version,
-                        "has_code_backup": point.metadata.get("code_backed_up", False),
-                    } for point in history.rollback_points)
+            points.extend(
+                {
+                    "rollback_id": point.rollback_id,
+                    "plugin_id": point.plugin_id,
+                    "created_at": point.created_at,
+                    "description": point.description,
+                    "version": point.plugin_version,
+                    "has_code_backup": point.metadata.get("code_backed_up", False),
+                }
+                for point in history.rollback_points
+            )
 
         return points
 

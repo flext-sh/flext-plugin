@@ -44,7 +44,7 @@ class PluginLoader(DomainBaseModel):
             self.plugin_modules[path.stem] = module
 
             # Look for get_plugin function first
-            if hasattr(module, 'get_plugin'):
+            if hasattr(module, "get_plugin"):
                 plugin = module.get_plugin()
                 self.loaded_plugins[path.stem] = plugin
                 return plugin
@@ -52,7 +52,7 @@ class PluginLoader(DomainBaseModel):
             # Fallback to any class that has execute method
             for name in dir(module):
                 obj = getattr(module, name)
-                if inspect.isclass(obj) and hasattr(obj, 'execute'):
+                if inspect.isclass(obj) and hasattr(obj, "execute"):
                     plugin = obj()
                     self.loaded_plugins[path.stem] = plugin
                     return plugin
@@ -67,7 +67,7 @@ class PluginLoader(DomainBaseModel):
         if plugin_name in self.loaded_plugins:
             plugin = self.loaded_plugins[plugin_name]
             # Call cleanup if available
-            if hasattr(plugin, 'cleanup'):
+            if hasattr(plugin, "cleanup"):
                 await plugin.cleanup()
             del self.loaded_plugins[plugin_name]
 
@@ -86,7 +86,7 @@ class PluginLoader(DomainBaseModel):
                 importlib.reload(module)
 
                 # Reload plugin instance
-                if hasattr(module, 'get_plugin'):
+                if hasattr(module, "get_plugin"):
                     plugin = module.get_plugin()
                     self.loaded_plugins[plugin_name] = plugin
                     return plugin

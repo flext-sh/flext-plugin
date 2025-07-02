@@ -36,7 +36,7 @@ class PluginDiscovery(DomainBaseModel):
                 "path": py_file,
                 "file_name": py_file.name,
                 "size": py_file.stat().st_size,
-                "modified": py_file.stat().st_mtime
+                "modified": py_file.stat().st_mtime,
             }
             plugins.append(plugin_info)
 
@@ -59,7 +59,7 @@ class PluginDiscovery(DomainBaseModel):
                 "module_name": plugin["name"],
                 "plugin_class": "Plugin",  # Default class name
                 "path": plugin["path"],
-                "type": "generic"
+                "type": "generic",
             }
             entry_points.append(entry_point)
 

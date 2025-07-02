@@ -278,7 +278,11 @@ class PluginLoader:
         # Check Meltano plugin dependencies
         if metadata.meltano_dependencies:
             # Check if required plugins are loaded
-            missing_deps.extend(f"meltano:{dep_id}" for dep_id in metadata.meltano_dependencies if dep_id not in self._loaded_plugins)
+            missing_deps.extend(
+                f"meltano:{dep_id}"
+                for dep_id in metadata.meltano_dependencies
+                if dep_id not in self._loaded_plugins
+            )
 
         return missing_deps
 

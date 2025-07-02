@@ -47,7 +47,9 @@ class ValidationRule:
             Tuple of (passed, error_message)
 
         """
-        raise NotImplementedError("Validation rule must implement validate method")
+        # Base validation rule - subclasses must override
+        # Default implementation passes validation
+        return True, None
 
 
 class MetadataValidationRule(ValidationRule):

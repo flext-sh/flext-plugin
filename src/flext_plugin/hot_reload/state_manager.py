@@ -340,9 +340,7 @@ class StateManager:
 
             # Convert saved_at back to datetime
             if "saved_at" in state_dict:
-                state_dict["saved_at"] = datetime.fromisoformat(
-                    state_dict["saved_at"]
-                )
+                state_dict["saved_at"] = datetime.fromisoformat(state_dict["saved_at"])
 
             return PluginState(**state_dict)
 
@@ -441,9 +439,12 @@ class StateManager:
             List of snapshot summaries
 
         """
-        return [{
-                    "snapshot_id": snapshot.snapshot_id,
-                    "created_at": snapshot.created_at,
-                    "description": snapshot.description,
-                    "plugin_count": len(snapshot.plugin_states),
-                } for snapshot in self._snapshots.values()]
+        return [
+            {
+                "snapshot_id": snapshot.snapshot_id,
+                "created_at": snapshot.created_at,
+                "description": snapshot.description,
+                "plugin_count": len(snapshot.plugin_states),
+            }
+            for snapshot in self._snapshots.values()
+        ]

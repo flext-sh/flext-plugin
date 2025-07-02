@@ -28,7 +28,7 @@ class PluginFileHandler(FileSystemEventHandler):
             return
 
         path = Path(event.src_path)
-        if path.suffix == '.py' and not path.name.startswith('__'):
+        if path.suffix == ".py" and not path.name.startswith("__"):
             self.reload_callback(path)
 
 
@@ -73,7 +73,7 @@ class HotReloadManager(DomainBaseModel):
         try:
             plugins = await self.discovery.scan()
             for plugin_info in plugins:
-                await self._load_plugin(plugin_info['path'])
+                await self._load_plugin(plugin_info["path"])
         except Exception:
             pass
 
@@ -115,7 +115,7 @@ class HotReloadManager(DomainBaseModel):
             if plugin_name in self.loaded_plugins:
                 plugin = self.loaded_plugins[plugin_name]
                 # Call plugin cleanup if available
-                if hasattr(plugin, 'cleanup'):
+                if hasattr(plugin, "cleanup"):
                     await plugin.cleanup()
                 del self.loaded_plugins[plugin_name]
         except Exception:

@@ -25,7 +25,7 @@ class SimplePluginHandler(FileSystemEventHandler):
             return
 
         path = Path(event.src_path)
-        if path.suffix == '.py' and not path.name.startswith('__'):
+        if path.suffix == ".py" and not path.name.startswith("__"):
             self.reload_callback(path)
 
 
@@ -109,12 +109,12 @@ class SimpleHotReloadManager(DomainBaseModel):
 
             # Look for plugin_instance or first class
             plugin_instance = None
-            if 'plugin_instance' in plugin_globals:
-                plugin_instance = plugin_globals['plugin_instance']
+            if "plugin_instance" in plugin_globals:
+                plugin_instance = plugin_globals["plugin_instance"]
             else:
                 # Find first class in the module
                 for value in plugin_globals.values():
-                    if isinstance(value, type) and value.__name__ != 'type':
+                    if isinstance(value, type) and value.__name__ != "type":
                         plugin_instance = value()
                         break
 
@@ -132,7 +132,7 @@ class SimpleHotReloadManager(DomainBaseModel):
             if plugin_name in self.loaded_plugins:
                 plugin = self.loaded_plugins[plugin_name]
                 # Call plugin cleanup if available
-                if hasattr(plugin, 'cleanup'):
+                if hasattr(plugin, "cleanup"):
                     if asyncio.iscoroutinefunction(plugin.cleanup):
                         await plugin.cleanup()
                     else:
@@ -156,7 +156,9 @@ class SimpleHotReloadManager(DomainBaseModel):
 
 
 # Convenience function for quick setup
-async def create_simple_hot_reload_manager(plugin_directory: str) -> SimpleHotReloadManager:
+async def create_simple_hot_reload_manager(
+    plugin_directory: str,
+) -> SimpleHotReloadManager:
     """Create and start a simple hot reload manager."""
     manager = SimpleHotReloadManager(plugin_directory=plugin_directory)
     await manager.start_watching()

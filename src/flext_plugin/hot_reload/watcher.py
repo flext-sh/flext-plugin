@@ -37,9 +37,7 @@ class WatchEvent(BaseModel):
     event_type: WatchEventType = Field(description="Type of file system event")
     path: Path = Field(description="Path that triggered the event")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    old_path: Path | None = Field(
-        default=None, description="Old path for move events"
-    )
+    old_path: Path | None = Field(default=None, description="Old path for move events")
 
     class Config:
         arbitrary_types_allowed = True
