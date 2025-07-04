@@ -149,7 +149,7 @@ class PluginManager:
     async def initialize(self) -> ServiceResult[PluginManagerResult]:
         """Initialize plugin manager and optionally discover plugins.
 
-        Returns
+        Returns:
         -------
             ServiceResult containing initialization results
 
@@ -602,7 +602,7 @@ class PluginManager:
     async def integrate_with_protocols(self) -> ServiceResult[None]:
         """Integrate plugins with universal command protocols.
 
-        Returns
+        Returns:
         -------
             ServiceResult indicating integration success/failure
 

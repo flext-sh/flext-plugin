@@ -17,10 +17,11 @@ from pydantic import BaseModel, Field
 
 from flx_plugin.hot_reload.rollback import RollbackManager
 from flx_plugin.hot_reload.state_manager import StateManager
-from flx_plugin.hot_reload.watcher import PluginWatcher, WatchEvent, WatchEventType
+from flx_plugin.hot_reload.watcher import PluginWatcher, WatchEventType
 
 if TYPE_CHECKING:
     from flx_plugin.core.manager import PluginManager
+    from flx_plugin.hot_reload.watcher import WatchEvent
 
 logger = logging.getLogger(__name__)
 

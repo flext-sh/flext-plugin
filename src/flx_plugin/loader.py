@@ -560,7 +560,7 @@ class PluginLoader:
     def get_loaded_plugins(self) -> dict[str, PluginInterface]:
         """Get currently loaded plugins.
 
-        Returns
+        Returns:
         -------
             Dictionary of plugin ID to plugin instance mappings
 

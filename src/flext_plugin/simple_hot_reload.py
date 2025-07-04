@@ -123,8 +123,6 @@ class SimpleHotReloadManager(DomainBaseModel):
 
             if plugin_instance:
                 self.loaded_plugins[plugin_name] = plugin_instance
-            else:
-                pass
 
         except Exception:
             pass

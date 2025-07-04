@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from flext_core.types import PluginExecutionContext, PluginType
+from flext_core.types import PluginExecutionContext
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from flext_core.types import PluginType
 
 T = TypeVar("T")
 
@@ -370,7 +373,7 @@ class PluginContext(BaseModel):
     def to_execution_context(self) -> PluginExecutionContext:
         """Convert to plugin execution context dictionary.
 
-        Returns
+        Returns:
         -------
             Dictionary representation for execution context
 
@@ -485,7 +488,7 @@ class PluginContextBuilder:
     def build(self) -> PluginContext:
         """Build the plugin context.
 
-        Returns
+        Returns:
         -------
             Configured plugin context
 

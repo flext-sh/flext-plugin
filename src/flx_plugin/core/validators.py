@@ -504,7 +504,7 @@ class ValidationResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation.
 
-        Returns
+        Returns:
         -------
             Dictionary with validation results
 

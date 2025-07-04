@@ -7,11 +7,14 @@ from __future__ import annotations
 
 import abc
 from datetime import UTC, datetime
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, Field
 
-from flext_plugin.core.types import PluginLifecycle, PluginStatus, PluginType
+from flext_plugin.core.types import PluginLifecycle, PluginStatus
+
+if TYPE_CHECKING:
+    from flext_plugin.core.types import PluginType
 
 
 class PluginMetadata(BaseModel):
@@ -164,7 +167,7 @@ class Plugin(abc.ABC):
         Called once during plugin loading to set up required resources,
         establish connections, and prepare the plugin for execution.
 
-        Raises
+        Raises:
         ------
             PluginError: When initialization fails
 
@@ -178,7 +181,7 @@ class Plugin(abc.ABC):
         Called during plugin unloading to properly release resources,
         close connections, and perform necessary cleanup operations.
 
-        Raises
+        Raises:
         ------
             PluginError: When cleanup fails
 
@@ -192,7 +195,7 @@ class Plugin(abc.ABC):
         Returns comprehensive health status including operational metrics,
         resource usage, and any detected issues or warnings.
 
-        Returns
+        Returns:
         -------
             Dictionary containing health status and metrics
 
@@ -261,7 +264,7 @@ class Plugin(abc.ABC):
     async def get_capabilities(self) -> list[str]:
         """Get list of plugin capabilities.
 
-        Returns
+        Returns:
         -------
             List of capability strings
 
@@ -271,7 +274,7 @@ class Plugin(abc.ABC):
     async def get_resource_usage(self) -> dict[str, Any]:
         """Get current resource usage metrics.
 
-        Returns
+        Returns:
         -------
             Dictionary containing resource usage information
 

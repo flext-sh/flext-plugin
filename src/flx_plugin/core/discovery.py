@@ -13,10 +13,12 @@ import os
 from typing import TYPE_CHECKING, Any
 
 from flx_plugin.core.base import Plugin, PluginMetadata
-from flx_plugin.core.types import PluginError, PluginType
+from flx_plugin.core.types import PluginError
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from flx_plugin.core.types import PluginType
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +101,7 @@ class PluginDiscovery:
     async def discover_all(self) -> dict[str, DiscoveredPlugin]:
         """Discover all available plugins.
 
-        Returns
+        Returns:
         -------
             Dictionary mapping plugin IDs to discovered plugins
 

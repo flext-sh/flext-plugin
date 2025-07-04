@@ -365,7 +365,7 @@ class PluginLoader:
     def get_all_loaded_plugins(self) -> dict[str, LoadedPlugin]:
         """Get all loaded plugins.
 
-        Returns
+        Returns:
         -------
             Dictionary of loaded plugins
 

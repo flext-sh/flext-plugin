@@ -299,7 +299,7 @@ class PluginDiscovery:
     def get_discovered_plugins(self) -> dict[str, PluginEntryPoint]:
         """Get currently discovered plugins from cache.
 
-        Returns
+        Returns:
         -------
             Dictionary of plugin name to entry point mappings
 
@@ -447,7 +447,7 @@ class PluginRegistry:
     def get_plugin_count(self) -> int:
         """Get count of registered plugins.
 
-        Returns
+        Returns:
         -------
             Number of registered plugins
 

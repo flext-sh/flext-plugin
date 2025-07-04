@@ -17,10 +17,11 @@ from pydantic import BaseModel, Field
 
 from flext_plugin.hot_reload.rollback import RollbackManager
 from flext_plugin.hot_reload.state_manager import StateManager
-from flext_plugin.hot_reload.watcher import PluginWatcher, WatchEvent, WatchEventType
+from flext_plugin.hot_reload.watcher import PluginWatcher, WatchEventType
 
 if TYPE_CHECKING:
     from flext_plugin.core.manager import PluginManager
+    from flext_plugin.hot_reload.watcher import WatchEvent
 
 logger = logging.getLogger(__name__)
 

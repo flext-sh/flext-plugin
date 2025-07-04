@@ -366,7 +366,7 @@ class PluginWatcher:
     def get_watched_files(self) -> list[Path]:
         """Get list of currently watched files.
 
-        Returns
+        Returns:
         -------
             List of watched file paths
 

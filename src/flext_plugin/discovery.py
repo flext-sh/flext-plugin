@@ -16,7 +16,7 @@ class PluginDiscovery(DomainBaseModel):
     async def scan(self) -> list[dict[str, Any]]:
         """Scan plugin directory for Python plugin files.
 
-        Returns
+        Returns:
         -------
             List of plugin metadata dictionaries
 
@@ -45,7 +45,7 @@ class PluginDiscovery(DomainBaseModel):
     async def discover_plugin_entry_points(self) -> list[dict[str, Any]]:
         """Discover plugin entry points with metadata.
 
-        Returns
+        Returns:
         -------
             List of plugin entry point metadata
 

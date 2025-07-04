@@ -440,7 +440,7 @@ class StateManager:
     def list_snapshots(self) -> list[dict[str, Any]]:
         """List available snapshots.
 
-        Returns
+        Returns:
         -------
             List of snapshot summaries
 

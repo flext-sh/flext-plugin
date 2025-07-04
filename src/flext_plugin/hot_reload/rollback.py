@@ -65,7 +65,7 @@ class RollbackHistory(BaseModel):
     def get_latest_point(self) -> RollbackPoint | None:
         """Get the most recent rollback point.
 
-        Returns
+        Returns:
         -------
             Latest rollback point or None
 
