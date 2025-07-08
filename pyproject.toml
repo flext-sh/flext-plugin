@@ -4,12 +4,12 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "flext-plugin"
-version = "0.2.0"
+version = "0.6.0"
 description = "FLEXT Plugin - Enterprise Plugin System with Hot Reload & Dynamic Loading"
 authors = [{ name = "FLEXT Team", email = "team@flext.sh" }]
 license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 keywords = [
     "flext",
     "plugin",
@@ -50,7 +50,6 @@ dependencies = [
     "jsonschema>=4.23.0",
     "psutil>=6.0.0",
     "filelock>=3.16.0"]
-
 [project.scripts]
 flext-plugin = "flext_plugin.cli:main"
 flext-plugin-create = "flext_plugin.cli:create"
@@ -65,57 +64,55 @@ Changelog = "https://github.com/flext-sh/flext-plugin/blob/main/CHANGELOG.md"
 
 [tool.poetry]
 packages = [{ include = "flext_plugin", from = "src" }]
-
 [tool.poetry.group.dev.dependencies]
 # Testing - Maximum strictness
-pytest = "^8.3.0"
-pytest-cov = "^6.0.0"
+pytest = "^8.4.0"
+pytest-cov = "^6.2.0"
 pytest-asyncio = "^0.24.0"
 pytest-benchmark = "^4.0.0"
 pytest-mock = "^3.14.0"
-pytest-xdist = "^3.6.0"
-pytest-timeout = "^2.3.0"
-pytest-randomly = "^3.15.0"
+pytest-xdist = "^3.8.0"
+pytest-timeout = "^2.4.0"
+pytest-randomly = "^3.16.0"
 pytest-sugar = "^1.0.0"
 pytest-clarity = "^1.0.1"
 
 # Code quality - Maximum strictness
-ruff = "^0.8.4"
-black = "^24.10.0"
-isort = "^5.13.0"
-mypy = "^1.13.0"
-bandit = { extras = ["toml"], version = "^1.7.0" }
-pre-commit = "^4.0.0"
+ruff = "^0.12.2"
+black = "^25.1.0"
+isort = "^6.0.1"
+mypy = "^1.16.1"
+bandit = {extras = ["toml"], version = "^1.8.0"}
+pre-commit = "^4.2.0"
 vulture = "^2.14"
 radon = "^6.0.1"
 
 # Type stubs
-types-requests = "^2.32.0"
-types-setuptools = "^75.6.0"
+types-requests = "^2.32.4"
+types-setuptools = "^75.8.2"
 types-redis = "^4.6.0"
 types-pyyaml = "^6.0.12"
 types-python-dateutil = "^2.9.0"
 
 # Documentation
-mkdocs = "^1.6.0"
-mkdocs-material = "^9.5.0"
-sphinx = "^8.0.0"
-sphinx-rtd-theme = "^3.0.0"
-myst-parser = "^4.0.0"
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.6.15"
+sphinx = "^8.2.3"
+sphinx-rtd-theme = "^3.0.2"
+myst-parser = "^4.0.1"
 
 # Development tools
-ipython = "^8.29.0"
+ipython = "^8.37.0"
 rich = "^13.9.0"
 rich-traceback = "^1.0.3"
 
 [tool.poetry.group.security.dependencies]
-bandit = { extras = ["toml"], version = "^1.7.0" }
+bandit = {extras = ["toml"], version = "^1.8.0"}
 safety = "^3.2.0"
-semgrep = "^1.91.0"
 
 [tool.poetry.group.build.dependencies]
-build = "^1.2.0"
-twine = "^6.0.0"
+build = "^1.2.2"
+twine = "^6.1.0"
 
 [tool.poetry.group.test.dependencies]
 hypothesis = "^6.112.0"
@@ -147,7 +144,6 @@ extend-exclude = [
     "dist",
     "htmlcov",
     "node_modules"]
-
 [tool.ruff.lint]
 # SELECT ALL RULES - MAXIMUM STRICTNESS
 select = ["ALL"]
@@ -193,7 +189,6 @@ ignore = [
 "conftest.py" = ["D"]
 "scripts/*" = ["T201", "D", "ERA001"]
 "examples/*" = ["T201", "D", "ERA001"]
-
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
@@ -202,7 +197,6 @@ line-ending = "lf"
 [tool.black]
 line-length = 88
 target-version = ["py313"]
-
 [tool.isort]
 profile = "black"
 line_length = 88
@@ -328,7 +322,6 @@ omit = [
 data_file = "reports/.coverage"
 parallel = true
 concurrency = ["thread", "multiprocessing"]
-
 [tool.coverage.report]
 skip_empty = true
 skip_covered = false
@@ -346,15 +339,12 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
     "TYPE_CHECKING"]
-
 [tool.bandit]
 targets = ["src"]
 exclude_dirs = ["tests", "build", "dist"]
 skips = ["B101", "B601"]
-
 [tool.bandit.assert_used]
 skips = ["*/tests/*", "*/test_*.py"]
-
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
