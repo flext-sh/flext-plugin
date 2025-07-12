@@ -8,110 +8,127 @@ from __future__ import annotations
 import traceback
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, TypedDict
+from typing import Any
 
-from pydantic import BaseModel, Field
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
 
-class PluginType(Enum):
-    """Plugin type classification for enterprise plugin system.
+class PluginType(str, Enum):
+    """Plugin type enumeration."""
 
-    Defines the functional categories of plugins available in the system,
-    enabling proper routing, validation, and lifecycle management.
-    """
-
-    # Data processing plugins
     EXTRACTOR = "extractor"
-    LOADER = "loader"
     TRANSFORMER = "transformer"
-    VALIDATOR = "validator"
-
-    # Pipeline and orchestration plugins
-    ORCHESTRATOR = "orchestrator"
-    SCHEDULER = "scheduler"
-    TRIGGER = "trigger"
-
-    # Monitoring and observability plugins
-    MONITOR = "monitor"
-    ALERTER = "alerter"
-    LOGGER = "logger"
-    TRACER = "tracer"
-
-    # Integration and connectivity plugins
-    CONNECTOR = "connector"
-    ADAPTER = "adapter"
-    BRIDGE = "bridge"
-
-    # Security and compliance plugins
-    AUTHENTICATOR = "authenticator"
-    AUTHORIZER = "authorizer"
-    ENCRYPTOR = "encryptor"
-    AUDITOR = "auditor"
-
-    # Utility and extension plugins
+    LOADER = "loader"
     UTILITY = "utility"
-    EXTENSION = "extension"
-    FILTER = "filter"
-    PROCESSOR = "processor"
+    ORCHESTRATOR = "orchestrator"
 
 
-class PluginCapability(Enum):
-    """Plugin capability enumeration for functional classification."""
+class PluginStatus(str, Enum):
+    """Plugin lifecycle status enumeration."""
 
-    # Data processing capabilities
-    DATA_EXTRACTION = "data_extraction"
-    DATA_LOADING = "data_loading"
-    DATA_TRANSFORMATION = "data_transformation"
-    DATA_VALIDATION = "data_validation"
-
-    # Schema and metadata capabilities
-    SCHEMA_INFERENCE = "schema_inference"
-    SCHEMA_VALIDATION = "schema_validation"
-    METADATA_EXTRACTION = "metadata_extraction"
-
-    # Synchronization capabilities
-    INCREMENTAL_SYNC = "incremental_sync"
-    FULL_SYNC = "full_sync"
-    REAL_TIME_SYNC = "real_time_sync"
-
-    # Pipeline capabilities
-    PIPELINE_ORCHESTRATION = "pipeline_orchestration"
-    TASK_SCHEDULING = "task_scheduling"
-    DEPENDENCY_MANAGEMENT = "dependency_management"
-
-    # Monitoring capabilities
-    HEALTH_MONITORING = "health_monitoring"
-    PERFORMANCE_MONITORING = "performance_monitoring"
-    ERROR_REPORTING = "error_reporting"
-
-
-class PluginLifecycle(Enum):
-    """Plugin lifecycle states for state management and monitoring."""
-
-    UNREGISTERED = "unregistered"
-    REGISTERED = "registered"
-    LOADED = "loaded"
-    INITIALIZED = "initialized"
+    INACTIVE = "inactive"
+    LOADING = "loading"
     ACTIVE = "active"
-    SUSPENDED = "suspended"
-    ERROR = "error"
-    UNLOADING = "unloading"
-    UNLOADED = "unloaded"
+    FAILED = "failed"
+    RELOADING = "reloading"
+    STOPPING = "stopping"
 
 
-class PluginStatus(Enum):
-    """Plugin operational status for health monitoring."""
+class ExecutionStatus(str, Enum):
+    """Plugin execution status enumeration."""
 
-    HEALTHY = "healthy"
-    DEGRADED = "degraded"
-    UNHEALTHY = "unhealthy"
-    UNKNOWN = "unknown"
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
-class PluginExecutionResult(BaseModel):
-    """Result container for plugin execution with comprehensive metadata."""
+class PluginConfig(DomainBaseModel):
+    """Plugin configuration model."""
 
-    model_config = {"frozen": True}
+    # Basic plugin information
+    name: str = Field(description="Plugin name")
+    version: str = Field(description="Plugin version")
+    description: str = Field(description="Plugin description")
+    plugin_type: PluginType = Field(description="Type of plugin")
+
+    # Entry point and dependencies
+    entry_point: str = Field(description="Main entry point module path")
+    dependencies: list[str] = Field(
+        default_factory=list,
+        description="List of required dependencies",
+    )
+    python_requires: str = Field(
+        default=">=3.11",
+        description="Required Python version",
+    )
+
+    # Runtime configuration
+    timeout_seconds: int = Field(
+        default=300,
+        description="Plugin execution timeout",
+    )
+    max_memory_mb: int = Field(
+        default=512,
+        description="Maximum memory usage in MB",
+    )
+    enable_hot_reload: bool = Field(
+        default=True,
+        description="Whether hot reload is enabled",
+    )
+
+    # Custom configuration
+    config: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Plugin-specific configuration",
+    )
+
+
+class PluginMetadata(DomainBaseModel):
+    """Plugin metadata and runtime information."""
+
+    # Core identification
+    plugin_id: str = Field(description="Unique plugin identifier")
+    config: PluginConfig = Field(description="Plugin configuration")
+
+    # Runtime state
+    status: PluginStatus = Field(
+        default=PluginStatus.INACTIVE,
+        description="Current plugin status",
+    )
+
+    # Lifecycle timestamps
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Plugin creation time",
+    )
+    last_loaded_at: datetime | None = Field(
+        default=None,
+        description="Last successful load time",
+    )
+    last_executed_at: datetime | None = Field(
+        default=None,
+        description="Last execution time",
+    )
+
+    # File system tracking
+    plugin_path: str = Field(description="Path to plugin files")
+    file_hash: str = Field(description="Hash of plugin files for change detection")
+
+    # Error tracking
+    last_error: str | None = Field(
+        default=None,
+        description="Last error message",
+    )
+    error_count: int = Field(
+        default=0,
+        description="Total error count",
+    )
+
+
+class ExecutionResult(DomainBaseModel):
+    """Plugin execution result."""
 
     # Execution outcome
     success: bool = Field(description="Whether the plugin execution succeeded")
@@ -137,201 +154,141 @@ class PluginExecutionResult(BaseModel):
     # Context and tracing
     execution_context: dict[str, Any] = Field(
         default_factory=dict,
-        description="Execution context metadata",
+        description="Execution context data",
     )
-    trace_id: str | None = Field(default=None, description="Distributed tracing ID")
-    span_id: str | None = Field(default=None, description="Distributed tracing span ID")
-
-    # Resource usage
-    memory_usage_mb: float | None = Field(
+    traceback_info: str | None = Field(
         default=None,
-        description="Peak memory usage in MB",
+        description="Traceback information for failed executions",
     )
-    cpu_time_ms: float | None = Field(
+
+    def set_error(self, error: Exception) -> None:
+        """Set error information from an exception."""
+        self.success = False
+        self.error = str(error)
+        self.traceback_info = traceback.format_exc()
+
+    def set_completed(self, result: Any = None) -> None:
+        """Mark execution as completed successfully."""
+        self.success = True
+        self.result = result
+        self.end_time = datetime.now(UTC)
+        if self.start_time and self.end_time:
+            duration = self.end_time - self.start_time
+            self.duration_ms = int(duration.total_seconds() * 1000)
+
+
+class PluginEvent(DomainBaseModel):
+    """Plugin lifecycle event."""
+
+    event_id: str = Field(description="Unique event identifier")
+    plugin_id: str = Field(description="Plugin identifier")
+    event_type: str = Field(description="Type of event")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Event timestamp",
+    )
+    data: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Event-specific data",
+    )
+    source: str = Field(description="Event source component")
+
+
+class HotReloadEvent(DomainBaseModel):
+    """Hot reload event information."""
+
+    plugin_id: str = Field(description="Plugin being reloaded")
+    event_type: str = Field(description="Type of reload event")
+    file_path: str = Field(description="Path of changed file")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Event timestamp",
+    )
+    success: bool = Field(description="Whether reload was successful")
+    error_message: str | None = Field(
         default=None,
-        description="CPU time consumed in milliseconds",
+        description="Error message if reload failed",
     )
-
-    def mark_completed(self, result: Any = None, error: str | None = None) -> None:
-        """Mark execution as completed with result or error."""
-        if not self.model_config.get("frozen"):
-            self.end_time = datetime.now(UTC)
-            if self.start_time:
-                duration = (self.end_time - self.start_time).total_seconds() * 1000
-                self.duration_ms = int(duration)
-
-            if error:
-                self.success = False
-                self.error = error
-            else:
-                self.success = True
-                self.result = result
 
 
 class PluginError(Exception):
     """Base exception for plugin system errors."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str | None = None,
-        error_code: str | None = None,
-        details: dict[str, Any] | None = None,
-        cause: Exception | None = None,
-    ) -> None:
-        """Initialize plugin error with comprehensive context.
-
-        Args:
-        ----
-            message: Human-readable error message
-            plugin_id: ID of the plugin that caused the error
-            error_code: Machine-readable error classification
-            details: Additional error context and metadata
-            cause: Original exception that caused this error
-
-        """
+    def __init__(self, message: str, plugin_id: str | None = None, cause: Exception | None = None) -> None:
         super().__init__(message)
-        self.message = message
         self.plugin_id = plugin_id
-        self.error_code = error_code
-        self.details = details or {}
         self.cause = cause
-        self.timestamp = datetime.now(UTC)
-        self.traceback = traceback.format_exc() if cause else None
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert error to dictionary for serialization."""
-        return {
-            "message": self.message,
-            "plugin_id": self.plugin_id,
-            "error_code": self.error_code,
-            "details": self.details,
-            "timestamp": self.timestamp.isoformat(),
-            "traceback": self.traceback,
-            "cause": str(self.cause) if self.cause else None,
-        }
 
 
-class PluginValidationError(PluginError):
-    """Exception raised when plugin validation fails."""
+class PluginDiscoveryError(PluginError):
+    """Error during plugin discovery."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        validation_failures: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize validation error with failure details.
-
-        Args:
-        ----
-            message: Error message
-            plugin_id: ID of the plugin that failed validation
-            validation_failures: List of specific validation failures
-            **kwargs: Additional error context
-
-        """
-        super().__init__(message, plugin_id, "VALIDATION_FAILED", **kwargs)
-        self.validation_failures = validation_failures
-        self.details["validation_failures"] = validation_failures
 
 
 class PluginLoadError(PluginError):
-    """Exception raised when plugin loading fails."""
+    """Error during plugin loading."""
 
-    def __init__(self, message: str, plugin_id: str, **kwargs: Any) -> None:
-        """Initialize plugin load error with failure details."""
-        super().__init__(message, plugin_id, "LOAD_FAILED", **kwargs)
 
 
 class PluginExecutionError(PluginError):
-    """Exception raised when plugin execution fails."""
+    """Error during plugin execution."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        execution_id: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin execution error with execution context."""
-        super().__init__(message, plugin_id, "EXECUTION_FAILED", **kwargs)
-        self.execution_id = execution_id
-        if execution_id:
-            self.details["execution_id"] = execution_id
+
+
+class PluginValidationError(PluginError):
+    """Error during plugin validation."""
+
 
 
 class PluginDependencyError(PluginError):
-    """Exception raised when plugin dependency resolution fails."""
+    """Error during plugin dependency resolution."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        missing_dependencies: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin dependency error with missing dependencies."""
-        super().__init__(message, plugin_id, "DEPENDENCY_FAILED", **kwargs)
-        self.missing_dependencies = missing_dependencies
-        self.details["missing_dependencies"] = missing_dependencies
+
+
+class PluginLifecycleError(PluginError):
+    """Error during plugin lifecycle operations."""
+
 
 
 class PluginSecurityError(PluginError):
-    """Exception raised when plugin security validation fails."""
-
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        security_violations: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin security error with violation details."""
-        super().__init__(message, plugin_id, "SECURITY_VIOLATION", **kwargs)
-        self.security_violations = security_violations
-        self.details["security_violations"] = security_violations
+    """Error related to plugin security validation."""
 
 
-# Type definitions for plugin configuration
-class PluginConfigDict(TypedDict):
-    """Plugin configuration dictionary for runtime settings."""
 
-    enabled: bool
-    priority: int
-    settings: dict[str, Any]
-    dependencies: list[str]
-    security_level: str
-    resource_limits: dict[str, Any]
+class PluginCapability(str, Enum):
+    """Plugin capability enumeration."""
 
-
-# Type definitions for plugin metadata
-class PluginMetadataDict(TypedDict):
-    """Plugin metadata dictionary for identification and discovery."""
-
-    id: str
-    name: str
-    version: str
-    description: str
-    author: str
-    license: str
-    plugin_type: str
-    entry_point: str
-    dependencies: list[str]
-    capabilities: list[str]
-    configuration_schema: dict[str, Any]
+    HOT_RELOAD = "hot_reload"
+    ASYNC_EXECUTION = "async_execution"
+    STATE_PERSISTENCE = "state_persistence"
+    HEALTH_CHECK = "health_check"
+    METRICS_EXPORT = "metrics_export"
 
 
-# Type definitions for plugin execution context
-class PluginExecutionContext(TypedDict):
-    """Plugin execution context dictionary for runtime tracking."""
+class PluginExecutionResult(DomainBaseModel):
+    """Result of plugin execution with comprehensive metadata."""
 
-    execution_id: str
-    plugin_id: str
-    user_id: str
-    session_id: str
-    trace_id: str
-    environment: str
-    request_metadata: dict[str, Any]
-    resource_limits: dict[str, Any]
+    success: bool = Field(description="Whether execution succeeded")
+    result: Any = Field(default=None, description="Execution result data")
+    error_message: str | None = Field(default=None, description="Error message if failed")
+    execution_time_ms: int = Field(description="Execution time in milliseconds")
+    memory_used_mb: float = Field(description="Memory used during execution")
+    plugin_id: str = Field(description="ID of executed plugin")
+
+
+class PluginLifecycle(str, Enum):
+    """Plugin lifecycle state enumeration."""
+
+    DISCOVERED = "discovered"
+    VALIDATED = "validated"
+    LOADED = "loaded"
+    ACTIVATED = "activated"
+    DEACTIVATED = "deactivated"
+    UNLOADED = "unloaded"
+    FAILED = "failed"
+
+
+# Type aliases for clean interfaces
+PluginRegistry = dict[str, PluginMetadata]
+ExecutionHistory = list[ExecutionResult]
+EventLog = list[PluginEvent]

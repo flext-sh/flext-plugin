@@ -6,46 +6,51 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 from __future__ import annotations
 
 import json
-import logging
 import pickle
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from uuid import uuid4
 
 import aiofiles
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
     from flext_plugin.core.base import Plugin
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-class PluginState(BaseModel):
+class PluginState(DomainBaseModel):
     """Represents the state of a plugin instance."""
 
     plugin_id: str = Field(description="Plugin identifier")
     plugin_version: str = Field(description="Plugin version")
     state_data: dict[str, Any] = Field(
-        default_factory=dict, description="Plugin state data"
+        default_factory=dict,
+        description="Plugin state data",
     )
     metadata: dict[str, Any] = Field(default_factory=dict, description="State metadata")
     saved_at: datetime = Field(
-        default_factory=lambda: datetime.now(UTC), description="When state was saved"
+        default_factory=lambda: datetime.now(UTC),
+        description="When state was saved",
     )
 
-    class Config:
-        """Pydantic model configuration."""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class StateSnapshot(BaseModel):
+class StateSnapshot(DomainBaseModel):
     """Complete state snapshot for rollback."""
 
     snapshot_id: str = Field(description="Unique snapshot identifier")
     plugin_states: dict[str, PluginState] = Field(
-        default_factory=dict, description="States by plugin ID"
+        default_factory=dict,
+        description="States by plugin ID",
     )
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
@@ -57,23 +62,10 @@ class StateSnapshot(BaseModel):
 class StateManager:
     """Manages plugin state for hot reload operations.
 
-    Handles state extraction, preservation, and restoration
-    during plugin reload operations.
+    Handles state extraction, preservation, and restoration during plugin reload operations.
     """
 
-    def __init__(
-        self,
-        state_directory: Path | None = None,
-        enable_persistence: bool = True,
-    ) -> None:
-        """Initialize state manager.
-
-        Args:
-        ----
-            state_directory: Directory for state persistence
-            enable_persistence: Whether to persist state to disk
-
-        """
+    def __init__(self, state_directory: Path | None = None, enable_persistence: bool = True) -> None:
         self.state_directory = state_directory or Path.cwd() / ".plugin_states"
         self.enable_persistence = enable_persistence
 
@@ -83,27 +75,8 @@ class StateManager:
         self._plugin_states: dict[str, PluginState] = {}
         self._snapshots: dict[str, StateSnapshot] = {}
 
-    async def save_plugin_state(
-        self,
-        plugin: Plugin,
-        force: bool = False,
-    ) -> PluginState:
-        """Save plugin state.
-
-        Args:
-        ----
-            plugin: Plugin instance
-            force: Force save even if plugin doesn't support state
-
-        Returns:
-        -------
-            Saved plugin state
-
-        Raises:
-        ------
-            ValueError: If plugin doesn't support state and force=False
-
-        """
+    async def save_plugin_state(self, plugin: Plugin, force: bool = False) -> PluginState:
+        """Save plugin state for hot reload."""
         plugin_id = plugin.metadata.id
 
         # Check if plugin supports state preservation
@@ -117,10 +90,7 @@ class StateManager:
             try:
                 state_data = await plugin.get_state()
             except Exception as e:
-                logger.error(
-                    f"Error extracting state from plugin {plugin_id}: {e}",
-                    exc_info=True,
-                )
+                logger.error(f"Error extracting state from plugin {plugin_id}: {e}", exc_info=True)
                 if not force:
                     raise
 
@@ -142,30 +112,12 @@ class StateManager:
         if self.enable_persistence:
             await self._persist_state(plugin_id, state)
 
-        logger.info(
-            f"Saved state for plugin {plugin_id}",
-            state_size=len(str(state_data)),
-        )
+        logger.info(f"Saved state for plugin {plugin_id}", state_size=len(str(state_data)))
 
         return state
 
-    async def restore_plugin_state(
-        self,
-        plugin: Plugin,
-        state: PluginState | None = None,
-    ) -> bool:
-        """Restore plugin state.
-
-        Args:
-        ----
-            plugin: Plugin instance
-            state: State to restore (uses saved state if None)
-
-        Returns:
-        -------
-            True if state was restored successfully
-
-        """
+    async def restore_plugin_state(self, plugin: Plugin, state: PluginState | None = None) -> bool:
+        """Restore plugin state from saved state."""
         plugin_id = plugin.metadata.id
 
         # Get state to restore
@@ -186,39 +138,15 @@ class StateManager:
         # Restore state
         try:
             await plugin.set_state(state.state_data)
-            logger.info(
-                f"Restored state for plugin {plugin_id}",
-                state_version=state.plugin_version,
-            )
+            logger.info(f"Restored state for plugin {plugin_id}", state_version=state.plugin_version)
             return True
-
         except Exception as e:
-            logger.error(
-                f"Error restoring state for plugin {plugin_id}: {e}",
-                exc_info=True,
-            )
+            logger.error(f"Error restoring state for plugin {plugin_id}: {e}", exc_info=True)
             return False
 
-    async def create_snapshot(
-        self,
-        description: str = "",
-        plugin_ids: list[str] | None = None,
-    ) -> str:
-        """Create a state snapshot.
-
-        Args:
-        ----
-            description: Snapshot description
-            plugin_ids: Specific plugins to snapshot (all if None)
-
-        Returns:
-        -------
-            Snapshot ID
-
-        """
-        import uuid
-
-        snapshot_id = str(uuid.uuid4())
+    async def create_snapshot(self, description: str = "", plugin_ids: list[str] | None = None) -> str:
+        """Create a snapshot of current plugin states."""
+        snapshot_id = str(uuid4())
 
         # Determine which states to include
         states_to_snapshot = {}
@@ -250,23 +178,8 @@ class StateManager:
 
         return snapshot_id
 
-    async def restore_snapshot(
-        self,
-        snapshot_id: str,
-        plugins: dict[str, Plugin] | None = None,
-    ) -> dict[str, bool]:
-        """Restore from snapshot.
-
-        Args:
-        ----
-            snapshot_id: Snapshot to restore
-            plugins: Plugin instances to restore to
-
-        Returns:
-        -------
-            Dict of plugin_id -> success status
-
-        """
+    async def restore_snapshot(self, snapshot_id: str, plugins: dict[str, Plugin] | None = None) -> dict[str, bool]:
+        """Restore from a snapshot."""
         snapshot = self._snapshots.get(snapshot_id)
         if snapshot is None and self.enable_persistence:
             snapshot = await self._load_snapshot(snapshot_id)
@@ -296,14 +209,7 @@ class StateManager:
         return results
 
     async def _persist_state(self, plugin_id: str, state: PluginState) -> None:
-        """Persist state to disk.
-
-        Args:
-        ----
-            plugin_id: Plugin identifier
-            state: State to persist
-
-        """
+        """Persist plugin state to disk."""
         state_file = self.state_directory / f"{plugin_id}.state.json"
 
         try:
@@ -315,23 +221,10 @@ class StateManager:
                 await f.write(json.dumps(state_dict, indent=2, default=str))
 
         except Exception as e:
-            logger.error(
-                f"Error persisting state for {plugin_id}: {e}",
-                exc_info=True,
-            )
+            logger.error(f"Error persisting state for {plugin_id}: {e}", exc_info=True)
 
     async def _load_state(self, plugin_id: str) -> PluginState | None:
-        """Load state from disk.
-
-        Args:
-        ----
-            plugin_id: Plugin identifier
-
-        Returns:
-        -------
-            Loaded state or None
-
-        """
+        """Load plugin state from disk."""
         state_file = self.state_directory / f"{plugin_id}.state.json"
 
         if not state_file.exists():
@@ -349,20 +242,11 @@ class StateManager:
             return PluginState(**state_dict)
 
         except Exception as e:
-            logger.error(
-                f"Error loading state for {plugin_id}: {e}",
-                exc_info=True,
-            )
+            logger.error(f"Error loading state for {plugin_id}: {e}", exc_info=True)
             return None
 
     async def _persist_snapshot(self, snapshot: StateSnapshot) -> None:
-        """Persist snapshot to disk.
-
-        Args:
-        ----
-            snapshot: Snapshot to persist
-
-        """
+        """Persist snapshot to disk."""
         snapshot_file = self.state_directory / f"snapshot_{snapshot.snapshot_id}.pkl"
 
         try:
@@ -371,23 +255,10 @@ class StateManager:
                 await f.write(data)
 
         except Exception as e:
-            logger.error(
-                f"Error persisting snapshot {snapshot.snapshot_id}: {e}",
-                exc_info=True,
-            )
+            logger.error(f"Error persisting snapshot {snapshot.snapshot_id}: {e}", exc_info=True)
 
     async def _load_snapshot(self, snapshot_id: str) -> StateSnapshot | None:
-        """Load snapshot from disk.
-
-        Args:
-        ----
-            snapshot_id: Snapshot identifier
-
-        Returns:
-        -------
-            Loaded snapshot or None
-
-        """
+        """Load snapshot from disk."""
         snapshot_file = self.state_directory / f"snapshot_{snapshot_id}.pkl"
 
         if not snapshot_file.exists():
@@ -396,23 +267,14 @@ class StateManager:
         try:
             async with aiofiles.open(snapshot_file, "rb") as f:
                 data = await f.read()
-                return pickle.loads(data)  # noqa: S301
+                return pickle.loads(data)
 
         except Exception as e:
-            logger.error(
-                f"Error loading snapshot {snapshot_id}: {e}",
-                exc_info=True,
-            )
+            logger.error(f"Error loading snapshot {snapshot_id}: {e}", exc_info=True)
             return None
 
     def clear_state(self, plugin_id: str) -> None:
-        """Clear saved state for a plugin.
-
-        Args:
-        ----
-            plugin_id: Plugin identifier
-
-        """
+        """Clear plugin state."""
         if plugin_id in self._plugin_states:
             del self._plugin_states[plugin_id]
 
@@ -424,27 +286,11 @@ class StateManager:
         logger.info(f"Cleared state for plugin {plugin_id}")
 
     def get_plugin_state(self, plugin_id: str) -> PluginState | None:
-        """Get saved state for a plugin.
-
-        Args:
-        ----
-            plugin_id: Plugin identifier
-
-        Returns:
-        -------
-            Plugin state or None
-
-        """
+        """Get plugin state."""
         return self._plugin_states.get(plugin_id)
 
     def list_snapshots(self) -> list[dict[str, Any]]:
-        """List available snapshots.
-
-        Returns:
-        -------
-            List of snapshot summaries
-
-        """
+        """List all snapshots."""
         return [
             {
                 "snapshot_id": snapshot.snapshot_id,

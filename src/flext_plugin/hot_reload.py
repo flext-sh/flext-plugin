@@ -1,5 +1,7 @@
 """Plugin hot reload system with watchdog integration."""
 
+from __future__ import annotations
+
 import asyncio
 import importlib
 import sys
@@ -7,11 +9,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, ClassVar
 
-from flext_core.domain.pydantic_base import DomainBaseModel
-from pydantic import Field
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
 
@@ -24,7 +25,12 @@ class PluginFileHandler(FileSystemEventHandler):
         self.reload_callback = reload_callback
 
     def on_modified(self, event: FileSystemEvent) -> None:
-        """Handle file modification events."""
+        """Handle file modification events.
+        
+        Args:
+            event: The file system event that occurred.
+
+        """
         if event.is_directory:
             return
 
@@ -37,7 +43,7 @@ class HotReloadManager(DomainBaseModel):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
-    discovery: PluginDiscovery | None = Field(default=None)
+    discovery = Field(default=None)
     loader: PluginLoader | None = Field(default=None)
     observer: Observer | None = Field(default=None)
     loaded_plugins: dict[str, Any] = Field(default_factory=dict)
@@ -45,14 +51,24 @@ class HotReloadManager(DomainBaseModel):
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     def model_post_init(self, __context: Any, /) -> None:
-        """Initialize components after creation."""
+        """Initialize model after creation.
+        
+        Args:
+            __context: Pydantic context.
+
+        """
         self.discovery = PluginDiscovery(plugin_directory=self.plugin_directory)
         self.loader = PluginLoader()
         self.observer = Observer()
         self.loaded_plugins = {}
 
     async def start_watching(self) -> None:
-        """Start watching plugin directory for changes."""
+        """Start watching for plugin file changes.
+        
+        Raises:
+            RuntimeError: If observer is not initialized.
+
+        """
         if self.observer is None:
             msg = "Observer not initialized"
             raise RuntimeError(msg)
@@ -65,13 +81,12 @@ class HotReloadManager(DomainBaseModel):
         await self._initial_plugin_load()
 
     async def stop_watching(self) -> None:
-        """Stop watching plugin directory."""
+        """Stop watching for plugin file changes."""
         if self.observer and self.observer.is_alive():
             self.observer.stop()
             self.observer.join()
 
     async def _initial_plugin_load(self) -> None:
-        """Load all plugins initially."""
         try:
             plugins = await self.discovery.scan()
             for plugin_info in plugins:
@@ -80,12 +95,10 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
-        """Handle plugin file changes."""
         task = asyncio.create_task(self._reload_plugin(file_path))
         task.add_done_callback(lambda _: None)  # Prevent dangling task warning
 
     async def _reload_plugin(self, file_path: Path) -> None:
-        """Reload a specific plugin."""
         try:
             plugin_name = file_path.stem
 
@@ -104,7 +117,6 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     async def _load_plugin(self, file_path: Path) -> None:
-        """Load a single plugin."""
         try:
             plugin_name = file_path.stem
             plugin_instance = await self.loader.load_plugin_from_file(str(file_path))
@@ -113,11 +125,10 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     async def _unload_plugin(self, plugin_name: str) -> None:
-        """Unload a plugin."""
         try:
             if plugin_name in self.loaded_plugins:
                 plugin = self.loaded_plugins[plugin_name]
-                # Call plugin cleanup if available
+                # Call plugin cleanup if available:
                 if hasattr(plugin, "cleanup"):
                     await plugin.cleanup()
                 del self.loaded_plugins[plugin_name]
@@ -125,11 +136,16 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     def get_loaded_plugins(self) -> dict[str, Any]:
-        """Get currently loaded plugins."""
+        """Get a copy of currently loaded plugins.
+        
+        Returns:
+            Dictionary of loaded plugins keyed by plugin name.
+
+        """
         return self.loaded_plugins.copy()
 
     async def reload_all_plugins(self) -> None:
-        """Manually reload all plugins."""
+        """Reload all currently loaded plugins."""
         # Unload all
         for plugin_name in list(self.loaded_plugins.keys()):
             await self._unload_plugin(plugin_name)
@@ -140,7 +156,6 @@ class HotReloadManager(DomainBaseModel):
 
 # Convenience function for quick setup
 async def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
-    """Create and start a hot reload manager."""
     manager = HotReloadManager(plugin_directory=plugin_directory)
     await manager.start_watching()
     return manager

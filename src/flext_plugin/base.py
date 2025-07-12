@@ -1,12 +1,21 @@
+from datetime import datetime
+from typing import Any, ClassVar
+
+from flext_core.domain.pydantic_base import Field
+from flext_core.domain.pydantic_base import BaseModel
+from typing import List
+
 """Base plugin interface and metadata classes for the enterprise plugin system.
 
-📋 Architecture Documentation: docs/architecture/003-plugin-system-architecture/
+📋 Architecture Documentation:
+            docs/architecture/003-plugin-system-architecture/
 🔗 Interface Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md
 📊 Implementation Analysis: docs/architecture/003-plugin-system-architecture/IMPLEMENTATION-REALITY-MAP.md
 
 This module provides the foundation for the FLEXT enterprise plugin system with:
-- PluginInterface: Abstract base class for all plugins (EXCELLENT IMPLEMENTATION)
-- PluginMetadata: Rich metadata system with 20+ fields (ENTERPRISE-GRADE)
+            - PluginInterface: Abstract base class for all plugins (EXCELLENT IMPLEMENTATION)
+- PluginMetadata:
+        Rich metadata system with 20+ fields (ENTERPRISE-GRADE)
 - Specialized base classes: Extractor, Loader, Transformer plugins
 
 Status: ✅ PRODUCTION-READY FOUNDATION (A+ Grade)
@@ -16,24 +25,24 @@ Note: Core components (discovery.py, loader.py, manager.py) still missing
 from __future__ import annotations
 
 import abc
-from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any, ClassVar
+from datetime import UTC
+from typing import TYPE_CHECKING
 
-from flext_core.config.domain_config import get_domain_constants
-from flext_core.types import PluginLifecycle, PluginStatus
-from pydantic import BaseModel, Field
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from flext_plugin.domain.entities import PluginLifecycle, PluginStatus
 
 if TYPE_CHECKING:
-    from flext_core.types import PluginType
+            from flext_plugin.domain.entities import PluginType
 
 
-class PluginMetadata(BaseModel):
+class PluginMetadata(DomainBaseModel):
     """Comprehensive metadata for enterprise plugins.
 
     Provides all necessary information for plugin discovery, validation,
     dependency resolution, and lifecycle management with type safety.
 
-    📋 Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#221
+    📋 Documentation:
+            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#221
     🎯 Quality: A+ (97/100) - Enterprise-grade metadata system
     ✅ Status: COMPLETE - 20+ fields with Pydantic validation
 
@@ -124,18 +133,19 @@ class PluginMetadata(BaseModel):
 
 
 class PluginInterface(abc.ABC):
-    """Abstract base class for all FLEXT enterprise plugins.
+         """Abstract base class for all FLEXT enterprise plugins.
 
     Defines the contract that all plugins must implement for proper
     integration with the enterprise plugin system, including lifecycle
     management, configuration, and execution patterns.
 
-    📋 Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
+    📋 Documentation:
+            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
     🎯 Quality: A+ (98/100) - Industry-leading plugin interface architecture
     ✅ Status: EXCELLENT IMPLEMENTATION - Reference quality for enterprise plugins
 
     Features:
-    - Complete lifecycle management (initialize, cleanup, health_check, execute)
+            - Complete lifecycle management (initialize, cleanup, health_check, execute)
     - Rich metadata system with PluginMetadata class
     - Resource monitoring with psutil integration
     - Type-safe configuration validation
@@ -151,13 +161,6 @@ class PluginInterface(abc.ABC):
     METADATA: ClassVar[PluginMetadata]
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
-        """Initialize plugin with configuration.
-
-        Args:
-        ----
-            config: Plugin-specific configuration dictionary
-
-        """
         self._config = config or {}
         self._lifecycle_state = PluginLifecycle.UNREGISTERED
         self._status = PluginStatus.UNKNOWN
@@ -166,115 +169,48 @@ class PluginInterface(abc.ABC):
 
     @property
     def metadata(self) -> PluginMetadata:
-        """Get plugin metadata."""
         return self.METADATA
 
     @property
     def lifecycle_state(self) -> PluginLifecycle:
-        """Get current lifecycle state."""
         return self._lifecycle_state
 
     @property
     def status(self) -> PluginStatus:
-        """Get current operational status."""
         return self._status
 
     @property
     def config(self) -> dict[str, Any]:
-        """Get plugin configuration."""
         return self._config.copy()
 
     @property
     def is_initialized(self) -> bool:
-        """Check if plugin is initialized."""
         return self._initialized
 
     def _update_lifecycle_state(self, state: PluginLifecycle) -> None:
-        """Update plugin lifecycle state."""
         self._lifecycle_state = state
 
     def _update_status(self, status: PluginStatus) -> None:
-        """Update plugin operational status."""
         self._status = status
         self._last_health_check = datetime.now(UTC)
 
     @abc.abstractmethod
     async def initialize(self) -> None:
-        """Initialize plugin resources and connections.
-
-        Called once during plugin loading to set up required resources,
-        establish connections, and prepare the plugin for execution.
-
-        Raises:
-        ------
-            PluginError: When initialization fails
-
-        """
         ...
 
     @abc.abstractmethod
     async def cleanup(self) -> None:
-        """Clean up plugin resources and connections.
-
-        Called during plugin unloading to properly release resources,
-        close connections, and perform necessary cleanup operations.
-
-        Raises:
-        ------
-            PluginError: When cleanup fails
-
-        """
         ...
 
     @abc.abstractmethod
     async def health_check(self) -> dict[str, Any]:
-        """Perform plugin health check.
-
-        Returns comprehensive health status including operational metrics,
-        resource usage, and any detected issues or warnings.
-
-        Returns:
-        -------
-            Dictionary containing health status and metrics
-
-        """
         ...
 
     @abc.abstractmethod
     async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
-        """Execute plugin functionality.
-
-        Main entry point for plugin execution with input data and context.
-        Implementation varies by plugin type and specific functionality.
-
-        Args:
-        ----
-            input_data: Input data for plugin processing
-            context: Execution context and metadata
-
-        Returns:
-        -------
-            Plugin execution result
-
-        Raises:
-        ------
-            PluginExecutionError: When execution fails
-
-        """
         ...
 
     async def validate_configuration(self, config: dict[str, Any]) -> list[str]:
-        """Validate plugin configuration against schema.
-
-        Args:
-        ----
-            config: Configuration dictionary to validate
-
-        Returns:
-        -------
-            List of validation error messages (empty if valid)
-
-        """
         # Basic validation - can be overridden by concrete implementations
         errors = []
 
@@ -282,54 +218,35 @@ class PluginInterface(abc.ABC):
             errors.append("Configuration must be a dictionary")
             return errors
 
-        # Validate against configuration schema if available
+        # Validate against configuration schema if available:
         schema = self.metadata.configuration_schema
         if schema:
-            from flext_core.utils.import_fallback_patterns import (
-                get_jsonschema_validator,
-            )
+            try:
+            import jsonschema  # type: ignore
 
-            validate_func, ValidationError, SchemaError = get_jsonschema_validator()
-
-            if validate_func:
                 try:
-                    validate_func(instance=config, schema=schema)
-                except ValidationError as e:
-                    errors.append(f"Configuration validation failed: {e.message}")
-                except SchemaError as e:
-                    errors.append(f"Invalid configuration schema: {e.message}")
-            # If jsonschema not available, validation is silently skipped
+            jsonschema.validate(instance=config, schema=schema)
+                except jsonschema.ValidationError as e:
+        errors.append(f"Configuration validation failed: {e.message}")
+                except jsonschema.SchemaError as e:
+        errors.append(f"Invalid configuration schema: {e.message}")
+            except ImportError:
+        # jsonschema not available - skip validation
+                pass
 
         return errors
 
     async def get_capabilities(self) -> list[str]:
-        """Get list of plugin capabilities.
-
-        Returns:
-        -------
-            List of capability strings
-
-        """
         return self.metadata.capabilities
 
     async def get_resource_usage(self) -> dict[str, Any]:
-        """Get current resource usage metrics.
-
-        Returns:
-        -------
-            Dictionary containing resource usage information
-
-        """
-        import psutil
+        import psutil  # type: ignore
 
         process = psutil.Process()
-        constants = get_domain_constants()
-        mb_conversion = (
-            constants.MEMORY_UNIT_CONVERSION * constants.MEMORY_UNIT_CONVERSION
-        )
+        MB_TO_BYTES = 1024 * 1024
 
         return {
-            "memory_mb": process.memory_info().rss / mb_conversion,
+            "memory_mb": process.memory_info().rss / MB_TO_BYTES,
             "cpu_percent": process.cpu_percent(),
             "open_files": len(process.open_files()),
             "threads": process.num_threads(),
@@ -338,100 +255,63 @@ class PluginInterface(abc.ABC):
 
 
 class BaseExtractorPlugin(PluginInterface):
-    """Base class for data extractor plugins.
+         """Base class for data extractor plugins.
 
     Specialized base class for plugins that extract data from various
     sources including databases, APIs, files, and streaming systems.
 
-    📋 Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
+    📋 Documentation:
+            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
     ✅ Status: COMPLETE - Data extraction with source configuration pattern
     🎯 Usage: Inherit from this class for custom data source extractors
     """
 
     @abc.abstractmethod
     async def extract(self, source_config: dict[str, Any]) -> Any:
-        """Extract data from configured source.
-
-        Args:
-        ----
-            source_config: Source-specific configuration
-
-        Returns:
-        -------
-            Extracted data in standardized format
-
-        """
         ...
 
     async def execute(self, _input_data: Any, context: dict[str, Any]) -> Any:
-        """Execute extraction functionality."""
         source_config = context.get("source_config", {})
         return await self.extract(source_config)
 
 
 class BaseLoaderPlugin(PluginInterface):
-    """Base class for data loader plugins.
+         """Base class for data loader plugins.
 
     Specialized base class for plugins that load data into various
     destinations including databases, data warehouses, and file systems.
 
-    📋 Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
+    📋 Documentation:
+            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
     ✅ Status: COMPLETE - Data loading with destination configuration pattern
     🎯 Usage: Inherit from this class for custom data destination loaders
     """
 
     @abc.abstractmethod
-    async def load(
-        self, data: Any, destination_config: dict[str, Any]
-    ) -> dict[str, Any]:
-        """Load data to configured destination.
-
-        Args:
-        ----
-            data: Data to load
-            destination_config: Destination-specific configuration
-
-        Returns:
-        -------
-            Load operation results and metrics
-
-        """
+    async def load( self, data: Any, destination_config: dict[str, Any], ) -> dict[str, Any]:
         ...
 
     async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
-        """Execute loading functionality."""
         destination_config = context.get("destination_config", {})
         return await self.load(input_data, destination_config)
 
 
 class BaseTransformerPlugin(PluginInterface):
-    """Base class for data transformer plugins.
+         """Base class for data transformer plugins.
 
     Specialized base class for plugins that transform, validate,
     and enrich data during pipeline processing.
 
-    📋 Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
+    📋 Documentation:
+            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#211
     ✅ Status: COMPLETE - Data transformation with configuration pattern
     🎯 Usage: Inherit from this class for custom data transformation logic
     """
 
     @abc.abstractmethod
     async def transform(self, data: Any, transform_config: dict[str, Any]) -> Any:
-        """Transform data according to configuration.
-
-        Args:
-        ----
-            data: Input data to transform
-            transform_config: Transformation-specific configuration
-
-        Returns:
-        -------
-            Transformed data
-
-        """
         ...
 
     async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
-        """Execute transformation functionality."""
         transform_config = context.get("transform_config", {})
         return await self.transform(input_data, transform_config)

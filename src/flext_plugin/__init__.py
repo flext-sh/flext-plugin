@@ -5,20 +5,53 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+try:
+    from flext_core.domain.constants import FlextFramework
+    __version__ = FlextFramework.VERSION
+except ImportError:
+    __version__ = "0.7.0"
 
-from flext_plugin.core.base import Plugin, PluginMetadata
-from flext_plugin.core.discovery import PluginDiscovery
-from flext_plugin.core.loader import PluginLoader
-from flext_plugin.core.manager import PluginManager
-from flext_plugin.core.types import (
-    PluginCapability,
-    PluginError,
-    PluginExecutionResult,
-    PluginLifecycle,
-    PluginStatus,
-    PluginType,
-)
+# Core imports with error handling for missing components
+try:
+    from flext_plugin.core.base import Plugin
+except ImportError:
+    Plugin = None
+
+try:
+    from flext_plugin.core.discovery import PluginDiscovery
+except ImportError:
+    PluginDiscovery = None
+
+try:
+    from flext_plugin.core.loader import PluginLoader
+except ImportError:
+    PluginLoader = None
+
+try:
+    from flext_plugin.core.manager import PluginManager
+except ImportError:
+    PluginManager = None
+try:
+    from flext_plugin.core.types import (
+        PluginCapability,
+        PluginError,
+        PluginExecutionResult,
+        PluginLifecycle,
+        PluginStatus,
+        PluginType,
+    )
+except ImportError:
+    PluginCapability = None
+    PluginError = None
+    PluginExecutionResult = None
+    PluginLifecycle = None
+    PluginStatus = None
+    PluginType = None
+
+try:
+    from flext_plugin.domain.entities import PluginMetadata
+except ImportError:
+    PluginMetadata = None
 
 __all__ = [
     # Core

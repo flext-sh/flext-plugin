@@ -1,21 +1,22 @@
-"""Type definitions and enums for the enterprise plugin system."""
+"""Type definitions and enums for the enterprise plugin system.
+
+REFACTORED:
+Uses flext-core StrEnum, types, and constants - NO duplication.
+"""
 
 from __future__ import annotations
 
 import traceback
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any, TypedDict
 
-from pydantic import BaseModel, Field
+from flext_core.domain.constants import ConfigDefaults
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
 
-class PluginType(Enum):
-    """Plugin type classification for enterprise plugin system.
-
-    Defines the functional categories of plugins available in the system,
-    enabling proper routing, validation, and lifecycle management.
-    """
+class PluginType(StrEnum):
+    """Plugin type classification using StrEnum for type safety."""
 
     # Data processing plugins
     EXTRACTOR = "extractor"
@@ -52,8 +53,8 @@ class PluginType(Enum):
     PROCESSOR = "processor"
 
 
-class PluginCapability(Enum):
-    """Plugin capability enumeration for functional classification."""
+class PluginCapability(StrEnum):
+    """Plugin capability enumeration using StrEnum for type safety."""
 
     # Data processing capabilities
     DATA_EXTRACTION = "data_extraction"
@@ -82,8 +83,8 @@ class PluginCapability(Enum):
     ERROR_REPORTING = "error_reporting"
 
 
-class PluginLifecycle(Enum):
-    """Plugin lifecycle states for state management and monitoring."""
+class PluginLifecycle(StrEnum):
+    """Plugin lifecycle states using StrEnum for type safety."""
 
     UNREGISTERED = "unregistered"
     REGISTERED = "registered"
@@ -96,43 +97,8 @@ class PluginLifecycle(Enum):
     UNLOADED = "unloaded"
 
 
-class PluginStatus(Enum):
-    r"""PluginStatus - Framework Component.
-
-    Implementa componente central do framework com funcionalidades específicas.
-    Segue padrões arquiteturais estabelecidos.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    Sem métodos públicos.
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PluginStatus()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
-    """Plugin operational status for health monitoring."""
+class PluginStatus(StrEnum):
+    """Plugin operational status using StrEnum for type safety."""
 
     HEALTHY = "healthy"
     DEGRADED = "degraded"
@@ -140,7 +106,7 @@ class PluginStatus(Enum):
     UNKNOWN = "unknown"
 
 
-class PluginExecutionResult(BaseModel):
+class PluginExecutionResult(DomainBaseModel):
     """Result container for plugin execution with comprehensive metadata."""
 
     model_config = {"frozen": True}
@@ -154,8 +120,16 @@ class PluginExecutionResult(BaseModel):
     )
 
     # Execution metadata
-    plugin_id: str = Field(description="Unique identifier of the executed plugin")
-    execution_id: str = Field(description="Unique identifier for this execution")
+    plugin_id: str = Field(
+        description="Unique identifier of the executed plugin",
+        min_length=1,
+        max_length=ConfigDefaults.MAX_ENTITY_NAME_LENGTH,
+    )
+    execution_id: str = Field(
+        description="Unique identifier for this execution",
+        min_length=1,
+        max_length=ConfigDefaults.MAX_ENTITY_NAME_LENGTH,
+    )
     start_time: datetime = Field(default_factory=lambda: datetime.now(UTC))
     end_time: datetime | None = Field(
         default=None,
@@ -185,7 +159,13 @@ class PluginExecutionResult(BaseModel):
     )
 
     def mark_completed(self, result: Any = None, error: str | None = None) -> None:
-        """Mark execution as completed with result or error."""
+        """Mark the plugin execution as completed with result or error.
+
+        Args:
+            result: The execution result data if successful.
+            error: Error message if execution failed.
+
+        """
         if not self.model_config.get("frozen"):
             self.end_time = datetime.now(UTC)
             if self.start_time:
@@ -201,61 +181,9 @@ class PluginExecutionResult(BaseModel):
 
 
 class PluginError(Exception):
-    r"""PluginError - Custom Exception.
-
-    Implementa exceção customizada para casos específicos do domínio. Fornece informações detalhadas sobre erros.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    to_dict(): Método específico da classe
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PluginError()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """Base exception for plugin system errors."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str | None = None,
-        error_code: str | None = None,
-        details: dict[str, Any] | None = None,
-        cause: Exception | None = None,
-    ) -> None:
-        """Initialize plugin error with comprehensive context.
-
-        Args:
-        ----
-            message: Human-readable error message
-            plugin_id: ID of the plugin that caused the error
-            error_code: Machine-readable error classification
-            details: Additional error context and metadata
-            cause: Original exception that caused this error
-
-        """
+    def __init__(self, message: str, plugin_id: str | None = None, error_code: str | None = None, details: dict[str, Any] | None = None, cause: Exception | None = None) -> None:
         super().__init__(message)
         self.message = message
         self.plugin_id = plugin_id
@@ -266,9 +194,14 @@ class PluginError(Exception):
         self.traceback = traceback.format_exc() if cause else None
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert error to dictionary for serialization."""
-        return {
-            "message": self.message,
+        """Convert the plugin error to a dictionary representation.
+
+        Returns:
+            Dictionary containing error details including message, plugin_id,
+            error_code, details, timestamp, traceback, and cause.
+
+        """
+        return {"message": self.message,
             "plugin_id": self.plugin_id,
             "error_code": self.error_code,
             "details": self.details,
@@ -279,151 +212,25 @@ class PluginError(Exception):
 
 
 class PluginValidationError(PluginError):
-    r"""PluginValidationError - Custom Exception.
-
-    Implementa exceção customizada para casos específicos do domínio. Fornece informações detalhadas sobre erros.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    Sem métodos públicos documentados.
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PluginValidationError()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """Exception raised when plugin validation fails."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        validation_failures: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize validation error with failure details.
-
-        Args:
-        ----
-            message: Error message
-            plugin_id: ID of the plugin that failed validation
-            validation_failures: List of specific validation failures
-            **kwargs: Additional error context
-
-        """
+    def __init__(self, message: str, plugin_id: str, validation_failures: list[str], **kwargs: Any) -> None:
         super().__init__(message, plugin_id, "VALIDATION_FAILED", **kwargs)
         self.validation_failures = validation_failures
         self.details["validation_failures"] = validation_failures
 
 
 class PluginLoadError(PluginError):
-    r"""PluginLoadError - Custom Exception.
-
-    Implementa exceção customizada para casos específicos do domínio. Fornece informações detalhadas sobre erros.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    Sem métodos públicos documentados.
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PluginLoadError()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """Exception raised when plugin loading fails."""
 
     def __init__(self, message: str, plugin_id: str, **kwargs: Any) -> None:
-        """Initialize plugin load error with failure details."""
         super().__init__(message, plugin_id, "LOAD_FAILED", **kwargs)
 
 
 class PluginExecutionError(PluginError):
-    r"""PluginExecutionError - Custom Exception.
-
-    Implementa exceção customizada para casos específicos do domínio. Fornece informações detalhadas sobre erros.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    Sem métodos públicos documentados.
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PluginExecutionError()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """Exception raised when plugin execution fails."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        execution_id: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin execution error with execution context."""
+    def __init__(self, message: str, plugin_id: str, execution_id: str | None = None, **kwargs: Any) -> None:
         super().__init__(message, plugin_id, "EXECUTION_FAILED", **kwargs)
         self.execution_id = execution_id
         if execution_id:
@@ -433,14 +240,7 @@ class PluginExecutionError(PluginError):
 class PluginDependencyError(PluginError):
     """Exception raised when plugin dependency resolution fails."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        missing_dependencies: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin dependency error with missing dependencies."""
+    def __init__(self, message: str, plugin_id: str, missing_dependencies: list[str], **kwargs: Any) -> None:
         super().__init__(message, plugin_id, "DEPENDENCY_FAILED", **kwargs)
         self.missing_dependencies = missing_dependencies
         self.details["missing_dependencies"] = missing_dependencies
@@ -449,14 +249,7 @@ class PluginDependencyError(PluginError):
 class PluginSecurityError(PluginError):
     """Exception raised when plugin security validation fails."""
 
-    def __init__(
-        self,
-        message: str,
-        plugin_id: str,
-        security_violations: list[str],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize plugin security error with violation details."""
+    def __init__(self, message: str, plugin_id: str, security_violations: list[str], **kwargs: Any) -> None:
         super().__init__(message, plugin_id, "SECURITY_VIOLATION", **kwargs)
         self.security_violations = security_violations
         self.details["security_violations"] = security_violations
@@ -474,7 +267,6 @@ class PluginConfigDict(TypedDict):
     resource_limits: dict[str, Any]
 
 
-# Type definitions for plugin metadata
 class PluginMetadataDict(TypedDict):
     """Plugin metadata dictionary for identification and discovery."""
 
@@ -491,7 +283,6 @@ class PluginMetadataDict(TypedDict):
     configuration_schema: dict[str, Any]
 
 
-# Type definitions for plugin execution context
 class PluginExecutionContext(TypedDict):
     """Plugin execution context dictionary for runtime tracking."""
 

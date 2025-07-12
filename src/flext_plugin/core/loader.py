@@ -6,47 +6,36 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 from __future__ import annotations
 
 import asyncio
-import logging
+import importlib.util
 from typing import TYPE_CHECKING, Any
 
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
 from flext_plugin.core.types import (
     PluginDependencyError,
     PluginError,
-    PluginLifecycle,
     PluginLoadError,
     PluginSecurityError,
-    PluginStatus,
     PluginValidationError,
 )
 from flext_plugin.core.validators import PluginValidator
+from flext_plugin.domain.entities import (
+    PluginLifecycle,
+    PluginStatus,
+)
 
 if TYPE_CHECKING:
-    from flext_plugin.core.base import Plugin, PluginMetadata
+    from flext_plugin.core.base import Plugin
     from flext_plugin.core.discovery import DiscoveredPlugin
+    from flext_plugin.domain.entities import PluginMetadata
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LoadedPlugin:
     """Container for loaded plugin instance and metadata."""
 
-    def __init__(
-        self,
-        plugin_id: str,
-        instance: Plugin,
-        metadata: PluginMetadata,
-        config: dict[str, Any],
-    ) -> None:
-        """Initialize loaded plugin container.
-
-        Args:
-        ----
-            plugin_id: Unique plugin identifier
-            instance: Plugin instance
-            metadata: Plugin metadata
-            config: Plugin configuration
-
-        """
+    def __init__(self, plugin_id: str, instance: Plugin, metadata: PluginMetadata, config: dict[str, Any]) -> None:
         self.plugin_id = plugin_id
         self.instance = instance
         self.metadata = metadata
@@ -54,7 +43,10 @@ class LoadedPlugin:
         self.is_initialized = False
 
     async def initialize(self) -> None:
-        """Initialize the plugin instance."""
+        """Initialize the loaded plugin.
+        
+        Sets up the plugin instance and updates its lifecycle state.
+        """
         if not self.is_initialized:
             await self.instance.initialize()
             self.instance._initialized = True
@@ -63,7 +55,10 @@ class LoadedPlugin:
             self.is_initialized = True
 
     async def cleanup(self) -> None:
-        """Cleanup the plugin instance."""
+        """Clean up the loaded plugin.
+        
+        Performs cleanup operations and resets the plugin state.
+        """
         if self.is_initialized:
             await self.instance.cleanup()
             self.instance._initialized = False
@@ -82,55 +77,33 @@ class PluginLoader:
     - Instance creation and initialization
     """
 
-    def __init__(
-        self,
-        validator: PluginValidator | None = None,
-        security_enabled: bool = True,
-        max_load_time: float = 30.0,
-    ) -> None:
-        """Initialize plugin loader.
-
-        Args:
-        ----
-            validator: Plugin validator instance
-            security_enabled: Whether to enforce security validation
-            max_load_time: Maximum time allowed for plugin loading
-
-        """
+    def __init__(self, validator: PluginValidator | None = None, security_enabled: bool = True, max_load_time: float = 30.0) -> None:
         self.validator = validator or PluginValidator()
         self.security_enabled = security_enabled
         self.max_load_time = max_load_time
         self._loaded_plugins: dict[str, LoadedPlugin] = {}
         self._loading_plugins: set[str] = set()
 
-    async def load_plugin(
-        self,
-        discovered_plugin: DiscoveredPlugin,
-        config: dict[str, Any] | None = None,
-        initialize: bool = True,
-    ) -> LoadedPlugin:
+    async def load_plugin(self, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None = None, initialize: bool = True) -> LoadedPlugin:
         """Load a discovered plugin.
-
+        
         Args:
-        ----
-            discovered_plugin: Discovered plugin to load
-            config: Plugin configuration
-            initialize: Whether to initialize after loading
-
+            discovered_plugin: The discovered plugin to load.
+            config: Optional configuration for the plugin.
+            initialize: Whether to initialize the plugin after loading.
+            
         Returns:
-        -------
-            Loaded plugin instance
-
+            The loaded plugin instance.
+            
         Raises:
-        ------
-            PluginLoadError: If loading fails
-            PluginSecurityError: If security validation fails
-            PluginDependencyError: If dependencies cannot be resolved
+            PluginLoadError: If the plugin cannot be loaded.
+            PluginSecurityError: If security validation fails.
+            PluginDependencyError: If dependencies are missing.
 
         """
         plugin_id = discovered_plugin.metadata.id
 
-        # Check if already loading
+        # Check if already loading:
         if plugin_id in self._loading_plugins:
             msg = f"Plugin is already being loaded: {plugin_id}"
             raise PluginLoadError(
@@ -138,7 +111,7 @@ class PluginLoader:
                 plugin_id=plugin_id,
             )
 
-        # Check if already loaded
+        # Check if already loaded:
         if plugin_id in self._loaded_plugins:
             logger.info(f"Plugin already loaded: {plugin_id}")
             return self._loaded_plugins[plugin_id]
@@ -166,13 +139,23 @@ class PluginLoader:
         finally:
             self._loading_plugins.discard(plugin_id)
 
-    async def _load_plugin_internal(
-        self,
-        discovered_plugin: DiscoveredPlugin,
-        config: dict[str, Any] | None,
-        initialize: bool,
-    ) -> LoadedPlugin:
-        """Internal plugin loading logic."""
+    async def _load_plugin_internal(self, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None, initialize: bool) -> LoadedPlugin:
+        """Internal plugin loading implementation.
+        
+        Args:
+            discovered_plugin: The discovered plugin to load.
+            config: Optional configuration for the plugin.
+            initialize: Whether to initialize the plugin after loading.
+            
+        Returns:
+            The loaded plugin instance.
+            
+        Raises:
+            PluginSecurityError: If security validation fails.
+            PluginDependencyError: If dependencies are missing.
+            PluginLoadError: If loading fails.
+
+        """
         plugin_class = discovered_plugin.plugin_class
         metadata = discovered_plugin.metadata
         plugin_id = metadata.id
@@ -182,7 +165,7 @@ class PluginLoader:
         if config:
             final_config.update(config)
 
-        # Validate security if enabled
+        # Validate security if enabled:
         if self.security_enabled:
             security_violations = await self.validator.validate_security(metadata)
             if security_violations:
@@ -235,7 +218,7 @@ class PluginLoader:
             config=final_config,
         )
 
-        # Initialize if requested
+        # Initialize if requested:
         if initialize:
             try:
                 await loaded.initialize()
@@ -250,23 +233,19 @@ class PluginLoader:
         return loaded
 
     async def _check_dependencies(self, metadata: PluginMetadata) -> list[str]:
-        """Check plugin dependencies.
-
+        """Check if plugin dependencies are available.
+        
         Args:
-        ----
-            metadata: Plugin metadata
-
+            metadata: The plugin metadata containing dependencies.
+            
         Returns:
-        -------
-            List of missing dependencies
+            List of missing dependencies.
 
         """
         missing_deps = []
 
         # Check Python package dependencies
         if metadata.dependencies:
-            import importlib.util
-
             for dep in metadata.dependencies:
                 # Extract package name from requirement string
                 package_name = dep.split("==")[0].split(">=")[0].split("<=")[0].strip()
@@ -277,25 +256,23 @@ class PluginLoader:
 
         # Check Meltano plugin dependencies
         if metadata.meltano_dependencies:
-            # Check if required plugins are loaded
-            missing_deps.extend(
+            # Check if required plugins are loaded:
+            missing_deps.extend([
                 f"meltano:{dep_id}"
                 for dep_id in metadata.meltano_dependencies
                 if dep_id not in self._loaded_plugins
-            )
+            ])
 
         return missing_deps
 
     async def unload_plugin(self, plugin_id: str) -> None:
         """Unload a plugin.
-
+        
         Args:
-        ----
-            plugin_id: Plugin ID to unload
-
+            plugin_id: The ID of the plugin to unload.
+            
         Raises:
-        ------
-            PluginError: If plugin is not loaded
+            PluginError: If the plugin is not loaded.
 
         """
         if plugin_id not in self._loaded_plugins:
@@ -311,37 +288,33 @@ class PluginLoader:
         # Update lifecycle state
         loaded.instance._update_lifecycle_state(PluginLifecycle.UNLOADING)
 
-        # Cleanup if initialized
+        # Cleanup if initialized:
         if loaded.is_initialized:
             try:
                 await loaded.cleanup()
             except Exception as e:
-                logger.exception(f"Error during plugin cleanup: {plugin_id}", exc_info=e)
+                logger.exception(
+                    f"Error during plugin cleanup: {plugin_id}",
+                    exc_info=e,
+                )
 
         # Remove from loaded plugins
         del self._loaded_plugins[plugin_id]
         logger.info(f"Unloaded plugin: {plugin_id}")
 
-    async def reload_plugin(
-        self,
-        plugin_id: str,
-        discovered_plugin: DiscoveredPlugin,
-        config: dict[str, Any] | None = None,
-    ) -> LoadedPlugin:
-        """Reload a plugin.
-
+    async def reload_plugin(self, plugin_id: str, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None = None) -> LoadedPlugin:
+        """Reload a plugin with new configuration.
+        
         Args:
-        ----
-            plugin_id: Plugin ID to reload
-            discovered_plugin: Updated discovered plugin
-            config: New configuration
-
+            plugin_id: The ID of the plugin to reload.
+            discovered_plugin: The discovered plugin information.
+            config: Optional new configuration for the plugin.
+            
         Returns:
-        -------
-            Reloaded plugin instance
+            The reloaded plugin instance.
 
         """
-        # Unload if already loaded
+        # Unload if already loaded:
         if plugin_id in self._loaded_plugins:
             await self.unload_plugin(plugin_id)
 
@@ -350,38 +323,33 @@ class PluginLoader:
 
     def get_loaded_plugin(self, plugin_id: str) -> LoadedPlugin | None:
         """Get a loaded plugin by ID.
-
+        
         Args:
-        ----
-            plugin_id: Plugin ID
-
+            plugin_id: The plugin ID to retrieve.
+            
         Returns:
-        -------
-            Loaded plugin or None if not loaded
+            The loaded plugin or None if not found.
 
         """
         return self._loaded_plugins.get(plugin_id)
 
     def get_all_loaded_plugins(self) -> dict[str, LoadedPlugin]:
         """Get all loaded plugins.
-
+        
         Returns:
-        -------
-            Dictionary of loaded plugins
+            Dictionary mapping plugin IDs to loaded plugin instances.
 
         """
         return self._loaded_plugins.copy()
 
     def is_loaded(self, plugin_id: str) -> bool:
         """Check if a plugin is loaded.
-
+        
         Args:
-        ----
-            plugin_id: Plugin ID
-
+            plugin_id: The plugin ID to check.
+            
         Returns:
-        -------
-            True if plugin is loaded
+            True if the plugin is loaded, False otherwise.
 
         """
         return plugin_id in self._loaded_plugins

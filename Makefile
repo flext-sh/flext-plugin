@@ -34,7 +34,7 @@ test-coverage: ## Run tests with coverage
 # Code Quality - Maximum Strictness
 lint: ## Run all linters with maximum strictness
 	@echo "🔍 Running maximum strictness linting for flext-plugin..."
-	poetry run ruff check . --output-format=verbose
+	poetry run ruff check . --output-format=full
 	@echo "✅ Ruff linting complete"
 
 format: ## Format code with strict standards
@@ -114,3 +114,6 @@ dev-test: ## Quick development test cycle
 # Environment variables
 export PYTHONPATH := $(PWD)/src:$(PYTHONPATH)
 export FLEXT_PLUGIN_DEV := true
+
+# Include standardized build system
+include Makefile.build

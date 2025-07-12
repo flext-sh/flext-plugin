@@ -5,22 +5,23 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 
 from __future__ import annotations
 
-import importlib
 import importlib.metadata
+import importlib.util
 import inspect
-import logging
 import os
 from typing import TYPE_CHECKING, Any
 
-from flext_plugin.core.base import Plugin, PluginMetadata
-from flext_plugin.core.types import PluginError
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
+from flext_plugin.core.base import Plugin
+from flext_plugin.core.types import PluginError, PluginType
+from flext_plugin.domain.value_objects import PluginMetadata
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from flext_plugin.core.types import PluginType
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DiscoveredPlugin:
@@ -33,23 +34,12 @@ class DiscoveredPlugin:
         source: str,
         entry_point_name: str | None = None,
     ) -> None:
-        """Initialize discovered plugin.
-
-        Args:
-        ----
-            metadata: Plugin metadata
-            plugin_class: Plugin class reference
-            source: Discovery source (entry_point, file, package)
-            entry_point_name: Entry point name if discovered via entry points
-
-        """
         self.metadata = metadata
         self.plugin_class = plugin_class
         self.source = source
         self.entry_point_name = entry_point_name
 
     def __repr__(self) -> str:
-        """String representation."""
         return f"DiscoveredPlugin({self.metadata.id}, source={self.source})"
 
 
@@ -67,14 +57,6 @@ class PluginDiscovery:
         plugin_directories: list[Path] | None = None,
         entry_point_groups: list[str] | None = None,
     ) -> None:
-        """Initialize plugin discovery.
-
-        Args:
-        ----
-            plugin_directories: Directories to scan for plugins
-            entry_point_groups: Entry point groups to scan
-
-        """
         self.plugin_directories = plugin_directories or []
         self.entry_point_groups = entry_point_groups or [
             "flext.plugins",
@@ -86,24 +68,41 @@ class PluginDiscovery:
         self._blacklisted_plugins: set[str] = set()
 
     def add_plugin_directory(self, directory: Path) -> None:
-        """Add a directory to scan for plugins."""
+        """Add a directory to the plugin search path.
+        
+        Args:
+            directory: The directory path to add.
+
+        """
         if directory not in self.plugin_directories:
             self.plugin_directories.append(directory)
 
     def blacklist_plugin(self, plugin_id: str) -> None:
-        """Blacklist a plugin to prevent discovery."""
+        """Blacklist a plugin to prevent it from being discovered.
+        
+        Args:
+            plugin_id: The plugin ID to blacklist.
+
+        """
         self._blacklisted_plugins.add(plugin_id)
 
     def is_blacklisted(self, plugin_id: str) -> bool:
-        """Check if a plugin is blacklisted."""
+        """Check if a plugin is blacklisted.
+        
+        Args:
+            plugin_id: The plugin ID to check.
+            
+        Returns:
+            True if the plugin is blacklisted, False otherwise.
+
+        """
         return plugin_id in self._blacklisted_plugins
 
     async def discover_all(self) -> dict[str, DiscoveredPlugin]:
         """Discover all available plugins.
-
+        
         Returns:
-        -------
-            Dictionary mapping plugin IDs to discovered plugins
+            Dictionary mapping plugin IDs to discovered plugin info.
 
         """
         # Clear previous discoveries
@@ -116,27 +115,22 @@ class PluginDiscovery:
         await self._discover_file_system()
 
         # Filter out blacklisted plugins
-        filtered = {
-            plugin_id: plugin
-            for plugin_id, plugin in self._discovered_plugins.items()
-            if not self.is_blacklisted(plugin_id)
-        }
+        filtered = {}
+        for plugin_id, plugin in self._discovered_plugins.items():
+            if not self.is_blacklisted(plugin_id):
+                filtered[plugin_id] = plugin
 
         logger.info(f"Discovered {len(filtered)} plugins")
         return filtered
 
-    async def discover_by_type(
-        self, plugin_type: PluginType
-    ) -> dict[str, DiscoveredPlugin]:
-        """Discover plugins of a specific type.
-
+    async def discover_by_type(self, plugin_type: PluginType) -> dict[str, DiscoveredPlugin]:
+        """Discover plugins by type.
+        
         Args:
-        ----
-            plugin_type: Type of plugins to discover
-
+            plugin_type: The type of plugins to discover.
+            
         Returns:
-        -------
-            Dictionary mapping plugin IDs to discovered plugins
+            Dictionary mapping plugin IDs to discovered plugin info.
 
         """
         all_plugins = await self.discover_all()
@@ -147,7 +141,10 @@ class PluginDiscovery:
         }
 
     async def _discover_entry_points(self) -> None:
-        """Discover plugins from Python entry points."""
+        """Discover plugins through Python entry points.
+        
+        Scans configured entry point groups for plugin classes.
+        """
         for group in self.entry_point_groups:
             try:
                 entry_points = importlib.metadata.entry_points(group=group)
@@ -168,7 +165,7 @@ class PluginDiscovery:
                                 )
                                 self._discovered_plugins[metadata.id] = discovered
                                 logger.debug(
-                                    f"Discovered plugin via entry point: {metadata.id}"
+                                    f"Discovered plugin via entry point: {metadata.id}",
                                 )
 
                     except Exception as e:
@@ -178,7 +175,10 @@ class PluginDiscovery:
                 logger.warning(f"Failed to scan entry point group {group}: {e}")
 
     async def _discover_file_system(self) -> None:
-        """Discover plugins from file system."""
+        """Discover plugins through file system scanning.
+        
+        Scans configured directories for plugin files.
+        """
         for directory in self.plugin_directories:
             if not directory.exists():
                 logger.warning(f"Plugin directory does not exist: {directory}")
@@ -187,7 +187,12 @@ class PluginDiscovery:
             await self._scan_directory(directory)
 
     async def _scan_directory(self, directory: Path) -> None:
-        """Scan a directory for plugins."""
+        """Scan a directory for plugin files.
+        
+        Args:
+            directory: The directory to scan.
+
+        """
         for py_file in directory.rglob("*.py"):
             if py_file.name.startswith("_"):
                 continue
@@ -195,7 +200,7 @@ class PluginDiscovery:
             try:
                 # Convert file path to module name
                 relative_path = py_file.relative_to(directory.parent)
-                module_name = str(relative_path).replace(os.sep, ".")[:-3]
+                module_name = str(relative_path).replace(os.sep, ".")[:-3]  # Remove .py extension
 
                 # Import module
                 spec = importlib.util.spec_from_file_location(module_name, py_file)
@@ -220,41 +225,35 @@ class PluginDiscovery:
                                     source="file",
                                 )
                                 self._discovered_plugins[metadata.id] = discovered
-                                logger.debug(
-                                    f"Discovered plugin from file: {metadata.id}"
-                                )
+                                logger.debug(f"Discovered plugin from file: {metadata.id}")
 
             except Exception as e:
                 logger.warning(f"Failed to scan file {py_file}: {e}")
 
     def _validate_plugin_class(self, plugin_class: type[Any]) -> bool:
         """Validate that a class is a valid plugin.
-
+        
         Args:
-        ----
-            plugin_class: Class to validate
-
+            plugin_class: The class to validate.
+            
         Returns:
-        -------
-            True if valid plugin class
+            True if the class is a valid plugin, False otherwise.
 
         """
         try:
-            # Check if it's a Plugin subclass
+            # Check if it's a Plugin subclass:
             if not issubclass(plugin_class, Plugin):
                 return False
 
-            # Check if it has metadata
+            # Check if it has metadata:
             if not hasattr(plugin_class, "METADATA"):
                 logger.warning(f"Plugin class {plugin_class.__name__} missing METADATA")
                 return False
 
-            # Check if metadata is valid
+            # Check if metadata is valid:
             metadata = plugin_class.METADATA
             if not isinstance(metadata, PluginMetadata):
-                logger.warning(
-                    f"Plugin class {plugin_class.__name__} has invalid METADATA"
-                )
+                logger.warning(f"Plugin class {plugin_class.__name__} has invalid METADATA")
                 return False
 
             # Check required methods
@@ -262,7 +261,7 @@ class PluginDiscovery:
             for method in required_methods:
                 if not hasattr(plugin_class, method):
                     logger.warning(
-                        f"Plugin class {plugin_class.__name__} missing method: {method}"
+                        f"Plugin class {plugin_class.__name__} missing method: {method}",
                     )
                     return False
 
@@ -272,21 +271,15 @@ class PluginDiscovery:
             logger.warning(f"Failed to validate plugin class {plugin_class}: {e}")
             return False
 
-    def register_plugin(
-        self,
-        plugin_class: type[Plugin],
-        override: bool = False,
-    ) -> None:
-        """Manually register a plugin.
-
+    def register_plugin(self, plugin_class: type[Plugin], override: bool = False) -> None:
+        """Manually register a plugin class.
+        
         Args:
-        ----
-            plugin_class: Plugin class to register
-            override: Whether to override existing plugin
-
+            plugin_class: The plugin class to register.
+            override: Whether to override existing registrations.
+            
         Raises:
-        ------
-            PluginError: If plugin is invalid or already registered
+            PluginError: If the plugin class is invalid or already registered.
 
         """
         if not self._validate_plugin_class(plugin_class):
@@ -316,14 +309,12 @@ class PluginDiscovery:
 
     def get_discovered_plugin(self, plugin_id: str) -> DiscoveredPlugin | None:
         """Get a discovered plugin by ID.
-
+        
         Args:
-        ----
-            plugin_id: Plugin ID
-
+            plugin_id: The plugin ID to retrieve.
+            
         Returns:
-        -------
-            Discovered plugin or None if not found
+            The discovered plugin or None if not found.
 
         """
         return self._discovered_plugins.get(plugin_id)

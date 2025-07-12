@@ -3,7 +3,7 @@
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
-from flext_plugin.core.base import Plugin, PluginMetadata
+from flext_plugin.core.base import Plugin
 from flext_plugin.core.discovery import PluginDiscovery
 from flext_plugin.core.loader import PluginLoader
 from flext_plugin.core.manager import PluginManager
@@ -16,6 +16,7 @@ from flext_plugin.core.types import (
     PluginType,
 )
 from flext_plugin.core.validators import PluginValidator
+from flext_plugin.domain.entities import PluginMetadata
 
 __all__ = [
     "Plugin",

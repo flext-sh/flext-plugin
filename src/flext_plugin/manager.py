@@ -4,15 +4,16 @@ This module provides comprehensive plugin lifecycle management, orchestrating
 plugin discovery, loading, execution, and integration with the application
 container and universal command system.
 
-📋 Architecture: docs/architecture/003-plugin-system-architecture/04-hot-reload-system.md
-🎯 Status: IMPLEMENTING MISSING CRITICAL COMPONENT
+Architecture:
+    docs/architecture/003-plugin-system-architecture/04-hot-reload-system.md
+Status: IMPLEMENTING MISSING CRITICAL COMPONENT
 
 Features:
-- Complete plugin lifecycle management
-- Integration with dependency injection container
-- Plugin configuration management and validation
-- Hot-reload capabilities for development
-- Plugin execution orchestration and monitoring
+    - Complete plugin lifecycle management
+    - Integration with dependency injection container
+    - Plugin configuration management and validation
+    - Hot-reload capabilities for development
+    - Plugin execution orchestration and monitoring
 
 Usage:
     from flext_core.plugins.manager import PluginManager, PluginConfiguration
@@ -25,25 +26,46 @@ Usage:
 
 from __future__ import annotations
 
+import time
+import uuid
+
+# Removed: import logging - use flext-observability instead
 from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.advanced_types import ServiceError, ServiceResult
-from flext_core.plugins.context import PluginContext
-from flext_core.plugins.discovery import PluginDiscovery, PluginRegistry
-from flext_core.plugins.loader import PluginLoader, PluginSecurity
-from flext_observability.structured_logging import get_logger
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from flext_core.domain.types import ServiceResult
+
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
+
+# from flext_observability import get_logger
+from flext_plugin.core.context import PluginContext
+from flext_plugin.core.discovery import PluginDiscovery
+from flext_plugin.core.loader import PluginLoader
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from flext_core.infrastructure.containers import ApplicationContainer
-    from flext_core.plugins.types import PluginExecutionResult, PluginType
+    from flext_core.infrastructure.di_container import ApplicationContainer
+    from flext_plugin.infrastructure.registry import PluginRegistry
+    from flext_plugin.infrastructure.security import PluginSecurity
+    from flext_plugin.types import PluginExecutionResult, PluginType
+else:
+    try:
+        from flext_core.infrastructure.di_container import ApplicationContainer
+        from flext_plugin.infrastructure.registry import PluginRegistry
+        from flext_plugin.infrastructure.security import PluginSecurity
+    except ImportError:
+        ApplicationContainer = None  # type: ignore
+        PluginRegistry = None  # type: ignore
+        PluginSecurity = None  # type: ignore
 
 logger = get_logger(__name__)
 
 
-class PluginConfiguration(BaseModel):
+class PluginConfiguration(DomainBaseModel):
     """Plugin configuration management."""
 
     plugin_id: str = Field(description="Plugin identifier")
@@ -63,13 +85,10 @@ class PluginConfiguration(BaseModel):
     )
     priority: int = Field(default=100, description="Plugin loading priority")
 
-    class Config:
-        """Pydantic model configuration."""
-
-        extra = "allow"  # Allow additional configuration fields
+    model_config = ConfigDict(extra="allow")  # Allow additional configuration fields
 
 
-class PluginExecutionContext(BaseModel):
+class PluginExecutionContext(DomainBaseModel):
     """Context for plugin execution operations."""
 
     plugin_id: str = Field(description="Plugin being executed")
@@ -84,13 +103,10 @@ class PluginExecutionContext(BaseModel):
     )
     timeout_seconds: int | None = Field(default=None, description="Execution timeout")
 
-    class Config:
-        """Pydantic model configuration."""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class PluginManagerResult(BaseModel):
+class PluginManagerResult(DomainBaseModel):
     """Result of plugin manager operations."""
 
     operation: str = Field(description="Operation performed")
@@ -120,15 +136,6 @@ class PluginManager:
         auto_discover: bool = True,
         security_enabled: bool = True,
     ) -> None:
-        """Initialize plugin manager.
-
-        Args:
-        ----
-            container: Application dependency injection container
-            auto_discover: Automatically discover plugins on initialization
-            security_enabled: Enable security validation for plugins
-
-        """
         self.container = container
         self.auto_discover = auto_discover
         self.security_enabled = security_enabled
@@ -147,15 +154,13 @@ class PluginManager:
         self._is_initialized = False
 
     async def initialize(self) -> ServiceResult[PluginManagerResult]:
-        """Initialize plugin manager and optionally discover plugins.
+        """Initialize the plugin manager and auto-discover plugins if enabled.
 
         Returns:
-        -------
-            ServiceResult containing initialization results
+            ServiceResult containing PluginManagerResult with initialization details,
+            including plugins discovered, execution time, and any errors.
 
         """
-        import time
-
         start_time = time.time()
 
         self.logger.info(
@@ -165,18 +170,16 @@ class PluginManager:
         )
 
         try:
-            plugins_discovered = []
+            plugins_discovered: list[str] = []
             errors = []
 
             if self.auto_discover:
                 # Discover and load plugins automatically
                 discover_result = await self.discover_and_load_plugins()
                 if discover_result.is_ok():
-                    plugins_discovered = discover_result.data.plugins_affected
+                    plugins_discovered = discover_result.data.plugins_affected or []
                 else:
-                    errors.append(
-                        f"Auto-discovery failed: {discover_result.error.message}",
-                    )
+                    errors.append(f"Auto-discovery failed: {discover_result.error.message}")
 
             self._is_initialized = True
             execution_time_ms = (time.time() - start_time) * 1000
@@ -189,7 +192,7 @@ class PluginManager:
                 details={
                     "auto_discover": self.auto_discover,
                     "security_enabled": self.security_enabled,
-                    "plugins_discovered": len(plugins_discovered),
+                    "plugins_discovered": len(plugins_discovered or []),
                 },
                 errors=errors,
             )
@@ -197,7 +200,7 @@ class PluginManager:
             self.logger.info(
                 "Plugin manager initialized",
                 success=result.success,
-                plugins_discovered=len(plugins_discovered),
+                plugins_discovered=len(plugins_discovered or []),
                 execution_time_ms=execution_time_ms,
             )
 
@@ -221,27 +224,25 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def discover_and_load_plugins(
-        self, plugin_types: Sequence[PluginType] | None = None
+        self, plugin_types: Sequence[PluginType] | None = None,
     ) -> ServiceResult[PluginManagerResult]:
-        """Discover and load all available plugins.
+        """Discover and load plugins, optionally filtering by plugin types.
 
         Args:
-        ----
-            plugin_types: Filter plugins by specific types (optional)
+            plugin_types: Optional sequence of plugin types to filter discovery.
+                         If None, all plugin types are discovered.
 
         Returns:
-        -------
-            ServiceResult containing discovery and loading results
+            ServiceResult containing PluginManagerResult with details about
+            plugins discovered, loaded, and any errors encountered.
 
         """
-        import time
-
         start_time = time.time()
 
         self.logger.info("Discovering and loading plugins", filter_types=plugin_types)
 
         try:
-            plugins_loaded = []
+            plugins_loaded: list[str] = []
             errors = []
 
             # Discover plugins
@@ -265,13 +266,12 @@ class PluginManager:
                         # Register plugin
                         register_result = await self.registry.register_plugin(plugin)
                         if register_result.is_ok():
-                            plugins_loaded.append(plugin.METADATA.id)
+                            if plugins_loaded is not None:
+                                plugins_loaded.append(plugin.METADATA.id)
 
                             # Store default configuration
-                            self._configurations[plugin.METADATA.id] = (
-                                PluginConfiguration(
-                                    plugin_id=plugin.METADATA.id,
-                                )
+                            self._configurations[plugin.METADATA.id] = PluginConfiguration(
+                                plugin_id=plugin.METADATA.id,
                             )
 
                             self.logger.debug(
@@ -280,11 +280,13 @@ class PluginManager:
                             )
                         else:
                             errors.append(
-                                f"Plugin registration failed for {entry_point.name}: {register_result.error.message}",
+                                f"Plugin registration failed for {entry_point.name}: "
+                                f"{register_result.error.message}",
                             )
                     else:
                         errors.append(
-                            f"Plugin loading failed for {entry_point.name}: {load_result.error.message}",
+                            f"Plugin loading failed for {entry_point.name}: "
+                            f"{load_result.error.message}",
                         )
 
                 except (
@@ -313,7 +315,7 @@ class PluginManager:
                 execution_time_ms=execution_time_ms,
                 details={
                     "plugins_discovered": len(discovered_plugins),
-                    "plugins_loaded": len(plugins_loaded),
+                    "plugins_loaded": len(plugins_loaded or []),
                     "plugins_failed": len(errors),
                 },
                 errors=errors,
@@ -321,7 +323,7 @@ class PluginManager:
 
             self.logger.info(
                 "Plugin discovery and loading completed",
-                plugins_loaded=len(plugins_loaded),
+                plugins_loaded=len(plugins_loaded or []),
                 plugins_failed=len(errors),
                 execution_time_ms=execution_time_ms,
             )
@@ -351,21 +353,18 @@ class PluginManager:
         input_data: dict[str, Any],
         context: dict[str, Any] | None = None,
     ) -> ServiceResult[PluginExecutionResult]:
-        """Execute plugin with provided input data.
+        """Execute a loaded plugin with the provided input data and context.
 
         Args:
-        ----
-            plugin_id: ID of plugin to execute
-            input_data: Input data for plugin execution
-            context: Additional execution context (optional)
+            plugin_id: Unique identifier of the plugin to execute.
+            input_data: Input data dictionary to pass to the plugin.
+            context: Optional execution context dictionary.
 
         Returns:
-        -------
-            ServiceResult containing plugin execution result
+            ServiceResult containing PluginExecutionResult with execution
+            outcome, results, and metadata.
 
         """
-        import uuid
-
         execution_id = str(uuid.uuid4())
 
         self.logger.info(
@@ -438,18 +437,16 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def configure_plugin(
-        self, plugin_id: str, configuration: PluginConfiguration
+        self, plugin_id: str, configuration: PluginConfiguration,
     ) -> ServiceResult[None]:
-        """Configure plugin with provided configuration.
+        """Configure a plugin with the provided configuration settings.
 
         Args:
-        ----
-            plugin_id: ID of plugin to configure
-            configuration: Plugin configuration
+            plugin_id: Unique identifier of the plugin to configure.
+            configuration: PluginConfiguration object with settings to apply.
 
         Returns:
-        -------
-            ServiceResult indicating configuration success/failure
+            ServiceResult indicating success or failure of configuration.
 
         """
         try:
@@ -496,15 +493,13 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def reload_plugin(self, plugin_id: str) -> ServiceResult[None]:
-        """Hot-reload plugin for development environments.
+        """Reload a plugin if hot-reload is enabled for development.
 
         Args:
-        ----
-            plugin_id: ID of plugin to reload
+            plugin_id: Unique identifier of the plugin to reload.
 
         Returns:
-        -------
-            ServiceResult indicating reload success/failure
+            ServiceResult indicating success or failure of plugin reload.
 
         """
         try:
@@ -554,15 +549,13 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def unload_plugin(self, plugin_id: str) -> ServiceResult[None]:
-        """Unload plugin and cleanup resources.
+        """Unload a plugin and remove it from the registry.
 
         Args:
-        ----
-            plugin_id: ID of plugin to unload
+            plugin_id: Unique identifier of the plugin to unload.
 
         Returns:
-        -------
-            ServiceResult indicating unload success/failure
+            ServiceResult indicating success or failure of plugin unload.
 
         """
         try:
@@ -600,11 +593,10 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def integrate_with_protocols(self) -> ServiceResult[None]:
-        """Integrate plugins with universal command protocols.
+        """Integrate plugins with universal command system and other protocols.
 
         Returns:
-        -------
-            ServiceResult indicating integration success/failure
+            ServiceResult indicating success or failure of protocol integration.
 
         """
         try:
@@ -632,17 +624,6 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def _create_plugin_context(self, plugin_name: str) -> PluginContext:
-        """Create plugin context with dependency injection.
-
-        Args:
-        ----
-            plugin_name: Name of plugin to create context for
-
-        Returns:
-        -------
-            PluginContext with injected dependencies
-
-        """
         # Create basic plugin context
         # In a full implementation, this would inject services from the container
         return PluginContext(
@@ -654,15 +635,14 @@ class PluginManager:
         )
 
     def get_plugin_status(self, plugin_id: str) -> dict[str, Any]:
-        """Get comprehensive plugin status information.
+        """Get the current status and metadata of a plugin.
 
         Args:
-        ----
-            plugin_id: ID of plugin to get status for
+            plugin_id: Unique identifier of the plugin to query.
 
         Returns:
-        -------
-            Dictionary with plugin status details
+            Dictionary containing plugin status, metadata, configuration,
+            and health information.
 
         """
         plugin = self.registry.get_plugin(plugin_id)
@@ -686,18 +666,19 @@ class PluginManager:
         }
 
     def list_plugins(
-        self, plugin_type: PluginType | None = None, enabled_only: bool = False
+        self,
+        plugin_type: PluginType | None = None,
+        enabled_only: bool = False,
     ) -> list[dict[str, Any]]:
-        """List all plugins with optional filtering.
+        """List all registered plugins with optional filtering.
 
         Args:
-        ----
-            plugin_type: Filter plugins by type (optional)
-            enabled_only: Only return enabled plugins
+            plugin_type: Optional plugin type to filter results.
+            enabled_only: If True, only return enabled plugins.
 
         Returns:
-        -------
-            List of plugin status information
+            List of dictionaries containing plugin information including
+            id, name, version, type, description, and configuration status.
 
         """
         plugins_metadata = self.registry.list_plugins(plugin_type)
@@ -724,7 +705,11 @@ class PluginManager:
         return plugin_list
 
     async def cleanup(self) -> None:
-        """Cleanup plugin manager and all loaded plugins."""
+        """Clean up the plugin manager and all associated resources.
+
+        Unloads all plugins, clears configurations and execution contexts,
+        and resets the manager to uninitialized state.
+        """
         self.logger.info("Cleaning up plugin manager")
 
         try:
@@ -753,12 +738,22 @@ class PluginManager:
 
     @property
     def is_initialized(self) -> bool:
-        """Check if plugin manager is initialized."""
+        """Check if the plugin manager has been initialized.
+
+        Returns:
+            True if the manager is initialized and ready for use, False otherwise.
+
+        """
         return self._is_initialized
 
     @property
     def plugin_count(self) -> int:
-        """Get count of loaded plugins."""
+        """Get the total number of registered plugins.
+
+        Returns:
+            Integer count of plugins currently registered in the registry.
+
+        """
         return self.registry.get_plugin_count()
 
 
@@ -768,19 +763,6 @@ def create_plugin_manager(
     auto_discover: bool = True,
     security_enabled: bool = True,
 ) -> PluginManager:
-    """Create and configure a plugin manager instance.
-
-    Args:
-    ----
-        container: Application dependency injection container
-        auto_discover: Automatically discover plugins on initialization
-        security_enabled: Enable security validation for plugins
-
-    Returns:
-    -------
-        Configured PluginManager instance
-
-    """
     return PluginManager(
         container=container,
         auto_discover=auto_discover,

@@ -5,31 +5,37 @@ This directory contains working implementations of FLEXT plugins that demonstrat
 ## Available Plugins
 
 ### Extractors
+
 - **CSV Extractor** (`csv_extractor_plugin.py`): Extracts data from CSV files with schema inference
 - **PostgreSQL Extractor** (`postgres_extractor_plugin.py`): Extracts data from PostgreSQL databases
 
 ### Transformers
+
 - **Data Filter** (`data_filter_transformer_plugin.py`): Filters data based on configurable conditions
 - **Data Aggregator** (`data_aggregator_transformer_plugin.py`): Aggregates data with grouping functions
 
 ### Loaders
+
 - **CSV Loader** (`csv_loader_plugin.py`): Loads data to CSV files with configurable format
 - **PostgreSQL Loader** (`postgres_loader_plugin.py`): Loads data to PostgreSQL databases
 
 ## Key Features
 
 ### Real Data Processing
+
 - Actual data extraction, transformation, and loading
 - No simulation or mocked operations
 - Production-ready implementations
 
 ### Plugin Architecture Integration
+
 - Built on FLEXT plugin base classes
 - Full metadata and configuration support
 - Health checks and error handling
 - Resource monitoring and cleanup
 
 ### Data Flow Management
+
 - Structured data packets between steps
 - Execution context and lineage tracking
 - Validation and quality metrics
@@ -86,6 +92,7 @@ python test_real_plugin_integration.py
 ```
 
 This test demonstrates:
+
 - CSV data extraction with schema inference
 - Data filtering with multiple conditions
 - Data aggregation by department
@@ -95,10 +102,12 @@ This test demonstrates:
 ## Dependencies
 
 Some plugins require additional dependencies:
+
 - PostgreSQL plugins: `asyncpg>=0.28.0`
 - Schema validation: `jsonschema` (optional)
 
 Install with:
+
 ```bash
 pip install asyncpg jsonschema
 ```
@@ -106,6 +115,7 @@ pip install asyncpg jsonschema
 ## Configuration Examples
 
 ### CSV Extractor
+
 ```python
 config = {
     "file_path": "/data/employees.csv",
@@ -118,6 +128,7 @@ config = {
 ```
 
 ### Data Filter
+
 ```python
 config = {
     "filter_rules": [
@@ -127,7 +138,7 @@ config = {
             "value": [25, 65]
         },
         {
-            "field": "department", 
+            "field": "department",
             "operator": "in",
             "value": ["Engineering", "Marketing"]
         }
@@ -137,6 +148,7 @@ config = {
 ```
 
 ### Data Aggregator
+
 ```python
 config = {
     "group_by": ["department", "location"],

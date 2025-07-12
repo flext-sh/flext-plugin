@@ -8,19 +8,24 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import hashlib
-import logging
+from collections.abc import Callable
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import aiofiles
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class WatchEventType(Enum):
@@ -32,7 +37,7 @@ class WatchEventType(Enum):
     MOVED = "moved"
 
 
-class WatchEvent(BaseModel):
+class WatchEvent(DomainBaseModel):
     """File system watch event."""
 
     event_type: WatchEventType = Field(description="Type of file system event")
@@ -40,25 +45,18 @@ class WatchEvent(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     old_path: Path | None = Field(default=None, description="Old path for move events")
 
-    class Config:
-        """Pydantic model configuration."""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class FileMetadata(BaseModel):
+class FileMetadata(DomainBaseModel):
     """Metadata for tracked files."""
 
-    path: Path
-    size: int
-    mtime: float
-    hash: str
-    last_checked: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    path: Path = Field(description="File path")
+    size: int = Field(description="File size in bytes")
+    mtime: float = Field(description="Last modification time")
+    hash: str = Field(description="File content hash")
 
-    class Config:
-        """Pydantic model configuration."""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class PluginWatcher:
@@ -68,17 +66,10 @@ class PluginWatcher:
     Uses polling-based approach for cross-platform compatibility.
     """
 
-    def __init__(
-        self,
-        watch_directories: list[Path],
-        poll_interval: float = 1.0,
-        patterns: list[str] | None = None,
-        ignore_patterns: list[str] | None = None,
-    ) -> None:
+    def __init__(self, watch_directories: list[Path], poll_interval: float = 1.0, patterns: list[str] | None = None, ignore_patterns: list[str] | None = None) -> None:
         """Initialize plugin watcher.
 
         Args:
-        ----
             watch_directories: Directories to watch
             poll_interval: Polling interval in seconds
             patterns: File patterns to watch (e.g., ["*.py"])
@@ -91,33 +82,34 @@ class PluginWatcher:
         self.ignore_patterns = ignore_patterns or ["__pycache__", "*.pyc", ".git"]
 
         self._watching = False
-        self._watch_task: asyncio.Task | None = None
+        self._watch_task: asyncio.Task[None] | None = None
         self._file_metadata: dict[Path, FileMetadata] = {}
-        self._event_handlers: list[Callable[[WatchEvent], asyncio.Future]] = []
+        self._event_handlers: list[Callable[[WatchEvent], asyncio.Future[None]]] = []
 
-    def add_handler(self, handler: Callable[[WatchEvent], asyncio.Future]) -> None:
-        """Add event handler.
-
+    def add_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
+        """Add an event handler for file system events.
+        
         Args:
-        ----
-            handler: Async function to handle watch events
+            handler: Async function to handle watch events.
 
         """
         self._event_handlers.append(handler)
 
-    def remove_handler(self, handler: Callable[[WatchEvent], asyncio.Future]) -> None:
-        """Remove event handler.
-
+    def remove_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
+        """Remove an event handler.
+        
         Args:
-        ----
-            handler: Handler to remove
+            handler: The handler function to remove.
 
         """
         if handler in self._event_handlers:
             self._event_handlers.remove(handler)
 
     async def start(self) -> None:
-        """Start watching for file changes."""
+        """Start the file system watcher.
+        
+        Performs initial scan and starts the watch loop.
+        """
         if self._watching:
             logger.warning("Watcher already started")
             return
@@ -130,14 +122,16 @@ class PluginWatcher:
         # Start watch loop
         self._watch_task = asyncio.create_task(self._watch_loop())
 
-        logger.info(
-            "Plugin watcher started",
+        logger.info("Plugin watcher started",
             directories=[str(d) for d in self.watch_directories],
             poll_interval=self.poll_interval,
         )
 
     async def stop(self) -> None:
-        """Stop watching for file changes."""
+        """Stop the file system watcher.
+        
+        Cancels the watch task and cleanup resources.
+        """
         self._watching = False
 
         if self._watch_task:
@@ -148,7 +142,10 @@ class PluginWatcher:
         logger.info("Plugin watcher stopped")
 
     async def _watch_loop(self) -> None:
-        """Main watch loop."""
+        """Main watch loop that polls for file changes.
+        
+        Continuously scans directories for changes at the specified interval.
+        """
         while self._watching:
             try:
                 await self._scan_directories()
@@ -158,7 +155,10 @@ class PluginWatcher:
                 await asyncio.sleep(self.poll_interval)
 
     async def _scan_directories(self) -> None:
-        """Scan watched directories for changes."""
+        """Scan all watch directories for changes.
+        
+        Detects created, modified, and deleted files.
+        """
         current_files = set()
 
         for directory in self.watch_directories:
@@ -181,15 +181,13 @@ class PluginWatcher:
             await self._handle_deleted(file_path)
 
     def _should_ignore(self, path: Path) -> bool:
-        """Check if path should be ignored.
-
+        """Check if a file should be ignored based on patterns.
+        
         Args:
-        ----
-            path: Path to check
-
+            path: The file path to check.
+            
         Returns:
-        -------
-            True if path should be ignored
+            True if the file should be ignored, False otherwise.
 
         """
         path_str = str(path)
@@ -197,11 +195,10 @@ class PluginWatcher:
         return any(pattern in path_str for pattern in self.ignore_patterns)
 
     async def _check_file(self, path: Path) -> None:
-        """Check file for changes.
-
+        """Check a file for changes.
+        
         Args:
-        ----
-            path: File path to check
+            path: The file path to check.
 
         """
         try:
@@ -218,11 +215,9 @@ class PluginWatcher:
             else:
                 # Check if file is modified
                 metadata = self._file_metadata[path]
-                if (
-                    metadata.size != size
+                if (metadata.size != size
                     or metadata.mtime != mtime
-                    or metadata.hash != file_hash
-                ):
+                    or metadata.hash != file_hash):
                     await self._handle_modified(path, size, mtime, file_hash)
 
         except FileNotFoundError:
@@ -233,15 +228,13 @@ class PluginWatcher:
             logger.exception(f"Error checking file {path}: {e}")
 
     async def _calculate_file_hash(self, path: Path) -> str:
-        """Calculate file hash.
-
+        """Calculate SHA256 hash of a file.
+        
         Args:
-        ----
-            path: File path
-
+            path: The file path to hash.
+            
         Returns:
-        -------
-            File hash as hex string
+            The SHA256 hash as a hex string.
 
         """
         hasher = hashlib.sha256()
@@ -256,21 +249,14 @@ class PluginWatcher:
 
         return hasher.hexdigest()
 
-    async def _handle_created(
-        self,
-        path: Path,
-        size: int,
-        mtime: float,
-        file_hash: str,
-    ) -> None:
-        """Handle file creation.
-
+    async def _handle_created(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
+        """Handle file creation event.
+        
         Args:
-        ----
-            path: Created file path
-            size: File size
-            mtime: Modification time
-            file_hash: File hash
+            path: The created file path.
+            size: File size in bytes.
+            mtime: Modification time.
+            file_hash: File content hash.
 
         """
         self._file_metadata[path] = FileMetadata(
@@ -287,21 +273,14 @@ class PluginWatcher:
 
         await self._dispatch_event(event)
 
-    async def _handle_modified(
-        self,
-        path: Path,
-        size: int,
-        mtime: float,
-        file_hash: str,
-    ) -> None:
-        """Handle file modification.
-
+    async def _handle_modified(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
+        """Handle file modification event.
+        
         Args:
-        ----
-            path: Modified file path
-            size: New file size
-            mtime: New modification time
-            file_hash: New file hash
+            path: The modified file path.
+            size: File size in bytes.
+            mtime: Modification time.
+            file_hash: File content hash.
 
         """
         self._file_metadata[path] = FileMetadata(
@@ -319,11 +298,10 @@ class PluginWatcher:
         await self._dispatch_event(event)
 
     async def _handle_deleted(self, path: Path) -> None:
-        """Handle file deletion.
-
+        """Handle file deletion event.
+        
         Args:
-        ----
-            path: Deleted file path
+            path: The deleted file path.
 
         """
         if path in self._file_metadata:
@@ -337,20 +315,17 @@ class PluginWatcher:
         await self._dispatch_event(event)
 
     async def _dispatch_event(self, event: WatchEvent) -> None:
-        """Dispatch event to handlers.
-
+        """Dispatch an event to all registered handlers.
+        
         Args:
-        ----
-            event: Watch event to dispatch
+            event: The watch event to dispatch.
 
         """
         logger.debug(f"Dispatching {event.event_type.value} event for {event.path}")
 
         # Run handlers concurrently
         if self._event_handlers:
-            tasks = [
-                asyncio.create_task(handler(event)) for handler in self._event_handlers
-            ]
+            tasks = [asyncio.create_task(handler(event)) for handler in self._event_handlers]
 
             # Wait for all handlers to complete
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -364,25 +339,22 @@ class PluginWatcher:
                     )
 
     def get_watched_files(self) -> list[Path]:
-        """Get list of currently watched files.
-
+        """Get list of all currently watched files.
+        
         Returns:
-        -------
-            List of watched file paths
+            List of file paths being watched.
 
         """
         return list(self._file_metadata.keys())
 
     def get_file_metadata(self, path: Path) -> FileMetadata | None:
-        """Get metadata for a specific file.
-
+        """Get metadata for a watched file.
+        
         Args:
-        ----
-            path: File path
-
+            path: The file path to get metadata for.
+            
         Returns:
-        -------
-            File metadata or None if not tracked
+            File metadata or None if not found.
 
         """
         return self._file_metadata.get(path)

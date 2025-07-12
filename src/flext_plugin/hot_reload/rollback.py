@@ -5,21 +5,26 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 
 from __future__ import annotations
 
-import logging
+import inspect
+import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+
+# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
     from flext_plugin.core.base import Plugin
     from flext_plugin.hot_reload.state_manager import StateManager
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-class RollbackPoint(BaseModel):
+class RollbackPoint(DomainBaseModel):
     """Represents a rollback point in plugin history."""
 
     rollback_id: str = Field(description="Unique rollback point identifier")
@@ -32,42 +37,43 @@ class RollbackPoint(BaseModel):
     plugin_version: str = Field(description="Plugin version at rollback point")
     state_snapshot_id: str = Field(description="Associated state snapshot ID")
     metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
+        default_factory=dict,
+        description="Additional metadata",
     )
 
 
-class RollbackHistory(BaseModel):
+class RollbackHistory(DomainBaseModel):
     """Rollback history for a plugin."""
 
     plugin_id: str = Field(description="Plugin identifier")
     rollback_points: list[RollbackPoint] = Field(
-        default_factory=list, description="List of rollback points"
+        default_factory=list,
+        description="List of rollback points",
     )
     max_history_size: int = Field(
-        default=10, description="Maximum number of rollback points to keep"
+        default=10,
+        description="Maximum number of rollback points to keep",
     )
 
     def add_rollback_point(self, point: RollbackPoint) -> None:
-        """Add a rollback point to history.
-
+        """Add a rollback point to the history.
+        
         Args:
-        ----
-            point: Rollback point to add
+            point: The rollback point to add.
 
         """
         self.rollback_points.append(point)
 
-        # Trim history if needed
+        # Trim history if needed:
         if len(self.rollback_points) > self.max_history_size:
             # Remove oldest points
             self.rollback_points = self.rollback_points[-self.max_history_size :]
 
     def get_latest_point(self) -> RollbackPoint | None:
-        """Get the most recent rollback point.
-
+        """Get the latest rollback point.
+        
         Returns:
-        -------
-            Latest rollback point or None
+            The latest rollback point or None if no points exist.
 
         """
         if not self.rollback_points:
@@ -75,15 +81,13 @@ class RollbackHistory(BaseModel):
         return self.rollback_points[-1]
 
     def get_point_by_id(self, rollback_id: str) -> RollbackPoint | None:
-        """Get rollback point by ID.
-
+        """Get a rollback point by its ID.
+        
         Args:
-        ----
-            rollback_id: Rollback point identifier
-
+            rollback_id: The rollback point ID to search for.
+            
         Returns:
-        -------
-            Rollback point or None
+            The rollback point or None if not found.
 
         """
         for point in self.rollback_points:
@@ -95,23 +99,10 @@ class RollbackHistory(BaseModel):
 class RollbackManager:
     """Manages rollback operations for plugin hot reload.
 
-    Provides rollback capabilities to recover from failed
-    reload operations or unwanted plugin updates.
+    Provides rollback capabilities to recover from failed reload operations or unwanted plugin updates.
     """
 
-    def __init__(
-        self,
-        state_manager: StateManager,
-        backup_directory: Path | None = None,
-    ) -> None:
-        """Initialize rollback manager.
-
-        Args:
-        ----
-            state_manager: State manager for snapshots
-            backup_directory: Directory for plugin backups
-
-        """
+    def __init__(self, state_manager: StateManager, backup_directory: Path | None = None) -> None:
         self.state_manager = state_manager
         self.backup_directory = backup_directory or Path.cwd() / ".plugin_backups"
 
@@ -121,29 +112,20 @@ class RollbackManager:
         self._histories: dict[str, RollbackHistory] = {}
         self._plugin_backups: dict[str, dict[str, Path]] = {}
 
-    async def create_rollback_point(
-        self,
-        plugin: Plugin,
-        description: str,
-        backup_code: bool = True,
-    ) -> str:
-        """Create a rollback point for a plugin.
-
+    async def create_rollback_point(self, plugin: Plugin, description: str, backup_code: bool = True) -> str:
+        """Create a new rollback point for a plugin.
+        
         Args:
-        ----
-            plugin: Plugin instance
-            description: Rollback point description
-            backup_code: Whether to backup plugin code
-
+            plugin: The plugin to create a rollback point for.
+            description: Description of the rollback point.
+            backup_code: Whether to backup the plugin code.
+            
         Returns:
-        -------
-            Rollback point ID
+            The ID of the created rollback point.
 
         """
-        import uuid
-
         plugin_id = plugin.metadata.id
-        rollback_id = str(uuid.uuid4())
+        rollback_id = str(uuid4())
 
         # Create state snapshot
         snapshot_id = await self.state_manager.create_snapshot(
@@ -151,7 +133,7 @@ class RollbackManager:
             plugin_ids=[plugin_id],
         )
 
-        # Backup plugin code if requested
+        # Backup plugin code if requested:
         if backup_code:
             backup_path = await self._backup_plugin_code(plugin, rollback_id)
             if plugin_id not in self._plugin_backups:
@@ -165,9 +147,7 @@ class RollbackManager:
             plugin_id=plugin_id,
             plugin_version=plugin.metadata.version,
             state_snapshot_id=snapshot_id,
-            metadata={
-                "code_backed_up": backup_code,
-            },
+            metadata={"code_backed_up": backup_code},
         )
 
         # Add to history
@@ -184,23 +164,19 @@ class RollbackManager:
 
         return rollback_id
 
-    async def rollback_plugin(
-        self,
-        plugin_id: str,
-        rollback_id: str | None = None,
-        restore_code: bool = True,
-    ) -> dict[str, Any]:
+    async def rollback_plugin(self, plugin_id: str, rollback_id: str | None = None, restore_code: bool = True) -> dict[str, Any]:
         """Rollback a plugin to a previous state.
-
+        
         Args:
-        ----
-            plugin_id: Plugin identifier
-            rollback_id: Specific rollback point (latest if None)
-            restore_code: Whether to restore plugin code
-
+            plugin_id: The ID of the plugin to rollback.
+            rollback_id: The specific rollback point ID, or None for latest.
+            restore_code: Whether to restore the plugin code.
+            
         Returns:
-        -------
-            Rollback result information
+            Dictionary with rollback operation results.
+            
+        Raises:
+            ValueError: If rollback point is not found.
 
         """
         # Get rollback history
@@ -231,9 +207,7 @@ class RollbackManager:
 
         # Restore state
         try:
-            restore_results = await self.state_manager.restore_snapshot(
-                point.state_snapshot_id
-            )
+            restore_results = await self.state_manager.restore_snapshot(point.state_snapshot_id)
             result["state_restored"] = restore_results.get(plugin_id, False)
         except Exception as e:
             logger.error(
@@ -242,7 +216,7 @@ class RollbackManager:
             )
             result["errors"].append(f"State restoration failed: {e!s}")
 
-        # Restore code if requested
+        # Restore code if requested:
         if restore_code and point.metadata.get("code_backed_up"):
             try:
                 await self._restore_plugin_code(plugin_id, point.rollback_id)
@@ -263,26 +237,20 @@ class RollbackManager:
 
         return result
 
-    async def _backup_plugin_code(
-        self,
-        plugin: Plugin,
-        rollback_id: str,
-    ) -> Path:
-        """Backup plugin code.
-
+    async def _backup_plugin_code(self, plugin: Plugin, rollback_id: str) -> Path:
+        """Backup plugin code to a file.
+        
         Args:
-        ----
-            plugin: Plugin instance
-            rollback_id: Rollback point identifier
-
+            plugin: The plugin to backup.
+            rollback_id: The rollback point ID.
+            
         Returns:
-        -------
-            Path to backup
+            Path to the backup file.
+            
+        Raises:
+            ValueError: If plugin source file cannot be determined.
 
         """
-        import inspect
-        import shutil
-
         plugin_module = inspect.getmodule(plugin.__class__)
         if not plugin_module or not hasattr(plugin_module, "__file__"):
             msg = "Cannot determine plugin module file"
@@ -310,26 +278,20 @@ class RollbackManager:
 
         return backup_file
 
-    async def _restore_plugin_code(
-        self,
-        plugin_id: str,
-        rollback_id: str,
-    ) -> None:
-        """Restore plugin code from backup.
-
+    async def _restore_plugin_code(self, plugin_id: str, rollback_id: str) -> None:
+        """Restore plugin code from a backup.
+        
         Args:
-        ----
-            plugin_id: Plugin identifier
-            rollback_id: Rollback point identifier
+            plugin_id: The plugin ID to restore.
+            rollback_id: The rollback point ID.
+            
+        Raises:
+            ValueError: If backup file is not found.
 
         """
-        import shutil
-
         # Get backup path
-        if (
-            plugin_id not in self._plugin_backups
-            or rollback_id not in self._plugin_backups[plugin_id]
-        ):
+        if (plugin_id not in self._plugin_backups
+            or rollback_id not in self._plugin_backups[plugin_id]):
             msg = f"No code backup found for rollback {rollback_id}"
             raise ValueError(msg)
 
@@ -352,36 +314,26 @@ class RollbackManager:
             target=str(target_file),
         )
 
-    def get_rollback_history(
-        self,
-        plugin_id: str,
-    ) -> RollbackHistory | None:
-        """Get rollback history for a plugin.
-
+    def get_rollback_history(self, plugin_id: str) -> RollbackHistory | None:
+        """Get the rollback history for a plugin.
+        
         Args:
-        ----
-            plugin_id: Plugin identifier
-
+            plugin_id: The plugin ID to get history for.
+            
         Returns:
-        -------
-            Rollback history or None
+            The rollback history or None if not found.
 
         """
         return self._histories.get(plugin_id)
 
-    def list_rollback_points(
-        self,
-        plugin_id: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """List available rollback points.
-
+    def list_rollback_points(self, plugin_id: str | None = None) -> list[dict[str, Any]]:
+        """List all rollback points.
+        
         Args:
-        ----
-            plugin_id: Filter by plugin ID (all if None)
-
+            plugin_id: Optional plugin ID to filter by.
+            
         Returns:
-        -------
-            List of rollback point summaries
+            List of rollback point information dictionaries.
 
         """
         points = []
@@ -390,7 +342,7 @@ class RollbackManager:
             if plugin_id and pid != plugin_id:
                 continue
 
-            points.extend(
+            points.extend([
                 {
                     "rollback_id": point.rollback_id,
                     "plugin_id": point.plugin_id,
@@ -400,23 +352,18 @@ class RollbackManager:
                     "has_code_backup": point.metadata.get("code_backed_up", False),
                 }
                 for point in history.rollback_points
-            )
+            ])
 
         return points
 
-    def cleanup_old_backups(
-        self,
-        days_to_keep: int = 30,
-    ) -> int:
+    def cleanup_old_backups(self, days_to_keep: int = 30) -> int:
         """Clean up old backup files.
-
+        
         Args:
-        ----
-            days_to_keep: Number of days to keep backups
-
+            days_to_keep: Number of days to keep backup files.
+            
         Returns:
-        -------
-            Number of files deleted
+            Number of files deleted.
 
         """
         import time
