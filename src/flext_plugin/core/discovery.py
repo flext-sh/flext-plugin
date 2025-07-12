@@ -117,15 +117,14 @@ class PluginDiscovery:
         await self._discover_file_system()
 
         # Filter out blacklisted plugins
-        filtered = {}
-        for plugin_id, plugin in self._discovered_plugins.items():
-            if not self.is_blacklisted(plugin_id):
-                filtered[plugin_id] = plugin
+        filtered = {plugin_id: plugin for plugin_id, plugin in self._discovered_plugins.items() if not self.is_blacklisted(plugin_id)}
 
         logger.info("Discovered %d plugins", len(filtered))
         return filtered
 
-    async def discover_by_type(self, plugin_type: PluginType) -> dict[str, DiscoveredPlugin]:
+    async def discover_by_type(
+        self, plugin_type: PluginType,
+    ) -> dict[str, DiscoveredPlugin]:
         """Discover plugins by type.
 
         Args:
@@ -171,7 +170,12 @@ class PluginDiscovery:
                                     metadata.id,
                                 )
 
-                    except (ImportError, AttributeError, ModuleNotFoundError, ValueError) as e:
+                    except (
+                        ImportError,
+                        AttributeError,
+                        ModuleNotFoundError,
+                        ValueError,
+                    ) as e:
                         logger.warning("Failed to load entry point %s: %s", ep.name, e)
 
             except (ImportError, RuntimeError, ValueError) as e:
@@ -203,7 +207,9 @@ class PluginDiscovery:
             try:
                 # Convert file path to module name
                 relative_path = py_file.relative_to(directory.parent)
-                module_name = str(relative_path).replace(os.sep, ".")[:-3]  # Remove .py extension
+                module_name = str(relative_path).replace(os.sep, ".")[
+                    :-3
+                ]  # Remove .py extension
 
                 # Import module
                 spec = importlib.util.spec_from_file_location(module_name, py_file)
@@ -228,7 +234,9 @@ class PluginDiscovery:
                                     source="file",
                                 )
                                 self._discovered_plugins[metadata.id] = discovered
-                                logger.debug("Discovered plugin from file: %s", metadata.id)
+                                logger.debug(
+                                    "Discovered plugin from file: %s", metadata.id,
+                                )
 
             except (OSError, ImportError, AttributeError, ValueError, SyntaxError) as e:
                 logger.warning("Failed to scan file %s: %s", py_file, e)
@@ -250,13 +258,17 @@ class PluginDiscovery:
 
             # Check if it has metadata:
             if not hasattr(plugin_class, "METADATA"):
-                logger.warning("Plugin class %s missing METADATA", plugin_class.__name__)
+                logger.warning(
+                    "Plugin class %s missing METADATA", plugin_class.__name__,
+                )
                 return False
 
             # Check if metadata is valid:
             metadata = plugin_class.METADATA
             if not isinstance(metadata, PluginMetadata):
-                logger.warning("Plugin class %s has invalid METADATA", plugin_class.__name__)
+                logger.warning(
+                    "Plugin class %s has invalid METADATA", plugin_class.__name__,
+                )
                 return False
 
             # Check required methods
@@ -276,7 +288,9 @@ class PluginDiscovery:
             logger.warning("Failed to validate plugin class %s: %s", plugin_class, e)
             return False
 
-    def register_plugin(self, plugin_class: type[Plugin], override: bool = False) -> None:
+    def register_plugin(
+        self, plugin_class: type[Plugin], override: bool = False,
+    ) -> None:
         """Manually register a plugin class.
 
         Args:

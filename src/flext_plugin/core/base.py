@@ -16,18 +16,18 @@ from flext_plugin.domain.entities import (
     PluginLifecycle,
     PluginStatus,
 )
-from flext_plugin.types import (
-    ConfigurationDict,
-    PluginContext,
-    PluginData,
-    PluginResult,
-)
 
 if TYPE_CHECKING:
     import jsonschema  # type: ignore
     import psutil  # type: ignore
 
     from flext_plugin.domain.value_objects import PluginMetadata
+    from flext_plugin.types import (
+        ConfigurationDict,
+        PluginContext,
+        PluginData,
+        PluginResult,
+    )
 else:
     try:
         import jsonschema
@@ -183,7 +183,9 @@ class Plugin(ABC):
         ...
 
     @abstractmethod
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute plugin with input data and context.
 
         Args:
@@ -227,7 +229,9 @@ class Plugin(ABC):
                 except jsonschema.SchemaError as e:
                     errors.append(f"Invalid configuration schema: {e.message}")
             else:
-                errors.append("jsonschema not available - cannot validate configuration")
+                errors.append(
+                    "jsonschema not available - cannot validate configuration",
+                )
 
         return errors
 
@@ -290,7 +294,9 @@ class BaseExtractorPlugin(Plugin):
         """
         ...
 
-    async def execute(self, _input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, _input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute extractor plugin by extracting from source.
 
         Args:
@@ -333,7 +339,9 @@ class BaseLoaderPlugin(Plugin):
         """
         ...
 
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute loader plugin by loading data to destination.
 
         Args:
@@ -356,7 +364,9 @@ class BaseTransformerPlugin(Plugin):
     """
 
     @abstractmethod
-    async def transform(self, data: PluginData, transform_config: ConfigurationDict) -> PluginResult:
+    async def transform(
+        self, data: PluginData, transform_config: ConfigurationDict,
+    ) -> PluginResult:
         """Transform input data according to configuration.
 
         Args:
@@ -372,7 +382,9 @@ class BaseTransformerPlugin(Plugin):
         """
         ...
 
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute transformer plugin by transforming input data.
 
         Args:

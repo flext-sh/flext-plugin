@@ -5,9 +5,8 @@ from __future__ import annotations
 import asyncio
 import importlib
 import sys
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -15,6 +14,9 @@ from watchdog.observers import Observer
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class PluginFileHandler(FileSystemEventHandler):

@@ -165,7 +165,9 @@ class PluginExecutionResult(DomainBaseModel):
         description="CPU time consumed in milliseconds",
     )
 
-    def mark_completed(self, result: PluginResult = None, error: str | None = None) -> None:
+    def mark_completed(
+        self, result: PluginResult = None, error: str | None = None,
+    ) -> None:
         """Mark the plugin execution as completed with result or error.
 
         Args:
@@ -190,7 +192,14 @@ class PluginExecutionResult(DomainBaseModel):
 class PluginError(Exception):
     """Base exception for plugin system errors."""
 
-    def __init__(self, message: str, plugin_id: str | None = None, error_code: str | None = None, details: dict[str, Any] | None = None, cause: Exception | None = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_id: str | None = None,
+        error_code: str | None = None,
+        details: dict[str, Any] | None = None,
+        cause: Exception | None = None,
+    ) -> None:
         """Initialize plugin error with message and optional context."""
         super().__init__(message)
         self.message = message
@@ -209,7 +218,8 @@ class PluginError(Exception):
             error_code, details, timestamp, traceback, and cause.
 
         """
-        return {"message": self.message,
+        return {
+            "message": self.message,
             "plugin_id": self.plugin_id,
             "error_code": self.error_code,
             "details": self.details,
@@ -222,7 +232,13 @@ class PluginError(Exception):
 class PluginValidationError(PluginError):
     """Exception raised when plugin validation fails."""
 
-    def __init__(self, message: str, plugin_id: str, validation_failures: list[str], **kwargs: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_id: str,
+        validation_failures: list[str],
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Initialize validation error with specific failure details."""
         super().__init__(message, plugin_id, "VALIDATION_FAILED", **kwargs)
         self.validation_failures = validation_failures
@@ -240,7 +256,13 @@ class PluginLoadError(PluginError):
 class PluginExecutionError(PluginError):
     """Exception raised when plugin execution fails."""
 
-    def __init__(self, message: str, plugin_id: str, execution_id: str | None = None, **kwargs: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_id: str,
+        execution_id: str | None = None,
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Initialize execution error with execution context."""
         super().__init__(message, plugin_id, "EXECUTION_FAILED", **kwargs)
         self.execution_id = execution_id
@@ -251,7 +273,13 @@ class PluginExecutionError(PluginError):
 class PluginDependencyError(PluginError):
     """Exception raised when plugin dependency resolution fails."""
 
-    def __init__(self, message: str, plugin_id: str, missing_dependencies: list[str], **kwargs: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_id: str,
+        missing_dependencies: list[str],
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Initialize dependency error with missing dependencies list."""
         super().__init__(message, plugin_id, "DEPENDENCY_FAILED", **kwargs)
         self.missing_dependencies = missing_dependencies
@@ -261,7 +289,13 @@ class PluginDependencyError(PluginError):
 class PluginSecurityError(PluginError):
     """Exception raised when plugin security validation fails."""
 
-    def __init__(self, message: str, plugin_id: str, security_violations: list[str], **kwargs: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_id: str,
+        security_violations: list[str],
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Initialize security error with violations list."""
         super().__init__(message, plugin_id, "SECURITY_VIOLATION", **kwargs)
         self.security_violations = security_violations

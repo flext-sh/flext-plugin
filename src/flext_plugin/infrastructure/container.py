@@ -23,7 +23,7 @@ from flext_plugin.infrastructure.ports import (
 )
 
 if TYPE_CHECKING:
-            from flext_plugin.domain.ports import (
+    from flext_plugin.domain.ports import (
         PluginDiscoveryService,
         PluginExecutionService,
         PluginLifecycleService,

@@ -44,6 +44,7 @@ except ImportError:
     class ServiceError(Exception):
         pass
 
+
 # Use centralized logger from flext-observability - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
 
@@ -187,7 +188,9 @@ class PluginManager:
                 if discover_result.is_ok():
                     plugins_discovered = discover_result.data.plugins_affected or []
                 else:
-                    errors.append(f"Auto-discovery failed: {discover_result.error.message}")
+                    errors.append(
+                        f"Auto-discovery failed: {discover_result.error.message}",
+                    )
 
             self._is_initialized = True
             execution_time_ms = (time.time() - start_time) * 1000
@@ -232,7 +235,8 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def discover_and_load_plugins(
-        self, plugin_types: Sequence[PluginType] | None = None,
+        self,
+        plugin_types: Sequence[PluginType] | None = None,
     ) -> ServiceResult[PluginManagerResult]:
         """Discover and load plugins, optionally filtering by plugin types.
 
@@ -278,8 +282,10 @@ class PluginManager:
                                 plugins_loaded.append(plugin.METADATA.id)
 
                             # Store default configuration
-                            self._configurations[plugin.METADATA.id] = PluginConfiguration(
-                                plugin_id=plugin.METADATA.id,
+                            self._configurations[plugin.METADATA.id] = (
+                                PluginConfiguration(
+                                    plugin_id=plugin.METADATA.id,
+                                )
                             )
 
                             self.logger.debug(
@@ -445,7 +451,9 @@ class PluginManager:
             return ServiceResult.fail(ServiceError("SYSTEM_ERROR", error_msg))
 
     async def configure_plugin(
-        self, plugin_id: str, configuration: PluginConfiguration,
+        self,
+        plugin_id: str,
+        configuration: PluginConfiguration,
     ) -> ServiceResult[None]:
         """Configure a plugin with the provided configuration settings.
 

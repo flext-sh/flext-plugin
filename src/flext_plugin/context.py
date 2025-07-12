@@ -188,7 +188,9 @@ class PluginContext(DomainBaseModel):
     )
     tags: list[str] = Field(default_factory=list, description="Context tags")
 
-    def get_service(self, service_name: str, service_type: type[T] | None = None) -> T | None:
+    def get_service(
+        self, service_name: str, service_type: type[T] | None = None,
+    ) -> T | None:
         """Get service from context by name and optional type."""
         service = self.services.get(service_name)
 
@@ -201,7 +203,9 @@ class PluginContext(DomainBaseModel):
 
         return service  # type: ignore
 
-    def get_dependency(self, dependency_name: str, dependency_type: type[T] | None = None) -> T | None:
+    def get_dependency(
+        self, dependency_name: str, dependency_type: type[T] | None = None,
+    ) -> T | None:
         """Get dependency from context by name and optional type."""
         dependency = self.dependencies.get(dependency_name)
 
@@ -255,14 +259,16 @@ class PluginContext(DomainBaseModel):
 
     def to_execution_context(self) -> PluginExecutionContext:
         """Convert to execution context."""
-        return PluginExecutionContext(execution_id=self.execution_id,
+        return PluginExecutionContext(
+            execution_id=self.execution_id,
             plugin_id=self.plugin_id,
             user_id=self.user_id or "",
             session_id=self.session_id or "",
             trace_id=self.trace_id or "",
             environment=self.environment,
             request_metadata=self.metadata,
-            resource_limits={"max_memory_mb": self.max_memory_mb,
+            resource_limits={
+                "max_memory_mb": self.max_memory_mb,
                 "max_cpu_percent": self.max_cpu_percent,
                 "max_execution_time_seconds": self.max_execution_time_seconds,
             },
@@ -290,7 +296,9 @@ class PluginContextBuilder:
         self._data["session_id"] = session_id
         return self
 
-    def with_request(self, request_id: str, trace_id: str | None = None) -> PluginContextBuilder:
+    def with_request(
+        self, request_id: str, trace_id: str | None = None,
+    ) -> PluginContextBuilder:
         """Add request and trace IDs to context."""
         self._data["request_id"] = request_id
         if trace_id:
@@ -302,7 +310,9 @@ class PluginContextBuilder:
         self._data["environment"] = environment
         return self
 
-    def with_pipeline(self, pipeline_id: str, pipeline_run_id: str | None = None) -> PluginContextBuilder:
+    def with_pipeline(
+        self, pipeline_id: str, pipeline_run_id: str | None = None,
+    ) -> PluginContextBuilder:
         """Add pipeline information to context."""
         self._data["pipeline_id"] = pipeline_id
         if pipeline_run_id:

@@ -41,7 +41,9 @@ if TYPE_CHECKING:
 class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
     """File system-based plugin discovery implementation."""
 
-    async def discover_plugins(self, search_paths: list[str]) -> ServiceResult[list[PluginMetadata]]:
+    async def discover_plugins(
+        self, search_paths: list[str],
+    ) -> ServiceResult[list[PluginMetadata]]:
         """Discover plugins in the specified search paths.
 
         Args:
@@ -49,6 +51,7 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
 
         Returns:
             ServiceResult containing list of discovered plugin metadata.
+
         """
         try:
             discovered_plugins = []
@@ -82,7 +85,9 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
         except (OSError, RuntimeError, ValueError) as e:
             return ServiceResult.fail(f"Plugin discovery failed: {e}")
 
-    async def validate_plugin_metadata( self, metadata: PluginMetadata ) -> ServiceResult[bool]:
+    async def validate_plugin_metadata(
+        self, metadata: PluginMetadata,
+    ) -> ServiceResult[bool]:
         """Validate plugin metadata structure and requirements."""
         try:
             # Check required fields
@@ -198,7 +203,9 @@ class PydanticPluginValidationPort(PluginValidationService):
         except (ValueError, TypeError, AttributeError, RuntimeError) as e:
             return ServiceResult.fail(f"Plugin validation failed: {e}")
 
-    async def validate_configuration( self, plugin: PluginInstance, config: dict ) -> ServiceResult[bool]:
+    async def validate_configuration(
+        self, plugin: PluginInstance, config: dict,
+    ) -> ServiceResult[bool]:
         """Validate plugin configuration against schema."""
         try:
             # Validate against schema if available:
@@ -214,7 +221,9 @@ class PydanticPluginValidationPort(PluginValidationService):
         except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Configuration validation failed: {e}")
 
-    async def validate_dependencies( self, plugin: PluginInstance ) -> ServiceResult[bool]:
+    async def validate_dependencies(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[bool]:
         """Validate plugin dependencies are available."""
         try:
             for dependency in plugin.metadata.dependencies:
@@ -259,7 +268,9 @@ class PydanticPluginValidationPort(PluginValidationService):
 class LocalPluginLifecyclePort(PluginLifecycleService):
     """Local plugin lifecycle management implementation."""
 
-    async def register_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def register_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Register plugin in lifecycle system."""
         try:
             plugin.transition_to(PluginLifecycle.REGISTERED)
@@ -267,7 +278,9 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
         except (ValueError, AttributeError, RuntimeError) as e:
             return ServiceResult.fail(f"Plugin registration failed: {e}")
 
-    async def load_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def load_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Load plugin module into memory."""
         try:
             # Load plugin module
@@ -282,7 +295,9 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             plugin.transition_to(PluginLifecycle.ERROR)
             return ServiceResult.fail(f"Plugin loading failed: {e}")
 
-    async def initialize_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def initialize_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Initialize plugin with configuration."""
         try:
             # Initialize plugin with configuration
@@ -294,7 +309,9 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             plugin.transition_to(PluginLifecycle.ERROR)
             return ServiceResult.fail(f"Plugin initialization failed: {e}")
 
-    async def activate_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def activate_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Activate plugin for execution."""
         try:
             plugin.transition_to(PluginLifecycle.ACTIVE)
@@ -305,7 +322,9 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             plugin.transition_to(PluginLifecycle.ERROR)
             return ServiceResult.fail(f"Plugin activation failed: {e}")
 
-    async def suspend_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def suspend_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Suspend plugin execution."""
         try:
             plugin.transition_to(PluginLifecycle.SUSPENDED)
@@ -313,7 +332,9 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
         except (ValueError, AttributeError, RuntimeError) as e:
             return ServiceResult.fail(f"Plugin suspension failed: {e}")
 
-    async def unload_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def unload_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Unload plugin from memory."""
         try:
             plugin.transition_to(PluginLifecycle.UNLOADING)
@@ -340,7 +361,12 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
 class LocalPluginExecutionPort(PluginExecutionService):
     """Local plugin execution implementation."""
 
-    async def execute_plugin( self, plugin: PluginInstance, input_data: dict, execution_context: dict | None = None ) -> ServiceResult[PluginExecution]:
+    async def execute_plugin(
+        self,
+        plugin: PluginInstance,
+        input_data: dict,
+        execution_context: dict | None = None,
+    ) -> ServiceResult[PluginExecution]:
         """Execute plugin with input data and context."""
         try:
             # Create execution record
@@ -366,7 +392,9 @@ class LocalPluginExecutionPort(PluginExecutionService):
         except (ValueError, RuntimeError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Plugin execution failed: {e}")
 
-    async def get_execution_status( self, execution_id: str ) -> ServiceResult[PluginExecution]:
+    async def get_execution_status(
+        self, execution_id: str,
+    ) -> ServiceResult[PluginExecution]:
         """Get execution status by ID."""
         try:
             # In real implementation, would query repository
@@ -395,7 +423,9 @@ class LocalPluginExecutionPort(PluginExecutionService):
 class LocalPluginRegistryPort(PluginRegistryService):
     """Local plugin registry implementation."""
 
-    async def register_registry( self, registry: PluginRegistry ) -> ServiceResult[PluginRegistry]:
+    async def register_registry(
+        self, registry: PluginRegistry,
+    ) -> ServiceResult[PluginRegistry]:
         """Register plugin registry in system."""
         try:
             # Validate registry configuration
@@ -416,7 +446,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
             registry.record_sync(success=False)
             return ServiceResult.fail(f"Registry sync failed: {e}")
 
-    async def search_plugins( self, registry: PluginRegistry, query: str ) -> ServiceResult[list[PluginMetadata]]:
+    async def search_plugins(
+        self, registry: PluginRegistry, query: str,
+    ) -> ServiceResult[list[PluginMetadata]]:
         """Search plugins in registry by query."""
         try:
             # In real implementation, would search remote registry
@@ -424,7 +456,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
         except (OSError, ValueError, ConnectionError) as e:
             return ServiceResult.fail(f"Plugin search failed: {e}")
 
-    async def download_plugin( self, registry: PluginRegistry, plugin_id: str ) -> ServiceResult[str]:
+    async def download_plugin(
+        self, registry: PluginRegistry, plugin_id: str,
+    ) -> ServiceResult[str]:
         """Download plugin from registry."""
         try:
             # In real implementation, would download plugin
@@ -432,7 +466,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
         except (OSError, ValueError, ConnectionError, RuntimeError) as e:
             return ServiceResult.fail(f"Plugin download failed: {e}")
 
-    async def verify_plugin_signature( self, registry: PluginRegistry, plugin_path: str ) -> ServiceResult[bool]:
+    async def verify_plugin_signature(
+        self, registry: PluginRegistry, plugin_path: str,
+    ) -> ServiceResult[bool]:
         """Verify plugin signature for security."""
         try:
             # In real implementation, would verify signature
@@ -481,7 +517,9 @@ class FileSystemHotReloadPort(PluginHotReloadService):
         except (RuntimeError, ValueError) as e:
             return ServiceResult.fail(f"Failed to stop watching: {e}")
 
-    async def reload_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+    async def reload_plugin(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[PluginInstance]:
         """Reload plugin with state preservation."""
         try:
             # Backup state
@@ -524,7 +562,9 @@ class FileSystemHotReloadPort(PluginHotReloadService):
         except (ValueError, AttributeError, TypeError) as e:
             return ServiceResult.fail(f"State backup failed: {e}")
 
-    async def restore_plugin_state( self, plugin: PluginInstance, state: dict ) -> ServiceResult[bool]:
+    async def restore_plugin_state(
+        self, plugin: PluginInstance, state: dict,
+    ) -> ServiceResult[bool]:
         """Restore plugin state after reload."""
         try:
             # Restore configuration
@@ -568,7 +608,9 @@ class SandboxPluginSecurityPort(PluginSecurityService):
         except (ValueError, AttributeError, RuntimeError) as e:
             return ServiceResult.fail(f"Sandbox creation failed: {e}")
 
-    async def enforce_resource_limits( self, plugin: PluginInstance ) -> ServiceResult[bool]:
+    async def enforce_resource_limits(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[bool]:
         """Enforce resource limits on plugin execution."""
         try:
             # In real implementation, would use cgroups or similar
@@ -586,7 +628,9 @@ class SandboxPluginSecurityPort(PluginSecurityService):
         except (ValueError, AttributeError, ImportError) as e:
             return ServiceResult.fail(f"Import validation failed: {e}")
 
-    async def scan_for_vulnerabilities( self, plugin: PluginInstance ) -> ServiceResult[list[dict]]:
+    async def scan_for_vulnerabilities(
+        self, plugin: PluginInstance,
+    ) -> ServiceResult[list[dict]]:
         """Scan plugin for security vulnerabilities."""
         try:
             # In real implementation, would use security scanner

@@ -56,7 +56,9 @@ class PluginSettings(BaseSettings):
         le=60,
         description="Plugin discovery timeout in seconds",
     )
-    discovery_pattern: str = Field("*.py", description="File pattern for plugin discovery")
+    discovery_pattern: str = Field(
+        "*.py", description="File pattern for plugin discovery",
+    )
     exclude_patterns: list[str] = Field(
         default_factory=lambda: ["__pycache__", "*.pyc", ".git", ".pytest_cache"],
         description="Patterns to exclude from discovery",
@@ -76,10 +78,14 @@ class PluginSettings(BaseSettings):
         description="Maximum concurrent plugin loads",
     )
     enable_lazy_loading: bool = Field(True, description="Enable lazy plugin loading")
-    cache_loaded_plugins: bool = Field(True, description="Cache loaded plugins in memory")
+    cache_loaded_plugins: bool = Field(
+        True, description="Cache loaded plugins in memory",
+    )
 
     # Hot Reload Configuration
-    hot_reload_enabled: bool = Field(False, description="Enable hot reload functionality")
+    hot_reload_enabled: bool = Field(
+        False, description="Enable hot reload functionality",
+    )
     hot_reload_poll_interval: int = Field(
         1000,
         ge=100,

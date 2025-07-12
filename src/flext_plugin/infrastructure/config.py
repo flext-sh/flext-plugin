@@ -189,7 +189,8 @@ class PluginConfig(BaseSettings):
             Dictionary containing security configuration settings.
 
         """
-        return {"sandbox_enabled": self.plugin_sandbox_enabled,
+        return {
+            "sandbox_enabled": self.plugin_sandbox_enabled,
             "max_memory_mb": self.plugin_max_memory_mb,
             "max_cpu_percent": self.plugin_max_cpu_percent,
             "execution_timeout": self.plugin_execution_timeout,
@@ -205,7 +206,8 @@ class PluginConfig(BaseSettings):
             Dictionary containing registry configuration settings.
 
         """
-        return {"url": self.plugin_registry_url,
+        return {
+            "url": self.plugin_registry_url,
             "api_key": self.plugin_registry_api_key,
             "verify_signatures": self.plugin_verify_signatures,
             "timeout": self.registry_timeout,
@@ -304,7 +306,8 @@ class PluginConfig(BaseSettings):
             Dictionary of environment variables and their values.
 
         """
-        return {"FLEXT_PLUGIN_DIR": str(self.plugin_directory_path),
+        return {
+            "FLEXT_PLUGIN_DIR": str(self.plugin_directory_path),
             "FLEXT_PLUGIN_CACHE": str(self.plugin_cache_path),
             "FLEXT_PLUGIN_CONFIG": str(self.plugin_config_path),
             "FLEXT_PLUGIN_LOG": str(self.plugin_log_path),

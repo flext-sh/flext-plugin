@@ -35,7 +35,13 @@ logger = get_logger(__name__)
 class LoadedPlugin:
     """Container for loaded plugin instance and metadata."""
 
-    def __init__(self, plugin_id: str, instance: Plugin, metadata: PluginMetadata, config: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        plugin_id: str,
+        instance: Plugin,
+        metadata: PluginMetadata,
+        config: dict[str, Any],
+    ) -> None:
         """Initialize loaded plugin container."""
         self.plugin_id = plugin_id
         self.instance = instance
@@ -78,7 +84,12 @@ class PluginLoader:
     - Instance creation and initialization
     """
 
-    def __init__(self, validator: PluginValidator | None = None, security_enabled: bool = True, max_load_time: float = 30.0) -> None:
+    def __init__(
+        self,
+        validator: PluginValidator | None = None,
+        security_enabled: bool = True,
+        max_load_time: float = 30.0,
+    ) -> None:
         """Initialize plugin loader with configuration."""
         self.validator = validator or PluginValidator()
         self.security_enabled = security_enabled
@@ -86,7 +97,12 @@ class PluginLoader:
         self._loaded_plugins: dict[str, LoadedPlugin] = {}
         self._loading_plugins: set[str] = set()
 
-    async def load_plugin(self, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None = None, initialize: bool = True) -> LoadedPlugin:
+    async def load_plugin(
+        self,
+        discovered_plugin: DiscoveredPlugin,
+        config: dict[str, Any] | None = None,
+        initialize: bool = True,
+    ) -> LoadedPlugin:
         """Load a discovered plugin.
 
         Args:
@@ -141,7 +157,12 @@ class PluginLoader:
         finally:
             self._loading_plugins.discard(plugin_id)
 
-    async def _load_plugin_internal(self, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None, initialize: bool) -> LoadedPlugin:
+    async def _load_plugin_internal(
+        self,
+        discovered_plugin: DiscoveredPlugin,
+        config: dict[str, Any] | None,
+        initialize: bool,
+    ) -> LoadedPlugin:
         """Internal plugin loading implementation.
 
         Args:
@@ -259,11 +280,13 @@ class PluginLoader:
         # Check Meltano plugin dependencies
         if metadata.meltano_dependencies:
             # Check if required plugins are loaded:
-            missing_deps.extend([
-                f"meltano:{dep_id}"
-                for dep_id in metadata.meltano_dependencies
-                if dep_id not in self._loaded_plugins
-            ])
+            missing_deps.extend(
+                [
+                    f"meltano:{dep_id}"
+                    for dep_id in metadata.meltano_dependencies
+                    if dep_id not in self._loaded_plugins
+                ],
+            )
 
         return missing_deps
 
@@ -305,7 +328,12 @@ class PluginLoader:
         del self._loaded_plugins[plugin_id]
         logger.info("Unloaded plugin: %s", plugin_id)
 
-    async def reload_plugin(self, plugin_id: str, discovered_plugin: DiscoveredPlugin, config: dict[str, Any] | None = None) -> LoadedPlugin:
+    async def reload_plugin(
+        self,
+        plugin_id: str,
+        discovered_plugin: DiscoveredPlugin,
+        config: dict[str, Any] | None = None,
+    ) -> LoadedPlugin:
         """Reload a plugin with new configuration.
 
         Args:

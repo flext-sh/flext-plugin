@@ -65,7 +65,9 @@ class StateManager:
     Handles state extraction, preservation, and restoration during plugin reload operations.
     """
 
-    def __init__(self, state_directory: Path | None = None, enable_persistence: bool = True) -> None:
+    def __init__(
+        self, state_directory: Path | None = None, enable_persistence: bool = True,
+    ) -> None:
         """Initialize state manager with directory and persistence settings."""
         self.state_directory = state_directory or Path.cwd() / ".plugin_states"
         self.enable_persistence = enable_persistence
@@ -76,7 +78,9 @@ class StateManager:
         self._plugin_states: dict[str, PluginState] = {}
         self._snapshots: dict[str, StateSnapshot] = {}
 
-    async def save_plugin_state(self, plugin: Plugin, force: bool = False) -> PluginState:
+    async def save_plugin_state(
+        self, plugin: Plugin, force: bool = False,
+    ) -> PluginState:
         """Save plugin state for hot reload."""
         plugin_id = plugin.metadata.id
 
@@ -91,7 +95,12 @@ class StateManager:
             try:
                 state_data = await plugin.get_state()
             except Exception as e:
-                logger.error("Error extracting state from plugin %s: %s", plugin_id, e, exc_info=True)
+                logger.error(
+                    "Error extracting state from plugin %s: %s",
+                    plugin_id,
+                    e,
+                    exc_info=True,
+                )
                 if not force:
                     raise
 
@@ -113,11 +122,15 @@ class StateManager:
         if self.enable_persistence:
             await self._persist_state(plugin_id, state)
 
-        logger.info("Saved state for plugin %s", plugin_id, state_size=len(str(state_data)))
+        logger.info(
+            "Saved state for plugin %s", plugin_id, state_size=len(str(state_data)),
+        )
 
         return state
 
-    async def restore_plugin_state(self, plugin: Plugin, state: PluginState | None = None) -> bool:
+    async def restore_plugin_state(
+        self, plugin: Plugin, state: PluginState | None = None,
+    ) -> bool:
         """Restore plugin state from saved state."""
         plugin_id = plugin.metadata.id
 
@@ -139,13 +152,21 @@ class StateManager:
         # Restore state
         try:
             await plugin.set_state(state.state_data)
-            logger.info("Restored state for plugin %s", plugin_id, state_version=state.plugin_version)
+            logger.info(
+                "Restored state for plugin %s",
+                plugin_id,
+                state_version=state.plugin_version,
+            )
             return True
         except Exception as e:
-            logger.error("Error restoring state for plugin %s: %s", plugin_id, e, exc_info=True)
+            logger.error(
+                "Error restoring state for plugin %s: %s", plugin_id, e, exc_info=True,
+            )
             return False
 
-    async def create_snapshot(self, description: str = "", plugin_ids: list[str] | None = None) -> str:
+    async def create_snapshot(
+        self, description: str = "", plugin_ids: list[str] | None = None,
+    ) -> str:
         """Create a snapshot of current plugin states."""
         snapshot_id = str(uuid4())
 
@@ -180,7 +201,9 @@ class StateManager:
 
         return snapshot_id
 
-    async def restore_snapshot(self, snapshot_id: str, plugins: dict[str, Plugin] | None = None) -> dict[str, bool]:
+    async def restore_snapshot(
+        self, snapshot_id: str, plugins: dict[str, Plugin] | None = None,
+    ) -> dict[str, bool]:
         """Restore from a snapshot."""
         snapshot = self._snapshots.get(snapshot_id)
         if snapshot is None and self.enable_persistence:
@@ -224,7 +247,9 @@ class StateManager:
                 await f.write(json.dumps(state_dict, indent=2, default=str))
 
         except Exception as e:
-            logger.error("Error persisting state for %s: %s", plugin_id, e, exc_info=True)
+            logger.error(
+                "Error persisting state for %s: %s", plugin_id, e, exc_info=True,
+            )
 
     async def _load_state(self, plugin_id: str) -> PluginState | None:
         """Load plugin state from disk."""
@@ -258,7 +283,12 @@ class StateManager:
                 await f.write(data)
 
         except Exception as e:
-            logger.error("Error persisting snapshot %s: %s", snapshot.snapshot_id, e, exc_info=True)
+            logger.error(
+                "Error persisting snapshot %s: %s",
+                snapshot.snapshot_id,
+                e,
+                exc_info=True,
+            )
 
     async def _load_snapshot(self, snapshot_id: str) -> StateSnapshot | None:
         """Load snapshot from disk."""

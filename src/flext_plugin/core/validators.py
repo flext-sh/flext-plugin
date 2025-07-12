@@ -46,7 +46,8 @@ class MetadataValidationRule(ValidationRule):
 
     def __init__(self) -> None:
         """Initialize metadata validation rule."""
-        super().__init__("metadata_validation",
+        super().__init__(
+            "metadata_validation",
             "Validates plugin metadata is complete and valid",
         )
 
@@ -73,8 +74,7 @@ class MetadataValidationRule(ValidationRule):
         required_fields = ["id", "name", "version", "plugin_type"]
 
         missing_fields = [
-            field for field in required_fields
-            if not getattr(metadata, field, None)
+            field for field in required_fields if not getattr(metadata, field, None)
         ]
 
         if missing_fields:
@@ -107,7 +107,8 @@ class InterfaceValidationRule(ValidationRule):
 
     def __init__(self) -> None:
         """Initialize interface validation rule."""
-        super().__init__("interface_validation",
+        super().__init__(
+            "interface_validation",
             "Validates plugin implements required interfaces",
         )
 
@@ -127,8 +128,7 @@ class InterfaceValidationRule(ValidationRule):
         required_methods = ["execute", "get_metadata"]
 
         missing_methods = [
-            method for method in required_methods
-            if not hasattr(plugin_class, method)
+            method for method in required_methods if not hasattr(plugin_class, method)
         ]
 
         if missing_methods:

@@ -21,7 +21,6 @@ from flext_plugin.core.types import (
     PluginStatus,
 )
 from flext_plugin.core.validators import PluginValidator
-from flext_plugin.types import PluginContext, PluginData, PluginResult
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -31,6 +30,7 @@ if TYPE_CHECKING:
     from flext_plugin.core.types import (
         PluginType,
     )
+    from flext_plugin.types import PluginContext, PluginData, PluginResult
 
 logger = get_logger(__name__)
 
@@ -45,7 +45,13 @@ class PluginManager:
         - Unloading and cleanup
     """
 
-    def __init__(self, plugin_directories: list[Path] | None = None, entry_point_groups: list[str] | None = None, security_enabled: bool = True, auto_discover: bool = True) -> None:
+    def __init__(
+        self,
+        plugin_directories: list[Path] | None = None,
+        entry_point_groups: list[str] | None = None,
+        security_enabled: bool = True,
+        auto_discover: bool = True,
+    ) -> None:
         """Initialize plugin manager.
 
         Args:
@@ -56,7 +62,8 @@ class PluginManager:
 
         """
         self.discovery = PluginDiscovery(plugin_directories, entry_point_groups)
-        self.loader = PluginLoader(validator=PluginValidator(),
+        self.loader = PluginLoader(
+            validator=PluginValidator(),
             security_enabled=security_enabled,
         )
         self.auto_discover = auto_discover
@@ -82,7 +89,12 @@ class PluginManager:
         logger.info("Discovered %d plugins", len(self._discovered_plugins))
         return self._discovered_plugins
 
-    async def load_plugin(self, plugin_id: str, config: dict[str, Any] | None = None, initialize: bool = True) -> LoadedPlugin:
+    async def load_plugin(
+        self,
+        plugin_id: str,
+        config: dict[str, Any] | None = None,
+        initialize: bool = True,
+    ) -> LoadedPlugin:
         """Load a plugin by ID.
 
         Args:
@@ -132,7 +144,9 @@ class PluginManager:
         # Unload the plugin
         await self.loader.unload_plugin(plugin_id)
 
-    async def reload_plugin(self, plugin_id: str, config: dict[str, Any] | None = None) -> LoadedPlugin:
+    async def reload_plugin(
+        self, plugin_id: str, config: dict[str, Any] | None = None,
+    ) -> LoadedPlugin:
         """Reload a plugin by ID.
 
         Args:
@@ -157,7 +171,12 @@ class PluginManager:
         discovered = self._discovered_plugins[plugin_id]
         return await self.loader.reload_plugin(plugin_id, discovered, config)
 
-    async def execute_plugin(self, plugin_id: str, input_data: PluginData = None, context: PluginContext | None = None) -> PluginExecutionResult:
+    async def execute_plugin(
+        self,
+        plugin_id: str,
+        input_data: PluginData = None,
+        context: PluginContext | None = None,
+    ) -> PluginExecutionResult:
         """Execute a plugin with input data.
 
         Args:
@@ -183,13 +202,15 @@ class PluginManager:
         execution_id = str(uuid4())
 
         # Create execution context
-        exec_context = {"execution_id": execution_id,
+        exec_context = {
+            "execution_id": execution_id,
             "plugin_id": plugin_id,
             **(context or {}),
         }
 
         # Create execution result
-        result = PluginExecutionResult(success=False,
+        result = PluginExecutionResult(
+            success=False,
             plugin_id=plugin_id,
             execution_id=execution_id,
             execution_context=exec_context,
@@ -209,7 +230,8 @@ class PluginManager:
             result.error = str(e)
 
             msg = f"Plugin execution failed {plugin_id}"
-            raise PluginExecutionError(msg,
+            raise PluginExecutionError(
+                msg,
                 plugin_id=plugin_id,
                 execution_id=execution_id,
                 cause=e,
@@ -224,7 +246,12 @@ class PluginManager:
 
         return result
 
-    async def execute_plugin_async(self, plugin_id: str, input_data: PluginData = None, context: PluginContext | None = None) -> asyncio.Task[PluginResult]:
+    async def execute_plugin_async(
+        self,
+        plugin_id: str,
+        input_data: PluginData = None,
+        context: PluginContext | None = None,
+    ) -> asyncio.Task[PluginResult]:
         """Execute a plugin asynchronously.
 
         Args:
@@ -276,7 +303,8 @@ class PluginManager:
         """
         loaded = self.loader.get_loaded_plugin(plugin_id)
         if not loaded:
-            return {"status": "unknown",
+            return {
+                "status": "unknown",
                 "error": "Plugin not loaded",
             }
 
@@ -288,7 +316,9 @@ class PluginManager:
                 "error": str(e),
             }
 
-    async def list_plugins(self, plugin_type: PluginType | None = None, status: PluginStatus | None = None) -> list[dict[str, Any]]:
+    async def list_plugins(
+        self, plugin_type: PluginType | None = None, status: PluginStatus | None = None,
+    ) -> list[dict[str, Any]]:
         """List available plugins with optional filtering.
 
         Args:
@@ -317,7 +347,8 @@ class PluginManager:
                 continue
 
             # Build plugin info
-            plugin_info = {"id": plugin_id,
+            plugin_info = {
+                "id": plugin_id,
                 "name": discovered.metadata.name,
                 "version": discovered.metadata.version,
                 "type": discovered.metadata.plugin_type.value,
@@ -380,7 +411,8 @@ class PluginManager:
 
         # Wait for all tasks to complete
         if self._execution_tasks:
-            await asyncio.gather(*self._execution_tasks.values(),
+            await asyncio.gather(
+                *self._execution_tasks.values(),
                 return_exceptions=True,
             )
 

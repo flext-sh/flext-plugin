@@ -7,18 +7,24 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from flext_core.domain.types import ServiceResult
 from flext_plugin.config import PluginSettings
-from flext_plugin.types import ConfigurationDict
+
+if TYPE_CHECKING:
+    from flext_plugin.types import ConfigurationDict
 
 
-def setup_plugin_system(settings: PluginSettings | None = None) -> ServiceResult[PluginSettings]:
+def setup_plugin_system(
+    settings: PluginSettings | None = None,
+) -> ServiceResult[PluginSettings]:
     """Setup the plugin system with configuration."""
     try:
         # Setup logging using flext-observability
         try:
             from flext_observability.logging import setup_logging
+
             setup_logging(
                 log_level=settings.log_level if settings else "INFO",
                 json_logs=False,

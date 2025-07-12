@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel
-from flext_plugin.types import PluginResult
+
+if TYPE_CHECKING:
+    from flext_plugin.types import PluginResult
 
 
 class PluginLoader(DomainBaseModel):
@@ -61,7 +63,8 @@ class PluginLoader(DomainBaseModel):
             raise ImportError(msg)
 
         except Exception as e:
-            raise ImportError(f"Failed to load plugin from {file_path}: {e}") from e
+            msg = f"Failed to load plugin from {file_path}: {e}"
+            raise ImportError(msg) from e
 
     async def unload_plugin(self, plugin_name: str) -> None:
         """Unload plugin by name."""

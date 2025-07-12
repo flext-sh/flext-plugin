@@ -20,6 +20,7 @@ def test_flext_plugin_imports() -> None:
     """Test that flext-plugin core components can be imported."""
     try:
         from flext_plugin import PluginManager, PluginType
+
         assert PluginManager is not None
         assert PluginType is not None
     except ImportError:

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 try:
     from flext_core.domain.constants import FlextFramework
+
     __version__ = FlextFramework.VERSION
 except ImportError:
     __version__ = "0.7.0"

@@ -66,7 +66,13 @@ class PluginWatcher:
     Uses polling-based approach for cross-platform compatibility.
     """
 
-    def __init__(self, watch_directories: list[Path], poll_interval: float = 1.0, patterns: list[str] | None = None, ignore_patterns: list[str] | None = None) -> None:
+    def __init__(
+        self,
+        watch_directories: list[Path],
+        poll_interval: float = 1.0,
+        patterns: list[str] | None = None,
+        ignore_patterns: list[str] | None = None,
+    ) -> None:
         """Initialize plugin watcher.
 
         Args:
@@ -86,7 +92,9 @@ class PluginWatcher:
         self._file_metadata: dict[Path, FileMetadata] = {}
         self._event_handlers: list[Callable[[WatchEvent], asyncio.Future[None]]] = []
 
-    def add_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
+    def add_handler(
+        self, handler: Callable[[WatchEvent], asyncio.Future[None]],
+    ) -> None:
         """Add an event handler for file system events.
 
         Args:
@@ -95,7 +103,9 @@ class PluginWatcher:
         """
         self._event_handlers.append(handler)
 
-    def remove_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
+    def remove_handler(
+        self, handler: Callable[[WatchEvent], asyncio.Future[None]],
+    ) -> None:
         """Remove an event handler.
 
         Args:
@@ -122,7 +132,8 @@ class PluginWatcher:
         # Start watch loop
         self._watch_task = asyncio.create_task(self._watch_loop())
 
-        logger.info("Plugin watcher started",
+        logger.info(
+            "Plugin watcher started",
             directories=[str(d) for d in self.watch_directories],
             poll_interval=self.poll_interval,
         )
@@ -215,9 +226,11 @@ class PluginWatcher:
             else:
                 # Check if file is modified
                 metadata = self._file_metadata[path]
-                if (metadata.size != size
+                if (
+                    metadata.size != size
                     or metadata.mtime != mtime
-                    or metadata.hash != file_hash):
+                    or metadata.hash != file_hash
+                ):
                     await self._handle_modified(path, size, mtime, file_hash)
 
         except FileNotFoundError:
@@ -249,7 +262,9 @@ class PluginWatcher:
 
         return hasher.hexdigest()
 
-    async def _handle_created(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
+    async def _handle_created(
+        self, path: Path, size: int, mtime: float, file_hash: str,
+    ) -> None:
         """Handle file creation event.
 
         Args:
@@ -273,7 +288,9 @@ class PluginWatcher:
 
         await self._dispatch_event(event)
 
-    async def _handle_modified(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
+    async def _handle_modified(
+        self, path: Path, size: int, mtime: float, file_hash: str,
+    ) -> None:
         """Handle file modification event.
 
         Args:
@@ -325,7 +342,9 @@ class PluginWatcher:
 
         # Run handlers concurrently
         if self._event_handlers:
-            tasks = [asyncio.create_task(handler(event)) for handler in self._event_handlers]
+            tasks = [
+                asyncio.create_task(handler(event)) for handler in self._event_handlers
+            ]
 
             # Wait for all handlers to complete
             results = await asyncio.gather(*tasks, return_exceptions=True)

@@ -14,9 +14,7 @@ from uuid import uuid4
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
 if TYPE_CHECKING:
-    from flext_plugin.types import PluginExecutionResult, PluginType
-else:
-    from flext_plugin.types import PluginData, PluginType
+    from flext_plugin.types import PluginData, PluginExecutionResult, PluginType
 
 
 class DataFlowContext(DomainBaseModel):
@@ -69,27 +67,33 @@ class DataPacket(DomainBaseModel):
 
     # Data payload
     data: Any = Field(description="The actual data payload")
-    data_schema: dict[str, Any] | None = Field(default=None,
+    data_schema: dict[str, Any] | None = Field(
+        default=None,
         description="Data schema information",
     )
 
     # Metadata
-    packet_id: str = Field(default_factory=lambda: str(uuid4()),
+    packet_id: str = Field(
+        default_factory=lambda: str(uuid4()),
         description="Unique packet identifier",
     )
     size_bytes: int | None = Field(default=None, description="Data size in bytes")
-    row_count: int | None = Field(default=None,
+    row_count: int | None = Field(
+        default=None,
         description="Number of records (if applicable)",
     )
 
     # Processing information
-    source_plugin_id: str | None = Field(default=None,
+    source_plugin_id: str | None = Field(
+        default=None,
         description="Plugin that generated this data",
     )
-    source_plugin_type: PluginType | None = Field(default=None,
+    source_plugin_type: PluginType | None = Field(
+        default=None,
         description="Type of source plugin",
     )
-    processing_metadata: dict[str, Any] = Field(default_factory=dict,
+    processing_metadata: dict[str, Any] = Field(
+        default_factory=dict,
         description="Processing metadata",
     )
 
@@ -98,10 +102,12 @@ class DataPacket(DomainBaseModel):
     last_modified_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Validation and quality
-    validation_errors: list[str] = Field(default_factory=list,
+    validation_errors: list[str] = Field(
+        default_factory=list,
         description="Data validation errors",
     )
-    quality_metrics: dict[str, Any] = Field(default_factory=dict,
+    quality_metrics: dict[str, Any] = Field(
+        default_factory=dict,
         description="Data quality metrics",
     )
 
@@ -121,16 +127,20 @@ class DataPacket(DomainBaseModel):
 
         # Update size and row count if possible:
         self._update_metrics()
+
     def add_validation_error(self, error: str) -> None:
         """Add validation error to packet."""
         if error not in self.validation_errors:
             self.validation_errors.append(error)
+
     def is_valid(self) -> bool:
         """Check if packet has no validation errors."""
         return len(self.validation_errors) == 0
+
     def get_data_summary(self) -> dict[str, Any]:
         """Get summary information about the data packet."""
-        return {"packet_id": self.packet_id,
+        return {
+            "packet_id": self.packet_id,
             "source_plugin": self.source_plugin_id,
             "size_bytes": self.size_bytes,
             "row_count": self.row_count,
@@ -148,7 +158,8 @@ class DataPacket(DomainBaseModel):
                 self.size_bytes = len(self.data.encode("utf-8"))
             elif isinstance(self.data, list | dict):
                 # Rough estimate using JSON serialization
-                self.size_bytes = len(json.dumps(self.data, default=str).encode("utf-8"),
+                self.size_bytes = len(
+                    json.dumps(self.data, default=str).encode("utf-8"),
                 )
 
             # Count rows if data is a list:
@@ -177,25 +188,30 @@ class StepResult(DomainBaseModel):
 
     # Execution results
     success: bool = Field(description="Whether step executed successfully")
-    execution_result: PluginExecutionResult | None = Field(default=None,
+    execution_result: PluginExecutionResult | None = Field(
+        default=None,
         description="Plugin execution result",
     )
-    output_data: DataPacket | None = Field(default=None,
+    output_data: DataPacket | None = Field(
+        default=None,
         description="Output data packet",
     )
 
     # Timing and performance
     start_time: datetime = Field(default_factory=lambda: datetime.now(UTC))
     end_time: datetime | None = Field(default=None, description="Step completion time")
-    duration_ms: int | None = Field(default=None,
+    duration_ms: int | None = Field(
+        default=None,
         description="Execution duration in milliseconds",
     )
 
     # Error information
-    error_message: str | None = Field(default=None,
+    error_message: str | None = Field(
+        default=None,
         description="Error message if step failed",
     )
-    error_details: dict[str, Any] = Field(default_factory=dict,
+    error_details: dict[str, Any] = Field(
+        default_factory=dict,
         description="Detailed error information",
     )
 
@@ -233,13 +249,16 @@ class PipelineDataFlow(DomainBaseModel):
     execution_id: str = Field(description="Execution identifier")
 
     # Data flow state
-    current_step_index: int = Field(default=0,
+    current_step_index: int = Field(
+        default=0,
         description="Current step being executed",
     )
-    step_results: list[StepResult] = Field(default_factory=list,
+    step_results: list[StepResult] = Field(
+        default_factory=list,
         description="Results of completed steps",
     )
-    current_data: DataPacket | None = Field(default=None,
+    current_data: DataPacket | None = Field(
+        default=None,
         description="Current data flowing through pipeline",
     )
 
@@ -247,10 +266,12 @@ class PipelineDataFlow(DomainBaseModel):
     context: DataFlowContext = Field(description="Pipeline execution context")
 
     # Flow control
-    should_continue: bool = Field(default=True,
+    should_continue: bool = Field(
+        default=True,
         description="Whether pipeline should continue execution",
     )
-    abort_reason: str | None = Field(default=None,
+    abort_reason: str | None = Field(
+        default=None,
         description="Reason for aborting pipeline",
     )
 
@@ -259,9 +280,12 @@ class PipelineDataFlow(DomainBaseModel):
     completed_steps: int = Field(default=0, description="Number of completed steps")
     failed_steps: int = Field(default=0, description="Number of failed steps")
 
-    def start_step(self, step_id: str, plugin_id: str, plugin_type: PluginType) -> StepResult:
+    def start_step(
+        self, step_id: str, plugin_id: str, plugin_type: PluginType,
+    ) -> StepResult:
         """Start execution of a new pipeline step."""
-        step_result = StepResult(step_id=step_id,
+        step_result = StepResult(
+            step_id=step_id,
             plugin_id=plugin_id,
             plugin_type=plugin_type,
             success=False,
@@ -296,6 +320,7 @@ class PipelineDataFlow(DomainBaseModel):
         """Abort pipeline execution with specified reason."""
         self.should_continue = False
         self.abort_reason = reason
+
     def get_step_by_id(self, step_id: str) -> StepResult | None:
         """Find step result by step ID."""
         for step in self.step_results:
@@ -317,7 +342,8 @@ class PipelineDataFlow(DomainBaseModel):
             for step in self.step_results:
                 if step.duration_ms:
                     total_duration += step.duration_ms
-        return {"pipeline_id": self.pipeline_id,
+        return {
+            "pipeline_id": self.pipeline_id,
             "execution_id": self.execution_id,
             "total_steps": self.total_steps,
             "completed_steps": self.completed_steps,
@@ -327,7 +353,8 @@ class PipelineDataFlow(DomainBaseModel):
             "abort_reason": self.abort_reason,
             "total_duration_ms": total_duration,
             "has_output_data": self.current_data is not None,
-            "execution_context": {"user_id": self.context.user_id,
+            "execution_context": {
+                "user_id": self.context.user_id,
                 "environment": self.context.environment,
                 "created_at": self.context.created_at.isoformat(),
             },
@@ -352,7 +379,8 @@ class DataValidator:
 
         # Schema validation if provided:
         if expected_schema:
-            schema_errors = DataValidator._validate_against_schema(packet.data,
+            schema_errors = DataValidator._validate_against_schema(
+                packet.data,
                 expected_schema,
             )
             errors.extend(schema_errors)
@@ -389,7 +417,8 @@ class DataValidator:
             # Validate required fields for objects
             if schema_type == "object" and isinstance(data, dict):
                 required_fields = schema.get("required", [])
-                errors.extend(f"Required field '{field}' is missing"
+                errors.extend(
+                    f"Required field '{field}' is missing"
                     for field in required_fields
                     if field not in data
                 )
@@ -403,17 +432,23 @@ class DataValidator:
 class DataFlowManager:
     """Manages data flow and step execution in a pipeline."""
 
-    def __init__(self, pipeline_id: str, execution_id: str, context: DataFlowContext) -> None:
+    def __init__(
+        self, pipeline_id: str, execution_id: str, context: DataFlowContext,
+    ) -> None:
         """Initialize data flow manager with pipeline context."""
-        self.pipeline_flow = PipelineDataFlow(pipeline_id=pipeline_id,
+        self.pipeline_flow = PipelineDataFlow(
+            pipeline_id=pipeline_id,
             execution_id=execution_id,
             context=context,
         )
         self.validator = DataValidator()
 
-    def create_data_packet(self, data: PluginData, plugin_id: str, plugin_type: PluginType) -> DataPacket:
+    def create_data_packet(
+        self, data: PluginData, plugin_id: str, plugin_type: PluginType,
+    ) -> DataPacket:
         """Create and validate data packet from plugin output."""
-        packet = DataPacket(data=data,
+        packet = DataPacket(
+            data=data,
             source_plugin_id=plugin_id,
             source_plugin_type=plugin_type,
         )
@@ -425,7 +460,9 @@ class DataFlowManager:
 
         return packet
 
-    def start_step_execution(self, step_id: str, plugin_id: str, plugin_type: PluginType) -> StepResult:
+    def start_step_execution(
+        self, step_id: str, plugin_id: str, plugin_type: PluginType,
+    ) -> StepResult:
         """Start new step execution and return result tracker."""
         return self.pipeline_flow.start_step(step_id, plugin_id, plugin_type)
 
@@ -438,7 +475,8 @@ class DataFlowManager:
         """Complete step execution with result data or error."""
         if output_data is not None and error is None:
             # Create data packet for successful step output
-            data_packet = self.create_data_packet(output_data,
+            data_packet = self.create_data_packet(
+                output_data,
                 step_result.plugin_id,
                 step_result.plugin_type,
             )
@@ -467,7 +505,8 @@ class DataFlowManager:
 
 
 # Export all classes
-__all__ = ["DataFlowContext",
+__all__ = [
+    "DataFlowContext",
     "DataFlowManager",
     "DataPacket",
     "DataValidator",

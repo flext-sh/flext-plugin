@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import importlib
 import sys
-from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import aiofiles  # type: ignore
     from watchdog.observers import Observer
 else:
@@ -167,7 +168,9 @@ class SimpleHotReloadManager(DomainBaseModel):
 
 
 # Convenience function for quick setup
-async def create_simple_hot_reload_manager(plugin_directory: str) -> SimpleHotReloadManager:
+async def create_simple_hot_reload_manager(
+    plugin_directory: str,
+) -> SimpleHotReloadManager:
     """Create and start a simple hot reload manager."""
     manager = SimpleHotReloadManager(plugin_directory=plugin_directory)
     await manager.start_watching()

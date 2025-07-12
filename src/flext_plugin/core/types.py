@@ -7,14 +7,16 @@ from __future__ import annotations
 
 import traceback
 from datetime import UTC, datetime
-from enum import Enum
-from typing import Any
+from enum import StrEnum
+from typing import TYPE_CHECKING, Any
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
-from flext_plugin.types import PluginResult
+
+if TYPE_CHECKING:
+    from flext_plugin.types import PluginResult
 
 
-class PluginType(str, Enum):
+class PluginType(StrEnum):
     """Plugin type enumeration."""
 
     EXTRACTOR = "extractor"
@@ -24,7 +26,7 @@ class PluginType(str, Enum):
     ORCHESTRATOR = "orchestrator"
 
 
-class PluginStatus(str, Enum):
+class PluginStatus(StrEnum):
     """Plugin lifecycle status enumeration."""
 
     INACTIVE = "inactive"
@@ -35,7 +37,7 @@ class PluginStatus(str, Enum):
     STOPPING = "stopping"
 
 
-class ExecutionStatus(str, Enum):
+class ExecutionStatus(StrEnum):
     """Plugin execution status enumeration."""
 
     PENDING = "pending"
@@ -215,7 +217,9 @@ class HotReloadEvent(DomainBaseModel):
 class PluginError(Exception):
     """Base exception for plugin system errors."""
 
-    def __init__(self, message: str, plugin_id: str | None = None, cause: Exception | None = None) -> None:
+    def __init__(
+        self, message: str, plugin_id: str | None = None, cause: Exception | None = None,
+    ) -> None:
         """Initialize plugin error with message and optional context."""
         super().__init__(message)
         self.plugin_id = plugin_id
@@ -226,38 +230,31 @@ class PluginDiscoveryError(PluginError):
     """Error during plugin discovery."""
 
 
-
 class PluginLoadError(PluginError):
     """Error during plugin loading."""
-
 
 
 class PluginExecutionError(PluginError):
     """Error during plugin execution."""
 
 
-
 class PluginValidationError(PluginError):
     """Error during plugin validation."""
-
 
 
 class PluginDependencyError(PluginError):
     """Error during plugin dependency resolution."""
 
 
-
 class PluginLifecycleError(PluginError):
     """Error during plugin lifecycle operations."""
-
 
 
 class PluginSecurityError(PluginError):
     """Error related to plugin security validation."""
 
 
-
-class PluginCapability(str, Enum):
+class PluginCapability(StrEnum):
     """Plugin capability enumeration."""
 
     HOT_RELOAD = "hot_reload"
@@ -272,13 +269,15 @@ class PluginExecutionResult(DomainBaseModel):
 
     success: bool = Field(description="Whether execution succeeded")
     result: Any = Field(default=None, description="Execution result data")
-    error_message: str | None = Field(default=None, description="Error message if failed")
+    error_message: str | None = Field(
+        default=None, description="Error message if failed",
+    )
     execution_time_ms: int = Field(description="Execution time in milliseconds")
     memory_used_mb: float = Field(description="Memory used during execution")
     plugin_id: str = Field(description="ID of executed plugin")
 
 
-class PluginLifecycle(str, Enum):
+class PluginLifecycle(StrEnum):
     """Plugin lifecycle state enumeration."""
 
     DISCOVERED = "discovered"

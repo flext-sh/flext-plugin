@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
-            from flext_plugin.core.types import PluginType
+    from flext_plugin.core.types import PluginType
 
 
 class PluginMetadata(BaseModel):

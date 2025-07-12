@@ -22,15 +22,15 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_plugin.domain.entities import PluginLifecycle, PluginStatus
-from flext_plugin.types import (
-    ConfigurationDict,
-    PluginContext,
-    PluginData,
-    PluginResult,
-)
 
 if TYPE_CHECKING:
     from flext_plugin.domain.entities import PluginType
+    from flext_plugin.types import (
+        ConfigurationDict,
+        PluginContext,
+        PluginData,
+        PluginResult,
+    )
 
 
 class PluginMetadata(DomainBaseModel):
@@ -214,7 +214,9 @@ class PluginInterface(abc.ABC):
         ...
 
     @abc.abstractmethod
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute plugin with input data."""
         ...
 
@@ -282,7 +284,9 @@ class BaseExtractorPlugin(PluginInterface):
         """Extract data from source."""
         ...
 
-    async def execute(self, _input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, _input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute extractor by extracting from source."""
         source_config = context.get("source_config", {})
         return await self.extract(source_config)
@@ -301,11 +305,15 @@ class BaseLoaderPlugin(PluginInterface):
     """
 
     @abc.abstractmethod
-    async def load( self, data: PluginData, destination_config: ConfigurationDict ) -> ConfigurationDict:
+    async def load(
+        self, data: PluginData, destination_config: ConfigurationDict,
+    ) -> ConfigurationDict:
         """Load data to destination."""
         ...
 
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute loader by loading data to destination."""
         destination_config = context.get("destination_config", {})
         return await self.load(input_data, destination_config)
@@ -324,11 +332,15 @@ class BaseTransformerPlugin(PluginInterface):
     """
 
     @abc.abstractmethod
-    async def transform(self, data: PluginData, transform_config: ConfigurationDict) -> PluginResult:
+    async def transform(
+        self, data: PluginData, transform_config: ConfigurationDict,
+    ) -> PluginResult:
         """Transform input data."""
         ...
 
-    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+    async def execute(
+        self, input_data: PluginData, context: PluginContext,
+    ) -> PluginResult:
         """Execute transformer by transforming input data."""
         transform_config = context.get("transform_config", {})
         return await self.transform(input_data, transform_config)
