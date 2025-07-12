@@ -57,7 +57,7 @@ class RollbackHistory(DomainBaseModel):
 
     def add_rollback_point(self, point: RollbackPoint) -> None:
         """Add a rollback point to the history.
-        
+
         Args:
             point: The rollback point to add.
 
@@ -71,7 +71,7 @@ class RollbackHistory(DomainBaseModel):
 
     def get_latest_point(self) -> RollbackPoint | None:
         """Get the latest rollback point.
-        
+
         Returns:
             The latest rollback point or None if no points exist.
 
@@ -82,10 +82,10 @@ class RollbackHistory(DomainBaseModel):
 
     def get_point_by_id(self, rollback_id: str) -> RollbackPoint | None:
         """Get a rollback point by its ID.
-        
+
         Args:
             rollback_id: The rollback point ID to search for.
-            
+
         Returns:
             The rollback point or None if not found.
 
@@ -103,6 +103,7 @@ class RollbackManager:
     """
 
     def __init__(self, state_manager: StateManager, backup_directory: Path | None = None) -> None:
+        """Initialize rollback manager with state manager and backup directory."""
         self.state_manager = state_manager
         self.backup_directory = backup_directory or Path.cwd() / ".plugin_backups"
 
@@ -114,12 +115,12 @@ class RollbackManager:
 
     async def create_rollback_point(self, plugin: Plugin, description: str, backup_code: bool = True) -> str:
         """Create a new rollback point for a plugin.
-        
+
         Args:
             plugin: The plugin to create a rollback point for.
             description: Description of the rollback point.
             backup_code: Whether to backup the plugin code.
-            
+
         Returns:
             The ID of the created rollback point.
 
@@ -157,7 +158,8 @@ class RollbackManager:
         self._histories[plugin_id].add_rollback_point(point)
 
         logger.info(
-            f"Created rollback point for plugin {plugin_id}",
+            "Created rollback point for plugin %s",
+            plugin_id,
             rollback_id=rollback_id,
             description=description,
         )
@@ -166,15 +168,15 @@ class RollbackManager:
 
     async def rollback_plugin(self, plugin_id: str, rollback_id: str | None = None, restore_code: bool = True) -> dict[str, Any]:
         """Rollback a plugin to a previous state.
-        
+
         Args:
             plugin_id: The ID of the plugin to rollback.
             rollback_id: The specific rollback point ID, or None for latest.
             restore_code: Whether to restore the plugin code.
-            
+
         Returns:
             Dictionary with rollback operation results.
-            
+
         Raises:
             ValueError: If rollback point is not found.
 
@@ -211,7 +213,9 @@ class RollbackManager:
             result["state_restored"] = restore_results.get(plugin_id, False)
         except Exception as e:
             logger.error(
-                f"Error restoring state for plugin {plugin_id}: {e}",
+                "Error restoring state for plugin %s: %s",
+                plugin_id,
+                e,
                 exc_info=True,
             )
             result["errors"].append(f"State restoration failed: {e!s}")
@@ -223,13 +227,16 @@ class RollbackManager:
                 result["code_restored"] = True
             except Exception as e:
                 logger.error(
-                    f"Error restoring code for plugin {plugin_id}: {e}",
+                    "Error restoring code for plugin %s: %s",
+                    plugin_id,
+                    e,
                     exc_info=True,
                 )
                 result["errors"].append(f"Code restoration failed: {e!s}")
 
         logger.info(
-            f"Rolled back plugin {plugin_id}",
+            "Rolled back plugin %s",
+            plugin_id,
             rollback_id=point.rollback_id,
             state_restored=result["state_restored"],
             code_restored=result["code_restored"],
@@ -239,14 +246,14 @@ class RollbackManager:
 
     async def _backup_plugin_code(self, plugin: Plugin, rollback_id: str) -> Path:
         """Backup plugin code to a file.
-        
+
         Args:
             plugin: The plugin to backup.
             rollback_id: The rollback point ID.
-            
+
         Returns:
             Path to the backup file.
-            
+
         Raises:
             ValueError: If plugin source file cannot be determined.
 
@@ -280,11 +287,11 @@ class RollbackManager:
 
     async def _restore_plugin_code(self, plugin_id: str, rollback_id: str) -> None:
         """Restore plugin code from a backup.
-        
+
         Args:
             plugin_id: The plugin ID to restore.
             rollback_id: The rollback point ID.
-            
+
         Raises:
             ValueError: If backup file is not found.
 
@@ -316,10 +323,10 @@ class RollbackManager:
 
     def get_rollback_history(self, plugin_id: str) -> RollbackHistory | None:
         """Get the rollback history for a plugin.
-        
+
         Args:
             plugin_id: The plugin ID to get history for.
-            
+
         Returns:
             The rollback history or None if not found.
 
@@ -328,10 +335,10 @@ class RollbackManager:
 
     def list_rollback_points(self, plugin_id: str | None = None) -> list[dict[str, Any]]:
         """List all rollback points.
-        
+
         Args:
             plugin_id: Optional plugin ID to filter by.
-            
+
         Returns:
             List of rollback point information dictionaries.
 
@@ -358,10 +365,10 @@ class RollbackManager:
 
     def cleanup_old_backups(self, days_to_keep: int = 30) -> int:
         """Clean up old backup files.
-        
+
         Args:
             days_to_keep: Number of days to keep backup files.
-            
+
         Returns:
             Number of files deleted.
 
@@ -378,7 +385,8 @@ class RollbackManager:
                     deleted_count += 1
 
         logger.info(
-            f"Cleaned up {deleted_count} old backup files",
+            "Cleaned up %d old backup files",
+            deleted_count,
             days_to_keep=days_to_keep,
         )
 

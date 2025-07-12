@@ -8,6 +8,13 @@ from __future__ import annotations
 import pytest
 import pytest_asyncio
 
+try:
+    from flext_plugin.domain.exceptions import PluginError
+except ImportError:
+    # Define basic exception as fallback for tests
+    class PluginError(Exception):
+        pass
+
 
 def test_flext_plugin_imports() -> None:
     """Test that flext-plugin core components can be imported."""
@@ -71,7 +78,7 @@ class TestFlextPluginIntegration:
         # Test load operation exists and handles missing plugins gracefully
         try:
             await manager.load_plugin("nonexistent-plugin")
-        except Exception as e:
+        except (PluginError, ValueError, KeyError, FileNotFoundError) as e:
             # Should get PluginError for missing plugin
             assert "not found" in str(e).lower() or "plugin" in str(e).lower()
 

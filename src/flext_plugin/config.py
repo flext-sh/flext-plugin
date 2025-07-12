@@ -8,7 +8,6 @@ Zero tolerance for duplication.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -128,7 +127,7 @@ class PluginSettings(BaseSettings):
             raise ValueError(msg)
         return v.upper()
 
-    def configure_dependencies(self, container: Any = None) -> None:
+    def configure_dependencies(self, container: object = None) -> None:
         """Configure dependencies in container."""
         if container is None:
             container = get_container()

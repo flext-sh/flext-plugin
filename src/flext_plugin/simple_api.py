@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any
 
 from flext_core.domain.types import ServiceResult
 from flext_plugin.config import PluginSettings
+from flext_plugin.types import ConfigurationDict
 
 
 def setup_plugin_system(settings: PluginSettings | None = None) -> ServiceResult[PluginSettings]:
@@ -42,11 +42,11 @@ def setup_plugin_system(settings: PluginSettings | None = None) -> ServiceResult
 
         return ServiceResult.ok(settings)
 
-    except Exception as e:
+    except (OSError, ImportError, RuntimeError, ValueError) as e:
         return ServiceResult.fail(f"Failed to setup plugin system: {e}")
 
 
-def create_development_plugin_config(**overrides: Any) -> PluginSettings:
+def create_development_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create development plugin configuration with defaults."""
     defaults = {
         "plugin_directory": Path.cwd() / "plugins",
@@ -67,7 +67,7 @@ def create_development_plugin_config(**overrides: Any) -> PluginSettings:
     return PluginSettings(**defaults)
 
 
-def create_production_plugin_config(**overrides: Any) -> PluginSettings:
+def create_production_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create production plugin configuration with defaults."""
     defaults = {
         "plugin_directory": Path("/opt/flext/plugins"),
@@ -89,7 +89,7 @@ def create_production_plugin_config(**overrides: Any) -> PluginSettings:
     return PluginSettings(**defaults)
 
 
-def create_testing_plugin_config(**overrides: Any) -> PluginSettings:
+def create_testing_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create testing plugin configuration with defaults."""
     defaults = {
         "plugin_directory": Path("/tmp/test_plugins"),
@@ -111,7 +111,7 @@ def create_testing_plugin_config(**overrides: Any) -> PluginSettings:
     return PluginSettings(**defaults)
 
 
-def create_minimal_plugin_config(**overrides: Any) -> PluginSettings:
+def create_minimal_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create minimal plugin configuration with defaults."""
     defaults = {
         "hot_reload_enabled": False,

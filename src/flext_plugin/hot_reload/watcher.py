@@ -88,7 +88,7 @@ class PluginWatcher:
 
     def add_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
         """Add an event handler for file system events.
-        
+
         Args:
             handler: Async function to handle watch events.
 
@@ -97,7 +97,7 @@ class PluginWatcher:
 
     def remove_handler(self, handler: Callable[[WatchEvent], asyncio.Future[None]]) -> None:
         """Remove an event handler.
-        
+
         Args:
             handler: The handler function to remove.
 
@@ -107,7 +107,7 @@ class PluginWatcher:
 
     async def start(self) -> None:
         """Start the file system watcher.
-        
+
         Performs initial scan and starts the watch loop.
         """
         if self._watching:
@@ -129,7 +129,7 @@ class PluginWatcher:
 
     async def stop(self) -> None:
         """Stop the file system watcher.
-        
+
         Cancels the watch task and cleanup resources.
         """
         self._watching = False
@@ -143,7 +143,7 @@ class PluginWatcher:
 
     async def _watch_loop(self) -> None:
         """Main watch loop that polls for file changes.
-        
+
         Continuously scans directories for changes at the specified interval.
         """
         while self._watching:
@@ -151,19 +151,19 @@ class PluginWatcher:
                 await self._scan_directories()
                 await asyncio.sleep(self.poll_interval)
             except Exception as e:
-                logger.error(f"Error in watch loop: {e}", exc_info=True)
+                logger.error("Error in watch loop: %s", e, exc_info=True)
                 await asyncio.sleep(self.poll_interval)
 
     async def _scan_directories(self) -> None:
         """Scan all watch directories for changes.
-        
+
         Detects created, modified, and deleted files.
         """
         current_files = set()
 
         for directory in self.watch_directories:
             if not directory.exists():
-                logger.warning(f"Watch directory does not exist: {directory}")
+                logger.warning("Watch directory does not exist: %s", directory)
                 continue
 
             # Find all matching files
@@ -182,10 +182,10 @@ class PluginWatcher:
 
     def _should_ignore(self, path: Path) -> bool:
         """Check if a file should be ignored based on patterns.
-        
+
         Args:
             path: The file path to check.
-            
+
         Returns:
             True if the file should be ignored, False otherwise.
 
@@ -196,7 +196,7 @@ class PluginWatcher:
 
     async def _check_file(self, path: Path) -> None:
         """Check a file for changes.
-        
+
         Args:
             path: The file path to check.
 
@@ -225,14 +225,14 @@ class PluginWatcher:
             if path in self._file_metadata:
                 await self._handle_deleted(path)
         except Exception as e:
-            logger.exception(f"Error checking file {path}: {e}")
+            logger.exception("Error checking file %s: %s", path, e)
 
     async def _calculate_file_hash(self, path: Path) -> str:
         """Calculate SHA256 hash of a file.
-        
+
         Args:
             path: The file path to hash.
-            
+
         Returns:
             The SHA256 hash as a hex string.
 
@@ -244,14 +244,14 @@ class PluginWatcher:
                 while chunk := await f.read(8192):
                     hasher.update(chunk)
         except Exception as e:
-            logger.exception(f"Error hashing file {path}: {e}")
+            logger.exception("Error hashing file %s: %s", path, e)
             return ""
 
         return hasher.hexdigest()
 
     async def _handle_created(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
         """Handle file creation event.
-        
+
         Args:
             path: The created file path.
             size: File size in bytes.
@@ -275,7 +275,7 @@ class PluginWatcher:
 
     async def _handle_modified(self, path: Path, size: int, mtime: float, file_hash: str) -> None:
         """Handle file modification event.
-        
+
         Args:
             path: The modified file path.
             size: File size in bytes.
@@ -299,7 +299,7 @@ class PluginWatcher:
 
     async def _handle_deleted(self, path: Path) -> None:
         """Handle file deletion event.
-        
+
         Args:
             path: The deleted file path.
 
@@ -316,12 +316,12 @@ class PluginWatcher:
 
     async def _dispatch_event(self, event: WatchEvent) -> None:
         """Dispatch an event to all registered handlers.
-        
+
         Args:
             event: The watch event to dispatch.
 
         """
-        logger.debug(f"Dispatching {event.event_type.value} event for {event.path}")
+        logger.debug("Dispatching %s event for %s", event.event_type.value, event.path)
 
         # Run handlers concurrently
         if self._event_handlers:
@@ -334,13 +334,15 @@ class PluginWatcher:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     logger.error(
-                        f"Error in event handler {i}: {result}",
+                        "Error in event handler %d: %s",
+                        i,
+                        result,
                         exc_info=result,
                     )
 
     def get_watched_files(self) -> list[Path]:
         """Get list of all currently watched files.
-        
+
         Returns:
             List of file paths being watched.
 
@@ -349,10 +351,10 @@ class PluginWatcher:
 
     def get_file_metadata(self, path: Path) -> FileMetadata | None:
         """Get metadata for a watched file.
-        
+
         Args:
             path: The file path to get metadata for.
-            
+
         Returns:
             File metadata or None if not found.
 

@@ -25,7 +25,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
         try:
             # In real implementation, would query database
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_type(
@@ -36,7 +36,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_active_plugins(self) -> ServiceResult[list[PluginInstance]]:
@@ -44,7 +44,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_capability(
@@ -55,7 +55,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def update_status(self, plugin_id: str, status: str) -> ServiceResult[bool]:
@@ -63,7 +63,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
         try:
             # In real implementation, would update database
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Update failed: {e}")
 
     async def get_plugin_statistics(self) -> ServiceResult[dict[str, Any]]:
@@ -78,7 +78,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance]):
                 "capabilities": {},
             }
             return ServiceResult.success(stats)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Statistics query failed: {e}")
 
 
@@ -93,7 +93,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_execution_id(
@@ -104,7 +104,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would query database
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_running_executions(self) -> ServiceResult[list[PluginExecution]]:
@@ -112,7 +112,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_user_id(
@@ -123,7 +123,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_date_range(
@@ -135,7 +135,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def get_execution_statistics(self) -> ServiceResult[dict[str, Any]]:
@@ -151,7 +151,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
                 "executions_by_status": {},
             }
             return ServiceResult.success(stats)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Statistics query failed: {e}")
 
     async def cleanup_old_executions(self, days_old: int) -> ServiceResult[int]:
@@ -159,7 +159,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution]):
         try:
             # In real implementation, would delete old records
             return ServiceResult.success(0)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cleanup failed: {e}")
 
 
@@ -171,7 +171,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry]):
         try:
             # In real implementation, would query database
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_enabled_registries(self) -> ServiceResult[list[PluginRegistry]]:
@@ -179,7 +179,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry]):
         try:
             # In real implementation, would query database
             return ServiceResult.success([])
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def find_by_name(self, name: str) -> ServiceResult[PluginRegistry | None]:
@@ -187,7 +187,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry]):
         try:
             # In real implementation, would query database
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Query failed: {e}")
 
     async def update_sync_status(
@@ -200,7 +200,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry]):
         try:
             # In real implementation, would update database
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Update failed: {e}")
 
     async def get_registry_statistics(self) -> ServiceResult[dict[str, Any]]:
@@ -215,7 +215,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry]):
                 "sync_errors": {},
             }
             return ServiceResult.success(stats)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Statistics query failed: {e}")
 
 
@@ -231,7 +231,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would store in cache (Redis/Memory)
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache store failed: {e}")
 
     async def get_plugin_metadata(self, plugin_id: str) -> ServiceResult[dict | None]:
@@ -239,7 +239,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would retrieve from cache
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache retrieval failed: {e}")
 
     async def invalidate_plugin_cache(self, plugin_id: str) -> ServiceResult[bool]:
@@ -247,7 +247,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would invalidate cache
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache invalidation failed: {e}")
 
     async def store_execution_result(
@@ -259,7 +259,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would store in cache
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache store failed: {e}")
 
     async def get_execution_result(
@@ -270,7 +270,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would retrieve from cache
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache retrieval failed: {e}")
 
     async def cleanup_expired_cache(self) -> ServiceResult[int]:
@@ -278,7 +278,7 @@ class PluginCacheRepository(BaseRepository[dict]):
         try:
             # In real implementation, would cleanup expired entries
             return ServiceResult.success(0)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"Cache cleanup failed: {e}")
 
 
@@ -294,7 +294,7 @@ class PluginStateRepository(BaseRepository[dict]):
         try:
             # In real implementation, would persist state
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State save failed: {e}")
 
     async def load_plugin_state(self, plugin_id: str) -> ServiceResult[dict | None]:
@@ -302,7 +302,7 @@ class PluginStateRepository(BaseRepository[dict]):
         try:
             # In real implementation, would load persisted state
             return ServiceResult.success(None)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State load failed: {e}")
 
     async def delete_plugin_state(self, plugin_id: str) -> ServiceResult[bool]:
@@ -310,7 +310,7 @@ class PluginStateRepository(BaseRepository[dict]):
         try:
             # In real implementation, would delete persisted state
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State delete failed: {e}")
 
     async def backup_plugin_state(self, plugin_id: str) -> ServiceResult[str]:
@@ -319,7 +319,7 @@ class PluginStateRepository(BaseRepository[dict]):
             # In real implementation, would create backup
             backup_id = f"backup_{plugin_id}_{int(time.time())}"
             return ServiceResult.success(backup_id)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State backup failed: {e}")
 
     async def restore_plugin_state(
@@ -331,7 +331,7 @@ class PluginStateRepository(BaseRepository[dict]):
         try:
             # In real implementation, would restore from backup
             return ServiceResult.success(True)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State restore failed: {e}")
 
     async def cleanup_old_states(self, days_old: int) -> ServiceResult[int]:
@@ -339,5 +339,5 @@ class PluginStateRepository(BaseRepository[dict]):
         try:
             # In real implementation, would cleanup old backups
             return ServiceResult.success(0)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.failure(f"State cleanup failed: {e}")

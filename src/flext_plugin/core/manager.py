@@ -21,6 +21,7 @@ from flext_plugin.core.types import (
     PluginStatus,
 )
 from flext_plugin.core.validators import PluginValidator
+from flext_plugin.types import PluginContext, PluginData, PluginResult
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -46,7 +47,7 @@ class PluginManager:
 
     def __init__(self, plugin_directories: list[Path] | None = None, entry_point_groups: list[str] | None = None, security_enabled: bool = True, auto_discover: bool = True) -> None:
         """Initialize plugin manager.
-        
+
         Args:
             plugin_directories: List of directories to search for plugins.
             entry_point_groups: List of entry point groups to discover.
@@ -64,7 +65,7 @@ class PluginManager:
 
     async def initialize(self) -> None:
         """Initialize the plugin manager.
-        
+
         Performs plugin discovery if auto_discover is enabled.
         """
         if self.auto_discover:
@@ -72,26 +73,26 @@ class PluginManager:
 
     async def discover_plugins(self) -> dict[str, DiscoveredPlugin]:
         """Discover all available plugins.
-        
+
         Returns:
             Dictionary mapping plugin IDs to discovered plugin info.
 
         """
         self._discovered_plugins = await self.discovery.discover_all()
-        logger.info(f"Discovered {len(self._discovered_plugins)} plugins")
+        logger.info("Discovered %d plugins", len(self._discovered_plugins))
         return self._discovered_plugins
 
     async def load_plugin(self, plugin_id: str, config: dict[str, Any] | None = None, initialize: bool = True) -> LoadedPlugin:
         """Load a plugin by ID.
-        
+
         Args:
             plugin_id: The plugin ID to load.
             config: Optional configuration for the plugin.
             initialize: Whether to initialize the plugin after loading.
-            
+
         Returns:
             The loaded plugin instance.
-            
+
         Raises:
             PluginError: If plugin is not found or cannot be loaded.
 
@@ -114,7 +115,7 @@ class PluginManager:
 
     async def unload_plugin(self, plugin_id: str) -> None:
         """Unload a plugin by ID.
-        
+
         Args:
             plugin_id: The plugin ID to unload.
 
@@ -133,14 +134,14 @@ class PluginManager:
 
     async def reload_plugin(self, plugin_id: str, config: dict[str, Any] | None = None) -> LoadedPlugin:
         """Reload a plugin by ID.
-        
+
         Args:
             plugin_id: The plugin ID to reload.
             config: Optional new configuration for the plugin.
-            
+
         Returns:
             The reloaded plugin instance.
-            
+
         Raises:
             PluginError: If plugin is not found or cannot be reloaded.
 
@@ -156,17 +157,17 @@ class PluginManager:
         discovered = self._discovered_plugins[plugin_id]
         return await self.loader.reload_plugin(plugin_id, discovered, config)
 
-    async def execute_plugin(self, plugin_id: str, input_data: Any = None, context: dict[str, Any] | None = None) -> PluginExecutionResult:
+    async def execute_plugin(self, plugin_id: str, input_data: PluginData = None, context: PluginContext | None = None) -> PluginExecutionResult:
         """Execute a plugin with input data.
-        
+
         Args:
             plugin_id: The plugin ID to execute.
             input_data: Input data to pass to the plugin.
             context: Additional execution context.
-            
+
         Returns:
             The execution result.
-            
+
         Raises:
             PluginExecutionError: If plugin execution fails.
 
@@ -202,7 +203,7 @@ class PluginManager:
             result.success = True
             result.result = plugin_result
 
-        except Exception as e:
+        except (PluginError, RuntimeError, ValueError, AttributeError, TypeError) as e:
             # Update result with error
             result.success = False
             result.error = str(e)
@@ -223,14 +224,14 @@ class PluginManager:
 
         return result
 
-    async def execute_plugin_async(self, plugin_id: str, input_data: Any = None, context: dict[str, Any] | None = None) -> asyncio.Task[Any]:
+    async def execute_plugin_async(self, plugin_id: str, input_data: PluginData = None, context: PluginContext | None = None) -> asyncio.Task[PluginResult]:
         """Execute a plugin asynchronously.
-        
+
         Args:
             plugin_id: The plugin ID to execute.
             input_data: Input data to pass to the plugin.
             context: Additional execution context.
-            
+
         Returns:
             The async task for the execution.
 
@@ -249,10 +250,10 @@ class PluginManager:
 
     async def get_plugin_status(self, plugin_id: str) -> PluginStatus:
         """Get the status of a plugin.
-        
+
         Args:
             plugin_id: The plugin ID to check.
-            
+
         Returns:
             The plugin status.
 
@@ -265,10 +266,10 @@ class PluginManager:
 
     async def get_plugin_health(self, plugin_id: str) -> dict[str, Any]:
         """Get the health status of a plugin.
-        
+
         Args:
             plugin_id: The plugin ID to check.
-            
+
         Returns:
             Dictionary containing health information.
 
@@ -281,7 +282,7 @@ class PluginManager:
 
         try:
             return await loaded.instance.health_check()
-        except Exception as e:
+        except (RuntimeError, ValueError, AttributeError, TypeError, OSError) as e:
             return {
                 "status": "unhealthy",
                 "error": str(e),
@@ -289,11 +290,11 @@ class PluginManager:
 
     async def list_plugins(self, plugin_type: PluginType | None = None, status: PluginStatus | None = None) -> list[dict[str, Any]]:
         """List available plugins with optional filtering.
-        
+
         Args:
             plugin_type: Optional plugin type filter.
             status: Optional plugin status filter.
-            
+
         Returns:
             List of plugin information dictionaries.
 
@@ -333,10 +334,10 @@ class PluginManager:
 
     def get_discovered_plugin(self, plugin_id: str) -> DiscoveredPlugin | None:
         """Get a discovered plugin by ID.
-        
+
         Args:
             plugin_id: The plugin ID to retrieve.
-            
+
         Returns:
             The discovered plugin info or None if not found.
 
@@ -345,10 +346,10 @@ class PluginManager:
 
     def get_loaded_plugin(self, plugin_id: str) -> LoadedPlugin | None:
         """Get a loaded plugin by ID.
-        
+
         Args:
             plugin_id: The plugin ID to retrieve.
-            
+
         Returns:
             The loaded plugin or None if not loaded.
 
@@ -357,10 +358,10 @@ class PluginManager:
 
     def is_plugin_loaded(self, plugin_id: str) -> bool:
         """Check if a plugin is loaded.
-        
+
         Args:
             plugin_id: The plugin ID to check.
-            
+
         Returns:
             True if the plugin is loaded, False otherwise.
 
@@ -369,7 +370,7 @@ class PluginManager:
 
     async def shutdown(self) -> None:
         """Shutdown the plugin manager.
-        
+
         Cancels all running executions and unloads all plugins.
         """
         # Cancel all running executions
@@ -389,6 +390,6 @@ class PluginManager:
             try:
                 await self.unload_plugin(plugin_id)
             except Exception as e:
-                logger.exception(f"Error unloading plugin {plugin_id}: {e}")
+                logger.exception("Error unloading plugin %s: %s", plugin_id, e)
 
         logger.info("Plugin manager shutdown complete")

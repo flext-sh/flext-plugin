@@ -1,40 +1,40 @@
-from typing import Any
-from flext_core.domain.pydantic_base import BaseModel
+"""Simple working hot reload system for plugins."""
 
-"""Simple working hot reload system for plugins.
+from __future__ import annotations
 
 import asyncio
 import importlib
 import sys
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
-from flext_core.domain.pydantic_base import Field
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 
 if TYPE_CHECKING:
-            import aiofiles  # type: ignore
+    import aiofiles  # type: ignore
     from watchdog.observers import Observer
 else:
-            try:
-            import aiofiles
+    try:
+        import aiofiles
         from watchdog.observers import Observer
     except ImportError:
         aiofiles = None  # type: ignore
         Observer = None  # type: ignore
 
-from flext_core.domain.pydantic_base import DomainBaseModel
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
 
 class SimplePluginHandler(FileSystemEventHandler):
-         """Simple file system event handler for plugin files."""
+    """Simple file system event handler for plugin files."""
 
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
+        """Initialize handler with reload callback function."""
         super().__init__()
         self.reload_callback = reload_callback
 
     def on_modified(self, event: FileSystemEvent) -> None:
+        """Handle file modification events for Python plugin files."""
         if event.is_directory:
             return
 
@@ -52,13 +52,15 @@ class SimpleHotReloadManager(DomainBaseModel):
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def model_post_init(self, __context: Any, /) -> None:
+    def model_post_init(self, __context: dict[str, Any] | None, /) -> None:
+        """Initialize observer and loaded plugins after model creation."""
         if Observer is not None:
             self.observer = Observer()
         if not hasattr(self, "loaded_plugins"):
             self.loaded_plugins = {}
 
     async def start_watching(self) -> None:
+        """Start watching plugin directory for file changes."""
         if self.observer is None or Observer is None:
             msg = "Observer not initialized or watchdog not available"
             raise RuntimeError(msg)
@@ -71,6 +73,7 @@ class SimpleHotReloadManager(DomainBaseModel):
         await self._initial_plugin_load()
 
     async def stop_watching(self) -> None:
+        """Stop watching plugin directory and cleanup observer."""
         if self.observer and self.observer.is_alive():
             self.observer.stop()
             self.observer.join()
@@ -79,10 +82,10 @@ class SimpleHotReloadManager(DomainBaseModel):
         try:
             plugin_dir = Path(self.plugin_directory)
             for plugin_file in plugin_dir.glob("*.py"):
-            if not plugin_file.name.startswith("__"):
-            await self._load_plugin(plugin_file)
-        except Exception:
-        pass
+                if not plugin_file.name.startswith("__"):
+                    await self._load_plugin(plugin_file)
+        except (OSError, ImportError, RuntimeError, ValueError, AttributeError):
+            pass
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
         task = asyncio.create_task(self._reload_plugin(file_path))
@@ -94,17 +97,17 @@ class SimpleHotReloadManager(DomainBaseModel):
 
             # Unload existing plugin
             if plugin_name in self.loaded_plugins:
-            await self._unload_plugin(plugin_name)
+                await self._unload_plugin(plugin_name)
 
             # Reload plugin module
             if plugin_name in sys.modules:
-            importlib.reload(sys.modules[plugin_name])
+                importlib.reload(sys.modules[plugin_name])
 
             # Load updated plugin
             await self._load_plugin(file_path)
 
-        except Exception:
-        pass
+        except (OSError, ImportError, RuntimeError, ValueError, AttributeError):
+            pass
 
     async def _load_plugin(self, file_path: Path) -> None:
         try:
@@ -121,38 +124,40 @@ class SimpleHotReloadManager(DomainBaseModel):
             # Look for plugin_instance or first class
             plugin_instance = None
             if "plugin_instance" in plugin_globals:
-            plugin_instance = plugin_globals["plugin_instance"]
+                plugin_instance = plugin_globals["plugin_instance"]
             else:
-            # Find first class in the module
+                # Find first class in the module
                 for value in plugin_globals.values():
-            if isinstance(value, type) and value.__name__ != "type":
-            plugin_instance = value()
+                    if isinstance(value, type) and value.__name__ != "type":
+                        plugin_instance = value()
                         break
 
             if plugin_instance:
-            self.loaded_plugins[plugin_name] = plugin_instance
+                self.loaded_plugins[plugin_name] = plugin_instance
 
-        except Exception:
-        pass
+        except (OSError, ImportError, RuntimeError, ValueError, AttributeError):
+            pass
 
     async def _unload_plugin(self, plugin_name: str) -> None:
         try:
             if plugin_name in self.loaded_plugins:
-            plugin = self.loaded_plugins[plugin_name]
+                plugin = self.loaded_plugins[plugin_name]
                 # Call plugin cleanup if available:
                 if hasattr(plugin, "cleanup"):
-            if asyncio.iscoroutinefunction(plugin.cleanup):
+                    if asyncio.iscoroutinefunction(plugin.cleanup):
                         await plugin.cleanup()
                     else:
-            plugin.cleanup()
+                        plugin.cleanup()
                 del self.loaded_plugins[plugin_name]
-        except Exception:
-        pass
+        except (OSError, ImportError, RuntimeError, ValueError, AttributeError):
+            pass
 
     def get_loaded_plugins(self) -> dict[str, Any]:
+        """Get dictionary of currently loaded plugins."""
         return self.loaded_plugins.copy()
 
     async def reload_all_plugins(self) -> None:
+        """Reload all loaded plugins from scratch."""
         # Unload all
         for plugin_name in list(self.loaded_plugins.keys()):
             await self._unload_plugin(plugin_name)

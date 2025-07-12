@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel
+from flext_plugin.types import PluginResult
 
 
 class PluginLoader(DomainBaseModel):
@@ -23,7 +24,7 @@ class PluginLoader(DomainBaseModel):
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    async def load_plugin_from_file(self, file_path: str) -> Any:
+    async def load_plugin_from_file(self, file_path: str) -> PluginResult:
         """Load plugin from file path."""
         try:
             path = Path(file_path)
@@ -73,7 +74,7 @@ class PluginLoader(DomainBaseModel):
         if plugin_name in self.plugin_modules:
             del self.plugin_modules[plugin_name]
 
-    async def reload_plugin(self, plugin_name: str, file_path: str) -> Any:
+    async def reload_plugin(self, plugin_name: str, file_path: str) -> PluginResult:
         """Reload plugin from file."""
         await self.unload_plugin(plugin_name)
         return await self.load_plugin_from_file(file_path)

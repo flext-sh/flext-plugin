@@ -1,21 +1,13 @@
-from datetime import datetime
-from typing import Any, ClassVar
-
-from flext_core.domain.pydantic_base import Field
-from flext_core.domain.pydantic_base import BaseModel
-from typing import List
-
 """Base plugin interface and metadata classes for the enterprise plugin system.
 
 📋 Architecture Documentation:
-            docs/architecture/003-plugin-system-architecture/
+    docs/architecture/003-plugin-system-architecture/
 🔗 Interface Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md
 📊 Implementation Analysis: docs/architecture/003-plugin-system-architecture/IMPLEMENTATION-REALITY-MAP.md
 
 This module provides the foundation for the FLEXT enterprise plugin system with:
-            - PluginInterface: Abstract base class for all plugins (EXCELLENT IMPLEMENTATION)
-- PluginMetadata:
-        Rich metadata system with 20+ fields (ENTERPRISE-GRADE)
+- PluginInterface: Abstract base class for all plugins (EXCELLENT IMPLEMENTATION)
+- PluginMetadata: Rich metadata system with 20+ fields (ENTERPRISE-GRADE)
 - Specialized base classes: Extractor, Loader, Transformer plugins
 
 Status: ✅ PRODUCTION-READY FOUNDATION (A+ Grade)
@@ -25,14 +17,20 @@ Note: Core components (discovery.py, loader.py, manager.py) still missing
 from __future__ import annotations
 
 import abc
-from datetime import UTC
-from typing import TYPE_CHECKING
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_plugin.domain.entities import PluginLifecycle, PluginStatus
+from flext_plugin.types import (
+    ConfigurationDict,
+    PluginContext,
+    PluginData,
+    PluginResult,
+)
 
 if TYPE_CHECKING:
-            from flext_plugin.domain.entities import PluginType
+    from flext_plugin.domain.entities import PluginType
 
 
 class PluginMetadata(DomainBaseModel):
@@ -133,7 +131,7 @@ class PluginMetadata(DomainBaseModel):
 
 
 class PluginInterface(abc.ABC):
-         """Abstract base class for all FLEXT enterprise plugins.
+    """Abstract base class for all FLEXT enterprise plugins.
 
     Defines the contract that all plugins must implement for proper
     integration with the enterprise plugin system, including lifecycle
@@ -160,7 +158,8 @@ class PluginInterface(abc.ABC):
     # Plugin metadata - must be defined by concrete implementations
     METADATA: ClassVar[PluginMetadata]
 
-    def __init__(self, config: dict[str, Any] | None = None) -> None:
+    def __init__(self, config: ConfigurationDict | None = None) -> None:
+        """Initialize plugin interface with configuration."""
         self._config = config or {}
         self._lifecycle_state = PluginLifecycle.UNREGISTERED
         self._status = PluginStatus.UNKNOWN
@@ -169,22 +168,27 @@ class PluginInterface(abc.ABC):
 
     @property
     def metadata(self) -> PluginMetadata:
+        """Get plugin metadata."""
         return self.METADATA
 
     @property
     def lifecycle_state(self) -> PluginLifecycle:
+        """Get current lifecycle state."""
         return self._lifecycle_state
 
     @property
     def status(self) -> PluginStatus:
+        """Get current plugin status."""
         return self._status
 
     @property
-    def config(self) -> dict[str, Any]:
+    def config(self) -> ConfigurationDict:
+        """Get plugin configuration."""
         return self._config.copy()
 
     @property
     def is_initialized(self) -> bool:
+        """Check if plugin is initialized."""
         return self._initialized
 
     def _update_lifecycle_state(self, state: PluginLifecycle) -> None:
@@ -196,21 +200,26 @@ class PluginInterface(abc.ABC):
 
     @abc.abstractmethod
     async def initialize(self) -> None:
+        """Initialize plugin resources."""
         ...
 
     @abc.abstractmethod
     async def cleanup(self) -> None:
+        """Clean up plugin resources."""
         ...
 
     @abc.abstractmethod
-    async def health_check(self) -> dict[str, Any]:
+    async def health_check(self) -> ConfigurationDict:
+        """Perform plugin health check."""
         ...
 
     @abc.abstractmethod
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+        """Execute plugin with input data."""
         ...
 
-    async def validate_configuration(self, config: dict[str, Any]) -> list[str]:
+    async def validate_configuration(self, config: ConfigurationDict) -> list[str]:
+        """Validate plugin configuration."""
         # Basic validation - can be overridden by concrete implementations
         errors = []
 
@@ -222,24 +231,26 @@ class PluginInterface(abc.ABC):
         schema = self.metadata.configuration_schema
         if schema:
             try:
-            import jsonschema  # type: ignore
+                import jsonschema  # type: ignore
 
                 try:
-            jsonschema.validate(instance=config, schema=schema)
+                    jsonschema.validate(instance=config, schema=schema)
                 except jsonschema.ValidationError as e:
-        errors.append(f"Configuration validation failed: {e.message}")
+                    errors.append(f"Configuration validation failed: {e.message}")
                 except jsonschema.SchemaError as e:
-        errors.append(f"Invalid configuration schema: {e.message}")
+                    errors.append(f"Invalid configuration schema: {e.message}")
             except ImportError:
-        # jsonschema not available - skip validation
+                # jsonschema not available - skip validation
                 pass
 
         return errors
 
     async def get_capabilities(self) -> list[str]:
+        """Get plugin capabilities."""
         return self.metadata.capabilities
 
-    async def get_resource_usage(self) -> dict[str, Any]:
+    async def get_resource_usage(self) -> ConfigurationDict:
+        """Get current resource usage."""
         import psutil  # type: ignore
 
         process = psutil.Process()
@@ -255,7 +266,7 @@ class PluginInterface(abc.ABC):
 
 
 class BaseExtractorPlugin(PluginInterface):
-         """Base class for data extractor plugins.
+    """Base class for data extractor plugins.
 
     Specialized base class for plugins that extract data from various
     sources including databases, APIs, files, and streaming systems.
@@ -267,16 +278,18 @@ class BaseExtractorPlugin(PluginInterface):
     """
 
     @abc.abstractmethod
-    async def extract(self, source_config: dict[str, Any]) -> Any:
+    async def extract(self, source_config: ConfigurationDict) -> PluginResult:
+        """Extract data from source."""
         ...
 
-    async def execute(self, _input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, _input_data: PluginData, context: PluginContext) -> PluginResult:
+        """Execute extractor by extracting from source."""
         source_config = context.get("source_config", {})
         return await self.extract(source_config)
 
 
 class BaseLoaderPlugin(PluginInterface):
-         """Base class for data loader plugins.
+    """Base class for data loader plugins.
 
     Specialized base class for plugins that load data into various
     destinations including databases, data warehouses, and file systems.
@@ -288,16 +301,18 @@ class BaseLoaderPlugin(PluginInterface):
     """
 
     @abc.abstractmethod
-    async def load( self, data: Any, destination_config: dict[str, Any], ) -> dict[str, Any]:
+    async def load( self, data: PluginData, destination_config: ConfigurationDict ) -> ConfigurationDict:
+        """Load data to destination."""
         ...
 
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+        """Execute loader by loading data to destination."""
         destination_config = context.get("destination_config", {})
         return await self.load(input_data, destination_config)
 
 
 class BaseTransformerPlugin(PluginInterface):
-         """Base class for data transformer plugins.
+    """Base class for data transformer plugins.
 
     Specialized base class for plugins that transform, validate,
     and enrich data during pipeline processing.
@@ -309,9 +324,11 @@ class BaseTransformerPlugin(PluginInterface):
     """
 
     @abc.abstractmethod
-    async def transform(self, data: Any, transform_config: dict[str, Any]) -> Any:
+    async def transform(self, data: PluginData, transform_config: ConfigurationDict) -> PluginResult:
+        """Transform input data."""
         ...
 
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
+        """Execute transformer by transforming input data."""
         transform_config = context.get("transform_config", {})
         return await self.transform(input_data, transform_config)

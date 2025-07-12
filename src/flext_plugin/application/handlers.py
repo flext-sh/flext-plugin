@@ -17,6 +17,7 @@ if TYPE_CHECKING:
         PluginMetadata,
         PluginRegistry,
     )
+    from flext_plugin.domain.exceptions import PluginError
     from flext_plugin.domain.ports import (
         PluginDiscoveryService,
         PluginExecutionService,
@@ -24,16 +25,25 @@ if TYPE_CHECKING:
         PluginRegistryService,
         PluginValidationService,
     )
+else:
+    try:
+        from flext_plugin.domain.exceptions import PluginError
+    except ImportError:
+        # Define basic exception as fallback
+        class PluginError(Exception):
+            pass
 
 
 class PluginDiscoveryHandler(CommandHandler):
     """Plugin discovery command handler."""
 
     def __init__(self, discovery_service: PluginDiscoveryService) -> None:
+        """Initialize discovery handler with service dependency."""
         super().__init__()
         self.discovery_service = discovery_service
 
     async def discover_plugins(self, search_paths: list[str]) -> ServiceResult[list[PluginMetadata]]:
+        """Discover plugins in specified search paths."""
         try:
             self.logger.info(
                 "Starting plugin discovery",
@@ -58,6 +68,7 @@ class PluginDiscoveryHandler(CommandHandler):
             return ServiceResult.fail(f"Discovery handler failed: {e}")
 
     async def validate_plugin_metadata(self, metadata: PluginMetadata) -> ServiceResult[bool]:
+        """Validate plugin metadata structure and content."""
         try:
             self.logger.debug(
                 "Validating plugin metadata",
@@ -79,6 +90,7 @@ class PluginDiscoveryHandler(CommandHandler):
             return ServiceResult.fail(f"Validation handler failed: {e}")
 
     async def get_plugin_manifest(self, plugin_path: str) -> ServiceResult[dict]:
+        """Retrieve plugin manifest from path."""
         try:
             self.logger.debug(
                 "Getting plugin manifest",
@@ -104,10 +116,12 @@ class PluginValidationHandler(CommandHandler):
     """Plugin validation command handler."""
 
     def __init__(self, validation_service: PluginValidationService) -> None:
+        """Initialize validation handler with service dependency."""
         super().__init__()
         self.validation_service = validation_service
 
     async def validate_plugin(self, plugin: PluginInstance) -> ServiceResult[bool]:
+        """Validate plugin instance structure and configuration."""
         try:
             self.logger.info(
                 "Starting plugin validation",
@@ -129,6 +143,7 @@ class PluginValidationHandler(CommandHandler):
             return ServiceResult.fail(f"Validation handler failed: {e}")
 
     async def validate_configuration(self, plugin: PluginInstance, config: dict) -> ServiceResult[bool]:
+        """Validate plugin configuration parameters."""
         try:
             self.logger.debug(
                 "Validating plugin configuration",
@@ -152,7 +167,8 @@ class PluginValidationHandler(CommandHandler):
             self.logger.exception("Plugin configuration validation handler error")
             return ServiceResult.fail(f"Configuration validation handler failed: {e}")
 
-    async def validate_dependencies( self, plugin: PluginInstance, ) -> ServiceResult[bool]:
+    async def validate_dependencies( self, plugin: PluginInstance ) -> ServiceResult[bool]:
+        """Validate plugin dependencies and compatibility."""
         try:
             self.logger.debug(
                 "Validating plugin dependencies",
@@ -178,10 +194,12 @@ class PluginLifecycleHandler(CommandHandler):
     """Plugin lifecycle command handler."""
 
     def __init__(self, lifecycle_service: PluginLifecycleService) -> None:
+        """Initialize lifecycle handler with service dependency."""
         super().__init__()
         self.lifecycle_service = lifecycle_service
 
-    async def register_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def register_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Register plugin in the system."""
         try:
             self.logger.info(
                 "Registering plugin",
@@ -201,7 +219,8 @@ class PluginLifecycleHandler(CommandHandler):
             self.logger.exception("Plugin registration handler error")
             return ServiceResult.fail(f"Registration handler failed: {e}")
 
-    async def load_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def load_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Load plugin into memory."""
         try:
             self.logger.info(
                 "Loading plugin",
@@ -221,7 +240,8 @@ class PluginLifecycleHandler(CommandHandler):
             self.logger.exception("Plugin loading handler error")
             return ServiceResult.fail(f"Loading handler failed: {e}")
 
-    async def initialize_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def initialize_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Initialize plugin for execution."""
         try:
             self.logger.info(
                 "Initializing plugin",
@@ -231,17 +251,18 @@ class PluginLifecycleHandler(CommandHandler):
             result = await self.lifecycle_service.initialize_plugin(plugin)
 
             if result.success:
-            self.logger.info("Plugin initialized successfully")
+                self.logger.info("Plugin initialized successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin initialization failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin initialization handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin initialization handler error")
             return ServiceResult.fail(f"Initialization handler failed: {e}")
 
-    async def activate_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def activate_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Activate plugin for use."""
         try:
             self.logger.info(
                 "Activating plugin",
@@ -251,17 +272,18 @@ class PluginLifecycleHandler(CommandHandler):
             result = await self.lifecycle_service.activate_plugin(plugin)
 
             if result.success:
-            self.logger.info("Plugin activated successfully")
+                self.logger.info("Plugin activated successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin activation failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin activation handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin activation handler error")
             return ServiceResult.fail(f"Activation handler failed: {e}")
 
-    async def suspend_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def suspend_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Suspend plugin execution."""
         try:
             self.logger.info(
                 "Suspending plugin",
@@ -271,17 +293,18 @@ class PluginLifecycleHandler(CommandHandler):
             result = await self.lifecycle_service.suspend_plugin(plugin)
 
             if result.success:
-            self.logger.info("Plugin suspended successfully")
+                self.logger.info("Plugin suspended successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin suspension failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin suspension handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin suspension handler error")
             return ServiceResult.fail(f"Suspension handler failed: {e}")
 
-    async def unload_plugin( self, plugin: PluginInstance, ) -> ServiceResult[PluginInstance]:
+    async def unload_plugin( self, plugin: PluginInstance ) -> ServiceResult[PluginInstance]:
+        """Unload plugin from memory."""
         try:
             self.logger.info(
                 "Unloading plugin",
@@ -291,25 +314,27 @@ class PluginLifecycleHandler(CommandHandler):
             result = await self.lifecycle_service.unload_plugin(plugin)
 
             if result.success:
-            self.logger.info("Plugin unloaded successfully")
+                self.logger.info("Plugin unloaded successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin unloading failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin unloading handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin unloading handler error")
             return ServiceResult.fail(f"Unloading handler failed: {e}")
 
 
 class PluginExecutionHandler(CommandHandler):
-         """Plugin execution command handler."""
+    """Plugin execution command handler."""
 
     def __init__(self, execution_service: PluginExecutionService) -> None:
+        """Initialize execution handler with service dependency."""
         super().__init__()
         self.execution_service = execution_service
 
-    async def execute_plugin( self, plugin: PluginInstance, input_data: dict, execution_context: dict | None = None, ) -> ServiceResult[PluginExecution]:
+    async def execute_plugin( self, plugin: PluginInstance, input_data: dict, execution_context: dict | None = None ) -> ServiceResult[PluginExecution]:
+        """Execute plugin with input data and context."""
         try:
             self.logger.info(
                 "Executing plugin",
@@ -326,7 +351,7 @@ class PluginExecutionHandler(CommandHandler):
             )
 
             if result.success:
-            self.logger.info(
+                self.logger.info(
                     "Plugin execution completed",
                     extra={
                         "execution_id": result.value.execution_id,
@@ -335,15 +360,16 @@ class PluginExecutionHandler(CommandHandler):
                     },
                 )
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin execution failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin execution handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin execution handler error")
             return ServiceResult.fail(f"Execution handler failed: {e}")
 
-    async def get_execution_status( self, execution_id: str, ) -> ServiceResult[PluginExecution]:
+    async def get_execution_status( self, execution_id: str ) -> ServiceResult[PluginExecution]:
+        """Get current execution status by ID."""
         try:
             self.logger.debug(
                 "Getting execution status",
@@ -353,17 +379,18 @@ class PluginExecutionHandler(CommandHandler):
             result = await self.execution_service.get_execution_status(execution_id)
 
             if result.success:
-            self.logger.debug("Execution status retrieved successfully")
+                self.logger.debug("Execution status retrieved successfully")
             else:
-            self.logger.warning(
+                self.logger.warning(
                     "Execution status retrieval failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Execution status handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Execution status handler error")
             return ServiceResult.fail(f"Status handler failed: {e}")
 
     async def cancel_execution(self, execution_id: str) -> ServiceResult[bool]:
+        """Cancel running plugin execution."""
         try:
             self.logger.info(
                 "Cancelling execution",
@@ -373,25 +400,27 @@ class PluginExecutionHandler(CommandHandler):
             result = await self.execution_service.cancel_execution(execution_id)
 
             if result.success:
-            self.logger.info("Execution cancelled successfully")
+                self.logger.info("Execution cancelled successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Execution cancellation failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Execution cancellation handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Execution cancellation handler error")
             return ServiceResult.fail(f"Cancellation handler failed: {e}")
 
 
 class PluginRegistryHandler(CommandHandler):
-         """Plugin registry command handler."""
+    """Plugin registry command handler."""
 
     def __init__(self, registry_service: PluginRegistryService) -> None:
+        """Initialize registry handler with service dependency."""
         super().__init__()
         self.registry_service = registry_service
 
-    async def register_registry( self, registry: PluginRegistry, ) -> ServiceResult[PluginRegistry]:
+    async def register_registry( self, registry: PluginRegistry ) -> ServiceResult[PluginRegistry]:
+        """Register plugin registry in the system."""
         try:
             self.logger.info(
                 "Registering plugin registry",
@@ -401,17 +430,18 @@ class PluginRegistryHandler(CommandHandler):
             result = await self.registry_service.register_registry(registry)
 
             if result.success:
-            self.logger.info("Plugin registry registered successfully")
+                self.logger.info("Plugin registry registered successfully")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin registry registration failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin registry registration handler error")
+        except (PluginError, TypeError, ValueError, AttributeError) as e:
+            self.logger.exception("Plugin registry registration handler error")
             return ServiceResult.fail(f"Registry registration handler failed: {e}")
 
     async def sync_registry(self, registry: PluginRegistry) -> ServiceResult[bool]:
+        """Synchronize registry with remote source."""
         try:
             self.logger.info(
                 "Synchronizing registry",
@@ -421,17 +451,18 @@ class PluginRegistryHandler(CommandHandler):
             result = await self.registry_service.sync_registry(registry)
 
             if result.success:
-            self.logger.info("Registry synchronization successful")
+                self.logger.info("Registry synchronization successful")
             else:
-            self.logger.error(
+                self.logger.error(
                     "Registry synchronization failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Registry synchronization handler error")
+        except (PluginError, TypeError, ValueError, ConnectionError, TimeoutError) as e:
+            self.logger.exception("Registry synchronization handler error")
             return ServiceResult.fail(f"Sync handler failed: {e}")
 
-    async def search_plugins( self, registry: PluginRegistry, query: str, ) -> ServiceResult[list[PluginMetadata]]:
+    async def search_plugins( self, registry: PluginRegistry, query: str ) -> ServiceResult[list[PluginMetadata]]:
+        """Search plugins in registry by query."""
         try:
             self.logger.info(
                 "Searching plugins in registry",
@@ -441,20 +472,21 @@ class PluginRegistryHandler(CommandHandler):
             result = await self.registry_service.search_plugins(registry, query)
 
             if result.success:
-            self.logger.info(
+                self.logger.info(
                     "Plugin search completed",
                     extra={"result_count": len(result.value)},
                 )
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin search failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin search handler error")
+        except (PluginError, TypeError, ValueError, ConnectionError, TimeoutError) as e:
+            self.logger.exception("Plugin search handler error")
             return ServiceResult.fail(f"Search handler failed: {e}")
 
-    async def download_plugin( self, registry: PluginRegistry, plugin_id: str, ) -> ServiceResult[str]:
+    async def download_plugin( self, registry: PluginRegistry, plugin_id: str ) -> ServiceResult[str]:
+        """Download plugin from registry."""
         try:
             self.logger.info(
                 "Downloading plugin from registry",
@@ -464,15 +496,15 @@ class PluginRegistryHandler(CommandHandler):
             result = await self.registry_service.download_plugin(registry, plugin_id)
 
             if result.success:
-            self.logger.info(
+                self.logger.info(
                     "Plugin downloaded successfully",
                     extra={"download_path": result.value},
                 )
             else:
-            self.logger.error(
+                self.logger.error(
                     "Plugin download failed",
                     extra={"error": result.error},
                 )
-        except Exception as e:
-        self.logger.exception("Plugin download handler error")
+        except (PluginError, OSError, PermissionError, ConnectionError, TimeoutError) as e:
+            self.logger.exception("Plugin download handler error")
             return ServiceResult.fail(f"Download handler failed: {e}")

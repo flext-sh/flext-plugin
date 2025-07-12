@@ -37,6 +37,13 @@ from pydantic import ConfigDict
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_core.domain.types import ServiceResult
 
+try:
+    from flext_core.domain.exceptions import ServiceError
+except ImportError:
+    # Define basic exception as fallback
+    class ServiceError(Exception):
+        pass
+
 # Use centralized logger from flext-observability - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
 
@@ -136,6 +143,7 @@ class PluginManager:
         auto_discover: bool = True,
         security_enabled: bool = True,
     ) -> None:
+        """Initialize plugin manager with container and configuration."""
         self.container = container
         self.auto_discover = auto_discover
         self.security_enabled = security_enabled
@@ -763,6 +771,7 @@ def create_plugin_manager(
     auto_discover: bool = True,
     security_enabled: bool = True,
 ) -> PluginManager:
+    """Create and configure plugin manager instance with container."""
     return PluginManager(
         container=container,
         auto_discover=auto_discover,

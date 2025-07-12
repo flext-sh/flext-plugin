@@ -98,7 +98,7 @@ class PluginConfig(BaseSettings):
     @property
     def plugin_directory_path(self) -> Path:
         """Get the plugin directory path.
-        
+
         Returns:
             The plugin directory path as a Path object.
 
@@ -108,7 +108,7 @@ class PluginConfig(BaseSettings):
     @property
     def plugin_cache_path(self) -> Path:
         """Get the plugin cache directory path.
-        
+
         Returns:
             The plugin cache directory path as a Path object.
 
@@ -118,7 +118,7 @@ class PluginConfig(BaseSettings):
     @property
     def plugin_config_path(self) -> Path:
         """Get the plugin configuration directory path.
-        
+
         Returns:
             The plugin configuration directory path as a Path object.
 
@@ -128,7 +128,7 @@ class PluginConfig(BaseSettings):
     @property
     def plugin_log_path(self) -> Path:
         """Get the plugin log directory path.
-        
+
         Returns:
             The plugin log directory path as a Path object.
 
@@ -138,7 +138,7 @@ class PluginConfig(BaseSettings):
     @property
     def hot_reload_backup_path(self) -> Path:
         """Get the hot reload backup directory path.
-        
+
         Returns:
             The hot reload backup directory path as a Path object.
 
@@ -148,7 +148,7 @@ class PluginConfig(BaseSettings):
     @property
     def is_development(self) -> bool:
         """Check if running in development mode.
-        
+
         Returns:
             True if in development mode, False otherwise.
 
@@ -158,7 +158,7 @@ class PluginConfig(BaseSettings):
     @property
     def is_production(self) -> bool:
         """Check if running in production mode.
-        
+
         Returns:
             True if in production mode, False otherwise.
 
@@ -168,7 +168,7 @@ class PluginConfig(BaseSettings):
     @property
     def hot_reload_config(self) -> dict[str, int | bool | str]:
         """Get hot reload configuration.
-        
+
         Returns:
             Dictionary containing hot reload configuration settings.
 
@@ -184,7 +184,7 @@ class PluginConfig(BaseSettings):
     @property
     def security_config(self) -> dict[str, int | bool | list[str]]:
         """Get security configuration.
-        
+
         Returns:
             Dictionary containing security configuration settings.
 
@@ -200,7 +200,7 @@ class PluginConfig(BaseSettings):
     @property
     def registry_config(self) -> dict[str, str | bool | int | None]:
         """Get registry configuration.
-        
+
         Returns:
             Dictionary containing registry configuration settings.
 
@@ -214,7 +214,7 @@ class PluginConfig(BaseSettings):
 
     def validate_plugin_configuration(self) -> list[str]:
         """Validate plugin configuration settings.
-        
+
         Returns:
             List of validation error messages, empty if no errors.
 
@@ -261,14 +261,14 @@ class PluginConfig(BaseSettings):
             if not plugin_dir.exists():
                 # Try to create directory
                 plugin_dir.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
+        except (OSError, PermissionError, ValueError) as e:
             errors.append(f"Cannot create plugin directory: {e}")
 
         try:
             cache_dir = self.plugin_cache_path
             if not cache_dir.exists():
                 cache_dir.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
+        except (OSError, PermissionError, ValueError) as e:
             errors.append(f"Cannot create plugin cache directory: {e}")
 
         # Validate log level
@@ -279,7 +279,7 @@ class PluginConfig(BaseSettings):
 
     def get_plugin_paths(self) -> list[Path]:
         """Get all plugin search paths.
-        
+
         Returns:
             List of Path objects for plugin discovery.
 
@@ -299,7 +299,7 @@ class PluginConfig(BaseSettings):
 
     def get_environment_variables(self) -> dict[str, str]:
         """Get environment variables for plugin system.
-        
+
         Returns:
             Dictionary of environment variables and their values.
 

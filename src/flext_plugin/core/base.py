@@ -9,12 +9,18 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_plugin.domain.entities import (
     PluginConfiguration,
     PluginLifecycle,
     PluginStatus,
+)
+from flext_plugin.types import (
+    ConfigurationDict,
+    PluginContext,
+    PluginData,
+    PluginResult,
 )
 
 if TYPE_CHECKING:
@@ -42,9 +48,9 @@ class Plugin(ABC):
     # Plugin metadata - must be defined by concrete implementations
     METADATA: ClassVar[PluginMetadata]
 
-    def __init__(self, config: dict[str, Any] | None = None) -> None:
+    def __init__(self, config: ConfigurationDict | None = None) -> None:
         """Initialize plugin with configuration.
-        
+
         Args:
             config: Optional configuration dictionary for the plugin.
 
@@ -61,7 +67,7 @@ class Plugin(ABC):
     @property
     def metadata(self) -> PluginMetadata:
         """Get plugin metadata.
-        
+
         Returns:
             Plugin metadata instance containing name, version, and capabilities.
 
@@ -71,7 +77,7 @@ class Plugin(ABC):
     @property
     def lifecycle_state(self) -> PluginLifecycle:
         """Get current plugin lifecycle state.
-        
+
         Returns:
             Current lifecycle state of the plugin.
 
@@ -81,7 +87,7 @@ class Plugin(ABC):
     @property
     def status(self) -> PluginStatus:
         """Get current plugin status.
-        
+
         Returns:
             Current operational status of the plugin.
 
@@ -89,9 +95,9 @@ class Plugin(ABC):
         return self._status
 
     @property
-    def config(self) -> dict[str, Any]:
+    def config(self) -> ConfigurationDict:
         """Get plugin configuration as dictionary.
-        
+
         Returns:
             Copy of the plugin configuration dictionary.
 
@@ -101,7 +107,7 @@ class Plugin(ABC):
     @property
     def configuration(self) -> PluginConfiguration:
         """Get plugin configuration instance.
-        
+
         Returns:
             Plugin configuration domain object.
 
@@ -111,7 +117,7 @@ class Plugin(ABC):
     @property
     def is_initialized(self) -> bool:
         """Check if plugin is initialized.
-        
+
         Returns:
             True if plugin has been initialized, False otherwise.
 
@@ -120,7 +126,7 @@ class Plugin(ABC):
 
     def _update_lifecycle_state(self, state: PluginLifecycle) -> None:
         """Update plugin lifecycle state.
-        
+
         Args:
             state: New lifecycle state to set.
 
@@ -129,7 +135,7 @@ class Plugin(ABC):
 
     def _update_status(self, status: PluginStatus) -> None:
         """Update plugin status and health check timestamp.
-        
+
         Args:
             status: New plugin status to set.
 
@@ -140,10 +146,10 @@ class Plugin(ABC):
     @abstractmethod
     async def initialize(self) -> None:
         """Initialize the plugin.
-        
+
         Performs plugin initialization including resource setup,
         configuration validation, and dependency loading.
-        
+
         Raises:
             PluginInitializationError: If initialization fails.
 
@@ -153,10 +159,10 @@ class Plugin(ABC):
     @abstractmethod
     async def cleanup(self) -> None:
         """Clean up plugin resources.
-        
+
         Performs graceful shutdown of the plugin including
         resource cleanup and connection termination.
-        
+
         Raises:
             PluginCleanupError: If cleanup fails.
 
@@ -164,12 +170,12 @@ class Plugin(ABC):
         ...
 
     @abstractmethod
-    async def health_check(self) -> dict[str, Any]:
+    async def health_check(self) -> ConfigurationDict:
         """Perform plugin health check.
-        
+
         Returns:
             Dictionary containing health status and diagnostic information.
-            
+
         Raises:
             PluginHealthCheckError: If health check fails.
 
@@ -177,28 +183,28 @@ class Plugin(ABC):
         ...
 
     @abstractmethod
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
         """Execute plugin with input data and context.
-        
+
         Args:
             input_data: Input data for plugin execution.
             context: Execution context and parameters.
-            
+
         Returns:
             Plugin execution result.
-            
+
         Raises:
             PluginExecutionError: If execution fails.
 
         """
         ...
 
-    async def validate_configuration(self, config: dict[str, Any]) -> list[str]:
+    async def validate_configuration(self, config: ConfigurationDict) -> list[str]:
         """Validate plugin configuration.
-        
+
         Args:
             config: Configuration dictionary to validate.
-            
+
         Returns:
             List of validation error messages, empty if valid.
 
@@ -227,16 +233,16 @@ class Plugin(ABC):
 
     async def get_capabilities(self) -> list[str]:
         """Get list of plugin capabilities.
-        
+
         Returns:
             List of capability strings that this plugin supports.
 
         """
         return [str(capability) for capability in self.metadata.capabilities]
 
-    async def get_resource_usage(self) -> dict[str, Any]:
+    async def get_resource_usage(self) -> ConfigurationDict:
         """Get current resource usage statistics.
-        
+
         Returns:
             Dictionary containing memory, CPU, and other resource metrics.
 
@@ -269,28 +275,28 @@ class BaseExtractorPlugin(Plugin):
     """
 
     @abstractmethod
-    async def extract(self, source_config: dict[str, Any]) -> Any:
+    async def extract(self, source_config: ConfigurationDict) -> PluginResult:
         """Extract data from configured source.
-        
+
         Args:
             source_config: Source configuration parameters.
-            
+
         Returns:
             Extracted data in appropriate format.
-            
+
         Raises:
             PluginExtractionError: If data extraction fails.
 
         """
         ...
 
-    async def execute(self, _input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, _input_data: PluginData, context: PluginContext) -> PluginResult:
         """Execute extractor plugin by extracting from source.
-        
+
         Args:
             _input_data: Unused input data (extractors read from source).
             context: Execution context containing source_config.
-            
+
         Returns:
             Extracted data from the configured source.
 
@@ -309,31 +315,31 @@ class BaseLoaderPlugin(Plugin):
     @abstractmethod
     async def load(
         self,
-        data: Any,
-        destination_config: dict[str, Any],
-    ) -> dict[str, Any]:
+        data: PluginData,
+        destination_config: ConfigurationDict,
+    ) -> ConfigurationDict:
         """Load data to configured destination.
-        
+
         Args:
             data: Data to load to the destination.
             destination_config: Destination configuration parameters.
-            
+
         Returns:
             Dictionary containing load results and statistics.
-            
+
         Raises:
             PluginLoadError: If data loading fails.
 
         """
         ...
 
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
         """Execute loader plugin by loading data to destination.
-        
+
         Args:
             input_data: Data to load to the destination.
             context: Execution context containing destination_config.
-            
+
         Returns:
             Load results and statistics from the destination.
 
@@ -350,29 +356,29 @@ class BaseTransformerPlugin(Plugin):
     """
 
     @abstractmethod
-    async def transform(self, data: Any, transform_config: dict[str, Any]) -> Any:
+    async def transform(self, data: PluginData, transform_config: ConfigurationDict) -> PluginResult:
         """Transform input data according to configuration.
-        
+
         Args:
             data: Input data to transform.
             transform_config: Transformation configuration parameters.
-            
+
         Returns:
             Transformed data in the target format.
-            
+
         Raises:
             PluginTransformError: If data transformation fails.
 
         """
         ...
 
-    async def execute(self, input_data: Any, context: dict[str, Any]) -> Any:
+    async def execute(self, input_data: PluginData, context: PluginContext) -> PluginResult:
         """Execute transformer plugin by transforming input data.
-        
+
         Args:
             input_data: Data to transform.
             context: Execution context containing transform_config.
-            
+
         Returns:
             Transformed data according to configuration.
 

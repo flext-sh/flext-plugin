@@ -1,72 +1,67 @@
-from typing import Any
-from flext_core.domain.pydantic_base import BaseModel
-from typing import List
-from datetime import datetime
 """Plugin context and dependency management for enterprise plugin system."""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, time
-from typing import TYPE_CHECKING, Any, List, Set, TypeVar
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import uuid4
 
-from flext_core.domain.pydantic_base import Field
-
-from flext_core.domain.pydantic_base import DomainBaseModel
-from flext_plugin.types import PluginExecutionContext, PluginType
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from flext_plugin.types import PluginData, PluginExecutionContext, PluginType
 
 if TYPE_CHECKING:
-            T = TypeVar("T")
+    T = TypeVar("T")
 
 
 class PluginDependency(DomainBaseModel):
-         """Plugin dependency specification with version constraints.
+    """Plugin dependency specification with version constraints.
 
     Defines dependencies between plugins including version requirements,
-    optional dependencies, and compatibility constraints for proper  plugin ecosystem management.  """
+    optional dependencies, and compatibility constraints for proper plugin ecosystem management.
+    """
 
-    model_config = {"frozen":
-            True}
+    model_config = {"frozen": True}
 
     # Dependency identification
     plugin_id: str = Field(description="ID of the required plugin")
-    plugin_type: PluginType | None = Field(default=None,)
+    plugin_type: PluginType | None = Field(
         default=None,
         description="Expected plugin type",
     )
 
     # Version constraints
-    min_version: str | None = Field(default=None,)
+    min_version: str | None = Field(
         default=None,
         description="Minimum required version",
     )
-    max_version: str | None = Field(default=None,)
+    max_version: str | None = Field(
         default=None,
         description="Maximum compatible version",
     )
-    exact_version: str | None = Field(default=None,)
+    exact_version: str | None = Field(
         default=None,
         description="Exact version requirement",
     )
 
     # Dependency characteristics
     optional: bool = Field(default=False, description="Whether dependency is optional")
-    development_only: bool = Field(default=False,)
+    development_only: bool = Field(
         default=False,
         description="Development/testing dependency",
     )
 
     # Compatibility information
-    compatible_versions: list[str] = Field(default_factory=list,)
+    compatible_versions: list[str] = Field(
         default_factory=list,
         description="List of known compatible versions",
     )
-    incompatible_versions: list[str] = Field(default_factory=list,)
+    incompatible_versions: list[str] = Field(
         default_factory=list,
         description="List of known incompatible versions",
     )
 
     def is_version_compatible(self, version: str) -> bool:
+        """Check if version is compatible with dependency constraints."""
         # Check exact version requirement
         if self.exact_version and version != self.exact_version:
             return False
@@ -100,27 +95,27 @@ class PluginDependency(DomainBaseModel):
 
         for p1, p2 in zip(parts1, parts2, strict=False):
             if p1 < p2:
-            return -1
+                return -1
             if p1 > p2:
-            return 1
+                return 1
         return 0
 
 
 class PluginContext(DomainBaseModel):
-         """Comprehensive execution context for plugin operations.
+    """Comprehensive execution context for plugin operations.
 
     Provides all necessary context information for plugin execution
-    including user information, session data, resource limits,  and dependency injection containers.  """
+    including user information, session data, resource limits, and dependency injection containers.
+    """
 
-    model_config = {"frozen":
-            True}
+    model_config = {"frozen": True}
 
     # Execution identification
-    execution_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    execution_id: str = Field(default_factory=lambda: str(uuid4()))
     plugin_id: str = Field(description="ID of the executing plugin")
 
     # User and session context
-    user_id: str | None = Field(default=None,)
+    user_id: str | None = Field(
         default=None,
         description="ID of the user executing the plugin",
     )
@@ -135,7 +130,7 @@ class PluginContext(DomainBaseModel):
     # Environment context
     environment: str = Field(default="development", description="Execution environment")
     pipeline_id: str | None = Field(default=None, description="Pipeline context")
-    pipeline_run_id: str | None = Field(default=None,)
+    pipeline_run_id: str | None = Field(
         default=None,
         description="Pipeline run identifier",
     )
@@ -147,66 +142,67 @@ class PluginContext(DomainBaseModel):
     # Resource limits
     max_memory_mb: int | None = Field(default=None, description="Maximum memory limit")
     max_cpu_percent: int | None = Field(default=None, description="Maximum CPU usage")
-    max_execution_time_seconds: int | None = Field(default=None,)
+    max_execution_time_seconds: int | None = Field(
         default=None,
         description="Maximum execution time",
     )
 
     # Plugin configuration
-    plugin_config: dict[str, Any] = Field(default_factory=dict,)
+    plugin_config: dict[str, Any] = Field(
         default_factory=dict,
         description="Plugin configuration",
     )
-    environment_config: dict[str, Any] = Field(default_factory=dict,)
+    environment_config: dict[str, Any] = Field(
         default_factory=dict,
         description="Environment configuration",
     )
 
     # Security context
-    permissions: list[str] = Field(default_factory=list,)
+    permissions: list[str] = Field(
         default_factory=list,
         description="Granted permissions",
     )
-    security_level: str = Field(default="standard",)
+    security_level: str = Field(
         default="standard",
         description="Security sandbox level",
     )
-    allowed_operations: list[str] = Field(default_factory=list,)
+    allowed_operations: list[str] = Field(
         default_factory=list,
         description="Allowed operations",
     )
 
     # Dependency injection
-    services: dict[str, Any] = Field(default_factory=dict,)
+    services: dict[str, Any] = Field(
         default_factory=dict,
         description="Injected services",
     )
-    dependencies: dict[str, Any] = Field(default_factory=dict,)
+    dependencies: dict[str, Any] = Field(
         default_factory=dict,
         description="Plugin dependencies",
     )
 
     # Metadata and logging
-    metadata: dict[str, Any] = Field(default_factory=dict,)
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional metadata",
     )
     tags: list[str] = Field(default_factory=list, description="Context tags")
 
-    def get_service(: self, service_name: str, service_type: type[T] | None = None, ) -> T | None:
+    def get_service(self, service_name: str, service_type: type[T] | None = None) -> T | None:
+        """Get service from context by name and optional type."""
         service = self.services.get(service_name)
 
         if service is None:
             return None
 
         if service_type and not isinstance(service, service_type):
-            msg = f"Service '{service_name}' is type {type(service).__name__}, expected {service_type.__name__}"  # TODO: Break long line
-            raise TypeError(msg,
-            )
+            msg = f"Service '{service_name}' is type {type(service).__name__}, expected {service_type.__name__}"
+            raise TypeError(msg)
 
         return service  # type: ignore
 
-    def get_dependency(: self, dependency_name: str, dependency_type: type[T] | None = None, ) -> T | None:
+    def get_dependency(self, dependency_name: str, dependency_type: type[T] | None = None) -> T | None:
+        """Get dependency from context by name and optional type."""
         dependency = self.dependencies.get(dependency_name)
 
         if dependency is None:
@@ -217,27 +213,36 @@ class PluginContext(DomainBaseModel):
                 f"Dependency '{dependency_name}' is type {type(dependency).__name__}, "
                 f"expected {dependency_type.__name__}"
             )
-            raise TypeError(msg,
-            )
+            raise TypeError(msg)
 
         return dependency  # type: ignore
 
     def has_permission(self, permission: str) -> bool:
+        """Check if context has specific permission."""
         return permission in self.permissions
 
     def can_perform_operation(self, operation: str) -> bool:
+        """Check if context can perform specific operation."""
         return operation in self.allowed_operations
 
-    def add_metadata(self, key: str, value: Any) -> PluginContext:
+    def add_metadata(self, key: str, value: PluginData) -> PluginContext:
+        """Add metadata to context and return new instance."""
         new_metadata = self.metadata.copy()
         new_metadata[key] = value
 
         return self.model_copy(update={"metadata": new_metadata})
 
     def with_timeout(self, timeout_seconds: int) -> PluginContext:
+        """Create context with specific timeout."""
         return self.model_copy(update={"timeout_seconds": timeout_seconds})
 
-    def with_resource_limits(: self, max_memory_mb: int | None = None, max_cpu_percent: int | None = None, max_execution_time_seconds: int | None = None, ) -> PluginContext:
+    def with_resource_limits(
+        self,
+        max_memory_mb: int | None = None,
+        max_cpu_percent: int | None = None,
+        max_execution_time_seconds: int | None = None,
+    ) -> PluginContext:
+        """Create context with resource limits."""
         updates = {}
         if max_memory_mb is not None:
             updates["max_memory_mb"] = max_memory_mb
@@ -249,6 +254,7 @@ class PluginContext(DomainBaseModel):
         return self.model_copy(update=updates)
 
     def to_execution_context(self) -> PluginExecutionContext:
+        """Convert to execution context."""
         return PluginExecutionContext(execution_id=self.execution_id,
             plugin_id=self.plugin_id,
             user_id=self.user_id or "",
@@ -264,55 +270,72 @@ class PluginContext(DomainBaseModel):
 
 
 class PluginContextBuilder:
-         """Builder pattern for creating plugin contexts with fluent interface.
+    """Builder pattern for creating plugin contexts with fluent interface.
 
-    Provides a convenient way to construct plugin contexts with  method chaining for better readability and maintainability.  """
+    Provides a convenient way to construct plugin contexts with method chaining for better readability and maintainability.
+    """
 
     def __init__(self, plugin_id: str) -> None:
+        """Initialize context builder with plugin ID."""
         self._plugin_id = plugin_id
         self._data: dict[str, Any] = {"plugin_id": plugin_id}
 
     def with_user(self, user_id: str) -> PluginContextBuilder:
+        """Add user ID to context."""
         self._data["user_id"] = user_id
         return self
 
     def with_session(self, session_id: str) -> PluginContextBuilder:
+        """Add session ID to context."""
         self._data["session_id"] = session_id
         return self
 
-    def with_request(: self, request_id: str, trace_id: str | None = None, ) -> PluginContextBuilder:
+    def with_request(self, request_id: str, trace_id: str | None = None) -> PluginContextBuilder:
+        """Add request and trace IDs to context."""
         self._data["request_id"] = request_id
         if trace_id:
             self._data["trace_id"] = trace_id
         return self
 
     def with_environment(self, environment: str) -> PluginContextBuilder:
+        """Add environment to context."""
         self._data["environment"] = environment
         return self
 
-    def with_pipeline(: self, pipeline_id: str, pipeline_run_id: str | None = None, ) -> PluginContextBuilder:
+    def with_pipeline(self, pipeline_id: str, pipeline_run_id: str | None = None) -> PluginContextBuilder:
+        """Add pipeline information to context."""
         self._data["pipeline_id"] = pipeline_id
         if pipeline_run_id:
             self._data["pipeline_run_id"] = pipeline_run_id
         return self
 
     def with_config(self, config: dict[str, Any]) -> PluginContextBuilder:
+        """Add plugin configuration to context."""
         self._data["plugin_config"] = config
         return self
 
     def with_permissions(self, permissions: list[str]) -> PluginContextBuilder:
+        """Add permissions to context."""
         self._data["permissions"] = permissions
         return self
 
     def with_services(self, services: dict[str, Any]) -> PluginContextBuilder:
+        """Add services to context."""
         self._data["services"] = services
         return self
 
     def with_dependencies(self, dependencies: dict[str, Any]) -> PluginContextBuilder:
+        """Add dependencies to context."""
         self._data["dependencies"] = dependencies
         return self
 
-    def with_resource_limits(: self, max_memory_mb: int | None = None, max_cpu_percent: int | None = None, max_execution_time_seconds: int | None = None, ) -> PluginContextBuilder:
+    def with_resource_limits(
+        self,
+        max_memory_mb: int | None = None,
+        max_cpu_percent: int | None = None,
+        max_execution_time_seconds: int | None = None,
+    ) -> PluginContextBuilder:
+        """Add resource limits to context."""
         if max_memory_mb is not None:
             self._data["max_memory_mb"] = max_memory_mb
         if max_cpu_percent is not None:
@@ -322,8 +345,10 @@ class PluginContextBuilder:
         return self
 
     def with_metadata(self, metadata: dict[str, Any]) -> PluginContextBuilder:
+        """Add metadata to context."""
         self._data["metadata"] = metadata
         return self
 
     def build(self) -> PluginContext:
+        """Build final plugin context."""
         return PluginContext(**self._data)

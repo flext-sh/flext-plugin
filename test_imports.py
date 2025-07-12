@@ -15,8 +15,8 @@ modules_to_test = [
 ]
 
 for module in modules_to_test:
-            try:
-            __import__(module)
+    try:
+        __import__(module)
         print(f"✅ {module} - OK")
     except Exception as e:
-            print(f"❌ {module} - ERROR: {e}")
+        print(f"❌ {module} - ERROR: {e}")

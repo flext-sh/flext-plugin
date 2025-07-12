@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 
 def configure_plugin_dependencies() -> None:
+    """Configure all plugin dependencies in DI container."""
     container = get_container()
 
     # Configuration
@@ -58,30 +59,36 @@ def configure_plugin_dependencies() -> None:
 
 
 def get_plugin_config() -> PluginConfig:
+    """Get plugin configuration from container."""
     container = get_container()
     return container.resolve(PluginConfig)
 
 
 def get_plugin_discovery_service() -> PluginDiscoveryService:
+    """Get plugin discovery service from container."""
     container = get_container()
     return container.resolve(FileSystemPluginDiscoveryPort)
 
 
 def get_plugin_validation_service() -> PluginValidationService:
+    """Get plugin validation service from container."""
     container = get_container()
     return container.resolve(PydanticPluginValidationPort)
 
 
 def get_plugin_lifecycle_service() -> PluginLifecycleService:
+    """Get plugin lifecycle service from container."""
     container = get_container()
     return container.resolve(LocalPluginLifecyclePort)
 
 
 def get_plugin_execution_service() -> PluginExecutionService:
+    """Get plugin execution service from container."""
     container = get_container()
     return container.resolve(LocalPluginExecutionPort)
 
 
 def get_plugin_registry_service() -> PluginRegistryService:
+    """Get plugin registry service from container."""
     container = get_container()
     return container.resolve(LocalPluginRegistryPort)

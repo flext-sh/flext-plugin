@@ -18,7 +18,7 @@ class ValidationRule:
 
     def __init__(self, rule_id: str, description: str) -> None:
         """Initialize validation rule.
-        
+
         Args:
             rule_id: Unique identifier for the validation rule.
             description: Human-readable description of what the rule validates.
@@ -29,10 +29,10 @@ class ValidationRule:
 
     def validate(self, plugin: type[Plugin] | Plugin) -> tuple[bool, str | None]:
         """Validate a plugin against this rule.
-        
+
         Args:
             plugin: Plugin class or instance to validate.
-            
+
         Returns:
             Tuple of (is_valid, error_message).
 
@@ -52,10 +52,10 @@ class MetadataValidationRule(ValidationRule):
 
     def validate(self, plugin: type[Plugin] | Plugin) -> tuple[bool, str | None]:
         """Validate plugin metadata completeness and correctness.
-        
+
         Args:
             plugin: Plugin class or instance to validate.
-            
+
         Returns:
             Tuple of (is_valid, error_message).
 
@@ -113,10 +113,10 @@ class InterfaceValidationRule(ValidationRule):
 
     def validate(self, plugin: type[Plugin] | Plugin) -> tuple[bool, str | None]:
         """Validate plugin implements required interfaces.
-        
+
         Args:
             plugin: Plugin class or instance to validate.
-            
+
         Returns:
             Tuple of (is_valid, error_message).
 
@@ -152,10 +152,10 @@ class PluginValidator:
 
     def validate_plugin(self, plugin: type[Plugin] | Plugin) -> tuple[bool, list[str]]:
         """Validate a plugin against all rules.
-        
+
         Args:
             plugin: Plugin class or instance to validate.
-            
+
         Returns:
             Tuple of (is_valid, list_of_errors).
 
@@ -171,7 +171,7 @@ class PluginValidator:
 
     def add_rule(self, rule: ValidationRule) -> None:
         """Add a custom validation rule.
-        
+
         Args:
             rule: The validation rule to add.
 
@@ -180,10 +180,10 @@ class PluginValidator:
 
     def remove_rule(self, rule_id: str) -> bool:
         """Remove a validation rule by ID.
-        
+
         Args:
             rule_id: The ID of the rule to remove.
-            
+
         Returns:
             True if rule was found and removed, False otherwise.
 

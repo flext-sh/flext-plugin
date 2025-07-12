@@ -122,17 +122,17 @@ class HotReloadManager:
 
                 # Mark success
                 event.success = True
-                logger.info(f"Successfully reloaded plugin {plugin_id}")
+                logger.info("Successfully reloaded plugin %s", plugin_id)
 
             except Exception as reload_error:
                 # Rollback on failure
-                logger.exception(f"Plugin reload failed, rolling back: {reload_error}")
+                logger.exception("Plugin reload failed, rolling back: %s", reload_error)
                 await self.rollback_manager.rollback(rollback_id)
                 event.error = str(reload_error)
 
         except Exception as e:
             event.error = f"Reload orchestration failed: {e}"
-            logger.exception(f"Hot reload failed for {plugin_id}: {e}")
+            logger.exception("Hot reload failed for %s: %s", plugin_id, e)
 
         # Calculate duration
         end_time = datetime.now(UTC)
@@ -151,13 +151,13 @@ class HotReloadManager:
             if not plugin_id:
                 return
 
-            logger.info(f"Plugin change detected: {plugin_id} at {event.path}")
+            logger.info("Plugin change detected: %s at %s", plugin_id, event.path)
 
             # Trigger reload
             await self.reload_plugin(plugin_id)
 
         except Exception as e:
-            logger.exception(f"Failed to handle plugin change: {e}")
+            logger.exception("Failed to handle plugin change: %s", e)
 
     def _get_plugin_id_from_path(self, file_path: Path) -> str | None:
         """Extract plugin ID from file path."""

@@ -9,10 +9,17 @@ from __future__ import annotations
 import traceback
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import Any, TypedDict
+from typing import Any, TypedDict, Union
 
 from flext_core.domain.constants import ConfigDefaults
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
+
+# Type aliases for plugin system
+PluginData = Union[dict[str, Any], list[Any], str, int, float, bool, None]
+PluginContext = dict[str, Any]
+PluginResult = Union[PluginData, dict[str, PluginData]]
+ConfigurationDict = dict[str, Any]
+MetadataDict = dict[str, Any]
 
 
 class PluginType(StrEnum):
@@ -158,7 +165,7 @@ class PluginExecutionResult(DomainBaseModel):
         description="CPU time consumed in milliseconds",
     )
 
-    def mark_completed(self, result: Any = None, error: str | None = None) -> None:
+    def mark_completed(self, result: PluginResult = None, error: str | None = None) -> None:
         """Mark the plugin execution as completed with result or error.
 
         Args:
@@ -184,6 +191,7 @@ class PluginError(Exception):
     """Base exception for plugin system errors."""
 
     def __init__(self, message: str, plugin_id: str | None = None, error_code: str | None = None, details: dict[str, Any] | None = None, cause: Exception | None = None) -> None:
+        """Initialize plugin error with message and optional context."""
         super().__init__(message)
         self.message = message
         self.plugin_id = plugin_id
@@ -214,7 +222,8 @@ class PluginError(Exception):
 class PluginValidationError(PluginError):
     """Exception raised when plugin validation fails."""
 
-    def __init__(self, message: str, plugin_id: str, validation_failures: list[str], **kwargs: Any) -> None:
+    def __init__(self, message: str, plugin_id: str, validation_failures: list[str], **kwargs: dict[str, Any]) -> None:
+        """Initialize validation error with specific failure details."""
         super().__init__(message, plugin_id, "VALIDATION_FAILED", **kwargs)
         self.validation_failures = validation_failures
         self.details["validation_failures"] = validation_failures
@@ -223,14 +232,16 @@ class PluginValidationError(PluginError):
 class PluginLoadError(PluginError):
     """Exception raised when plugin loading fails."""
 
-    def __init__(self, message: str, plugin_id: str, **kwargs: Any) -> None:
+    def __init__(self, message: str, plugin_id: str, **kwargs: dict[str, Any]) -> None:
+        """Initialize load error with plugin context."""
         super().__init__(message, plugin_id, "LOAD_FAILED", **kwargs)
 
 
 class PluginExecutionError(PluginError):
     """Exception raised when plugin execution fails."""
 
-    def __init__(self, message: str, plugin_id: str, execution_id: str | None = None, **kwargs: Any) -> None:
+    def __init__(self, message: str, plugin_id: str, execution_id: str | None = None, **kwargs: dict[str, Any]) -> None:
+        """Initialize execution error with execution context."""
         super().__init__(message, plugin_id, "EXECUTION_FAILED", **kwargs)
         self.execution_id = execution_id
         if execution_id:
@@ -240,7 +251,8 @@ class PluginExecutionError(PluginError):
 class PluginDependencyError(PluginError):
     """Exception raised when plugin dependency resolution fails."""
 
-    def __init__(self, message: str, plugin_id: str, missing_dependencies: list[str], **kwargs: Any) -> None:
+    def __init__(self, message: str, plugin_id: str, missing_dependencies: list[str], **kwargs: dict[str, Any]) -> None:
+        """Initialize dependency error with missing dependencies list."""
         super().__init__(message, plugin_id, "DEPENDENCY_FAILED", **kwargs)
         self.missing_dependencies = missing_dependencies
         self.details["missing_dependencies"] = missing_dependencies
@@ -249,7 +261,8 @@ class PluginDependencyError(PluginError):
 class PluginSecurityError(PluginError):
     """Exception raised when plugin security validation fails."""
 
-    def __init__(self, message: str, plugin_id: str, security_violations: list[str], **kwargs: Any) -> None:
+    def __init__(self, message: str, plugin_id: str, security_violations: list[str], **kwargs: dict[str, Any]) -> None:
+        """Initialize security error with violations list."""
         super().__init__(message, plugin_id, "SECURITY_VIOLATION", **kwargs)
         self.security_violations = security_violations
         self.details["security_violations"] = security_violations

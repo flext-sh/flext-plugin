@@ -11,6 +11,7 @@ from enum import Enum
 from typing import Any
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from flext_plugin.types import PluginResult
 
 
 class PluginType(str, Enum):
@@ -167,7 +168,7 @@ class ExecutionResult(DomainBaseModel):
         self.error = str(error)
         self.traceback_info = traceback.format_exc()
 
-    def set_completed(self, result: Any = None) -> None:
+    def set_completed(self, result: PluginResult = None) -> None:
         """Mark execution as completed successfully."""
         self.success = True
         self.result = result
@@ -215,6 +216,7 @@ class PluginError(Exception):
     """Base exception for plugin system errors."""
 
     def __init__(self, message: str, plugin_id: str | None = None, cause: Exception | None = None) -> None:
+        """Initialize plugin error with message and optional context."""
         super().__init__(message)
         self.plugin_id = plugin_id
         self.cause = cause

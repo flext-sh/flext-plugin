@@ -21,12 +21,13 @@ class PluginFileHandler(FileSystemEventHandler):
     """File system event handler for plugin files."""
 
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
+        """Initialize handler with reload callback function."""
         super().__init__()
         self.reload_callback = reload_callback
 
     def on_modified(self, event: FileSystemEvent) -> None:
         """Handle file modification events.
-        
+
         Args:
             event: The file system event that occurred.
 
@@ -50,9 +51,9 @@ class HotReloadManager(DomainBaseModel):
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def model_post_init(self, __context: Any, /) -> None:
+    def model_post_init(self, __context: dict[str, Any] | None, /) -> None:
         """Initialize model after creation.
-        
+
         Args:
             __context: Pydantic context.
 
@@ -64,7 +65,7 @@ class HotReloadManager(DomainBaseModel):
 
     async def start_watching(self) -> None:
         """Start watching for plugin file changes.
-        
+
         Raises:
             RuntimeError: If observer is not initialized.
 
@@ -91,7 +92,7 @@ class HotReloadManager(DomainBaseModel):
             plugins = await self.discovery.scan()
             for plugin_info in plugins:
                 await self._load_plugin(plugin_info["path"])
-        except Exception:
+        except (OSError, RuntimeError, ValueError, KeyError):
             pass
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
@@ -113,7 +114,7 @@ class HotReloadManager(DomainBaseModel):
             # Load updated plugin
             await self._load_plugin(file_path)
 
-        except Exception:
+        except (OSError, RuntimeError, ValueError, ImportError, AttributeError):
             pass
 
     async def _load_plugin(self, file_path: Path) -> None:
@@ -121,7 +122,7 @@ class HotReloadManager(DomainBaseModel):
             plugin_name = file_path.stem
             plugin_instance = await self.loader.load_plugin_from_file(str(file_path))
             self.loaded_plugins[plugin_name] = plugin_instance
-        except Exception:
+        except (OSError, RuntimeError, ValueError, ImportError, AttributeError):
             pass
 
     async def _unload_plugin(self, plugin_name: str) -> None:
@@ -132,12 +133,12 @@ class HotReloadManager(DomainBaseModel):
                 if hasattr(plugin, "cleanup"):
                     await plugin.cleanup()
                 del self.loaded_plugins[plugin_name]
-        except Exception:
+        except (RuntimeError, ValueError, AttributeError, KeyError):
             pass
 
     def get_loaded_plugins(self) -> dict[str, Any]:
         """Get a copy of currently loaded plugins.
-        
+
         Returns:
             Dictionary of loaded plugins keyed by plugin name.
 
@@ -156,6 +157,7 @@ class HotReloadManager(DomainBaseModel):
 
 # Convenience function for quick setup
 async def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
+    """Create and start hot reload manager for plugin directory."""
     manager = HotReloadManager(plugin_directory=plugin_directory)
     await manager.start_watching()
     return manager
