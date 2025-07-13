@@ -131,6 +131,7 @@ line-ending = "auto"
 
 # MyPy configuration - focused on src/ and tests/
 [tool.mypy]
+files = ["src", "tests"]
 python_version = "3.13"
 strict = true
 warn_return_any = true
@@ -147,7 +148,6 @@ warn_unreachable = true
 strict_equality = true
 
 # Paths to check
-files = ["src", "tests"]
 
 # Import discovery
 namespace_packages = true
