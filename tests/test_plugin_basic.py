@@ -9,7 +9,7 @@ import pytest
 import pytest_asyncio
 
 try:
-    from flext_plugin.domain.exceptions import PluginError
+    from flext_plugin.core.types import PluginError
 except ImportError:
     # Define basic exception as fallback for tests
     class PluginError(Exception):

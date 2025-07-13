@@ -119,7 +119,6 @@ class PluginManager:
                 raise PluginError(
                     msg,
                     plugin_id=plugin_id,
-                    error_code="NOT_FOUND",
                 )
 
         discovered = self._discovered_plugins[plugin_id]
@@ -165,7 +164,6 @@ class PluginManager:
             raise PluginError(
                 msg,
                 plugin_id=plugin_id,
-                error_code="NOT_FOUND",
             )
 
         discovered = self._discovered_plugins[plugin_id]
