@@ -215,7 +215,9 @@ class PluginInterface(abc.ABC):
 
     @abc.abstractmethod
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute plugin with input data."""
         ...
@@ -285,7 +287,9 @@ class BaseExtractorPlugin(PluginInterface):
         ...
 
     async def execute(
-        self, _input_data: PluginData, context: PluginContext,
+        self,
+        _input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute extractor by extracting from source."""
         source_config = context.get("source_config", {})
@@ -306,13 +310,17 @@ class BaseLoaderPlugin(PluginInterface):
 
     @abc.abstractmethod
     async def load(
-        self, data: PluginData, destination_config: ConfigurationDict,
+        self,
+        data: PluginData,
+        destination_config: ConfigurationDict,
     ) -> ConfigurationDict:
         """Load data to destination."""
         ...
 
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute loader by loading data to destination."""
         destination_config = context.get("destination_config", {})
@@ -333,13 +341,17 @@ class BaseTransformerPlugin(PluginInterface):
 
     @abc.abstractmethod
     async def transform(
-        self, data: PluginData, transform_config: ConfigurationDict,
+        self,
+        data: PluginData,
+        transform_config: ConfigurationDict,
     ) -> PluginResult:
         """Transform input data."""
         ...
 
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute transformer by transforming input data."""
         transform_config = context.get("transform_config", {})

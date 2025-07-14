@@ -43,7 +43,8 @@ class PluginDiscoveryHandler(CommandHandler):
         self.discovery_service = discovery_service
 
     async def discover_plugins(
-        self, search_paths: list[str],
+        self,
+        search_paths: list[str],
     ) -> ServiceResult[list[PluginMetadata]]:
         """Discover plugins in specified search paths."""
         try:
@@ -70,7 +71,8 @@ class PluginDiscoveryHandler(CommandHandler):
             return ServiceResult.fail(f"Discovery handler failed: {e}")
 
     async def validate_plugin_metadata(
-        self, metadata: PluginMetadata,
+        self,
+        metadata: PluginMetadata,
     ) -> ServiceResult[bool]:
         """Validate plugin metadata structure and content."""
         try:
@@ -147,7 +149,9 @@ class PluginValidationHandler(CommandHandler):
             return ServiceResult.fail(f"Validation handler failed: {e}")
 
     async def validate_configuration(
-        self, plugin: PluginInstance, config: dict,
+        self,
+        plugin: PluginInstance,
+        config: dict,
     ) -> ServiceResult[bool]:
         """Validate plugin configuration parameters."""
         try:
@@ -174,7 +178,8 @@ class PluginValidationHandler(CommandHandler):
             return ServiceResult.fail(f"Configuration validation handler failed: {e}")
 
     async def validate_dependencies(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[bool]:
         """Validate plugin dependencies and compatibility."""
         try:
@@ -207,7 +212,8 @@ class PluginLifecycleHandler(CommandHandler):
         self.lifecycle_service = lifecycle_service
 
     async def register_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Register plugin in the system."""
         try:
@@ -230,7 +236,8 @@ class PluginLifecycleHandler(CommandHandler):
             return ServiceResult.fail(f"Registration handler failed: {e}")
 
     async def load_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Load plugin into memory."""
         try:
@@ -253,7 +260,8 @@ class PluginLifecycleHandler(CommandHandler):
             return ServiceResult.fail(f"Loading handler failed: {e}")
 
     async def initialize_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Initialize plugin for execution."""
         try:
@@ -276,7 +284,8 @@ class PluginLifecycleHandler(CommandHandler):
             return ServiceResult.fail(f"Initialization handler failed: {e}")
 
     async def activate_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Activate plugin for use."""
         try:
@@ -299,7 +308,8 @@ class PluginLifecycleHandler(CommandHandler):
             return ServiceResult.fail(f"Activation handler failed: {e}")
 
     async def suspend_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Suspend plugin execution."""
         try:
@@ -322,7 +332,8 @@ class PluginLifecycleHandler(CommandHandler):
             return ServiceResult.fail(f"Suspension handler failed: {e}")
 
     async def unload_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Unload plugin from memory."""
         try:
@@ -394,7 +405,8 @@ class PluginExecutionHandler(CommandHandler):
             return ServiceResult.fail(f"Execution handler failed: {e}")
 
     async def get_execution_status(
-        self, execution_id: str,
+        self,
+        execution_id: str,
     ) -> ServiceResult[PluginExecution]:
         """Get current execution status by ID."""
         try:
@@ -447,7 +459,8 @@ class PluginRegistryHandler(CommandHandler):
         self.registry_service = registry_service
 
     async def register_registry(
-        self, registry: PluginRegistry,
+        self,
+        registry: PluginRegistry,
     ) -> ServiceResult[PluginRegistry]:
         """Register plugin registry in the system."""
         try:
@@ -491,7 +504,9 @@ class PluginRegistryHandler(CommandHandler):
             return ServiceResult.fail(f"Sync handler failed: {e}")
 
     async def search_plugins(
-        self, registry: PluginRegistry, query: str,
+        self,
+        registry: PluginRegistry,
+        query: str,
     ) -> ServiceResult[list[PluginMetadata]]:
         """Search plugins in registry by query."""
         try:
@@ -517,7 +532,9 @@ class PluginRegistryHandler(CommandHandler):
             return ServiceResult.fail(f"Search handler failed: {e}")
 
     async def download_plugin(
-        self, registry: PluginRegistry, plugin_id: str,
+        self,
+        registry: PluginRegistry,
+        plugin_id: str,
     ) -> ServiceResult[str]:
         """Download plugin from registry."""
         try:

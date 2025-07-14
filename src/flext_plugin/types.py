@@ -166,7 +166,9 @@ class PluginExecutionResult(DomainBaseModel):
     )
 
     def mark_completed(
-        self, result: PluginResult = None, error: str | None = None,
+        self,
+        result: PluginResult = None,
+        error: str | None = None,
     ) -> None:
         """Mark the plugin execution as completed with result or error.
 

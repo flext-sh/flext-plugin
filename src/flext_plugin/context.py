@@ -189,7 +189,9 @@ class PluginContext(DomainBaseModel):
     tags: list[str] = Field(default_factory=list, description="Context tags")
 
     def get_service(
-        self, service_name: str, service_type: type[T] | None = None,
+        self,
+        service_name: str,
+        service_type: type[T] | None = None,
     ) -> T | None:
         """Get service from context by name and optional type."""
         service = self.services.get(service_name)
@@ -204,7 +206,9 @@ class PluginContext(DomainBaseModel):
         return service  # type: ignore
 
     def get_dependency(
-        self, dependency_name: str, dependency_type: type[T] | None = None,
+        self,
+        dependency_name: str,
+        dependency_type: type[T] | None = None,
     ) -> T | None:
         """Get dependency from context by name and optional type."""
         dependency = self.dependencies.get(dependency_name)
@@ -297,7 +301,9 @@ class PluginContextBuilder:
         return self
 
     def with_request(
-        self, request_id: str, trace_id: str | None = None,
+        self,
+        request_id: str,
+        trace_id: str | None = None,
     ) -> PluginContextBuilder:
         """Add request and trace IDs to context."""
         self._data["request_id"] = request_id
@@ -311,7 +317,9 @@ class PluginContextBuilder:
         return self
 
     def with_pipeline(
-        self, pipeline_id: str, pipeline_run_id: str | None = None,
+        self,
+        pipeline_id: str,
+        pipeline_run_id: str | None = None,
     ) -> PluginContextBuilder:
         """Add pipeline information to context."""
         self._data["pipeline_id"] = pipeline_id

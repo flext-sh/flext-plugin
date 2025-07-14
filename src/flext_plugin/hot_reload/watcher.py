@@ -93,7 +93,8 @@ class PluginWatcher:
         self._event_handlers: list[Callable[[WatchEvent], asyncio.Future[None]]] = []
 
     def add_handler(
-        self, handler: Callable[[WatchEvent], asyncio.Future[None]],
+        self,
+        handler: Callable[[WatchEvent], asyncio.Future[None]],
     ) -> None:
         """Add an event handler for file system events.
 
@@ -104,7 +105,8 @@ class PluginWatcher:
         self._event_handlers.append(handler)
 
     def remove_handler(
-        self, handler: Callable[[WatchEvent], asyncio.Future[None]],
+        self,
+        handler: Callable[[WatchEvent], asyncio.Future[None]],
     ) -> None:
         """Remove an event handler.
 
@@ -263,7 +265,11 @@ class PluginWatcher:
         return hasher.hexdigest()
 
     async def _handle_created(
-        self, path: Path, size: int, mtime: float, file_hash: str,
+        self,
+        path: Path,
+        size: int,
+        mtime: float,
+        file_hash: str,
     ) -> None:
         """Handle file creation event.
 
@@ -289,7 +295,11 @@ class PluginWatcher:
         await self._dispatch_event(event)
 
     async def _handle_modified(
-        self, path: Path, size: int, mtime: float, file_hash: str,
+        self,
+        path: Path,
+        size: int,
+        mtime: float,
+        file_hash: str,
     ) -> None:
         """Handle file modification event.
 

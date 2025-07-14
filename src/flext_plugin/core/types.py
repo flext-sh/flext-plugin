@@ -218,7 +218,10 @@ class PluginError(Exception):
     """Base exception for plugin system errors."""
 
     def __init__(
-        self, message: str, plugin_id: str | None = None, cause: Exception | None = None,
+        self,
+        message: str,
+        plugin_id: str | None = None,
+        cause: Exception | None = None,
     ) -> None:
         """Initialize plugin error with message and optional context."""
         super().__init__(message)
@@ -270,7 +273,8 @@ class PluginExecutionResult(DomainBaseModel):
     success: bool = Field(description="Whether execution succeeded")
     result: Any = Field(default=None, description="Execution result data")
     error_message: str | None = Field(
-        default=None, description="Error message if failed",
+        default=None,
+        description="Error message if failed",
     )
     execution_time_ms: int = Field(description="Execution time in milliseconds")
     memory_used_mb: float = Field(description="Memory used during execution")

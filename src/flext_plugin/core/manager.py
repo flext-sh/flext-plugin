@@ -144,7 +144,9 @@ class PluginManager:
         await self.loader.unload_plugin(plugin_id)
 
     async def reload_plugin(
-        self, plugin_id: str, config: dict[str, Any] | None = None,
+        self,
+        plugin_id: str,
+        config: dict[str, Any] | None = None,
     ) -> LoadedPlugin:
         """Reload a plugin by ID.
 
@@ -315,7 +317,9 @@ class PluginManager:
             }
 
     async def list_plugins(
-        self, plugin_type: PluginType | None = None, status: PluginStatus | None = None,
+        self,
+        plugin_type: PluginType | None = None,
+        status: PluginStatus | None = None,
     ) -> list[dict[str, Any]]:
         """List available plugins with optional filtering.
 

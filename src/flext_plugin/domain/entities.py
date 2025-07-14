@@ -567,7 +567,9 @@ class PluginExecution(DomainEntity):
         self.execution_status = "running"
 
     def mark_completed(
-        self, success: bool = True, error_message: str | None = None,
+        self,
+        success: bool = True,
+        error_message: str | None = None,
     ) -> None:
         """Mark the plugin execution as completed.
 

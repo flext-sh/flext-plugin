@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
-
 from flext_core.config.base import BaseSettings
 from flext_core.domain.constants import LogLevels
 

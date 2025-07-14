@@ -42,7 +42,8 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
     """File system-based plugin discovery implementation."""
 
     async def discover_plugins(
-        self, search_paths: list[str],
+        self,
+        search_paths: list[str],
     ) -> ServiceResult[list[PluginMetadata]]:
         """Discover plugins in the specified search paths.
 
@@ -86,7 +87,8 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
             return ServiceResult.fail(f"Plugin discovery failed: {e}")
 
     async def validate_plugin_metadata(
-        self, metadata: PluginMetadata,
+        self,
+        metadata: PluginMetadata,
     ) -> ServiceResult[bool]:
         """Validate plugin metadata structure and requirements."""
         try:
@@ -204,7 +206,9 @@ class PydanticPluginValidationPort(PluginValidationService):
             return ServiceResult.fail(f"Plugin validation failed: {e}")
 
     async def validate_configuration(
-        self, plugin: PluginInstance, config: dict,
+        self,
+        plugin: PluginInstance,
+        config: dict,
     ) -> ServiceResult[bool]:
         """Validate plugin configuration against schema."""
         try:
@@ -222,7 +226,8 @@ class PydanticPluginValidationPort(PluginValidationService):
             return ServiceResult.fail(f"Configuration validation failed: {e}")
 
     async def validate_dependencies(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[bool]:
         """Validate plugin dependencies are available."""
         try:
@@ -269,7 +274,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     """Local plugin lifecycle management implementation."""
 
     async def register_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Register plugin in lifecycle system."""
         try:
@@ -279,7 +285,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             return ServiceResult.fail(f"Plugin registration failed: {e}")
 
     async def load_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Load plugin module into memory."""
         try:
@@ -296,7 +303,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             return ServiceResult.fail(f"Plugin loading failed: {e}")
 
     async def initialize_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Initialize plugin with configuration."""
         try:
@@ -310,7 +318,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             return ServiceResult.fail(f"Plugin initialization failed: {e}")
 
     async def activate_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Activate plugin for execution."""
         try:
@@ -323,7 +332,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             return ServiceResult.fail(f"Plugin activation failed: {e}")
 
     async def suspend_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Suspend plugin execution."""
         try:
@@ -333,7 +343,8 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             return ServiceResult.fail(f"Plugin suspension failed: {e}")
 
     async def unload_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Unload plugin from memory."""
         try:
@@ -393,7 +404,8 @@ class LocalPluginExecutionPort(PluginExecutionService):
             return ServiceResult.fail(f"Plugin execution failed: {e}")
 
     async def get_execution_status(
-        self, execution_id: str,
+        self,
+        execution_id: str,
     ) -> ServiceResult[PluginExecution]:
         """Get execution status by ID."""
         try:
@@ -424,7 +436,8 @@ class LocalPluginRegistryPort(PluginRegistryService):
     """Local plugin registry implementation."""
 
     async def register_registry(
-        self, registry: PluginRegistry,
+        self,
+        registry: PluginRegistry,
     ) -> ServiceResult[PluginRegistry]:
         """Register plugin registry in system."""
         try:
@@ -447,7 +460,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
             return ServiceResult.fail(f"Registry sync failed: {e}")
 
     async def search_plugins(
-        self, registry: PluginRegistry, query: str,
+        self,
+        registry: PluginRegistry,
+        query: str,
     ) -> ServiceResult[list[PluginMetadata]]:
         """Search plugins in registry by query."""
         try:
@@ -457,7 +472,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
             return ServiceResult.fail(f"Plugin search failed: {e}")
 
     async def download_plugin(
-        self, registry: PluginRegistry, plugin_id: str,
+        self,
+        registry: PluginRegistry,
+        plugin_id: str,
     ) -> ServiceResult[str]:
         """Download plugin from registry."""
         try:
@@ -467,7 +484,9 @@ class LocalPluginRegistryPort(PluginRegistryService):
             return ServiceResult.fail(f"Plugin download failed: {e}")
 
     async def verify_plugin_signature(
-        self, registry: PluginRegistry, plugin_path: str,
+        self,
+        registry: PluginRegistry,
+        plugin_path: str,
     ) -> ServiceResult[bool]:
         """Verify plugin signature for security."""
         try:
@@ -518,7 +537,8 @@ class FileSystemHotReloadPort(PluginHotReloadService):
             return ServiceResult.fail(f"Failed to stop watching: {e}")
 
     async def reload_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Reload plugin with state preservation."""
         try:
@@ -563,7 +583,9 @@ class FileSystemHotReloadPort(PluginHotReloadService):
             return ServiceResult.fail(f"State backup failed: {e}")
 
     async def restore_plugin_state(
-        self, plugin: PluginInstance, state: dict,
+        self,
+        plugin: PluginInstance,
+        state: dict,
     ) -> ServiceResult[bool]:
         """Restore plugin state after reload."""
         try:
@@ -609,7 +631,8 @@ class SandboxPluginSecurityPort(PluginSecurityService):
             return ServiceResult.fail(f"Sandbox creation failed: {e}")
 
     async def enforce_resource_limits(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[bool]:
         """Enforce resource limits on plugin execution."""
         try:
@@ -629,7 +652,8 @@ class SandboxPluginSecurityPort(PluginSecurityService):
             return ServiceResult.fail(f"Import validation failed: {e}")
 
     async def scan_for_vulnerabilities(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[list[dict]]:
         """Scan plugin for security vulnerabilities."""
         try:

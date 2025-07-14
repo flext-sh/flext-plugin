@@ -117,13 +117,18 @@ class PluginDiscovery:
         await self._discover_file_system()
 
         # Filter out blacklisted plugins
-        filtered = {plugin_id: plugin for plugin_id, plugin in self._discovered_plugins.items() if not self.is_blacklisted(plugin_id)}
+        filtered = {
+            plugin_id: plugin
+            for plugin_id, plugin in self._discovered_plugins.items()
+            if not self.is_blacklisted(plugin_id)
+        }
 
         logger.info("Discovered %d plugins", len(filtered))
         return filtered
 
     async def discover_by_type(
-        self, plugin_type: PluginType,
+        self,
+        plugin_type: PluginType,
     ) -> dict[str, DiscoveredPlugin]:
         """Discover plugins by type.
 
@@ -235,7 +240,8 @@ class PluginDiscovery:
                                 )
                                 self._discovered_plugins[metadata.id] = discovered
                                 logger.debug(
-                                    "Discovered plugin from file: %s", metadata.id,
+                                    "Discovered plugin from file: %s",
+                                    metadata.id,
                                 )
 
             except (OSError, ImportError, AttributeError, ValueError, SyntaxError) as e:
@@ -259,7 +265,8 @@ class PluginDiscovery:
             # Check if it has metadata:
             if not hasattr(plugin_class, "METADATA"):
                 logger.warning(
-                    "Plugin class %s missing METADATA", plugin_class.__name__,
+                    "Plugin class %s missing METADATA",
+                    plugin_class.__name__,
                 )
                 return False
 
@@ -267,7 +274,8 @@ class PluginDiscovery:
             metadata = plugin_class.METADATA
             if not isinstance(metadata, PluginMetadata):
                 logger.warning(
-                    "Plugin class %s has invalid METADATA", plugin_class.__name__,
+                    "Plugin class %s has invalid METADATA",
+                    plugin_class.__name__,
                 )
                 return False
 
@@ -289,7 +297,9 @@ class PluginDiscovery:
             return False
 
     def register_plugin(
-        self, plugin_class: type[Plugin], override: bool = False,
+        self,
+        plugin_class: type[Plugin],
+        override: bool = False,
     ) -> None:
         """Manually register a plugin class.
 

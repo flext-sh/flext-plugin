@@ -184,7 +184,9 @@ class Plugin(ABC):
 
     @abstractmethod
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute plugin with input data and context.
 
@@ -295,7 +297,9 @@ class BaseExtractorPlugin(Plugin):
         ...
 
     async def execute(
-        self, _input_data: PluginData, context: PluginContext,
+        self,
+        _input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute extractor plugin by extracting from source.
 
@@ -340,7 +344,9 @@ class BaseLoaderPlugin(Plugin):
         ...
 
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute loader plugin by loading data to destination.
 
@@ -365,7 +371,9 @@ class BaseTransformerPlugin(Plugin):
 
     @abstractmethod
     async def transform(
-        self, data: PluginData, transform_config: ConfigurationDict,
+        self,
+        data: PluginData,
+        transform_config: ConfigurationDict,
     ) -> PluginResult:
         """Transform input data according to configuration.
 
@@ -383,7 +391,9 @@ class BaseTransformerPlugin(Plugin):
         ...
 
     async def execute(
-        self, input_data: PluginData, context: PluginContext,
+        self,
+        input_data: PluginData,
+        context: PluginContext,
     ) -> PluginResult:
         """Execute transformer plugin by transforming input data.
 

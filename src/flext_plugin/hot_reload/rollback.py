@@ -103,7 +103,9 @@ class RollbackManager:
     """
 
     def __init__(
-        self, state_manager: StateManager, backup_directory: Path | None = None,
+        self,
+        state_manager: StateManager,
+        backup_directory: Path | None = None,
     ) -> None:
         """Initialize rollback manager with state manager and backup directory."""
         self.state_manager = state_manager
@@ -116,7 +118,10 @@ class RollbackManager:
         self._plugin_backups: dict[str, dict[str, Path]] = {}
 
     async def create_rollback_point(
-        self, plugin: Plugin, description: str, backup_code: bool = True,
+        self,
+        plugin: Plugin,
+        description: str,
+        backup_code: bool = True,
     ) -> str:
         """Create a new rollback point for a plugin.
 
@@ -171,7 +176,10 @@ class RollbackManager:
         return rollback_id
 
     async def rollback_plugin(
-        self, plugin_id: str, rollback_id: str | None = None, restore_code: bool = True,
+        self,
+        plugin_id: str,
+        rollback_id: str | None = None,
+        restore_code: bool = True,
     ) -> dict[str, Any]:
         """Rollback a plugin to a previous state.
 
@@ -344,7 +352,8 @@ class RollbackManager:
         return self._histories.get(plugin_id)
 
     def list_rollback_points(
-        self, plugin_id: str | None = None,
+        self,
+        plugin_id: str | None = None,
     ) -> list[dict[str, Any]]:
         """List all rollback points.
 

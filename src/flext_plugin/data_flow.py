@@ -281,7 +281,10 @@ class PipelineDataFlow(DomainBaseModel):
     failed_steps: int = Field(default=0, description="Number of failed steps")
 
     def start_step(
-        self, step_id: str, plugin_id: str, plugin_type: PluginType,
+        self,
+        step_id: str,
+        plugin_id: str,
+        plugin_type: PluginType,
     ) -> StepResult:
         """Start execution of a new pipeline step."""
         step_result = StepResult(
@@ -433,7 +436,10 @@ class DataFlowManager:
     """Manages data flow and step execution in a pipeline."""
 
     def __init__(
-        self, pipeline_id: str, execution_id: str, context: DataFlowContext,
+        self,
+        pipeline_id: str,
+        execution_id: str,
+        context: DataFlowContext,
     ) -> None:
         """Initialize data flow manager with pipeline context."""
         self.pipeline_flow = PipelineDataFlow(
@@ -444,7 +450,10 @@ class DataFlowManager:
         self.validator = DataValidator()
 
     def create_data_packet(
-        self, data: PluginData, plugin_id: str, plugin_type: PluginType,
+        self,
+        data: PluginData,
+        plugin_id: str,
+        plugin_type: PluginType,
     ) -> DataPacket:
         """Create and validate data packet from plugin output."""
         packet = DataPacket(
@@ -461,7 +470,10 @@ class DataFlowManager:
         return packet
 
     def start_step_execution(
-        self, step_id: str, plugin_id: str, plugin_type: PluginType,
+        self,
+        step_id: str,
+        plugin_id: str,
+        plugin_type: PluginType,
     ) -> StepResult:
         """Start new step execution and return result tracker."""
         return self.pipeline_flow.start_step(step_id, plugin_id, plugin_type)

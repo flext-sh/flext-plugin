@@ -23,19 +23,22 @@ class PluginDiscoveryService(ABC):
 
     @abstractmethod
     async def discover_plugins(
-        self, search_paths: list[str],
+        self,
+        search_paths: list[str],
     ) -> ServiceResult[list[PluginMetadata]]:
         """Discover plugins in specified paths."""
 
     @abstractmethod
     async def validate_plugin_metadata(
-        self, metadata: PluginMetadata,
+        self,
+        metadata: PluginMetadata,
     ) -> ServiceResult[bool]:
         """Validate plugin metadata."""
 
     @abstractmethod
     async def get_plugin_manifest(
-        self, plugin_path: str,
+        self,
+        plugin_path: str,
     ) -> ServiceResult[dict[str, Any]]:
         """Get plugin manifest from path."""
 
@@ -49,13 +52,16 @@ class PluginValidationService(ABC):
 
     @abstractmethod
     async def validate_configuration(
-        self, plugin: PluginInstance, config: dict[str, Any],
+        self,
+        plugin: PluginInstance,
+        config: dict[str, Any],
     ) -> ServiceResult[bool]:
         """Validate plugin configuration."""
 
     @abstractmethod
     async def validate_dependencies(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[bool]:
         """Validate plugin dependencies."""
 
@@ -69,37 +75,43 @@ class PluginLifecycleService(ABC):
 
     @abstractmethod
     async def register_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Register plugin in system."""
 
     @abstractmethod
     async def load_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Load plugin into memory."""
 
     @abstractmethod
     async def initialize_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Initialize plugin."""
 
     @abstractmethod
     async def activate_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Activate plugin."""
 
     @abstractmethod
     async def suspend_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Suspend plugin."""
 
     @abstractmethod
     async def unload_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Unload plugin from memory."""
 
@@ -122,7 +134,8 @@ class PluginExecutionService(ABC):
 
     @abstractmethod
     async def get_execution_status(
-        self, execution_id: str,
+        self,
+        execution_id: str,
     ) -> ServiceResult[PluginExecution]:
         """Get execution status."""
 
@@ -132,7 +145,8 @@ class PluginExecutionService(ABC):
 
     @abstractmethod
     async def get_execution_logs(
-        self, execution_id: str,
+        self,
+        execution_id: str,
     ) -> ServiceResult[list[dict[str, Any]]]:
         """Get execution logs."""
 
@@ -142,7 +156,8 @@ class PluginRegistryService(ABC):
 
     @abstractmethod
     async def register_registry(
-        self, registry: PluginRegistry,
+        self,
+        registry: PluginRegistry,
     ) -> ServiceResult[PluginRegistry]:
         """Register a plugin registry."""
 
@@ -152,19 +167,25 @@ class PluginRegistryService(ABC):
 
     @abstractmethod
     async def search_plugins(
-        self, registry: PluginRegistry, query: str,
+        self,
+        registry: PluginRegistry,
+        query: str,
     ) -> ServiceResult[list[PluginMetadata]]:
         """Search plugins in registry."""
 
     @abstractmethod
     async def download_plugin(
-        self, registry: PluginRegistry, plugin_id: str,
+        self,
+        registry: PluginRegistry,
+        plugin_id: str,
     ) -> ServiceResult[str]:
         """Download plugin from registry."""
 
     @abstractmethod
     async def verify_plugin_signature(
-        self, registry: PluginRegistry, plugin_path: str,
+        self,
+        registry: PluginRegistry,
+        plugin_path: str,
     ) -> ServiceResult[bool]:
         """Verify plugin digital signature."""
 
@@ -182,19 +203,23 @@ class PluginHotReloadService(ABC):
 
     @abstractmethod
     async def reload_plugin(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[PluginInstance]:
         """Reload plugin."""
 
     @abstractmethod
     async def backup_plugin_state(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[dict[str, Any]]:
         """Backup plugin state."""
 
     @abstractmethod
     async def restore_plugin_state(
-        self, plugin: PluginInstance, state: dict[str, Any],
+        self,
+        plugin: PluginInstance,
+        state: dict[str, Any],
     ) -> ServiceResult[bool]:
         """Restore plugin state."""
 
@@ -204,13 +229,15 @@ class PluginSecurityService(ABC):
 
     @abstractmethod
     async def create_sandbox(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[dict[str, Any]]:
         """Create security sandbox for plugin."""
 
     @abstractmethod
     async def enforce_resource_limits(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[bool]:
         """Enforce resource limits."""
 
@@ -220,6 +247,7 @@ class PluginSecurityService(ABC):
 
     @abstractmethod
     async def scan_for_vulnerabilities(
-        self, plugin: PluginInstance,
+        self,
+        plugin: PluginInstance,
     ) -> ServiceResult[list[dict[str, Any]]]:
         """Scan plugin for vulnerabilities."""

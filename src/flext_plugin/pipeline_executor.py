@@ -154,7 +154,9 @@ class RealPluginPipelineExecutor:
             self._active_executions.pop(execution_id, None)
 
     async def _execute_step(
-        self, step: PipelineStep, flow_manager: DataFlowManager,
+        self,
+        step: PipelineStep,
+        flow_manager: DataFlowManager,
     ) -> None:
         # Start step execution
         step_result = flow_manager.start_step_execution(
@@ -213,7 +215,10 @@ class RealPluginPipelineExecutor:
             raise
 
     async def _execute_extractor(
-        self, plugin: PluginInterface, step: PipelineStep, context: PluginContext,
+        self,
+        plugin: PluginInterface,
+        step: PipelineStep,
+        context: PluginContext,
     ) -> PluginResult:
         # Extractors don't take input data, they generate data from sources
         source_config = step.configuration.copy()
@@ -269,7 +274,9 @@ class RealPluginPipelineExecutor:
         return self.plugin_manager.registry.get_plugin(plugin_id)
 
     def _prepare_step_input(
-        self, step: PipelineStep, flow_manager: DataFlowManager,
+        self,
+        step: PipelineStep,
+        flow_manager: DataFlowManager,
     ) -> PluginData:
         current_data = flow_manager.get_current_data()
 
@@ -281,7 +288,9 @@ class RealPluginPipelineExecutor:
         return current_data.data
 
     def _prepare_execution_context(
-        self, step: PipelineStep, flow_manager: DataFlowManager,
+        self,
+        step: PipelineStep,
+        flow_manager: DataFlowManager,
     ) -> dict[str, Any]:
         context = flow_manager.pipeline_flow.context
 
@@ -302,7 +311,9 @@ class RealPluginPipelineExecutor:
         }
 
     async def _wait_for_dependencies(
-        self, step: PipelineStep, flow_manager: DataFlowManager,
+        self,
+        step: PipelineStep,
+        flow_manager: DataFlowManager,
     ) -> None:
         # In this simple implementation, we execute steps sequentially
         # In a more advanced implementation, you could run independent steps in parallel
