@@ -306,62 +306,39 @@ validate-interfaces: ## Validate plugin interfaces
 dev-plugin: ## Create development plugin template
 	@echo "🔌 Creating development plugin template..."
 	@mkdir -p dev_plugins/example_plugin/
-	@cat > dev_plugins/example_plugin/plugin.py << 'EOF'
-"""Example plugin for development and testing."""
-
-from flext_plugin.core.base import Plugin
-from typing import Any, Dict
-
-class ExamplePlugin(Plugin):
-    """Example plugin implementation."""
-    
-    def __init__(self) -> None:
-        super().__init__()
-        self.name = "example-plugin"
-        self.version = "1.0.0"
-        
-    async def initialize(self) -> None:
-        """Initialize plugin resources."""
-        pass
-        
-    async def execute(self, input_data: Any, context: Any) -> Any:
-        """Execute plugin logic."""
-        return {"message": "Hello from example plugin", "input": input_data}
-        
-    async def cleanup(self) -> None:
-        """Clean up plugin resources."""
-        pass
-        
-    async def health_check(self) -> Dict[str, Any]:
-        """Perform health check."""
-        return {"status": "healthy", "plugin": self.name}
-EOF
+	@echo '"""Example plugin for development and testing."""' > dev_plugins/example_plugin/plugin.py
+	@echo '' >> dev_plugins/example_plugin/plugin.py
+	@echo 'from flext_plugin.core.base import Plugin' >> dev_plugins/example_plugin/plugin.py
+	@echo 'from typing import Any, Dict' >> dev_plugins/example_plugin/plugin.py
+	@echo '' >> dev_plugins/example_plugin/plugin.py
+	@echo 'class ExamplePlugin(Plugin):' >> dev_plugins/example_plugin/plugin.py
+	@echo '    """Example plugin implementation."""' >> dev_plugins/example_plugin/plugin.py
+	@echo '    ' >> dev_plugins/example_plugin/plugin.py
+	@echo '    def __init__(self) -> None:' >> dev_plugins/example_plugin/plugin.py
+	@echo '        super().__init__()' >> dev_plugins/example_plugin/plugin.py
+	@echo '        self.name = "example-plugin"' >> dev_plugins/example_plugin/plugin.py
+	@echo '        self.version = "1.0.0"' >> dev_plugins/example_plugin/plugin.py
+	@echo '        ' >> dev_plugins/example_plugin/plugin.py
+	@echo '    async def initialize(self) -> None:' >> dev_plugins/example_plugin/plugin.py
+	@echo '        """Initialize plugin resources."""' >> dev_plugins/example_plugin/plugin.py
+	@echo '        pass' >> dev_plugins/example_plugin/plugin.py
+	@echo '        ' >> dev_plugins/example_plugin/plugin.py
+	@echo '    async def execute(self, input_data: Any, context: Any) -> Any:' >> dev_plugins/example_plugin/plugin.py
+	@echo '        """Execute plugin logic."""' >> dev_plugins/example_plugin/plugin.py
+	@echo '        return {"message": "Hello from example plugin", "input": input_data}' >> dev_plugins/example_plugin/plugin.py
+	@echo '        ' >> dev_plugins/example_plugin/plugin.py
+	@echo '    async def cleanup(self) -> None:' >> dev_plugins/example_plugin/plugin.py
+	@echo '        """Clean up plugin resources."""' >> dev_plugins/example_plugin/plugin.py
+	@echo '        pass' >> dev_plugins/example_plugin/plugin.py
+	@echo '        ' >> dev_plugins/example_plugin/plugin.py
+	@echo '    async def health_check(self) -> Dict[str, Any]:' >> dev_plugins/example_plugin/plugin.py
+	@echo '        """Perform health check."""' >> dev_plugins/example_plugin/plugin.py
+	@echo '        return {"status": "healthy", "plugin": self.name}' >> dev_plugins/example_plugin/plugin.py
 	@echo "✅ Development plugin template created in dev_plugins/example_plugin/"
 
 test-dev-plugin: ## Test development plugin
 	@echo "🔌 Testing development plugin..."
-	@poetry run python -c "
-import sys
-sys.path.insert(0, 'dev_plugins')
-
-from example_plugin.plugin import ExamplePlugin
-import asyncio
-
-async def test_plugin():
-    plugin = ExamplePlugin()
-    await plugin.initialize()
-    
-    result = await plugin.execute({'test': 'data'}, {})
-    print(f'Plugin result: {result}')
-    
-    health = await plugin.health_check()
-    print(f'Plugin health: {health}')
-    
-    await plugin.cleanup()
-    print('✅ Development plugin test complete')
-
-asyncio.run(test_plugin())
-"
+	@poetry run python -c "import sys; sys.path.insert(0, 'dev_plugins'); from example_plugin.plugin import ExamplePlugin; import asyncio; exec('async def test_plugin():\n    plugin = ExamplePlugin()\n    await plugin.initialize()\n    result = await plugin.execute({\"test\": \"data\"}, {})\n    print(f\"Plugin result: {result}\")\n    health = await plugin.health_check()\n    print(f\"Plugin health: {health}\")\n    await plugin.cleanup()\n    print(\"✅ Development plugin test complete\")\nasyncio.run(test_plugin())')"
 
 # ============================================================================
 # 🎯 FLEXT ECOSYSTEM INTEGRATION

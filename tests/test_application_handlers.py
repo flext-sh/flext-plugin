@@ -65,10 +65,30 @@ class TestablePluginDiscoveryHandler:
 
         self.logger = get_logger(__name__)
 
-    async def discover_plugins(self, search_paths: Any) -> Any:
+    async def discover_plugins(self, search_paths: Any) -> ServiceResult[Any]:
         """Discover plugins in given search paths."""
-        # Mock implementation for testing
-        return []
+        try:
+            self.logger.info(
+                "Starting plugin discovery",
+                extra={"search_paths": search_paths},
+            )
+
+            result = await self.discovery_service.discover_plugins(search_paths)
+
+            if result.is_success:
+                self.logger.info(
+                    "Plugin discovery completed",
+                    extra={"plugin_count": len(result.data) if result.data else 0},
+                )
+            else:
+                self.logger.error(
+                    "Plugin discovery failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin discovery handler error")
+            return ServiceResult.fail(f"Discovery handler failed: {e}")
 
     async def validate_plugin_metadata(self, metadata: Any) -> ServiceResult[bool]:
         """Validate plugin metadata."""
@@ -87,15 +107,34 @@ class TestablePluginDiscoveryHandler:
                     "Plugin metadata validation failed",
                     extra={"error": result.error},
                 )
-            return result  # type: ignore[no-any-return]
+            return result  # type: ignore[no-any-return]  # type: ignore[no-any-return]
         except Exception as e:
             self.logger.exception("Plugin metadata validation handler error")
             return ServiceResult.fail(f"Validation handler failed: {e}")
 
-    async def get_plugin_manifest(self, plugin_path: Any) -> Any:
+    async def get_plugin_manifest(
+        self, plugin_path: Any,
+    ) -> ServiceResult[dict[str, Any]]:
         """Get plugin manifest from path."""
-        # Mock implementation for testing
-        return {}
+        try:
+            self.logger.debug(
+                "Getting plugin manifest",
+                extra={"plugin_path": plugin_path},
+            )
+
+            result = await self.discovery_service.get_plugin_manifest(plugin_path)
+
+            if result.is_success:
+                self.logger.debug("Plugin manifest retrieved successfully")
+            else:
+                self.logger.warning(
+                    "Plugin manifest retrieval failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin manifest handler error")
+            return ServiceResult.fail(f"Manifest handler failed: {e}")
 
 
 class TestablePluginValidationHandler:
@@ -107,20 +146,87 @@ class TestablePluginValidationHandler:
 
         self.logger = get_logger(__name__)
 
-    async def validate_plugin(self, plugin: Any) -> Any:
+    async def validate_plugin(self, plugin: Any) -> ServiceResult[bool]:
         """Validate plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            self.logger.info(
+                "Starting plugin validation",
+                extra={
+                    "plugin_id": str(plugin.plugin_id)
+                    if hasattr(plugin, "plugin_id")
+                    else "unknown",
+                },
+            )
 
-    async def validate_configuration(self, plugin: Any, config: Any) -> Any:
+            result = await self.validation_service.validate_plugin(plugin)
+
+            if result.is_success:
+                self.logger.info("Plugin validation successful")
+            else:
+                self.logger.error(
+                    "Plugin validation failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin validation handler error")
+            return ServiceResult.fail(f"Validation handler failed: {e}")
+
+    async def validate_configuration(
+        self, plugin: Any, config: Any,
+    ) -> ServiceResult[bool]:
         """Validate plugin configuration."""
-        # Mock implementation for testing
-        return True
+        try:
+            self.logger.debug(
+                "Validating plugin configuration",
+                extra={
+                    "plugin_id": str(plugin.plugin_id)
+                    if hasattr(plugin, "plugin_id")
+                    else "unknown",
+                },
+            )
 
-    async def validate_dependencies(self, plugin: Any) -> Any:
+            result = await self.validation_service.validate_configuration(
+                plugin, config,
+            )
+
+            if result.is_success:
+                self.logger.debug("Plugin configuration validation successful")
+            else:
+                self.logger.warning(
+                    "Plugin configuration validation failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin configuration validation handler error")
+            return ServiceResult.fail(f"Configuration validation handler failed: {e}")
+
+    async def validate_dependencies(self, plugin: Any) -> ServiceResult[bool]:
         """Validate plugin dependencies."""
-        # Mock implementation for testing
-        return True
+        try:
+            self.logger.debug(
+                "Validating plugin dependencies",
+                extra={
+                    "plugin_id": str(plugin.plugin_id)
+                    if hasattr(plugin, "plugin_id")
+                    else "unknown",
+                },
+            )
+
+            result = await self.validation_service.validate_dependencies(plugin)
+
+            if result.is_success:
+                self.logger.debug("Plugin dependencies validation successful")
+            else:
+                self.logger.warning(
+                    "Plugin dependencies validation failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin dependencies validation handler error")
+            return ServiceResult.fail(f"Dependencies validation handler failed: {e}")
 
 
 class TestablePluginLifecycleHandler:
@@ -132,35 +238,66 @@ class TestablePluginLifecycleHandler:
 
         self.logger = get_logger(__name__)
 
-    async def register_plugin(self, plugin: Any) -> Any:
+    async def register_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Register plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            self.logger.info(
+                "Registering plugin",
+                extra={
+                    "plugin_id": str(plugin.plugin_id)
+                    if hasattr(plugin, "plugin_id")
+                    else "unknown",
+                },
+            )
 
-    async def load_plugin(self, plugin: Any) -> Any:
+            result = await self.lifecycle_service.register_plugin(plugin)
+
+            if result.is_success:
+                self.logger.info("Plugin registered successfully")
+            else:
+                self.logger.error(
+                    "Plugin registration failed",
+                    extra={"error": result.error},
+                )
+            return result  # type: ignore[no-any-return]
+        except Exception as e:
+            self.logger.exception("Plugin registration handler error")
+            return ServiceResult.fail(f"Registration handler failed: {e}")
+
+    async def load_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Load plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.lifecycle_service.load_plugin(plugin)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Loading handler failed: {e}")
 
-    async def initialize_plugin(self, plugin: Any) -> Any:
+    async def initialize_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Initialize plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.lifecycle_service.initialize_plugin(plugin)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Initialization handler failed: {e}")
 
-    async def activate_plugin(self, plugin: Any) -> Any:
+    async def activate_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Activate plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.lifecycle_service.activate_plugin(plugin)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Activation handler failed: {e}")
 
-    async def suspend_plugin(self, plugin: Any) -> Any:
+    async def suspend_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Suspend plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.lifecycle_service.suspend_plugin(plugin)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Suspension handler failed: {e}")
 
-    async def unload_plugin(self, plugin: Any) -> Any:
+    async def unload_plugin(self, plugin: Any) -> ServiceResult[Any]:
         """Unload plugin."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.lifecycle_service.unload_plugin(plugin)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Unloading handler failed: {e}")
 
 
 class TestablePluginExecutionHandler:
@@ -177,20 +314,28 @@ class TestablePluginExecutionHandler:
         plugin: Any,
         input_data: Any,
         execution_context: Any = None,
-    ) -> Any:
+    ) -> ServiceResult[Any]:
         """Execute plugin."""
-        # Mock implementation for testing
-        return {"status": "success"}
+        try:
+            return await self.execution_service.execute_plugin(  # type: ignore[no-any-return]
+                plugin, input_data, execution_context,
+            )
+        except Exception as e:
+            return ServiceResult.fail(f"Execution handler failed: {e}")
 
-    async def get_execution_status(self, execution_id: Any) -> Any:
+    async def get_execution_status(self, execution_id: Any) -> ServiceResult[Any]:
         """Get execution status."""
-        # Mock implementation for testing
-        return {"status": "running"}
+        try:
+            return await self.execution_service.get_execution_status(execution_id)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Status handler failed: {e}")
 
-    async def cancel_execution(self, execution_id: Any) -> Any:
+    async def cancel_execution(self, execution_id: Any) -> ServiceResult[Any]:
         """Cancel execution."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.execution_service.cancel_execution(execution_id)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Cancellation handler failed: {e}")
 
 
 class TestablePluginRegistryHandler:
@@ -202,25 +347,35 @@ class TestablePluginRegistryHandler:
 
         self.logger = get_logger(__name__)
 
-    async def register_registry(self, registry: Any) -> Any:
+    async def register_registry(self, registry: Any) -> ServiceResult[Any]:
         """Register plugin registry."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.registry_service.register_registry(registry)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Registry registration handler failed: {e}")
 
-    async def sync_registry(self, registry: Any) -> Any:
+    async def sync_registry(self, registry: Any) -> ServiceResult[Any]:
         """Sync plugin registry."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.registry_service.sync_registry(registry)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Sync handler failed: {e}")
 
-    async def search_plugins(self, registry: Any, query: Any) -> Any:
+    async def search_plugins(self, registry: Any, query: Any) -> ServiceResult[Any]:
         """Search plugins in registry."""
-        # Mock implementation for testing
-        return []
+        try:
+            return await self.registry_service.search_plugins(registry, query)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Search handler failed: {e}")
 
-    async def download_plugin(self, registry: Any, plugin_id: Any) -> Any:
+    async def download_plugin(
+        self, registry: Any, plugin_id: Any,
+    ) -> ServiceResult[Any]:
         """Download plugin from registry."""
-        # Mock implementation for testing
-        return True
+        try:
+            return await self.registry_service.download_plugin(registry, plugin_id)  # type: ignore[no-any-return]
+        except Exception as e:
+            return ServiceResult.fail(f"Download handler failed: {e}")
 
 
 class TestPluginDiscoveryHandler:
@@ -315,6 +470,8 @@ class TestPluginDiscoveryHandler:
         result = await handler.discover_plugins(search_paths)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert "Discovery handler failed: Service error" in result.error
 
     async def test_validate_plugin_metadata_success(
@@ -368,6 +525,7 @@ class TestPluginDiscoveryHandler:
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
         assert not result.is_success
+        assert result.error is not None
         assert result.error is not None
         assert "Validation handler failed: Validation error" in result.error
 
@@ -423,6 +581,8 @@ class TestPluginDiscoveryHandler:
         result = await handler.get_plugin_manifest(plugin_path)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert "Manifest handler failed: File read error" in result.error
 
 
@@ -519,6 +679,8 @@ class TestPluginValidationHandler:
         result = await handler.validate_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert "Validation handler failed: Service error" in result.error
 
     async def test_validate_configuration_success(
@@ -575,6 +737,8 @@ class TestPluginValidationHandler:
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert "Configuration validation handler failed: Type error" in result.error
 
     async def test_validate_dependencies_success(
@@ -627,6 +791,8 @@ class TestPluginValidationHandler:
         result = await handler.validate_dependencies(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert (
             "Dependencies validation handler failed: Dependency error" in result.error
         )
@@ -728,6 +894,8 @@ class TestPluginLifecycleHandler:
         result = await handler.register_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
+        assert result.error is not None
         assert "Registration handler failed: Service error" in result.error
 
     async def test_load_plugin_success(
@@ -776,6 +944,7 @@ class TestPluginLifecycleHandler:
         result = await handler.load_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Loading handler failed: Loading error" in result.error
 
     async def test_initialize_plugin_success(
@@ -827,6 +996,7 @@ class TestPluginLifecycleHandler:
         result = await handler.initialize_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Initialization handler failed: Type error" in result.error
 
     async def test_activate_plugin_success(
@@ -861,6 +1031,7 @@ class TestPluginLifecycleHandler:
         result = await handler.activate_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Activation handler failed: Value error" in result.error
 
     async def test_suspend_plugin_success(
@@ -897,6 +1068,7 @@ class TestPluginLifecycleHandler:
         result = await handler.suspend_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Suspension handler failed: Attribute error" in result.error
 
     async def test_unload_plugin_success(
@@ -931,6 +1103,7 @@ class TestPluginLifecycleHandler:
         result = await handler.unload_plugin(mock_plugin_instance)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Unloading handler failed: Unload error" in result.error
 
 
@@ -1073,6 +1246,7 @@ class TestPluginExecutionHandler:
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
         assert not result.is_success
+        assert result.error is not None
         assert "Execution handler failed: Service error" in result.error
 
     async def test_get_execution_status_success(

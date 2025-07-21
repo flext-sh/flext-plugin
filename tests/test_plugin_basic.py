@@ -32,7 +32,7 @@ def test_flext_core_dependencies() -> None:
     from flext_core import ServiceResult
 
     # Test ServiceResult works
-    result = ServiceResult.success(data={"test": "data"})
+    result = ServiceResult.ok({"test": "data"})
     assert result.is_success
     assert result.data == {"test": "data"}
 

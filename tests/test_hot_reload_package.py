@@ -194,6 +194,7 @@ class TestRollbackManager:
         mock_plugin = Mock()
         mock_plugin.metadata = Mock()
         mock_plugin.metadata.name = "test-plugin"
+        mock_plugin.metadata.version = "1.0.0"
 
         rollback_id = await rollback_manager.create_rollback_point(
             mock_plugin,

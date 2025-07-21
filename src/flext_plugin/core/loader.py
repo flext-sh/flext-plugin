@@ -58,9 +58,9 @@ class LoadedPlugin:
         """
         if not self.is_initialized:
             await self.instance.initialize()
-            self.instance._initialized = True  # noqa: SLF001
-            self.instance._update_lifecycle_state(PluginLifecycle.INITIALIZED)  # noqa: SLF001
-            self.instance._update_status(PluginStatus.HEALTHY)  # noqa: SLF001
+            self.instance._initialized = True  # noqa: SLF001 - Plugin lifecycle management
+            self.instance._update_lifecycle_state(PluginLifecycle.INITIALIZED)  # noqa: SLF001 - Plugin lifecycle management
+            self.instance._update_status(PluginStatus.HEALTHY)  # noqa: SLF001 - Plugin lifecycle management
             self.is_initialized = True
 
     async def cleanup(self) -> None:
@@ -70,9 +70,9 @@ class LoadedPlugin:
         """
         if self.is_initialized:
             await self.instance.cleanup()
-            self.instance._initialized = False  # noqa: SLF001
-            self.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001
-            self.instance._update_status(PluginStatus.UNKNOWN)  # noqa: SLF001
+            self.instance._initialized = False  # noqa: SLF001 - Plugin lifecycle management
+            self.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001 - Plugin lifecycle management
+            self.instance._update_status(PluginStatus.UNKNOWN)  # noqa: SLF001 - Plugin lifecycle management
             self.is_initialized = False
 
 
@@ -126,7 +126,6 @@ class PluginLoader:
         # Check if already loading:
         if plugin_id in self._loading_plugins:
             msg = f"Plugin {plugin_id} is already being loaded"
-            raise ValueError(msg)
             raise PluginLoadError(
                 msg,
                 plugin_id=plugin_id,
@@ -227,7 +226,7 @@ class PluginLoader:
             ) from e
 
         # Update lifecycle state
-        instance._update_lifecycle_state(PluginLifecycle.LOADED)  # noqa: SLF001
+        instance._update_lifecycle_state(PluginLifecycle.LOADED)  # noqa: SLF001 - Plugin lifecycle management
 
         # Validate configuration
         config_errors = await instance.validate_configuration(final_config)
@@ -300,7 +299,6 @@ class PluginLoader:
         """
         if plugin_id not in self._loaded_plugins:
             msg = f"Plugin {plugin_id} is not loaded"
-            raise ValueError(msg)
             raise PluginError(
                 msg,
                 plugin_id=plugin_id,
@@ -310,7 +308,7 @@ class PluginLoader:
         loaded = self._loaded_plugins[plugin_id]
 
         # Update lifecycle state
-        loaded.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001
+        loaded.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001 - Plugin lifecycle management
 
         # Cleanup if initialized
         try:
