@@ -1,24 +1,12 @@
-"""Plugin domain value objects."""
+"""Plugin domain value objects.
+
+REFACTORED: PluginMetadata moved to domain.entities to eliminate duplication.
+Use: from flext_plugin.domain.entities import PluginMetadata
+"""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+# Re-export from canonical location to maintain backwards compatibility
+from flext_plugin.domain.entities import PluginMetadata
 
-from pydantic import BaseModel, ConfigDict
-
-if TYPE_CHECKING:
-    from flext_plugin.core.types import PluginType
-
-
-class PluginMetadata(BaseModel):
-    """Plugin metadata containing all information about a plugin."""
-
-    id: str
-    name: str
-    version: str
-    description: str
-    plugin_type: PluginType
-    capabilities: list[str] = []
-    configuration_schema: dict[str, Any] | None = None
-
-    model_config = ConfigDict(frozen=True)
+__all__ = ["PluginMetadata"]

@@ -3,6 +3,8 @@
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
+from __future__ import annotations
+
 from flext_plugin.core.base import Plugin
 from flext_plugin.core.discovery import PluginDiscovery
 from flext_plugin.core.loader import PluginLoader

@@ -8,10 +8,10 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
 
@@ -90,6 +90,7 @@ class HotReloadManager(DomainBaseModel):
             self.observer.join()
 
     async def _initial_plugin_load(self) -> None:
+        """Perform initial plugin loading."""
         try:
             plugins = await self.discovery.scan()
             for plugin_info in plugins:
@@ -98,10 +99,12 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
+        """Handle plugin file change events."""
         task = asyncio.create_task(self._reload_plugin(file_path))
         task.add_done_callback(lambda _: None)  # Prevent dangling task warning
 
     async def _reload_plugin(self, file_path: Path) -> None:
+        """Reload a specific plugin."""
         try:
             plugin_name = file_path.stem
 
@@ -120,6 +123,7 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     async def _load_plugin(self, file_path: Path) -> None:
+        """Load a plugin from file path."""
         try:
             plugin_name = file_path.stem
             plugin_instance = await self.loader.load_plugin_from_file(str(file_path))
@@ -128,6 +132,7 @@ class HotReloadManager(DomainBaseModel):
             pass
 
     async def _unload_plugin(self, plugin_name: str) -> None:
+        """Unload a specific plugin."""
         try:
             if plugin_name in self.loaded_plugins:
                 plugin = self.loaded_plugins[plugin_name]

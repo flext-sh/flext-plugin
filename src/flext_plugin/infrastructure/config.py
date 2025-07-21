@@ -1,10 +1,12 @@
 """Configuration for FLEXT-PLUGIN infrastructure.
+
 Using flext-core configuration system - NO duplication.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import ClassVar
 
 from flext_core.config.base import BaseSettings
 from flext_core.domain.constants import LogLevels
@@ -21,7 +23,7 @@ class PluginConfig(BaseSettings):
 
     # Discovery settings
     discovery_timeout: int = 5  # seconds
-    discovery_patterns: list[str] = ["*.py", "*.yaml", "*.yml"]
+    discovery_patterns: ClassVar[list[str]] = ["*.py", "*.yaml", "*.yml"]
     auto_discovery: bool = True
     watch_directories: bool = True
 
@@ -34,7 +36,7 @@ class PluginConfig(BaseSettings):
     # Hot reload settings
     hot_reload_enabled: bool = True
     hot_reload_poll_interval: int = 1000  # milliseconds
-    hot_reload_state_backup_dir: str = "/tmp/flext_plugin_states"
+    hot_reload_state_backup_dir: str = str(Path.home() / ".flext" / "plugin_states")
     hot_reload_max_retries: int = 3
     hot_reload_grace_period: int = 5  # seconds
 
@@ -50,8 +52,20 @@ class PluginConfig(BaseSettings):
     plugin_max_memory_mb: int = 512
     plugin_max_cpu_percent: int = 50
     plugin_execution_timeout: int = 300  # seconds
-    allowed_imports: list[str] = ["requests", "pandas", "numpy", "json", "os", "sys"]
-    restricted_imports: list[str] = ["subprocess", "os.system", "eval", "exec"]
+    allowed_imports: ClassVar[list[str]] = [
+        "requests",
+        "pandas",
+        "numpy",
+        "json",
+        "os",
+        "sys",
+    ]
+    restricted_imports: ClassVar[list[str]] = [
+        "subprocess",
+        "os.system",
+        "eval",
+        "exec",
+    ]
 
     # Plugin lifecycle settings
     startup_timeout: int = 60  # seconds
@@ -255,7 +269,6 @@ class PluginConfig(BaseSettings):
         ):
             errors.append("Plugin registry URL must start with http:// or https://")
 
-        # Validate directories
         try:
             plugin_dir = self.plugin_directory_path
             if not plugin_dir.exists():

@@ -8,115 +8,45 @@ from __future__ import annotations
 
 import traceback
 from datetime import UTC, datetime
-from enum import StrEnum
-from typing import Any, TypedDict, Union
+from typing import Any, TypedDict
 
 from flext_core.domain.constants import ConfigDefaults
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from pydantic import ConfigDict
+
+from flext_plugin.core.types import (
+    PluginCapability,
+    PluginLifecycle,
+    PluginStatus,
+    PluginType,
+)
+
+# Export types for easy access
+__all__ = [
+    "PluginCapability",
+    "PluginContext",
+    "PluginData",
+    "PluginError",
+    "PluginExecutionContext",
+    "PluginExecutionResult",
+    "PluginLifecycle",
+    "PluginResult",
+    "PluginStatus",
+    "PluginType",
+]
 
 # Type aliases for plugin system
-PluginData = Union[dict[str, Any], list[Any], str, int, float, bool, None]
+PluginData = dict[str, Any] | list[Any] | str | int | float | bool | None
 PluginContext = dict[str, Any]
-PluginResult = Union[PluginData, dict[str, PluginData]]
+PluginResult = PluginData | dict[str, PluginData]
 ConfigurationDict = dict[str, Any]
 MetadataDict = dict[str, Any]
-
-
-class PluginType(StrEnum):
-    """Plugin type classification using StrEnum for type safety."""
-
-    # Data processing plugins
-    EXTRACTOR = "extractor"
-    LOADER = "loader"
-    TRANSFORMER = "transformer"
-    VALIDATOR = "validator"
-
-    # Pipeline and orchestration plugins
-    ORCHESTRATOR = "orchestrator"
-    SCHEDULER = "scheduler"
-    TRIGGER = "trigger"
-
-    # Monitoring and observability plugins
-    MONITOR = "monitor"
-    ALERTER = "alerter"
-    LOGGER = "logger"
-    TRACER = "tracer"
-
-    # Integration and connectivity plugins
-    CONNECTOR = "connector"
-    ADAPTER = "adapter"
-    BRIDGE = "bridge"
-
-    # Security and compliance plugins
-    AUTHENTICATOR = "authenticator"
-    AUTHORIZER = "authorizer"
-    ENCRYPTOR = "encryptor"
-    AUDITOR = "auditor"
-
-    # Utility and extension plugins
-    UTILITY = "utility"
-    EXTENSION = "extension"
-    FILTER = "filter"
-    PROCESSOR = "processor"
-
-
-class PluginCapability(StrEnum):
-    """Plugin capability enumeration using StrEnum for type safety."""
-
-    # Data processing capabilities
-    DATA_EXTRACTION = "data_extraction"
-    DATA_LOADING = "data_loading"
-    DATA_TRANSFORMATION = "data_transformation"
-    DATA_VALIDATION = "data_validation"
-
-    # Schema and metadata capabilities
-    SCHEMA_INFERENCE = "schema_inference"
-    SCHEMA_VALIDATION = "schema_validation"
-    METADATA_EXTRACTION = "metadata_extraction"
-
-    # Synchronization capabilities
-    INCREMENTAL_SYNC = "incremental_sync"
-    FULL_SYNC = "full_sync"
-    REAL_TIME_SYNC = "real_time_sync"
-
-    # Pipeline capabilities
-    PIPELINE_ORCHESTRATION = "pipeline_orchestration"
-    TASK_SCHEDULING = "task_scheduling"
-    DEPENDENCY_MANAGEMENT = "dependency_management"
-
-    # Monitoring capabilities
-    HEALTH_MONITORING = "health_monitoring"
-    PERFORMANCE_MONITORING = "performance_monitoring"
-    ERROR_REPORTING = "error_reporting"
-
-
-class PluginLifecycle(StrEnum):
-    """Plugin lifecycle states using StrEnum for type safety."""
-
-    UNREGISTERED = "unregistered"
-    REGISTERED = "registered"
-    LOADED = "loaded"
-    INITIALIZED = "initialized"
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    ERROR = "error"
-    UNLOADING = "unloading"
-    UNLOADED = "unloaded"
-
-
-class PluginStatus(StrEnum):
-    """Plugin operational status using StrEnum for type safety."""
-
-    HEALTHY = "healthy"
-    DEGRADED = "degraded"
-    UNHEALTHY = "unhealthy"
-    UNKNOWN = "unknown"
 
 
 class PluginExecutionResult(DomainBaseModel):
     """Result container for plugin execution with comprehensive metadata."""
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=False)
 
     # Execution outcome
     success: bool = Field(description="Whether the plugin execution succeeded")
@@ -177,18 +107,17 @@ class PluginExecutionResult(DomainBaseModel):
             error: Error message if execution failed.
 
         """
-        if not self.model_config.get("frozen"):
-            self.end_time = datetime.now(UTC)
-            if self.start_time:
-                duration = (self.end_time - self.start_time).total_seconds() * 1000
-                self.duration_ms = int(duration)
+        self.end_time = datetime.now(UTC)
+        if self.start_time:
+            duration = (self.end_time - self.start_time).total_seconds() * 1000
+            self.duration_ms = int(duration)
 
-            if error:
-                self.success = False
-                self.error = error
-            else:
-                self.success = True
-                self.result = result
+        if error:
+            self.success = False
+            self.error = error
+        else:
+            self.success = True
+            self.result = result
 
 
 class PluginError(Exception):
@@ -242,7 +171,7 @@ class PluginValidationError(PluginError):
         **kwargs: dict[str, Any],
     ) -> None:
         """Initialize validation error with specific failure details."""
-        super().__init__(message, plugin_id, "VALIDATION_FAILED", **kwargs)
+        super().__init__(message, plugin_id, "VALIDATION_FAILED", kwargs.get("cause"))
         self.validation_failures = validation_failures
         self.details["validation_failures"] = validation_failures
 
@@ -252,7 +181,7 @@ class PluginLoadError(PluginError):
 
     def __init__(self, message: str, plugin_id: str, **kwargs: dict[str, Any]) -> None:
         """Initialize load error with plugin context."""
-        super().__init__(message, plugin_id, "LOAD_FAILED", **kwargs)
+        super().__init__(message, plugin_id, "LOAD_FAILED", kwargs.get("cause"))
 
 
 class PluginExecutionError(PluginError):
@@ -266,7 +195,7 @@ class PluginExecutionError(PluginError):
         **kwargs: dict[str, Any],
     ) -> None:
         """Initialize execution error with execution context."""
-        super().__init__(message, plugin_id, "EXECUTION_FAILED", **kwargs)
+        super().__init__(message, plugin_id, "EXECUTION_FAILED", kwargs.get("cause"))
         self.execution_id = execution_id
         if execution_id:
             self.details["execution_id"] = execution_id
@@ -283,7 +212,7 @@ class PluginDependencyError(PluginError):
         **kwargs: dict[str, Any],
     ) -> None:
         """Initialize dependency error with missing dependencies list."""
-        super().__init__(message, plugin_id, "DEPENDENCY_FAILED", **kwargs)
+        super().__init__(message, plugin_id, "DEPENDENCY_FAILED", kwargs.get("cause"))
         self.missing_dependencies = missing_dependencies
         self.details["missing_dependencies"] = missing_dependencies
 
@@ -299,7 +228,7 @@ class PluginSecurityError(PluginError):
         **kwargs: dict[str, Any],
     ) -> None:
         """Initialize security error with violations list."""
-        super().__init__(message, plugin_id, "SECURITY_VIOLATION", **kwargs)
+        super().__init__(message, plugin_id, "SECURITY_VIOLATION", kwargs.get("cause"))
         self.security_violations = security_violations
         self.details["security_violations"] = security_violations
 

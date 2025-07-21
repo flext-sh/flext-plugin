@@ -1,4 +1,4 @@
-"""Simple plugin context for flext-plugin."""
+"""Simple plugin context for flext-infrastructure.plugins.flext-plugin."""
 
 from __future__ import annotations
 

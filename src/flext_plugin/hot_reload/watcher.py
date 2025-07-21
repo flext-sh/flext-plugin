@@ -14,13 +14,16 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import aiofiles
-from pydantic import ConfigDict
+if TYPE_CHECKING:
+    from collections.abc import Coroutine
 
+import aiofiles
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+# Use centralized logger from flext-infrastructure.monitoring.flext-observability
+# - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
+from pydantic import ConfigDict
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -90,11 +93,13 @@ class PluginWatcher:
         self._watching = False
         self._watch_task: asyncio.Task[None] | None = None
         self._file_metadata: dict[Path, FileMetadata] = {}
-        self._event_handlers: list[Callable[[WatchEvent], asyncio.Future[None]]] = []
+        self._event_handlers: list[
+            Callable[[WatchEvent], Coroutine[None, None, None]]
+        ] = []
 
     def add_handler(
         self,
-        handler: Callable[[WatchEvent], asyncio.Future[None]],
+        handler: Callable[[WatchEvent], Coroutine[None, None, None]],
     ) -> None:
         """Add an event handler for file system events.
 
@@ -106,7 +111,7 @@ class PluginWatcher:
 
     def remove_handler(
         self,
-        handler: Callable[[WatchEvent], asyncio.Future[None]],
+        handler: Callable[[WatchEvent], Coroutine[None, None, None]],
     ) -> None:
         """Remove an event handler.
 
@@ -159,13 +164,12 @@ class PluginWatcher:
 
         Continuously scans directories for changes at the specified interval.
         """
-        while self._watching:
-            try:
-                await self._scan_directories()
-                await asyncio.sleep(self.poll_interval)
-            except Exception as e:
-                logger.error("Error in watch loop: %s", e, exc_info=True)
-                await asyncio.sleep(self.poll_interval)
+        try:
+            await self._scan_directories()
+            await asyncio.sleep(self.poll_interval)
+        except Exception:
+            logger.exception("Error in watch loop")
+            await asyncio.sleep(self.poll_interval)
 
     async def _scan_directories(self) -> None:
         """Scan all watch directories for changes.
@@ -253,16 +257,14 @@ class PluginWatcher:
 
         """
         hasher = hashlib.sha256()
-
         try:
             async with aiofiles.open(path, "rb") as f:
                 while chunk := await f.read(8192):
                     hasher.update(chunk)
+            return hasher.hexdigest()
         except Exception as e:
-            logger.exception("Error hashing file %s: %s", path, e)
+            logger.exception("Error calculating hash for %s: %s", path, e)
             return ""
-
-        return hasher.hexdigest()
 
     async def _handle_created(
         self,
@@ -352,7 +354,7 @@ class PluginWatcher:
 
         # Run handlers concurrently
         if self._event_handlers:
-            tasks = [
+            tasks: list[asyncio.Task[None]] = [
                 asyncio.create_task(handler(event)) for handler in self._event_handlers
             ]
 

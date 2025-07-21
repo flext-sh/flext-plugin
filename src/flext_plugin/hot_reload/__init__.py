@@ -6,6 +6,8 @@ real-time plugin updates without system restart.
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 """
 
+from __future__ import annotations
+
 from flext_plugin.hot_reload.reloader import HotReloadManager, ReloadEvent
 from flext_plugin.hot_reload.rollback import RollbackManager, RollbackPoint
 from flext_plugin.hot_reload.state_manager import PluginState, StateManager

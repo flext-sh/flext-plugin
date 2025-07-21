@@ -1,7 +1,8 @@
 """Data Flow Management for Plugin Pipeline Execution.
 
 This module provides data structures and mechanisms for managing data flow
-between pipeline steps, including data validation, transformation tracking, and step communication protocols.
+between pipeline steps, including data validation, transformation tracking, and
+step communication protocols.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from pydantic import ConfigDict
 
 if TYPE_CHECKING:
     from flext_plugin.types import PluginData, PluginExecutionResult, PluginType
@@ -20,7 +22,7 @@ if TYPE_CHECKING:
 class DataFlowContext(DomainBaseModel):
     """Context information for data flow between pipeline steps."""
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
     # Execution identifiers
     pipeline_id: str = Field(description="Pipeline execution identifier")
@@ -63,7 +65,7 @@ class DataFlowContext(DomainBaseModel):
 class DataPacket(DomainBaseModel):
     """Container for data flowing between pipeline steps."""
 
-    model_config = {"frozen": False}  # Allow mutations for data transformation
+    model_config = ConfigDict(frozen=False)  # Allow mutations for data transformation
 
     # Data payload
     data: Any = Field(description="The actual data payload")
@@ -128,6 +130,35 @@ class DataPacket(DomainBaseModel):
         # Update size and row count if possible:
         self._update_metrics()
 
+    def _update_metrics(self) -> None:
+        """Update size_bytes and row_count based on current data."""
+        try:
+            # Estimate size in bytes
+            if isinstance(self.data, str):
+                self.size_bytes = len(self.data.encode("utf-8"))
+            elif isinstance(self.data, (list, dict)):
+                # Rough estimate using JSON serialization
+                import json
+
+                self.size_bytes = len(
+                    json.dumps(self.data, default=str).encode("utf-8"),
+                )
+
+            # Count rows if data is a list:
+            if isinstance(self.data, list):
+                self.row_count = len(self.data)
+            elif (
+                isinstance(self.data, dict)
+                and "data" in self.data
+                and isinstance(self.data["data"], list)
+            ):
+                self.row_count = len(self.data["data"])
+        except Exception as e:
+            # If estimation fails, keep existing values
+            import logging
+
+            logging.getLogger(__name__).debug("Failed to estimate data metrics: %s", e)
+
     def add_validation_error(self, error: str) -> None:
         """Add validation error to packet."""
         if error not in self.validation_errors:
@@ -139,19 +170,13 @@ class DataPacket(DomainBaseModel):
 
     def get_data_summary(self) -> dict[str, Any]:
         """Get summary information about the data packet."""
-        return {
-            "packet_id": self.packet_id,
-            "source_plugin": self.source_plugin_id,
-            "size_bytes": self.size_bytes,
-            "row_count": self.row_count,
+        summary = {
             "has_schema": self.data_schema is not None,
             "is_valid": self.is_valid(),
             "validation_errors_count": len(self.validation_errors),
             "created_at": self.created_at.isoformat(),
             "last_modified_at": self.last_modified_at.isoformat(),
         }
-
-    def _update_metrics(self) -> None:
         try:
             # Estimate size in bytes
             if isinstance(self.data, str):
@@ -175,11 +200,19 @@ class DataPacket(DomainBaseModel):
             # If metrics calculation fails, just skip it
             pass
 
+        # Add calculated metrics to summary
+        if self.size_bytes is not None:
+            summary["size_bytes"] = self.size_bytes
+        if self.row_count is not None:
+            summary["row_count"] = self.row_count
+
+        return summary
+
 
 class StepResult(DomainBaseModel):
     """Result of executing a single pipeline step."""
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=False)
 
     # Step identification
     step_id: str = Field(description="Step identifier")
@@ -225,24 +258,23 @@ class StepResult(DomainBaseModel):
         error: str | None = None,
     ) -> None:
         """Mark step as completed with optional output data or error."""
-        if not self.model_config.get("frozen"):
-            self.end_time = datetime.now(UTC)
-            if self.start_time:
-                duration = (self.end_time - self.start_time).total_seconds() * 1000
-                self.duration_ms = int(duration)
+        self.end_time = datetime.now(UTC)
+        if self.start_time:
+            duration = (self.end_time - self.start_time).total_seconds() * 1000
+            self.duration_ms = int(duration)
 
-            if error:
-                self.success = False
-                self.error_message = error
-            else:
-                self.success = True
-                self.output_data = output_data
+        if error:
+            self.success = False
+            self.error_message = error
+        else:
+            self.success = True
+            self.output_data = output_data
 
 
 class PipelineDataFlow(DomainBaseModel):
     """Manages data flow through an entire pipeline execution."""
 
-    model_config = {"frozen": False}
+    model_config = ConfigDict(frozen=False)
 
     # Pipeline identification
     pipeline_id: str = Field(description="Pipeline identifier")
@@ -402,7 +434,6 @@ class DataValidator:
     @staticmethod
     def _validate_against_schema(data: PluginData, schema: dict[str, Any]) -> list[str]:
         errors = []
-
         try:
             # This is a simplified schema validation
             # In a full implementation, you would use jsonschema library

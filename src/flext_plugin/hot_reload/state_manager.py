@@ -6,19 +6,18 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 from __future__ import annotations
 
 import json
-import pickle
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
 import aiofiles
-from pydantic import ConfigDict
-
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+# Use centralized logger from flext-infrastructure.monitoring.flext-observability
+# - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
+from pydantic import ConfigDict
 
 if TYPE_CHECKING:
     from flext_plugin.core.base import Plugin
@@ -62,7 +61,8 @@ class StateSnapshot(DomainBaseModel):
 class StateManager:
     """Manages plugin state for hot reload operations.
 
-    Handles state extraction, preservation, and restoration during plugin reload operations.
+    Handles state extraction, preservation, and restoration during plugin reload
+    operations.
     """
 
     def __init__(
@@ -86,27 +86,24 @@ class StateManager:
         force: bool = False,
     ) -> PluginState:
         """Save plugin state for hot reload."""
-        plugin_id = plugin.metadata.id
+        plugin_id = plugin.metadata.name
 
         # Check if plugin supports state preservation
         if not hasattr(plugin, "get_state") and not force:
-            msg = f"Plugin {plugin_id} does not support state preservation"
+            msg = "Plugin does not support state preservation"
             raise ValueError(msg)
 
         # Extract state
         state_data = {}
-        if hasattr(plugin, "get_state"):
-            try:
-                state_data = await plugin.get_state()
-            except Exception as e:
-                logger.error(
-                    "Error extracting state from plugin %s: %s",
-                    plugin_id,
-                    e,
-                    exc_info=True,
-                )
-                if not force:
-                    raise
+        try:
+            state_data = await plugin.get_state()
+        except Exception:
+            logger.exception(
+                "Error extracting state from plugin %s",
+                plugin_id,
+            )
+            if not force:
+                raise
 
         # Create state object
         state = PluginState(
@@ -140,7 +137,7 @@ class StateManager:
         state: PluginState | None = None,
     ) -> bool:
         """Restore plugin state from saved state."""
-        plugin_id = plugin.metadata.id
+        plugin_id = plugin.metadata.name
 
         # Get state to restore
         if state is None:
@@ -156,8 +153,6 @@ class StateManager:
         if not hasattr(plugin, "set_state"):
             logger.warning("Plugin %s does not support state restoration", plugin_id)
             return False
-
-        # Restore state
         try:
             await plugin.set_state(state.state_data)
             logger.info(
@@ -166,12 +161,10 @@ class StateManager:
                 state_version=state.plugin_version,
             )
             return True
-        except Exception as e:
-            logger.error(
-                "Error restoring state for plugin %s: %s",
+        except Exception:
+            logger.exception(
+                "Error restoring state for plugin %s",
                 plugin_id,
-                e,
-                exc_info=True,
             )
             return False
 
@@ -225,7 +218,7 @@ class StateManager:
             snapshot = await self._load_snapshot(snapshot_id)
 
         if snapshot is None:
-            msg = f"Snapshot {snapshot_id} not found"
+            msg = "Snapshot not found"
             raise ValueError(msg)
 
         results = {}
@@ -252,7 +245,6 @@ class StateManager:
     async def _persist_state(self, plugin_id: str, state: PluginState) -> None:
         """Persist plugin state to disk."""
         state_file = self.state_directory / f"{plugin_id}.state.json"
-
         try:
             # Convert to JSON-serializable format
             state_dict = state.model_dump(mode="json")
@@ -261,12 +253,10 @@ class StateManager:
             async with aiofiles.open(state_file, "w", encoding="utf-8") as f:
                 await f.write(json.dumps(state_dict, indent=2, default=str))
 
-        except Exception as e:
-            logger.error(
-                "Error persisting state for %s: %s",
+        except Exception:
+            logger.exception(
+                "Error persisting state for %s",
                 plugin_id,
-                e,
-                exc_info=True,
             )
 
     async def _load_state(self, plugin_id: str) -> PluginState | None:
@@ -287,41 +277,67 @@ class StateManager:
 
             return PluginState(**state_dict)
 
-        except Exception as e:
-            logger.error("Error loading state for %s: %s", plugin_id, e, exc_info=True)
+        except Exception:
+            logger.exception("Error loading state for %s", plugin_id)
             return None
 
     async def _persist_snapshot(self, snapshot: StateSnapshot) -> None:
         """Persist snapshot to disk."""
-        snapshot_file = self.state_directory / f"snapshot_{snapshot.snapshot_id}.pkl"
+        snapshot_file = self.state_directory / f"snapshot_{snapshot.snapshot_id}.json"
 
         try:
-            async with aiofiles.open(snapshot_file, "wb") as f:
-                data = pickle.dumps(snapshot)
-                await f.write(data)
+            # Convert to JSON-serializable format
+            snapshot_dict = snapshot.model_dump(mode="json")
 
-        except Exception as e:
-            logger.error(
-                "Error persisting snapshot %s: %s",
+            # Handle datetime serialization
+            if "created_at" in snapshot_dict:
+                snapshot_dict["created_at"] = snapshot_dict["created_at"].isoformat()
+
+            # Handle plugin states datetime serialization
+            if "plugin_states" in snapshot_dict:
+                for state in snapshot_dict["plugin_states"].values():
+                    if "saved_at" in state:
+                        state["saved_at"] = state["saved_at"].isoformat()
+
+            async with aiofiles.open(snapshot_file, "w", encoding="utf-8") as f:
+                await f.write(json.dumps(snapshot_dict, indent=2, default=str))
+
+        except Exception:
+            logger.exception(
+                "Error persisting snapshot %s",
                 snapshot.snapshot_id,
-                e,
-                exc_info=True,
             )
 
     async def _load_snapshot(self, snapshot_id: str) -> StateSnapshot | None:
         """Load snapshot from disk."""
-        snapshot_file = self.state_directory / f"snapshot_{snapshot_id}.pkl"
+        snapshot_file = self.state_directory / f"snapshot_{snapshot_id}.json"
 
         if not snapshot_file.exists():
             return None
 
         try:
-            async with aiofiles.open(snapshot_file, "rb") as f:
-                data = await f.read()
-                return pickle.loads(data)
+            async with aiofiles.open(snapshot_file, encoding="utf-8") as f:
+                content = await f.read()
+                snapshot_data = json.loads(content)
 
-        except Exception as e:
-            logger.error("Error loading snapshot %s: %s", snapshot_id, e, exc_info=True)
+                # Convert datetime fields back from ISO format
+                if "created_at" in snapshot_data:
+                    snapshot_data["created_at"] = datetime.fromisoformat(
+                        snapshot_data["created_at"],
+                    )
+
+                # Process plugin states
+                if "plugin_states" in snapshot_data:
+                    for state in snapshot_data["plugin_states"].values():
+                        if "saved_at" in state:
+                            state["saved_at"] = datetime.fromisoformat(
+                                state["saved_at"],
+                            )
+
+                return StateSnapshot(**snapshot_data)
+
+        except Exception:
+            logger.exception("Error loading snapshot %s", snapshot_id)
             return None
 
     def clear_state(self, plugin_id: str) -> None:

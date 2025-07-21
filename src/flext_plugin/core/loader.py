@@ -9,8 +9,10 @@ import asyncio
 import importlib.util
 from typing import TYPE_CHECKING, Any
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+# Use centralized logger from flext-infrastructure.monitoring.flext-observability
+# - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
+
 from flext_plugin.core.types import (
     PluginDependencyError,
     PluginError,
@@ -56,9 +58,9 @@ class LoadedPlugin:
         """
         if not self.is_initialized:
             await self.instance.initialize()
-            self.instance._initialized = True
-            self.instance._update_lifecycle_state(PluginLifecycle.INITIALIZED)
-            self.instance._update_status(PluginStatus.HEALTHY)
+            self.instance._initialized = True  # noqa: SLF001
+            self.instance._update_lifecycle_state(PluginLifecycle.INITIALIZED)  # noqa: SLF001
+            self.instance._update_status(PluginStatus.HEALTHY)  # noqa: SLF001
             self.is_initialized = True
 
     async def cleanup(self) -> None:
@@ -68,9 +70,9 @@ class LoadedPlugin:
         """
         if self.is_initialized:
             await self.instance.cleanup()
-            self.instance._initialized = False
-            self.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)
-            self.instance._update_status(PluginStatus.UNKNOWN)
+            self.instance._initialized = False  # noqa: SLF001
+            self.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001
+            self.instance._update_status(PluginStatus.UNKNOWN)  # noqa: SLF001
             self.is_initialized = False
 
 
@@ -119,11 +121,12 @@ class PluginLoader:
             PluginDependencyError: If dependencies are missing.
 
         """
-        plugin_id = discovered_plugin.metadata.id
+        plugin_id = discovered_plugin.metadata.name
 
         # Check if already loading:
         if plugin_id in self._loading_plugins:
-            msg = f"Plugin is already being loaded: {plugin_id}"
+            msg = f"Plugin {plugin_id} is already being loaded"
+            raise ValueError(msg)
             raise PluginLoadError(
                 msg,
                 plugin_id=plugin_id,
@@ -147,12 +150,12 @@ class PluginLoader:
             logger.info("Successfully loaded plugin: %s", plugin_id)
             return loaded
 
-        except TimeoutError:
-            msg = f"Plugin loading timed out after {self.max_load_time}s"
+        except TimeoutError as e:
+            msg = f"Plugin {plugin_id} loading timed out after {self.max_load_time}s"
             raise PluginLoadError(
                 msg,
                 plugin_id=plugin_id,
-            )
+            ) from e
 
         finally:
             self._loading_plugins.discard(plugin_id)
@@ -181,7 +184,7 @@ class PluginLoader:
         """
         plugin_class = discovered_plugin.plugin_class
         metadata = discovered_plugin.metadata
-        plugin_id = metadata.id
+        plugin_id = metadata.name
 
         # Merge default config with provided config
         final_config = {**metadata.default_configuration}
@@ -190,9 +193,13 @@ class PluginLoader:
 
         # Validate security if enabled:
         if self.security_enabled:
-            security_violations = await self.validator.validate_security(metadata)
+            # Security validation through existing validation rules
+            security_valid, security_errors = self.validator.validate_plugin(
+                plugin_class,
+            )
+            security_violations = security_errors if not security_valid else []
             if security_violations:
-                msg = f"Plugin failed security validation: {plugin_id}"
+                msg = f"Security validation failed for plugin {plugin_id}"
                 raise PluginSecurityError(
                     msg,
                     plugin_id=plugin_id,
@@ -202,31 +209,30 @@ class PluginLoader:
         # Validate dependencies
         missing_deps = await self._check_dependencies(metadata)
         if missing_deps:
-            msg = f"Plugin has missing dependencies: {plugin_id}"
+            msg = f"Missing dependencies for plugin {plugin_id}: {missing_deps}"
             raise PluginDependencyError(
                 msg,
                 plugin_id=plugin_id,
                 missing_dependencies=missing_deps,
             )
 
-        # Create plugin instance
         try:
             instance = plugin_class(config=final_config)
         except (TypeError, ValueError, RuntimeError, AttributeError) as e:
-            msg = f"Failed to create plugin instance: {plugin_id}"
+            msg = f"Failed to instantiate plugin {plugin_id}: {e}"
             raise PluginLoadError(
                 msg,
                 plugin_id=plugin_id,
                 cause=e,
-            )
+            ) from e
 
         # Update lifecycle state
-        instance._update_lifecycle_state(PluginLifecycle.LOADED)
+        instance._update_lifecycle_state(PluginLifecycle.LOADED)  # noqa: SLF001
 
         # Validate configuration
         config_errors = await instance.validate_configuration(final_config)
         if config_errors:
-            msg = f"Plugin configuration validation failed: {plugin_id}"
+            msg = f"Configuration validation failed for plugin {plugin_id}: {config_errors}"
             raise PluginValidationError(
                 msg,
                 plugin_id=plugin_id,
@@ -241,17 +247,17 @@ class PluginLoader:
             config=final_config,
         )
 
-        # Initialize if requested:
+        # Initialize if requested
         if initialize:
             try:
                 await loaded.initialize()
             except (RuntimeError, ValueError, AttributeError, TypeError) as e:
-                msg = f"Plugin initialization failed: {plugin_id}"
+                msg = f"Failed to initialize plugin {plugin_id}: {e}"
                 raise PluginLoadError(
                     msg,
                     plugin_id=plugin_id,
                     cause=e,
-                )
+                ) from e
 
         return loaded
 
@@ -277,16 +283,8 @@ class PluginLoader:
                 if spec is None:
                     missing_deps.append(dep)
 
-        # Check Meltano plugin dependencies
-        if metadata.meltano_dependencies:
-            # Check if required plugins are loaded:
-            missing_deps.extend(
-                [
-                    f"meltano:{dep_id}"
-                    for dep_id in metadata.meltano_dependencies
-                    if dep_id not in self._loaded_plugins
-                ],
-            )
+        # Note: No Meltano plugin dependencies field in current PluginMetadata
+        # This functionality can be added later if needed
 
         return missing_deps
 
@@ -301,7 +299,8 @@ class PluginLoader:
 
         """
         if plugin_id not in self._loaded_plugins:
-            msg = f"Plugin not loaded: {plugin_id}"
+            msg = f"Plugin {plugin_id} is not loaded"
+            raise ValueError(msg)
             raise PluginError(
                 msg,
                 plugin_id=plugin_id,
@@ -311,18 +310,17 @@ class PluginLoader:
         loaded = self._loaded_plugins[plugin_id]
 
         # Update lifecycle state
-        loaded.instance._update_lifecycle_state(PluginLifecycle.UNLOADING)
+        loaded.instance._update_lifecycle_state(PluginLifecycle.UNLOADED)  # noqa: SLF001
 
-        # Cleanup if initialized:
-        if loaded.is_initialized:
-            try:
-                await loaded.cleanup()
-            except Exception as e:
-                logger.exception(
-                    "Error during plugin cleanup: %s",
-                    plugin_id,
-                    exc_info=e,
-                )
+        # Cleanup if initialized
+        try:
+            await loaded.cleanup()
+        except Exception as e:
+            logger.exception(
+                "Error during plugin cleanup: %s",
+                plugin_id,
+                exc_info=e,
+            )
 
         # Remove from loaded plugins
         del self._loaded_plugins[plugin_id]

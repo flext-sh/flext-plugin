@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from flext_core.domain.pydantic_base import DomainBaseModel
+from pydantic import ConfigDict
 
 
 class PluginDiscovery(DomainBaseModel):
@@ -13,7 +14,7 @@ class PluginDiscovery(DomainBaseModel):
 
     plugin_directory: str
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def scan(self) -> list[dict[str, Any]]:
         """Scan the plugin directory for Python plugin files.

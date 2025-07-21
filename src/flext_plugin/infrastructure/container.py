@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from flext_core.config import get_container
+
 from flext_plugin.infrastructure.config import PluginConfig
 from flext_plugin.infrastructure.persistence.repositories import (
     PluginExecutionRepository,

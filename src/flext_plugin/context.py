@@ -7,7 +7,13 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import uuid4
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
-from flext_plugin.types import PluginData, PluginExecutionContext, PluginType
+from pydantic import ConfigDict
+
+from flext_plugin.types import (
+    PluginData,
+    PluginExecutionContext,
+    PluginType,
+)
 
 if TYPE_CHECKING:
     T = TypeVar("T")
@@ -17,10 +23,11 @@ class PluginDependency(DomainBaseModel):
     """Plugin dependency specification with version constraints.
 
     Defines dependencies between plugins including version requirements,
-    optional dependencies, and compatibility constraints for proper plugin ecosystem management.
+    optional dependencies, and compatibility constraints for proper plugin ecosystem
+    management.
     """
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
     # Dependency identification
     plugin_id: str = Field(description="ID of the required plugin")
@@ -105,10 +112,11 @@ class PluginContext(DomainBaseModel):
     """Comprehensive execution context for plugin operations.
 
     Provides all necessary context information for plugin execution
-    including user information, session data, resource limits, and dependency injection containers.
+    including user information, session data, resource limits, and dependency injection
+    containers.
     """
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
     # Execution identification
     execution_id: str = Field(default_factory=lambda: str(uuid4()))
@@ -200,10 +208,13 @@ class PluginContext(DomainBaseModel):
             return None
 
         if service_type and not isinstance(service, service_type):
-            msg = f"Service '{service_name}' is type {type(service).__name__}, expected {service_type.__name__}"
-            raise TypeError(msg)
+            msg = (
+                f"Service '{service_name}' is type {type(service).__name__}, "
+                f"expected {service_type.__name__}"
+            )
+            raise ValueError(msg)
 
-        return service  # type: ignore
+        return service  # type: ignore[no-any-return]
 
     def get_dependency(
         self,
@@ -221,9 +232,9 @@ class PluginContext(DomainBaseModel):
                 f"Dependency '{dependency_name}' is type {type(dependency).__name__}, "
                 f"expected {dependency_type.__name__}"
             )
-            raise TypeError(msg)
+            raise ValueError(msg)
 
-        return dependency  # type: ignore
+        return dependency  # type: ignore[no-any-return]
 
     def has_permission(self, permission: str) -> bool:
         """Check if context has specific permission."""
@@ -282,7 +293,8 @@ class PluginContext(DomainBaseModel):
 class PluginContextBuilder:
     """Builder pattern for creating plugin contexts with fluent interface.
 
-    Provides a convenient way to construct plugin contexts with method chaining for better readability and maintainability.
+    Provides a convenient way to construct plugin contexts with method chaining for
+    better readability and maintainability.
     """
 
     def __init__(self, plugin_id: str) -> None:

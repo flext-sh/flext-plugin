@@ -1,4 +1,4 @@
-"""Basic tests for flext-plugin functionality.
+"""Basic tests for flext-infrastructure.plugins.flext-plugin functionality.
 
 Tests following flext-core patterns and standards.
 """
@@ -6,40 +6,35 @@ Tests following flext-core patterns and standards.
 from __future__ import annotations
 
 import pytest
-import pytest_asyncio
-
-try:
-    from flext_plugin.core.types import PluginError
-except ImportError:
-    # Define basic exception as fallback for tests
-    class PluginError(Exception):
-        pass
 
 
 def test_flext_plugin_imports() -> None:
-    """Test that flext-plugin core components can be imported."""
+    """Test that flext-infrastructure.plugins.flext-plugin core components can be imported.
+
+    This verifies that the core plugin components are available for import.
+    """
     try:
         from flext_plugin import PluginManager, PluginType
 
         assert PluginManager is not None
         assert PluginType is not None
     except ImportError:
-        pytest.fail("flext-plugin core components not available")
+        pytest.fail(
+            "flext-infrastructure.plugins.flext-plugin core components not available",
+        )
 
 
 def test_flext_core_dependencies() -> None:
-    """Test that flext-plugin can use flext-core dependencies."""
-    from flext_core import APIResponse, ServiceResult
+    """Test that flext-infrastructure.plugins.flext-plugin can use flext-core dependencies.
+
+    This verifies that flext-core types and patterns are accessible.
+    """
+    from flext_core import ServiceResult
 
     # Test ServiceResult works
-    result = ServiceResult.success({"plugin": "test"})
-    assert result.is_success is True
-    assert result.data == {"plugin": "test"}
-
-    # Test APIResponse works
-    response = APIResponse(success=True, message="Plugin test")
-    assert response.success is True
-    assert response.message == "Plugin test"
+    result = ServiceResult.success(data={"test": "data"})
+    assert result.is_success
+    assert result.data == {"test": "data"}
 
 
 def test_plugin_type_enum() -> None:
@@ -67,7 +62,7 @@ async def test_plugin_manager_basic() -> None:
 
 
 class TestFlextPluginIntegration:
-    """Test flext-plugin integration patterns."""
+    """Test flext-infrastructure.plugins.flext-plugin integration patterns."""
 
     async def test_plugin_load_unload(self) -> None:
         """Test plugin load/unload functionality."""
@@ -77,11 +72,11 @@ class TestFlextPluginIntegration:
         await manager.initialize()
 
         # Test load operation exists and handles missing plugins gracefully
-        try:
-            await manager.load_plugin("nonexistent-plugin")
-        except (PluginError, ValueError, KeyError, FileNotFoundError) as e:
-            # Should get PluginError for missing plugin
-            assert "not found" in str(e).lower() or "plugin" in str(e).lower()
+        result = await manager.load_plugin("nonexistent-plugin")
+
+        assert not result.is_success
+        assert result.error is not None
+        assert "not found" in result.error.lower()
 
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""

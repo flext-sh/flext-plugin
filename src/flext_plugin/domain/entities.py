@@ -8,106 +8,29 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
-
-from pydantic import computed_field
+from typing import Any
 
 from flext_core.domain.constants import ConfigDefaults, FlextFramework
 from flext_core.domain.pydantic_base import DomainEntity, DomainValueObject, Field
+from pydantic import computed_field
 
-if TYPE_CHECKING:
-    from flext_core.domain.types import PluginId, UserId
+from flext_plugin.core.types import (
+    PluginCapability,
+    PluginLifecycle,
+    PluginStatus,
+    PluginType,
+)
 
-
-class PluginType(StrEnum):
-    """Plugin type enumeration using StrEnum for type safety."""
-
-    # Data processing plugins
-    EXTRACTOR = "extractor"
-    LOADER = "loader"
-    TRANSFORMER = "transformer"
-    VALIDATOR = "validator"
-
-    # Pipeline and orchestration plugins
-    ORCHESTRATOR = "orchestrator"
-    SCHEDULER = "scheduler"
-    TRIGGER = "trigger"
-
-    # Monitoring and observability plugins
-    MONITOR = "monitor"
-    ALERTER = "alerter"
-    LOGGER = "logger"
-    TRACER = "tracer"
-
-    # Integration and connectivity plugins
-    CONNECTOR = "connector"
-    ADAPTER = "adapter"
-    BRIDGE = "bridge"
-
-    # Security and compliance plugins
-    AUTHENTICATOR = "authenticator"
-    AUTHORIZER = "authorizer"
-    ENCRYPTOR = "encryptor"
-    AUDITOR = "auditor"
-
-    # Utility and extension plugins
-    UTILITY = "utility"
-    EXTENSION = "extension"
-    FILTER = "filter"
-    PROCESSOR = "processor"
-
-
-class PluginLifecycle(StrEnum):
-    """Plugin lifecycle states using StrEnum for type safety."""
-
-    UNREGISTERED = "unregistered"
-    REGISTERED = "registered"
-    LOADED = "loaded"
-    INITIALIZED = "initialized"
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    ERROR = "error"
-    UNLOADING = "unloading"
-    UNLOADED = "unloaded"
-
-
-class PluginStatus(StrEnum):
-    """Plugin operational status using StrEnum for type safety."""
-
-    HEALTHY = "healthy"
-    DEGRADED = "degraded"
-    UNHEALTHY = "unhealthy"
-    UNKNOWN = "unknown"
-
-
-class PluginCapability(StrEnum):
-    """Plugin capability enumeration using StrEnum for type safety."""
-
-    # Data processing capabilities
-    DATA_EXTRACTION = "data_extraction"
-    DATA_LOADING = "data_loading"
-    DATA_TRANSFORMATION = "data_transformation"
-    DATA_VALIDATION = "data_validation"
-
-    # Schema and metadata capabilities
-    SCHEMA_INFERENCE = "schema_inference"
-    SCHEMA_VALIDATION = "schema_validation"
-    METADATA_EXTRACTION = "metadata_extraction"
-
-    # Synchronization capabilities
-    INCREMENTAL_SYNC = "incremental_sync"
-    FULL_SYNC = "full_sync"
-    REAL_TIME_SYNC = "real_time_sync"
-
-    # Pipeline capabilities
-    PIPELINE_ORCHESTRATION = "pipeline_orchestration"
-    TASK_SCHEDULING = "task_scheduling"
-    DEPENDENCY_MANAGEMENT = "dependency_management"
-
-    # Monitoring capabilities
-    HEALTH_MONITORING = "health_monitoring"
-    PERFORMANCE_MONITORING = "performance_monitoring"
-    ERROR_REPORTING = "error_reporting"
+__all__ = [
+    "PluginConfiguration",
+    "PluginExecution",
+    "PluginInstance",
+    "PluginLifecycle",
+    "PluginMetadata",
+    "PluginRegistry",
+    "PluginSecurityLevel",
+    "PluginStatus",
+]
 
 
 class PluginSecurityLevel(StrEnum):
@@ -240,7 +163,7 @@ class PluginMetadata(DomainValueObject):
 class PluginInstance(DomainEntity):
     """Plugin instance domain entity using enhanced mixins for code reduction."""
 
-    plugin_id: PluginId = Field(..., description="Plugin identifier")
+    plugin_id: str = Field(..., description="Plugin identifier")
     metadata: PluginMetadata = Field(..., description="Plugin metadata")
     configuration: PluginConfiguration = Field(
         default_factory=PluginConfiguration,
@@ -326,7 +249,7 @@ class PluginInstance(DomainEntity):
 
         """
         return (
-            self.is_active
+            self.is_active()
             and self.is_initialized
             and self.configuration.enabled
             and self.plugin_status in {PluginStatus.HEALTHY, PluginStatus.DEGRADED}
@@ -411,7 +334,7 @@ class PluginInstance(DomainEntity):
                 self.plugin_status = PluginStatus.HEALTHY
         elif new_state == PluginLifecycle.ERROR:
             self.plugin_status = PluginStatus.UNHEALTHY
-        elif new_state in {PluginLifecycle.UNLOADED, PluginLifecycle.UNREGISTERED}:
+        elif new_state in {PluginLifecycle.STOPPED, PluginLifecycle.UNREGISTERED}:
             self.plugin_status = PluginStatus.UNKNOWN
 
 
@@ -491,11 +414,11 @@ class PluginRegistry(DomainEntity):
 class PluginExecution(DomainEntity):
     """Plugin execution domain entity using enhanced mixins for code reduction."""
 
-    plugin_id: PluginId = Field(..., description="Plugin identifier")
+    plugin_id: str = Field(..., description="Plugin identifier")
     execution_id: str = Field(..., description="Unique execution identifier")
 
     # Execution context
-    user_id: UserId | None = Field(None, description="User who triggered execution")
+    user_id: str | None = Field(None, description="User who triggered execution")
     trace_id: str | None = Field(None, description="Distributed tracing ID")
     span_id: str | None = Field(None, description="Distributed tracing span ID")
 

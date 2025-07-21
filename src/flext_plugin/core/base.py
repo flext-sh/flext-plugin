@@ -11,16 +11,10 @@ from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, ClassVar
 
-from flext_plugin.domain.entities import (
-    PluginConfiguration,
-    PluginLifecycle,
-    PluginStatus,
-)
+from flext_plugin.core.types import PluginLifecycle, PluginStatus
+from flext_plugin.domain.entities import PluginConfiguration
 
 if TYPE_CHECKING:
-    import jsonschema  # type: ignore
-    import psutil  # type: ignore
-
     from flext_plugin.domain.value_objects import PluginMetadata
     from flext_plugin.types import (
         ConfigurationDict,
@@ -28,13 +22,17 @@ if TYPE_CHECKING:
         PluginData,
         PluginResult,
     )
-else:
-    try:
-        import jsonschema
-        import psutil
-    except ImportError:
-        jsonschema = None  # type: ignore
-        psutil = None  # type: ignore
+
+try:
+    import jsonschema
+except (ImportError, TypeError):
+    # TypeError can occur in Python 3.13 with some lark/jsonschema versions
+    jsonschema = None  # type: ignore[assignment]
+
+try:
+    import psutil
+except ImportError:
+    psutil = None  # type: ignore[assignment]
 
 
 class Plugin(ABC):
@@ -203,6 +201,30 @@ class Plugin(ABC):
         """
         ...
 
+    async def get_state(self) -> ConfigurationDict:
+        """Get plugin state for preservation during hot reload.
+
+        Default implementation returns current configuration.
+        Override in concrete plugins to save additional state.
+
+        Returns:
+            Plugin state as a configuration dictionary.
+
+        """
+        return self._config.copy()
+
+    async def set_state(self, state: ConfigurationDict) -> None:
+        """Restore plugin state after hot reload.
+
+        Default implementation updates configuration.
+        Override in concrete plugins to restore additional state.
+
+        Args:
+            state: Plugin state to restore.
+
+        """
+        self._config.update(state)
+
     async def validate_configuration(self, config: ConfigurationDict) -> list[str]:
         """Validate plugin configuration.
 
@@ -216,12 +238,11 @@ class Plugin(ABC):
         # Basic validation - can be overridden by concrete implementations
         errors = []
 
-        if not isinstance(config, dict):
-            errors.append("Configuration must be a dictionary")
-            return errors
+        # ConfigurationDict is already typed as dict[str, Any], so no runtime
+        # check needed
 
         # Validate against configuration schema if available:
-        schema = self.metadata.configuration_schema
+        schema = self.metadata.config_schema
         if schema:
             if jsonschema:
                 try:
@@ -255,10 +276,10 @@ class Plugin(ABC):
         """
         if psutil:
             process = psutil.Process()
-            MB_TO_BYTES = 1024 * 1024
+            mb_to_bytes = 1024 * 1024
 
             return {
-                "memory_mb": process.memory_info().rss / MB_TO_BYTES,
+                "memory_mb": process.memory_info().rss / mb_to_bytes,
                 "cpu_percent": process.cpu_percent(),
                 "open_files": len(process.open_files()),
                 "threads": process.num_threads(),

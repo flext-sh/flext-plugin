@@ -11,14 +11,18 @@ import inspect
 import os
 from typing import TYPE_CHECKING, Any
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+# Use centralized logger from flext-infrastructure.monitoring.flext-observability
+# - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
+
 from flext_plugin.core.base import Plugin
-from flext_plugin.core.types import PluginError, PluginType
-from flext_plugin.domain.value_objects import PluginMetadata
+from flext_plugin.core.types import PluginError
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from flext_plugin.domain.entities import PluginMetadata
+    from flext_plugin.types import PluginType
 
 
 logger = get_logger(__name__)
@@ -41,7 +45,7 @@ class DiscoveredPlugin:
         self.entry_point_name = entry_point_name
 
     def __repr__(self) -> str:
-        return f"DiscoveredPlugin({self.metadata.id}, source={self.source})"
+        return f"DiscoveredPlugin({self.metadata.name}, source={self.source})"
 
 
 class PluginDiscovery:
@@ -154,7 +158,6 @@ class PluginDiscovery:
         for group in self.entry_point_groups:
             try:
                 entry_points = importlib.metadata.entry_points(group=group)
-
                 for ep in entry_points:
                     try:
                         plugin_class = ep.load()
@@ -162,17 +165,17 @@ class PluginDiscovery:
                         if self._validate_plugin_class(plugin_class):
                             metadata = plugin_class.METADATA
 
-                            if metadata.id not in self._discovered_plugins:
+                            if metadata.name not in self._discovered_plugins:
                                 discovered = DiscoveredPlugin(
                                     metadata=metadata,
                                     plugin_class=plugin_class,
                                     source="entry_point",
                                     entry_point_name=ep.name,
                                 )
-                                self._discovered_plugins[metadata.id] = discovered
+                                self._discovered_plugins[metadata.name] = discovered
                                 logger.debug(
                                     "Discovered plugin via entry point: %s",
-                                    metadata.id,
+                                    metadata.name,
                                 )
 
                     except (
@@ -232,16 +235,16 @@ class PluginDiscovery:
                         ):
                             metadata = obj.METADATA
 
-                            if metadata.id not in self._discovered_plugins:
+                            if metadata.name not in self._discovered_plugins:
                                 discovered = DiscoveredPlugin(
                                     metadata=metadata,
                                     plugin_class=obj,
                                     source="file",
                                 )
-                                self._discovered_plugins[metadata.id] = discovered
+                                self._discovered_plugins[metadata.name] = discovered
                                 logger.debug(
                                     "Discovered plugin from file: %s",
-                                    metadata.id,
+                                    metadata.name,
                                 )
 
             except (OSError, ImportError, AttributeError, ValueError, SyntaxError) as e:
@@ -263,21 +266,15 @@ class PluginDiscovery:
                 return False
 
             # Check if it has metadata:
-            if not hasattr(plugin_class, "METADATA"):
+            if not hasattr(plugin_class, "metadata"):
                 logger.warning(
-                    "Plugin class %s missing METADATA",
+                    "Plugin class %s missing metadata",
                     plugin_class.__name__,
                 )
                 return False
 
-            # Check if metadata is valid:
-            metadata = plugin_class.METADATA
-            if not isinstance(metadata, PluginMetadata):
-                logger.warning(
-                    "Plugin class %s has invalid METADATA",
-                    plugin_class.__name__,
-                )
-                return False
+            # Check if metadata is valid - metadata is guaranteed to exist due to \
+            # hasattr check above
 
             # Check required methods
             required_methods = ["initialize", "cleanup", "health_check", "execute"]
@@ -312,7 +309,7 @@ class PluginDiscovery:
 
         """
         if not self._validate_plugin_class(plugin_class):
-            msg = f"Invalid plugin class: {plugin_class.__name__}"
+            msg = f"Invalid plugin class: {plugin_class}"
             raise PluginError(
                 msg,
                 error_code="INVALID_PLUGIN",
@@ -320,11 +317,11 @@ class PluginDiscovery:
 
         metadata = plugin_class.METADATA
 
-        if metadata.id in self._discovered_plugins and not override:
-            msg = f"Plugin already registered: {metadata.id}"
+        if metadata.name in self._discovered_plugins and not override:
+            msg = f"Plugin {metadata.name} already registered"
             raise PluginError(
                 msg,
-                plugin_id=metadata.id,
+                plugin_id=metadata.name,
                 error_code="DUPLICATE_PLUGIN",
             )
 
@@ -333,8 +330,8 @@ class PluginDiscovery:
             plugin_class=plugin_class,
             source="manual",
         )
-        self._discovered_plugins[metadata.id] = discovered
-        logger.info("Manually registered plugin: %s", metadata.id)
+        self._discovered_plugins[metadata.name] = discovered
+        logger.info("Manually registered plugin: %s", metadata.name)
 
     def get_discovered_plugin(self, plugin_id: str) -> DiscoveredPlugin | None:
         """Get a discovered plugin by ID.

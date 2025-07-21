@@ -1,14 +1,21 @@
 """Test transformer plugin."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from flext_plugin.core.base import Plugin
-from flext_plugin.core.types import PluginType
 
 
 class TestTransformer(Plugin):
     """Simple test transformer plugin."""
 
-    plugin_type = PluginType.TRANSFORMER
+    plugin_type = "transformer"
 
-    def execute(self, **kwargs):
+    async def execute(
+        self,
+        input_data: Any = None,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Execute the test transformation."""
         return {"transformed_data": "processed_test_data", "status": "success"}

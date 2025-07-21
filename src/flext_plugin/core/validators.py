@@ -63,15 +63,24 @@ class MetadataValidationRule(ValidationRule):
         """
         # Get metadata from class or instance
         if inspect.isclass(plugin):
-            if not hasattr(plugin, "get_metadata"):
-                return False, "Plugin class missing get_metadata() method"
-            # For class validation, we can't call get_metadata
-            return True, None
+            if not hasattr(plugin, "METADATA"):
+                return False, "Plugin class missing METADATA attribute"
+            # For class validation, we need to access the class attribute directly
+            metadata = plugin.METADATA
+        else:
+            # Get metadata from instance
+            metadata = plugin.metadata
 
-        metadata = plugin.metadata
+        # Metadata should be a PluginMetadata object, not callable
+        if metadata is None:
+            return False, "Plugin metadata is None"
+
+        # If metadata is callable (shouldn't happen with proper Plugin implementation)
+        if callable(metadata):
+            return False, "Plugin metadata should not be callable"
 
         # Validate required fields
-        required_fields = ["id", "name", "version", "plugin_type"]
+        required_fields = ["name", "version", "plugin_type"]
 
         missing_fields = [
             field for field in required_fields if not getattr(metadata, field, None)
@@ -88,15 +97,17 @@ class MetadataValidationRule(ValidationRule):
         if not version_pattern.match(metadata.version):
             return (
                 False,
-                f"Invalid version format: {metadata.version} (expected semantic versioning)",
+                f"Invalid version format: {metadata.version} "
+                f"(expected semantic versioning)",
             )
 
-        # Validate plugin ID format
-        id_pattern = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-        if not id_pattern.match(metadata.id):
+        # Validate plugin name format (used as identifier)
+        name_pattern = re.compile(r"^[a-zA-Z0-9]+([_-][a-zA-Z0-9]+)*$")
+        if not name_pattern.match(metadata.name):
             return (
                 False,
-                f"Invalid plugin ID format: {metadata.id} (expected lowercase with hyphens)",
+                f"Invalid plugin name format: {metadata.name} "
+                f"(expected alphanumeric with underscores/hyphens)",
             )
 
         return True, None
@@ -125,7 +136,7 @@ class InterfaceValidationRule(ValidationRule):
         plugin_class = plugin if inspect.isclass(plugin) else type(plugin)
 
         # Check if plugin has required methods
-        required_methods = ["execute", "get_metadata"]
+        required_methods = ["execute", "initialize", "cleanup", "health_check"]
 
         missing_methods = [
             method for method in required_methods if not hasattr(plugin_class, method)

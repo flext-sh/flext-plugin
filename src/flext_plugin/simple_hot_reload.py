@@ -4,26 +4,36 @@ from __future__ import annotations
 
 import asyncio
 import importlib
+import importlib.util
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
-
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    import aiofiles  # type: ignore
-    from watchdog.observers import Observer
+    # Import for type checking only
+    from watchdog.events import (
+        FileSystemEvent,
+        FileSystemEventHandler,
+    )
+    from watchdog.observers import (
+        Observer as ObserverType,
+    )
 else:
+    # Runtime imports with error handling for missing stubs
     try:
-        import aiofiles
-        from watchdog.observers import Observer
-    except ImportError:
-        aiofiles = None  # type: ignore
-        Observer = None  # type: ignore
+        from watchdog.events import FileSystemEvent, FileSystemEventHandler
+        from watchdog.observers import Observer as ObserverType
+    except ImportError as e:
+        msg = "watchdog library is required but not properly installed"
+        raise RuntimeError(
+            msg,
+        ) from e
 
+# ZERO TOLERANCE: Use ORIGINAL libraries ONLY - NO FALLBACKS ALLOWED
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
+from pydantic import ConfigDict
 
 
 class SimplePluginHandler(FileSystemEventHandler):
@@ -48,22 +58,22 @@ class SimpleHotReloadManager(DomainBaseModel):
     """Simple working hot reload manager for plugins."""
 
     plugin_directory: str
-    observer = Field(default=None)
+    observer: Any | None = Field(default=None)
     loaded_plugins: dict[str, Any] = Field(default_factory=dict)
 
-    model_config: ClassVar = {"arbitrary_types_allowed": True}
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def model_post_init(self, __context: dict[str, Any] | None, /) -> None:
         """Initialize observer and loaded plugins after model creation."""
-        if Observer is not None:
-            self.observer = Observer()
+        if ObserverType is not None:
+            self.observer = ObserverType()
         if not hasattr(self, "loaded_plugins"):
             self.loaded_plugins = {}
 
     async def start_watching(self) -> None:
         """Start watching plugin directory for file changes."""
-        if self.observer is None or Observer is None:
-            msg = "Observer not initialized or watchdog not available"
+        if self.observer is None or ObserverType is None:
+            msg = "Observer not available"
             raise RuntimeError(msg)
 
         handler = SimplePluginHandler(self._on_plugin_file_changed)
@@ -80,6 +90,7 @@ class SimpleHotReloadManager(DomainBaseModel):
             self.observer.join()
 
     async def _initial_plugin_load(self) -> None:
+        """Load all existing plugins in the directory."""
         try:
             plugin_dir = Path(self.plugin_directory)
             for plugin_file in plugin_dir.glob("*.py"):
@@ -93,6 +104,7 @@ class SimpleHotReloadManager(DomainBaseModel):
         task.add_done_callback(lambda _: None)  # Prevent dangling task warning
 
     async def _reload_plugin(self, file_path: Path) -> None:
+        """Reload a plugin when its file changes."""
         try:
             plugin_name = file_path.stem
 
@@ -111,26 +123,30 @@ class SimpleHotReloadManager(DomainBaseModel):
             pass
 
     async def _load_plugin(self, file_path: Path) -> None:
+        """Load a plugin from file."""
         try:
             plugin_name = file_path.stem
 
-            # Read and execute plugin file
-            async with aiofiles.open(file_path, encoding="utf-8") as f:
-                plugin_code = await f.read()
+            # Use importlib for secure module loading instead of exec()
+            spec = importlib.util.spec_from_file_location(plugin_name, file_path)
+            if spec is None or spec.loader is None:
+                return
 
-            # Create module namespace
-            plugin_globals: dict[str, Any] = {}
-            exec(plugin_code, plugin_globals)
+            # Create and execute module
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[plugin_name] = module
+            spec.loader.exec_module(module)
 
             # Look for plugin_instance or first class
             plugin_instance = None
-            if "plugin_instance" in plugin_globals:
-                plugin_instance = plugin_globals["plugin_instance"]
+            if hasattr(module, "plugin_instance"):
+                plugin_instance = module.plugin_instance
             else:
                 # Find first class in the module
-                for value in plugin_globals.values():
-                    if isinstance(value, type) and value.__name__ != "type":
-                        plugin_instance = value()
+                for attr_name in dir(module):
+                    attr_value = getattr(module, attr_name)
+                    if isinstance(attr_value, type) and not attr_name.startswith("_"):
+                        plugin_instance = attr_value()
                         break
 
             if plugin_instance:
@@ -140,6 +156,7 @@ class SimpleHotReloadManager(DomainBaseModel):
             pass
 
     async def _unload_plugin(self, plugin_name: str) -> None:
+        """Unload a plugin from memory."""
         try:
             if plugin_name in self.loaded_plugins:
                 plugin = self.loaded_plugins[plugin_name]

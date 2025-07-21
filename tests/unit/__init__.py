@@ -1,3 +1,3 @@
-"""FLEXT Plugin domain layer."""
+"""Unit tests package."""
 
 from __future__ import annotations

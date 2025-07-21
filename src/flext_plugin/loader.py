@@ -27,12 +27,11 @@ class PluginLoader(DomainBaseModel):
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     async def load_plugin_from_file(self, file_path: str) -> PluginResult:
-        """Load plugin from file path."""
         try:
             path = Path(file_path)
             spec = importlib.util.spec_from_file_location(path.stem, file_path)
             if spec is None or spec.loader is None:
-                msg = f"Cannot load module from {file_path}"
+                msg = f"Failed to create spec for {file_path}"
                 raise ImportError(msg)
 
             module = importlib.util.module_from_spec(spec)
@@ -45,7 +44,7 @@ class PluginLoader(DomainBaseModel):
             if hasattr(module, "get_plugin"):
                 plugin = module.get_plugin()
                 self.loaded_plugins[path.stem] = plugin
-                return plugin
+                return plugin  # type: ignore[no-any-return]
 
             # Fallback to any class that has execute method
             for attr_name in dir(module):
@@ -57,11 +56,10 @@ class PluginLoader(DomainBaseModel):
                 ):
                     plugin = attr()
                     self.loaded_plugins[path.stem] = plugin
-                    return plugin
+                    return plugin  # type: ignore[no-any-return]
 
             msg = f"No plugin found in {file_path}"
             raise ImportError(msg)
-
         except Exception as e:
             msg = f"Failed to load plugin from {file_path}: {e}"
             raise ImportError(msg) from e

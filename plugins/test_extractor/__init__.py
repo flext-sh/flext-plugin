@@ -1,6 +1,9 @@
 """Test extractor plugin."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class TestExtractor(ABC):
@@ -8,6 +11,7 @@ class TestExtractor(ABC):
 
     plugin_type = "extractor"
 
-    def execute(self, **kwargs):
+    @abstractmethod
+    def execute(self, **kwargs: Any) -> dict[str, Any]:
         """Execute the test extraction."""
         return {"extracted_data": "test_data", "status": "success"}

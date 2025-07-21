@@ -14,7 +14,8 @@ from uuid import uuid4
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
+# Use centralized logger from flext-infrastructure.monitoring.flext-observability
+# - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
@@ -99,7 +100,8 @@ class RollbackHistory(DomainBaseModel):
 class RollbackManager:
     """Manages rollback operations for plugin hot reload.
 
-    Provides rollback capabilities to recover from failed reload operations or unwanted plugin updates.
+    Provides rollback capabilities to recover from failed reload operations or
+    unwanted plugin updates.
     """
 
     def __init__(
@@ -134,7 +136,7 @@ class RollbackManager:
             The ID of the created rollback point.
 
         """
-        plugin_id = plugin.metadata.id
+        plugin_id = plugin.metadata.name
         rollback_id = str(uuid4())
 
         # Create state snapshot
@@ -198,7 +200,7 @@ class RollbackManager:
         # Get rollback history
         history = self._histories.get(plugin_id)
         if not history:
-            msg = f"No rollback history for plugin {plugin_id}"
+            msg = f"No rollback history found for plugin {plugin_id}"
             raise ValueError(msg)
 
         # Get rollback point
@@ -208,7 +210,7 @@ class RollbackManager:
             point = history.get_latest_point()
 
         if not point:
-            msg = f"Rollback point not found: {rollback_id}"
+            msg = f"No rollback point found for plugin {plugin_id}"
             raise ValueError(msg)
 
         result = {
@@ -221,34 +223,31 @@ class RollbackManager:
             "errors": [],
         }
 
-        # Restore state
         try:
-            restore_results = await self.state_manager.restore_snapshot(
+            await self.state_manager.restore_snapshot(
                 point.state_snapshot_id,
             )
-            result["state_restored"] = restore_results.get(plugin_id, False)
+            result["state_restored"] = True
         except Exception as e:
-            logger.error(
-                "Error restoring state for plugin %s: %s",
+            logger.exception(
+                "Error restoring state for plugin %s",
                 plugin_id,
-                e,
-                exc_info=True,
             )
-            result["errors"].append(f"State restoration failed: {e!s}")
+            if isinstance(result["errors"], list):
+                result["errors"].append(f"State restoration failed: {e!s}")
 
-        # Restore code if requested:
-        if restore_code and point.metadata.get("code_backed_up"):
+        # Restore code if requested
+        if restore_code:
             try:
                 await self._restore_plugin_code(plugin_id, point.rollback_id)
                 result["code_restored"] = True
-            except Exception as e:
-                logger.error(
-                    "Error restoring code for plugin %s: %s",
+            except Exception:
+                logger.exception(
+                    "Error restoring code for plugin %s",
                     plugin_id,
-                    e,
-                    exc_info=True,
                 )
-                result["errors"].append(f"Code restoration failed: {e!s}")
+                if isinstance(result["errors"], list):
+                    result["errors"].append("Code restoration failed")
 
         logger.info(
             "Rolled back plugin %s",
@@ -276,16 +275,20 @@ class RollbackManager:
         """
         plugin_module = inspect.getmodule(plugin.__class__)
         if not plugin_module or not hasattr(plugin_module, "__file__"):
-            msg = "Cannot determine plugin module file"
+            msg = f"Cannot determine source file for plugin {plugin.metadata.name}"
             raise ValueError(msg)
 
-        source_file = Path(plugin_module.__file__)
+        module_file = plugin_module.__file__
+        if module_file is None:
+            msg = f"Plugin module file is None for {plugin.metadata.name}"
+            raise ValueError(msg)
+        source_file = Path(module_file)
         if not source_file.exists():
-            msg = f"Plugin source file not found: {source_file}"
+            msg = f"Plugin source file does not exist: {source_file}"
             raise ValueError(msg)
 
         # Create backup directory
-        plugin_backup_dir = self.backup_directory / plugin.metadata.id
+        plugin_backup_dir = self.backup_directory / plugin.metadata.name
         plugin_backup_dir.mkdir(exist_ok=True)
 
         # Backup file
@@ -294,7 +297,7 @@ class RollbackManager:
 
         logger.debug(
             "Backed up plugin code",
-            plugin_id=plugin.metadata.id,
+            plugin_id=plugin.metadata.name,
             source=str(source_file),
             backup=str(backup_file),
         )
@@ -317,12 +320,14 @@ class RollbackManager:
             plugin_id not in self._plugin_backups
             or rollback_id not in self._plugin_backups[plugin_id]
         ):
-            msg = f"No code backup found for rollback {rollback_id}"
+            msg = (
+                f"No backup found for plugin {plugin_id} with rollback ID {rollback_id}"
+            )
             raise ValueError(msg)
 
         backup_file = self._plugin_backups[plugin_id][rollback_id]
         if not backup_file.exists():
-            msg = f"Backup file not found: {backup_file}"
+            msg = f"Backup file does not exist: {backup_file}"
             raise ValueError(msg)
 
         # Determine target path

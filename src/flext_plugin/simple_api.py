@@ -9,7 +9,9 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from flext_core.domain.shared_types import Environment, LogLevel
 from flext_core.domain.types import ServiceResult
+
 from flext_plugin.config import PluginSettings
 
 if TYPE_CHECKING:
@@ -21,14 +23,22 @@ def setup_plugin_system(
 ) -> ServiceResult[PluginSettings]:
     """Setup the plugin system with configuration."""
     try:
-        # Setup logging using flext-observability
+        # Setup logging using flext-infrastructure.monitoring.flext-observability
         try:
-            from flext_observability.logging import setup_logging
+            from flext_core.domain.shared_models import LogLevel
+            from flext_observability.logging import LoggingConfig, setup_logging
 
-            setup_logging(
-                log_level=settings.log_level if settings else "INFO",
+            log_level_str = settings.log_level if settings else "INFO"
+            log_level = (
+                LogLevel(log_level_str)
+                if hasattr(LogLevel, log_level_str)
+                else LogLevel.INFO
+            )
+            log_config = LoggingConfig(
+                log_level=log_level,
                 json_logs=False,
             )
+            setup_logging(log_config)
         except ImportError:
             # Fallback to basic logging configuration
             logging.basicConfig(
@@ -54,87 +64,138 @@ def setup_plugin_system(
 
 def create_development_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create development plugin configuration with defaults."""
-    defaults = {
-        "plugin_directory": Path.cwd() / "plugins",
-        "hot_reload_enabled": True,
-        "hot_reload_poll_interval": 500,
-        "enable_sandbox": False,
-        "verify_signatures": False,
-        "log_level": "DEBUG",
-        "enable_profiling": True,
-        "profiling_sample_rate": 0.5,
-        "health_check_interval": 10,
-        "registry_enabled": False,
-    }
+    # Create base settings with all required fields
+    settings = PluginSettings(
+        project_name="flext-infrastructure.plugins.flext-plugin",
+        project_version="0.7.0",
+        plugin_directory=Path.cwd() / "plugins",
+        discovery_timeout=5,
+        discovery_pattern="*.py",
+        load_timeout=30,
+        max_concurrent_loads=10,
+        enable_lazy_loading=True,
+        cache_loaded_plugins=True,
+        hot_reload_enabled=True,
+        hot_reload_poll_interval=500,
+        verify_signatures=False,
+        health_check_enabled=True,
+        health_check_interval=10,
+        log_plugin_events=True,
+        log_level=LogLevel.DEBUG,
+        environment=Environment.DEVELOPMENT,
+        debug=True,
+    )
 
-    # Override with provided values
-    defaults.update(overrides)
+    # Apply overrides for supported fields only
+    supported_fields = {name for name, field in PluginSettings.model_fields.items()}
 
-    return PluginSettings(**defaults)
+    for key, value in overrides.items():
+        if key in supported_fields:
+            setattr(settings, key, value)
+
+    return settings
 
 
 def create_production_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create production plugin configuration with defaults."""
-    defaults = {
-        "plugin_directory": Path("/opt/flext/plugins"),
-        "hot_reload_enabled": False,
-        "enable_sandbox": True,
-        "verify_signatures": True,
-        "log_level": "INFO",
-        "enable_profiling": False,
-        "health_check_interval": 30,
-        "registry_enabled": True,
-        "max_memory_mb": 1024,
-        "max_cpu_percent": 75,
-        "execution_timeout": 120,
-    }
+    # Create base settings with all required fields
+    settings = PluginSettings(
+        project_name="flext-infrastructure.plugins.flext-plugin",
+        project_version="0.7.0",
+        plugin_directory=Path("/opt/flext/plugins"),
+        discovery_timeout=10,
+        discovery_pattern="*.py",
+        load_timeout=60,
+        max_concurrent_loads=5,
+        enable_lazy_loading=False,
+        cache_loaded_plugins=True,
+        hot_reload_enabled=False,
+        hot_reload_poll_interval=1000,
+        verify_signatures=True,
+        health_check_enabled=True,
+        health_check_interval=30,
+        log_plugin_events=True,
+        log_level=LogLevel.INFO,
+        environment=Environment.PRODUCTION,
+        debug=False,
+    )
 
-    # Override with provided values
-    defaults.update(overrides)
+    # Apply overrides for supported fields only
+    supported_fields = {name for name, field in PluginSettings.model_fields.items()}
 
-    return PluginSettings(**defaults)
+    for key, value in overrides.items():
+        if key in supported_fields:
+            setattr(settings, key, value)
+
+    return settings
 
 
 def create_testing_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create testing plugin configuration with defaults."""
-    defaults = {
-        "plugin_directory": Path("/tmp/test_plugins"),
-        "hot_reload_enabled": False,
-        "enable_sandbox": False,
-        "verify_signatures": False,
-        "log_level": "WARNING",
-        "enable_profiling": False,
-        "health_check_enabled": False,
-        "registry_enabled": False,
-        "discovery_timeout": 1,
-        "load_timeout": 5,
-        "execution_timeout": 10,
-    }
+    # Create base settings with all required fields
+    settings = PluginSettings(
+        project_name="flext-infrastructure.plugins.flext-plugin",
+        project_version="0.7.0",
+        plugin_directory=Path.cwd() / "test_plugins",
+        discovery_timeout=1,
+        discovery_pattern="*.py",
+        load_timeout=5,
+        max_concurrent_loads=2,
+        enable_lazy_loading=False,
+        cache_loaded_plugins=False,
+        hot_reload_enabled=False,
+        hot_reload_poll_interval=1000,
+        verify_signatures=False,
+        health_check_enabled=False,
+        health_check_interval=60,
+        log_plugin_events=False,
+        log_level=LogLevel.WARNING,
+        environment=Environment.TEST,
+        debug=False,
+    )
 
-    # Override with provided values
-    defaults.update(overrides)
+    # Apply overrides for supported fields only
+    supported_fields = {name for name, field in PluginSettings.model_fields.items()}
 
-    return PluginSettings(**defaults)
+    for key, value in overrides.items():
+        if key in supported_fields:
+            setattr(settings, key, value)
+
+    return settings
 
 
 def create_minimal_plugin_config(**overrides: ConfigurationDict) -> PluginSettings:
     """Create minimal plugin configuration with defaults."""
-    defaults = {
-        "hot_reload_enabled": False,
-        "enable_sandbox": False,
-        "verify_signatures": False,
-        "registry_enabled": False,
-        "health_check_enabled": False,
-        "enable_metrics": False,
-        "enable_profiling": False,
-        "log_plugin_events": False,
-        "log_plugin_executions": False,
-    }
+    # Create base settings with minimal required fields
+    settings = PluginSettings(
+        project_name="flext-infrastructure.plugins.flext-plugin",
+        project_version="0.7.0",
+        plugin_directory=Path.cwd() / "plugins",
+        discovery_timeout=5,
+        discovery_pattern="*.py",
+        load_timeout=30,
+        max_concurrent_loads=1,
+        enable_lazy_loading=False,
+        cache_loaded_plugins=False,
+        hot_reload_enabled=False,
+        hot_reload_poll_interval=1000,
+        verify_signatures=False,
+        health_check_enabled=False,
+        health_check_interval=60,
+        log_plugin_events=False,
+        log_level=LogLevel.WARNING,
+        environment=Environment.DEVELOPMENT,
+        debug=False,
+    )
 
-    # Override with provided values
-    defaults.update(overrides)
+    # Apply overrides for supported fields only
+    supported_fields = {name for name, field in PluginSettings.model_fields.items()}
 
-    return PluginSettings(**defaults)
+    for key, value in overrides.items():
+        if key in supported_fields:
+            setattr(settings, key, value)
+
+    return settings
 
 
 # Export convenience functions

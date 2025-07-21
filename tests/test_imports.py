@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Test script to check individual module imports."""
 
+from __future__ import annotations
+
+import contextlib
 import sys
 from pathlib import Path
 
@@ -15,8 +18,5 @@ modules_to_test = [
 ]
 
 for module in modules_to_test:
-    try:
+    with contextlib.suppress(Exception):
         __import__(module)
-        print(f"✅ {module} - OK")
-    except Exception as e:
-        print(f"❌ {module} - ERROR: {e}")

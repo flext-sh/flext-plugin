@@ -2,8 +2,10 @@
 
 📋 Architecture Documentation:
     docs/architecture/003-plugin-system-architecture/
-🔗 Interface Documentation: docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md
-📊 Implementation Analysis: docs/architecture/003-plugin-system-architecture/IMPLEMENTATION-REALITY-MAP.md
+🔗 Interface Documentation:
+    docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md
+📊 Implementation Analysis:
+    docs/architecture/003-plugin-system-architecture/IMPLEMENTATION-REALITY-MAP.md
 
 This module provides the foundation for the FLEXT enterprise plugin system with:
 - PluginInterface: Abstract base class for all plugins (EXCELLENT IMPLEMENTATION)
@@ -18,13 +20,11 @@ from __future__ import annotations
 
 import abc
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
-from flext_core.domain.pydantic_base import DomainBaseModel, Field
-from flext_plugin.domain.entities import PluginLifecycle, PluginStatus
+from flext_plugin.types import PluginLifecycle, PluginStatus
 
 if TYPE_CHECKING:
-    from flext_plugin.domain.entities import PluginType
     from flext_plugin.types import (
         ConfigurationDict,
         PluginContext,
@@ -32,102 +32,9 @@ if TYPE_CHECKING:
         PluginResult,
     )
 
-
-class PluginMetadata(DomainBaseModel):
-    """Comprehensive metadata for enterprise plugins.
-
-    Provides all necessary information for plugin discovery, validation,
-    dependency resolution, and lifecycle management with type safety.
-
-    📋 Documentation:
-            docs/architecture/003-plugin-system-architecture/02-plugin-interfaces.md#221
-    🎯 Quality: A+ (97/100) - Enterprise-grade metadata system
-    ✅ Status: COMPLETE - 20+ fields with Pydantic validation
-
-    Features:
-    - Core identification and versioning
-    - Plugin classification with PluginType enum
-    - Technical specifications and dependencies
-    - Security and permission requirements
-    - Resource requirements and limits
-    - Lifecycle tracking timestamps
-    """
-
-    model_config = {"frozen": True}
-
-    # Core identification
-    id: str = Field(description="Unique plugin identifier")
-    name: str = Field(description="Human-readable plugin name")
-    version: str = Field(description="Semantic version string")
-    description: str = Field(description="Plugin description and purpose")
-
-    # Plugin classification
-    plugin_type: PluginType = Field(description="Functional category of the plugin")
-    capabilities: list[str] = Field(
-        default_factory=list,
-        description="List of plugin capabilities",
-    )
-
-    # Authorship and licensing
-    author: str = Field(description="Plugin author or organization")
-    license: str = Field(description="Plugin license identifier")
-    homepage: str | None = Field(default=None, description="Plugin homepage URL")
-    repository: str | None = Field(
-        default=None,
-        description="Source code repository URL",
-    )
-
-    # Technical specifications
-    entry_point: str = Field(description="Python entry point for plugin class")
-    python_version: str = Field(default=">=3.13", description="Required Python version")
-    dependencies: list[str] = Field(
-        default_factory=list,
-        description="Required Python packages",
-    )
-    meltano_dependencies: list[str] = Field(
-        default_factory=list,
-        description="Required Meltano plugins",
-    )
-
-    # Configuration schema
-    configuration_schema: dict[str, Any] = Field(
-        default_factory=dict,
-        description="JSON schema for plugin configuration validation",
-    )
-    default_configuration: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Default configuration values",
-    )
-
-    # Security and permissions
-    required_permissions: list[str] = Field(
-        default_factory=list,
-        description="Required system permissions",
-    )
-    security_level: str = Field(
-        default="standard",
-        description="Security sandbox level",
-    )
-    trusted: bool = Field(
-        default=False,
-        description="Whether plugin is trusted by organization",
-    )
-
-    # Resource requirements
-    min_memory_mb: int = Field(
-        default=128,
-        description="Minimum memory requirement in MB",
-    )
-    max_memory_mb: int | None = Field(
-        default=None,
-        description="Maximum memory limit in MB",
-    )
-    cpu_cores: int = Field(default=1, description="CPU cores requirement")
-    disk_space_mb: int = Field(default=100, description="Disk space requirement in MB")
-
-    # Metadata timestamps
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+# Import from canonical location - ELIMINATES DUPLICATION (in type checking block)
+if TYPE_CHECKING:
+    from flext_plugin.domain.entities import PluginMetadata as DomainPluginMetadata
 
 
 class PluginInterface(abc.ABC):
@@ -156,7 +63,7 @@ class PluginInterface(abc.ABC):
     """
 
     # Plugin metadata - must be defined by concrete implementations
-    METADATA: ClassVar[PluginMetadata]
+    METADATA: ClassVar[DomainPluginMetadata]
 
     def __init__(self, config: ConfigurationDict | None = None) -> None:
         """Initialize plugin interface with configuration."""
@@ -167,7 +74,7 @@ class PluginInterface(abc.ABC):
         self._last_health_check = datetime.now(UTC)
 
     @property
-    def metadata(self) -> PluginMetadata:
+    def metadata(self) -> DomainPluginMetadata:
         """Get plugin metadata."""
         return self.METADATA
 
@@ -222,20 +129,35 @@ class PluginInterface(abc.ABC):
         """Execute plugin with input data."""
         ...
 
+    async def get_state(self) -> ConfigurationDict:
+        """Get plugin state for preservation during hot reload.
+
+        Default implementation returns current configuration.
+        Override in concrete plugins to save additional state.
+        """
+        return self._config.copy()
+
+    async def set_state(self, state: ConfigurationDict) -> None:
+        """Restore plugin state after hot reload.
+
+        Default implementation updates configuration.
+        Override in concrete plugins to restore additional state.
+        """
+        self._config.update(state)
+
     async def validate_configuration(self, config: ConfigurationDict) -> list[str]:
         """Validate plugin configuration."""
         # Basic validation - can be overridden by concrete implementations
         errors = []
 
-        if not isinstance(config, dict):
-            errors.append("Configuration must be a dictionary")
-            return errors
+        # ConfigurationDict is already typed as dict[str, Any], so no runtime
+        # check needed
 
         # Validate against configuration schema if available:
-        schema = self.metadata.configuration_schema
+        schema = self.metadata.config_schema
         if schema:
             try:
-                import jsonschema  # type: ignore
+                import jsonschema
 
                 try:
                     jsonschema.validate(instance=config, schema=schema)
@@ -251,17 +173,18 @@ class PluginInterface(abc.ABC):
 
     async def get_capabilities(self) -> list[str]:
         """Get plugin capabilities."""
-        return self.metadata.capabilities
+        # Convert PluginCapability enums to strings
+        return [str(cap) for cap in self.metadata.capabilities]
 
     async def get_resource_usage(self) -> ConfigurationDict:
         """Get current resource usage."""
-        import psutil  # type: ignore
+        import psutil
 
         process = psutil.Process()
-        MB_TO_BYTES = 1024 * 1024
+        mb_to_bytes = 1024 * 1024
 
         return {
-            "memory_mb": process.memory_info().rss / MB_TO_BYTES,
+            "memory_mb": process.memory_info().rss / mb_to_bytes,
             "cpu_percent": process.cpu_percent(),
             "open_files": len(process.open_files()),
             "threads": process.num_threads(),
