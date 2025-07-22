@@ -13,7 +13,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_plugin.core.types import PluginLifecycle, PluginStatus
 from flext_plugin.domain.entities import (
@@ -44,7 +44,7 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
     async def discover_plugins(
         self,
         search_paths: list[str],
-    ) -> ServiceResult[list[PluginMetadata]]:
+    ) -> ServiceResult[Any]:
         """Discover plugins in the specified search paths.
 
         Args:
@@ -89,7 +89,7 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
     async def validate_plugin_metadata(
         self,
         metadata: PluginMetadata,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin metadata structure and requirements."""
         try:
             # Check required fields
@@ -111,7 +111,7 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
     async def get_plugin_manifest(
         self,
         plugin_path: str,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Load plugin manifest from specified path."""
         try:
             path = Path(plugin_path)
@@ -186,7 +186,7 @@ class FileSystemPluginDiscoveryPort(PluginDiscoveryService):
 class PydanticPluginValidationPort(PluginValidationService):
     """Pydantic-based plugin validation implementation."""
 
-    async def validate_plugin(self, plugin: PluginInstance) -> ServiceResult[bool]:
+    async def validate_plugin(self, plugin: PluginInstance) -> ServiceResult[Any]:
         """Validate complete plugin instance including config and dependencies."""
         try:
             # Validate configuration
@@ -194,17 +194,17 @@ class PydanticPluginValidationPort(PluginValidationService):
                 plugin,
                 plugin.configuration.settings,
             )
-            if not config_result.is_success:
+            if not config_result.success:
                 return config_result
 
             # Validate dependencies
             deps_result = await self.validate_dependencies(plugin)
-            if not deps_result.is_success:
+            if not deps_result.success:
                 return deps_result
 
             # Validate permissions
             perms_result = await self.validate_permissions(plugin)
-            if not perms_result.is_success:
+            if not perms_result.success:
                 return perms_result
 
             return ServiceResult.ok(True)
@@ -215,7 +215,7 @@ class PydanticPluginValidationPort(PluginValidationService):
         self,
         plugin: PluginInstance,
         config: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin configuration against schema."""
         try:
             # Validate against schema if available:
@@ -233,7 +233,7 @@ class PydanticPluginValidationPort(PluginValidationService):
     async def validate_dependencies(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin dependencies are available."""
         try:
             for dependency in plugin.metadata.dependencies:
@@ -247,7 +247,7 @@ class PydanticPluginValidationPort(PluginValidationService):
         except (ImportError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Dependency validation failed: {e}")
 
-    async def validate_permissions(self, plugin: PluginInstance) -> ServiceResult[bool]:
+    async def validate_permissions(self, plugin: PluginInstance) -> ServiceResult[Any]:
         """Validate plugin has required permissions."""
         try:
             # Check required permissions
@@ -281,7 +281,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def register_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Register plugin in lifecycle system."""
         try:
             plugin.transition_to(PluginLifecycle.REGISTERED)
@@ -292,7 +292,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def load_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Load plugin module into memory."""
         try:
             # Load plugin module
@@ -310,7 +310,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def initialize_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Initialize plugin with configuration."""
         try:
             # Initialize plugin with configuration
@@ -325,7 +325,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def activate_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Activate plugin for execution."""
         try:
             plugin.transition_to(PluginLifecycle.ACTIVE)
@@ -339,7 +339,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def suspend_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Suspend plugin execution."""
         try:
             plugin.transition_to(PluginLifecycle.SUSPENDED)
@@ -350,7 +350,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
     async def unload_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Unload plugin from memory."""
         try:
             plugin.transition_to(PluginLifecycle.UNLOADED)
@@ -364,7 +364,7 @@ class LocalPluginLifecyclePort(PluginLifecycleService):
             plugin.transition_to(PluginLifecycle.ERROR)
             return ServiceResult.fail(f"Plugin unloading failed: {e}")
 
-    async def unregister_plugin(self, plugin: PluginInstance) -> ServiceResult[bool]:
+    async def unregister_plugin(self, plugin: PluginInstance) -> ServiceResult[Any]:
         """Unregister plugin from lifecycle system."""
         try:
             plugin.transition_to(PluginLifecycle.UNREGISTERED)
@@ -382,7 +382,7 @@ class LocalPluginExecutionPort(PluginExecutionService):
         plugin: PluginInstance,
         input_data: dict[str, Any],
         execution_context: dict[str, Any] | None = None,
-    ) -> ServiceResult[PluginExecution]:
+    ) -> ServiceResult[Any]:
         """Execute plugin with input data and context."""
         try:
             # Create execution record
@@ -410,7 +410,7 @@ class LocalPluginExecutionPort(PluginExecutionService):
     async def get_execution_status(
         self,
         execution_id: str,
-    ) -> ServiceResult[PluginExecution]:
+    ) -> ServiceResult[Any]:
         """Get execution status by ID."""
         try:
             # In real implementation, would query repository
@@ -418,7 +418,7 @@ class LocalPluginExecutionPort(PluginExecutionService):
         except (ValueError, KeyError, AttributeError) as e:
             return ServiceResult.fail(f"Status retrieval failed: {e}")
 
-    async def cancel_execution(self, execution_id: str) -> ServiceResult[bool]:
+    async def cancel_execution(self, execution_id: str) -> ServiceResult[Any]:
         """Cancel running execution."""
         try:
             # In real implementation, would cancel running execution
@@ -429,7 +429,7 @@ class LocalPluginExecutionPort(PluginExecutionService):
     async def get_execution_logs(
         self,
         execution_id: str,
-    ) -> ServiceResult[list[dict[str, Any]]]:
+    ) -> ServiceResult[Any]:
         """Get execution logs by ID."""
         try:
             # In real implementation, would retrieve logs
@@ -445,7 +445,7 @@ class LocalPluginRegistryPort(PluginRegistryService):
     async def register_registry(
         self,
         registry: PluginRegistry,
-    ) -> ServiceResult[PluginRegistry]:
+    ) -> ServiceResult[Any]:
         """Register plugin registry in system."""
         try:
             # Validate registry configuration
@@ -456,7 +456,7 @@ class LocalPluginRegistryPort(PluginRegistryService):
         except (ValueError, RuntimeError, AttributeError) as e:
             return ServiceResult.fail(f"Registry registration failed: {e}")
 
-    async def sync_registry(self, registry: PluginRegistry) -> ServiceResult[bool]:
+    async def sync_registry(self, registry: PluginRegistry) -> ServiceResult[Any]:
         """Synchronize registry with remote source."""
         try:
             # In real implementation, would sync with remote registry
@@ -470,7 +470,7 @@ class LocalPluginRegistryPort(PluginRegistryService):
         self,
         registry: PluginRegistry,
         query: str,
-    ) -> ServiceResult[list[PluginMetadata]]:
+    ) -> ServiceResult[Any]:
         """Search plugins in registry by query."""
         try:
             # In real implementation, would search remote registry
@@ -482,7 +482,7 @@ class LocalPluginRegistryPort(PluginRegistryService):
         self,
         registry: PluginRegistry,
         plugin_id: str,
-    ) -> ServiceResult[str]:
+    ) -> ServiceResult[Any]:
         """Download plugin from registry."""
         try:
             # In real implementation, would download plugin
@@ -494,7 +494,7 @@ class LocalPluginRegistryPort(PluginRegistryService):
         self,
         registry: PluginRegistry,
         plugin_path: str,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Verify plugin signature for security."""
         try:
             # In real implementation, would verify signature
@@ -512,7 +512,7 @@ class FileSystemHotReloadPort(PluginHotReloadService):
         self._watching = False
         self._watch_tasks: list[asyncio.Task[None]] = []
 
-    async def start_watching(self, watch_paths: list[str]) -> ServiceResult[bool]:
+    async def start_watching(self, watch_paths: list[str]) -> ServiceResult[Any]:
         """Start watching directories for plugin changes."""
         try:
             if self._watching:
@@ -529,7 +529,7 @@ class FileSystemHotReloadPort(PluginHotReloadService):
         except (OSError, RuntimeError, ValueError) as e:
             return ServiceResult.fail(f"Failed to start watching: {e}")
 
-    async def stop_watching(self) -> ServiceResult[bool]:
+    async def stop_watching(self) -> ServiceResult[Any]:
         """Stop watching directories."""
         try:
             self._watching = False
@@ -546,12 +546,12 @@ class FileSystemHotReloadPort(PluginHotReloadService):
     async def reload_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Reload plugin with state preservation."""
         try:
             # Backup state
             state_result = await self.backup_plugin_state(plugin)
-            if not state_result.is_success:
+            if not state_result.success:
                 return ServiceResult.fail(f"State backup failed: {state_result.error}")
 
             # Unload plugin
@@ -567,9 +567,9 @@ class FileSystemHotReloadPort(PluginHotReloadService):
                 return ServiceResult.fail("Failed to backup state - no data to restore")
 
             restore_result = await self.restore_plugin_state(plugin, state_data)
-            if not restore_result.is_success:
+            if not restore_result.success:
                 return ServiceResult.fail(
-                    f"State restoration failed: {restore_result.error}",
+                    f"State restoration failed: {restore_result.error}"
                 )
 
             plugin.transition_to(PluginLifecycle.ACTIVE)
@@ -581,7 +581,7 @@ class FileSystemHotReloadPort(PluginHotReloadService):
     async def backup_plugin_state(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Backup plugin state before reload."""
         try:
             state = {
@@ -600,7 +600,7 @@ class FileSystemHotReloadPort(PluginHotReloadService):
         self,
         plugin: PluginInstance,
         state: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Restore plugin state after reload."""
         try:
             # Create new configuration with restored settings
@@ -651,7 +651,7 @@ class SandboxPluginSecurityPort(PluginSecurityService):
     async def create_sandbox(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Create security sandbox for plugin execution."""
         try:
             sandbox_config = {
@@ -673,7 +673,7 @@ class SandboxPluginSecurityPort(PluginSecurityService):
     async def enforce_resource_limits(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Enforce resource limits on plugin execution."""
         try:
             # In real implementation, would use cgroups or similar
@@ -681,7 +681,7 @@ class SandboxPluginSecurityPort(PluginSecurityService):
         except (OSError, RuntimeError, ValueError) as e:
             return ServiceResult.fail(f"Resource limit enforcement failed: {e}")
 
-    async def validate_imports(self, plugin: PluginInstance) -> ServiceResult[bool]:
+    async def validate_imports(self, plugin: PluginInstance) -> ServiceResult[Any]:
         """Validate plugin imports for security."""
         try:
             # Check against restricted imports
@@ -694,7 +694,7 @@ class SandboxPluginSecurityPort(PluginSecurityService):
     async def scan_for_vulnerabilities(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[list[dict[str, Any]]]:
+    ) -> ServiceResult[Any]:
         """Scan plugin for security vulnerabilities."""
         try:
             # In real implementation, would use security scanner

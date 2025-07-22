@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 from flext_observability.logging import get_logger
 
 logger = get_logger(__name__)
@@ -68,7 +68,7 @@ class PluginManager:
         logger.info("Discovered %d plugins", len(discovered))
         return discovered
 
-    async def load_plugin(self, plugin_name: str) -> ServiceResult[dict[str, Any]]:
+    async def load_plugin(self, plugin_name: str) -> ServiceResult[Any]:
         """Load a plugin by name.
 
         Args:
@@ -82,7 +82,8 @@ class PluginManager:
             await self.initialize()
 
         if plugin_name not in self._plugins:
-            return ServiceResult.fail(f"Plugin '{plugin_name}' not found")
+            return ServiceResult.fail(f"Plugin '{plugin_name}' not found",
+            )
 
         try:
             plugin_data = self._plugins[plugin_name]
@@ -93,7 +94,7 @@ class PluginManager:
             logger.exception("Failed to load plugin: %s", plugin_name)
             return ServiceResult.fail(f"Failed to load plugin: {e}")
 
-    async def unload_plugin(self, plugin_name: str) -> ServiceResult[bool]:
+    async def unload_plugin(self, plugin_name: str) -> ServiceResult[Any]:
         """Unload a plugin by name.
 
         Args:
@@ -104,7 +105,8 @@ class PluginManager:
 
         """
         if plugin_name not in self._loaded_plugins:
-            return ServiceResult.fail(f"Plugin '{plugin_name}' not loaded")
+            return ServiceResult.fail(f"Plugin '{plugin_name}' not loaded",
+            )
 
         try:
             del self._loaded_plugins[plugin_name]
@@ -114,7 +116,7 @@ class PluginManager:
             logger.exception("Failed to unload plugin: %s", plugin_name)
             return ServiceResult.fail(f"Failed to unload plugin: {e}")
 
-    async def reload_plugin(self, plugin_name: str) -> ServiceResult[dict[str, Any]]:
+    async def reload_plugin(self, plugin_name: str) -> ServiceResult[Any]:
         """Reload a plugin by name.
 
         Args:

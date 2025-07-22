@@ -9,7 +9,7 @@ import time
 from typing import Any
 from uuid import UUID
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 from flext_core.infrastructure.memory import InMemoryRepository as BaseRepository
 
 from flext_plugin.domain.entities import (
@@ -22,7 +22,7 @@ from flext_plugin.domain.entities import (
 class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
     """Repository for plugin instances."""
 
-    async def find_by_name(self, name: str) -> ServiceResult[PluginInstance | None]:
+    async def find_by_name(self, name: str) -> ServiceResult[Any]:
         """Find plugin instance by name."""
         try:
             # In real implementation, would query database
@@ -33,7 +33,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
     async def find_by_type(
         self,
         plugin_type: str,
-    ) -> ServiceResult[list[PluginInstance]]:
+    ) -> ServiceResult[Any]:
         """Find plugin instances by type."""
         try:
             # In real implementation, would query database
@@ -41,7 +41,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def find_active_plugins(self) -> ServiceResult[list[PluginInstance]]:
+    async def find_active_plugins(self) -> ServiceResult[Any]:
         """Find all active plugin instances."""
         try:
             # In real implementation, would query database
@@ -52,7 +52,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
     async def find_by_capability(
         self,
         capability: str,
-    ) -> ServiceResult[list[PluginInstance]]:
+    ) -> ServiceResult[Any]:
         """Find plugins by capability."""
         try:
             # In real implementation, would query database
@@ -60,7 +60,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def update_status(self, plugin_id: str, status: str) -> ServiceResult[bool]:
+    async def update_status(self, plugin_id: str, status: str) -> ServiceResult[Any]:
         """Update plugin status."""
         try:
             # In real implementation, would update database
@@ -68,7 +68,7 @@ class PluginInstanceRepository(BaseRepository[PluginInstance, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Update failed: {e}")
 
-    async def get_plugin_statistics(self) -> ServiceResult[dict[str, Any]]:
+    async def get_plugin_statistics(self) -> ServiceResult[Any]:
         """Get plugin statistics."""
         try:
             # In real implementation, would query database
@@ -90,7 +90,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
     async def find_by_plugin_id(
         self,
         plugin_id: str,
-    ) -> ServiceResult[list[PluginExecution]]:
+    ) -> ServiceResult[Any]:
         """Find executions by plugin ID."""
         try:
             # In real implementation, would query database
@@ -101,7 +101,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
     async def find_by_execution_id(
         self,
         execution_id: str,
-    ) -> ServiceResult[PluginExecution | None]:
+    ) -> ServiceResult[Any]:
         """Find execution by execution ID."""
         try:
             # In real implementation, would query database
@@ -109,7 +109,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def find_running_executions(self) -> ServiceResult[list[PluginExecution]]:
+    async def find_running_executions(self) -> ServiceResult[Any]:
         """Find all running executions."""
         try:
             # In real implementation, would query database
@@ -120,7 +120,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
     async def find_by_user_id(
         self,
         user_id: str,
-    ) -> ServiceResult[list[PluginExecution]]:
+    ) -> ServiceResult[Any]:
         """Find executions by user ID."""
         try:
             # In real implementation, would query database
@@ -132,7 +132,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
         self,
         start_date: str,
         end_date: str,
-    ) -> ServiceResult[list[PluginExecution]]:
+    ) -> ServiceResult[Any]:
         """Find executions within date range."""
         try:
             # In real implementation, would query database
@@ -140,7 +140,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def get_execution_statistics(self) -> ServiceResult[dict[str, Any]]:
+    async def get_execution_statistics(self) -> ServiceResult[Any]:
         """Get execution statistics."""
         try:
             # In real implementation, would query database
@@ -156,7 +156,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Statistics query failed: {e}")
 
-    async def cleanup_old_executions(self, days_old: int) -> ServiceResult[int]:
+    async def cleanup_old_executions(self, days_old: int) -> ServiceResult[Any]:
         """Cleanup old execution records."""
         try:
             # In real implementation, would delete old records
@@ -168,7 +168,7 @@ class PluginExecutionRepository(BaseRepository[PluginExecution, UUID]):
 class PluginRegistryRepository(BaseRepository[PluginRegistry, UUID]):
     """Repository for plugin registries."""
 
-    async def find_by_url(self, url: str) -> ServiceResult[PluginRegistry | None]:
+    async def find_by_url(self, url: str) -> ServiceResult[Any]:
         """Find registry by URL."""
         try:
             # In real implementation, would query database
@@ -176,7 +176,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def find_enabled_registries(self) -> ServiceResult[list[PluginRegistry]]:
+    async def find_enabled_registries(self) -> ServiceResult[Any]:
         """Find all enabled registries."""
         try:
             # In real implementation, would query database
@@ -184,7 +184,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Query failed: {e}")
 
-    async def find_by_name(self, name: str) -> ServiceResult[PluginRegistry | None]:
+    async def find_by_name(self, name: str) -> ServiceResult[Any]:
         """Find registry by name."""
         try:
             # In real implementation, would query database
@@ -197,7 +197,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry, UUID]):
         registry_id: str,
         success: bool,
         plugin_count: int,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Update registry sync status."""
         try:
             # In real implementation, would update database
@@ -205,7 +205,7 @@ class PluginRegistryRepository(BaseRepository[PluginRegistry, UUID]):
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Update failed: {e}")
 
-    async def get_registry_statistics(self) -> ServiceResult[dict[str, Any]]:
+    async def get_registry_statistics(self) -> ServiceResult[Any]:
         """Get registry statistics."""
         try:
             # In real implementation, would query database
@@ -232,7 +232,7 @@ class PluginCacheRepository:
         self,
         plugin_id: str,
         metadata: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Store plugin metadata in cache."""
         try:
             # In real implementation, would store in cache (Redis/Memory)
@@ -243,7 +243,7 @@ class PluginCacheRepository:
     async def get_plugin_metadata(
         self,
         plugin_id: str,
-    ) -> ServiceResult[dict[str, Any] | None]:
+    ) -> ServiceResult[Any]:
         """Get plugin metadata from cache."""
         try:
             # In real implementation, would retrieve from cache
@@ -251,7 +251,7 @@ class PluginCacheRepository:
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Cache retrieval failed: {e}")
 
-    async def invalidate_plugin_cache(self, plugin_id: str) -> ServiceResult[bool]:
+    async def invalidate_plugin_cache(self, plugin_id: str) -> ServiceResult[Any]:
         """Invalidate plugin cache entry."""
         try:
             # In real implementation, would invalidate cache
@@ -263,7 +263,7 @@ class PluginCacheRepository:
         self,
         execution_id: str,
         result: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Store execution result in cache."""
         try:
             # In real implementation, would store in cache
@@ -274,7 +274,7 @@ class PluginCacheRepository:
     async def get_execution_result(
         self,
         execution_id: str,
-    ) -> ServiceResult[dict[str, Any] | None]:
+    ) -> ServiceResult[Any]:
         """Get execution result from cache."""
         try:
             # In real implementation, would retrieve from cache
@@ -282,7 +282,7 @@ class PluginCacheRepository:
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"Cache retrieval failed: {e}")
 
-    async def cleanup_expired_cache(self) -> ServiceResult[int]:
+    async def cleanup_expired_cache(self) -> ServiceResult[Any]:
         """Cleanup expired cache entries."""
         try:
             # In real implementation, would cleanup expired entries
@@ -302,7 +302,7 @@ class PluginStateRepository:
         self,
         plugin_id: str,
         state: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Save plugin state."""
         try:
             # In real implementation, would persist state
@@ -313,7 +313,7 @@ class PluginStateRepository:
     async def load_plugin_state(
         self,
         plugin_id: str,
-    ) -> ServiceResult[dict[str, Any] | None]:
+    ) -> ServiceResult[Any]:
         """Load plugin state."""
         try:
             # In real implementation, would load persisted state
@@ -321,7 +321,7 @@ class PluginStateRepository:
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"State load failed: {e}")
 
-    async def delete_plugin_state(self, plugin_id: str) -> ServiceResult[bool]:
+    async def delete_plugin_state(self, plugin_id: str) -> ServiceResult[Any]:
         """Delete plugin state."""
         try:
             # In real implementation, would delete persisted state
@@ -329,7 +329,7 @@ class PluginStateRepository:
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"State delete failed: {e}")
 
-    async def backup_plugin_state(self, plugin_id: str) -> ServiceResult[str]:
+    async def backup_plugin_state(self, plugin_id: str) -> ServiceResult[Any]:
         """Backup plugin state."""
         try:
             # In real implementation, would create backup
@@ -342,7 +342,7 @@ class PluginStateRepository:
         self,
         plugin_id: str,
         backup_id: str,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Restore plugin state from backup."""
         try:
             # In real implementation, would restore from backup
@@ -350,7 +350,7 @@ class PluginStateRepository:
         except (OSError, ValueError, RuntimeError, ConnectionError) as e:
             return ServiceResult.fail(f"State restore failed: {e}")
 
-    async def cleanup_old_states(self, days_old: int) -> ServiceResult[int]:
+    async def cleanup_old_states(self, days_old: int) -> ServiceResult[Any]:
         """Cleanup old state backups."""
         try:
             # In real implementation, would cleanup old backups

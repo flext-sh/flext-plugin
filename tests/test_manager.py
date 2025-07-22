@@ -8,8 +8,7 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core.domain.types import ServiceResult
-
+from flext_core.domain.shared_types import ServiceResult
 from flext_plugin.core.types import PluginType
 from flext_plugin.manager import (
     PluginConfiguration,
@@ -45,7 +44,7 @@ class TestSimplePluginRegistry:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.is_success
+        assert result.success
         assert result.data == mock_plugin
         assert registry.get_plugin("test-plugin") == mock_plugin
         assert registry.get_plugin_count() == 1
@@ -61,7 +60,7 @@ class TestSimplePluginRegistry:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "registration failed" in result.error.lower()
         assert registry.get_plugin_count() == 0
@@ -79,7 +78,7 @@ class TestSimplePluginRegistry:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.is_success
+        assert result.success
         assert result.data is True
         assert registry.get_plugin("test-plugin") is None
         assert registry.get_plugin_count() == 0
@@ -92,7 +91,7 @@ class TestSimplePluginRegistry:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     def test_list_plugins(self, registry: SimplePluginRegistry) -> None:
@@ -186,7 +185,7 @@ class TestPluginExecutionContext:
         context = PluginExecutionContext(
             plugin_id="test-plugin",
             execution_id="exec-123",
-            input_data={"test": "data"},
+            input_data={"test": "data"}
             context={"env": "test"},
             timeout_seconds=30,
         )
@@ -262,9 +261,9 @@ class TestPluginManager:
 
         result = await manager.initialize()
 
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
-        assert isinstance(result.data, PluginManagerResult)  # type: ignore[unreachable]
+        assert isinstance(result.data, PluginManagerResult)
         assert result.data.operation == "initialize"
 
     async def test_manager_initialization_with_auto_discover(self) -> None:
@@ -273,8 +272,7 @@ class TestPluginManager:
 
         # Mock the discovery method to avoid actual file system operations
         with patch.object(manager, "discover_and_load_plugins") as mock_discover:
-            mock_discover.return_value = ServiceResult.ok(
-                PluginManagerResult(
+            mock_discover.return_value = ServiceResult.ok(PluginManagerResult(
                     operation="discover_and_load",
                     success=True,
                     plugins_affected=["test-plugin"],
@@ -286,7 +284,7 @@ class TestPluginManager:
 
             result = await manager.initialize()
 
-            assert result.is_success
+            assert result.success
             assert manager.is_initialized
             mock_discover.assert_called_once()
 
@@ -301,7 +299,7 @@ class TestPluginManager:
 
             result = await manager.discover_and_load_plugins()
 
-            assert not result.is_success
+            assert not result.success
             assert result.error is not None
         assert result.error is not None
         assert "No plugins discovered" in result.error
@@ -315,7 +313,7 @@ class TestPluginManager:
             {"test": "data"},
         )
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not found" in result.error.lower()
 
@@ -326,7 +324,7 @@ class TestPluginManager:
         config = PluginConfiguration(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not found" in result.error.lower()
 
@@ -336,7 +334,7 @@ class TestPluginManager:
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not discovered" in result.error.lower()
 
@@ -346,7 +344,7 @@ class TestPluginManager:
 
         result = await manager.unload_plugin("non-existent")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "plugin unload failed" in result.error.lower()
 
@@ -357,7 +355,7 @@ class TestPluginManager:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.is_success
+        assert result.success
 
     def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
         """Test getting status of non-existent plugin."""

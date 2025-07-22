@@ -139,7 +139,7 @@ class HotReloadManager:
 
                 # Load new version
                 load_result = await self.plugin_manager.reload_plugin(plugin_id)
-                if not load_result.is_success:
+                if not load_result.success:
                     msg = "Plugin reload failed"
                     raise RuntimeError(msg)
 

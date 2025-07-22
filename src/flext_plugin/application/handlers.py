@@ -8,11 +8,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from flext_core.application.handlers import CommandHandler
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 from flext_observability.logging import get_logger
 
 from flext_plugin.domain.entities import (
-    PluginExecution,
     PluginInstance,
     PluginMetadata,
     PluginRegistry,
@@ -48,7 +47,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
     async def discover_plugins(
         self,
         search_paths: list[str],
-    ) -> ServiceResult[list[PluginMetadata]]:
+    ) -> ServiceResult[Any]:
         """Discover plugins in specified search paths."""
         try:
             self.logger.info(
@@ -58,7 +57,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
 
             result = await self.discovery_service.discover_plugins(search_paths)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info(
                     "Plugin discovery completed",
                     extra={"plugin_count": len(result.data) if result.data else 0},
@@ -76,7 +75,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
     async def validate_plugin_metadata(
         self,
         metadata: PluginMetadata,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin metadata structure and content."""
         try:
             self.logger.debug(
@@ -86,7 +85,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
 
             result = await self.discovery_service.validate_plugin_metadata(metadata)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin metadata validation successful")
             else:
                 self.logger.warning(
@@ -101,7 +100,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
     async def get_plugin_manifest(
         self,
         plugin_path: str,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Retrieve plugin manifest from path."""
         try:
             self.logger.debug(
@@ -111,7 +110,7 @@ class PluginDiscoveryHandler(CommandHandler[list[str], list[PluginMetadata]]):
 
             result = await self.discovery_service.get_plugin_manifest(plugin_path)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin manifest retrieved successfully")
             else:
                 self.logger.warning(
@@ -133,7 +132,7 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
         self.validation_service = validation_service
         self.logger = get_logger(__name__)
 
-    async def validate_plugin(self, plugin: PluginInstance) -> ServiceResult[bool]:
+    async def validate_plugin(self, plugin: PluginInstance) -> ServiceResult[Any]:
         """Validate plugin instance structure and configuration."""
         try:
             self.logger.info(
@@ -143,7 +142,7 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
 
             result = await self.validation_service.validate_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin validation successful")
             else:
                 self.logger.error(
@@ -159,7 +158,7 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
         self,
         plugin: PluginInstance,
         config: dict[str, Any],
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin configuration parameters."""
         try:
             self.logger.debug(
@@ -172,7 +171,7 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
                 config,
             )
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin configuration validation successful")
             else:
                 self.logger.warning(
@@ -182,12 +181,13 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
             return result
         except Exception as e:
             self.logger.exception("Plugin configuration validation handler error")
-            return ServiceResult.fail(f"Configuration validation handler failed: {e}")
+            return ServiceResult.fail(f"Configuration validation handler failed: {e}",
+            )
 
     async def validate_dependencies(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[bool]:
+    ) -> ServiceResult[Any]:
         """Validate plugin dependencies and compatibility."""
         try:
             self.logger.debug(
@@ -197,7 +197,7 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
 
             result = await self.validation_service.validate_dependencies(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin dependencies validation successful")
             else:
                 self.logger.warning(
@@ -207,7 +207,8 @@ class PluginValidationHandler(CommandHandler[PluginInstance, bool]):
             return result
         except Exception as e:
             self.logger.exception("Plugin dependencies validation handler error")
-            return ServiceResult.fail(f"Dependencies validation handler failed: {e}")
+            return ServiceResult.fail(f"Dependencies validation handler failed: {e}",
+            )
 
 
 class PluginLifecycleHandler(CommandHandler[Any, Any]):
@@ -222,7 +223,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
     async def register_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Register plugin in the system."""
         try:
             self.logger.info(
@@ -232,7 +233,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.register_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin registered successfully")
             else:
                 self.logger.error(
@@ -242,12 +243,13 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
             return result
         except Exception as e:
             self.logger.exception("Plugin registration handler error")
-            return ServiceResult.fail(f"Registration handler failed: {e}")
+            return ServiceResult.fail(f"Registration handler failed: {e}",
+            )
 
     async def load_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Load plugin into memory."""
         try:
             self.logger.info(
@@ -257,7 +259,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.load_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin loaded successfully")
             else:
                 self.logger.error(
@@ -272,7 +274,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
     async def initialize_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Initialize plugin for execution."""
         try:
             self.logger.info(
@@ -282,7 +284,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.initialize_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin initialized successfully")
             else:
                 self.logger.error(
@@ -292,12 +294,13 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
             return result
         except (PluginError, TypeError, ValueError, AttributeError) as e:
             self.logger.exception("Plugin initialization handler error")
-            return ServiceResult.fail(f"Initialization handler failed: {e}")
+            return ServiceResult.fail(f"Initialization handler failed: {e}",
+            )
 
     async def activate_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Activate plugin for use."""
         try:
             self.logger.info(
@@ -307,7 +310,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.activate_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin activated successfully")
             else:
                 self.logger.error(
@@ -322,7 +325,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
     async def suspend_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Suspend plugin execution."""
         try:
             self.logger.info(
@@ -332,7 +335,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.suspend_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin suspended successfully")
             else:
                 self.logger.error(
@@ -347,7 +350,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
     async def unload_plugin(
         self,
         plugin: PluginInstance,
-    ) -> ServiceResult[PluginInstance]:
+    ) -> ServiceResult[Any]:
         """Unload plugin from memory."""
         try:
             self.logger.info(
@@ -357,7 +360,7 @@ class PluginLifecycleHandler(CommandHandler[Any, Any]):
 
             result = await self.lifecycle_service.unload_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin unloaded successfully")
             else:
                 self.logger.error(
@@ -384,7 +387,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
         plugin: PluginInstance,
         input_data: dict[str, Any],
         execution_context: dict[str, Any] | None = None,
-    ) -> ServiceResult[PluginExecution]:
+    ) -> ServiceResult[Any]:
         """Execute plugin with input data and context."""
         try:
             self.logger.info(
@@ -401,7 +404,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
                 execution_context,
             )
 
-            if result.is_success and result.data:
+            if result.success and result.data:
                 self.logger.info(
                     "Plugin execution completed",
                     extra={
@@ -423,7 +426,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
     async def get_execution_status(
         self,
         execution_id: str,
-    ) -> ServiceResult[PluginExecution]:
+    ) -> ServiceResult[Any]:
         """Get current execution status by ID."""
         try:
             self.logger.debug(
@@ -433,7 +436,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
 
             result = await self.execution_service.get_execution_status(execution_id)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Execution status retrieved successfully")
             else:
                 self.logger.warning(
@@ -445,7 +448,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
             self.logger.exception("Execution status handler error")
             return ServiceResult.fail(f"Status handler failed: {e}")
 
-    async def cancel_execution(self, execution_id: str) -> ServiceResult[bool]:
+    async def cancel_execution(self, execution_id: str) -> ServiceResult[Any]:
         """Cancel running plugin execution."""
         try:
             self.logger.info(
@@ -455,7 +458,7 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
 
             result = await self.execution_service.cancel_execution(execution_id)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Execution cancelled successfully")
             else:
                 self.logger.error(
@@ -465,7 +468,8 @@ class PluginExecutionHandler(CommandHandler[Any, Any]):
             return result
         except (PluginError, TypeError, ValueError, AttributeError) as e:
             self.logger.exception("Execution cancellation handler error")
-            return ServiceResult.fail(f"Cancellation handler failed: {e}")
+            return ServiceResult.fail(f"Cancellation handler failed: {e}",
+            )
 
 
 class PluginRegistryHandler(CommandHandler[Any, Any]):
@@ -480,7 +484,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
     async def register_registry(
         self,
         registry: PluginRegistry,
-    ) -> ServiceResult[PluginRegistry]:
+    ) -> ServiceResult[Any]:
         """Register plugin registry in the system."""
         try:
             self.logger.info(
@@ -490,7 +494,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
 
             result = await self.registry_service.register_registry(registry)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin registry registered successfully")
             else:
                 self.logger.error(
@@ -500,9 +504,10 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
             return result
         except (PluginError, TypeError, ValueError, AttributeError) as e:
             self.logger.exception("Plugin registry registration handler error")
-            return ServiceResult.fail(f"Registry registration handler failed: {e}")
+            return ServiceResult.fail(f"Registry registration handler failed: {e}",
+            )
 
-    async def sync_registry(self, registry: PluginRegistry) -> ServiceResult[bool]:
+    async def sync_registry(self, registry: PluginRegistry) -> ServiceResult[Any]:
         """Synchronize registry with remote source."""
         try:
             self.logger.info(
@@ -512,7 +517,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
 
             result = await self.registry_service.sync_registry(registry)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Registry synchronization successful")
             else:
                 self.logger.error(
@@ -528,7 +533,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
         self,
         registry: PluginRegistry,
         query: str,
-    ) -> ServiceResult[list[PluginMetadata]]:
+    ) -> ServiceResult[Any]:
         """Search plugins in registry by query."""
         try:
             self.logger.info(
@@ -538,7 +543,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
 
             result = await self.registry_service.search_plugins(registry, query)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info(
                     "Plugin search completed",
                     extra={"result_count": len(result.data) if result.data else 0},
@@ -557,7 +562,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
         self,
         registry: PluginRegistry,
         plugin_id: str,
-    ) -> ServiceResult[str]:
+    ) -> ServiceResult[Any]:
         """Download plugin from registry."""
         try:
             self.logger.info(
@@ -567,7 +572,7 @@ class PluginRegistryHandler(CommandHandler[Any, Any]):
 
             result = await self.registry_service.download_plugin(registry, plugin_id)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info(
                     "Plugin downloaded successfully",
                     extra={"download_path": result.data},

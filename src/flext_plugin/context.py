@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from uuid import uuid4
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
@@ -214,7 +214,8 @@ class PluginContext(DomainBaseModel):
             )
             raise ValueError(msg)
 
-        return service  # type: ignore[no-any-return]
+        # Return service - isinstance check ensures type safety
+        return cast("T", service)
 
     def get_dependency(
         self,
@@ -234,7 +235,8 @@ class PluginContext(DomainBaseModel):
             )
             raise ValueError(msg)
 
-        return dependency  # type: ignore[no-any-return]
+        # Return dependency - isinstance check ensures type safety
+        return cast("T", dependency)
 
     def has_permission(self, permission: str) -> bool:
         """Check if context has specific permission."""

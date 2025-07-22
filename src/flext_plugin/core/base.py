@@ -7,6 +7,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 
 from __future__ import annotations
 
+import contextlib
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, ClassVar
@@ -15,6 +16,8 @@ from flext_plugin.core.types import PluginLifecycle, PluginStatus
 from flext_plugin.domain.entities import PluginConfiguration
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from flext_plugin.domain.value_objects import PluginMetadata
     from flext_plugin.types import (
         ConfigurationDict,
@@ -23,16 +26,15 @@ if TYPE_CHECKING:
         PluginResult,
     )
 
-try:
-    import jsonschema
-except (ImportError, TypeError):
+# Optional dependencies with proper typing
+jsonschema: ModuleType | None = None
+with contextlib.suppress(ImportError, TypeError):
     # TypeError can occur in Python 3.13 with some lark/jsonschema versions
-    jsonschema = None  # type: ignore[assignment]
+    import jsonschema
 
-try:
+psutil: ModuleType | None = None
+with contextlib.suppress(ImportError):
     import psutil
-except ImportError:
-    psutil = None  # type: ignore[assignment]
 
 
 class Plugin(ABC):

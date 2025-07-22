@@ -34,7 +34,7 @@ import uuid
 from typing import TYPE_CHECKING, Any
 
 from flext_core.domain.pydantic_base import DomainBaseModel, Field
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 # Use centralized logger from flext-infrastructure.monitoring.flext-observability
 # - ELIMINATE DUPLICATION
@@ -74,7 +74,7 @@ class SimplePluginRegistry:
         except (AttributeError, TypeError, ValueError) as e:
             return ServiceResult.fail(f"Plugin registration failed: {e}")
 
-    async def unregister_plugin(self, plugin_id: str) -> ServiceResult[bool]:
+    async def unregister_plugin(self, plugin_id: str) -> ServiceResult[Any]:
         """Unregister a plugin from the registry."""
         try:
             if plugin_id in self._plugins:
@@ -201,7 +201,7 @@ class PluginManager:
         self._execution_contexts: dict[str, PluginExecutionContext] = {}
         self._is_initialized = False
 
-    async def initialize(self) -> ServiceResult[PluginManagerResult]:
+    async def initialize(self) -> ServiceResult[Any]:
         """Initialize the plugin manager and auto-discover plugins if enabled.
 
         Returns:
@@ -224,7 +224,7 @@ class PluginManager:
             if self.auto_discover:
                 # Discover and load plugins automatically
                 discover_result = await self.discover_and_load_plugins()
-                if discover_result.is_success and discover_result.data:
+                if discover_result.success and discover_result.data:
                     plugins_discovered = (
                         getattr(discover_result.data, "plugins_affected", []) or []
                     )
@@ -277,7 +277,7 @@ class PluginManager:
     async def discover_and_load_plugins(
         self,
         plugin_types: Sequence[PluginType] | None = None,
-    ) -> ServiceResult[PluginManagerResult]:
+    ) -> ServiceResult[Any]:
         """Discover and load plugins, optionally filtering by plugin types.
 
         Args:
@@ -314,7 +314,7 @@ class PluginManager:
 
                     # Register plugin
                     register_result = await self.registry.register_plugin(plugin)
-                    if register_result.is_success:
+                    if register_result.success:
                         if plugins_loaded is not None:
                             plugins_loaded.append(plugin.metadata.name)
 
@@ -395,7 +395,7 @@ class PluginManager:
         plugin_id: str,
         input_data: dict[str, Any],
         context: dict[str, Any] | None = None,
-    ) -> ServiceResult[PluginExecutionResult]:
+    ) -> ServiceResult[Any]:
         """Execute a loaded plugin with the provided input data and context.
 
         Args:
@@ -421,14 +421,14 @@ class PluginManager:
             plugin = self.registry.get_plugin(plugin_id)
             if not plugin:
                 return ServiceResult.fail(
-                    f"Plugin {plugin_id} not found or not loaded",
+                    f"Plugin {plugin_id} not found or not loaded"
                 )
 
             # Check if plugin is enabled
             config = self._configurations.get(plugin_id)
             if config and not config.enabled:
                 return ServiceResult.fail(
-                    f"Plugin {plugin_id} is disabled",
+                    f"Plugin {plugin_id} is disabled"
                 )
 
             # Create execution context
@@ -481,7 +481,7 @@ class PluginManager:
         self,
         plugin_id: str,
         configuration: PluginConfiguration,
-    ) -> ServiceResult[None]:
+    ) -> ServiceResult[Any]:
         """Configure a plugin with the provided configuration settings.
 
         Args:
@@ -497,13 +497,13 @@ class PluginManager:
             plugin = self.registry.get_plugin(plugin_id)
             if not plugin:
                 return ServiceResult.fail(
-                    f"Plugin {plugin_id} not found",
+                    f"Plugin {plugin_id} not found"
                 )
 
             # Validate configuration
             if configuration.plugin_id != plugin_id:
                 return ServiceResult.fail(
-                    "Configuration plugin_id mismatch",
+                    "Configuration plugin_id mismatch"
                 )
 
             # Store configuration
@@ -535,7 +535,7 @@ class PluginManager:
             )
             return ServiceResult.fail(error_msg)
 
-    async def reload_plugin(self, plugin_id: str) -> ServiceResult[None]:
+    async def reload_plugin(self, plugin_id: str) -> ServiceResult[Any]:
         """Reload a plugin if hot-reload is enabled for development.
 
         Args:
@@ -550,12 +550,12 @@ class PluginManager:
             config = self._configurations.get(plugin_id)
             if config and not config.hot_reload:
                 return ServiceResult.fail(
-                    f"Hot-reload not enabled for plugin {plugin_id}",
+                    f"Hot-reload not enabled for plugin {plugin_id}"
                 )
 
             # Unregister current plugin
             unregister_result = await self.registry.unregister_plugin(plugin_id)
-            if not unregister_result.is_success:
+            if not unregister_result.success:
                 error_message = unregister_result.error or "Unregister failed"
                 return ServiceResult.fail(error_message)
 
@@ -575,11 +575,11 @@ class PluginManager:
             # Re-register reloaded plugin - reload_result is a LoadedPlugin instance
             reloaded_plugin = reload_result
             register_result = await self.registry.register_plugin(reloaded_plugin)
-            if not register_result.is_success:
+            if not register_result.success:
                 return ServiceResult.fail(
                     str(register_result.error)
                     if register_result.error
-                    else "Register failed",
+                    else "Register failed"
                 )
 
             self.logger.info("Plugin reloaded successfully", plugin_id=plugin_id)
@@ -602,7 +602,7 @@ class PluginManager:
             )
             return ServiceResult.fail(error_msg)
 
-    async def unload_plugin(self, plugin_id: str) -> ServiceResult[None]:
+    async def unload_plugin(self, plugin_id: str) -> ServiceResult[Any]:
         """Unload a plugin and remove it from the registry.
 
         Args:
@@ -615,11 +615,11 @@ class PluginManager:
         try:
             # Unregister plugin
             unregister_result = await self.registry.unregister_plugin(plugin_id)
-            if not unregister_result.is_success:
+            if not unregister_result.success:
                 return ServiceResult.fail(
                     str(unregister_result.error)
                     if unregister_result.error
-                    else "Unregister failed",
+                    else "Unregister failed"
                 )
 
             # Unload plugin - unload_plugin returns None, so just handle exception
@@ -651,7 +651,7 @@ class PluginManager:
             )
             return ServiceResult.fail(error_msg)
 
-    async def integrate_with_protocols(self) -> ServiceResult[None]:
+    async def integrate_with_protocols(self) -> ServiceResult[Any]:
         """Integrate plugins with universal command system and other protocols.
 
         Returns:

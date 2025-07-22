@@ -16,6 +16,7 @@ from flext_core.config.unified_config import (
     BaseConfigMixin,
     LoggingConfigMixin,
     MonitoringConfigMixin,
+    OracleConfigMixin,
     PerformanceConfigMixin,
 )
 from flext_core.domain.constants import ConfigDefaults, FlextFramework
@@ -30,6 +31,7 @@ class PluginSettings(
     LoggingConfigMixin,
     MonitoringConfigMixin,
     PerformanceConfigMixin,
+    OracleConfigMixin,
     BaseSettings,
 ):
     """FLEXT Plugin configuration settings using unified configuration mixins.

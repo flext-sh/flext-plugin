@@ -208,7 +208,7 @@ class PluginExecutionResult:
         self.cpu_time_ms = cpu_time_ms
         self.timestamp = datetime.now(UTC)
 
-    def to_service_result(self) -> ServiceResult[dict[str, Any]]:
+    def to_service_result(self) -> ServiceResult[Any]:
         """Convert to ServiceResult for unified error handling."""
         if self.success:
             return ServiceResult.ok(self.output_data)

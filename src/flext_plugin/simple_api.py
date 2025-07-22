@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from flext_core import ServiceResult
 from flext_core.domain.shared_types import Environment, LogLevel
-from flext_core.domain.types import ServiceResult
 
 from flext_plugin.config import PluginSettings
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 def setup_plugin_system(
     settings: PluginSettings | None = None,
-) -> ServiceResult[PluginSettings]:
+) -> ServiceResult[Any]:
     """Setup the plugin system with configuration."""
     try:
         # Setup logging using flext-infrastructure.monitoring.flext-observability

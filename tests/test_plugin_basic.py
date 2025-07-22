@@ -29,17 +29,16 @@ def test_flext_core_dependencies() -> None:
 
     This verifies that flext-core types and patterns are accessible.
     """
-    from flext_core import ServiceResult
-
+    from flext_core.domain.shared_types import ServiceResult
     # Test ServiceResult works
     result = ServiceResult.ok({"test": "data"})
-    assert result.is_success
+    assert result.success
     assert result.data == {"test": "data"}
 
 
 def test_plugin_type_enum() -> None:
-    """Test PluginType enum from flext-core."""
-    from flext_core.domain.types import PluginType
+    """Test PluginType enum from flext_plugin."""
+    from flext_plugin.core.types import PluginType
 
     # Test standard plugin types
     assert PluginType.TAP.value == "tap"
@@ -74,7 +73,7 @@ class TestFlextPluginIntegration:
         # Test load operation exists and handles missing plugins gracefully
         result = await manager.load_plugin("nonexistent-plugin")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not found" in result.error.lower()
 

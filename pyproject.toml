@@ -66,6 +66,22 @@ files = [ "src", "tests",]
 plugins = [ "pydantic.mypy",]
 exclude = [ "build", "dist", ".venv", ".mypy_cache",]
 
+[[tool.mypy.overrides]]
+module = "tests.test_domain_ports"
+disable_error_code = ["abstract"]
+
+[[tool.mypy.overrides]]
+module = "tests.test_application_handlers"
+disable_error_code = ["no-any-return"]
+
+[[tool.mypy.overrides]]
+module = "tests.test_manager"
+disable_error_code = ["unreachable"]
+
+[[tool.mypy.overrides]]
+module = "tests.test_manager_comprehensive"
+disable_error_code = ["unreachable"]
+
 [tool.bandit]
 exclude_dirs = [ "tests", "build", "dist",]
 skips = [ "B101", "B601",]

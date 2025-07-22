@@ -8,8 +8,7 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core.domain.types import ServiceResult
-
+from flext_core.domain.shared_types import ServiceResult
 from flext_plugin.core.types import PluginType
 from flext_plugin.manager import (
     PluginConfiguration,
@@ -55,7 +54,7 @@ class TestSimplePluginRegistryComprehensive:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.is_success
+        assert result.success
         assert result.data == mock_plugin
         assert registry.get_plugin("test-plugin") == mock_plugin
         assert registry.get_plugin_count() == 1
@@ -91,7 +90,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "registration failed" in result.error.lower()
         assert registry.get_plugin_count() == 0
@@ -108,7 +107,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "registration failed" in result.error.lower()
         assert registry.get_plugin_count() == 0
@@ -126,7 +125,7 @@ class TestSimplePluginRegistryComprehensive:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.is_success
+        assert result.success
         assert result.data is True
         assert registry.get_plugin("test-plugin") is None
         assert registry.get_plugin_count() == 0
@@ -139,7 +138,7 @@ class TestSimplePluginRegistryComprehensive:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     def test_get_plugin_nonexistent(self, registry: SimplePluginRegistry) -> None:
@@ -308,7 +307,7 @@ class TestPluginExecutionContextComprehensive:
         context = PluginExecutionContext(
             plugin_id="",
             execution_id="",
-            input_data={},
+            input_data={}
             context={},
             timeout_seconds=0,
         )
@@ -398,9 +397,9 @@ class TestPluginManagerComprehensive:
 
         result = await manager.initialize()
 
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
-        assert isinstance(result.data, PluginManagerResult)  # type: ignore[unreachable]
+        assert isinstance(result.data, PluginManagerResult)
         assert result.data.operation == "initialize"
         assert result.data.success is True
 
@@ -414,8 +413,7 @@ class TestPluginManagerComprehensive:
             manager_with_auto_discover,
             "discover_and_load_plugins",
         ) as mock_discover:
-            mock_discover.return_value = ServiceResult.ok(
-                PluginManagerResult(
+            mock_discover.return_value = ServiceResult.ok(PluginManagerResult(
                     operation="discover_and_load",
                     success=True,
                     plugins_affected=["test-plugin"],
@@ -427,7 +425,7 @@ class TestPluginManagerComprehensive:
 
             result = await manager_with_auto_discover.initialize()
 
-            assert result.is_success
+            assert result.success
             assert manager_with_auto_discover.is_initialized
             mock_discover.assert_called_once()
 
@@ -439,9 +437,9 @@ class TestPluginManagerComprehensive:
 
         # After initialization
         result = await manager.initialize()
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
-        assert manager.plugin_count == 0  # type: ignore[unreachable]  # No plugins loaded
+        assert manager.plugin_count == 0  # No plugins loaded
 
     async def test_discover_and_load_plugins_empty(
         self,
@@ -452,7 +450,7 @@ class TestPluginManagerComprehensive:
         with patch.object(manager.discovery, "discover_all", return_value={}):
             result = await manager.discover_and_load_plugins()
 
-            assert not result.is_success
+            assert not result.success
             assert result.error is not None
             assert "No plugins discovered" in result.error
 
@@ -465,7 +463,7 @@ class TestPluginManagerComprehensive:
             {"test": "data"},
         )
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not found" in result.error.lower()
 
@@ -476,7 +474,7 @@ class TestPluginManagerComprehensive:
         config = PluginConfiguration(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not found" in result.error.lower()
 
@@ -486,7 +484,7 @@ class TestPluginManagerComprehensive:
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "not discovered" in result.error.lower()
 
@@ -496,7 +494,7 @@ class TestPluginManagerComprehensive:
 
         result = await manager.unload_plugin("non-existent")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert "plugin unload failed" in result.error.lower()
 
@@ -507,7 +505,7 @@ class TestPluginManagerComprehensive:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.is_success
+        assert result.success
 
     def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
         """Test getting status of non-existent plugin."""

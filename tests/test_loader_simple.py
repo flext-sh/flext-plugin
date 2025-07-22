@@ -34,7 +34,7 @@ class TestLoadedPluginSimple:
         loaded = LoadedPlugin(
             plugin_id="test-plugin",
             instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
+            metadata=mock_plugin_instance.metadata
             config={"test": "config"},
         )
 
@@ -49,7 +49,7 @@ class TestLoadedPluginSimple:
         loaded = LoadedPlugin(
             plugin_id="test-plugin",
             instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
+            metadata=mock_plugin_instance.metadata
             config={},
         )
 
@@ -66,7 +66,7 @@ class TestLoadedPluginSimple:
         loaded = LoadedPlugin(
             plugin_id="test-plugin",
             instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
+            metadata=mock_plugin_instance.metadata
             config={},
         )
 
@@ -161,7 +161,7 @@ class TestPluginLoaderSimple:
         loaded_plugin = LoadedPlugin(
             plugin_id="test-plugin",
             instance=mock_instance,
-            metadata=mock_instance.metadata,
+            metadata=mock_instance.metadata
             config={},
         )
 

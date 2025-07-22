@@ -2,7 +2,6 @@
 
 Tests for domain service interfaces (ports) to ensure proper abstract class definitions.
 """
-
 from __future__ import annotations
 
 import inspect
@@ -36,7 +35,6 @@ class TestPluginDiscoveryService:
             "validate_plugin_metadata",
             "get_plugin_manifest",
         }
-
         abstract_methods = PluginDiscoveryService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -46,12 +44,10 @@ class TestPluginDiscoveryService:
         sig = inspect.signature(PluginDiscoveryService.discover_plugins)
         params = list(sig.parameters.keys())
         assert params == ["self", "search_paths"]
-
         # Test validate_plugin_metadata signature
         sig = inspect.signature(PluginDiscoveryService.validate_plugin_metadata)
         params = list(sig.parameters.keys())
         assert params == ["self", "metadata"]
-
         # Test get_plugin_manifest signature
         sig = inspect.signature(PluginDiscoveryService.get_plugin_manifest)
         params = list(sig.parameters.keys())
@@ -60,7 +56,7 @@ class TestPluginDiscoveryService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginDiscoveryService()  # type: ignore[abstract]
+            PluginDiscoveryService()
 
 
 class TestPluginValidationService:
@@ -79,7 +75,6 @@ class TestPluginValidationService:
             "validate_dependencies",
             "validate_permissions",
         }
-
         abstract_methods = PluginValidationService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -89,7 +84,6 @@ class TestPluginValidationService:
         sig = inspect.signature(PluginValidationService.validate_plugin)
         params = list(sig.parameters.keys())
         assert params == ["self", "plugin"]
-
         # Test validate_configuration signature
         sig = inspect.signature(PluginValidationService.validate_configuration)
         params = list(sig.parameters.keys())
@@ -98,7 +92,7 @@ class TestPluginValidationService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginValidationService()  # type: ignore[abstract]
+            PluginValidationService()
 
 
 class TestPluginLifecycleService:
@@ -120,7 +114,6 @@ class TestPluginLifecycleService:
             "unload_plugin",
             "unregister_plugin",
         }
-
         abstract_methods = PluginLifecycleService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -130,7 +123,6 @@ class TestPluginLifecycleService:
         sig = inspect.signature(PluginLifecycleService.register_plugin)
         params = list(sig.parameters.keys())
         assert params == ["self", "plugin"]
-
         # Test load_plugin signature
         sig = inspect.signature(PluginLifecycleService.load_plugin)
         params = list(sig.parameters.keys())
@@ -139,7 +131,7 @@ class TestPluginLifecycleService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginLifecycleService()  # type: ignore[abstract]
+            PluginLifecycleService()
 
 
 class TestPluginExecutionService:
@@ -158,7 +150,6 @@ class TestPluginExecutionService:
             "cancel_execution",
             "get_execution_logs",
         }
-
         abstract_methods = PluginExecutionService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -168,7 +159,6 @@ class TestPluginExecutionService:
         sig = inspect.signature(PluginExecutionService.execute_plugin)
         params = list(sig.parameters.keys())
         assert params == ["self", "plugin", "input_data", "execution_context"]
-
         # Test get_execution_status signature
         sig = inspect.signature(PluginExecutionService.get_execution_status)
         params = list(sig.parameters.keys())
@@ -177,7 +167,7 @@ class TestPluginExecutionService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginExecutionService()  # type: ignore[abstract]
+            PluginExecutionService()
 
 
 class TestPluginRegistryService:
@@ -197,7 +187,6 @@ class TestPluginRegistryService:
             "download_plugin",
             "verify_plugin_signature",
         }
-
         abstract_methods = PluginRegistryService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -207,7 +196,6 @@ class TestPluginRegistryService:
         sig = inspect.signature(PluginRegistryService.register_registry)
         params = list(sig.parameters.keys())
         assert params == ["self", "registry"]
-
         # Test search_plugins signature
         sig = inspect.signature(PluginRegistryService.search_plugins)
         params = list(sig.parameters.keys())
@@ -216,7 +204,7 @@ class TestPluginRegistryService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginRegistryService()  # type: ignore[abstract]
+            PluginRegistryService()
 
 
 class TestPluginHotReloadService:
@@ -236,7 +224,6 @@ class TestPluginHotReloadService:
             "backup_plugin_state",
             "restore_plugin_state",
         }
-
         abstract_methods = PluginHotReloadService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -246,7 +233,6 @@ class TestPluginHotReloadService:
         sig = inspect.signature(PluginHotReloadService.start_watching)
         params = list(sig.parameters.keys())
         assert params == ["self", "watch_paths"]
-
         # Test reload_plugin signature
         sig = inspect.signature(PluginHotReloadService.reload_plugin)
         params = list(sig.parameters.keys())
@@ -255,7 +241,7 @@ class TestPluginHotReloadService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginHotReloadService()  # type: ignore[abstract]
+            PluginHotReloadService()
 
 
 class TestPluginSecurityService:
@@ -274,7 +260,6 @@ class TestPluginSecurityService:
             "validate_imports",
             "scan_for_vulnerabilities",
         }
-
         abstract_methods = PluginSecurityService.__abstractmethods__
         assert expected_methods == abstract_methods
 
@@ -284,7 +269,6 @@ class TestPluginSecurityService:
         sig = inspect.signature(PluginSecurityService.create_sandbox)
         params = list(sig.parameters.keys())
         assert params == ["self", "plugin"]
-
         # Test scan_for_vulnerabilities signature
         sig = inspect.signature(PluginSecurityService.scan_for_vulnerabilities)
         params = list(sig.parameters.keys())
@@ -293,7 +277,7 @@ class TestPluginSecurityService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginSecurityService()  # type: ignore[abstract]
+            PluginSecurityService()
 
 
 class TestAllPorts:
@@ -310,7 +294,6 @@ class TestAllPorts:
             PluginHotReloadService,
             PluginSecurityService,
         ]
-
         for port_class in port_classes:
             assert issubclass(port_class, ABC)
             assert port_class.__abstractmethods__
@@ -326,7 +309,6 @@ class TestAllPorts:
             PluginHotReloadService,
             PluginSecurityService,
         ]
-
         for port_class in port_classes:
             assert port_class.__doc__ is not None
             assert port_class.__doc__.strip()
@@ -342,7 +324,6 @@ class TestAllPorts:
             PluginHotReloadService,
             PluginSecurityService,
         ]
-
         for port_class in port_classes:
             for method_name in port_class.__abstractmethods__:
                 method = getattr(port_class, method_name)
