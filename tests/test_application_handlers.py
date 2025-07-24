@@ -10,7 +10,9 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, Mock
 
 import pytest
-from flext_core.domain.shared_types import ServiceResult
+
+# 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
+from flext_core import ServiceResult
 
 from flext_plugin.core.types import PluginType
 from flext_plugin.domain.entities import (
@@ -61,7 +63,7 @@ class TestablePluginDiscoveryHandler:
         # Copy all attributes
         self.discovery_service = discovery_service
         # Add logger
-        from flext_observability.logging import get_logger
+        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -143,7 +145,7 @@ class TestablePluginValidationHandler:
 
     def __init__(self, validation_service: Any) -> None:
         self.validation_service = validation_service
-        from flext_observability.logging import get_logger
+        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -238,7 +240,7 @@ class TestablePluginLifecycleHandler:
 
     def __init__(self, lifecycle_service: Any) -> None:
         self.lifecycle_service = lifecycle_service
-        from flext_observability.logging import get_logger
+        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -309,7 +311,7 @@ class TestablePluginExecutionHandler:
 
     def __init__(self, execution_service: Any) -> None:
         self.execution_service = execution_service
-        from flext_observability.logging import get_logger
+        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -349,7 +351,7 @@ class TestablePluginRegistryHandler:
 
     def __init__(self, registry_service: Any) -> None:
         self.registry_service = registry_service
-        from flext_observability.logging import get_logger
+        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 

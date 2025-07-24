@@ -8,7 +8,10 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core.domain.shared_types import ServiceResult
+
+# 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
+from flext_core import ServiceResult
+
 from flext_plugin.core.types import PluginType
 from flext_plugin.manager import (
     PluginConfiguration,
@@ -307,7 +310,7 @@ class TestPluginExecutionContextComprehensive:
         context = PluginExecutionContext(
             plugin_id="",
             execution_id="",
-            input_data={}
+            input_data={},
             context={},
             timeout_seconds=0,
         )

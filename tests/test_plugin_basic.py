@@ -29,7 +29,8 @@ def test_flext_core_dependencies() -> None:
 
     This verifies that flext-core types and patterns are accessible.
     """
-    from flext_core.domain.shared_types import ServiceResult
+    # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
+    from flext_core import ServiceResult
     # Test ServiceResult works
     result = ServiceResult.ok({"test": "data"})
     assert result.success

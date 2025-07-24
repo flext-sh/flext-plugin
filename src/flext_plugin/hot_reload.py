@@ -8,12 +8,17 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from flext_core.domain.pydantic_base import DomainBaseModel, Field
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 from flext_plugin.discovery import PluginDiscovery
+
+# 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
+from flext_plugin.infrastructure.di_container import get_domain_base_model, get_field
 from flext_plugin.loader import PluginLoader
+
+DomainBaseModel = get_domain_base_model()
+Field = get_field()
 
 if TYPE_CHECKING:
     from collections.abc import Callable
