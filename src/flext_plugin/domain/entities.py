@@ -288,8 +288,38 @@ class FlextPluginRegistry(FlextEntity):
         return list(self.plugins.values())
 
 
+# Additional domain entities
+class FlextPluginExecution(FlextEntity):
+    """Plugin execution entity for tracking plugin executions."""
+
+    def __init__(
+        self,
+        entity_id: FlextEntityId | None = None,
+        plugin_name: str = "",
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+        status: str = "pending",
+        result: Any = None,
+        error: str = "",
+    ) -> None:
+        """Initialize plugin execution entity."""
+        super().__init__(entity_id)
+        self.plugin_name = plugin_name
+        self.start_time = start_time or datetime.now()
+        self.end_time = end_time
+        self.status = status
+        self.result = result
+        self.error = error
+
+    def is_valid(self) -> bool:
+        """Validate plugin execution entity state."""
+        return bool(self.plugin_name)
+
+
 # Backwards compatibility aliases
 Plugin = FlextPlugin
 PluginConfig = FlextPluginConfig
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
+PluginInstance = FlextPlugin  # Alias for compatibility
+PluginExecution = FlextPluginExecution
