@@ -9,7 +9,7 @@ import pytest
 
 
 def test_flext_plugin_imports() -> None:
-    """Test that flext-infrastructure.plugins.flext-plugin core components can be imported.
+    """Test that flext-plugin core components can be imported.
 
     This verifies that the core plugin components are available for import.
     """
@@ -25,14 +25,15 @@ def test_flext_plugin_imports() -> None:
 
 
 def test_flext_core_dependencies() -> None:
-    """Test that flext-infrastructure.plugins.flext-plugin can use flext-core dependencies.
+    """Test that flext-plugin can use flext-core dependencies.
 
     This verifies that flext-core types and patterns are accessible.
     """
     # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
-    from flext_core import ServiceResult
-    # Test ServiceResult works
-    result = ServiceResult.ok({"test": "data"})
+    from flext_core import FlextResult
+
+    # Test FlextResult works
+    result = FlextResult.ok({"test": "data"})
     assert result.success
     assert result.data == {"test": "data"}
 

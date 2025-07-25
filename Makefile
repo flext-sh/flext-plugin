@@ -1,9 +1,10 @@
 # FLEXT PLUGIN - Enterprise Plugin Management System
-# ================================================
+# ==================================================
 # Dynamic plugin loading, lifecycle management, and hot reload capabilities
+# PROJECT_TYPE: plugin-system
 # Python 3.13 + Clean Architecture + Zero Tolerance Quality Gates
 
-.PHONY: help check validate test lint type-check security format format-check fix
+.PHONY: help info diagnose check validate test lint type-check security format format-check fix
 .PHONY: install dev-install setup pre-commit build clean
 .PHONY: coverage coverage-html test-unit test-integration test-plugin
 .PHONY: deps-update deps-audit deps-tree deps-outdated
@@ -23,6 +24,37 @@ help: ## Show this help message
 	@echo "🧪 85%+ test coverage requirement for plugin components"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+
+info: ## Mostrar informações do projeto
+	@echo "📊 Informações do Projeto"
+	@echo "======================"
+	@echo "Nome: flext-plugin"
+	@echo "Título: FLEXT PLUGIN"
+	@echo "Versão: $(shell poetry version -s 2>/dev/null || echo "0.7.0")"
+	@echo "Python: $(shell python3.13 --version 2>/dev/null || echo "Não encontrado")"
+	@echo "Poetry: $(shell poetry --version 2>/dev/null || echo "Não instalado")"
+	@echo "Venv: $(shell poetry env info --path 2>/dev/null || echo "Não ativado")"
+	@echo "Diretório: $(CURDIR)"
+	@echo "Git Branch: $(shell git branch --show-current 2>/dev/null || echo "Não é repo git")"
+	@echo "Git Status: $(shell git status --porcelain 2>/dev/null | wc -l | xargs echo) arquivos alterados"
+
+diagnose: ## Executar diagnósticos completos
+	@echo "🔍 Executando diagnósticos para flext-plugin..."
+	@echo "Informações do Sistema:"
+	@echo "OS: $(shell uname -s)"
+	@echo "Arquitetura: $(shell uname -m)"
+	@echo "Python: $(shell python3.13 --version 2>/dev/null || echo "Não encontrado")"
+	@echo "Poetry: $(shell poetry --version 2>/dev/null || echo "Não instalado")"
+	@echo ""
+	@echo "Estrutura do Projeto:"
+	@ls -la
+	@echo ""
+	@echo "Configuração Poetry:"
+	@poetry config --list 2>/dev/null || echo "Poetry não configurado"
+	@echo ""
+	@echo "Status das Dependências:"
+	@poetry show --outdated 2>/dev/null || echo "Nenhuma dependência desatualizada"
 
 # ============================================================================
 # 🎯 CORE QUALITY GATES - ZERO TOLERANCE
@@ -124,6 +156,16 @@ pre-commit: ## Setup pre-commit hooks
 	@echo "✅ Pre-commit hooks installed"
 
 # ============================================================================
+# 🎯 PLUGIN SYSTEM OPERATIONS
+# ============================================================================
+
+plugin-load: plugin-validate ## Load and initialize plugin system
+
+plugin-test: test-plugin ## Run plugin system tests
+
+plugin-validate: ## Validate plugin system integrity
+
+# ============================================================================
 # 🔌 PLUGIN MANAGEMENT OPERATIONS
 # ============================================================================
 
@@ -154,6 +196,29 @@ plugin-watch: ## Watch for plugin changes with hot reload
 	@echo "🔌 Starting plugin watcher with hot reload..."
 	@echo "🔄 Watching for plugin file changes..."
 	@poetry run flext-plugin watch --enable-hot-reload
+
+plugin-reload: ## Hot reload all plugins
+	@echo "🔄 Hot reloading all plugins..."
+	@poetry run python -m flext_plugin.hot_reload.reload_all
+	@echo "✅ Plugin hot reload complete"
+
+plugin-disable: ## Disable plugin (usage: make plugin-disable NAME=plugin-name)
+	@echo "🔌 Disabling plugin..."
+	@if [ -z "$(NAME)" ]; then \
+		echo "❌ Usage: make plugin-disable NAME=plugin-name"; \
+		exit 1; \
+	fi
+	@poetry run flext-plugin disable $(NAME)
+	@echo "✅ Plugin $(NAME) disabled"
+
+plugin-enable: ## Enable plugin (usage: make plugin-enable NAME=plugin-name)
+	@echo "🔌 Enabling plugin..."
+	@if [ -z "$(NAME)" ]; then \
+		echo "❌ Usage: make plugin-enable NAME=plugin-name"; \
+		exit 1; \
+	fi
+	@poetry run flext-plugin enable $(NAME)
+	@echo "✅ Plugin $(NAME) enabled"
 
 plugin-validate: ## Validate plugin configuration and interfaces
 	@echo "🔌 Validating plugin system..."
@@ -278,6 +343,7 @@ export RUFF_CACHE_DIR := .ruff_cache
 
 # Project information
 PROJECT_NAME := flext-plugin
+PROJECT_TYPE := python-library
 PROJECT_VERSION := $(shell poetry version -s)
 PROJECT_DESCRIPTION := FLEXT Plugin - Enterprise Plugin Management System
 

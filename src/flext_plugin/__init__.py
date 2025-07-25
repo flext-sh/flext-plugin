@@ -1,25 +1,123 @@
-"""FLEXT Plugin - Simple Plugin System Library."""
+"""FLEXT Plugin - Enterprise Plugin Management System.
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
+
+Modern plugin management system following Clean Architecture and Domain-Driven Design.
+Built on Python 3.13 with dynamic plugin loading and hot-reload capabilities.
+"""
 
 from __future__ import annotations
 
-# 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
-from flext_plugin.infrastructure.di_container import get_service_result
-from flext_plugin.simple_plugin import (
-    Plugin,
-    PluginRegistry,
-    create_registry,
-    load_plugin,
+import importlib.metadata
+
+# Import from flext-core for foundational patterns
+from flext_core import FlextContainer, FlextResult
+
+try:
+    __version__ = importlib.metadata.version("flext-plugin")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "1.0.0"
+
+__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
+
+# Application handlers
+from flext_plugin.application.handlers import (
+    FlextPluginHandler,
+    FlextPluginRegistrationHandler,
 )
 
-ServiceResult = get_service_result()
+# Application services
+from flext_plugin.application.services import (
+    FlextPluginDiscoveryService,
+    FlextPluginService,
+)
 
-__version__ = "1.0.0"
+# Domain entities
+from flext_plugin.domain.entities import (
+    FlextPlugin,
+    FlextPluginConfig,
+    FlextPluginMetadata,
+    FlextPluginRegistry,
+)
+
+# Domain ports
+from flext_plugin.domain.ports import (
+    FlextPluginDiscoveryPort,
+    FlextPluginLoaderPort,
+    FlextPluginManagerPort,
+)
+
+# Platform
+from flext_plugin.platform import FlextPluginPlatform
+
+# Simple API
+from flext_plugin.simple_api import (
+    create_flext_plugin,
+    create_flext_plugin_config,
+    create_flext_plugin_metadata,
+    create_flext_plugin_registry,
+)
+
+# Main FlextPlugin aliases
+FlextPluginManager = FlextPluginPlatform
+FlextPluginResult = FlextResult
+
+
+def create_flext_plugin_platform(
+    config: dict[str, object] | None = None,
+) -> FlextPluginPlatform:
+    """Create unified FLEXT Plugin platform instance.
+
+    Args:
+        config: Optional configuration dictionary
+
+    Returns:
+        Configured FlextPluginPlatform instance
+
+    """
+    return FlextPluginPlatform(config or {})
+
+
+# Prefixed helper functions
+flext_plugin_create_plugin = create_flext_plugin
+flext_plugin_create_config = create_flext_plugin_config
+flext_plugin_create_metadata = create_flext_plugin_metadata
+flext_plugin_create_registry = create_flext_plugin_registry
+flext_plugin_create_manager = create_flext_plugin_platform
+flext_plugin_create_platform = create_flext_plugin_platform
 
 __all__ = [
-    "Plugin",
-    "PluginRegistry",
-    "ServiceResult",
+    "FlextContainer",
+    "FlextPlugin",
+    "FlextPluginConfig",
+    "FlextPluginDiscoveryPort",
+    "FlextPluginDiscoveryService",
+    "FlextPluginHandler",
+    "FlextPluginLoaderPort",
+    "FlextPluginManager",
+    "FlextPluginManagerPort",
+    "FlextPluginMetadata",
+    "FlextPluginPlatform",
+    "FlextPluginRegistrationHandler",
+    "FlextPluginRegistry",
+    "FlextPluginResult",
+    "FlextPluginService",
+    "FlextResult",
     "__version__",
-    "create_registry",
-    "load_plugin",
+    "__version_info__",
+    "create_flext_plugin",
+    "create_flext_plugin_config",
+    "create_flext_plugin_metadata",
+    "create_flext_plugin_platform",
+    "create_flext_plugin_registry",
+    "flext_plugin_create_config",
+    "flext_plugin_create_manager",
+    "flext_plugin_create_metadata",
+    "flext_plugin_create_platform",
+    "flext_plugin_create_plugin",
+    "flext_plugin_create_registry",
 ]
+
+# Module metadata
+__architecture__ = "Clean Architecture + DDD"

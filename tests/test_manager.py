@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
-from flext_core import ServiceResult
+from flext_core import FlextResult
 
 from flext_plugin.core.types import PluginType
 from flext_plugin.manager import (
@@ -275,7 +275,8 @@ class TestPluginManager:
 
         # Mock the discovery method to avoid actual file system operations
         with patch.object(manager, "discover_and_load_plugins") as mock_discover:
-            mock_discover.return_value = ServiceResult.ok(PluginManagerResult(
+            mock_discover.return_value = FlextResult.ok(
+                PluginManagerResult(
                     operation="discover_and_load",
                     success=True,
                     plugins_affected=["test-plugin"],

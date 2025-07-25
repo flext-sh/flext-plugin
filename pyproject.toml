@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "flext-plugin"
-version = "0.7.0"
+version = "0.8.0"
 description = "FLEXT Plugin - Plugin System for FLEXT Platform"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
@@ -38,6 +38,7 @@ show-fixes = true
 respect-gitignore = true
 src = [ "src", "tests",]
 extend-exclude = [ "__pycache__", ".git", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "venv", "build", "dist", "htmlcov",]
+extend = "../.ruff-shared.toml"
 
 [tool.mypy]
 python_version = "3.13"

@@ -7,7 +7,7 @@ import importlib
 # 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
 from flext_plugin.infrastructure.di_container import get_service_result
 
-ServiceResult = get_service_result()
+FlextResult = get_service_result()
 
 
 class Plugin:
@@ -17,21 +17,21 @@ class Plugin:
         self.name = name
         self.active = False
 
-    def activate(self) -> ServiceResult[None]:
+    def activate(self) -> FlextResult[None]:
         """Activate plugin."""
         try:
             self.active = True
-            return ServiceResult.ok(None)
+            return FlextResult.ok(None)
         except Exception as e:
-            return ServiceResult.fail(f"Plugin activation failed: {e}")
+            return FlextResult.fail(f"Plugin activation failed: {e}")
 
-    def deactivate(self) -> ServiceResult[None]:
+    def deactivate(self) -> FlextResult[None]:
         """Deactivate plugin."""
         try:
             self.active = False
-            return ServiceResult.ok(None)
+            return FlextResult.ok(None)
         except Exception as e:
-            return ServiceResult.fail(f"Plugin deactivation failed: {e}")
+            return FlextResult.fail(f"Plugin deactivation failed: {e}")
 
 
 class PluginRegistry:
@@ -40,22 +40,22 @@ class PluginRegistry:
     def __init__(self) -> None:
         self.plugins: dict[str, Plugin] = {}
 
-    def register(self, plugin: Plugin) -> ServiceResult[None]:
+    def register(self, plugin: Plugin) -> FlextResult[None]:
         """Register a plugin."""
         try:
             self.plugins[plugin.name] = plugin
-            return ServiceResult.ok(None)
+            return FlextResult.ok(None)
         except Exception as e:
-            return ServiceResult.fail(f"Plugin registration failed: {e}")
+            return FlextResult.fail(f"Plugin registration failed: {e}")
 
-    def unregister(self, name: str) -> ServiceResult[None]:
+    def unregister(self, name: str) -> FlextResult[None]:
         """Unregister a plugin."""
         try:
             if name in self.plugins:
                 del self.plugins[name]
-            return ServiceResult.ok(None)
+            return FlextResult.ok(None)
         except Exception as e:
-            return ServiceResult.fail(f"Plugin unregistration failed: {e}")
+            return FlextResult.fail(f"Plugin unregistration failed: {e}")
 
     def get(self, name: str) -> Plugin | None:
         """Get a plugin by name."""
@@ -66,19 +66,19 @@ class PluginRegistry:
         return list(self.plugins.keys())
 
 
-def load_plugin(module_name: str, class_name: str = "Plugin") -> ServiceResult[Plugin]:
+def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plugin]:
     """Load a plugin from module."""
     try:
         module = importlib.import_module(module_name)
         plugin_class = getattr(module, class_name)
         plugin = plugin_class()
-        return ServiceResult.ok(plugin)
+        return FlextResult.ok(plugin)
     except ImportError as e:
-        return ServiceResult.fail(f"Module import failed: {e}")
+        return FlextResult.fail(f"Module import failed: {e}")
     except AttributeError as e:
-        return ServiceResult.fail(f"Plugin class not found: {e}")
+        return FlextResult.fail(f"Plugin class not found: {e}")
     except Exception as e:
-        return ServiceResult.fail(f"Plugin loading failed: {e}")
+        return FlextResult.fail(f"Plugin loading failed: {e}")
 
 
 def create_registry() -> PluginRegistry:
