@@ -237,7 +237,8 @@ class TestPluginDiscovery:
         with patch("flext_plugin.core.discovery.issubclass", return_value=False):
             result = discovery._validate_plugin_class(mock_class)
             if result:
-                raise AssertionError(f"Expected False, got {result}")\ n
+                raise AssertionError(f"Expected False, got {result}")
+
     async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
         plugin_type = PluginType.TAP

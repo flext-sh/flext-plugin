@@ -124,7 +124,8 @@ class TestPluginDiscoverySimple:
         with patch("flext_plugin.core.discovery.issubclass", return_value=False):
             result = discovery._validate_plugin_class(mock_class)
             if result:
-                raise AssertionError(f"Expected False, got {result}")\ n
+                raise AssertionError(f"Expected False, got {result}")
+
     def test_validate_plugin_class_missing_metadata(
         self,
         discovery: PluginDiscovery,
@@ -148,7 +149,8 @@ class TestPluginDiscoverySimple:
 
             result = discovery._validate_plugin_class(mock_plugin_class)
             if result:
-                raise AssertionError(f"Expected False, got {result}")\ n
+                raise AssertionError(f"Expected False, got {result}")
+
     def test_register_plugin_manually(self, discovery: PluginDiscovery) -> None:
         """Test manually registering a plugin."""
         # Create mock plugin class

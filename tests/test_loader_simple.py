@@ -3,9 +3,6 @@
 Tests for plugin loading functionality using actual implementation.
 """
 
-from flext_plugin.core.types import PluginError
-
-
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, Mock
@@ -13,6 +10,7 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from flext_plugin.core.loader import LoadedPlugin, PluginLoader
+from flext_plugin.core.types import PluginError
 
 
 class TestLoadedPluginSimple:
@@ -42,14 +40,16 @@ class TestLoadedPluginSimple:
         )
 
         if loaded.plugin_id != "test-plugin":
-
-            raise AssertionError(f"Expected {"test-plugin"}, got {loaded.plugin_id}")
+            raise AssertionError(f"Expected {'test-plugin'}, got {loaded.plugin_id}")
         assert loaded.instance == mock_plugin_instance
         if loaded.metadata != mock_plugin_instance.metadata:
-            raise AssertionError(f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}")
+            raise AssertionError(
+                f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}"
+            )
         assert loaded.config == {"test": "config"}
         if loaded.is_initialized:
-            raise AssertionError(f"Expected False, got {loaded.is_initialized}")\ n
+            raise AssertionError(f"Expected False, got {loaded.is_initialized}")
+
     async def test_loaded_plugin_initialize(self, mock_plugin_instance: Mock) -> None:
         """Test LoadedPlugin initialization."""
         loaded = LoadedPlugin(
@@ -115,7 +115,6 @@ class TestPluginLoaderSimple:
         loader = PluginLoader()
 
         if not (loader.security_enabled):
-
             raise AssertionError(f"Expected True, got {loader.security_enabled}")
         assert hasattr(loader, "_loaded_plugins")
         assert isinstance(loader._loaded_plugins, dict)
@@ -127,8 +126,8 @@ class TestPluginLoaderSimple:
         loader = PluginLoader(security_enabled=False)
 
         if loader.security_enabled:
-
-            raise AssertionError(f"Expected False, got {loader.security_enabled}")\ n        assert hasattr(loader, "_loaded_plugins")
+            raise AssertionError(f"Expected False, got {loader.security_enabled}")
+        assert hasattr(loader, "_loaded_plugins")
 
     def test_get_loaded_plugin_not_found(self, loader: PluginLoader) -> None:
         """Test getting loaded plugin that doesn't exist."""
@@ -138,7 +137,10 @@ class TestPluginLoaderSimple:
     def test_is_plugin_loaded_false(self, loader: PluginLoader) -> None:
         """Test checking if plugin is loaded when it's not."""
         if loader.is_loaded("non-existent"):
-            raise AssertionError(f"Expected False, got {loader.is_loaded("non-existent")}")\ n
+            raise AssertionError(
+                f"Expected False, got {loader.is_loaded('non-existent')}"
+            )
+
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
         """Test getting all loaded plugins when none are loaded."""
         result = loader.get_all_loaded_plugins()
@@ -149,11 +151,12 @@ class TestPluginLoaderSimple:
         """Test unloading plugin that's not loaded."""
         # Should raise PluginError for not loaded plugin
 
-
         with pytest.raises(PluginError) as exc_info:
             await loader.unload_plugin("non-existent")
         if "not loaded" not in str(exc_info.value).lower():
-            raise AssertionError(f"Expected {"not loaded"} in {str(exc_info.value).lower()}")
+            raise AssertionError(
+                f"Expected {'not loaded'} in {str(exc_info.value).lower()}"
+            )
 
     def test_loader_properties(self, loader: PluginLoader) -> None:
         """Test loader properties and attributes."""
@@ -185,7 +188,9 @@ class TestPluginLoaderSimple:
         if result != loaded_plugin:
             raise AssertionError(f"Expected {loaded_plugin}, got {result}")
         if not (loader.is_loaded("test-plugin")):
-            raise AssertionError(f"Expected True, got {loader.is_loaded("test-plugin")}")
+            raise AssertionError(
+                f"Expected True, got {loader.is_loaded('test-plugin')}"
+            )
 
         # Should appear in all loaded plugins
         all_plugins = loader.get_all_loaded_plugins()

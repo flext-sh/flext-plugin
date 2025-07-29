@@ -185,7 +185,8 @@ class TestPluginConfiguration:
             raise AssertionError(f"Expected {{"key": "value"}}, got {config.configuration}")
         assert config.permissions == ["read", "write"]
         if config.auto_load:
-            raise AssertionError(f"Expected False, got {config.auto_load}")\ n        if not (config.hot_reload):
+            raise AssertionError(f"Expected False, got {config.auto_load}")
+        if not (config.hot_reload):
             raise AssertionError(f"Expected True, got {config.hot_reload}")
         if config.priority != 50:
             raise AssertionError(f"Expected {50}, got {config.priority}")
@@ -205,7 +206,8 @@ class TestPluginConfiguration:
         if not (config.auto_load):
             raise AssertionError(f"Expected True, got {config.auto_load}")
         if config.hot_reload:
-            raise AssertionError(f"Expected False, got {config.hot_reload}")\ n        assert config.priority == 100
+            raise AssertionError(f"Expected False, got {config.hot_reload}")
+        assert config.priority == 100
 
 
 class TestPluginExecutionContext:
@@ -289,7 +291,8 @@ class TestPluginManagerResult:
 
             raise AssertionError(f"Expected {"load_plugins"}, got {result.operation}")
         if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")\ n        assert result.errors == ["Plugin not found", "Invalid configuration"]
+            raise AssertionError(f"Expected False, got {result.success}")
+        assert result.errors == ["Plugin not found", "Invalid configuration"]
 
 
 class TestPluginManager:
@@ -477,4 +480,5 @@ class TestCreatePluginManager:
 
         assert isinstance(manager, PluginManager)
         if manager.auto_discover:
-            raise AssertionError(f"Expected False, got {manager.auto_discover}")\ n        assert manager.security_enabled is False
+            raise AssertionError(f"Expected False, got {manager.auto_discover}")
+        assert manager.security_enabled is False

@@ -269,7 +269,8 @@ class TestPluginConfigurationComprehensive:
             raise AssertionError(f"Expected {{"key": "value", "nested": {"item": 123}}}, got {config.configuration}")
         assert config.permissions == ["read", "write", "execute"]
         if config.auto_load:
-            raise AssertionError(f"Expected False, got {config.auto_load}")\ n        if not (config.hot_reload):
+            raise AssertionError(f"Expected False, got {config.auto_load}")
+        if not (config.hot_reload):
             raise AssertionError(f"Expected True, got {config.hot_reload}")
         if config.priority != 50:
             raise AssertionError(f"Expected {50}, got {config.priority}")
@@ -289,7 +290,8 @@ class TestPluginConfigurationComprehensive:
         if not (config.auto_load):
             raise AssertionError(f"Expected True, got {config.auto_load}")
         if config.hot_reload:
-            raise AssertionError(f"Expected False, got {config.hot_reload}")\ n        assert config.priority == 100
+            raise AssertionError(f"Expected False, got {config.hot_reload}")
+        assert config.priority == 100
 
     def test_configuration_edge_values(self) -> None:
         """Test configuration with edge values."""
@@ -305,11 +307,13 @@ class TestPluginConfigurationComprehensive:
 
             raise AssertionError(f"Expected {"edge-plugin"}, got {config.plugin_id}")
         if config.enabled:
-            raise AssertionError(f"Expected False, got {config.enabled}")\ n        assert config.configuration["empty"] == {}
+            raise AssertionError(f"Expected False, got {config.enabled}")
+        assert config.configuration["empty"] == {}
         if config.configuration["zero"] != 0:
             raise AssertionError(f"Expected {0}, got {config.configuration["zero"]}")
         if config.configuration["false"]:
-            raise AssertionError(f"Expected False, got {config.configuration["false"]}")\ n        assert config.permissions == []
+            raise AssertionError(f"Expected False, got {config.configuration["false"]}")
+        assert config.permissions == []
         if config.priority != 1:
             raise AssertionError(f"Expected {1}, got {config.priority}")
 
@@ -415,7 +419,8 @@ class TestPluginManagerResultComprehensive:
 
             raise AssertionError(f"Expected {"load_plugins"}, got {result.operation}")
         if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")\ n        assert result.plugins_affected == []
+            raise AssertionError(f"Expected False, got {result.success}")
+        assert result.plugins_affected == []
         if result.execution_time_ms != 50.0:
             raise AssertionError(f"Expected {50.0}, got {result.execution_time_ms}")
         assert result.details == {"attempted": 3, "failed": 3}
@@ -439,7 +444,8 @@ class TestPluginManagerResultComprehensive:
 
             raise AssertionError(f"Expected {""}, got {result.operation}")
         if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")\ n        assert result.plugins_affected == []
+            raise AssertionError(f"Expected False, got {result.success}")
+        assert result.plugins_affected == []
         if result.execution_time_ms != 0.0:
             raise AssertionError(f"Expected {0.0}, got {result.execution_time_ms}")
         assert result.details == {}
@@ -655,7 +661,8 @@ class TestCreatePluginManagerComprehensive:
 
         assert isinstance(manager, PluginManager)
         if manager.auto_discover:
-            raise AssertionError(f"Expected False, got {manager.auto_discover}")\ n        assert manager.security_enabled is False
+            raise AssertionError(f"Expected False, got {manager.auto_discover}")
+        assert manager.security_enabled is False
 
     def test_create_plugin_manager_all_combinations(self) -> None:
         """Test creating plugin manager with all parameter combinations."""

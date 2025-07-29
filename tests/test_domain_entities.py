@@ -87,7 +87,8 @@ class TestPluginInstance:
         # Test non-healthy status
         plugin.plugin_status = PluginStatus.UNHEALTHY
         if plugin.is_healthy:
-            raise AssertionError(f"Expected False, got {plugin.is_healthy}")\ n
+            raise AssertionError(f"Expected False, got {plugin.is_healthy}")
+
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics."""
         metadata = self.create_test_metadata()
@@ -211,7 +212,8 @@ class TestPluginExecution:
         if not (execution.is_running):
             raise AssertionError(f"Expected True, got {execution.is_running}")
         if execution.is_completed:
-            raise AssertionError(f"Expected False, got {execution.is_completed}")\ n
+            raise AssertionError(f"Expected False, got {execution.is_completed}")
+
         # Test marking as completed
         execution.mark_completed(success=True)
         if not (execution.success):
@@ -234,7 +236,8 @@ class TestPluginExecution:
 
         if execution.success:
 
-            raise AssertionError(f"Expected False, got {execution.success}")\ n        assert execution.error_message == "Plugin execution failed"
+            raise AssertionError(f"Expected False, got {execution.success}")
+        assert execution.error_message == "Plugin execution failed"
         if execution.execution_status != "failed":
             raise AssertionError(f"Expected {"failed"}, got {execution.execution_status}")
 
@@ -290,7 +293,8 @@ class TestPluginRegistryEntity:
             is_enabled=False,
         )
         if disabled_registry.is_available:
-            raise AssertionError(f"Expected False, got {disabled_registry.is_available}")\ n
+            raise AssertionError(f"Expected False, got {disabled_registry.is_available}")
+
     def test_registry_sync_recording(self) -> None:
         """Test recording sync attempts."""
         registry = PluginRegistry(
@@ -382,7 +386,8 @@ class TestPluginMetadata:
         if metadata.dependencies != []:
             raise AssertionError(f"Expected {[]}, got {metadata.dependencies}")
         if metadata.trusted:
-            raise AssertionError(f"Expected False, got {metadata.trusted}")\ n        assert metadata.homepage is None
+            raise AssertionError(f"Expected False, got {metadata.trusted}")
+        assert metadata.homepage is None
         assert metadata.repository is None
 
     def test_metadata_validation(self) -> None:
