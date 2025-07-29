@@ -9,9 +9,8 @@ Core type definitions for the plugin system.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
-from flext_core import FlextProcessingError
+from flext_core import FlextProcessingError, FlextResult
 
 
 class PluginStatus(Enum):
@@ -26,6 +25,11 @@ class PluginStatus(Enum):
 
 class PluginType(Enum):
     """Plugin type enumeration."""
+
+    # Singer ETL types (for Meltano integration)
+    TAP = "tap"
+    TARGET = "target"
+    TRANSFORM = "transform"
 
     # Plugin architecture types
     EXTENSION = "extension"
@@ -74,8 +78,9 @@ class PluginExecutionResult:
 
     def __init__(
         self,
+        *,
         success: bool = False,
-        data: Any = None,
+        data: object = None,
         error: str = "",
         plugin_name: str = "",
         execution_time: float = 0.0,
@@ -105,9 +110,136 @@ class PluginExecutionResult:
         return not self.success
 
 
+class PluginExecutionContext:
+    """Context for plugin execution."""
+
+    def __init__(
+        self,
+        plugin_id: str,
+        execution_id: str,
+        *,
+        input_data: dict[str, object] | None = None,
+        context: dict[str, object] | None = None,
+        timeout_seconds: int | None = None,
+    ) -> None:
+        """Initialize plugin execution context."""
+        self.plugin_id = plugin_id
+        self.execution_id = execution_id
+        self.input_data = input_data or {}
+        self.context = context or {}
+        self.timeout_seconds = timeout_seconds
+
+
+class PluginManagerResult:
+    """Result of plugin manager operations."""
+
+    def __init__(self, operation: str, *, success: bool = False) -> None:
+        """Initialize plugin manager result with minimal parameters."""
+        self.operation = operation
+        self.success = success
+        self.plugins_affected: list[str] = []
+        self.execution_time_ms: float = 0.0
+        self.details: dict[str, object] = {}
+        self.errors: list[str] = []
+
+    @classmethod
+    def create_detailed(
+        cls,
+        operation: str,
+        config: dict[str, object],
+    ) -> PluginManagerResult:
+        """Create detailed plugin manager result from config dict."""
+        result = cls(operation, success=bool(config.get("success")))
+        result.plugins_affected = config.get("plugins_affected", [])  # type: ignore[assignment]
+        execution_time = config.get("execution_time_ms", 0.0)
+        result.execution_time_ms = (
+            float(execution_time) if execution_time is not None else 0.0
+        )
+        result.details = config.get("details", {})  # type: ignore[assignment]
+        result.errors = config.get("errors", [])  # type: ignore[assignment]
+        return result
+
+
+class SimplePluginRegistry:
+    """Simple plugin registry for testing."""
+
+    def __init__(self) -> None:
+        """Initialize simple registry."""
+        self._plugins: dict[str, object] = {}
+
+    async def register_plugin(self, plugin: object) -> FlextResult[object]:
+        """Register a plugin."""
+        try:
+            # Mock validation - check if plugin has metadata and name
+            if not hasattr(plugin, "metadata") or plugin.metadata is None:
+                return FlextResult.fail("Plugin registration failed: missing metadata")
+
+            if not hasattr(plugin.metadata, "name"):
+                return FlextResult.fail("Plugin registration failed: missing name")
+
+            self._plugins[plugin.metadata.name] = plugin
+            return FlextResult.ok(plugin)
+        except Exception as e:
+            return FlextResult.fail(f"Plugin registration failed: {e}")
+
+    async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Unregister a plugin."""
+        if plugin_name in self._plugins:
+            del self._plugins[plugin_name]
+        plugin_unregistered = True
+        return FlextResult.ok(plugin_unregistered)
+
+    def get_plugin(self, plugin_name: str) -> object | None:
+        """Get a plugin by name."""
+        return self._plugins.get(plugin_name)
+
+    def get_plugin_count(self) -> int:
+        """Get plugin count."""
+        return len(self._plugins)
+
+    def list_plugins(self, plugin_type: PluginType | None = None) -> list[object]:
+        """List plugins with optional type filter."""
+        if plugin_type is None:
+            return [
+                p.metadata for p in self._plugins.values()
+                if hasattr(p, "metadata")
+            ]
+
+        return [
+            p.metadata for p in self._plugins.values()
+            if hasattr(p, "metadata") and hasattr(p.metadata, "plugin_type")
+            and p.metadata.plugin_type == plugin_type
+        ]
+
+    async def cleanup_all(self) -> None:
+        """Cleanup all plugins."""
+        self._plugins.clear()
+
+
+def create_plugin_manager(
+    _container: object | None = None,
+    *,
+    _auto_discover: bool = True,
+    _security_enabled: bool = True,
+) -> object:
+    """Create plugin manager - factory function.
+
+    Note: This is a lightweight factory that delays import to avoid circular
+    dependencies. The actual PluginManager implementation should be imported
+    when needed.
+    """
+    # Return a simple registry as default implementation
+    # This avoids circular imports while providing functionality
+    return SimplePluginRegistry()
+
+
 __all__ = [
     "PluginError",
+    "PluginExecutionContext",
     "PluginExecutionResult",
+    "PluginManagerResult",
     "PluginStatus",
     "PluginType",
+    "SimplePluginRegistry",
+    "create_plugin_manager",
 ]

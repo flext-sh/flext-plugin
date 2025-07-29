@@ -37,8 +37,9 @@ class TestPluginDiscoverySimple:
 
         if len(discovery.plugin_directories) != initial_count + 1:
 
-            raise AssertionError(f"Expected
-            {initial_count + 1}, got {len(discovery.plugin_directories)}")
+            expected_count = initial_count + 1
+            actual_count = len(discovery.plugin_directories)
+            raise AssertionError(f"Expected {expected_count}, got {actual_count}")
         if test_dir not in discovery.plugin_directories:
             raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
 

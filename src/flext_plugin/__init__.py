@@ -76,7 +76,12 @@ def create_flext_plugin_platform(
         Configured FlextPluginPlatform instance
 
     """
-    return FlextPluginPlatform(config or {})
+    container = FlextContainer()
+    # Configure container with config dict if provided
+    if config:
+        for key, value in config.items():
+            container.register(key, value)
+    return FlextPluginPlatform(container)
 
 
 # Prefixed helper functions

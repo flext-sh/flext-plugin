@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test script to check individual module imports."""
 
 from __future__ import annotations

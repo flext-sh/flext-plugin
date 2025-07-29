@@ -1,10 +1,5 @@
 """Tests for flext_plugin.domain.entities module.
 
-# Constants
-EXPECTED_BULK_SIZE = 2
-EXPECTED_TOTAL_PAGES = 8
-EXPECTED_DATA_COUNT = 3
-
 Comprehensive tests for all domain entities and business logic.
 """
 
@@ -23,6 +18,11 @@ from flext_plugin.domain.entities import (
     PluginMetadata,
     PluginRegistry,
 )
+
+# Constants
+EXPECTED_BULK_SIZE = 2
+EXPECTED_TOTAL_PAGES = 8
+EXPECTED_DATA_COUNT = 3
 
 
 class TestPluginInstance:
@@ -143,7 +143,8 @@ class TestPluginConfiguration:
 
             raise AssertionError(f"Expected True, got {config.enabled}")
         if config.settings != {"key": "value"}:
-            raise AssertionError(f"Expected {{"key": "value"}}, got {config.settings}")
+            expected = {"key": "value"}
+            raise AssertionError(f"Expected {expected}, got {config.settings}")
         assert config.dependencies == ["dep1", "dep2"]
 
     def test_configuration_defaults(self) -> None:
@@ -192,7 +193,8 @@ class TestPluginExecution:
             raise AssertionError(f"Expected {"test-plugin"}, got {execution.plugin_id}")
         assert execution.execution_id == "exec-123"
         if execution.input_data != {"test": "input"}:
-            raise AssertionError(f"Expected {{"test": "input"}}, got {execution.input_data}")
+            expected_input = {"test": "input"}
+            raise AssertionError(f"Expected {expected_input}, got {execution.input_data}")
         assert execution.end_time is None
         if execution.output_data != {}:
             raise AssertionError(f"Expected {{}}, got {execution.output_data}")

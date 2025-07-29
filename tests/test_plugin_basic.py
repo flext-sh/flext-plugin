@@ -3,18 +3,13 @@
 Tests following flext-core patterns and standards.
 """
 
-from flext_plugin import PluginManager, PluginType
-from flext_core import FlextResult
-from flext_plugin.core.types import PluginType
-from flext_plugin import PluginManager
-from flext_plugin import PluginManager
-from flext_plugin import PluginManager
-from flext_plugin import PluginManager
-
-
 from __future__ import annotations
 
 import pytest
+from flext_core import FlextResult
+
+from flext_plugin import FlextPluginManager as PluginManager
+from flext_plugin.core.types import PluginType
 
 
 def test_flext_plugin_imports() -> None:
@@ -23,7 +18,6 @@ def test_flext_plugin_imports() -> None:
     This verifies that the core plugin components are available for import.
     """
     try:
-
 
         assert PluginManager is not None
         assert PluginType is not None
@@ -40,17 +34,16 @@ def test_flext_core_dependencies() -> None:
     """
     # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 
-
     # Test FlextResult works
     result = FlextResult.ok({"test": "data"})
-    assert result.success
-    if result.data != {"test": "data"}:
-        raise AssertionError(f"Expected {{"test": "data"}}, got {result.data}")
+    assert result.is_success
+    expected_data = {"test": "data"}
+    if result.data != expected_data:
+        raise AssertionError(f"Expected {expected_data}, got {result.data}")
 
 
 def test_plugin_type_enum() -> None:
     """Test PluginType enum from flext_plugin."""
-
 
     # Test standard plugin types
     if PluginType.TAP.value != "tap":
@@ -63,7 +56,6 @@ def test_plugin_type_enum() -> None:
 
 async def test_plugin_manager_basic() -> None:
     """Test PluginManager basic functionality."""
-
 
     manager = PluginManager()
     assert manager is not None
@@ -80,7 +72,6 @@ class TestFlextPluginIntegration:
     async def test_plugin_load_unload(self) -> None:
         """Test plugin load/unload functionality."""
 
-
         manager = PluginManager()
         await manager.initialize()
 
@@ -95,7 +86,6 @@ class TestFlextPluginIntegration:
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""
 
-
         manager = PluginManager()
 
         # Test discovery doesn't crash
@@ -104,7 +94,6 @@ class TestFlextPluginIntegration:
 
     def test_plugin_lifecycle(self) -> None:
         """Test basic plugin lifecycle operations."""
-
 
         manager = PluginManager()
 

@@ -8,8 +8,7 @@ Core domain entities for plugin management system.
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any
+from datetime import UTC, datetime
 
 from flext_core import FlextEntity, FlextEntityId
 
@@ -22,14 +21,10 @@ class FlextPlugin(FlextEntity):
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
+        *,
         name: str = "",
         version: str = "",
-        description: str = "",
-        author: str = "",
-        dependencies: list[str] | None = None,
-        metadata: dict[str, Any] | None = None,
-        status: PluginStatus = PluginStatus.INACTIVE,
-        created_at: datetime | None = None,
+        config: dict[str, object] | None = None,
     ) -> None:
         """Initialize plugin entity.
 
@@ -37,23 +32,22 @@ class FlextPlugin(FlextEntity):
             entity_id: Unique entity identifier
             name: Plugin name
             version: Plugin version
-            description: Plugin description
-            author: Plugin author
-            dependencies: List of plugin dependencies
-            metadata: Additional plugin metadata
-            status: Plugin status
-            created_at: Creation timestamp
+            config: Configuration dict containing description, author, dependencies,
+                metadata, status, created_at
 
         """
         super().__init__(entity_id)
         self.name = name
         self.version = version
-        self.description = description
-        self.author = author
-        self.dependencies = dependencies or []
-        self.metadata = metadata or {}
-        self.status = status
-        self.created_at = created_at or datetime.now()
+
+        # Extract from config dict
+        config = config or {}
+        self.description = config.get("description", "")
+        self.author = config.get("author", "")
+        self.dependencies = config.get("dependencies", [])
+        self.metadata = config.get("metadata", {})
+        self.status = config.get("status", PluginStatus.INACTIVE)
+        self.created_at = config.get("created_at", datetime.now(UTC))
 
     def is_valid(self) -> bool:
         """Validate plugin entity state.
@@ -104,8 +98,9 @@ class FlextPluginConfig(FlextEntity):
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
+        *,
         plugin_name: str = "",
-        config_data: dict[str, Any] | None = None,
+        config_data: dict[str, object] | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -122,8 +117,8 @@ class FlextPluginConfig(FlextEntity):
         super().__init__(entity_id)
         self.plugin_name = plugin_name
         self.config_data = config_data or {}
-        self.created_at = created_at or datetime.now()
-        self.updated_at = updated_at or datetime.now()
+        self.created_at = created_at or datetime.now(UTC)
+        self.updated_at = updated_at or datetime.now(UTC)
 
     def is_valid(self) -> bool:
         """Validate plugin configuration entity state.
@@ -134,7 +129,7 @@ class FlextPluginConfig(FlextEntity):
         """
         return bool(self.plugin_name)
 
-    def update_config(self, new_config: dict[str, Any]) -> None:
+    def update_config(self, new_config: dict[str, object]) -> None:
         """Update configuration data.
 
         Args:
@@ -142,7 +137,7 @@ class FlextPluginConfig(FlextEntity):
 
         """
         self.config_data.update(new_config)
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.now(UTC)
 
 
 class FlextPluginMetadata(FlextEntity):
@@ -151,38 +146,31 @@ class FlextPluginMetadata(FlextEntity):
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
+        *,
         plugin_name: str = "",
-        tags: list[str] | None = None,
-        categories: list[str] | None = None,
-        homepage_url: str = "",
-        documentation_url: str = "",
-        repository_url: str = "",
-        license_info: str = "",
-        created_at: datetime | None = None,
+        metadata: dict[str, object] | None = None,
     ) -> None:
         """Initialize plugin metadata entity.
 
         Args:
             entity_id: Unique entity identifier
             plugin_name: Name of the plugin this metadata belongs to
-            tags: Plugin tags
-            categories: Plugin categories
-            homepage_url: Plugin homepage URL
-            documentation_url: Plugin documentation URL
-            repository_url: Plugin repository URL
-            license_info: Plugin license information
-            created_at: Creation timestamp
+            metadata: Metadata dict containing tags, categories, URLs, license,
+                created_at
 
         """
         super().__init__(entity_id)
         self.plugin_name = plugin_name
-        self.tags = tags or []
-        self.categories = categories or []
-        self.homepage_url = homepage_url
-        self.documentation_url = documentation_url
-        self.repository_url = repository_url
-        self.license_info = license_info
-        self.created_at = created_at or datetime.now()
+
+        # Extract from metadata dict
+        metadata = metadata or {}
+        self.tags = metadata.get("tags", [])
+        self.categories = metadata.get("categories", [])
+        self.homepage_url = metadata.get("homepage_url", "")
+        self.documentation_url = metadata.get("documentation_url", "")
+        self.repository_url = metadata.get("repository_url", "")
+        self.license_info = metadata.get("license_info", "")
+        self.created_at = metadata.get("created_at", datetime.now(UTC))
 
     def is_valid(self) -> bool:
         """Validate plugin metadata entity state.
@@ -200,6 +188,7 @@ class FlextPluginRegistry(FlextEntity):
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
+        *,
         name: str = "",
         plugins: dict[str, FlextPlugin] | None = None,
         created_at: datetime | None = None,
@@ -216,7 +205,7 @@ class FlextPluginRegistry(FlextEntity):
         super().__init__(entity_id)
         self.name = name
         self.plugins = plugins or {}
-        self.created_at = created_at or datetime.now()
+        self.created_at = created_at or datetime.now(UTC)
 
     def is_valid(self) -> bool:
         """Validate plugin registry entity state.
@@ -286,21 +275,21 @@ class FlextPluginExecution(FlextEntity):
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
+        *,
         plugin_name: str = "",
-        start_time: datetime | None = None,
-        end_time: datetime | None = None,
-        status: str = "pending",
-        result: Any = None,
-        error: str = "",
+        execution_config: dict[str, object] | None = None,
     ) -> None:
         """Initialize plugin execution entity."""
         super().__init__(entity_id)
         self.plugin_name = plugin_name
-        self.start_time = start_time or datetime.now()
-        self.end_time = end_time
-        self.status = status
-        self.result = result
-        self.error = error
+
+        # Extract from execution_config dict
+        execution_config = execution_config or {}
+        self.start_time = execution_config.get("start_time", datetime.now(UTC))
+        self.end_time = execution_config.get("end_time")
+        self.status = execution_config.get("status", "pending")
+        self.result = execution_config.get("result")
+        self.error = execution_config.get("error", "")
 
     def is_valid(self) -> bool:
         """Validate plugin execution entity state."""

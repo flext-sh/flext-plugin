@@ -47,14 +47,14 @@ class HotReloadManager(FlextEntity):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
-    discovery = Field(default=None)
+    discovery: PluginDiscovery | None = Field(default=None)
     loader: PluginLoader | None = Field(default=None)
     observer: Observer | None = Field(default=None)
-    loaded_plugins: dict[str, Any] = Field(default_factory=dict)
+    loaded_plugins: dict[str, object] = Field(default_factory=dict)
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def model_post_init(self, __context: dict[str, Any] | None, /) -> None:
+    def model_post_init(self, __context: dict[str, object] | None, /) -> None:
         """Initialize model after creation.
 
         Args:

@@ -28,7 +28,18 @@ logger = get_logger(__name__)
 
 # ==================== FLEXT_PLUGIN-SPECIFIC DI UTILITIES ====================
 
-_flext_plugin_container_instance: FlextContainer | None = None
+
+class FlextPluginContainerSingleton:
+    """Singleton container manager for flext-plugin."""
+
+    _instance: FlextContainer | None = None
+
+    @classmethod
+    def get_instance(cls) -> FlextContainer:
+        """Get container instance."""
+        if cls._instance is None:
+            cls._instance = FlextContainer()
+        return cls._instance
 
 
 def get_flext_plugin_container() -> FlextContainer:
@@ -38,10 +49,7 @@ def get_flext_plugin_container() -> FlextContainer:
         FlextContainer: Official container from flext-core.
 
     """
-    global _flext_plugin_container_instance
-    if _flext_plugin_container_instance is None:
-        _flext_plugin_container_instance = FlextContainer()
-    return _flext_plugin_container_instance
+    return FlextPluginContainerSingleton.get_instance()
 
 
 def configure_flext_plugin_dependencies() -> None:
@@ -56,8 +64,14 @@ def configure_flext_plugin_dependencies() -> None:
         container.register(
             "plugin_discovery_service", FlextPluginDiscoveryService(container),
         )
-        container.register("plugin_loader", PluginLoader())
-        container.register("plugin_discovery", PluginDiscovery())
+        container.register("plugin_loader", PluginLoader(entity_id="default_loader"))
+        container.register(
+            "plugin_discovery",
+            PluginDiscovery(
+                entity_id="default_discovery",
+                plugin_directory="/usr/local/plugins",
+            ),
+        )
 
         logger.info("FLEXT_PLUGIN dependencies configured successfully")
 
@@ -78,7 +92,7 @@ def get_flext_plugin_service(service_name: str) -> object:
     container = get_flext_plugin_container()
     result = container.get(service_name)
 
-    if result.success:
+    if result.is_success:
         return result.data
 
     logger.warning(f"FLEXT_PLUGIN service '{service_name}' not found: {result.error}")

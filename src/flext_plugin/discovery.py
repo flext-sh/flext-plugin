@@ -3,20 +3,19 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
-DomainBaseModel
+from flext_core import FlextEntity
 from pydantic import ConfigDict
 
 
-class PluginDiscovery(DomainBaseModel):
+class PluginDiscovery(FlextEntity):
     """Plugin discovery system to find and scan plugin files."""
 
     plugin_directory: str
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    async def scan(self) -> list[dict[str, Any]]:
+    async def scan(self) -> list[dict[str, object]]:
         """Scan the plugin directory for Python plugin files.
 
         Returns:
@@ -24,7 +23,7 @@ class PluginDiscovery(DomainBaseModel):
             name, path, file_name, size, and modified time.
 
         """
-        plugins: list[Any] = []
+        plugins: list[dict[str, object]] = []
         plugin_path = Path(self.plugin_directory)
 
         if not plugin_path.exists():
@@ -45,7 +44,7 @@ class PluginDiscovery(DomainBaseModel):
 
         return plugins
 
-    async def discover_plugin_entry_points(self) -> list[dict[str, Any]]:
+    async def discover_plugin_entry_points(self) -> list[dict[str, object]]:
         """Discover plugin entry points from scanned plugin files.
 
         Returns:

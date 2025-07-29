@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from flext_core import FlextEntity
+from flext_core import FlextEntity, FlextResult
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -16,25 +16,34 @@ if TYPE_CHECKING:
 class PluginDiscovery(FlextEntity):
     """Plugin discovery system to find and scan plugin files."""
 
-    def __init__(self, entity_id: str | None = None) -> None:
+    def __init__(
+        self, *, entity_id: str, plugin_directory: str = "/usr/local/plugins",
+    ) -> None:
         """Initialize plugin discovery system."""
-        super().__init__(entity_id)
+        super().__init__(id=entity_id)
+        self.plugin_directory = plugin_directory
         self.plugin_directories: list[Path] = []
-        self._discovered_plugins: dict[str, Any] = {}
+        self._discovered_plugins: dict[str, object] = {}
         self._blacklisted_plugins: set[str] = set()
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin discovery."""
+        if not self.plugin_directory:
+            return FlextResult.fail("Plugin directory is required")
+        return FlextResult.ok(None)
 
     def add_plugin_directory(self, directory: Path) -> None:
         """Add a plugin directory to scan."""
         if directory not in self.plugin_directories:
             self.plugin_directories.append(directory)
 
-    async def discover_all(self) -> dict[str, Any]:
+    async def discover_all(self) -> dict[str, object]:
         """Discover all plugins from configured directories."""
         await self._discover_entry_points()
         await self._discover_file_system()
         return self._discovered_plugins
 
-    async def discover_by_type(self, plugin_type: PluginType) -> dict[str, Any]:
+    async def discover_by_type(self, plugin_type: PluginType) -> dict[str, object]:
         """Discover plugins by type."""
         all_plugins = await self.discover_all()
         return {
@@ -58,10 +67,10 @@ class PluginDiscovery(FlextEntity):
     def register_plugin(self, plugin_class: type) -> None:
         """Manually register a plugin class."""
         if self._validate_plugin_class(plugin_class):
-            plugin_metadata = MockPluginMetadata(plugin_class.METADATA.name)
-            self._discovered_plugins[plugin_class.METADATA.name] = MockPlugin(
-                plugin_metadata,
-            )
+            # Create plugin instance directly from class
+            plugin_name = plugin_class.METADATA.name
+            plugin_instance = plugin_class()
+            self._discovered_plugins[plugin_name] = plugin_instance
 
     async def _discover_entry_points(self) -> None:
         """Discover plugins from entry points."""
@@ -103,18 +112,7 @@ class PluginDiscovery(FlextEntity):
             return False
 
 
-class MockPlugin:
-    """Mock plugin class for testing."""
-
-    def __init__(self, metadata: Any) -> None:
-        self.metadata = metadata
-
-
-class MockPluginMetadata:
-    """Mock plugin metadata for testing."""
-
-    def __init__(self, name: str) -> None:
-        self.name = name
+# Removed mock classes - use real implementations in tests
 
 
 __all__ = [

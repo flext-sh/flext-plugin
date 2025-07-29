@@ -9,8 +9,7 @@ Simple factory functions for creating plugin entities and configurations.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
-from typing import Any
+from datetime import UTC, datetime
 
 from flext_plugin.domain.entities import (
     FlextPlugin,
@@ -24,43 +23,35 @@ from flext_plugin.domain.entities import (
 def create_flext_plugin(
     name: str,
     version: str,
-    description: str = "",
-    author: str = "",
-    dependencies: list[str] | None = None,
-    metadata: dict[str, Any] | None = None,
-    status: PluginStatus = PluginStatus.INACTIVE,
+    *,
+    config: dict[str, object] | None = None,
 ) -> FlextPlugin:
     """Create a new FlextPlugin entity.
 
     Args:
         name: Plugin name
         version: Plugin version
-        description: Plugin description
-        author: Plugin author
-        dependencies: List of plugin dependencies
-        metadata: Additional plugin metadata
-        status: Plugin status
+        config: Configuration dict containing description, author, dependencies,
+            metadata, status
 
     Returns:
         New FlextPlugin entity
 
     """
+    config = config or {}
+    config["created_at"] = datetime.now(UTC)
+
     return FlextPlugin(
         entity_id=str(uuid.uuid4()),
         name=name,
         version=version,
-        description=description,
-        author=author,
-        dependencies=dependencies,
-        metadata=metadata,
-        status=status,
-        created_at=datetime.now(),
+        config=config,
     )
 
 
 def create_flext_plugin_config(
     plugin_name: str,
-    config_data: dict[str, Any] | None = None,
+    config_data: dict[str, object] | None = None,
 ) -> FlextPluginConfig:
     """Create a new FlextPluginConfig entity.
 
@@ -76,45 +67,33 @@ def create_flext_plugin_config(
         entity_id=str(uuid.uuid4()),
         plugin_name=plugin_name,
         config_data=config_data,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
 
 def create_flext_plugin_metadata(
     plugin_name: str,
-    tags: list[str] | None = None,
-    categories: list[str] | None = None,
-    homepage_url: str = "",
-    documentation_url: str = "",
-    repository_url: str = "",
-    license_info: str = "",
+    *,
+    metadata: dict[str, object] | None = None,
 ) -> FlextPluginMetadata:
     """Create a new FlextPluginMetadata entity.
 
     Args:
         plugin_name: Name of the plugin this metadata belongs to
-        tags: Plugin tags
-        categories: Plugin categories
-        homepage_url: Plugin homepage URL
-        documentation_url: Plugin documentation URL
-        repository_url: Plugin repository URL
-        license_info: Plugin license information
+        metadata: Metadata dict containing tags, categories, URLs, license info
 
     Returns:
         New FlextPluginMetadata entity
 
     """
+    metadata = metadata or {}
+    metadata["created_at"] = datetime.now(UTC)
+
     return FlextPluginMetadata(
         entity_id=str(uuid.uuid4()),
         plugin_name=plugin_name,
-        tags=tags,
-        categories=categories,
-        homepage_url=homepage_url,
-        documentation_url=documentation_url,
-        repository_url=repository_url,
-        license_info=license_info,
-        created_at=datetime.now(),
+        metadata=metadata,
     )
 
 
@@ -136,11 +115,11 @@ def create_flext_plugin_registry(
         entity_id=str(uuid.uuid4()),
         name=name,
         plugins=plugins,
-        created_at=datetime.now(),
+        created_at=datetime.now(UTC),
     )
 
 
-def create_plugin_from_dict(plugin_data: dict[str, Any]) -> FlextPlugin:
+def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
     """Create a FlextPlugin from dictionary data.
 
     Args:
@@ -202,7 +181,7 @@ def create_plugin_from_dict(plugin_data: dict[str, Any]) -> FlextPlugin:
 
 def create_plugin_config_from_dict(
     plugin_name: str,
-    config_dict: dict[str, Any],
+    config_dict: dict[str, object],
 ) -> FlextPluginConfig:
     """Create a FlextPluginConfig from dictionary data.
 

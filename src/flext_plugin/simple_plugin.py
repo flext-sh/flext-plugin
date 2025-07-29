@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import importlib
 
-# 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
-from flext_plugin.infrastructure.di_container import get_service_result
-
-FlextResult = get_service_result()
+# 🚨 ARCHITECTURAL COMPLIANCE: Using real flext-core imports
+from flext_core import FlextResult
 
 
 class Plugin:

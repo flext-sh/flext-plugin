@@ -10,7 +10,7 @@ import os
 import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -32,7 +32,7 @@ def set_test_environment() -> Generator[None]:
 
 # Plugin test configuration
 @pytest.fixture
-def plugin_test_config() -> dict[str, Any]:
+def plugin_test_config() -> dict[str, object]:
     """Plugin manager configuration for testing."""
     return {
         "plugin_directory": "test_plugins",
@@ -53,7 +53,7 @@ def test_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def sample_plugin_data() -> dict[str, Any]:
+def sample_plugin_data() -> dict[str, object]:
     """Sample plugin data for testing."""
     return {
         "plugins": [
@@ -86,23 +86,23 @@ def sample_plugin_data() -> dict[str, Any]:
 # Plugin manager fixtures
 @pytest.fixture
 async def plugin_manager(
-    plugin_test_config: dict[str, Any],
+    plugin_test_config: dict[str, object],
     test_plugin_directory: Path,
 ) -> object:
     """Plugin manager for testing."""
-    from flext_plugin.manager import PluginManager
+    from flext_plugin import FlextPluginManager
 
     # Update config with test directory
     config = plugin_test_config.copy()
     config["plugin_directory"] = str(test_plugin_directory)
 
-    return PluginManager()
+    return FlextPluginManager()
 
     # Note: No cleanup needed - PluginManager handles its own lifecycle
 
 
 @pytest.fixture
-def mock_plugin_manifest() -> dict[str, Any]:
+def mock_plugin_manifest() -> dict[str, object]:
     """Mock plugin manifest for testing."""
     return {
         "name": "mock-plugin",
@@ -154,7 +154,7 @@ def plugin_lifecycle_states() -> list[str]:
 
 # Plugin configuration fixtures
 @pytest.fixture
-def plugin_config_samples(tmp_path: Path) -> dict[str, dict[str, Any]]:
+def plugin_config_samples(tmp_path: Path) -> dict[str, dict[str, object]]:
     """Sample plugin configurations."""
     return {
         "database_extractor": {
@@ -224,15 +224,15 @@ def mock_extractor_plugin() -> object:
 
     class ExtractorPlugin(ABC):
         @abstractmethod
-        async def extract(self) -> list[dict[str, Any]]:
+        async def extract(self) -> list[dict[str, object]]:
             pass
 
     class MockExtractorPlugin(ExtractorPlugin):
-        def __init__(self, config: dict[str, Any]) -> None:
+        def __init__(self, config: dict[str, object]) -> None:
             self.config = config
             self.name = "mock-extractor"
 
-        async def extract(self) -> list[dict[str, Any]]:
+        async def extract(self) -> list[dict[str, object]]:
             return [{"id": 1, "data": "test"}]
 
         async def validate_config(self) -> bool:
@@ -248,15 +248,15 @@ def mock_loader_plugin() -> object:
 
     class LoaderPlugin(ABC):
         @abstractmethod
-        async def load(self, data: list[dict[str, Any]]) -> bool:
+        async def load(self, data: list[dict[str, object]]) -> bool:
             pass
 
     class MockLoaderPlugin(LoaderPlugin):
-        def __init__(self, config: dict[str, Any]) -> None:
+        def __init__(self, config: dict[str, object]) -> None:
             self.config = config
             self.name = "mock-loader"
 
-        async def load(self, data: list[dict[str, Any]]) -> bool:
+        async def load(self, data: list[dict[str, object]]) -> bool:
             return True
 
         async def validate_config(self) -> bool:
@@ -280,7 +280,7 @@ def plugin_dependency_graph() -> dict[str, list[str]]:
 
 # Performance testing fixtures
 @pytest.fixture
-def plugin_performance_config() -> dict[str, Any]:
+def plugin_performance_config() -> dict[str, object]:
     """Configuration for plugin performance testing."""
     return {
         "max_load_time": 5.0,  # seconds

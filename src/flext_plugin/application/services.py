@@ -8,7 +8,7 @@ Application services for plugin management operations.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_core import FlextContainer, FlextDomainService, FlextResult
 
@@ -25,6 +25,7 @@ class FlextPluginService(FlextDomainService):
     """Main plugin management service."""
 
     container: FlextContainer
+    model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize plugin service.
@@ -38,7 +39,7 @@ class FlextPluginService(FlextDomainService):
         self._loader_port: FlextPluginLoaderPort | None = None
         self._manager_port: FlextPluginManagerPort | None = None
 
-    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
 
         This method is required by the abstract base class but services
@@ -48,6 +49,7 @@ class FlextPluginService(FlextDomainService):
             FlextResult indicating this method should not be used directly
 
         """
+        _ = args, kwargs  # Mark as intentionally unused
         return FlextResult.fail("Use specific service methods instead of execute")
 
     @property
@@ -109,7 +111,7 @@ class FlextPluginService(FlextDomainService):
 
             # Validate plugin first
             validation_result = self.discovery_port.validate_plugin(plugin)
-            if not validation_result.is_success or not validation_result.value:
+            if not validation_result.is_success or not validation_result.data:
                 return FlextResult.fail("Plugin validation failed")
 
             return self.loader_port.load_plugin(plugin)
@@ -282,6 +284,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
     """Service for plugin discovery operations."""
 
     container: FlextContainer
+    model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize plugin discovery service.
@@ -293,7 +296,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
         super().__init__(container=container or FlextContainer())
         self._discovery_port: FlextPluginDiscoveryPort | None = None
 
-    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
 
         This method is required by the abstract base class but services
@@ -303,6 +306,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
             FlextResult indicating this method should not be used directly
 
         """
+        _ = args, kwargs  # Mark as intentionally unused
         return FlextResult.fail("Use specific service methods instead of execute")
 
     @property

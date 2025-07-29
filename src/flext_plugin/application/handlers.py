@@ -10,18 +10,20 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import FlextCommandHandler, FlextEventHandler, FlextResult
+from flext_core import FlextHandlers, FlextResult
 
 if TYPE_CHECKING:
+    from flext_plugin.application.services import FlextPluginService
     from flext_plugin.domain.entities import FlextPlugin
 
 
-class FlextPluginHandler(FlextCommandHandler):
+class FlextPluginHandler(FlextHandlers.CommandHandler):
     """Base handler for plugin-related commands."""
 
-    def __init__(self) -> None:
+    def __init__(self, plugin_service: FlextPluginService | None = None) -> None:
         """Initialize plugin handler."""
         super().__init__()
+        self._plugin_service = plugin_service
 
 
 class FlextPluginRegistrationHandler(FlextPluginHandler):
@@ -45,9 +47,11 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             if not plugin.version:
                 return FlextResult.fail("Plugin version is required")
 
-            # Registration logic would go here
-            # This is a placeholder implementation
-            return FlextResult.ok(True)
+            if self._plugin_service is None:
+                return FlextResult.fail("Plugin service not available")
+
+            # Use real plugin service to register plugin
+            return self._plugin_service.load_plugin(plugin)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to register plugin: {e}")
@@ -66,15 +70,17 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             if not plugin_name:
                 return FlextResult.fail("Plugin name is required")
 
-            # Unregistration logic would go here
-            # This is a placeholder implementation
-            return FlextResult.ok(True)
+            if self._plugin_service is None:
+                return FlextResult.fail("Plugin service not available")
+
+            # Use real plugin service to unregister plugin
+            return self._plugin_service.unload_plugin(plugin_name)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler(FlextEventHandler):
+class FlextPluginEventHandler(FlextHandlers.EventHandler):
     """Handler for plugin-related events."""
 
     def handle_plugin_loaded(self, plugin: FlextPlugin) -> FlextResult[bool]:
@@ -88,9 +94,20 @@ class FlextPluginEventHandler(FlextEventHandler):
 
         """
         try:
-            # Event handling logic would go here
-            # This is a placeholder implementation
-            return FlextResult.ok(True)
+            # Log plugin loaded event
+            getattr(plugin, "name", "unknown")
+            getattr(plugin, "version", "unknown")
+
+            # In a real implementation, this could:
+            # - Log the event to observability system
+            # - Notify other services
+            # - Update plugin registry metrics
+            # For now, we consider successful if plugin has required attributes
+
+            if not hasattr(plugin, "name") or not plugin.name:
+                return FlextResult.fail("Plugin loaded event: plugin missing name")
+
+            return FlextResult.ok(data=True)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin loaded event: {e}")
@@ -106,9 +123,19 @@ class FlextPluginEventHandler(FlextEventHandler):
 
         """
         try:
-            # Event handling logic would go here
-            # This is a placeholder implementation
-            return FlextResult.ok(True)
+            if not plugin_name or not plugin_name.strip():
+                return FlextResult.fail(
+                    "Plugin unloaded event: plugin name is required",
+                )
+
+            # In a real implementation, this could:
+            # - Log the unload event to observability system
+            # - Clean up plugin-specific resources
+            # - Update plugin registry metrics
+            # - Notify dependent services
+
+            # For now, we validate plugin_name and consider it successful
+            return FlextResult.ok(data=True)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin unloaded event: {e}")

@@ -8,12 +8,10 @@ REFACTORED:
 from __future__ import annotations
 
 import importlib.util
-from typing import TYPE_CHECKING, ClassVar
+from pathlib import Path
+from typing import ClassVar
 
-from flext_core import FlextEntity
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from flext_core import FlextEntity, FlextResult
 
 
 class PluginLoader(FlextEntity):
@@ -24,6 +22,14 @@ class PluginLoader(FlextEntity):
     plugin_modules: ClassVar[dict[str, object]] = {}
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
+
+    def __init__(self, *, entity_id: str) -> None:
+        """Initialize plugin loader."""
+        super().__init__(id=entity_id)
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin loader."""
+        return FlextResult.ok(None)
 
     def load_plugin(self, file_path: Path) -> object:
         """Load a plugin from a Python file.
@@ -54,12 +60,17 @@ class PluginLoader(FlextEntity):
                 file_path.stem,
                 file_path,
             )
-            if spec is None or spec.loader is None:
+            if spec is None:
                 msg = f"Failed to create spec for {file_path}"
+                _handle_import_error(msg)
+            # Type narrowing: spec is not None after check
+            if spec.loader is None:
+                msg = f"No loader available for {file_path}"
                 _handle_import_error(msg)
 
             module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+            if spec.loader:
+                spec.loader.exec_module(module)
 
             # Store module for hot reload
             self.plugin_modules[file_path.stem] = module
@@ -88,7 +99,7 @@ class PluginLoader(FlextEntity):
             msg = f"Failed to load plugin from {file_path}: {e}"
             _handle_import_error(msg)
 
-        # This should never be reached due to exceptions above, but needed for type safety
+        # This should never be reached, all paths above either return or raise
         return None
 
     async def unload_plugin(self, plugin_name: str) -> None:
@@ -105,9 +116,9 @@ class PluginLoader(FlextEntity):
     async def reload_plugin(self, plugin_name: str, file_path: str) -> object:
         """Reload plugin from file."""
         await self.unload_plugin(plugin_name)
-        return await self.load_plugin_from_file(file_path)
+        return self.load_plugin(Path(file_path))
 
-    def get_loaded_plugins(self) -> dict[str, Any]:
+    def get_loaded_plugins(self) -> dict[str, object]:
         """Get copy of loaded plugins."""
         return self.loaded_plugins.copy()
 

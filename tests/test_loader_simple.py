@@ -9,8 +9,8 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from flext_plugin.core.loader import LoadedPlugin, PluginLoader
 from flext_plugin.core.types import PluginError
+from flext_plugin.loader import PluginLoader
 
 
 class TestLoadedPluginSimple:
