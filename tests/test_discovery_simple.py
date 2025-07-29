@@ -6,7 +6,6 @@ Tests for plugin discovery functionality using only real methods.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -132,7 +131,7 @@ class TestPluginDiscoverySimple:
             patch("builtins.hasattr") as mock_hasattr,
         ):
             # Return False for METADATA check, True for method checks
-            def hasattr_side_effect(_obj: Any, attr: str) -> bool:
+            def hasattr_side_effect(_obj: object, attr: str) -> bool:
                 if attr == "METADATA":
                     return False
                 return attr in {"initialize", "cleanup", "health_check", "execute"}

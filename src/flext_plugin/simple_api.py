@@ -154,6 +154,7 @@ def create_plugin_from_dict(plugin_data: dict[str, Any]) -> FlextPlugin:
         ValueError: If plugin data is invalid
 
     """
+
     # Helper function for validation
     def _handle_value_error(error: str) -> None:
         """Handle value error by raising appropriate exception."""

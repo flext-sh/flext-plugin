@@ -38,7 +38,7 @@ class FlextPluginService(FlextDomainService):
         self._loader_port: FlextPluginLoaderPort | None = None
         self._manager_port: FlextPluginManagerPort | None = None
 
-    def execute(self, *args: Any, **kwargs: object) -> FlextResult[Any]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:
         """Execute service operation (required by FlextDomainService).
 
         This method is required by the abstract base class but services
@@ -293,7 +293,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
         super().__init__(container=container or FlextContainer())
         self._discovery_port: FlextPluginDiscoveryPort | None = None
 
-    def execute(self, *args: Any, **kwargs: object) -> FlextResult[Any]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:
         """Execute service operation (required by FlextDomainService).
 
         This method is required by the abstract base class but services

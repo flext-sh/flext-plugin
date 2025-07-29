@@ -116,7 +116,7 @@ class TestablePluginDiscoveryHandler:
 
     async def get_plugin_manifest(
         self,
-        plugin_path: Any,
+        plugin_path: object,
     ) -> FlextResult[Any]:
         """Get plugin manifest from path."""
         try:
@@ -177,8 +177,8 @@ class TestablePluginValidationHandler:
 
     async def validate_configuration(
         self,
-        plugin: Any,
-        config: Any,
+        plugin: object,
+        config: object,
     ) -> FlextResult[Any]:
         """Validate plugin configuration."""
         try:
@@ -317,8 +317,8 @@ class TestablePluginExecutionHandler:
 
     async def execute_plugin(
         self,
-        plugin: Any,
-        input_data: Any,
+        plugin: object,
+        input_data: object,
         execution_context: Any = None,
     ) -> FlextResult[Any]:
         """Execute plugin."""
@@ -369,7 +369,7 @@ class TestablePluginRegistryHandler:
         except Exception as e:
             return FlextResult.fail(f"Sync handler failed: {e}")
 
-    async def search_plugins(self, registry: Any, query: Any) -> FlextResult[Any]:
+    async def search_plugins(self, registry: object, query: Any) -> FlextResult[Any]:
         """Search plugins in registry."""
         try:
             return await self.registry_service.search_plugins(registry, query)
@@ -378,8 +378,8 @@ class TestablePluginRegistryHandler:
 
     async def download_plugin(
         self,
-        registry: Any,
-        plugin_id: Any,
+        registry: object,
+        plugin_id: object,
     ) -> FlextResult[Any]:
         """Download plugin from registry."""
         try:

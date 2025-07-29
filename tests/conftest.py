@@ -87,7 +87,7 @@ def sample_plugin_data() -> dict[str, Any]:
 async def plugin_manager(
     plugin_test_config: dict[str, Any],
     test_plugin_directory: Path,
-) -> Any:
+) -> object:
     """Plugin manager for testing."""
     from flext_plugin.manager import PluginManager
 
@@ -217,7 +217,7 @@ def plugin_validation_error() -> Exception:
 
 # Mock plugin implementations
 @pytest.fixture
-def mock_extractor_plugin() -> Any:
+def mock_extractor_plugin() -> object:
     """Mock extractor plugin for testing."""
     # Create a mock base class since interfaces module doesn't exist
     from abc import ABC, abstractmethod
@@ -242,7 +242,7 @@ def mock_extractor_plugin() -> Any:
 
 
 @pytest.fixture
-def mock_loader_plugin() -> Any:
+def mock_loader_plugin() -> object:
     """Mock loader plugin for testing."""
     # Create a mock base class since interfaces module doesn't exist
     from abc import ABC, abstractmethod

@@ -389,7 +389,7 @@ dev-plugin: ## Create development plugin template
 	@echo '        """Initialize plugin resources."""' >> dev_plugins/example_plugin/plugin.py
 	@echo '        pass' >> dev_plugins/example_plugin/plugin.py
 	@echo '        ' >> dev_plugins/example_plugin/plugin.py
-	@echo '    async def execute(self, input_data: Any, context: Any) -> Any:' >> dev_plugins/example_plugin/plugin.py
+	@echo '    async def execute(self, input_data: object, context: Any) -> object:' >> dev_plugins/example_plugin/plugin.py
 	@echo '        """Execute plugin logic."""' >> dev_plugins/example_plugin/plugin.py
 	@echo '        return {"message": "Hello from example plugin", "input": input_data}' >> dev_plugins/example_plugin/plugin.py
 	@echo '        ' >> dev_plugins/example_plugin/plugin.py

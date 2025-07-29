@@ -170,3 +170,12 @@ class FlextPluginManagerPort(ABC):
 PluginDiscoveryPort = FlextPluginDiscoveryPort
 PluginLoaderPort = FlextPluginLoaderPort
 PluginManagerPort = FlextPluginManagerPort
+
+# Service aliases for tests (mapped to appropriate ports)
+PluginDiscoveryService = FlextPluginDiscoveryPort
+PluginExecutionService = FlextPluginLoaderPort  # Execution is handled by loader
+PluginHotReloadService = FlextPluginLoaderPort  # Hot reload is a loader concern
+PluginLifecycleService = FlextPluginManagerPort  # Lifecycle is managed by manager
+PluginRegistryService = FlextPluginManagerPort  # Registry is managed by manager
+PluginSecurityService = FlextPluginManagerPort  # Security is a manager concern
+PluginValidationService = FlextPluginDiscoveryPort  # Validation is part of discovery

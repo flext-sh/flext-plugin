@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from flext_core import FlextDomainBaseModel, FlextServiceError
+from flext_core import FlextEntity, FlextProcessingError
 from pydantic import Field
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -43,7 +43,7 @@ class PluginFileHandler(FileSystemEventHandler):
             self.reload_callback(path)
 
 
-class HotReloadManager(FlextDomainBaseModel):
+class HotReloadManager(FlextEntity):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
@@ -75,7 +75,7 @@ class HotReloadManager(FlextDomainBaseModel):
         """
         if self.observer is None:
             msg = "Observer not initialized"
-            raise FlextServiceError(msg)
+            raise FlextProcessingError(msg)
 
         handler = PluginFileHandler(self._on_plugin_file_changed)
         self.observer.schedule(handler, self.plugin_directory, recursive=True)

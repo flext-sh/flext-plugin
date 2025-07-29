@@ -12,8 +12,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 # 🚨 ARCHITECTURAL COMPLIANCE: Use ONLY official flext-core FlextContainer
 from flext_core import FlextContainer, get_logger
 
@@ -55,7 +53,9 @@ def configure_flext_plugin_dependencies() -> None:
 
         # Register actual plugin services and components
         container.register("plugin_service", FlextPluginService(container))
-        container.register("plugin_discovery_service", FlextPluginDiscoveryService(container))
+        container.register(
+            "plugin_discovery_service", FlextPluginDiscoveryService(container),
+        )
         container.register("plugin_loader", PluginLoader())
         container.register("plugin_discovery", PluginDiscovery())
 
@@ -65,7 +65,7 @@ def configure_flext_plugin_dependencies() -> None:
         logger.exception("Failed to configure FLEXT_PLUGIN dependencies")
 
 
-def get_flext_plugin_service(service_name: str) -> Any:
+def get_flext_plugin_service(service_name: str) -> object:
     """Get flext_plugin service from container.
 
     Args:

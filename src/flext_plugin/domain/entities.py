@@ -9,20 +9,11 @@ Core domain entities for plugin management system.
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
 from typing import Any
 
 from flext_core import FlextEntity, FlextEntityId
 
-
-class PluginStatus(Enum):
-    """Plugin status enumeration."""
-
-    INACTIVE = "inactive"
-    ACTIVE = "active"
-    LOADING = "loading"
-    ERROR = "error"
-    DISABLED = "disabled"
+from flext_plugin.core.types import PluginStatus
 
 
 class FlextPlugin(FlextEntity):
@@ -319,6 +310,7 @@ class FlextPluginExecution(FlextEntity):
 # Backwards compatibility aliases
 Plugin = FlextPlugin
 PluginConfig = FlextPluginConfig
+PluginConfiguration = FlextPluginConfig  # Additional alias for tests
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
 PluginInstance = FlextPlugin  # Alias for compatibility

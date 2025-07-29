@@ -8,8 +8,16 @@ Core types and utilities for the plugin system.
 
 from __future__ import annotations
 
-from flext_plugin.core.types import PluginType
+from flext_plugin.core.types import (
+    PluginError,
+    PluginExecutionResult,
+    PluginStatus,
+    PluginType,
+)
 
 __all__ = [
+    "PluginError",
+    "PluginExecutionResult",
+    "PluginStatus",
     "PluginType",
 ]

@@ -573,7 +573,11 @@ class NonCallableMock(Base):
         self._mock_add_spec(spec, spec_set)
 
     def _mock_add_spec(
-        self, spec, spec_set, _spec_as_instance=False, _eat_self=False,
+        self,
+        spec,
+        spec_set,
+        _spec_as_instance=False,
+        _eat_self=False,
     ) -> None:
         if _is_instance_mock(spec):
             msg = f"Cannot spec a Mock object. [object={spec!r}]"
@@ -668,7 +672,11 @@ class NonCallableMock(Base):
     side_effect = property(__get_side_effect, __set_side_effect)
 
     def reset_mock(
-        self, visited=None, *, return_value: bool = False, side_effect: bool = False,
+        self,
+        visited=None,
+        *,
+        return_value: bool = False,
+        side_effect: bool = False,
     ) -> None:
         """Restore the mock object to its initial state."""
         if visited is None:
@@ -693,7 +701,9 @@ class NonCallableMock(Base):
             if isinstance(child, _SpecState) or child is _deleted:
                 continue
             child.reset_mock(
-                visited, return_value=return_value, side_effect=side_effect,
+                visited,
+                return_value=return_value,
+                side_effect=side_effect,
             )
 
         ret = self._mock_return_value
@@ -733,11 +743,13 @@ class NonCallableMock(Base):
                 raise AttributeError(msg)
         elif _is_magic(name):
             raise AttributeError(name)
-        if not self._mock_unsafe and (
-            not self._mock_methods or name not in self._mock_methods
-        ) and (
-            name.startswith(("assert", "assret", "asert", "aseert", "assrt"))
-            or name in _ATTRIB_DENY_LIST
+        if (
+            not self._mock_unsafe
+            and (not self._mock_methods or name not in self._mock_methods)
+            and (
+                name.startswith(("assert", "assret", "asert", "aseert", "assrt"))
+                or name in _ATTRIB_DENY_LIST
+            )
         ):
             msg = (
                 f"{name!r} is not a valid assertion. Use a spec "
@@ -980,7 +992,9 @@ class NonCallableMock(Base):
         """Assert that the mock was never called."""
         if self.call_count != 0:
             msg = "Expected '{}' to not have been called. Called {} times.{}".format(
-                self._mock_name or "mock", self.call_count, self._calls_repr(),
+                self._mock_name or "mock",
+                self.call_count,
+                self._calls_repr(),
             )
             raise AssertionError(msg)
 
@@ -994,7 +1008,9 @@ class NonCallableMock(Base):
         """Assert that the mock was called only once."""
         if self.call_count != 1:
             msg = "Expected '{}' to have been called once. Called {} times.{}".format(
-                self._mock_name or "mock", self.call_count, self._calls_repr(),
+                self._mock_name or "mock",
+                self.call_count,
+                self._calls_repr(),
             )
             raise AssertionError(msg)
 
@@ -1027,7 +1043,9 @@ class NonCallableMock(Base):
         """
         if self.call_count != 1:
             msg = "Expected '{}' to be called once. Called {} times.{}".format(
-                self._mock_name or "mock", self.call_count, self._calls_repr(),
+                self._mock_name or "mock",
+                self.call_count,
+                self._calls_repr(),
             )
             raise AssertionError(msg)
         return self.assert_called_with(*args, **kwargs)
@@ -1051,7 +1069,7 @@ class NonCallableMock(Base):
                 if cause is None:
                     problem = "Calls not found."
                 else:
-                    problem = (f"Error processing expected calls.\nErrors: {[e if isinstance(e, Exception) else None for e in expected]}")
+                    problem = f"Error processing expected calls.\nErrors: {[e if isinstance(e, Exception) else None for e in expected]}"
                 msg = (
                     f"{problem}\n"
                     f"Expected: {_CallList(calls)}\n"
@@ -1074,7 +1092,9 @@ class NonCallableMock(Base):
             msg = (
                 "{!r} does not contain all of {!r} in its call list, "
                 "found {!r} instead".format(
-                    self._mock_name or "mock", tuple(not_found), all_calls,
+                    self._mock_name or "mock",
+                    tuple(not_found),
+                    all_calls,
                 )
             )
             raise AssertionError(
@@ -1680,7 +1700,10 @@ class _patch:
                 raise InvalidSpecError(msg)
 
             new = create_autospec(
-                autospec, spec_set=spec_set, _name=self.attribute, **kwargs,
+                autospec,
+                spec_set=spec_set,
+                _name=self.attribute,
+                **kwargs,
             )
         elif kwargs:
             # can't set keyword args when we aren't creating the mock
@@ -2573,7 +2596,7 @@ class AsyncMockMixin(Base):
                 if cause is None:
                     problem = "Awaits not found."
                 else:
-                    problem = (f"Error processing expected awaits.\nErrors: {[e if isinstance(e, Exception) else None for e in expected]}")
+                    problem = f"Error processing expected awaits.\nErrors: {[e if isinstance(e, Exception) else None for e in expected]}"
                 msg = (
                     f"{problem}\n"
                     f"Expected: {_CallList(calls)}\n"
@@ -2738,7 +2761,12 @@ class _Call(tuple):
         return tuple.__new__(cls, (name, args, kwargs))
 
     def __init__(
-        self, value=(), name=None, parent=None, two=False, from_kall=True,
+        self,
+        value=(),
+        name=None,
+        parent=None,
+        two=False,
+        from_kall=True,
     ) -> None:
         self._mock_name = name
         self._mock_parent = parent
@@ -2950,7 +2978,11 @@ def create_autospec(
         Klass = NonCallableMagicMock
 
     mock = Klass(
-        parent=_parent, _new_parent=_parent, _new_name=new_name, name=_name, **kwargs_,
+        parent=_parent,
+        _new_parent=_parent,
+        _new_name=new_name,
+        name=_name,
+        **kwargs_,
     )
 
     if isinstance(spec, FunctionTypes):
@@ -2970,7 +3002,12 @@ def create_autospec(
     wrapped = kwargs.pop("wraps", None)
     if is_type and not instance and "return_value" not in kwargs:
         mock.return_value = create_autospec(
-            spec, spec_set, instance=True, _name="()", _parent=mock, wraps=wrapped,
+            spec,
+            spec_set,
+            instance=True,
+            _name="()",
+            _parent=mock,
+            wraps=wrapped,
         )
 
     for entry in dir(spec):
@@ -3064,7 +3101,13 @@ def _must_skip(spec, entry, is_type):
 
 class _SpecState:
     def __init__(
-        self, spec, spec_set=False, parent=None, name=None, ids=None, instance=False,
+        self,
+        spec,
+        spec_set=False,
+        parent=None,
+        name=None,
+        ids=None,
+        instance=False,
     ) -> None:
         self.spec = spec
         self.ids = ids

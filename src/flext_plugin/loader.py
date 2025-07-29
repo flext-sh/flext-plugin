@@ -10,7 +10,7 @@ from __future__ import annotations
 import importlib.util
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from flext_core.domain.pydantic_base import DomainBaseModel
+DomainBaseModel
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -25,7 +25,7 @@ class PluginLoader(DomainBaseModel):
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def load_plugin(self, file_path: Path) -> Any:
+    def load_plugin(self, file_path: Path) -> object:
         """Load a plugin from a Python file.
 
         Args:
@@ -39,6 +39,7 @@ class PluginLoader(DomainBaseModel):
             ValueError: If plugin is invalid
 
         """
+
         def _handle_import_error(error: str) -> None:
             """Handle import error by raising appropriate exception."""
             raise ImportError(error)
@@ -50,7 +51,8 @@ class PluginLoader(DomainBaseModel):
         try:
             # Create module spec
             spec = importlib.util.spec_from_file_location(
-                file_path.stem, file_path,
+                file_path.stem,
+                file_path,
             )
             if spec is None or spec.loader is None:
                 msg = f"Failed to create spec for {file_path}"
@@ -97,7 +99,7 @@ class PluginLoader(DomainBaseModel):
         if plugin_name in self.plugin_modules:
             del self.plugin_modules[plugin_name]
 
-    async def reload_plugin(self, plugin_name: str, file_path: str) -> Any:
+    async def reload_plugin(self, plugin_name: str, file_path: str) -> object:
         """Reload plugin from file."""
         await self.unload_plugin(plugin_name)
         return await self.load_plugin_from_file(file_path)
