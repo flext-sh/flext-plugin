@@ -99,7 +99,7 @@ class PluginDiscovery(FlextEntity):
             # Mock validation - check if it has required attributes
             required_methods = ["initialize", "cleanup", "health_check", "execute"]
             return all(hasattr(plugin_class, method) for method in required_methods)
-        except Exception:
+        except (RuntimeError, ValueError, TypeError):
             return False
 
 

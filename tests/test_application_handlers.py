@@ -13,6 +13,7 @@ import pytest
 
 # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 from flext_core import FlextResult
+from flext_observability import get_logger
 
 from flext_plugin.core.types import PluginType
 from flext_plugin.domain.entities import (
@@ -63,7 +64,6 @@ class TestablePluginDiscoveryHandler:
         # Copy all attributes
         self.discovery_service = discovery_service
         # Add logger
-        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -88,7 +88,7 @@ class TestablePluginDiscoveryHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin discovery handler error")
             return FlextResult.fail(f"Discovery handler failed: {e}")
 
@@ -110,7 +110,7 @@ class TestablePluginDiscoveryHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin metadata validation handler error")
             return FlextResult.fail(f"Validation handler failed: {e}")
 
@@ -135,7 +135,7 @@ class TestablePluginDiscoveryHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin manifest handler error")
             return FlextResult.fail(f"Manifest handler failed: {e}")
 
@@ -145,7 +145,6 @@ class TestablePluginValidationHandler:
 
     def __init__(self, validation_service: Any) -> None:
         self.validation_service = validation_service
-        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -171,7 +170,7 @@ class TestablePluginValidationHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin validation handler error")
             return FlextResult.fail(f"Validation handler failed: {e}")
 
@@ -204,7 +203,7 @@ class TestablePluginValidationHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin configuration validation handler error")
             return FlextResult.fail(f"Configuration validation handler failed: {e}")
 
@@ -230,7 +229,7 @@ class TestablePluginValidationHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin dependencies validation handler error")
             return FlextResult.fail(f"Dependencies validation handler failed: {e}")
 
@@ -240,7 +239,6 @@ class TestablePluginLifecycleHandler:
 
     def __init__(self, lifecycle_service: Any) -> None:
         self.lifecycle_service = lifecycle_service
-        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -266,7 +264,7 @@ class TestablePluginLifecycleHandler:
                     extra={"error": result.error},
                 )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self.logger.exception("Plugin registration handler error")
             return FlextResult.fail(f"Registration handler failed: {e}")
 
@@ -274,35 +272,35 @@ class TestablePluginLifecycleHandler:
         """Load plugin."""
         try:
             return await self.lifecycle_service.load_plugin(plugin)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Loading handler failed: {e}")
 
     async def initialize_plugin(self, plugin: Any) -> FlextResult[Any]:
         """Initialize plugin."""
         try:
             return await self.lifecycle_service.initialize_plugin(plugin)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Initialization handler failed: {e}")
 
     async def activate_plugin(self, plugin: Any) -> FlextResult[Any]:
         """Activate plugin."""
         try:
             return await self.lifecycle_service.activate_plugin(plugin)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Activation handler failed: {e}")
 
     async def suspend_plugin(self, plugin: Any) -> FlextResult[Any]:
         """Suspend plugin."""
         try:
             return await self.lifecycle_service.suspend_plugin(plugin)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Suspension handler failed: {e}")
 
     async def unload_plugin(self, plugin: Any) -> FlextResult[Any]:
         """Unload plugin."""
         try:
             return await self.lifecycle_service.unload_plugin(plugin)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Unloading handler failed: {e}")
 
 
@@ -311,7 +309,6 @@ class TestablePluginExecutionHandler:
 
     def __init__(self, execution_service: Any) -> None:
         self.execution_service = execution_service
-        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -328,21 +325,21 @@ class TestablePluginExecutionHandler:
                 input_data,
                 execution_context,
             )
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Execution handler failed: {e}")
 
     async def get_execution_status(self, execution_id: Any) -> FlextResult[Any]:
         """Get execution status."""
         try:
             return await self.execution_service.get_execution_status(execution_id)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Status handler failed: {e}")
 
     async def cancel_execution(self, execution_id: Any) -> FlextResult[Any]:
         """Cancel execution."""
         try:
             return await self.execution_service.cancel_execution(execution_id)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Cancellation handler failed: {e}")
 
 
@@ -351,7 +348,6 @@ class TestablePluginRegistryHandler:
 
     def __init__(self, registry_service: Any) -> None:
         self.registry_service = registry_service
-        from flext_observability import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -359,21 +355,21 @@ class TestablePluginRegistryHandler:
         """Register plugin registry."""
         try:
             return await self.registry_service.register_registry(registry)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Registry registration handler failed: {e}")
 
     async def sync_registry(self, registry: Any) -> FlextResult[Any]:
         """Sync plugin registry."""
         try:
             return await self.registry_service.sync_registry(registry)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Sync handler failed: {e}")
 
     async def search_plugins(self, registry: object, query: Any) -> FlextResult[Any]:
         """Search plugins in registry."""
         try:
             return await self.registry_service.search_plugins(registry, query)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Search handler failed: {e}")
 
     async def download_plugin(
@@ -384,7 +380,7 @@ class TestablePluginRegistryHandler:
         """Download plugin from registry."""
         try:
             return await self.registry_service.download_plugin(registry, plugin_id)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Download handler failed: {e}")
 
 
@@ -426,7 +422,10 @@ class TestPluginDiscoveryHandler:
             discovery_service=mock_discovery_service,
         )
 
-        assert handler.discovery_service == mock_discovery_service
+        if handler.discovery_service != mock_discovery_service:
+
+            msg = f"Expected {mock_discovery_service}, got {handler.discovery_service}"
+            raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
     async def test_discover_plugins_success(
@@ -446,7 +445,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.discover_plugins(search_paths)
 
         assert result.success
-        assert result.data == expected_plugins
+        if result.data != expected_plugins:
+            msg = f"Expected {expected_plugins}, got {result.data}"
+            raise AssertionError(msg)
         mock_discovery_service.discover_plugins.assert_called_once_with(search_paths)
 
     async def test_discover_plugins_failure(
@@ -465,7 +466,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.discover_plugins(search_paths)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_discover_plugins_exception(
         self,
@@ -482,7 +485,9 @@ class TestPluginDiscoveryHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Discovery handler failed: Service error" in result.error
+        if "Discovery handler failed: Service error" not in result.error:
+            msg = f"Expected {"Discovery handler failed: Service error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_plugin_metadata_success(
         self,
@@ -498,7 +503,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_discovery_service.validate_plugin_metadata.assert_called_once_with(
             mock_plugin_metadata,
         )
@@ -518,7 +525,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_plugin_metadata_exception(
         self,
@@ -537,7 +546,9 @@ class TestPluginDiscoveryHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Validation handler failed: Validation error" in result.error
+        if "Validation handler failed: Validation error" not in result.error:
+            msg = f"Expected {"Validation handler failed: Validation error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_get_plugin_manifest_success(
         self,
@@ -555,7 +566,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.get_plugin_manifest(plugin_path)
 
         assert result.success
-        assert result.data == expected_manifest
+        if result.data != expected_manifest:
+            msg = f"Expected {expected_manifest}, got {result.data}"
+            raise AssertionError(msg)
         mock_discovery_service.get_plugin_manifest.assert_called_once_with(plugin_path)
 
     async def test_get_plugin_manifest_failure(
@@ -574,7 +587,9 @@ class TestPluginDiscoveryHandler:
         result = await handler.get_plugin_manifest(plugin_path)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_get_plugin_manifest_exception(
         self,
@@ -593,7 +608,9 @@ class TestPluginDiscoveryHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Manifest handler failed: File read error" in result.error
+        if "Manifest handler failed: File read error" not in result.error:
+            msg = f"Expected {"Manifest handler failed: File read error"} in {result.error}"
+            raise AssertionError(msg)
 
 
 class TestPluginValidationHandler:
@@ -640,7 +657,10 @@ class TestPluginValidationHandler:
             validation_service=mock_validation_service,
         )
 
-        assert handler.validation_service == mock_validation_service
+        if handler.validation_service != mock_validation_service:
+
+            msg = f"Expected {mock_validation_service}, got {handler.validation_service}"
+            raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
     async def test_validate_plugin_success(
@@ -655,7 +675,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_validation_service.validate_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -675,7 +697,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_plugin(mock_plugin_instance)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_plugin_exception(
         self,
@@ -691,7 +715,9 @@ class TestPluginValidationHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Validation handler failed: Service error" in result.error
+        if "Validation handler failed: Service error" not in result.error:
+            msg = f"Expected {"Validation handler failed: Service error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_configuration_success(
         self,
@@ -708,7 +734,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_validation_service.validate_configuration.assert_called_once_with(
             mock_plugin_instance,
             config,
@@ -730,7 +758,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_configuration_exception(
         self,
@@ -749,7 +779,9 @@ class TestPluginValidationHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Configuration validation handler failed: Type error" in result.error
+        if "Configuration validation handler failed: Type error" not in result.error:
+            msg = f"Expected {"Configuration validation handler failed: Type error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_dependencies_success(
         self,
@@ -765,7 +797,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_dependencies(mock_plugin_instance)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_validation_service.validate_dependencies.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -785,7 +819,9 @@ class TestPluginValidationHandler:
         result = await handler.validate_dependencies(mock_plugin_instance)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_validate_dependencies_exception(
         self,
@@ -853,7 +889,10 @@ class TestPluginLifecycleHandler:
             lifecycle_service=mock_lifecycle_service,
         )
 
-        assert handler.lifecycle_service == mock_lifecycle_service
+        if handler.lifecycle_service != mock_lifecycle_service:
+
+            msg = f"Expected {mock_lifecycle_service}, got {handler.lifecycle_service}"
+            raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
     async def test_register_plugin_success(
@@ -870,7 +909,9 @@ class TestPluginLifecycleHandler:
         result = await handler.register_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.register_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -890,7 +931,9 @@ class TestPluginLifecycleHandler:
         result = await handler.register_plugin(mock_plugin_instance)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_register_plugin_exception(
         self,
@@ -906,7 +949,9 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         assert result.error is not None
-        assert "Registration handler failed: Service error" in result.error
+        if "Registration handler failed: Service error" not in result.error:
+            msg = f"Expected {"Registration handler failed: Service error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_load_plugin_success(
         self,
@@ -922,7 +967,9 @@ class TestPluginLifecycleHandler:
         result = await handler.load_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.load_plugin.assert_called_once_with(mock_plugin_instance)
 
     async def test_load_plugin_failure(
@@ -940,7 +987,9 @@ class TestPluginLifecycleHandler:
         result = await handler.load_plugin(mock_plugin_instance)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_load_plugin_exception(
         self,
@@ -955,7 +1004,9 @@ class TestPluginLifecycleHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Loading handler failed: Loading error" in result.error
+        if "Loading handler failed: Loading error" not in result.error:
+            msg = f"Expected {"Loading handler failed: Loading error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_initialize_plugin_success(
         self,
@@ -971,7 +1022,9 @@ class TestPluginLifecycleHandler:
         result = await handler.initialize_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.initialize_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -991,7 +1044,9 @@ class TestPluginLifecycleHandler:
         result = await handler.initialize_plugin(mock_plugin_instance)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_initialize_plugin_specific_exceptions(
         self,
@@ -1007,7 +1062,9 @@ class TestPluginLifecycleHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Initialization handler failed: Type error" in result.error
+        if "Initialization handler failed: Type error" not in result.error:
+            msg = f"Expected {"Initialization handler failed: Type error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_activate_plugin_success(
         self,
@@ -1023,7 +1080,9 @@ class TestPluginLifecycleHandler:
         result = await handler.activate_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.activate_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -1042,7 +1101,9 @@ class TestPluginLifecycleHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Activation handler failed: Value error" in result.error
+        if "Activation handler failed: Value error" not in result.error:
+            msg = f"Expected {"Activation handler failed: Value error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_suspend_plugin_success(
         self,
@@ -1058,7 +1119,9 @@ class TestPluginLifecycleHandler:
         result = await handler.suspend_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.suspend_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -1079,7 +1142,9 @@ class TestPluginLifecycleHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Suspension handler failed: Attribute error" in result.error
+        if "Suspension handler failed: Attribute error" not in result.error:
+            msg = f"Expected {"Suspension handler failed: Attribute error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_unload_plugin_success(
         self,
@@ -1095,7 +1160,9 @@ class TestPluginLifecycleHandler:
         result = await handler.unload_plugin(mock_plugin_instance)
 
         assert result.success
-        assert result.data == mock_plugin_instance
+        if result.data != mock_plugin_instance:
+            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            raise AssertionError(msg)
         mock_lifecycle_service.unload_plugin.assert_called_once_with(
             mock_plugin_instance,
         )
@@ -1114,7 +1181,9 @@ class TestPluginLifecycleHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Unloading handler failed: Unload error" in result.error
+        if "Unloading handler failed: Unload error" not in result.error:
+            msg = f"Expected {"Unloading handler failed: Unload error"} in {result.error}"
+            raise AssertionError(msg)
 
 
 class TestPluginExecutionHandler:
@@ -1167,7 +1236,10 @@ class TestPluginExecutionHandler:
             execution_service=mock_execution_service,
         )
 
-        assert handler.execution_service == mock_execution_service
+        if handler.execution_service != mock_execution_service:
+
+            msg = f"Expected {mock_execution_service}, got {handler.execution_service}"
+            raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
     async def test_execute_plugin_success(
@@ -1192,7 +1264,9 @@ class TestPluginExecutionHandler:
         )
 
         assert result.success
-        assert result.data == mock_plugin_execution
+        if result.data != mock_plugin_execution:
+            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            raise AssertionError(msg)
         mock_execution_service.execute_plugin.assert_called_once_with(
             mock_plugin_instance,
             input_data,
@@ -1216,7 +1290,9 @@ class TestPluginExecutionHandler:
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
         assert result.success
-        assert result.data == mock_plugin_execution
+        if result.data != mock_plugin_execution:
+            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            raise AssertionError(msg)
         mock_execution_service.execute_plugin.assert_called_once_with(
             mock_plugin_instance,
             input_data,
@@ -1240,7 +1316,9 @@ class TestPluginExecutionHandler:
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_execute_plugin_exception(
         self,
@@ -1257,7 +1335,9 @@ class TestPluginExecutionHandler:
 
         assert not result.success
         assert result.error is not None
-        assert "Execution handler failed: Service error" in result.error
+        if "Execution handler failed: Service error" not in result.error:
+            msg = f"Expected {"Execution handler failed: Service error"} in {result.error}"
+            raise AssertionError(msg)
 
     async def test_get_execution_status_success(
         self,
@@ -1275,7 +1355,9 @@ class TestPluginExecutionHandler:
         result = await handler.get_execution_status(execution_id)
 
         assert result.success
-        assert result.data == mock_plugin_execution
+        if result.data != mock_plugin_execution:
+            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            raise AssertionError(msg)
         mock_execution_service.get_execution_status.assert_called_once_with(
             execution_id,
         )
@@ -1296,7 +1378,9 @@ class TestPluginExecutionHandler:
         result = await handler.get_execution_status(execution_id)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_cancel_execution_success(
         self,
@@ -1311,7 +1395,9 @@ class TestPluginExecutionHandler:
         result = await handler.cancel_execution(execution_id)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_execution_service.cancel_execution.assert_called_once_with(execution_id)
 
     async def test_cancel_execution_failure(
@@ -1330,7 +1416,9 @@ class TestPluginExecutionHandler:
         result = await handler.cancel_execution(execution_id)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
 
 class TestPluginRegistryHandler:
@@ -1378,7 +1466,10 @@ class TestPluginRegistryHandler:
         """Test registry handler initialization."""
         handler = TestablePluginRegistryHandler(registry_service=mock_registry_service)
 
-        assert handler.registry_service == mock_registry_service
+        if handler.registry_service != mock_registry_service:
+
+            msg = f"Expected {mock_registry_service}, got {handler.registry_service}"
+            raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
     async def test_register_registry_success(
@@ -1395,7 +1486,9 @@ class TestPluginRegistryHandler:
         result = await handler.register_registry(mock_plugin_registry)
 
         assert result.success
-        assert result.data == mock_plugin_registry
+        if result.data != mock_plugin_registry:
+            msg = f"Expected {mock_plugin_registry}, got {result.data}"
+            raise AssertionError(msg)
         mock_registry_service.register_registry.assert_called_once_with(
             mock_plugin_registry,
         )
@@ -1415,7 +1508,9 @@ class TestPluginRegistryHandler:
         result = await handler.register_registry(mock_plugin_registry)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_sync_registry_success(
         self,
@@ -1429,7 +1524,9 @@ class TestPluginRegistryHandler:
         result = await handler.sync_registry(mock_plugin_registry)
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            msg = f"Expected True, got {result.data}"
+            raise AssertionError(msg)
         mock_registry_service.sync_registry.assert_called_once_with(
             mock_plugin_registry,
         )
@@ -1449,7 +1546,9 @@ class TestPluginRegistryHandler:
         result = await handler.sync_registry(mock_plugin_registry)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_search_plugins_success(
         self,
@@ -1469,7 +1568,9 @@ class TestPluginRegistryHandler:
         result = await handler.search_plugins(mock_plugin_registry, query)
 
         assert result.success
-        assert result.data == expected_plugins
+        if result.data != expected_plugins:
+            msg = f"Expected {expected_plugins}, got {result.data}"
+            raise AssertionError(msg)
         mock_registry_service.search_plugins.assert_called_once_with(
             mock_plugin_registry,
             query,
@@ -1492,7 +1593,9 @@ class TestPluginRegistryHandler:
         result = await handler.search_plugins(mock_plugin_registry, query)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)
 
     async def test_download_plugin_success(
         self,
@@ -1512,7 +1615,9 @@ class TestPluginRegistryHandler:
         result = await handler.download_plugin(mock_plugin_registry, plugin_id)
 
         assert result.success
-        assert result.data == download_path
+        if result.data != download_path:
+            msg = f"Expected {download_path}, got {result.data}"
+            raise AssertionError(msg)
         mock_registry_service.download_plugin.assert_called_once_with(
             mock_plugin_registry,
             plugin_id,
@@ -1535,4 +1640,6 @@ class TestPluginRegistryHandler:
         result = await handler.download_plugin(mock_plugin_registry, plugin_id)
 
         assert not result.success
-        assert result.error == error_message
+        if result.error != error_message:
+            msg = f"Expected {error_message}, got {result.error}"
+            raise AssertionError(msg)

@@ -1,5 +1,8 @@
 """Tests for flext_plugin.core.discovery module.
 
+# Constants
+EXPECTED_BULK_SIZE = 2
+
 Comprehensive tests for plugin discovery functionality.
 """
 
@@ -33,7 +36,9 @@ class TestPluginDiscovery:
         test_dir = Path("/test/plugins")
         discovery.add_plugin_directory(test_dir)
 
-        assert test_dir in discovery.plugin_directories
+        if test_dir not in discovery.plugin_directories:
+
+            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
 
     def test_add_multiple_plugin_directories(self, discovery: PluginDiscovery) -> None:
         """Test adding multiple plugin directories."""
@@ -43,7 +48,8 @@ class TestPluginDiscovery:
             discovery.add_plugin_directory(test_dir)
 
         for test_dir in test_dirs:
-            assert test_dir in discovery.plugin_directories
+            if test_dir not in discovery.plugin_directories:
+                raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
 
     @patch("pathlib.Path.glob")
     @patch("pathlib.Path.exists")
@@ -59,7 +65,9 @@ class TestPluginDiscovery:
 
         result = await discovery.discover_all()
 
-        assert result == {}
+        if result != {}:
+
+            raise AssertionError(f"Expected {{}}, got {result}")
 
     @patch("pathlib.Path.glob")
     @patch("pathlib.Path.exists")
@@ -109,7 +117,9 @@ class TestPluginDiscovery:
 
         result = await discovery.discover_all()
 
-        assert result == {}
+        if result != {}:
+
+            raise AssertionError(f"Expected {{}}, got {result}")
 
     async def test_discover_plugins_empty_result(
         self,
@@ -126,7 +136,9 @@ class TestPluginDiscovery:
 
             result = await discovery.discover_all()
 
-            assert result == {}
+            if result != {}:
+
+                raise AssertionError(f"Expected {{}}, got {result}")
             mock_entry_points.assert_called_once()
             mock_file_system.assert_called_once()
 
@@ -144,7 +156,9 @@ class TestPluginDiscovery:
 
             result = await discovery.discover_by_type(plugin_type)
 
-            assert result == {}
+            if result != {}:
+
+                raise AssertionError(f"Expected {{}}, got {result}")
             mock_entry_points.assert_called_once()
             mock_file_system.assert_called_once()
 
@@ -177,8 +191,11 @@ class TestPluginDiscovery:
         # Get the result from discovered plugins
         result = plugin_files
 
-        assert len(result) == 2
-        assert plugin_files[0] in result
+        if len(result) != EXPECTED_BULK_SIZE:
+
+            raise AssertionError(f"Expected {2}, got {len(result)}")
+        if plugin_files[0] not in result:
+            raise AssertionError(f"Expected {plugin_files[0]} in {result}")
         assert plugin_files[1] in result
 
     def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
@@ -208,7 +225,8 @@ class TestPluginDiscovery:
                 setattr(mock_plugin_class, method, Mock())
 
             result = discovery._validate_plugin_class(mock_plugin_class)
-            assert result is True
+            if not (result):
+                raise AssertionError(f"Expected True, got {result}")
 
     def test_validate_plugin_class_invalid(self, discovery: PluginDiscovery) -> None:
         """Test validating invalid plugin class."""
@@ -218,8 +236,8 @@ class TestPluginDiscovery:
 
         with patch("flext_plugin.core.discovery.issubclass", return_value=False):
             result = discovery._validate_plugin_class(mock_class)
-            assert result is False
-
+            if result:
+                raise AssertionError(f"Expected False, got {result}")\ n
     async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
         plugin_type = PluginType.TAP
@@ -227,7 +245,8 @@ class TestPluginDiscovery:
         # Mock the discover_all method to return empty results
         with patch.object(discovery, "discover_all", return_value={}):
             result = await discovery.discover_by_type(plugin_type)
-            assert result == {}
+            if result != {}:
+                raise AssertionError(f"Expected {{}}, got {result}")
 
     def test_register_plugin_manually(self, discovery: PluginDiscovery) -> None:
         """Test manually registering a plugin."""
@@ -245,7 +264,8 @@ class TestPluginDiscovery:
             # Plugin should be discoverable
             result = discovery.get_discovered_plugin("test-plugin")
             assert result is not None
-            assert result.metadata.name == "test-plugin"
+            if result.metadata.name != "test-plugin":
+                raise AssertionError(f"Expected {"test-plugin"}, got {result.metadata.name}")
 
     def test_plugin_directory_management(self, discovery: PluginDiscovery) -> None:
         """Test plugin directory management."""
@@ -256,9 +276,14 @@ class TestPluginDiscovery:
 
         # Add directory
         discovery.add_plugin_directory(test_dir)
-        assert len(discovery.plugin_directories) == initial_count + 1
-        assert test_dir in discovery.plugin_directories
+        if len(discovery.plugin_directories) != initial_count + 1:
+            raise AssertionError(f"Expected
+            {initial_count + 1}, got {len(discovery.plugin_directories)}")
+        if test_dir not in discovery.plugin_directories:
+            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
 
         # Adding same directory again should not increase count
         discovery.add_plugin_directory(test_dir)
-        assert len(discovery.plugin_directories) == initial_count + 1
+        if len(discovery.plugin_directories) != initial_count + 1:
+            raise AssertionError(f"Expected
+            {initial_count + 1}, got {len(discovery.plugin_directories)}")

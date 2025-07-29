@@ -49,7 +49,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             # This is a placeholder implementation
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to register plugin: {e}")
 
     def handle_unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -70,7 +70,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             # This is a placeholder implementation
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to unregister plugin: {e}")
 
 
@@ -92,7 +92,7 @@ class FlextPluginEventHandler(FlextEventHandler):
             # This is a placeholder implementation
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin loaded event: {e}")
 
     def handle_plugin_unloaded(self, plugin_name: str) -> FlextResult[bool]:
@@ -110,5 +110,5 @@ class FlextPluginEventHandler(FlextEventHandler):
             # This is a placeholder implementation
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin unloaded event: {e}")

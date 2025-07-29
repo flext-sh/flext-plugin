@@ -37,22 +37,30 @@ class TestPluginDiscoveryService:
             "get_plugin_manifest",
         }
         abstract_methods = PluginDiscoveryService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test discover_plugins signature
         sig = inspect.signature(PluginDiscoveryService.discover_plugins)
         params = list(sig.parameters.keys())
-        assert params == ["self", "search_paths"]
+        if params != ["self", "search_paths"]:
+            msg = f"Expected {["self", "search_paths"]}, got {params}"
+            raise AssertionError(msg)
         # Test validate_plugin_metadata signature
         sig = inspect.signature(PluginDiscoveryService.validate_plugin_metadata)
         params = list(sig.parameters.keys())
-        assert params == ["self", "metadata"]
+        if params != ["self", "metadata"]:
+            msg = f"Expected {["self", "metadata"]}, got {params}"
+            raise AssertionError(msg)
         # Test get_plugin_manifest signature
         sig = inspect.signature(PluginDiscoveryService.get_plugin_manifest)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin_path"]
+        if params != ["self", "plugin_path"]:
+            msg = f"Expected {["self", "plugin_path"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -77,18 +85,24 @@ class TestPluginValidationService:
             "validate_permissions",
         }
         abstract_methods = PluginValidationService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test validate_plugin signature
         sig = inspect.signature(PluginValidationService.validate_plugin)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
         # Test validate_configuration signature
         sig = inspect.signature(PluginValidationService.validate_configuration)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin", "config"]
+        if params != ["self", "plugin", "config"]:
+            msg = f"Expected {["self", "plugin", "config"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -116,18 +130,24 @@ class TestPluginLifecycleService:
             "unregister_plugin",
         }
         abstract_methods = PluginLifecycleService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test register_plugin signature
         sig = inspect.signature(PluginLifecycleService.register_plugin)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
         # Test load_plugin signature
         sig = inspect.signature(PluginLifecycleService.load_plugin)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -152,18 +172,24 @@ class TestPluginExecutionService:
             "get_execution_logs",
         }
         abstract_methods = PluginExecutionService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test execute_plugin signature
         sig = inspect.signature(PluginExecutionService.execute_plugin)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin", "input_data", "execution_context"]
+        if params != ["self", "plugin", "input_data", "execution_context"]:
+            msg = f"Expected {["self", "plugin", "input_data", "execution_context"]}, got {params}"
+            raise AssertionError(msg)
         # Test get_execution_status signature
         sig = inspect.signature(PluginExecutionService.get_execution_status)
         params = list(sig.parameters.keys())
-        assert params == ["self", "execution_id"]
+        if params != ["self", "execution_id"]:
+            msg = f"Expected {["self", "execution_id"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -189,18 +215,24 @@ class TestPluginRegistryService:
             "verify_plugin_signature",
         }
         abstract_methods = PluginRegistryService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test register_registry signature
         sig = inspect.signature(PluginRegistryService.register_registry)
         params = list(sig.parameters.keys())
-        assert params == ["self", "registry"]
+        if params != ["self", "registry"]:
+            msg = f"Expected {["self", "registry"]}, got {params}"
+            raise AssertionError(msg)
         # Test search_plugins signature
         sig = inspect.signature(PluginRegistryService.search_plugins)
         params = list(sig.parameters.keys())
-        assert params == ["self", "registry", "query"]
+        if params != ["self", "registry", "query"]:
+            msg = f"Expected {["self", "registry", "query"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -226,18 +258,24 @@ class TestPluginHotReloadService:
             "restore_plugin_state",
         }
         abstract_methods = PluginHotReloadService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test start_watching signature
         sig = inspect.signature(PluginHotReloadService.start_watching)
         params = list(sig.parameters.keys())
-        assert params == ["self", "watch_paths"]
+        if params != ["self", "watch_paths"]:
+            msg = f"Expected {["self", "watch_paths"]}, got {params}"
+            raise AssertionError(msg)
         # Test reload_plugin signature
         sig = inspect.signature(PluginHotReloadService.reload_plugin)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
@@ -262,18 +300,24 @@ class TestPluginSecurityService:
             "scan_for_vulnerabilities",
         }
         abstract_methods = PluginSecurityService.__abstractmethods__
-        assert expected_methods == abstract_methods
+        if expected_methods != abstract_methods:
+            msg = f"Expected {abstract_methods}, got {expected_methods}"
+            raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
         # Test create_sandbox signature
         sig = inspect.signature(PluginSecurityService.create_sandbox)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
         # Test scan_for_vulnerabilities signature
         sig = inspect.signature(PluginSecurityService.scan_for_vulnerabilities)
         params = list(sig.parameters.keys())
-        assert params == ["self", "plugin"]
+        if params != ["self", "plugin"]:
+            msg = f"Expected {["self", "plugin"]}, got {params}"
+            raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""

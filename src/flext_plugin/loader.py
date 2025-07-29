@@ -8,20 +8,20 @@ REFACTORED:
 from __future__ import annotations
 
 import importlib.util
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
-DomainBaseModel
+from flext_core import FlextEntity
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-class PluginLoader(DomainBaseModel):
+class PluginLoader(FlextEntity):
     """Simple plugin loader for development and hot reload."""
 
     security_enabled: bool = True
-    loaded_plugins: ClassVar[dict[str, Any]] = {}
-    plugin_modules: ClassVar[dict[str, Any]] = {}
+    loaded_plugins: ClassVar[dict[str, object]] = {}
+    plugin_modules: ClassVar[dict[str, object]] = {}
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
@@ -84,9 +84,12 @@ class PluginLoader(DomainBaseModel):
 
             msg = f"No plugin found in {file_path}"
             _handle_value_error(msg)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             msg = f"Failed to load plugin from {file_path}: {e}"
             _handle_import_error(msg)
+
+        # This should never be reached due to exceptions above, but needed for type safety
+        return None
 
     async def unload_plugin(self, plugin_name: str) -> None:
         """Unload plugin by name."""

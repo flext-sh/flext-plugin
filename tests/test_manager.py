@@ -1,5 +1,9 @@
 """Tests for flext_plugin.manager module.
 
+# Constants
+EXPECTED_BULK_SIZE = 2
+EXPECTED_DATA_COUNT = 3
+
 Comprehensive tests for plugin manager functionality.
 """
 
@@ -48,9 +52,11 @@ class TestSimplePluginRegistry:
         result = await registry.register_plugin(mock_plugin)
 
         assert result.success
-        assert result.data == mock_plugin
+        if result.data != mock_plugin:
+            raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
         assert registry.get_plugin("test-plugin") == mock_plugin
-        assert registry.get_plugin_count() == 1
+        if registry.get_plugin_count() != 1:
+            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
     async def test_register_plugin_failure(
         self,
@@ -65,8 +71,10 @@ class TestSimplePluginRegistry:
 
         assert not result.success
         assert result.error is not None
-        assert "registration failed" in result.error.lower()
-        assert registry.get_plugin_count() == 0
+        if "registration failed" not in result.error.lower():
+            raise AssertionError(f"Expected {"registration failed"} in {result.error.lower()}")
+        if registry.get_plugin_count() != 0:
+            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
     async def test_unregister_plugin(
         self,
@@ -76,15 +84,18 @@ class TestSimplePluginRegistry:
         """Test plugin unregistration."""
         # First register a plugin
         await registry.register_plugin(mock_plugin)
-        assert registry.get_plugin_count() == 1
+        if registry.get_plugin_count() != 1:
+            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            raise AssertionError(f"Expected True, got {result.data}")
         assert registry.get_plugin("test-plugin") is None
-        assert registry.get_plugin_count() == 0
+        if registry.get_plugin_count() != 0:
+            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
     async def test_unregister_nonexistent_plugin(
         self,
@@ -95,13 +106,15 @@ class TestSimplePluginRegistry:
 
         # Should still succeed (idempotent operation)
         assert result.success
-        assert result.data is True
+        if not (result.data):
+            raise AssertionError(f"Expected True, got {result.data}")
 
     def test_list_plugins(self, registry: SimplePluginRegistry) -> None:
         """Test listing plugins."""
         # Empty registry
         plugins = registry.list_plugins()
-        assert len(plugins) == 0
+        if len(plugins) != 0:
+            raise AssertionError(f"Expected {0}, got {len(plugins)}")
 
     def test_list_plugins_with_type_filter(
         self,
@@ -125,10 +138,12 @@ class TestSimplePluginRegistry:
 
         # Test filtering
         all_plugins = registry.list_plugins()
-        assert len(all_plugins) == 2
+        if len(all_plugins) != EXPECTED_BULK_SIZE:
+            raise AssertionError(f"Expected {2}, got {len(all_plugins)}")
 
         tap_plugins = registry.list_plugins(PluginType.TAP)
-        assert len(tap_plugins) == 1
+        if len(tap_plugins) != 1:
+            raise AssertionError(f"Expected {1}, got {len(tap_plugins)}")
         assert tap_plugins[0].name == "tap-plugin"
 
     async def test_cleanup_all(
@@ -138,10 +153,12 @@ class TestSimplePluginRegistry:
     ) -> None:
         """Test cleaning up all plugins."""
         await registry.register_plugin(mock_plugin)
-        assert registry.get_plugin_count() == 1
+        if registry.get_plugin_count() != 1:
+            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
         await registry.cleanup_all()
-        assert registry.get_plugin_count() == 0
+        if registry.get_plugin_count() != 0:
+            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
 
 class TestPluginConfiguration:
@@ -159,25 +176,36 @@ class TestPluginConfiguration:
             priority=50,
         )
 
-        assert config.plugin_id == "test-plugin"
-        assert config.enabled is True
-        assert config.configuration == {"key": "value"}
+        if config.plugin_id != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {config.plugin_id}")
+        if not (config.enabled):
+            raise AssertionError(f"Expected True, got {config.enabled}")
+        if config.configuration != {"key": "value"}:
+            raise AssertionError(f"Expected {{"key": "value"}}, got {config.configuration}")
         assert config.permissions == ["read", "write"]
-        assert config.auto_load is False
-        assert config.hot_reload is True
-        assert config.priority == 50
+        if config.auto_load:
+            raise AssertionError(f"Expected False, got {config.auto_load}")\ n        if not (config.hot_reload):
+            raise AssertionError(f"Expected True, got {config.hot_reload}")
+        if config.priority != 50:
+            raise AssertionError(f"Expected {50}, got {config.priority}")
 
     def test_configuration_defaults(self) -> None:
         """Test default configuration values."""
         config = PluginConfiguration(plugin_id="test-plugin")
 
-        assert config.plugin_id == "test-plugin"
-        assert config.enabled is True
-        assert config.configuration == {}
+        if config.plugin_id != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {config.plugin_id}")
+        if not (config.enabled):
+            raise AssertionError(f"Expected True, got {config.enabled}")
+        if config.configuration != {}:
+            raise AssertionError(f"Expected {{}}, got {config.configuration}")
         assert config.permissions == []
-        assert config.auto_load is True
-        assert config.hot_reload is False
-        assert config.priority == 100
+        if not (config.auto_load):
+            raise AssertionError(f"Expected True, got {config.auto_load}")
+        if config.hot_reload:
+            raise AssertionError(f"Expected False, got {config.hot_reload}")\ n        assert config.priority == 100
 
 
 class TestPluginExecutionContext:
@@ -193,11 +221,15 @@ class TestPluginExecutionContext:
             timeout_seconds=30,
         )
 
-        assert context.plugin_id == "test-plugin"
+        if context.plugin_id != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {context.plugin_id}")
         assert context.execution_id == "exec-123"
-        assert context.input_data == {"test": "data"}
+        if context.input_data != {"test": "data"}:
+            raise AssertionError(f"Expected {{"test": "data"}}, got {context.input_data}")
         assert context.context == {"env": "test"}
-        assert context.timeout_seconds == 30
+        if context.timeout_seconds != 30:
+            raise AssertionError(f"Expected {30}, got {context.timeout_seconds}")
 
     def test_execution_context_defaults(self) -> None:
         """Test default execution context values."""
@@ -206,9 +238,12 @@ class TestPluginExecutionContext:
             execution_id="exec-123",
         )
 
-        assert context.plugin_id == "test-plugin"
+        if context.plugin_id != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {context.plugin_id}")
         assert context.execution_id == "exec-123"
-        assert context.input_data == {}
+        if context.input_data != {}:
+            raise AssertionError(f"Expected {{}}, got {context.input_data}")
         assert context.context == {}
         assert context.timeout_seconds is None
 
@@ -227,11 +262,16 @@ class TestPluginManagerResult:
             errors=[],
         )
 
-        assert result.operation == "initialize"
-        assert result.success is True
-        assert result.plugins_affected == ["plugin1", "plugin2"]
+        if result.operation != "initialize":
+
+            raise AssertionError(f"Expected {"initialize"}, got {result.operation}")
+        if not (result.success):
+            raise AssertionError(f"Expected True, got {result.success}")
+        if result.plugins_affected != ["plugin1", "plugin2"]:
+            raise AssertionError(f"Expected {["plugin1", "plugin2"]}, got {result.plugins_affected}")
         assert result.execution_time_ms == 150.5
-        assert result.details == {"plugins_loaded": 2}
+        if result.details != {"plugins_loaded": 2}:
+            raise AssertionError(f"Expected {{"plugins_loaded": 2}}, got {result.details}")
         assert result.errors == []
 
     def test_manager_result_with_errors(self) -> None:
@@ -245,9 +285,11 @@ class TestPluginManagerResult:
             errors=["Plugin not found", "Invalid configuration"],
         )
 
-        assert result.operation == "load_plugins"
-        assert result.success is False
-        assert result.errors == ["Plugin not found", "Invalid configuration"]
+        if result.operation != "load_plugins":
+
+            raise AssertionError(f"Expected {"load_plugins"}, got {result.operation}")
+        if result.success:
+            raise AssertionError(f"Expected False, got {result.success}")\ n        assert result.errors == ["Plugin not found", "Invalid configuration"]
 
 
 class TestPluginManager:
@@ -267,7 +309,8 @@ class TestPluginManager:
         assert result.success
         assert manager.is_initialized
         assert isinstance(result.data, PluginManagerResult)
-        assert result.data.operation == "initialize"
+        if result.data.operation != "initialize":
+            raise AssertionError(f"Expected {"initialize"}, got {result.data.operation}")
 
     async def test_manager_initialization_with_auto_discover(self) -> None:
         """Test manager initialization with auto-discovery."""
@@ -306,7 +349,8 @@ class TestPluginManager:
             assert not result.success
             assert result.error is not None
         assert result.error is not None
-        assert "No plugins discovered" in result.error
+        if "No plugins discovered" not in result.error:
+            raise AssertionError(f"Expected {"No plugins discovered"} in {result.error}")
 
     async def test_execute_plugin_not_found(self, manager: PluginManager) -> None:
         """Test executing non-existent plugin."""
@@ -319,7 +363,8 @@ class TestPluginManager:
 
         assert not result.success
         assert result.error is not None
-        assert "not found" in result.error.lower()
+        if "not found" not in result.error.lower():
+            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
 
     async def test_configure_plugin_not_found(self, manager: PluginManager) -> None:
         """Test configuring non-existent plugin."""
@@ -330,7 +375,8 @@ class TestPluginManager:
 
         assert not result.success
         assert result.error is not None
-        assert "not found" in result.error.lower()
+        if "not found" not in result.error.lower():
+            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
 
     async def test_reload_plugin_not_configured(self, manager: PluginManager) -> None:
         """Test reloading plugin that doesn't exist."""
@@ -340,7 +386,8 @@ class TestPluginManager:
 
         assert not result.success
         assert result.error is not None
-        assert "not discovered" in result.error.lower()
+        if "not discovered" not in result.error.lower():
+            raise AssertionError(f"Expected {"not discovered"} in {result.error.lower()}")
 
     async def test_unload_plugin_not_found(self, manager: PluginManager) -> None:
         """Test unloading non-existent plugin."""
@@ -350,7 +397,8 @@ class TestPluginManager:
 
         assert not result.success
         assert result.error is not None
-        assert "plugin unload failed" in result.error.lower()
+        if "plugin unload failed" not in result.error.lower():
+            raise AssertionError(f"Expected {"plugin unload failed"} in {result.error.lower()}")
 
     async def test_integrate_with_protocols(self, manager: PluginManager) -> None:
         """Test protocol integration."""
@@ -364,17 +412,20 @@ class TestPluginManager:
     def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
         """Test getting status of non-existent plugin."""
         status = manager.get_plugin_status("non-existent")
-        assert status == {"status": "not_found"}
+        if status != {"status": "not_found"}:
+            raise AssertionError(f"Expected {{"status": "not_found"}}, got {status}")
 
     def test_list_plugins_empty(self, manager: PluginManager) -> None:
         """Test listing plugins when registry is empty."""
         plugins = manager.list_plugins()
-        assert plugins == []
+        if plugins != []:
+            raise AssertionError(f"Expected {[]}, got {plugins}")
 
     def test_list_plugins_enabled_only(self, manager: PluginManager) -> None:
         """Test listing only enabled plugins."""
         plugins = manager.list_plugins(enabled_only=True)
-        assert plugins == []
+        if plugins != []:
+            raise AssertionError(f"Expected {[]}, got {plugins}")
 
     async def test_cleanup(self, manager: PluginManager) -> None:
         """Test plugin manager cleanup."""
@@ -386,17 +437,22 @@ class TestPluginManager:
 
     def test_plugin_count_property(self, manager: PluginManager) -> None:
         """Test plugin count property."""
-        assert manager.plugin_count == 0
+        if manager.plugin_count != 0:
+            raise AssertionError(f"Expected {0}, got {manager.plugin_count}")
 
     async def test_create_plugin_context(self, manager: PluginManager) -> None:
         """Test creating plugin context."""
         context = await manager._create_plugin_context("test-plugin")
 
-        assert context.plugin_name == "test-plugin"
+        if context.plugin_name != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {context.plugin_name}")
         assert context.services == {}
-        assert context.dependencies == {}
+        if context.dependencies != {}:
+            raise AssertionError(f"Expected {{}}, got {context.dependencies}")
         assert context.permissions == ["read", "execute"]
-        assert context.security_level == "standard"
+        if context.security_level != "standard":
+            raise AssertionError(f"Expected {"standard"}, got {context.security_level}")
 
 
 class TestCreatePluginManager:
@@ -407,7 +463,8 @@ class TestCreatePluginManager:
         manager = create_plugin_manager()
 
         assert isinstance(manager, PluginManager)
-        assert manager.auto_discover is True
+        if not (manager.auto_discover):
+            raise AssertionError(f"Expected True, got {manager.auto_discover}")
         assert manager.security_enabled is True
 
     def test_create_plugin_manager_custom_settings(self) -> None:
@@ -419,5 +476,5 @@ class TestCreatePluginManager:
         )
 
         assert isinstance(manager, PluginManager)
-        assert manager.auto_discover is False
-        assert manager.security_enabled is False
+        if manager.auto_discover:
+            raise AssertionError(f"Expected False, got {manager.auto_discover}")\ n        assert manager.security_enabled is False

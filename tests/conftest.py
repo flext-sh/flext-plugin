@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -220,7 +221,6 @@ def plugin_validation_error() -> Exception:
 def mock_extractor_plugin() -> object:
     """Mock extractor plugin for testing."""
     # Create a mock base class since interfaces module doesn't exist
-    from abc import ABC, abstractmethod
 
     class ExtractorPlugin(ABC):
         @abstractmethod
@@ -245,7 +245,6 @@ def mock_extractor_plugin() -> object:
 def mock_loader_plugin() -> object:
     """Mock loader plugin for testing."""
     # Create a mock base class since interfaces module doesn't exist
-    from abc import ABC, abstractmethod
 
     class LoaderPlugin(ABC):
         @abstractmethod

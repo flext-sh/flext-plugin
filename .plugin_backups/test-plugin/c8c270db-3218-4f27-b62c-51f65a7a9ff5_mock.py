@@ -4,6 +4,10 @@
 # Backport for other versions of Python available from
 # https://pypi.org/project/mock
 
+# Constants
+EXPECTED_BULK_SIZE = 2
+EXPECTED_DATA_COUNT = 3
+
 __all__ = (
     "ANY",
     "DEFAULT",
@@ -975,7 +979,7 @@ class NonCallableMock(Base):
             sig = self._spec_signature
 
         if sig is not None:
-            if len(_call) == 2:
+            if len(_call) == EXPECTED_BULK_SIZE:
                 name = ""
                 args, kwargs = _call
             else:
@@ -1189,7 +1193,9 @@ class _AnyComparer(UserList):
 
     def __contains__(self, item) -> bool:
         for _call in self:
-            assert len(item) == len(_call)
+            if len(item) != len(_call):
+                msg = f"Expected {len(_call)}, got {len(item)}"
+                raise AssertionError(msg)
             if all(
                 expected == actual
                 for expected, actual in zip(item, _call, strict=False)
@@ -2734,9 +2740,9 @@ class _Call(tuple):
         args = ()
         kwargs = {}
         len_ = len(value)
-        if len_ == 3:
+        if len_ == EXPECTED_DATA_COUNT:
             name, args, kwargs = value
-        elif len_ == 2:
+        elif len_ == EXPECTED_BULK_SIZE:
             first, second = value
             if isinstance(first, str):
                 name = first
@@ -2779,7 +2785,7 @@ class _Call(tuple):
             return NotImplemented
 
         self_name = ""
-        if len(self) == 2:
+        if len(self) == EXPECTED_BULK_SIZE:
             self_args, self_kwargs = self
         else:
             self_name, self_args, self_kwargs = self
@@ -2794,7 +2800,7 @@ class _Call(tuple):
         other_name = ""
         if len_other == 0:
             other_args, other_kwargs = (), {}
-        elif len_other == 3:
+        elif len_other == EXPECTED_DATA_COUNT:
             other_name, other_args, other_kwargs = other
         elif len_other == 1:
             (value,) = other
@@ -2807,7 +2813,7 @@ class _Call(tuple):
             else:
                 other_args = ()
                 other_kwargs = value
-        elif len_other == 2:
+        elif len_other == EXPECTED_BULK_SIZE:
             # could be (name, args) or (name, kwargs) or (args, kwargs)
             first, second = other
             if isinstance(first, str):
@@ -2848,7 +2854,7 @@ class _Call(tuple):
         return tuple.__getattribute__(self, attr)
 
     def _get_call_arguments(self):
-        if len(self) == 2:
+        if len(self) == EXPECTED_BULK_SIZE:
             args, kwargs = self
         else:
             _name, args, kwargs = self
@@ -2870,7 +2876,7 @@ class _Call(tuple):
                 name = f"call{name}"
             return name
 
-        if len(self) == 2:
+        if len(self) == EXPECTED_BULK_SIZE:
             name = "call"
             args, kwargs = self
         else:

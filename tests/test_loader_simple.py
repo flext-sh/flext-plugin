@@ -3,6 +3,9 @@
 Tests for plugin loading functionality using actual implementation.
 """
 
+from flext_plugin.core.types import PluginError
+
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, Mock
@@ -38,12 +41,15 @@ class TestLoadedPluginSimple:
             config={"test": "config"},
         )
 
-        assert loaded.plugin_id == "test-plugin"
-        assert loaded.instance == mock_plugin_instance
-        assert loaded.metadata == mock_plugin_instance.metadata
-        assert loaded.config == {"test": "config"}
-        assert loaded.is_initialized is False
+        if loaded.plugin_id != "test-plugin":
 
+            raise AssertionError(f"Expected {"test-plugin"}, got {loaded.plugin_id}")
+        assert loaded.instance == mock_plugin_instance
+        if loaded.metadata != mock_plugin_instance.metadata:
+            raise AssertionError(f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}")
+        assert loaded.config == {"test": "config"}
+        if loaded.is_initialized:
+            raise AssertionError(f"Expected False, got {loaded.is_initialized}")\ n
     async def test_loaded_plugin_initialize(self, mock_plugin_instance: Mock) -> None:
         """Test LoadedPlugin initialization."""
         loaded = LoadedPlugin(
@@ -108,17 +114,21 @@ class TestPluginLoaderSimple:
         """Test plugin loader initialization with defaults."""
         loader = PluginLoader()
 
-        assert loader.security_enabled is True
+        if not (loader.security_enabled):
+
+            raise AssertionError(f"Expected True, got {loader.security_enabled}")
         assert hasattr(loader, "_loaded_plugins")
         assert isinstance(loader._loaded_plugins, dict)
-        assert len(loader._loaded_plugins) == 0
+        if len(loader._loaded_plugins) != 0:
+            raise AssertionError(f"Expected {0}, got {len(loader._loaded_plugins)}")
 
     def test_loader_initialization_custom(self) -> None:
         """Test plugin loader initialization with custom settings."""
         loader = PluginLoader(security_enabled=False)
 
-        assert loader.security_enabled is False
-        assert hasattr(loader, "_loaded_plugins")
+        if loader.security_enabled:
+
+            raise AssertionError(f"Expected False, got {loader.security_enabled}")\ n        assert hasattr(loader, "_loaded_plugins")
 
     def test_get_loaded_plugin_not_found(self, loader: PluginLoader) -> None:
         """Test getting loaded plugin that doesn't exist."""
@@ -127,21 +137,23 @@ class TestPluginLoaderSimple:
 
     def test_is_plugin_loaded_false(self, loader: PluginLoader) -> None:
         """Test checking if plugin is loaded when it's not."""
-        assert loader.is_loaded("non-existent") is False
-
+        if loader.is_loaded("non-existent"):
+            raise AssertionError(f"Expected False, got {loader.is_loaded("non-existent")}")\ n
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
         """Test getting all loaded plugins when none are loaded."""
         result = loader.get_all_loaded_plugins()
-        assert result == {}
+        if result != {}:
+            raise AssertionError(f"Expected {{}}, got {result}")
 
     async def test_unload_plugin_not_loaded(self, loader: PluginLoader) -> None:
         """Test unloading plugin that's not loaded."""
         # Should raise PluginError for not loaded plugin
-        from flext_plugin.core.types import PluginError
+
 
         with pytest.raises(PluginError) as exc_info:
             await loader.unload_plugin("non-existent")
-        assert "not loaded" in str(exc_info.value).lower()
+        if "not loaded" not in str(exc_info.value).lower():
+            raise AssertionError(f"Expected {"not loaded"} in {str(exc_info.value).lower()}")
 
     def test_loader_properties(self, loader: PluginLoader) -> None:
         """Test loader properties and attributes."""
@@ -170,10 +182,13 @@ class TestPluginLoaderSimple:
 
         # Should be able to retrieve it
         result = loader.get_loaded_plugin("test-plugin")
-        assert result == loaded_plugin
-        assert loader.is_loaded("test-plugin") is True
+        if result != loaded_plugin:
+            raise AssertionError(f"Expected {loaded_plugin}, got {result}")
+        if not (loader.is_loaded("test-plugin")):
+            raise AssertionError(f"Expected True, got {loader.is_loaded("test-plugin")}")
 
         # Should appear in all loaded plugins
         all_plugins = loader.get_all_loaded_plugins()
-        assert len(all_plugins) == 1
+        if len(all_plugins) != 1:
+            raise AssertionError(f"Expected {1}, got {len(all_plugins)}")
         assert all_plugins["test-plugin"] == loaded_plugin

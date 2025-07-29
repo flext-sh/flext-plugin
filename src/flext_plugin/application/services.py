@@ -90,7 +90,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.discovery_port.discover_plugins(path)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to discover plugins: {e}")
 
     def load_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
@@ -114,7 +114,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.loader_port.load_plugin(plugin)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to load plugin: {e}")
 
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -133,7 +133,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.loader_port.unload_plugin(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to unload plugin: {e}")
 
     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]:
@@ -152,7 +152,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.install_plugin(plugin_path)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to install plugin: {e}")
 
     def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -171,7 +171,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.uninstall_plugin(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to uninstall plugin: {e}")
 
     def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -190,7 +190,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.enable_plugin(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to enable plugin: {e}")
 
     def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -209,7 +209,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.disable_plugin(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to disable plugin: {e}")
 
     def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
@@ -228,7 +228,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.get_plugin_config(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to get plugin config: {e}")
 
     def update_plugin_config(
@@ -255,7 +255,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.manager_port.update_plugin_config(plugin_name, config)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to update plugin config: {e}")
 
     def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
@@ -274,7 +274,7 @@ class FlextPluginService(FlextDomainService):
 
             return self.loader_port.is_plugin_loaded(plugin_name)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to check plugin status: {e}")
 
 
@@ -329,7 +329,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
 
             return self.discovery_port.discover_plugins(directory_path)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to scan directory: {e}")
 
     def validate_plugin_integrity(self, plugin: FlextPlugin) -> FlextResult[bool]:
@@ -348,7 +348,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
 
             return self.discovery_port.validate_plugin(plugin)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to validate plugin: {e}")
 
 

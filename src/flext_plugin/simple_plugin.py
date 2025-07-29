@@ -22,7 +22,7 @@ class Plugin:
         try:
             self.active = True
             return FlextResult.ok(None)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Plugin activation failed: {e}")
 
     def deactivate(self) -> FlextResult[None]:
@@ -30,7 +30,7 @@ class Plugin:
         try:
             self.active = False
             return FlextResult.ok(None)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Plugin deactivation failed: {e}")
 
 
@@ -45,7 +45,7 @@ class PluginRegistry:
         try:
             self.plugins[plugin.name] = plugin
             return FlextResult.ok(None)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Plugin registration failed: {e}")
 
     def unregister(self, name: str) -> FlextResult[None]:
@@ -54,7 +54,7 @@ class PluginRegistry:
             if name in self.plugins:
                 del self.plugins[name]
             return FlextResult.ok(None)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Plugin unregistration failed: {e}")
 
     def get(self, name: str) -> Plugin | None:
@@ -77,7 +77,7 @@ def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plu
         return FlextResult.fail(f"Module import failed: {e}")
     except AttributeError as e:
         return FlextResult.fail(f"Plugin class not found: {e}")
-    except Exception as e:
+    except (RuntimeError, ValueError, TypeError) as e:
         return FlextResult.fail(f"Plugin loading failed: {e}")
 
 

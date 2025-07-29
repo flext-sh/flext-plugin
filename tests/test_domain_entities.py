@@ -1,5 +1,10 @@
 """Tests for flext_plugin.domain.entities module.
 
+# Constants
+EXPECTED_BULK_SIZE = 2
+EXPECTED_TOTAL_PAGES = 8
+EXPECTED_DATA_COUNT = 3
+
 Comprehensive tests for all domain entities and business logic.
 """
 
@@ -42,9 +47,12 @@ class TestPluginInstance:
             metadata=metadata,
         )
 
-        assert plugin.plugin_id == "test-id"
+        if plugin.plugin_id != "test-id":
+
+            raise AssertionError(f"Expected {"test-id"}, got {plugin.plugin_id}")
         assert plugin.metadata == metadata
-        assert plugin.plugin_status == PluginStatus.UNKNOWN.value
+        if plugin.plugin_status != PluginStatus.UNKNOWN.value:
+            raise AssertionError(f"Expected {PluginStatus.UNKNOWN.value}, got {plugin.plugin_status}")
 
     def test_plugin_status_transitions(self) -> None:
         """Test plugin status can be updated."""
@@ -56,10 +64,12 @@ class TestPluginInstance:
 
         # Test status can be changed
         plugin.plugin_status = PluginStatus.LOADED
-        assert plugin.plugin_status == PluginStatus.LOADED.value
+        if plugin.plugin_status != PluginStatus.LOADED.value:
+            raise AssertionError(f"Expected {PluginStatus.LOADED.value}, got {plugin.plugin_status}")
 
         plugin.plugin_status = PluginStatus.ACTIVE
-        assert plugin.plugin_status == PluginStatus.ACTIVE.value
+        if plugin.plugin_status != PluginStatus.ACTIVE.value:
+            raise AssertionError(f"Expected {PluginStatus.ACTIVE.value}, got {plugin.plugin_status}")
 
     def test_plugin_health_check(self) -> None:
         """Test plugin health status checking."""
@@ -71,12 +81,13 @@ class TestPluginInstance:
 
         # Test healthy status
         plugin.plugin_status = PluginStatus.HEALTHY
-        assert plugin.is_healthy is True
+        if not (plugin.is_healthy):
+            raise AssertionError(f"Expected True, got {plugin.is_healthy}")
 
         # Test non-healthy status
         plugin.plugin_status = PluginStatus.UNHEALTHY
-        assert plugin.is_healthy is False
-
+        if plugin.is_healthy:
+            raise AssertionError(f"Expected False, got {plugin.is_healthy}")\ n
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics."""
         metadata = self.create_test_metadata()
@@ -87,13 +98,15 @@ class TestPluginInstance:
 
         # Record successful execution
         plugin.record_execution(150.5, success=True)
-        assert plugin.execution_count == 1
+        if plugin.execution_count != 1:
+            raise AssertionError(f"Expected {1}, got {plugin.execution_count}")
         assert plugin.average_execution_time_ms == 150.5
         assert plugin.last_execution is not None
 
         # Record another execution
         plugin.record_execution(200.0, success=True)
-        assert plugin.execution_count == 2
+        if plugin.execution_count != EXPECTED_BULK_SIZE:
+            raise AssertionError(f"Expected {2}, got {plugin.execution_count}")
         assert plugin.average_execution_time_ms == 175.25  # (150.5 + 200.0) / 2
 
     def test_plugin_error_recording(self) -> None:
@@ -106,10 +119,12 @@ class TestPluginInstance:
 
         # Record error
         plugin.record_error("Test error message")
-        assert plugin.error_count == 1
+        if plugin.error_count != 1:
+            raise AssertionError(f"Expected {1}, got {plugin.error_count}")
         assert plugin.last_error == "Test error message"
         assert plugin.last_error_time is not None
-        assert plugin.plugin_status == PluginStatus.UNHEALTHY.value
+        if plugin.plugin_status != PluginStatus.UNHEALTHY.value:
+            raise AssertionError(f"Expected {PluginStatus.UNHEALTHY.value}, got {plugin.plugin_status}")
 
 
 class TestPluginConfiguration:
@@ -123,18 +138,25 @@ class TestPluginConfiguration:
             dependencies=["dep1", "dep2"],
         )
 
-        assert config.enabled is True
-        assert config.settings == {"key": "value"}
+        if not (config.enabled):
+
+            raise AssertionError(f"Expected True, got {config.enabled}")
+        if config.settings != {"key": "value"}:
+            raise AssertionError(f"Expected {{"key": "value"}}, got {config.settings}")
         assert config.dependencies == ["dep1", "dep2"]
 
     def test_configuration_defaults(self) -> None:
         """Test PluginConfiguration default values."""
         config = PluginConfiguration()
 
-        assert config.enabled is True
-        assert config.settings == {}
+        if not (config.enabled):
+
+            raise AssertionError(f"Expected True, got {config.enabled}")
+        if config.settings != {}:
+            raise AssertionError(f"Expected {{}}, got {config.settings}")
         assert config.dependencies == []
-        assert config.priority == 100
+        if config.priority != 100:
+            raise AssertionError(f"Expected {100}, got {config.priority}")
 
     def test_configuration_resource_limits(self) -> None:
         """Test configuration resource limits."""
@@ -144,9 +166,12 @@ class TestPluginConfiguration:
             timeout_seconds=300,
         )
 
-        assert config.max_memory_mb == 800
+        if config.max_memory_mb != 800:
+
+            raise AssertionError(f"Expected {800}, got {config.max_memory_mb}")
         assert config.max_cpu_percent == 75
-        assert config.timeout_seconds == 300
+        if config.timeout_seconds != 300:
+            raise AssertionError(f"Expected {300}, got {config.timeout_seconds}")
 
 
 class TestPluginExecution:
@@ -161,11 +186,15 @@ class TestPluginExecution:
             input_data={"test": "input"},
         )
 
-        assert execution.plugin_id == "test-plugin"
+        if execution.plugin_id != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {execution.plugin_id}")
         assert execution.execution_id == "exec-123"
-        assert execution.input_data == {"test": "input"}
+        if execution.input_data != {"test": "input"}:
+            raise AssertionError(f"Expected {{"test": "input"}}, got {execution.input_data}")
         assert execution.end_time is None
-        assert execution.output_data == {}
+        if execution.output_data != {}:
+            raise AssertionError(f"Expected {{}}, got {execution.output_data}")
         assert execution.error_message is None
 
     def test_execution_lifecycle(self) -> None:
@@ -177,15 +206,20 @@ class TestPluginExecution:
 
         # Test marking as started
         execution.mark_started()
-        assert execution.execution_status == "running"
-        assert execution.is_running is True
-        assert execution.is_completed is False
-
+        if execution.execution_status != "running":
+            raise AssertionError(f"Expected {"running"}, got {execution.execution_status}")
+        if not (execution.is_running):
+            raise AssertionError(f"Expected True, got {execution.is_running}")
+        if execution.is_completed:
+            raise AssertionError(f"Expected False, got {execution.is_completed}")\ n
         # Test marking as completed
         execution.mark_completed(success=True)
-        assert execution.success is True
-        assert execution.execution_status == "completed"
-        assert execution.is_completed is True
+        if not (execution.success):
+            raise AssertionError(f"Expected True, got {execution.success}")
+        if execution.execution_status != "completed":
+            raise AssertionError(f"Expected {"completed"}, got {execution.execution_status}")
+        if not (execution.is_completed):
+            raise AssertionError(f"Expected True, got {execution.is_completed}")
         # Note: duration_ms assertion removed to avoid mypy unreachable warning
 
     def test_execution_failure(self) -> None:
@@ -198,9 +232,11 @@ class TestPluginExecution:
         # Mark execution as failed
         execution.mark_completed(success=False, error_message="Plugin execution failed")
 
-        assert execution.success is False
-        assert execution.error_message == "Plugin execution failed"
-        assert execution.execution_status == "failed"
+        if execution.success:
+
+            raise AssertionError(f"Expected False, got {execution.success}")\ n        assert execution.error_message == "Plugin execution failed"
+        if execution.execution_status != "failed":
+            raise AssertionError(f"Expected {"failed"}, got {execution.execution_status}")
 
     def test_execution_resource_tracking(self) -> None:
         """Test execution resource usage tracking."""
@@ -211,7 +247,8 @@ class TestPluginExecution:
 
         # Update resource usage
         execution.update_resource_usage(memory_mb=256.5, cpu_time_ms=150.0)
-        assert execution.memory_usage_mb == 256.5
+        if execution.memory_usage_mb != 256.5:
+            raise AssertionError(f"Expected {256.5}, got {execution.memory_usage_mb}")
         assert execution.cpu_time_ms == 150.0
 
 
@@ -225,10 +262,14 @@ class TestPluginRegistryEntity:
             registry_url="https://plugins.example.com",
         )
 
-        assert registry.name == "test-registry"
+        if registry.name != "test-registry":
+
+            raise AssertionError(f"Expected {"test-registry"}, got {registry.name}")
         assert registry.registry_url == "https://plugins.example.com"
-        assert registry.is_enabled is True
-        assert registry.plugin_count == 0
+        if not (registry.is_enabled):
+            raise AssertionError(f"Expected True, got {registry.is_enabled}")
+        if registry.plugin_count != 0:
+            raise AssertionError(f"Expected {0}, got {registry.plugin_count}")
         assert registry.sync_error_count == 0
 
     def test_registry_availability(self) -> None:
@@ -239,7 +280,8 @@ class TestPluginRegistryEntity:
             registry_url="https://plugins.example.com",
             is_enabled=True,
         )
-        assert enabled_registry.is_available is True
+        if not (enabled_registry.is_available):
+            raise AssertionError(f"Expected True, got {enabled_registry.is_available}")
 
         # Disabled registry should not be available
         disabled_registry = PluginRegistry(
@@ -247,8 +289,8 @@ class TestPluginRegistryEntity:
             registry_url="https://plugins.example.com",
             is_enabled=False,
         )
-        assert disabled_registry.is_available is False
-
+        if disabled_registry.is_available:
+            raise AssertionError(f"Expected False, got {disabled_registry.is_available}")\ n
     def test_registry_sync_recording(self) -> None:
         """Test recording sync attempts."""
         registry = PluginRegistry(
@@ -258,13 +300,15 @@ class TestPluginRegistryEntity:
 
         # Record successful sync
         registry.record_sync(success=True, plugin_count=5)
-        assert registry.plugin_count == 5
+        if registry.plugin_count != 5:
+            raise AssertionError(f"Expected {5}, got {registry.plugin_count}")
         assert registry.sync_error_count == 0
         assert registry.last_sync is not None
 
         # Record failed sync
         registry.record_sync(success=False)
-        assert registry.sync_error_count == 1
+        if registry.sync_error_count != 1:
+            raise AssertionError(f"Expected {1}, got {registry.sync_error_count}")
         assert registry.plugin_count == 5  # Should remain the same
 
     def test_registry_authentication_settings(self) -> None:
@@ -276,8 +320,11 @@ class TestPluginRegistryEntity:
             api_key="secret-key",
         )
 
-        assert registry.requires_authentication is True
-        assert registry.api_key == "secret-key"
+        if not (registry.requires_authentication):
+
+            raise AssertionError(f"Expected True, got {registry.requires_authentication}")
+        if registry.api_key != "secret-key":
+            raise AssertionError(f"Expected {"secret-key"}, got {registry.api_key}")
 
     def test_registry_security_settings(self) -> None:
         """Test registry security configuration."""
@@ -288,8 +335,11 @@ class TestPluginRegistryEntity:
             trusted_publishers=["acme-corp", "trusted-dev"],
         )
 
-        assert registry.verify_signatures is True
-        assert "acme-corp" in registry.trusted_publishers
+        if not (registry.verify_signatures):
+
+            raise AssertionError(f"Expected True, got {registry.verify_signatures}")
+        if "acme-corp" not in registry.trusted_publishers:
+            raise AssertionError(f"Expected {"acme-corp"} in {registry.trusted_publishers}")
         assert "trusted-dev" in registry.trusted_publishers
 
 
@@ -306,11 +356,15 @@ class TestPluginMetadata:
             dependencies=["requests", "pydantic"],
         )
 
-        assert metadata.name == "test-plugin"
+        if metadata.name != "test-plugin":
+
+            raise AssertionError(f"Expected {"test-plugin"}, got {metadata.name}")
         assert metadata.entry_point == "test.entry:main"
-        assert metadata.plugin_type == PluginType.TAP.value
+        if metadata.plugin_type != PluginType.TAP.value:
+            raise AssertionError(f"Expected {PluginType.TAP.value}, got {metadata.plugin_type}")
         assert metadata.description == "Test extractor plugin"
-        assert "requests" in metadata.dependencies
+        if "requests" not in metadata.dependencies:
+            raise AssertionError(f"Expected {"requests"} in {metadata.dependencies}")
         assert "pydantic" in metadata.dependencies
 
     def test_metadata_defaults(self) -> None:
@@ -321,11 +375,14 @@ class TestPluginMetadata:
             plugin_type=PluginType.UTILITY,
         )
 
-        assert metadata.name == "minimal-plugin"
+        if metadata.name != "minimal-plugin":
+
+            raise AssertionError(f"Expected {"minimal-plugin"}, got {metadata.name}")
         assert metadata.description == ""
-        assert metadata.dependencies == []
-        assert metadata.trusted is False
-        assert metadata.homepage is None
+        if metadata.dependencies != []:
+            raise AssertionError(f"Expected {[]}, got {metadata.dependencies}")
+        if metadata.trusted:
+            raise AssertionError(f"Expected False, got {metadata.trusted}")\ n        assert metadata.homepage is None
         assert metadata.repository is None
 
     def test_metadata_validation(self) -> None:

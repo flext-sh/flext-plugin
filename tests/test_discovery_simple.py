@@ -35,8 +35,12 @@ class TestPluginDiscoverySimple:
 
         discovery.add_plugin_directory(test_dir)
 
-        assert len(discovery.plugin_directories) == initial_count + 1
-        assert test_dir in discovery.plugin_directories
+        if len(discovery.plugin_directories) != initial_count + 1:
+
+            raise AssertionError(f"Expected
+            {initial_count + 1}, got {len(discovery.plugin_directories)}")
+        if test_dir not in discovery.plugin_directories:
+            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
 
     def test_add_duplicate_plugin_directory(self, discovery: PluginDiscovery) -> None:
         """Test adding duplicate plugin directory."""
@@ -49,7 +53,8 @@ class TestPluginDiscoverySimple:
         discovery.add_plugin_directory(test_dir)
 
         # Should not increase count
-        assert len(discovery.plugin_directories) == initial_count
+        if len(discovery.plugin_directories) != initial_count:
+            raise AssertionError(f"Expected {initial_count}, got {len(discovery.plugin_directories)}")
 
     def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
         """Test blacklisting a plugin."""
@@ -73,7 +78,8 @@ class TestPluginDiscoverySimple:
             result = await discovery.discover_all()
 
             # Should return empty dict when no plugins found
-            assert result == {}
+            if result != {}:
+                raise AssertionError(f"Expected {{}}, got {result}")
 
     async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
@@ -82,7 +88,8 @@ class TestPluginDiscoverySimple:
         # Mock the discover_all method to return empty results
         with patch.object(discovery, "discover_all", return_value={}):
             result = await discovery.discover_by_type(plugin_type)
-            assert result == {}
+            if result != {}:
+                raise AssertionError(f"Expected {{}}, got {result}")
 
     def test_get_discovered_plugin_not_found(self, discovery: PluginDiscovery) -> None:
         """Test getting discovered plugin that doesn't exist."""
@@ -103,7 +110,8 @@ class TestPluginDiscoverySimple:
                 setattr(mock_plugin_class, method, Mock())
 
             result = discovery._validate_plugin_class(mock_plugin_class)
-            assert result is True
+            if not (result):
+                raise AssertionError(f"Expected True, got {result}")
 
     def test_validate_plugin_class_invalid_not_subclass(
         self,
@@ -115,8 +123,8 @@ class TestPluginDiscoverySimple:
 
         with patch("flext_plugin.core.discovery.issubclass", return_value=False):
             result = discovery._validate_plugin_class(mock_class)
-            assert result is False
-
+            if result:
+                raise AssertionError(f"Expected False, got {result}")\ n
     def test_validate_plugin_class_missing_metadata(
         self,
         discovery: PluginDiscovery,
@@ -139,8 +147,8 @@ class TestPluginDiscoverySimple:
             mock_hasattr.side_effect = hasattr_side_effect
 
             result = discovery._validate_plugin_class(mock_plugin_class)
-            assert result is False
-
+            if result:
+                raise AssertionError(f"Expected False, got {result}")\ n
     def test_register_plugin_manually(self, discovery: PluginDiscovery) -> None:
         """Test manually registering a plugin."""
         # Create mock plugin class
@@ -157,7 +165,8 @@ class TestPluginDiscoverySimple:
             # Plugin should be discoverable
             result = discovery.get_discovered_plugin("test-plugin")
             assert result is not None
-            assert result.metadata.name == "test-plugin"
+            if result.metadata.name != "test-plugin":
+                raise AssertionError(f"Expected {"test-plugin"}, got {result.metadata.name}")
 
     async def test_discover_entry_points_empty(
         self,

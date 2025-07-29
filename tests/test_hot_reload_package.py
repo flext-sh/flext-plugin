@@ -36,9 +36,14 @@ class TestPluginState:
             state_data={"key": "value"},
         )
 
-        assert state.plugin_id == "test-plugin"
+        if state.plugin_id != "test-plugin":
+
+            msg = f"Expected {"test-plugin"}, got {state.plugin_id}"
+            raise AssertionError(msg)
         assert state.plugin_version == "1.0.0"
-        assert state.state_data["key"] == "value"
+        if state.state_data["key"] != "value":
+            msg = f"Expected {"value"}, got {state.state_data["key"]}"
+            raise AssertionError(msg)
 
     def test_plugin_state_default_values(self) -> None:
         """Test plugin state with default values."""
@@ -47,7 +52,10 @@ class TestPluginState:
             plugin_version="0.1.0",
         )
 
-        assert state.state_data == {}
+        if state.state_data != {}:
+
+            msg = f"Expected {{}}, got {state.state_data}"
+            raise AssertionError(msg)
         assert state.metadata == {}
         assert state.saved_at is not None
 
@@ -63,9 +71,14 @@ class TestReloadEvent:
             plugin_path=Path("/test/plugin.py"),
         )
 
-        assert event.event_type == "file_changed"
+        if event.event_type != "file_changed":
+
+            msg = f"Expected {"file_changed"}, got {event.event_type}"
+            raise AssertionError(msg)
         assert event.plugin_id == "test-plugin"
-        assert event.plugin_path == Path("/test/plugin.py")
+        if event.plugin_path != Path("/test/plugin.py"):
+            msg = f"Expected {Path("/test/plugin.py")}, got {event.plugin_path}"
+            raise AssertionError(msg)
         assert not event.success  # Default value
         assert event.error is None
 
@@ -93,7 +106,9 @@ class TestPluginWatcher:
     ) -> None:
         """Test plugin watcher initialization."""
         expected_dir = temp_dir / "plugins"
-        assert expected_dir in watcher.watch_directories
+        if expected_dir not in watcher.watch_directories:
+            msg = f"Expected {expected_dir} in {watcher.watch_directories}"
+            raise AssertionError(msg)
 
     def test_watcher_properties(self, watcher: PluginWatcher) -> None:
         """Test watcher properties."""
@@ -126,8 +141,12 @@ class TestStateManager:
         temp_dir: Path,
     ) -> None:
         """Test state manager initialization."""
-        assert state_manager.state_directory == temp_dir / "states"
-        assert state_manager.enable_persistence is True
+        if state_manager.state_directory != temp_dir / "states":
+            msg = f"Expected {temp_dir / "states"}, got {state_manager.state_directory}"
+            raise AssertionError(msg)
+        if not (state_manager.enable_persistence):
+            msg = f"Expected True, got {state_manager.enable_persistence}"
+            raise AssertionError(msg)
 
     async def test_save_plugin_state_without_plugin(
         self,
@@ -144,7 +163,10 @@ class TestStateManager:
 
         state = await state_manager.save_plugin_state(mock_plugin)
 
-        assert state.plugin_id == "test-plugin"
+        if state.plugin_id != "test-plugin":
+
+            msg = f"Expected {"test-plugin"}, got {state.plugin_id}"
+            raise AssertionError(msg)
 
     async def test_create_snapshot(self, state_manager: StateManager) -> None:
         """Test creating state snapshot."""

@@ -195,7 +195,7 @@ def create_plugin_from_dict(plugin_data: dict[str, Any]) -> FlextPlugin:
             status=status,
         )
 
-    except Exception as e:
+    except (RuntimeError, ValueError, TypeError) as e:
         msg = f"Failed to create plugin from dictionary: {e}"
         raise ValueError(msg) from e
 

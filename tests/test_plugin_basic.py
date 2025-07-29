@@ -3,6 +3,15 @@
 Tests following flext-core patterns and standards.
 """
 
+from flext_plugin import PluginManager, PluginType
+from flext_core import FlextResult
+from flext_plugin.core.types import PluginType
+from flext_plugin import PluginManager
+from flext_plugin import PluginManager
+from flext_plugin import PluginManager
+from flext_plugin import PluginManager
+
+
 from __future__ import annotations
 
 import pytest
@@ -14,7 +23,7 @@ def test_flext_plugin_imports() -> None:
     This verifies that the core plugin components are available for import.
     """
     try:
-        from flext_plugin import PluginManager, PluginType
+
 
         assert PluginManager is not None
         assert PluginType is not None
@@ -30,28 +39,31 @@ def test_flext_core_dependencies() -> None:
     This verifies that flext-core types and patterns are accessible.
     """
     # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
-    from flext_core import FlextResult
+
 
     # Test FlextResult works
     result = FlextResult.ok({"test": "data"})
     assert result.success
-    assert result.data == {"test": "data"}
+    if result.data != {"test": "data"}:
+        raise AssertionError(f"Expected {{"test": "data"}}, got {result.data}")
 
 
 def test_plugin_type_enum() -> None:
     """Test PluginType enum from flext_plugin."""
-    from flext_plugin.core.types import PluginType
+
 
     # Test standard plugin types
-    assert PluginType.TAP.value == "tap"
+    if PluginType.TAP.value != "tap":
+        raise AssertionError(f"Expected {"tap"}, got {PluginType.TAP.value}")
     assert PluginType.TARGET.value == "target"
-    assert PluginType.TRANSFORM.value == "transform"
+    if PluginType.TRANSFORM.value != "transform":
+        raise AssertionError(f"Expected {"transform"}, got {PluginType.TRANSFORM.value}")
     assert PluginType.UTILITY.value == "utility"
 
 
 async def test_plugin_manager_basic() -> None:
     """Test PluginManager basic functionality."""
-    from flext_plugin import PluginManager
+
 
     manager = PluginManager()
     assert manager is not None
@@ -67,7 +79,7 @@ class TestFlextPluginIntegration:
 
     async def test_plugin_load_unload(self) -> None:
         """Test plugin load/unload functionality."""
-        from flext_plugin import PluginManager
+
 
         manager = PluginManager()
         await manager.initialize()
@@ -77,11 +89,12 @@ class TestFlextPluginIntegration:
 
         assert not result.success
         assert result.error is not None
-        assert "not found" in result.error.lower()
+        if "not found" not in result.error.lower():
+            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
 
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""
-        from flext_plugin import PluginManager
+
 
         manager = PluginManager()
 
@@ -91,7 +104,7 @@ class TestFlextPluginIntegration:
 
     def test_plugin_lifecycle(self) -> None:
         """Test basic plugin lifecycle operations."""
-        from flext_plugin import PluginManager
+
 
         manager = PluginManager()
 
