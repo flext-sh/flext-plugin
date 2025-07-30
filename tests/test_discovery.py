@@ -74,7 +74,7 @@ class TestPluginDiscovery:
     @patch(
         "builtins.open",
         new_callable=mock_open,
-        read_data='{"name": "test-plugin", "version": "1.0.0", "type": "tap"}',
+        read_data='{"name": "test-plugin", "version": "0.9.0", "type": "tap"}',
     )
     async def test_discover_plugins_with_metadata(
         self,

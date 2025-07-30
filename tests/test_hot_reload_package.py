@@ -32,7 +32,7 @@ class TestPluginState:
         """Test creating plugin state."""
         state = PluginState(
             plugin_id="test-plugin",
-            plugin_version="1.0.0",
+            plugin_version="0.9.0",
             state_data={"key": "value"},
         )
 
@@ -40,7 +40,7 @@ class TestPluginState:
 
             msg = f"Expected {"test-plugin"}, got {state.plugin_id}"
             raise AssertionError(msg)
-        assert state.plugin_version == "1.0.0"
+        assert state.plugin_version == "0.9.0"
         if state.state_data["key"] != "value":
             msg = f"Expected {"value"}, got {state.state_data["key"]}"
             raise AssertionError(msg)
@@ -156,7 +156,7 @@ class TestStateManager:
         # Create a mock plugin that has the required attributes
         mock_plugin = Mock()
         mock_plugin.metadata.name = "test-plugin"
-        mock_plugin.metadata.version = "1.0.0"
+        mock_plugin.metadata.version = "0.9.0"
         mock_plugin.metadata.plugin_type.value = "tap"
         mock_plugin.metadata.capabilities = ["read", "extract"]
         mock_plugin.get_state = AsyncMock(return_value={"key": "value"})
@@ -216,7 +216,7 @@ class TestRollbackManager:
         mock_plugin = Mock()
         mock_plugin.metadata = Mock()
         mock_plugin.metadata.name = "test-plugin"
-        mock_plugin.metadata.version = "1.0.0"
+        mock_plugin.metadata.version = "0.9.0"
 
         rollback_id = await rollback_manager.create_rollback_point(
             mock_plugin,

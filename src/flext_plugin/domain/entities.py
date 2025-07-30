@@ -26,7 +26,8 @@ class FlextPlugin(FlextEntity):
     description: str = Field(default="", description="Plugin description")
     author: str = Field(default="", description="Plugin author")
     status: PluginStatus = Field(
-        default=PluginStatus.INACTIVE, description="Plugin status",
+        default=PluginStatus.INACTIVE,
+        description="Plugin status",
     )
 
     def __init__(
@@ -36,7 +37,7 @@ class FlextPlugin(FlextEntity):
         name: str = "",
         version: str = "",
         config: dict[str, object] | None = None,
-        metadata: object = None,
+        metadata: object = None,  # noqa: ARG002
         **kwargs: object,  # Accept additional arguments for backward compatibility
     ) -> None:
         """Initialize plugin entity.
@@ -52,9 +53,7 @@ class FlextPlugin(FlextEntity):
 
         """
         # Generate ID if not provided
-        final_entity_id = (
-            entity_id or FlextGenerators.generate_entity_id()
-        )
+        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
 
         # Extract config values
         config = config or {}
@@ -149,7 +148,7 @@ class FlextPluginConfig(FlextEntity):
         *,
         plugin_name: str = "",
         config_data: dict[str, object] | None = None,
-        created_at: datetime | None = None,
+        created_at: datetime | None = None,  # noqa: ARG002
         updated_at: datetime | None = None,
     ) -> None:
         """Initialize plugin configuration entity.
@@ -265,7 +264,7 @@ class FlextPluginRegistry(FlextEntity):
         *,
         name: str = "",
         plugins: dict[str, FlextPlugin] | None = None,
-        created_at: datetime | None = None,
+        created_at: datetime | None = None,  # noqa: ARG002
     ) -> None:
         """Initialize plugin registry entity.
 

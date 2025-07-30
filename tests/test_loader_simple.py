@@ -23,7 +23,7 @@ class TestFlextPluginSimple:
         instance = Mock()
         instance.metadata = Mock()
         instance.metadata.name = "test-plugin"
-        instance.metadata.version = "1.0.0"
+        instance.metadata.version = "0.9.0"
         instance.initialize = AsyncMock()
         instance.cleanup = AsyncMock()
         instance._initialized = False
@@ -35,13 +35,13 @@ class TestFlextPluginSimple:
         """Test creating FlextPlugin."""
         loaded = FlextPlugin(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             config={"test": "config"},
         )
 
         if loaded.name != "test-plugin":
             raise AssertionError(f"Expected {'test-plugin'}, got {loaded.name}")
-        assert loaded.version == "1.0.0"
+        assert loaded.version == "0.9.0"
         if loaded.metadata != mock_plugin_instance.metadata:
             raise AssertionError(
                 f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}"
@@ -105,7 +105,7 @@ class TestPluginLoaderSimple:
         discovered = Mock()
         discovered.metadata = Mock()
         discovered.metadata.name = "test-plugin"
-        discovered.metadata.version = "1.0.0"
+        discovered.metadata.version = "0.9.0"
         discovered.plugin_class = Mock()
         discovered.source = "file"
         return discovered

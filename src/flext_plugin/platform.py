@@ -49,8 +49,6 @@ class FlextPluginPlatform:
     @property
     def plugin_service(self) -> FlextPluginService:
         """Get plugin management service."""
-        from flext_plugin.application.services import FlextPluginService
-
         result = self.container.get("plugin_service")
         if result.is_success and isinstance(result.data, FlextPluginService):
             return result.data
@@ -60,8 +58,6 @@ class FlextPluginPlatform:
     @property
     def discovery_service(self) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
-        from flext_plugin.application.services import FlextPluginDiscoveryService
-
         result = self.container.get("plugin_discovery_service")
         if result.is_success and isinstance(result.data, FlextPluginDiscoveryService):
             return result.data

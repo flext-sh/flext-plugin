@@ -59,7 +59,7 @@ def sample_plugin_data() -> dict[str, object]:
         "plugins": [
             {
                 "name": "test-plugin-1",
-                "version": "1.0.0",
+                "version": "0.9.0",
                 "description": "Test plugin for unit testing",
                 "type": "extractor",
                 "module": "test_plugin_1",
@@ -70,7 +70,7 @@ def sample_plugin_data() -> dict[str, object]:
             },
             {
                 "name": "test-plugin-2",
-                "version": "2.0.0",
+                "version": "0.9.0",
                 "description": "Another test plugin",
                 "type": "loader",
                 "module": "test_plugin_2",
@@ -106,7 +106,7 @@ def mock_plugin_manifest() -> dict[str, object]:
     """Mock plugin manifest for testing."""
     return {
         "name": "mock-plugin",
-        "version": "1.0.0",
+        "version": "0.9.0",
         "description": "Mock plugin for testing",
         "author": "Test Author",
         "license": "MIT",
@@ -121,7 +121,7 @@ def mock_plugin_manifest() -> dict[str, object]:
             "required": ["host"],
         },
         "dependencies": [],
-        "minimum_flext_version": "2.0.0",
+        "minimum_flext_version": "0.9.0",
     }
 
 

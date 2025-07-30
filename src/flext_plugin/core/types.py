@@ -70,7 +70,11 @@ class PluginError(FlextProcessingError):
     """Base exception for plugin-related errors."""
 
     def __init__(
-        self, message: str, plugin_name: str = "", plugin_id: str = "", **kwargs: object,
+        self,
+        message: str,
+        plugin_name: str = "",
+        plugin_id: str = "",
+        **kwargs: object,
     ) -> None:
         """Initialize plugin error.
 

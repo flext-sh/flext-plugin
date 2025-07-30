@@ -13,14 +13,14 @@ from typing import TYPE_CHECKING, ClassVar
 from flext_core import FlextContainer, FlextDomainService, FlextResult
 
 from flext_plugin.core.types import SimplePluginRegistry
+from flext_plugin.domain.ports import (
+    FlextPluginDiscoveryPort,
+    FlextPluginLoaderPort,
+    FlextPluginManagerPort,
+)
 
 if TYPE_CHECKING:
     from flext_plugin.domain.entities import FlextPlugin, FlextPluginConfig
-    from flext_plugin.domain.ports import (
-        FlextPluginDiscoveryPort,
-        FlextPluginLoaderPort,
-        FlextPluginManagerPort,
-    )
 
 
 class FlextPluginService(FlextDomainService):
@@ -61,8 +61,6 @@ class FlextPluginService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
-        from flext_plugin.domain.ports import FlextPluginDiscoveryPort
-
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
@@ -77,8 +75,6 @@ class FlextPluginService(FlextDomainService):
     @property
     def loader_port(self) -> FlextPluginLoaderPort:
         """Get plugin loader port."""
-        from flext_plugin.domain.ports import FlextPluginLoaderPort
-
         loader_port = getattr(self, "_loader_port", None)
         if loader_port is None:
             result = self.container.get("plugin_loader_port")
@@ -93,8 +89,6 @@ class FlextPluginService(FlextDomainService):
     @property
     def manager_port(self) -> FlextPluginManagerPort:
         """Get plugin manager port."""
-        from flext_plugin.domain.ports import FlextPluginManagerPort
-
         manager_port = getattr(self, "_manager_port", None)
         if manager_port is None:
             result = self.container.get("plugin_manager_port")
@@ -346,8 +340,6 @@ class FlextPluginDiscoveryService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
-        from flext_plugin.domain.ports import FlextPluginDiscoveryPort
-
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")

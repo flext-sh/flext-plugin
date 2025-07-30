@@ -6,7 +6,7 @@ patterns.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -32,34 +32,7 @@ VALIDATION_FAILURE = False
 OPERATION_SUCCESS = True
 OPERATION_FAILURE = False
 
-# Import the actual handler types for type annotations
-try:
-    from flext_plugin.application.handlers import (
-        PluginDiscoveryHandler,
-        PluginExecutionHandler,
-        PluginLifecycleHandler,
-        PluginRegistryHandler,
-        PluginValidationHandler,
-    )
-except ImportError:
-    # Fallback for type annotations only
-    from typing import TYPE_CHECKING
-
-    if TYPE_CHECKING:
-        from flext_plugin.application.handlers import (
-            PluginDiscoveryHandler,
-            PluginExecutionHandler,
-            PluginLifecycleHandler,
-            PluginRegistryHandler,
-            PluginValidationHandler,
-        )
-    else:
-        # Use Any for runtime when imports fail
-        PluginDiscoveryHandler = Any
-        PluginValidationHandler = Any
-        PluginLifecycleHandler = Any
-        PluginExecutionHandler = Any
-        PluginRegistryHandler = Any
+# Import handler types directly
 
 
 # Create concrete test implementations that don't inherit from abstract base
@@ -412,7 +385,7 @@ class TestPluginDiscoveryHandler:
         """Create mock plugin metadata."""
         return PluginMetadata(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             description="Test plugin",
             author="Test Author",
             license="MIT",
@@ -563,7 +536,7 @@ class TestPluginDiscoveryHandler:
     ) -> None:
         """Test successful plugin manifest retrieval."""
         plugin_path = "/test/plugins/manifest.json"
-        expected_manifest = {"name": "test-plugin", "version": "1.0.0"}
+        expected_manifest = {"name": "test-plugin", "version": "0.9.0"}
 
         mock_discovery_service.get_plugin_manifest.return_value = FlextResult.ok(
             expected_manifest,
@@ -643,7 +616,7 @@ class TestPluginValidationHandler:
         """Create mock plugin instance."""
         metadata = PluginMetadata(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             description="Test plugin",
             author="Test Author",
             license="MIT",
@@ -875,7 +848,7 @@ class TestPluginLifecycleHandler:
         """Create mock plugin instance."""
         metadata = PluginMetadata(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             description="Test plugin",
             author="Test Author",
             license="MIT",
@@ -1214,7 +1187,7 @@ class TestPluginExecutionHandler:
         """Create mock plugin instance."""
         metadata = PluginMetadata(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             description="Test plugin",
             author="Test Author",
             license="MIT",
@@ -1458,7 +1431,7 @@ class TestPluginRegistryHandler:
         """Create mock plugin metadata."""
         return PluginMetadata(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             description="Test plugin",
             author="Test Author",
             license="MIT",
