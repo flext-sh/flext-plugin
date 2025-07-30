@@ -18,7 +18,6 @@ def test_flext_plugin_imports() -> None:
     This verifies that the core plugin components are available for import.
     """
     try:
-
         assert PluginManager is not None
         assert PluginType is not None
     except ImportError:
@@ -47,10 +46,12 @@ def test_plugin_type_enum() -> None:
 
     # Test standard plugin types
     if PluginType.TAP.value != "tap":
-        raise AssertionError(f"Expected {"tap"}, got {PluginType.TAP.value}")
+        raise AssertionError(f"Expected {'tap'}, got {PluginType.TAP.value}")
     assert PluginType.TARGET.value == "target"
     if PluginType.TRANSFORM.value != "transform":
-        raise AssertionError(f"Expected {"transform"}, got {PluginType.TRANSFORM.value}")
+        raise AssertionError(
+            f"Expected {'transform'}, got {PluginType.TRANSFORM.value}"
+        )
     assert PluginType.UTILITY.value == "utility"
 
 
@@ -81,7 +82,7 @@ class TestFlextPluginIntegration:
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""

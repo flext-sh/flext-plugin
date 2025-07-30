@@ -17,7 +17,10 @@ class PluginDiscovery(FlextEntity):
     """Plugin discovery system to find and scan plugin files."""
 
     def __init__(
-        self, *, entity_id: str, plugin_directory: str = "/usr/local/plugins",
+        self,
+        *,
+        entity_id: str,
+        plugin_directory: str = "/usr/local/plugins",
     ) -> None:
         """Initialize plugin discovery system."""
         super().__init__(id=entity_id)
@@ -69,7 +72,8 @@ class PluginDiscovery(FlextEntity):
         if self._validate_plugin_class(plugin_class):
             # Create plugin instance directly from class
             plugin_name = getattr(plugin_class, "METADATA", {}).get(
-                "name", plugin_class.__name__,
+                "name",
+                plugin_class.__name__,
             )
             plugin_instance = plugin_class()
             self._discovered_plugins[plugin_name] = plugin_instance

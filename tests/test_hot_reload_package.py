@@ -37,12 +37,11 @@ class TestPluginState:
         )
 
         if state.plugin_id != "test-plugin":
-
-            msg = f"Expected {"test-plugin"}, got {state.plugin_id}"
+            msg = f"Expected {'test-plugin'}, got {state.plugin_id}"
             raise AssertionError(msg)
         assert state.plugin_version == "0.9.0"
         if state.state_data["key"] != "value":
-            msg = f"Expected {"value"}, got {state.state_data["key"]}"
+            msg = f"Expected {'value'}, got {state.state_data['key']}"
             raise AssertionError(msg)
 
     def test_plugin_state_default_values(self) -> None:
@@ -53,7 +52,6 @@ class TestPluginState:
         )
 
         if state.state_data != {}:
-
             msg = f"Expected {{}}, got {state.state_data}"
             raise AssertionError(msg)
         assert state.metadata == {}
@@ -72,12 +70,11 @@ class TestReloadEvent:
         )
 
         if event.event_type != "file_changed":
-
-            msg = f"Expected {"file_changed"}, got {event.event_type}"
+            msg = f"Expected {'file_changed'}, got {event.event_type}"
             raise AssertionError(msg)
         assert event.plugin_id == "test-plugin"
         if event.plugin_path != Path("/test/plugin.py"):
-            msg = f"Expected {Path("/test/plugin.py")}, got {event.plugin_path}"
+            msg = f"Expected {Path('/test/plugin.py')}, got {event.plugin_path}"
             raise AssertionError(msg)
         assert not event.success  # Default value
         assert event.error is None
@@ -142,7 +139,7 @@ class TestStateManager:
     ) -> None:
         """Test state manager initialization."""
         if state_manager.state_directory != temp_dir / "states":
-            msg = f"Expected {temp_dir / "states"}, got {state_manager.state_directory}"
+            msg = f"Expected {temp_dir / 'states'}, got {state_manager.state_directory}"
             raise AssertionError(msg)
         if not (state_manager.enable_persistence):
             msg = f"Expected True, got {state_manager.enable_persistence}"
@@ -164,8 +161,7 @@ class TestStateManager:
         state = await state_manager.save_plugin_state(mock_plugin)
 
         if state.plugin_id != "test-plugin":
-
-            msg = f"Expected {"test-plugin"}, got {state.plugin_id}"
+            msg = f"Expected {'test-plugin'}, got {state.plugin_id}"
             raise AssertionError(msg)
 
     async def test_create_snapshot(self, state_manager: StateManager) -> None:

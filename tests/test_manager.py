@@ -71,7 +71,9 @@ class TestSimplePluginRegistry:
         assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
-            raise AssertionError(f"Expected {"registration failed"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'registration failed'} in {result.error.lower()}"
+            )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
@@ -181,7 +183,9 @@ class TestFlextPluginConfig:
             raise AssertionError(f"Expected True, got {config.enabled}")
         expected_config = {"key": "value"}
         if config.configuration != expected_config:
-            raise AssertionError(f"Expected {expected_config}, got {config.configuration}")
+            raise AssertionError(
+                f"Expected {expected_config}, got {config.configuration}"
+            )
         assert config.permissions == ["read", "write"]
         if config.auto_load:
             raise AssertionError(f"Expected False, got {config.auto_load}")
@@ -195,8 +199,7 @@ class TestFlextPluginConfig:
         config = FlextPluginConfig(plugin_id="test-plugin")
 
         if config.plugin_id != "test-plugin":
-
-            raise AssertionError(f"Expected {"test-plugin"}, got {config.plugin_id}")
+            raise AssertionError(f"Expected {'test-plugin'}, got {config.plugin_id}")
         if not (config.enabled):
             raise AssertionError(f"Expected True, got {config.enabled}")
         if config.configuration != {}:
@@ -223,7 +226,6 @@ class TestPluginExecutionContext:
         )
 
         if context.plugin_id != "test-plugin":
-
             expected = "test-plugin"
             raise AssertionError(f"Expected {expected}, got {context.plugin_id}")
         assert context.execution_id == "exec-123"
@@ -242,7 +244,6 @@ class TestPluginExecutionContext:
         )
 
         if context.plugin_id != "test-plugin":
-
             expected = "test-plugin"
             raise AssertionError(f"Expected {expected}, got {context.plugin_id}")
         assert context.execution_id == "exec-123"
@@ -267,14 +268,15 @@ class TestFlextPluginManagerResult:
         )
 
         if result.operation != "initialize":
-
             expected = "initialize"
             raise AssertionError(f"Expected {expected}, got {result.operation}")
         if not (result.success):
             raise AssertionError(f"Expected True, got {result.success}")
         if result.plugins_affected != ["plugin1", "plugin2"]:
             expected_plugins = ["plugin1", "plugin2"]
-            raise AssertionError(f"Expected {expected_plugins}, got {result.plugins_affected}")
+            raise AssertionError(
+                f"Expected {expected_plugins}, got {result.plugins_affected}"
+            )
         assert result.execution_time_ms == 150.5
         if result.details != {"plugins_loaded": 2}:
             expected_details = {"plugins_loaded": 2}
@@ -293,8 +295,7 @@ class TestFlextPluginManagerResult:
         )
 
         if result.operation != "load_plugins":
-
-            raise AssertionError(f"Expected {"load_plugins"}, got {result.operation}")
+            raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
         if result.success:
             raise AssertionError(f"Expected False, got {result.success}")
         assert result.errors == ["Plugin not found", "Invalid configuration"]
@@ -318,7 +319,9 @@ class TestFlextPluginManager:
         assert manager.is_initialized
         assert isinstance(result.data, FlextPluginManagerResult)
         if result.data.operation != "initialize":
-            raise AssertionError(f"Expected {"initialize"}, got {result.data.operation}")
+            raise AssertionError(
+                f"Expected {'initialize'}, got {result.data.operation}"
+            )
 
     async def test_manager_initialization_with_auto_discover(self) -> None:
         """Test manager initialization with auto-discovery."""
@@ -358,7 +361,9 @@ class TestFlextPluginManager:
             assert result.error is not None
         assert result.error is not None
         if "No plugins discovered" not in result.error:
-            raise AssertionError(f"Expected {"No plugins discovered"} in {result.error}")
+            raise AssertionError(
+                f"Expected {'No plugins discovered'} in {result.error}"
+            )
 
     async def test_execute_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test executing non-existent plugin."""
@@ -372,9 +377,11 @@ class TestFlextPluginManager:
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
-    async def test_configure_plugin_not_found(self, manager: FlextPluginManager) -> None:
+    async def test_configure_plugin_not_found(
+        self, manager: FlextPluginManager
+    ) -> None:
         """Test configuring non-existent plugin."""
         await manager.initialize()
 
@@ -384,9 +391,11 @@ class TestFlextPluginManager:
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
-    async def test_reload_plugin_not_configured(self, manager: FlextPluginManager) -> None:
+    async def test_reload_plugin_not_configured(
+        self, manager: FlextPluginManager
+    ) -> None:
         """Test reloading plugin that doesn't exist."""
         await manager.initialize()
 
@@ -395,7 +404,9 @@ class TestFlextPluginManager:
         assert not result.success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
-            raise AssertionError(f"Expected {"not discovered"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'not discovered'} in {result.error.lower()}"
+            )
 
     async def test_unload_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test unloading non-existent plugin."""
@@ -406,7 +417,9 @@ class TestFlextPluginManager:
         assert not result.success
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
-            raise AssertionError(f"Expected {"plugin unload failed"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'plugin unload failed'} in {result.error.lower()}"
+            )
 
     async def test_integrate_with_protocols(self, manager: FlextPluginManager) -> None:
         """Test protocol integration."""
@@ -454,14 +467,13 @@ class TestFlextPluginManager:
         context = await manager._create_plugin_context("test-plugin")
 
         if context.plugin_name != "test-plugin":
-
-            raise AssertionError(f"Expected {"test-plugin"}, got {context.plugin_name}")
+            raise AssertionError(f"Expected {'test-plugin'}, got {context.plugin_name}")
         assert context.services == {}
         if context.dependencies != {}:
             raise AssertionError(f"Expected {{}}, got {context.dependencies}")
         assert context.permissions == ["read", "execute"]
         if context.security_level != "standard":
-            raise AssertionError(f"Expected {"standard"}, got {context.security_level}")
+            raise AssertionError(f"Expected {'standard'}, got {context.security_level}")
 
 
 class TestCreateFlextPluginManager:

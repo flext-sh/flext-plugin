@@ -36,12 +36,13 @@ class TestPluginDiscoverySimple:
         discovery.add_plugin_directory(test_dir)
 
         if len(discovery.plugin_directories) != initial_count + 1:
-
             expected_count = initial_count + 1
             actual_count = len(discovery.plugin_directories)
             raise AssertionError(f"Expected {expected_count}, got {actual_count}")
         if test_dir not in discovery.plugin_directories:
-            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
+            raise AssertionError(
+                f"Expected {test_dir} in {discovery.plugin_directories}"
+            )
 
     def test_add_duplicate_plugin_directory(self, discovery: PluginDiscovery) -> None:
         """Test adding duplicate plugin directory."""
@@ -55,7 +56,9 @@ class TestPluginDiscoverySimple:
 
         # Should not increase count
         if len(discovery.plugin_directories) != initial_count:
-            raise AssertionError(f"Expected {initial_count}, got {len(discovery.plugin_directories)}")
+            raise AssertionError(
+                f"Expected {initial_count}, got {len(discovery.plugin_directories)}"
+            )
 
     def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
         """Test blacklisting a plugin."""
@@ -169,7 +172,9 @@ class TestPluginDiscoverySimple:
             result = discovery.get_discovered_plugin("test-plugin")
             assert result is not None
             if result.metadata.name != "test-plugin":
-                raise AssertionError(f"Expected {"test-plugin"}, got {result.metadata.name}")
+                raise AssertionError(
+                    f"Expected {'test-plugin'}, got {result.metadata.name}"
+                )
 
     async def test_discover_entry_points_empty(
         self,

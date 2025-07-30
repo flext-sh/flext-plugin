@@ -39,7 +39,8 @@ class FlextPluginPlatform:
         # Register services in container
         # DRY SOLID pattern: Use container kwarg for service initialization
         self.container.register(
-            "plugin_service", FlextPluginService(container=self.container),
+            "plugin_service",
+            FlextPluginService(container=self.container),
         )
         self.container.register(
             "plugin_discovery_service",

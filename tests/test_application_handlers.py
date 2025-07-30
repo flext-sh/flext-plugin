@@ -344,7 +344,9 @@ class TestablePluginRegistryHandler:
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Sync handler failed: {e}")
 
-    async def search_plugins(self, registry: object, query: object) -> FlextResult[object]:
+    async def search_plugins(
+        self, registry: object, query: object
+    ) -> FlextResult[object]:
         """Search plugins in registry."""
         try:
             return await self.registry_service.search_plugins(registry, query)
@@ -402,7 +404,6 @@ class TestPluginDiscoveryHandler:
         )
 
         if handler.discovery_service != mock_discovery_service:
-
             msg = f"Expected {mock_discovery_service}, got {handler.discovery_service}"
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
@@ -465,7 +466,7 @@ class TestPluginDiscoveryHandler:
         assert result.error is not None
         assert result.error is not None
         if "Discovery handler failed: Service error" not in result.error:
-            msg = f"Expected {"Discovery handler failed: Service error"} in {result.error}"
+            msg = f"Expected {'Discovery handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_validate_plugin_metadata_success(
@@ -526,7 +527,7 @@ class TestPluginDiscoveryHandler:
         assert result.error is not None
         assert result.error is not None
         if "Validation handler failed: Validation error" not in result.error:
-            msg = f"Expected {"Validation handler failed: Validation error"} in {result.error}"
+            msg = f"Expected {'Validation handler failed: Validation error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_get_plugin_manifest_success(
@@ -588,7 +589,7 @@ class TestPluginDiscoveryHandler:
         assert result.error is not None
         assert result.error is not None
         if "Manifest handler failed: File read error" not in result.error:
-            msg = f"Expected {"Manifest handler failed: File read error"} in {result.error}"
+            msg = f"Expected {'Manifest handler failed: File read error'} in {result.error}"
             raise AssertionError(msg)
 
 
@@ -637,8 +638,9 @@ class TestPluginValidationHandler:
         )
 
         if handler.validation_service != mock_validation_service:
-
-            msg = f"Expected {mock_validation_service}, got {handler.validation_service}"
+            msg = (
+                f"Expected {mock_validation_service}, got {handler.validation_service}"
+            )
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
@@ -649,7 +651,9 @@ class TestPluginValidationHandler:
         mock_plugin_instance: PluginInstance,
     ) -> None:
         """Test successful plugin validation."""
-        mock_validation_service.validate_plugin.return_value = FlextResult.ok(VALIDATION_SUCCESS)
+        mock_validation_service.validate_plugin.return_value = FlextResult.ok(
+            VALIDATION_SUCCESS
+        )
 
         result = await handler.validate_plugin(mock_plugin_instance)
 
@@ -695,7 +699,7 @@ class TestPluginValidationHandler:
         assert result.error is not None
         assert result.error is not None
         if "Validation handler failed: Service error" not in result.error:
-            msg = f"Expected {"Validation handler failed: Service error"} in {result.error}"
+            msg = f"Expected {'Validation handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_validate_configuration_success(
@@ -759,7 +763,7 @@ class TestPluginValidationHandler:
         assert result.error is not None
         assert result.error is not None
         if "Configuration validation handler failed: Type error" not in result.error:
-            msg = f"Expected {"Configuration validation handler failed: Type error"} in {result.error}"
+            msg = f"Expected {'Configuration validation handler failed: Type error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_validate_dependencies_success(
@@ -869,7 +873,6 @@ class TestPluginLifecycleHandler:
         )
 
         if handler.lifecycle_service != mock_lifecycle_service:
-
             msg = f"Expected {mock_lifecycle_service}, got {handler.lifecycle_service}"
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
@@ -929,7 +932,7 @@ class TestPluginLifecycleHandler:
         assert result.error is not None
         assert result.error is not None
         if "Registration handler failed: Service error" not in result.error:
-            msg = f"Expected {"Registration handler failed: Service error"} in {result.error}"
+            msg = f"Expected {'Registration handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_load_plugin_success(
@@ -984,7 +987,9 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         if "Loading handler failed: Loading error" not in result.error:
-            msg = f"Expected {"Loading handler failed: Loading error"} in {result.error}"
+            msg = (
+                f"Expected {'Loading handler failed: Loading error'} in {result.error}"
+            )
             raise AssertionError(msg)
 
     async def test_initialize_plugin_success(
@@ -1042,7 +1047,7 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         if "Initialization handler failed: Type error" not in result.error:
-            msg = f"Expected {"Initialization handler failed: Type error"} in {result.error}"
+            msg = f"Expected {'Initialization handler failed: Type error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_activate_plugin_success(
@@ -1081,7 +1086,9 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         if "Activation handler failed: Value error" not in result.error:
-            msg = f"Expected {"Activation handler failed: Value error"} in {result.error}"
+            msg = (
+                f"Expected {'Activation handler failed: Value error'} in {result.error}"
+            )
             raise AssertionError(msg)
 
     async def test_suspend_plugin_success(
@@ -1122,7 +1129,7 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         if "Suspension handler failed: Attribute error" not in result.error:
-            msg = f"Expected {"Suspension handler failed: Attribute error"} in {result.error}"
+            msg = f"Expected {'Suspension handler failed: Attribute error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_unload_plugin_success(
@@ -1161,7 +1168,9 @@ class TestPluginLifecycleHandler:
         assert not result.success
         assert result.error is not None
         if "Unloading handler failed: Unload error" not in result.error:
-            msg = f"Expected {"Unloading handler failed: Unload error"} in {result.error}"
+            msg = (
+                f"Expected {'Unloading handler failed: Unload error'} in {result.error}"
+            )
             raise AssertionError(msg)
 
 
@@ -1216,7 +1225,6 @@ class TestPluginExecutionHandler:
         )
 
         if handler.execution_service != mock_execution_service:
-
             msg = f"Expected {mock_execution_service}, got {handler.execution_service}"
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
@@ -1315,7 +1323,7 @@ class TestPluginExecutionHandler:
         assert not result.success
         assert result.error is not None
         if "Execution handler failed: Service error" not in result.error:
-            msg = f"Expected {"Execution handler failed: Service error"} in {result.error}"
+            msg = f"Expected {'Execution handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     async def test_get_execution_status_success(
@@ -1369,7 +1377,9 @@ class TestPluginExecutionHandler:
         """Test successful execution cancellation."""
         execution_id = "exec-123"
 
-        mock_execution_service.cancel_execution.return_value = FlextResult.ok(OPERATION_SUCCESS)
+        mock_execution_service.cancel_execution.return_value = FlextResult.ok(
+            OPERATION_SUCCESS
+        )
 
         result = await handler.cancel_execution(execution_id)
 
@@ -1446,7 +1456,6 @@ class TestPluginRegistryHandler:
         handler = TestablePluginRegistryHandler(registry_service=mock_registry_service)
 
         if handler.registry_service != mock_registry_service:
-
             msg = f"Expected {mock_registry_service}, got {handler.registry_service}"
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
@@ -1498,7 +1507,9 @@ class TestPluginRegistryHandler:
         mock_plugin_registry: PluginRegistry,
     ) -> None:
         """Test successful registry synchronization."""
-        mock_registry_service.sync_registry.return_value = FlextResult.ok(OPERATION_SUCCESS)
+        mock_registry_service.sync_registry.return_value = FlextResult.ok(
+            OPERATION_SUCCESS
+        )
 
         result = await handler.sync_registry(mock_plugin_registry)
 

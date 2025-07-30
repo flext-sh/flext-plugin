@@ -37,8 +37,9 @@ class TestPluginDiscovery:
         discovery.add_plugin_directory(test_dir)
 
         if test_dir not in discovery.plugin_directories:
-
-            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
+            raise AssertionError(
+                f"Expected {test_dir} in {discovery.plugin_directories}"
+            )
 
     def test_add_multiple_plugin_directories(self, discovery: PluginDiscovery) -> None:
         """Test adding multiple plugin directories."""
@@ -49,7 +50,9 @@ class TestPluginDiscovery:
 
         for test_dir in test_dirs:
             if test_dir not in discovery.plugin_directories:
-                raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
+                raise AssertionError(
+                    f"Expected {test_dir} in {discovery.plugin_directories}"
+                )
 
     @patch("pathlib.Path.glob")
     @patch("pathlib.Path.exists")
@@ -66,7 +69,6 @@ class TestPluginDiscovery:
         result = await discovery.discover_all()
 
         if result != {}:
-
             raise AssertionError(f"Expected {{}}, got {result}")
 
     @patch("pathlib.Path.glob")
@@ -118,7 +120,6 @@ class TestPluginDiscovery:
         result = await discovery.discover_all()
 
         if result != {}:
-
             raise AssertionError(f"Expected {{}}, got {result}")
 
     async def test_discover_plugins_empty_result(
@@ -137,7 +138,6 @@ class TestPluginDiscovery:
             result = await discovery.discover_all()
 
             if result != {}:
-
                 raise AssertionError(f"Expected {{}}, got {result}")
             mock_entry_points.assert_called_once()
             mock_file_system.assert_called_once()
@@ -157,7 +157,6 @@ class TestPluginDiscovery:
             result = await discovery.discover_by_type(plugin_type)
 
             if result != {}:
-
                 raise AssertionError(f"Expected {{}}, got {result}")
             mock_entry_points.assert_called_once()
             mock_file_system.assert_called_once()
@@ -192,7 +191,6 @@ class TestPluginDiscovery:
         result = plugin_files
 
         if len(result) != EXPECTED_BULK_SIZE:
-
             raise AssertionError(f"Expected {2}, got {len(result)}")
         if plugin_files[0] not in result:
             raise AssertionError(f"Expected {plugin_files[0]} in {result}")
@@ -266,7 +264,9 @@ class TestPluginDiscovery:
             result = discovery.get_discovered_plugin("test-plugin")
             assert result is not None
             if result.metadata.name != "test-plugin":
-                raise AssertionError(f"Expected {"test-plugin"}, got {result.metadata.name}")
+                raise AssertionError(
+                    f"Expected {'test-plugin'}, got {result.metadata.name}"
+                )
 
     def test_plugin_directory_management(self, discovery: PluginDiscovery) -> None:
         """Test plugin directory management."""
@@ -282,7 +282,9 @@ class TestPluginDiscovery:
             actual_count = len(discovery.plugin_directories)
             raise AssertionError(f"Expected {expected_count}, got {actual_count}")
         if test_dir not in discovery.plugin_directories:
-            raise AssertionError(f"Expected {test_dir} in {discovery.plugin_directories}")
+            raise AssertionError(
+                f"Expected {test_dir} in {discovery.plugin_directories}"
+            )
 
         # Adding same directory again should not increase count
         discovery.add_plugin_directory(test_dir)

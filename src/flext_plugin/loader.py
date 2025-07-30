@@ -31,9 +31,7 @@ class PluginLoader(FlextEntity):
     ) -> None:
         """Initialize plugin loader."""
         # Generate ID if not provided for backward compatibility
-        final_entity_id = (
-            entity_id or FlextGenerators.generate_entity_id()
-        )
+        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
         super().__init__(id=final_entity_id)
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)

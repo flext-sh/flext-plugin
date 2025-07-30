@@ -89,7 +89,9 @@ class TestSimplePluginRegistryComprehensive:
 
         # Both should be retrievable
         if registry.get_plugin("test-plugin") != mock_plugin:
-            raise AssertionError(f"Expected {mock_plugin}, got {registry.get_plugin("test-plugin")}")
+            raise AssertionError(
+                f"Expected {mock_plugin}, got {registry.get_plugin('test-plugin')}"
+            )
         assert registry.get_plugin("test-plugin-2") == mock_plugin_2
 
     async def test_register_plugin_without_metadata(
@@ -105,7 +107,9 @@ class TestSimplePluginRegistryComprehensive:
         assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
-            raise AssertionError(f"Expected {"registration failed"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'registration failed'} in {result.error.lower()}"
+            )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
@@ -124,7 +128,9 @@ class TestSimplePluginRegistryComprehensive:
         assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
-            raise AssertionError(f"Expected {"registration failed"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'registration failed'} in {result.error.lower()}"
+            )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
@@ -191,7 +197,7 @@ class TestSimplePluginRegistryComprehensive:
         # Should return metadata objects
         plugin_names = [p.name for p in all_plugins]
         if "test-plugin" not in plugin_names:
-            raise AssertionError(f"Expected {"test-plugin"} in {plugin_names}")
+            raise AssertionError(f"Expected {'test-plugin'} in {plugin_names}")
         assert "test-plugin-2" in plugin_names
 
     def test_list_plugins_with_type_filter(
@@ -261,13 +267,14 @@ class TestPluginConfigurationComprehensive:
         )
 
         if config.plugin_id != "test-plugin":
-
             raise AssertionError(f"Expected 'test-plugin', got {config.plugin_id}")
         if not (config.enabled):
             raise AssertionError(f"Expected True, got {config.enabled}")
         if config.configuration != {"key": "value", "nested": {"item": 123}}:
             expected_config = {"key": "value", "nested": {"item": 123}}
-            raise AssertionError(f"Expected {expected_config}, got {config.configuration}")
+            raise AssertionError(
+                f"Expected {expected_config}, got {config.configuration}"
+            )
         assert config.permissions == ["read", "write", "execute"]
         if config.auto_load:
             raise AssertionError(f"Expected False, got {config.auto_load}")
@@ -281,7 +288,6 @@ class TestPluginConfigurationComprehensive:
         config = PluginConfiguration(plugin_id="test-plugin")
 
         if config.plugin_id != "test-plugin":
-
             raise AssertionError(f"Expected 'test-plugin', got {config.plugin_id}")
         if not (config.enabled):
             raise AssertionError(f"Expected True, got {config.enabled}")
@@ -305,15 +311,14 @@ class TestPluginConfigurationComprehensive:
         )
 
         if config.plugin_id != "edge-plugin":
-
-            raise AssertionError(f"Expected {"edge-plugin"}, got {config.plugin_id}")
+            raise AssertionError(f"Expected {'edge-plugin'}, got {config.plugin_id}")
         if config.enabled:
             raise AssertionError(f"Expected False, got {config.enabled}")
         assert config.configuration["empty"] == {}
         if config.configuration["zero"] != 0:
-            raise AssertionError(f"Expected {0}, got {config.configuration["zero"]}")
+            raise AssertionError(f"Expected {0}, got {config.configuration['zero']}")
         if config.configuration["false"]:
-            raise AssertionError(f"Expected False, got {config.configuration["false"]}")
+            raise AssertionError(f"Expected False, got {config.configuration['false']}")
         assert config.permissions == []
         if config.priority != 1:
             raise AssertionError(f"Expected {1}, got {config.priority}")
@@ -333,7 +338,6 @@ class TestPluginExecutionContextComprehensive:
         )
 
         if context.plugin_id != "test-plugin":
-
             raise AssertionError(f"Expected 'test-plugin', got {context.plugin_id}")
         assert context.execution_id == "exec-123"
         expected_input = {"data": "test", "items": [1, 2, 3]}
@@ -351,7 +355,6 @@ class TestPluginExecutionContextComprehensive:
         )
 
         if context.plugin_id != "test-plugin":
-
             raise AssertionError(f"Expected 'test-plugin', got {context.plugin_id}")
         assert context.execution_id == "exec-123"
         if context.input_data != {}:
@@ -370,8 +373,7 @@ class TestPluginExecutionContextComprehensive:
         )
 
         if context.plugin_id != "":
-
-            raise AssertionError(f"Expected {""}, got {context.plugin_id}")
+            raise AssertionError(f"Expected {''}, got {context.plugin_id}")
         assert context.execution_id == ""
         if context.input_data != {}:
             raise AssertionError(f"Expected {{}}, got {context.input_data}")
@@ -395,12 +397,13 @@ class TestPluginManagerResultComprehensive:
         )
 
         if result.operation != "initialize":
-
-            raise AssertionError(f"Expected {"initialize"}, got {result.operation}")
+            raise AssertionError(f"Expected {'initialize'}, got {result.operation}")
         if not (result.success):
             raise AssertionError(f"Expected True, got {result.success}")
         if result.plugins_affected != ["plugin1", "plugin2"]:
-            raise AssertionError(f"Expected {["plugin1", "plugin2"]}, got {result.plugins_affected}")
+            raise AssertionError(
+                f"Expected {['plugin1', 'plugin2']}, got {result.plugins_affected}"
+            )
         assert result.execution_time_ms == 150.5
         expected_details = {"plugins_loaded": 2, "config_applied": True}
         if result.details != expected_details:
@@ -419,8 +422,7 @@ class TestPluginManagerResultComprehensive:
         )
 
         if result.operation != "load_plugins":
-
-            raise AssertionError(f"Expected {"load_plugins"}, got {result.operation}")
+            raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
         if result.success:
             raise AssertionError(f"Expected False, got {result.success}")
         assert result.plugins_affected == []
@@ -430,7 +432,7 @@ class TestPluginManagerResultComprehensive:
         if len(result.errors) != 3:
             raise AssertionError(f"Expected {3}, got {len(result.errors)}")
         if "Plugin not found" not in result.errors:
-            raise AssertionError(f"Expected {"Plugin not found"} in {result.errors}")
+            raise AssertionError(f"Expected {'Plugin not found'} in {result.errors}")
 
     def test_manager_result_edge_values(self) -> None:
         """Test manager result with edge values."""
@@ -444,8 +446,7 @@ class TestPluginManagerResultComprehensive:
         )
 
         if result.operation != "":
-
-            raise AssertionError(f"Expected {""}, got {result.operation}")
+            raise AssertionError(f"Expected {''}, got {result.operation}")
         if result.success:
             raise AssertionError(f"Expected False, got {result.success}")
         assert result.plugins_affected == []
@@ -479,7 +480,9 @@ class TestPluginManagerComprehensive:
         assert manager.is_initialized
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
-            raise AssertionError(f"Expected {"initialize"}, got {result.data.operation}")
+            raise AssertionError(
+                f"Expected {'initialize'}, got {result.data.operation}"
+            )
         if not (result.data.success):
             raise AssertionError(f"Expected True, got {result.data.success}")
 
@@ -523,7 +526,9 @@ class TestPluginManagerComprehensive:
         assert manager.is_initialized
         expected_count = 0  # No plugins loaded
         if manager.plugin_count != expected_count:
-            raise AssertionError(f"Expected {expected_count}, got {manager.plugin_count}")
+            raise AssertionError(
+                f"Expected {expected_count}, got {manager.plugin_count}"
+            )
 
     async def test_discover_and_load_plugins_empty(
         self,
@@ -537,7 +542,9 @@ class TestPluginManagerComprehensive:
             assert not result.success
             assert result.error is not None
             if "No plugins discovered" not in result.error:
-                raise AssertionError(f"Expected {"No plugins discovered"} in {result.error}")
+                raise AssertionError(
+                    f"Expected {'No plugins discovered'} in {result.error}"
+                )
 
     async def test_execute_plugin_not_found(self, manager: PluginManager) -> None:
         """Test executing non-existent plugin."""
@@ -551,7 +558,7 @@ class TestPluginManagerComprehensive:
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
     async def test_configure_plugin_not_found(self, manager: PluginManager) -> None:
         """Test configuring non-existent plugin."""
@@ -563,7 +570,7 @@ class TestPluginManagerComprehensive:
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
     async def test_reload_plugin_not_configured(self, manager: PluginManager) -> None:
         """Test reloading plugin that doesn't exist."""
@@ -574,7 +581,9 @@ class TestPluginManagerComprehensive:
         assert not result.success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
-            raise AssertionError(f"Expected {"not discovered"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'not discovered'} in {result.error.lower()}"
+            )
 
     async def test_unload_plugin_not_found(self, manager: PluginManager) -> None:
         """Test unloading non-existent plugin."""
@@ -585,7 +594,9 @@ class TestPluginManagerComprehensive:
         assert not result.success
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
-            raise AssertionError(f"Expected {"plugin unload failed"} in {result.error.lower()}")
+            raise AssertionError(
+                f"Expected {'plugin unload failed'} in {result.error.lower()}"
+            )
 
     async def test_integrate_with_protocols(self, manager: PluginManager) -> None:
         """Test protocol integration."""
@@ -634,14 +645,13 @@ class TestPluginManagerComprehensive:
         context = await manager._create_plugin_context("test-plugin")
 
         if context.plugin_name != "test-plugin":
-
-            raise AssertionError(f"Expected {"test-plugin"}, got {context.plugin_name}")
+            raise AssertionError(f"Expected {'test-plugin'}, got {context.plugin_name}")
         assert context.services == {}
         if context.dependencies != {}:
             raise AssertionError(f"Expected {{}}, got {context.dependencies}")
         assert context.permissions == ["read", "execute"]
         if context.security_level != "standard":
-            raise AssertionError(f"Expected {"standard"}, got {context.security_level}")
+            raise AssertionError(f"Expected {'standard'}, got {context.security_level}")
 
 
 class TestCreatePluginManagerComprehensive:
