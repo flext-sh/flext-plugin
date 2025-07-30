@@ -70,11 +70,7 @@ class PluginError(FlextProcessingError):
     """Base exception for plugin-related errors."""
 
     def __init__(
-        self,
-        message: str,
-        plugin_name: str = "",
-        plugin_id: str = "",
-        **kwargs: object
+        self, message: str, plugin_name: str = "", plugin_id: str = "", **kwargs: object,
     ) -> None:
         """Initialize plugin error.
 
@@ -87,8 +83,8 @@ class PluginError(FlextProcessingError):
         """
         super().__init__(message, **kwargs)
         # Use plugin_id if provided, otherwise use plugin_name
-        self.plugin_name = plugin_id if plugin_id else plugin_name
-        self.plugin_id = plugin_id if plugin_id else plugin_name
+        self.plugin_name = plugin_id or plugin_name
+        self.plugin_id = plugin_id or plugin_name
 
 
 class PluginExecutionResult:
@@ -176,13 +172,13 @@ class PluginManagerResult:
     ) -> PluginManagerResult:
         """Create detailed plugin manager result from config dict."""
         result = cls(operation, success=bool(config.get("success")))
-        result.plugins_affected = config.get("plugins_affected", [])  # type: ignore[assignment]
+        result.plugins_affected = cast("list[str]", config.get("plugins_affected", []))
         execution_time = cast("float", config.get("execution_time_ms", 0.0))
         result.execution_time_ms = (
             float(execution_time) if execution_time is not None else 0.0
         )
-        result.details = config.get("details", {})  # type: ignore[assignment]
-        result.errors = config.get("errors", [])  # type: ignore[assignment]
+        result.details = cast("dict[str, object]", config.get("details", {}))
+        result.errors = cast("list[str]", config.get("errors", []))
         return result
 
 
@@ -227,13 +223,14 @@ class SimplePluginRegistry:
         """List plugins with optional type filter."""
         if plugin_type is None:
             return [
-                p.metadata for p in self._plugins.values()
-                if hasattr(p, "metadata")
+                p.metadata for p in self._plugins.values() if hasattr(p, "metadata")
             ]
 
         return [
-            p.metadata for p in self._plugins.values()
-            if hasattr(p, "metadata") and hasattr(p.metadata, "plugin_type")
+            p.metadata
+            for p in self._plugins.values()
+            if hasattr(p, "metadata")
+            and hasattr(p.metadata, "plugin_type")
             and p.metadata.plugin_type == plugin_type
         ]
 

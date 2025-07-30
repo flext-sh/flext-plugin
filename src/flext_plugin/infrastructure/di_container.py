@@ -60,9 +60,10 @@ def configure_flext_plugin_dependencies() -> None:
         container = get_flext_plugin_container()
 
         # Register actual plugin services and components
-        container.register("plugin_service", FlextPluginService(container))
+        container.register("plugin_service", FlextPluginService(container=container))
         container.register(
-            "plugin_discovery_service", FlextPluginDiscoveryService(container),
+            "plugin_discovery_service",
+            FlextPluginDiscoveryService(container=container),
         )
         container.register("plugin_loader", PluginLoader(entity_id="default_loader"))
         container.register(

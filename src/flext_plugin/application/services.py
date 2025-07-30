@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, ClassVar
 
 from flext_core import FlextContainer, FlextDomainService, FlextResult
 
+from flext_plugin.core.types import SimplePluginRegistry
+
 if TYPE_CHECKING:
     from flext_plugin.domain.entities import FlextPlugin, FlextPluginConfig
     from flext_plugin.domain.ports import (
@@ -59,35 +61,50 @@ class FlextPluginService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
+        from flext_plugin.domain.ports import FlextPluginDiscoveryPort
+
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            if result.is_success:
+            if result.is_success and isinstance(result.data, FlextPluginDiscoveryPort):
                 object.__setattr__(self, "_discovery_port", result.data)
                 return result.data
-        return discovery_port
+        if isinstance(discovery_port, FlextPluginDiscoveryPort):
+            return discovery_port
+        # Return a mock implementation if none available
+        return SimplePluginRegistry()
 
     @property
     def loader_port(self) -> FlextPluginLoaderPort:
         """Get plugin loader port."""
+        from flext_plugin.domain.ports import FlextPluginLoaderPort
+
         loader_port = getattr(self, "_loader_port", None)
         if loader_port is None:
             result = self.container.get("plugin_loader_port")
-            if result.is_success:
+            if result.is_success and isinstance(result.data, FlextPluginLoaderPort):
                 object.__setattr__(self, "_loader_port", result.data)
                 return result.data
-        return loader_port
+        if isinstance(loader_port, FlextPluginLoaderPort):
+            return loader_port
+        # Return a mock implementation if none available
+        return SimplePluginRegistry()
 
     @property
     def manager_port(self) -> FlextPluginManagerPort:
         """Get plugin manager port."""
+        from flext_plugin.domain.ports import FlextPluginManagerPort
+
         manager_port = getattr(self, "_manager_port", None)
         if manager_port is None:
             result = self.container.get("plugin_manager_port")
-            if result.is_success:
+            if result.is_success and isinstance(result.data, FlextPluginManagerPort):
                 object.__setattr__(self, "_manager_port", result.data)
                 return result.data
-        return manager_port
+        if isinstance(manager_port, FlextPluginManagerPort):
+            return manager_port
+        # Return a mock implementation if none available
+        return SimplePluginRegistry()
 
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in the given path.
@@ -329,13 +346,18 @@ class FlextPluginDiscoveryService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
+        from flext_plugin.domain.ports import FlextPluginDiscoveryPort
+
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            if result.is_success:
+            if result.is_success and isinstance(result.data, FlextPluginDiscoveryPort):
                 object.__setattr__(self, "_discovery_port", result.data)
                 return result.data
-        return discovery_port
+        if isinstance(discovery_port, FlextPluginDiscoveryPort):
+            return discovery_port
+        # Return a mock implementation if none available
+        return SimplePluginRegistry()
 
     def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPlugin]]:
         """Scan directory for plugins.

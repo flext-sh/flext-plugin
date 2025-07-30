@@ -11,12 +11,12 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
+from flext_plugin.core.types import PluginStatus
 from flext_plugin.domain.entities import (
     FlextPlugin,
     FlextPluginConfig,
     FlextPluginMetadata,
     FlextPluginRegistry,
-    PluginStatus,
 )
 
 
@@ -141,19 +141,21 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
 
     try:
         # Extract required fields with validation
-        name = plugin_data.get("name", "")
-        if not name:
+        name_obj = plugin_data.get("name", "")
+        if not name_obj:
             msg = "Plugin name is required"
             _handle_value_error(msg)
+        name = str(name_obj)
 
-        version = plugin_data.get("version", "")
-        if not version:
+        version_obj = plugin_data.get("version", "")
+        if not version_obj:
             msg = "Plugin version is required"
             _handle_value_error(msg)
+        version = str(version_obj)
 
         # Extract optional fields
-        description = plugin_data.get("description", "")
-        author = plugin_data.get("author", "")
+        description = str(plugin_data.get("description", ""))
+        author = str(plugin_data.get("author", ""))
         dependencies = plugin_data.get("dependencies", [])
         metadata = plugin_data.get("metadata", {})
 
@@ -167,11 +169,13 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
         return create_flext_plugin(
             name=name,
             version=version,
-            description=description,
-            author=author,
-            dependencies=dependencies,
-            metadata=metadata,
-            status=status,
+            config={
+                "description": description,
+                "author": author,
+                "dependencies": dependencies,
+                "metadata": metadata,
+                "status": status,
+            },
         )
 
     except (RuntimeError, ValueError, TypeError) as e:

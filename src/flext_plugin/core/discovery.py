@@ -49,7 +49,7 @@ class PluginDiscovery(FlextEntity):
         return {
             name: plugin
             for name, plugin in all_plugins.items()
-            if plugin.get("type") == plugin_type
+            if isinstance(plugin, dict) and plugin.get("type") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:
@@ -68,7 +68,9 @@ class PluginDiscovery(FlextEntity):
         """Manually register a plugin class."""
         if self._validate_plugin_class(plugin_class):
             # Create plugin instance directly from class
-            plugin_name = plugin_class.METADATA.name
+            plugin_name = getattr(plugin_class, "METADATA", {}).get(
+                "name", plugin_class.__name__,
+            )
             plugin_instance = plugin_class()
             self._discovered_plugins[plugin_name] = plugin_instance
 

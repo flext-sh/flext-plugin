@@ -19,14 +19,16 @@ from flext_plugin.core.types import PluginStatus
 
 class FlextPlugin(FlextEntity):
     """Plugin entity representing a plugin in the system."""
-    
+
     # Define Pydantic fields for proper type recognition
     name: str = Field(default="", description="Plugin name")
-    plugin_version: str = Field(default="", description="Plugin version") 
+    plugin_version: str = Field(default="", description="Plugin version")
     description: str = Field(default="", description="Plugin description")
     author: str = Field(default="", description="Plugin author")
-    status: PluginStatus = Field(default=PluginStatus.INACTIVE, description="Plugin status")
-    
+    status: PluginStatus = Field(
+        default=PluginStatus.INACTIVE, description="Plugin status",
+    )
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
@@ -51,15 +53,15 @@ class FlextPlugin(FlextEntity):
         """
         # Generate ID if not provided
         final_entity_id = (
-            entity_id if entity_id else FlextGenerators.generate_entity_id()
+            entity_id or FlextGenerators.generate_entity_id()
         )
-        
+
         # Extract config values
         config = config or {}
-        
+
         # Initialize FlextEntity base first
         super().__init__(id=final_entity_id)
-        
+
         # Set plugin-specific fields using object.__setattr__ for frozen models
         object.__setattr__(self, "name", kwargs.get("plugin_id", name))
         object.__setattr__(self, "plugin_version", version)
@@ -74,7 +76,7 @@ class FlextPlugin(FlextEntity):
         return self.name
 
     def get_version(self) -> str:
-        """Get plugin version (compatibility).""" 
+        """Get plugin version (compatibility)."""
         return self.plugin_version
 
     @property
@@ -161,7 +163,7 @@ class FlextPluginConfig(FlextEntity):
 
         """
         # FlextEntity expects keyword argument 'id'
-        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextGenerators.generate_entity_id()
         super().__init__(id=final_id)
         self.plugin_name = plugin_name
         self.config_data = config_data or {}
@@ -187,6 +189,17 @@ class FlextPluginConfig(FlextEntity):
         self.config_data.update(new_config)
         self.updated_at = datetime.now(UTC)
 
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin configuration entity.
+
+        Returns:
+            FlextResult indicating success or failure of validation
+
+        """
+        if not self.plugin_name:
+            return FlextResult.fail("Plugin name is required")
+        return FlextResult.ok(None)
+
 
 class FlextPluginMetadata(FlextEntity):
     """Plugin metadata entity containing additional plugin information."""
@@ -208,7 +221,7 @@ class FlextPluginMetadata(FlextEntity):
 
         """
         # FlextEntity expects keyword argument 'id'
-        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextGenerators.generate_entity_id()
         super().__init__(id=final_id)
         self.plugin_name = plugin_name
 
@@ -230,6 +243,17 @@ class FlextPluginMetadata(FlextEntity):
 
         """
         return bool(self.plugin_name)
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin metadata entity.
+
+        Returns:
+            FlextResult indicating success or failure of validation
+
+        """
+        if not self.plugin_name:
+            return FlextResult.fail("Plugin name is required")
+        return FlextResult.ok(None)
 
 
 class FlextPluginRegistry(FlextEntity):
@@ -253,7 +277,7 @@ class FlextPluginRegistry(FlextEntity):
 
         """
         # FlextEntity expects keyword argument 'id'
-        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextGenerators.generate_entity_id()
         super().__init__(id=final_id)
         self.name = name
         self.plugins = plugins or {}
@@ -319,6 +343,17 @@ class FlextPluginRegistry(FlextEntity):
         """
         return list(self.plugins.values())
 
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin registry entity.
+
+        Returns:
+            FlextResult indicating success or failure of validation
+
+        """
+        if not self.name:
+            return FlextResult.fail("Registry name is required")
+        return FlextResult.ok(None)
+
 
 # Additional domain entities
 class FlextPluginExecution(FlextEntity):
@@ -333,7 +368,7 @@ class FlextPluginExecution(FlextEntity):
     ) -> None:
         """Initialize plugin execution entity."""
         # FlextEntity expects keyword argument 'id'
-        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextGenerators.generate_entity_id()
         super().__init__(id=final_id)
         self.plugin_name = plugin_name
 
@@ -348,6 +383,17 @@ class FlextPluginExecution(FlextEntity):
     def is_valid(self) -> bool:
         """Validate plugin execution entity state."""
         return bool(self.plugin_name)
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin execution entity.
+
+        Returns:
+            FlextResult indicating success or failure of validation
+
+        """
+        if not self.plugin_name:
+            return FlextResult.fail("Plugin name is required")
+        return FlextResult.ok(None)
 
 
 # Backwards compatibility aliases

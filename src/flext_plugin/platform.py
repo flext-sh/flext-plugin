@@ -39,7 +39,7 @@ class FlextPluginPlatform:
         # Register services in container
         # DRY SOLID pattern: Use container kwarg for service initialization
         self.container.register(
-            "plugin_service", FlextPluginService(container=self.container)
+            "plugin_service", FlextPluginService(container=self.container),
         )
         self.container.register(
             "plugin_discovery_service",
@@ -49,8 +49,10 @@ class FlextPluginPlatform:
     @property
     def plugin_service(self) -> FlextPluginService:
         """Get plugin management service."""
+        from flext_plugin.application.services import FlextPluginService
+
         result = self.container.get("plugin_service")
-        if result.is_success:
+        if result.is_success and isinstance(result.data, FlextPluginService):
             return result.data
         msg = f"Failed to get plugin service: {result.error}"
         raise RuntimeError(msg)
@@ -58,8 +60,10 @@ class FlextPluginPlatform:
     @property
     def discovery_service(self) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
+        from flext_plugin.application.services import FlextPluginDiscoveryService
+
         result = self.container.get("plugin_discovery_service")
-        if result.is_success:
+        if result.is_success and isinstance(result.data, FlextPluginDiscoveryService):
             return result.data
         msg = f"Failed to get discovery service: {result.error}"
         raise RuntimeError(msg)
