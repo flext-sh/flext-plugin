@@ -12,20 +12,37 @@ from pathlib import Path
 from typing import ClassVar
 
 from flext_core import FlextEntity, FlextResult
+from flext_core.utilities import FlextGenerators
 
 
 class PluginLoader(FlextEntity):
     """Simple plugin loader for development and hot reload."""
 
-    security_enabled: bool = True
     loaded_plugins: ClassVar[dict[str, object]] = {}
     plugin_modules: ClassVar[dict[str, object]] = {}
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def __init__(self, *, entity_id: str) -> None:
+    def __init__(
+        self,
+        *,
+        entity_id: str = "",
+        security_enabled: bool = True
+    ) -> None:
         """Initialize plugin loader."""
-        super().__init__(id=entity_id)
+        # Generate ID if not provided for backward compatibility
+        final_entity_id = (
+            entity_id if entity_id else FlextGenerators.generate_entity_id()
+        )
+        super().__init__(id=final_entity_id)
+        # Store security setting as instance attribute (not Pydantic field)
+        object.__setattr__(self, "_security_enabled", security_enabled)
+        self._loaded_plugins: dict[str, object] = {}
+
+    @property
+    def security_enabled(self) -> bool:
+        """Get security enabled status."""
+        return getattr(self, "_security_enabled", True)
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
@@ -63,14 +80,17 @@ class PluginLoader(FlextEntity):
             if spec is None:
                 msg = f"Failed to create spec for {file_path}"
                 _handle_import_error(msg)
+                return FlextResult.fail(msg)  # Early return for type narrowing
+
             # Type narrowing: spec is not None after check
             if spec.loader is None:
                 msg = f"No loader available for {file_path}"
                 _handle_import_error(msg)
+                return FlextResult.fail(msg)  # Early return for type narrowing
 
             module = importlib.util.module_from_spec(spec)
-            if spec.loader:
-                spec.loader.exec_module(module)
+            # spec and spec.loader are guaranteed to be non-None here
+            spec.loader.exec_module(module)
 
             # Store module for hot reload
             self.plugin_modules[file_path.stem] = module
@@ -129,3 +149,38 @@ class PluginLoader(FlextEntity):
 
         self.loaded_plugins.clear()
         self.plugin_modules.clear()
+
+    def get_loaded_plugin(self, plugin_name: str) -> FlextResult[object]:
+        """Get a loaded plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to retrieve
+
+        Returns:
+            FlextResult containing the loaded plugin or error
+
+        """
+        if plugin_name in self._loaded_plugins:
+            return FlextResult.ok(self._loaded_plugins[plugin_name])
+        return FlextResult.fail(f"Plugin '{plugin_name}' not loaded")
+
+    def is_loaded(self, plugin_name: str) -> bool:
+        """Check if a plugin is loaded.
+
+        Args:
+            plugin_name: Name of the plugin to check
+
+        Returns:
+            True if plugin is loaded, False otherwise
+
+        """
+        return plugin_name in self._loaded_plugins
+
+    def get_all_loaded_plugins(self) -> FlextResult[dict[str, object]]:
+        """Get all loaded plugins.
+
+        Returns:
+            FlextResult containing dictionary of loaded plugins
+
+        """
+        return FlextResult.ok(self._loaded_plugins.copy())

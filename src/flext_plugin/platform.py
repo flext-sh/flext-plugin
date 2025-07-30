@@ -37,21 +37,32 @@ class FlextPluginPlatform:
     def _setup_services(self) -> None:
         """Setup platform services."""
         # Register services in container
-        self.container.register("plugin_service", FlextPluginService(self.container))
+        # DRY SOLID pattern: Use container kwarg for service initialization
+        self.container.register(
+            "plugin_service", FlextPluginService(container=self.container)
+        )
         self.container.register(
             "plugin_discovery_service",
-            FlextPluginDiscoveryService(self.container),
+            FlextPluginDiscoveryService(container=self.container),
         )
 
     @property
     def plugin_service(self) -> FlextPluginService:
         """Get plugin management service."""
-        return self.container.get("plugin_service")
+        result = self.container.get("plugin_service")
+        if result.is_success:
+            return result.data
+        msg = f"Failed to get plugin service: {result.error}"
+        raise RuntimeError(msg)
 
     @property
     def discovery_service(self) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
-        return self.container.get("plugin_discovery_service")
+        result = self.container.get("plugin_discovery_service")
+        if result.is_success:
+            return result.data
+        msg = f"Failed to get discovery service: {result.error}"
+        raise RuntimeError(msg)
 
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in the given path.

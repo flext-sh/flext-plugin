@@ -16,9 +16,10 @@ import pytest
 # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 from flext_core import FlextResult
 
+from flext_plugin import FlextPluginConfig, FlextPluginManager
 from flext_plugin.core.types import (
+    FlextPluginManagerResult,
     PluginExecutionContext,
-    PluginManagerResult,
     PluginType,
     SimplePluginRegistry,
     create_plugin_manager,
@@ -159,12 +160,12 @@ class TestSimplePluginRegistry:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
 
-class TestPluginConfiguration:
-    """Test PluginConfiguration model."""
+class TestFlextPluginConfig:
+    """Test FlextPluginConfig model."""
 
     def test_configuration_creation(self) -> None:
         """Test creating plugin configuration."""
-        config = PluginConfiguration(
+        config = FlextPluginConfig(
             plugin_id="test-plugin",
             enabled=True,
             configuration={"key": "value"},
@@ -191,7 +192,7 @@ class TestPluginConfiguration:
 
     def test_configuration_defaults(self) -> None:
         """Test default configuration values."""
-        config = PluginConfiguration(plugin_id="test-plugin")
+        config = FlextPluginConfig(plugin_id="test-plugin")
 
         if config.plugin_id != "test-plugin":
 
@@ -251,12 +252,12 @@ class TestPluginExecutionContext:
         assert context.timeout_seconds is None
 
 
-class TestPluginManagerResult:
-    """Test PluginManagerResult model."""
+class TestFlextPluginManagerResult:
+    """Test FlextPluginManagerResult model."""
 
     def test_manager_result_creation(self) -> None:
         """Test creating manager result."""
-        result = PluginManagerResult(
+        result = FlextPluginManagerResult(
             operation="initialize",
             success=True,
             plugins_affected=["plugin1", "plugin2"],
@@ -282,7 +283,7 @@ class TestPluginManagerResult:
 
     def test_manager_result_with_errors(self) -> None:
         """Test manager result with errors."""
-        result = PluginManagerResult(
+        result = FlextPluginManagerResult(
             operation="load_plugins",
             success=False,
             plugins_affected=[],
@@ -299,15 +300,15 @@ class TestPluginManagerResult:
         assert result.errors == ["Plugin not found", "Invalid configuration"]
 
 
-class TestPluginManager:
-    """Test PluginManager functionality."""
+class TestFlextPluginManager:
+    """Test FlextPluginManager functionality."""
 
     @pytest.fixture
-    def manager(self) -> PluginManager:
+    def manager(self) -> FlextPluginManager:
         """Create plugin manager for testing."""
-        return PluginManager(auto_discover=False, security_enabled=False)
+        return FlextPluginManager(auto_discover=False, security_enabled=False)
 
-    async def test_manager_initialization(self, manager: PluginManager) -> None:
+    async def test_manager_initialization(self, manager: FlextPluginManager) -> None:
         """Test plugin manager initialization."""
         assert not manager.is_initialized
 
@@ -315,18 +316,18 @@ class TestPluginManager:
 
         assert result.success
         assert manager.is_initialized
-        assert isinstance(result.data, PluginManagerResult)
+        assert isinstance(result.data, FlextPluginManagerResult)
         if result.data.operation != "initialize":
             raise AssertionError(f"Expected {"initialize"}, got {result.data.operation}")
 
     async def test_manager_initialization_with_auto_discover(self) -> None:
         """Test manager initialization with auto-discovery."""
-        manager = PluginManager(auto_discover=True, security_enabled=False)
+        manager = FlextPluginManager(auto_discover=True, security_enabled=False)
 
         # Mock the discovery method to avoid actual file system operations
         with patch.object(manager, "discover_and_load_plugins") as mock_discover:
             mock_discover.return_value = FlextResult.ok(
-                PluginManagerResult(
+                FlextPluginManagerResult(
                     operation="discover_and_load",
                     success=True,
                     plugins_affected=["test-plugin"],
@@ -344,7 +345,7 @@ class TestPluginManager:
 
     async def test_discover_and_load_plugins_empty(
         self,
-        manager: PluginManager,
+        manager: FlextPluginManager,
     ) -> None:
         """Test discovering plugins when none are available."""
         # Mock discovery to return empty results
@@ -359,7 +360,7 @@ class TestPluginManager:
         if "No plugins discovered" not in result.error:
             raise AssertionError(f"Expected {"No plugins discovered"} in {result.error}")
 
-    async def test_execute_plugin_not_found(self, manager: PluginManager) -> None:
+    async def test_execute_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test executing non-existent plugin."""
         await manager.initialize()
 
@@ -373,11 +374,11 @@ class TestPluginManager:
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
 
-    async def test_configure_plugin_not_found(self, manager: PluginManager) -> None:
+    async def test_configure_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test configuring non-existent plugin."""
         await manager.initialize()
 
-        config = PluginConfiguration(plugin_id="non-existent")
+        config = FlextPluginConfig(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
         assert not result.success
@@ -385,7 +386,7 @@ class TestPluginManager:
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {"not found"} in {result.error.lower()}")
 
-    async def test_reload_plugin_not_configured(self, manager: PluginManager) -> None:
+    async def test_reload_plugin_not_configured(self, manager: FlextPluginManager) -> None:
         """Test reloading plugin that doesn't exist."""
         await manager.initialize()
 
@@ -396,7 +397,7 @@ class TestPluginManager:
         if "not discovered" not in result.error.lower():
             raise AssertionError(f"Expected {"not discovered"} in {result.error.lower()}")
 
-    async def test_unload_plugin_not_found(self, manager: PluginManager) -> None:
+    async def test_unload_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test unloading non-existent plugin."""
         await manager.initialize()
 
@@ -407,7 +408,7 @@ class TestPluginManager:
         if "plugin unload failed" not in result.error.lower():
             raise AssertionError(f"Expected {"plugin unload failed"} in {result.error.lower()}")
 
-    async def test_integrate_with_protocols(self, manager: PluginManager) -> None:
+    async def test_integrate_with_protocols(self, manager: FlextPluginManager) -> None:
         """Test protocol integration."""
         await manager.initialize()
 
@@ -416,26 +417,26 @@ class TestPluginManager:
         # Should succeed as it's currently a placeholder
         assert result.success
 
-    def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
+    def test_get_plugin_status_not_found(self, manager: FlextPluginManager) -> None:
         """Test getting status of non-existent plugin."""
         status = manager.get_plugin_status("non-existent")
         if status != {"status": "not_found"}:
             expected_status = {"status": "not_found"}
             raise AssertionError(f"Expected {expected_status}, got {status}")
 
-    def test_list_plugins_empty(self, manager: PluginManager) -> None:
+    def test_list_plugins_empty(self, manager: FlextPluginManager) -> None:
         """Test listing plugins when registry is empty."""
         plugins = manager.list_plugins()
         if plugins != []:
             raise AssertionError(f"Expected {[]}, got {plugins}")
 
-    def test_list_plugins_enabled_only(self, manager: PluginManager) -> None:
+    def test_list_plugins_enabled_only(self, manager: FlextPluginManager) -> None:
         """Test listing only enabled plugins."""
         plugins = manager.list_plugins(enabled_only=True)
         if plugins != []:
             raise AssertionError(f"Expected {[]}, got {plugins}")
 
-    async def test_cleanup(self, manager: PluginManager) -> None:
+    async def test_cleanup(self, manager: FlextPluginManager) -> None:
         """Test plugin manager cleanup."""
         await manager.initialize()
         assert manager.is_initialized
@@ -443,12 +444,12 @@ class TestPluginManager:
         await manager.cleanup()
         assert not manager.is_initialized
 
-    def test_plugin_count_property(self, manager: PluginManager) -> None:
+    def test_plugin_count_property(self, manager: FlextPluginManager) -> None:
         """Test plugin count property."""
         if manager.plugin_count != 0:
             raise AssertionError(f"Expected {0}, got {manager.plugin_count}")
 
-    async def test_create_plugin_context(self, manager: PluginManager) -> None:
+    async def test_create_plugin_context(self, manager: FlextPluginManager) -> None:
         """Test creating plugin context."""
         context = await manager._create_plugin_context("test-plugin")
 
@@ -463,14 +464,14 @@ class TestPluginManager:
             raise AssertionError(f"Expected {"standard"}, got {context.security_level}")
 
 
-class TestCreatePluginManager:
+class TestCreateFlextPluginManager:
     """Test plugin manager factory function."""
 
     def test_create_plugin_manager_defaults(self) -> None:
         """Test creating plugin manager with defaults."""
         manager = create_plugin_manager()
 
-        assert isinstance(manager, PluginManager)
+        assert isinstance(manager, FlextPluginManager)
         if not (manager.auto_discover):
             raise AssertionError(f"Expected True, got {manager.auto_discover}")
         assert manager.security_enabled is True
@@ -483,7 +484,7 @@ class TestCreatePluginManager:
             security_enabled=False,
         )
 
-        assert isinstance(manager, PluginManager)
+        assert isinstance(manager, FlextPluginManager)
         if manager.auto_discover:
             raise AssertionError(f"Expected False, got {manager.auto_discover}")
         assert manager.security_enabled is False

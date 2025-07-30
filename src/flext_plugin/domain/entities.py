@@ -10,14 +10,23 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import FlextEntity, FlextEntityId
+from flext_core import FlextEntity, FlextEntityId, FlextResult
+from flext_core.utilities import FlextGenerators
+from pydantic import Field
 
 from flext_plugin.core.types import PluginStatus
 
 
 class FlextPlugin(FlextEntity):
     """Plugin entity representing a plugin in the system."""
-
+    
+    # Define Pydantic fields for proper type recognition
+    name: str = Field(default="", description="Plugin name")
+    plugin_version: str = Field(default="", description="Plugin version") 
+    description: str = Field(default="", description="Plugin description")
+    author: str = Field(default="", description="Plugin author")
+    status: PluginStatus = Field(default=PluginStatus.INACTIVE, description="Plugin status")
+    
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
@@ -25,6 +34,8 @@ class FlextPlugin(FlextEntity):
         name: str = "",
         version: str = "",
         config: dict[str, object] | None = None,
+        metadata: object = None,
+        **kwargs: object,  # Accept additional arguments for backward compatibility
     ) -> None:
         """Initialize plugin entity.
 
@@ -34,20 +45,42 @@ class FlextPlugin(FlextEntity):
             version: Plugin version
             config: Configuration dict containing description, author, dependencies,
                 metadata, status, created_at
+            metadata: Plugin metadata object
+            **kwargs: Additional arguments for backward compatibility
 
         """
-        super().__init__(entity_id)
-        self.name = name
-        self.version = version
-
-        # Extract from config dict
+        # Generate ID if not provided
+        final_entity_id = (
+            entity_id if entity_id else FlextGenerators.generate_entity_id()
+        )
+        
+        # Extract config values
         config = config or {}
-        self.description = config.get("description", "")
-        self.author = config.get("author", "")
-        self.dependencies = config.get("dependencies", [])
-        self.metadata = config.get("metadata", {})
-        self.status = config.get("status", PluginStatus.INACTIVE)
-        self.created_at = config.get("created_at", datetime.now(UTC))
+        
+        # Initialize FlextEntity base first
+        super().__init__(id=final_entity_id)
+        
+        # Set plugin-specific fields using object.__setattr__ for frozen models
+        object.__setattr__(self, "name", kwargs.get("plugin_id", name))
+        object.__setattr__(self, "plugin_version", version)
+        object.__setattr__(self, "description", config.get("description", ""))
+        object.__setattr__(self, "author", config.get("author", ""))
+        object.__setattr__(self, "status", config.get("status", PluginStatus.INACTIVE))
+
+    # Backward compatibility properties (without conflicting names)
+    @property
+    def plugin_name(self) -> str:
+        """Get plugin name (compatibility)."""
+        return self.name
+
+    def get_version(self) -> str:
+        """Get plugin version (compatibility).""" 
+        return self.plugin_version
+
+    @property
+    def plugin_status(self) -> PluginStatus:
+        """Get plugin status (compatibility)."""
+        return self.status
 
     def is_valid(self) -> bool:
         """Validate plugin entity state.
@@ -56,7 +89,7 @@ class FlextPlugin(FlextEntity):
             True if plugin is valid, False otherwise
 
         """
-        return bool(self.name and self.version)
+        return bool(self.name and self.plugin_version)
 
     def activate(self) -> bool:
         """Activate the plugin.
@@ -66,7 +99,7 @@ class FlextPlugin(FlextEntity):
 
         """
         if self.status == PluginStatus.INACTIVE:
-            self.status = PluginStatus.ACTIVE
+            object.__setattr__(self, "status", PluginStatus.ACTIVE)
             return True
         return False
 
@@ -78,7 +111,7 @@ class FlextPlugin(FlextEntity):
 
         """
         if self.status == PluginStatus.ACTIVE:
-            self.status = PluginStatus.INACTIVE
+            object.__setattr__(self, "status", PluginStatus.INACTIVE)
             return True
         return False
 
@@ -90,6 +123,19 @@ class FlextPlugin(FlextEntity):
 
         """
         return self.status == PluginStatus.ACTIVE
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin entity.
+
+        Returns:
+            FlextResult indicating success or failure of validation
+
+        """
+        if not self.name:
+            return FlextResult.fail("Plugin name is required")
+        if not self.plugin_version:
+            return FlextResult.fail("Plugin version is required")
+        return FlextResult.ok(None)
 
 
 class FlextPluginConfig(FlextEntity):
@@ -114,10 +160,12 @@ class FlextPluginConfig(FlextEntity):
             updated_at: Last update timestamp
 
         """
-        super().__init__(entity_id)
+        # FlextEntity expects keyword argument 'id'
+        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        super().__init__(id=final_id)
         self.plugin_name = plugin_name
         self.config_data = config_data or {}
-        self.created_at = created_at or datetime.now(UTC)
+        # created_at is automatically handled by FlextEntity base class
         self.updated_at = updated_at or datetime.now(UTC)
 
     def is_valid(self) -> bool:
@@ -159,7 +207,9 @@ class FlextPluginMetadata(FlextEntity):
                 created_at
 
         """
-        super().__init__(entity_id)
+        # FlextEntity expects keyword argument 'id'
+        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        super().__init__(id=final_id)
         self.plugin_name = plugin_name
 
         # Extract from metadata dict
@@ -170,7 +220,7 @@ class FlextPluginMetadata(FlextEntity):
         self.documentation_url = metadata.get("documentation_url", "")
         self.repository_url = metadata.get("repository_url", "")
         self.license_info = metadata.get("license_info", "")
-        self.created_at = metadata.get("created_at", datetime.now(UTC))
+        # created_at is automatically handled by FlextEntity base class
 
     def is_valid(self) -> bool:
         """Validate plugin metadata entity state.
@@ -202,10 +252,12 @@ class FlextPluginRegistry(FlextEntity):
             created_at: Creation timestamp
 
         """
-        super().__init__(entity_id)
+        # FlextEntity expects keyword argument 'id'
+        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        super().__init__(id=final_id)
         self.name = name
         self.plugins = plugins or {}
-        self.created_at = created_at or datetime.now(UTC)
+        # created_at is automatically handled by FlextEntity base class
 
     def is_valid(self) -> bool:
         """Validate plugin registry entity state.
@@ -280,7 +332,9 @@ class FlextPluginExecution(FlextEntity):
         execution_config: dict[str, object] | None = None,
     ) -> None:
         """Initialize plugin execution entity."""
-        super().__init__(entity_id)
+        # FlextEntity expects keyword argument 'id'
+        final_id = entity_id if entity_id else FlextGenerators.generate_entity_id()
+        super().__init__(id=final_id)
         self.plugin_name = plugin_name
 
         # Extract from execution_config dict

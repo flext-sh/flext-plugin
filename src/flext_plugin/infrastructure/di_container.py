@@ -68,7 +68,7 @@ def configure_flext_plugin_dependencies() -> None:
         container.register(
             "plugin_discovery",
             PluginDiscovery(
-                entity_id="default_discovery",
+                id="default_discovery",
                 plugin_directory="/usr/local/plugins",
             ),
         )

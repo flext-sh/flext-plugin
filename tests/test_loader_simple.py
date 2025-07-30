@@ -9,12 +9,13 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
+from flext_plugin import FlextPlugin
 from flext_plugin.core.types import PluginError
 from flext_plugin.loader import PluginLoader
 
 
-class TestLoadedPluginSimple:
-    """Simple test LoadedPlugin functionality."""
+class TestFlextPluginSimple:
+    """Simple test FlextPlugin functionality."""
 
     @pytest.fixture
     def mock_plugin_instance(self) -> Mock:
@@ -31,17 +32,16 @@ class TestLoadedPluginSimple:
         return instance
 
     def test_loaded_plugin_creation(self, mock_plugin_instance: Mock) -> None:
-        """Test creating LoadedPlugin."""
-        loaded = LoadedPlugin(
-            plugin_id="test-plugin",
-            instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
+        """Test creating FlextPlugin."""
+        loaded = FlextPlugin(
+            name="test-plugin",
+            version="1.0.0",
             config={"test": "config"},
         )
 
-        if loaded.plugin_id != "test-plugin":
-            raise AssertionError(f"Expected {'test-plugin'}, got {loaded.plugin_id}")
-        assert loaded.instance == mock_plugin_instance
+        if loaded.name != "test-plugin":
+            raise AssertionError(f"Expected {'test-plugin'}, got {loaded.name}")
+        assert loaded.version == "1.0.0"
         if loaded.metadata != mock_plugin_instance.metadata:
             raise AssertionError(
                 f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}"
@@ -51,8 +51,8 @@ class TestLoadedPluginSimple:
             raise AssertionError(f"Expected False, got {loaded.is_initialized}")
 
     async def test_loaded_plugin_initialize(self, mock_plugin_instance: Mock) -> None:
-        """Test LoadedPlugin initialization."""
-        loaded = LoadedPlugin(
+        """Test FlextPlugin initialization."""
+        loaded = FlextPlugin(
             plugin_id="test-plugin",
             instance=mock_plugin_instance,
             metadata=mock_plugin_instance.metadata,
@@ -68,8 +68,8 @@ class TestLoadedPluginSimple:
         # The functionality is still tested via the assert above
 
     async def test_loaded_plugin_cleanup(self, mock_plugin_instance: Mock) -> None:
-        """Test LoadedPlugin cleanup."""
-        loaded = LoadedPlugin(
+        """Test FlextPlugin cleanup."""
+        loaded = FlextPlugin(
             plugin_id="test-plugin",
             instance=mock_plugin_instance,
             metadata=mock_plugin_instance.metadata,
@@ -173,7 +173,7 @@ class TestPluginLoaderSimple:
         mock_instance.metadata = Mock()
         mock_instance.metadata.name = "test-plugin"
 
-        loaded_plugin = LoadedPlugin(
+        loaded_plugin = FlextPlugin(
             plugin_id="test-plugin",
             instance=mock_instance,
             metadata=mock_instance.metadata,

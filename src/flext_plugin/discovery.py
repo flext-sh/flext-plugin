@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flext_core import FlextEntity
+from flext_core import FlextEntity, FlextResult
 from pydantic import ConfigDict
 
 
@@ -14,6 +14,12 @@ class PluginDiscovery(FlextEntity):
     plugin_directory: str
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin discovery."""
+        if not self.plugin_directory:
+            return FlextResult.fail("Plugin directory cannot be empty")
+        return FlextResult.ok(None)
 
     async def scan(self) -> list[dict[str, object]]:
         """Scan the plugin directory for Python plugin files.

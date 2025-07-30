@@ -27,17 +27,21 @@ class FlextPluginService(FlextDomainService):
     container: FlextContainer
     model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
-    def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize plugin service.
+    def __init__(self, **kwargs: object) -> None:
+        """Initialize plugin service."""
+        # Extract container from kwargs or create default
+        container_arg = kwargs.pop("container", None)
+        if container_arg is not None:
+            kwargs["container"] = container_arg
+        else:
+            kwargs["container"] = FlextContainer()
 
-        Args:
-            container: Dependency injection container
+        super().__init__(**kwargs)
 
-        """
-        super().__init__(container=container or FlextContainer())
-        self._discovery_port: FlextPluginDiscoveryPort | None = None
-        self._loader_port: FlextPluginLoaderPort | None = None
-        self._manager_port: FlextPluginManagerPort | None = None
+        # Store private attributes
+        object.__setattr__(self, "_discovery_port", None)
+        object.__setattr__(self, "_loader_port", None)
+        object.__setattr__(self, "_manager_port", None)
 
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
@@ -55,26 +59,35 @@ class FlextPluginService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
-        if self._discovery_port is None:
+        discovery_port = getattr(self, "_discovery_port", None)
+        if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            self._discovery_port = result.data if result.is_success else None
-        return self._discovery_port
+            if result.is_success:
+                object.__setattr__(self, "_discovery_port", result.data)
+                return result.data
+        return discovery_port
 
     @property
     def loader_port(self) -> FlextPluginLoaderPort:
         """Get plugin loader port."""
-        if self._loader_port is None:
+        loader_port = getattr(self, "_loader_port", None)
+        if loader_port is None:
             result = self.container.get("plugin_loader_port")
-            self._loader_port = result.data if result.is_success else None
-        return self._loader_port
+            if result.is_success:
+                object.__setattr__(self, "_loader_port", result.data)
+                return result.data
+        return loader_port
 
     @property
     def manager_port(self) -> FlextPluginManagerPort:
         """Get plugin manager port."""
-        if self._manager_port is None:
+        manager_port = getattr(self, "_manager_port", None)
+        if manager_port is None:
             result = self.container.get("plugin_manager_port")
-            self._manager_port = result.data if result.is_success else None
-        return self._manager_port
+            if result.is_success:
+                object.__setattr__(self, "_manager_port", result.data)
+                return result.data
+        return manager_port
 
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in the given path.
@@ -286,15 +299,19 @@ class FlextPluginDiscoveryService(FlextDomainService):
     container: FlextContainer
     model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
-    def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize plugin discovery service.
+    def __init__(self, **kwargs: object) -> None:
+        """Initialize plugin discovery service."""
+        # Extract container from kwargs or create default
+        container_arg = kwargs.pop("container", None)
+        if container_arg is not None:
+            kwargs["container"] = container_arg
+        else:
+            kwargs["container"] = FlextContainer()
 
-        Args:
-            container: Dependency injection container
+        super().__init__(**kwargs)
 
-        """
-        super().__init__(container=container or FlextContainer())
-        self._discovery_port: FlextPluginDiscoveryPort | None = None
+        # Store private attributes
+        object.__setattr__(self, "_discovery_port", None)
 
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
@@ -312,10 +329,13 @@ class FlextPluginDiscoveryService(FlextDomainService):
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
         """Get plugin discovery port."""
-        if self._discovery_port is None:
+        discovery_port = getattr(self, "_discovery_port", None)
+        if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            self._discovery_port = result.data if result.is_success else None
-        return self._discovery_port
+            if result.is_success:
+                object.__setattr__(self, "_discovery_port", result.data)
+                return result.data
+        return discovery_port
 
     def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPlugin]]:
         """Scan directory for plugins.

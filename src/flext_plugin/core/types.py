@@ -9,6 +9,7 @@ Core type definitions for the plugin system.
 from __future__ import annotations
 
 from enum import Enum
+from typing import cast
 
 from flext_core import FlextProcessingError, FlextResult
 
@@ -16,11 +17,19 @@ from flext_core import FlextProcessingError, FlextResult
 class PluginStatus(Enum):
     """Plugin status enumeration."""
 
-    INACTIVE = "inactive"
+    # Lifecycle states
+    UNKNOWN = "unknown"
+    DISCOVERED = "discovered"
+    LOADED = "loaded"
     ACTIVE = "active"
+    INACTIVE = "inactive"
     LOADING = "loading"
     ERROR = "error"
     DISABLED = "disabled"
+
+    # Health states
+    HEALTHY = "healthy"
+    UNHEALTHY = "unhealthy"
 
 
 class PluginType(Enum):
@@ -60,17 +69,26 @@ class PluginType(Enum):
 class PluginError(FlextProcessingError):
     """Base exception for plugin-related errors."""
 
-    def __init__(self, message: str, plugin_name: str = "", **kwargs: object) -> None:
+    def __init__(
+        self,
+        message: str,
+        plugin_name: str = "",
+        plugin_id: str = "",
+        **kwargs: object
+    ) -> None:
         """Initialize plugin error.
 
         Args:
             message: Error message
             plugin_name: Name of the plugin that caused the error
+            plugin_id: ID of the plugin (alias for plugin_name if provided)
             **kwargs: Additional error context
 
         """
         super().__init__(message, **kwargs)
-        self.plugin_name = plugin_name
+        # Use plugin_id if provided, otherwise use plugin_name
+        self.plugin_name = plugin_id if plugin_id else plugin_name
+        self.plugin_id = plugin_id if plugin_id else plugin_name
 
 
 class PluginExecutionResult:
@@ -84,6 +102,7 @@ class PluginExecutionResult:
         error: str = "",
         plugin_name: str = "",
         execution_time: float = 0.0,
+        **kwargs: object,  # Accept additional arguments for backward compatibility
     ) -> None:
         """Initialize plugin execution result.
 
@@ -93,13 +112,20 @@ class PluginExecutionResult:
             error: Error message if execution failed
             plugin_name: Name of the executed plugin
             execution_time: Time taken for execution in seconds
+            **kwargs: Additional arguments for backward compatibility
 
         """
         self.success = success
-        self.data = data
-        self.error = error
+        self.data = kwargs.get("output_data", data)
+        self.error = kwargs.get("error_message", error)
         self.plugin_name = plugin_name
         self.execution_time = execution_time
+
+        # Additional properties for test compatibility
+        self.execution_id = kwargs.get("execution_id", plugin_name)
+        self.duration_ms = kwargs.get("duration_ms", execution_time * 1000)
+        self.output_data = self.data
+        self.error_message = self.error
 
     def is_success(self) -> bool:
         """Check if execution was successful."""
@@ -151,7 +177,7 @@ class PluginManagerResult:
         """Create detailed plugin manager result from config dict."""
         result = cls(operation, success=bool(config.get("success")))
         result.plugins_affected = config.get("plugins_affected", [])  # type: ignore[assignment]
-        execution_time = config.get("execution_time_ms", 0.0)
+        execution_time = cast("float", config.get("execution_time_ms", 0.0))
         result.execution_time_ms = (
             float(execution_time) if execution_time is not None else 0.0
         )

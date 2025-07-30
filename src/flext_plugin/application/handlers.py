@@ -80,7 +80,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             return FlextResult.fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler(FlextHandlers.EventHandler):
+class FlextPluginEventHandler(FlextHandlers.EventHandler):  # Remove generic
     """Handler for plugin-related events."""
 
     def handle_plugin_loaded(self, plugin: FlextPlugin) -> FlextResult[bool]:
