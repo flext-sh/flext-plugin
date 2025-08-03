@@ -1,6 +1,37 @@
-"""Tests for flext_plugin.core.discovery module.
+"""Comprehensive test suite for flext_plugin.core.discovery module.
 
-Comprehensive tests for plugin discovery functionality.
+This test module validates the complete plugin discovery functionality within the
+FLEXT plugin system, ensuring robust file system scanning, entry point detection,
+plugin validation, and metadata extraction capabilities. Tests cover both successful
+discovery scenarios and error conditions.
+
+Test Coverage:
+    - Plugin discovery initialization and configuration
+    - File system-based plugin scanning with directory management
+    - Entry point-based plugin detection and validation
+    - Plugin metadata extraction and validation
+    - Plugin blacklisting and filtering mechanisms
+    - Manual plugin registration and lifecycle management
+    - Error handling for invalid plugins and missing directories
+
+Testing Architecture:
+    - Comprehensive mock-based testing for file system operations
+    - Async/await pattern testing for discovery operations
+    - Fixture-based test isolation with proper setup/teardown
+    - Edge case validation including empty directories and invalid plugins
+
+Quality Patterns:
+    - Explicit assertion messages for clear test failure diagnosis
+    - Mock-based isolation to prevent file system dependencies
+    - Comprehensive coverage of both success and failure scenarios
+    - Integration testing with realistic plugin directory structures
+    - Performance validation for bulk discovery operations
+
+Integration Points:
+    - Built on flext-core foundation with FlextResult patterns
+    - Integrates with plugin lifecycle management system
+    - Coordinates with plugin loader for discovered plugin instantiation
+    - Supports both file system and entry point discovery mechanisms
 """
 
 from __future__ import annotations
@@ -18,7 +49,27 @@ EXPECTED_BULK_SIZE = 2
 
 
 class TestPluginDiscovery:
-    """Test PluginDiscovery functionality."""
+    """Comprehensive test suite for PluginDiscovery core functionality.
+    
+    This test class validates all aspects of the plugin discovery system including
+    directory scanning, metadata extraction, plugin validation, and lifecycle
+    management. Tests ensure the discovery system can handle various plugin formats,
+    invalid configurations, and edge cases while maintaining performance standards.
+    
+    Test Categories:
+        - Initialization: Discovery instance creation and configuration
+        - Directory Management: Adding, scanning, and validating plugin directories
+        - Plugin Detection: File system and entry point-based discovery
+        - Metadata Processing: Plugin manifest validation and extraction
+        - Filtering: Blacklist management and type-based filtering
+        - Error Handling: Invalid plugins, missing files, and corrupt metadata
+        
+    Architecture Integration:
+        - Clean Architecture: Tests domain logic isolation from infrastructure
+        - Plugin Lifecycle: Validates discovery → loading → activation flow
+        - Performance: Bulk operations and concurrent discovery testing
+        - Security: Plugin validation and sandboxing verification
+    """
 
     @pytest.fixture
     def discovery(self) -> PluginDiscovery:
@@ -62,7 +113,25 @@ class TestPluginDiscovery:
         mock_glob: Mock,
         discovery: PluginDiscovery,
     ) -> None:
-        """Test discovering plugins when no plugins exist."""
+        """Validate plugin discovery behavior with empty plugin directories.
+        
+        Tests the discovery system's handling of valid directories that contain
+        no plugin files, ensuring graceful handling without errors or exceptions.
+        
+        Mock Configuration:
+            - mock_exists: Simulates directory existence (True)
+            - mock_glob: Returns empty list simulating no plugin files
+        
+        Test Scenario:
+            - Directory exists but contains no plugin files
+            - Discovery system scans empty directories
+            - System returns empty result without errors
+        
+        Validates:
+            - Empty directory scanning completes successfully
+            - Returns empty dictionary as expected result
+            - No exceptions raised during empty directory processing
+        """
         mock_exists.return_value = True
         mock_glob.return_value = []
 
@@ -85,7 +154,26 @@ class TestPluginDiscovery:
         mock_glob: Mock,
         discovery: PluginDiscovery,
     ) -> None:
-        """Test discovering plugins with valid metadata."""
+        """Validate plugin discovery with complete metadata processing.
+        
+        Tests the discovery system's ability to process plugins with valid
+        JSON metadata files, ensuring proper metadata extraction and validation.
+        
+        Mock Configuration:
+            - mock_file: Simulates JSON metadata file content reading
+            - mock_exists: Controls directory and file existence checks
+            - mock_glob: Returns mock plugin files for discovery
+        
+        Test Scenario:
+            - Valid plugin file with accompanying JSON manifest
+            - Metadata contains name, version, and type information
+            - Discovery processes both plugin file and metadata
+        
+        Validates:
+            - Plugin discovery processes metadata successfully
+            - Returns dictionary result structure
+            - Handles complex file system operations correctly
+        """
         # Setup mocks
         plugin_file = Path("/test/plugins/test_plugin.py")
         manifest_file = Path("/test/plugins/test_plugin.json")
@@ -111,7 +199,24 @@ class TestPluginDiscovery:
         mock_exists: Mock,
         discovery: PluginDiscovery,
     ) -> None:
-        """Test discovering plugins in non-existent directory."""
+        """Validate plugin discovery handling of non-existent directories.
+        
+        Tests the discovery system's resilience when configured with directories
+        that don't exist, ensuring graceful error handling without exceptions.
+        
+        Mock Configuration:
+            - mock_exists: Simulates directory non-existence (False)
+        
+        Test Scenario:
+            - Add non-existent directory to discovery configuration
+            - Attempt to discover plugins from invalid path
+            - System handles missing directory gracefully
+        
+        Validates:
+            - Non-existent directory doesn't cause discovery failure
+            - Returns empty result dictionary
+            - No exceptions raised for missing directories
+        """
         mock_exists.return_value = False
 
         # Add non-existent directory
