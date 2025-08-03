@@ -1,7 +1,42 @@
-"""Tests for flext_plugin.application.handlers module.
+"""Comprehensive test suite for flext_plugin.application.handlers module.
 
-Comprehensive test coverage for application handlers following Clean Architecture
-patterns.
+This test module provides complete validation of the CQRS application handler layer,
+ensuring proper command and event handling patterns within the Clean Architecture.
+The handlers orchestrate domain operations through service interfaces while maintaining
+proper separation of concerns and error handling patterns.
+
+Handler Architecture Testing:
+    - PluginDiscoveryHandler: Plugin discovery command orchestration and metadata validation
+    - PluginValidationHandler: Plugin validation command handling with comprehensive checks
+    - PluginLifecycleHandler: Complete plugin lifecycle management command orchestration
+    - PluginExecutionHandler: Plugin execution command handling with context management
+    - PluginRegistryHandler: Registry management command orchestration and search operations
+
+Test Implementation Strategy:
+    - Testable Concrete Implementations: Creates testable versions without abstract inheritance
+    - Comprehensive Mock Integration: Full service mocking with AsyncMock for async operations
+    - Railway-Oriented Programming: Validates FlextResult success/failure pattern handling
+    - Error Handling Validation: Tests exception handling and proper error propagation
+    - CQRS Pattern Compliance: Ensures command handlers follow proper CQRS architecture
+
+Testing Coverage:
+    - Handler Initialization: Service injection and logger configuration validation
+    - Success Scenarios: Proper command execution with expected results
+    - Failure Scenarios: Service failure handling with proper error propagation
+    - Exception Handling: Exception catching and FlextResult error conversion
+    - Logging Integration: Structured logging with correlation IDs and context data
+
+Clean Architecture Compliance:
+    - Application Layer Testing: Validates orchestration without business logic
+    - Service Interface Usage: Tests proper dependency injection and service interaction
+    - Domain Entity Integration: Uses real domain entities for realistic testing
+    - Infrastructure Independence: Tests handlers without infrastructure dependencies
+
+Quality Standards:
+    - Enterprise-grade error messages with detailed context information
+    - Comprehensive fixture management for test data and mock services
+    - Type safety validation with proper type annotations throughout
+    - Performance consideration testing for bulk operations and async workflows
 """
 
 from __future__ import annotations
@@ -366,7 +401,24 @@ class TestablePluginRegistryHandler:
 
 
 class TestPluginDiscoveryHandler:
-    """Test PluginDiscoveryHandler functionality."""
+    """Comprehensive test suite for PluginDiscoveryHandler CQRS command orchestration.
+
+    Validates the plugin discovery handler's ability to orchestrate discovery operations
+    through service interfaces while maintaining proper error handling and logging patterns.
+
+    Test Categories:
+        - Handler Initialization: Service injection and logger configuration
+        - Discovery Operations: Plugin discovery with search path management
+        - Metadata Validation: Plugin metadata validation with error handling
+        - Manifest Retrieval: Plugin manifest extraction and processing
+        - Exception Handling: Comprehensive error scenario testing
+
+    CQRS Compliance:
+        - Command orchestration without business logic implementation
+        - Proper service interface usage for domain operations
+        - Railway-oriented programming with FlextResult patterns
+        - Structured logging with correlation IDs and context data
+    """
 
     @pytest.fixture
     def mock_discovery_service(self) -> Mock:
@@ -828,7 +880,25 @@ class TestPluginValidationHandler:
 
 
 class TestPluginLifecycleHandler:
-    """Test PluginLifecycleHandler functionality."""
+    """Comprehensive test suite for PluginLifecycleHandler command orchestration.
+
+    Validates the complete plugin lifecycle management handler covering all states
+    from registration through unregistration with proper error handling patterns.
+
+    Lifecycle Operations Tested:
+        - register_plugin: Plugin registration command orchestration
+        - load_plugin: Plugin loading and initialization command handling
+        - initialize_plugin: Plugin setup and configuration orchestration
+        - activate_plugin: Plugin activation and readiness command handling
+        - suspend_plugin: Plugin suspension and state preservation orchestration
+        - unload_plugin: Plugin cleanup and resource release command handling
+
+    Error Handling Validation:
+        - Service failure propagation with proper error context
+        - Exception handling for all lifecycle operations
+        - FlextResult pattern compliance for all command responses
+        - Comprehensive logging for lifecycle state transitions
+    """
 
     @pytest.fixture
     def mock_lifecycle_service(self) -> Mock:
@@ -1175,7 +1245,27 @@ class TestPluginLifecycleHandler:
 
 
 class TestPluginExecutionHandler:
-    """Test PluginExecutionHandler functionality."""
+    """Comprehensive test suite for PluginExecutionHandler command orchestration.
+
+    Validates plugin execution management including execution control, status monitoring,
+    and cancellation operations with proper context handling and error management.
+
+    Execution Operations Tested:
+        - execute_plugin: Plugin execution with input data and context management
+        - get_execution_status: Execution monitoring and status retrieval
+        - cancel_execution: Execution cancellation with proper cleanup
+
+    Context Management:
+        - Execution context handling with optional parameters
+        - Input data validation and processing
+        - Execution ID tracking and correlation
+        - Proper async operation orchestration
+
+    Error Scenarios:
+        - Service failure handling during execution
+        - Exception propagation with proper error context
+        - Execution state management during failures
+    """
 
     @pytest.fixture
     def mock_execution_service(self) -> Mock:

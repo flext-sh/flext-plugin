@@ -1,4 +1,4 @@
-"""FLEXT Plugin Application Services - Orchestrating plugin business logic with CQRS patterns.
+"""FLEXT Plugin Application Services - Orchestrating business logic with CQRS.
 
 This module implements the application layer services following Clean Architecture
 principles, providing orchestration of plugin management operations through
@@ -120,7 +120,7 @@ class FlextPluginService(FlextDomainService):
 
         Note:
             If no container is provided, a default FlextContainer instance is created.
-            Port dependencies are resolved lazily through the container when first accessed.
+            Port dependencies are resolved lazily through the container.
 
         """
         # Extract container from kwargs or create default
@@ -165,11 +165,12 @@ class FlextPluginService(FlextDomainService):
         # Create a simple adapter that implements the interface
 
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
-            def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
+            def discover_plugins(self, _path: str) -> FlextResult[list[FlextPlugin]]:
                 return FlextResult.ok([])
 
-            def validate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def validate_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
         return MockDiscoveryPort()
 
@@ -188,14 +189,17 @@ class FlextPluginService(FlextDomainService):
         # Create a simple adapter that implements the interface
 
         class MockLoaderPort(FlextPluginLoaderPort):
-            def load_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def load_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
-            def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def unload_plugin(self, _plugin_name: str, /) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
-            def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
-                return FlextResult.ok(False)
+            def is_plugin_loaded(self, _plugin_name: str, /) -> FlextResult[bool]:
+                loaded = False
+                return FlextResult.ok(loaded)
 
         return MockLoaderPort()
 
@@ -214,23 +218,31 @@ class FlextPluginService(FlextDomainService):
         # Create a simple adapter that implements the interface
 
         class MockManagerPort(FlextPluginManagerPort):
-            def install_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]:
+            def install_plugin(self, _plugin_path: str) -> FlextResult[FlextPlugin]:
                 return FlextResult.fail("Mock implementation")
 
-            def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def uninstall_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
-            def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def enable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
-            def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def disable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
-            def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
+            def get_plugin_config(
+                self, _plugin_name: str
+            ) -> FlextResult[FlextPluginConfig]:
                 return FlextResult.fail("Mock implementation")
 
-            def update_plugin_config(self, plugin_name: str, config: FlextPluginConfig) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def update_plugin_config(
+                self, _plugin_name: str, _config: FlextPluginConfig
+            ) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
         return MockManagerPort()
 
@@ -497,7 +509,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
 
         Sets up the discovery service with proper dependency injection container
         and initializes infrastructure port references. The service uses lazy loading
-        for discovery ports to support various discovery implementations and testing scenarios.
+        for discovery ports to support various implementations and testing scenarios.
 
         Args:
             **kwargs: Configuration parameters including:
@@ -506,7 +518,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
 
         Note:
             If no container is provided, a default FlextContainer instance is created.
-            Discovery port dependencies are resolved lazily through the container when first accessed.
+            Discovery port dependencies are resolved lazily through the container.
 
         """
         # Extract container from kwargs or create default
@@ -549,11 +561,12 @@ class FlextPluginDiscoveryService(FlextDomainService):
         # Create a simple adapter that implements the interface
 
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
-            def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
+            def discover_plugins(self, _path: str) -> FlextResult[list[FlextPlugin]]:
                 return FlextResult.ok([])
 
-            def validate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-                return FlextResult.ok(True)
+            def validate_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
+                success = True
+                return FlextResult.ok(success)
 
         return MockDiscoveryPort()
 

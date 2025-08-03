@@ -50,7 +50,7 @@ All commands use Poetry for dependency management and follow zero-tolerance qual
 ### Essential Quality Checks
 
 ```bash
-make validate          # Complete validation (lint + type + security + test) - MUST PASS  
+make validate          # Complete validation (lint + type + security + test) - MUST PASS
 make check             # Essential checks (lint + type + test)
 make lint              # Ruff linting with comprehensive rules
 make type-check        # MyPy strict mode (zero errors tolerated)
@@ -83,7 +83,7 @@ make pre-commit        # Run pre-commit hooks on all files
 ```bash
 # Plugin operations (⚠️  CLI IMPLEMENTATION REQUIRED - THESE COMMANDS WILL FAIL)
 # make plugin-create NAME=my-plugin TYPE=extractor    # TODO: Requires flext-plugin CLI
-# make plugin-install NAME=tap-github                 # TODO: Requires flext-plugin CLI  
+# make plugin-install NAME=tap-github                 # TODO: Requires flext-plugin CLI
 # make plugin-list                                    # TODO: Requires flext-plugin CLI
 # make plugin-watch                                   # TODO: Requires flext-plugin CLI
 # make plugin-validate                                # Works - uses FlextPluginPlatform
@@ -126,7 +126,7 @@ make reset             # Reset project (clean-all + setup)
 
 ```bash
 make t                 # Alias for test
-make l                 # Alias for lint  
+make l                 # Alias for lint
 make f                 # Alias for format
 make tc                # Alias for type-check
 make c                 # Alias for clean
@@ -180,7 +180,7 @@ The project maintains 85% minimum test coverage with comprehensive test categori
 
 ```bash
 # Run specific test categories with pytest markers
-pytest -m unit              # Isolated unit tests  
+pytest -m unit              # Isolated unit tests
 pytest -m integration       # Cross-layer integration tests
 pytest -m plugin            # Plugin system tests
 pytest -m hot_reload        # Hot-reload functionality tests
@@ -190,7 +190,7 @@ pytest -k "test_name"       # Run specific test by name pattern
 **Test Structure:**
 
 - `tests/unit/`: Isolated unit tests for each layer
-- `tests/integration/`: Cross-layer integration tests  
+- `tests/integration/`: Cross-layer integration tests
 - `tests/e2e/`: End-to-end plugin lifecycle tests
 - `tests/fixtures/`: Shared test data and fixtures
 - `tests/conftest.py`: Pytest configuration and shared fixtures
@@ -235,7 +235,7 @@ from flext_plugin.core.types import PluginStatus, PluginType
 # Using entity directly
 plugin = FlextPlugin(
     name="my-plugin",
-    version="1.0.0", 
+    version="1.0.0",
     config={
         "description": "My custom plugin",
         "author": "Developer",
@@ -275,7 +275,7 @@ from flext_plugin.core.discovery import PluginDiscovery
 discovery = FlextPluginDiscoveryService()
 plugins = await discovery.discover_plugins(path="./plugins")
 
-# Direct discovery usage  
+# Direct discovery usage
 direct_discovery = PluginDiscovery()
 found_plugins = direct_discovery.discover_in_directory("./plugins")
 ```
@@ -312,26 +312,30 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 ### 🚨 GAP 1: CLI Implementation Missing
 
 **Status**: HIGH PRIORITY - CLI entry point defined but not implemented
-**Issue**: 
-- `pyproject.toml` defines `flext-plugin = "flext_plugin.cli:main"` 
+**Issue**:
+
+- `pyproject.toml` defines `flext-plugin = "flext_plugin.cli:main"`
 - No `cli.py` file exists in the codebase
 - Makefile plugin commands reference non-existent CLI
 
 **Required Actions**:
+
 - [ ] Create `src/flext_plugin/cli.py` with main() entry point
-- [ ] Implement plugin management commands (create, install, list, watch, validate)  
+- [ ] Implement plugin management commands (create, install, list, watch, validate)
 - [ ] Add CLI argument parsing and help documentation
 - [ ] Update Makefile commands to work with actual CLI implementation
 
-### 🚨 GAP 2: Hot Reload Implementation Incomplete  
+### 🚨 GAP 2: Hot Reload Implementation Incomplete
 
 **Status**: MEDIUM PRIORITY - Framework exists but needs completion
 **Issue**:
+
 - `hot_reload.py` exists at root level but integration unclear
 - Test files reference hot reload functionality
 - Makefile has hot reload configuration but no working implementation
 
 **Required Actions**:
+
 - [ ] Complete hot reload integration with plugin platform
 - [ ] Implement file watching with watchdog library integration
 - [ ] Add hot reload testing and validation
@@ -341,11 +345,13 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 
 **Status**: MEDIUM PRIORITY - Types defined but integration missing
 **Issue**:
+
 - `PluginType` enum defines TAP, TARGET, TRANSFORM for Singer/Meltano
 - No actual Singer SDK or Meltano integration code
 - Missing plugin discovery for Singer ecosystem
 
 **Required Actions**:
+
 - [ ] Implement Singer tap/target plugin interfaces
 - [ ] Add Meltano project configuration integration
 - [ ] Create Singer plugin discovery mechanisms
@@ -355,11 +361,13 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 
 **Status**: LOW PRIORITY - Foundation exists but needs practical examples  
 **Issue**:
+
 - Strong architectural foundation but missing practical examples
 - `examples/real_plugins/` directory exists but may be empty
 - Integration patterns need concrete implementation examples
 
 **Required Actions**:
+
 - [ ] Create practical plugin examples in `examples/` directory
 - [ ] Add end-to-end integration examples
 - [ ] Document common plugin development workflows
@@ -368,6 +376,6 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 ## Next Steps for Development
 
 1. **Immediate**: Implement CLI functionality to enable plugin management commands
-2. **Short-term**: Complete hot reload system integration and testing  
+2. **Short-term**: Complete hot reload system integration and testing
 3. **Medium-term**: Add Singer/Meltano plugin support for data pipeline integration
 4. **Long-term**: Expand examples and documentation for broader ecosystem adoption

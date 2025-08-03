@@ -72,21 +72,25 @@ make setup
 FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosystem:
 
 ### Core Services Integration
+
 - **FlexCore (Go)**: Runtime container service with plugin proxy adapters
 - **FLEXT Service (Go/Python)**: Data platform service with Python bridge
 - **Plugin Communication**: Go ↔ Python plugin interaction protocols
 
 ### Foundation Libraries
+
 - **flext-core**: Base patterns, FlextResult, dependency injection container
 - **flext-observability**: Monitoring, metrics, tracing, health checks
 
 ### Singer Ecosystem (15 Projects)
+
 - **Taps (5)**: Data extraction plugins (Oracle, LDAP, LDIF, OIC, WMS)
 - **Targets (5)**: Data loading plugins with matching sources
 - **DBT Projects (4)**: Data transformation models and business logic
 - **Extensions (1)**: Oracle OIC specialized extensions
 
 ### Application Services (5 Projects)
+
 - **flext-api**: REST API services with plugin endpoints
 - **flext-auth**: Authentication plugins and strategies
 - **flext-web**: Web interface with plugin management
@@ -96,12 +100,14 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 ## Development Workflow
 
 ### Quality Standards
+
 - **85% Test Coverage**: Comprehensive test suites with unit, integration, and e2e tests
 - **Type Safety**: 100% type coverage with strict MyPy validation
 - **Code Quality**: Ruff linting with ALL rules enabled
 - **Security**: Bandit scanning and pip-audit dependency checks
 
 ### Development Commands
+
 ```bash
 # Setup development environment
 make setup
@@ -125,17 +131,20 @@ make plugin-validate       # Validate plugin system
 ## Architecture Principles
 
 ### Clean Architecture
+
 - **Dependency Rule**: Dependencies point inward toward business logic
 - **Layer Separation**: Core → Domain → Application → Infrastructure
 - **Interface Segregation**: Small, focused interfaces for better testability
 
 ### Domain-Driven Design
+
 - **Bounded Contexts**: Plugin management as a distinct business domain
 - **Entities**: Rich business objects with behavior and identity
 - **Value Objects**: Immutable data structures for plugin metadata
 - **Aggregates**: Consistency boundaries for plugin operations
 
 ### CQRS Pattern
+
 - **Command Handlers**: Plugin lifecycle operations (create, activate, deactivate)
 - **Query Handlers**: Plugin discovery and status retrieval
 - **Event Sourcing**: Plugin state changes as event streams
@@ -143,17 +152,20 @@ make plugin-validate       # Validate plugin system
 ## Support & Contributing
 
 ### Getting Help
+
 - **GitHub Issues**: [Report bugs and request features](https://github.com/flext-sh/flext/issues)
 - **Discussions**: [Community Q&A and ideas](https://github.com/flext-sh/flext/discussions)
 - **Documentation**: Browse this documentation for detailed guides
 
 ### Contributing
+
 - **Development**: Follow Clean Architecture and quality standards
 - **Testing**: Maintain 85%+ coverage with quality test cases
 - **Documentation**: Update docs for public APIs and patterns
 - **Code Review**: All changes require review and quality gate passage
 
 ### Commercial Support
+
 Enterprise support and consulting available through [team@flext.sh](mailto:team@flext.sh).
 
 ---

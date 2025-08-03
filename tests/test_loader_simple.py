@@ -1,6 +1,38 @@
-"""Simple tests for flext_plugin.core.loader module.
+"""Simplified test suite for flext_plugin.core.loader module.
 
-Tests for plugin loading functionality using actual implementation.
+This test module provides streamlined validation of plugin loading functionality
+using real implementation components with minimal mocking, focusing on actual
+behavior validation and integration testing with the core loading system.
+
+Plugin Loading Architecture Testing:
+    - FlextPlugin: Loaded plugin wrapper with lifecycle management capabilities
+    - PluginLoader: Core plugin loading system with security and registry management
+
+Test Implementation Philosophy:
+    - Real Implementation Focus: Uses actual loader components for authentic testing
+    - Minimal Mocking Strategy: Only mocks external dependencies and plugin instances
+    - Lifecycle Validation: Tests complete plugin initialization and cleanup cycles
+    - Registry Management: Validates plugin loading state and registry operations
+
+Testing Coverage:
+    - Plugin Wrapper Functionality: FlextPlugin lifecycle and state management
+    - Loader Initialization: Default and custom configuration testing
+    - Plugin Registry Operations: Loading state tracking and plugin retrieval
+    - Security Configuration: Security-enabled and disabled loader testing
+    - Error Handling: Proper exception handling for invalid operations
+    - Lifecycle Management: Plugin initialization, cleanup, and state transitions
+
+Plugin System Integration:
+    - Built on flext-core foundation patterns
+    - Integrates with plugin discovery and validation systems
+    - Coordinates with plugin lifecycle management
+    - Supports both secure and non-secure loading modes
+
+Quality Standards:
+    - Enterprise-grade error handling with proper exception types
+    - Comprehensive lifecycle testing with state validation
+    - Real-world scenario simulation with mock plugin instances
+    - Integration testing with actual loading system components
 """
 
 from __future__ import annotations
@@ -15,7 +47,28 @@ from flext_plugin.loader import PluginLoader
 
 
 class TestFlextPluginSimple:
-    """Simple test FlextPlugin functionality."""
+    """Comprehensive test suite for FlextPlugin wrapper functionality.
+
+    Validates the FlextPlugin wrapper class that encapsulates loaded plugin instances
+    with lifecycle management, state tracking, and proper initialization/cleanup cycles.
+
+    Test Categories:
+        - Plugin Creation: FlextPlugin instantiation with various configuration options
+        - Lifecycle Management: Initialize and cleanup operations with state tracking
+        - State Validation: Plugin initialization state and metadata preservation
+        - Configuration Handling: Plugin configuration management and validation
+
+    Plugin Wrapper Validation:
+        - Proper plugin instance encapsulation with metadata preservation
+        - Initialization state tracking with is_initialized property
+        - Lifecycle method delegation to underlying plugin instance
+        - Configuration management with default and custom settings
+
+    Integration Testing:
+        - Mock plugin instance integration for controlled testing
+        - Async operation support for initialization and cleanup
+        - State synchronization between wrapper and plugin instance
+    """
 
     @pytest.fixture
     def mock_plugin_instance(self) -> Mock:
@@ -87,7 +140,31 @@ class TestFlextPluginSimple:
 
 
 class TestPluginLoaderSimple:
-    """Simple test PluginLoader functionality."""
+    """Comprehensive test suite for PluginLoader core functionality.
+
+    Validates the core plugin loading system including plugin registry management,
+    security configuration, and loaded plugin lifecycle operations.
+
+    Test Categories:
+        - Loader Initialization: Default and custom configuration testing
+        - Registry Operations: Plugin loading state tracking and retrieval
+        - Security Configuration: Security-enabled and disabled loader modes
+        - Plugin Management: Loading, unloading, and state validation operations
+        - Error Handling: Proper exception handling for invalid operations
+
+    Loading System Validation:
+        - Plugin registry management with loaded plugin tracking
+        - Security mode configuration with proper initialization
+        - Plugin retrieval operations with proper null handling
+        - Plugin state validation with is_loaded checking
+        - Comprehensive error handling for invalid plugin operations
+
+    Integration Points:
+        - Real PluginLoader implementation testing without excessive mocking
+        - Plugin registry state management with proper isolation
+        - Security configuration testing for enterprise deployment scenarios
+        - Error condition testing with proper exception types and messages
+    """
 
     @pytest.fixture
     def loader(self) -> PluginLoader:

@@ -21,6 +21,7 @@ result = await platform.execute_plugin("plugin-name", data)
 ```
 
 **Key Methods:**
+
 - `register_plugin(plugin)` - Register new plugin
 - `activate_plugin(plugin_id)` - Activate registered plugin
 - `deactivate_plugin(plugin_id)` - Deactivate active plugin
@@ -49,6 +50,7 @@ plugin = create_flext_plugin(
 ```
 
 **Factory Functions:**
+
 - `create_flext_plugin()` - Create plugin entity
 - `create_flext_plugin_config()` - Create plugin configuration
 - `create_flext_plugin_metadata()` - Create plugin metadata
@@ -81,26 +83,26 @@ class PluginType(Enum):
     TAP = "tap"
     TARGET = "target"
     TRANSFORM = "transform"
-    
+
     # Architecture types
     EXTENSION = "extension"
     SERVICE = "service"
     MIDDLEWARE = "middleware"
     TRANSFORMER = "transformer"
-    
+
     # Integration types
     API = "api"
     DATABASE = "database"
     NOTIFICATION = "notification"
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
-    
+
     # Utility types
     UTILITY = "utility"
     TOOL = "tool"
     HANDLER = "handler"
     PROCESSOR = "processor"
-    
+
     # System types
     CORE = "core"
     ADDON = "addon"
@@ -120,7 +122,7 @@ class PluginExecutionResult:
     error: str
     plugin_name: str
     execution_time: float
-    
+
     def is_success(self) -> bool
     def is_failure(self) -> bool
 
@@ -140,7 +142,7 @@ from flext_plugin.core.types import PluginError
 
 class PluginError(FlextProcessingError):
     """Base exception for plugin-related errors."""
-    
+
     def __init__(
         self,
         message: str,
@@ -165,14 +167,14 @@ from flext_core import FlextEntity, FlextEntityId
 
 class FlextPlugin(FlextEntity):
     """Plugin entity representing a plugin in the system."""
-    
+
     # Core attributes
     name: str
     plugin_version: str
     description: str
     author: str
     status: PluginStatus
-    
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
@@ -184,25 +186,25 @@ class FlextPlugin(FlextEntity):
         **kwargs: object
     ):
         """Initialize plugin entity."""
-    
+
     # Lifecycle methods
     def activate(self) -> bool:
         """Activate the plugin."""
-    
+
     def deactivate(self) -> bool:
         """Deactivate the plugin."""
-    
+
     def is_valid(self) -> bool:
         """Validate plugin entity state."""
-    
+
     # Properties
     @property
     def plugin_name(self) -> str:
         """Get plugin name (compatibility)."""
-    
+
     def get_version(self) -> str:
         """Get plugin version (compatibility)."""
-    
+
     @property
     def plugin_status(self) -> PluginStatus:
         """Get plugin status (compatibility)."""
@@ -217,26 +219,26 @@ from flext_plugin.domain.entities import FlextPluginConfig
 
 class FlextPluginConfig(FlextEntity):
     """Plugin configuration entity with update tracking."""
-    
+
     plugin_id: str
     config_data: dict[str, object]
     created_at: datetime
     updated_at: datetime
     version: str
-    
+
     def update_config(
-        self, 
+        self,
         new_config: dict[str, object]
     ) -> FlextResult[bool]:
         """Update configuration with validation."""
-    
+
     def get_config_value(
-        self, 
-        key: str, 
+        self,
+        key: str,
         default: object = None
     ) -> object:
         """Get configuration value by key."""
-    
+
     def validate_config(self) -> FlextResult[bool]:
         """Validate configuration against schema."""
 ```
@@ -250,7 +252,7 @@ from flext_plugin.domain.entities import FlextPluginMetadata
 
 class FlextPluginMetadata(FlextEntity):
     """Plugin metadata entity with tags and additional information."""
-    
+
     plugin_id: str
     tags: list[str]
     homepage_url: str
@@ -259,16 +261,16 @@ class FlextPluginMetadata(FlextEntity):
     license: str
     keywords: list[str]
     dependencies: list[str]
-    
+
     def add_tag(self, tag: str) -> FlextResult[bool]:
         """Add tag to plugin metadata."""
-    
+
     def remove_tag(self, tag: str) -> FlextResult[bool]:
         """Remove tag from plugin metadata."""
-    
+
     def has_tag(self, tag: str) -> bool:
         """Check if plugin has specific tag."""
-    
+
     def update_urls(self, urls: dict[str, str]) -> FlextResult[bool]:
         """Update plugin URLs (homepage, repository, docs)."""
 ```
@@ -282,55 +284,55 @@ from flext_plugin.domain.entities import FlextPluginRegistry
 
 class FlextPluginRegistry(FlextEntity):
     """Plugin registry aggregate managing collection of plugins."""
-    
+
     plugins: dict[str, FlextPlugin]
     discovery_paths: list[str]
     last_discovery: datetime
-    
+
     # Registration operations
     async def register_plugin(
-        self, 
+        self,
         plugin: FlextPlugin
     ) -> FlextResult[FlextPlugin]:
         """Register plugin with validation and conflict resolution."""
-    
+
     async def unregister_plugin(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[bool]:
         """Unregister plugin and cleanup resources."""
-    
+
     # Query operations
     def get_plugin(self, plugin_id: str) -> FlextPlugin | None:
         """Get plugin by ID."""
-    
+
     def list_plugins(
-        self, 
+        self,
         plugin_type: PluginType | None = None,
         status: PluginStatus | None = None
     ) -> list[FlextPlugin]:
         """List plugins with optional filtering."""
-    
+
     def get_plugin_count(self) -> int:
         """Get total number of registered plugins."""
-    
-    # Discovery operations  
+
+    # Discovery operations
     async def discover_plugins(
-        self, 
+        self,
         paths: list[str] | None = None
     ) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in specified paths."""
-    
+
     async def refresh_discovery(self) -> FlextResult[int]:
         """Refresh plugin discovery in all configured paths."""
-    
+
     # Lifecycle operations
     async def activate_all_plugins(self) -> FlextResult[list[str]]:
         """Activate all registered plugins."""
-    
+
     async def deactivate_all_plugins(self) -> FlextResult[list[str]]:
         """Deactivate all active plugins."""
-    
+
     async def cleanup_all(self) -> None:
         """Cleanup all plugins and registry resources."""
 ```
@@ -346,29 +348,29 @@ from flext_plugin.application.services import FlextPluginService
 
 class FlextPluginService:
     """Core plugin management service."""
-    
+
     def __init__(self, registry: FlextPluginRegistry):
         """Initialize service with plugin registry."""
-    
+
     # Plugin lifecycle management
     async def create_plugin(
-        self, 
+        self,
         config: dict[str, object]
     ) -> FlextResult[FlextPlugin]:
         """Create new plugin with validation."""
-    
+
     async def activate_plugin(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[bool]:
         """Activate plugin with lifecycle management."""
-    
+
     async def deactivate_plugin(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[bool]:
         """Deactivate plugin with cleanup."""
-    
+
     async def execute_plugin(
         self,
         plugin_id: str,
@@ -376,23 +378,23 @@ class FlextPluginService:
         context: dict[str, object] | None = None
     ) -> FlextResult[PluginExecutionResult]:
         """Execute plugin with data and context."""
-    
+
     # Plugin information
     async def get_plugin_info(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[dict[str, object]]:
         """Get comprehensive plugin information."""
-    
+
     async def get_plugin_status(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[PluginStatus]:
         """Get current plugin status."""
-    
+
     async def list_active_plugins(self) -> FlextResult[list[FlextPlugin]]:
         """List all currently active plugins."""
-    
+
     # Configuration management
     async def update_plugin_config(
         self,
@@ -400,7 +402,7 @@ class FlextPluginService:
         config: dict[str, object]
     ) -> FlextResult[bool]:
         """Update plugin configuration."""
-    
+
     async def validate_plugin_config(
         self,
         plugin_id: str,
@@ -418,46 +420,46 @@ from flext_plugin.application.services import FlextPluginDiscoveryService
 
 class FlextPluginDiscoveryService:
     """Plugin discovery and scanning service."""
-    
+
     # Discovery operations
     async def discover_plugins(
-        self, 
+        self,
         path: str
     ) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in specified path."""
-    
+
     async def discover_plugins_recursive(
         self,
         root_path: str,
         max_depth: int = 3
     ) -> FlextResult[list[FlextPlugin]]:
         """Recursively discover plugins in directory tree."""
-    
+
     async def scan_for_singer_plugins(
-        self, 
+        self,
         path: str
     ) -> FlextResult[list[FlextPlugin]]:
         """Scan for Singer tap/target plugins."""
-    
+
     # Validation operations
     async def validate_plugin_structure(
-        self, 
+        self,
         plugin_path: str
     ) -> FlextResult[bool]:
         """Validate plugin directory structure."""
-    
+
     async def validate_plugin_metadata(
-        self, 
+        self,
         plugin: FlextPlugin
     ) -> FlextResult[bool]:
         """Validate plugin metadata and configuration."""
-    
+
     # Cache operations
     async def clear_discovery_cache(self) -> FlextResult[bool]:
         """Clear plugin discovery cache."""
-    
+
     async def refresh_plugin_cache(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[bool]:
         """Refresh cache for specific plugin."""
@@ -474,44 +476,44 @@ from flext_plugin.application.handlers import FlextPluginHandler
 
 class FlextPluginHandler:
     """CQRS command handler for plugin operations."""
-    
+
     def __init__(self, service: FlextPluginService):
         """Initialize handler with plugin service."""
-    
+
     # Command handling
     async def handle_create_plugin_command(
-        self, 
+        self,
         command: dict[str, object]
     ) -> FlextResult[FlextPlugin]:
         """Handle plugin creation command."""
-    
+
     async def handle_activate_plugin_command(
-        self, 
+        self,
         command: dict[str, object]
     ) -> FlextResult[bool]:
         """Handle plugin activation command."""
-    
+
     async def handle_deactivate_plugin_command(
-        self, 
+        self,
         command: dict[str, object]
     ) -> FlextResult[bool]:
         """Handle plugin deactivation command."""
-    
+
     async def handle_execute_plugin_command(
         self,
         command: dict[str, object]
     ) -> FlextResult[PluginExecutionResult]:
         """Handle plugin execution command."""
-    
+
     # Query handling
     async def handle_get_plugin_query(
-        self, 
+        self,
         query: dict[str, object]
     ) -> FlextResult[FlextPlugin]:
         """Handle get plugin query."""
-    
+
     async def handle_list_plugins_query(
-        self, 
+        self,
         query: dict[str, object]
     ) -> FlextResult[list[FlextPlugin]]:
         """Handle list plugins query."""
@@ -526,30 +528,30 @@ from flext_plugin.application.handlers import FlextPluginRegistrationHandler
 
 class FlextPluginRegistrationHandler:
     """Specialized handler for plugin registration operations."""
-    
+
     def __init__(self, registry: FlextPluginRegistry):
         """Initialize handler with plugin registry."""
-    
+
     async def handle_register_plugin(
-        self, 
+        self,
         plugin: FlextPlugin
     ) -> FlextResult[FlextPlugin]:
         """Handle plugin registration with validation."""
-    
+
     async def handle_unregister_plugin(
-        self, 
+        self,
         plugin_id: str
     ) -> FlextResult[bool]:
         """Handle plugin unregistration with cleanup."""
-    
+
     async def handle_bulk_register(
-        self, 
+        self,
         plugins: list[FlextPlugin]
     ) -> FlextResult[list[str]]:
         """Handle bulk plugin registration."""
-    
+
     async def validate_registration(
-        self, 
+        self,
         plugin: FlextPlugin
     ) -> FlextResult[bool]:
         """Validate plugin before registration."""
@@ -569,7 +571,7 @@ from flext_plugin.domain.ports import (
 # Plugin management interface
 class FlextPluginManagerPort(Protocol):
     """Port for plugin management operations."""
-    
+
     async def register_plugin(self, plugin: FlextPlugin) -> FlextResult[FlextPlugin]
     async def activate_plugin(self, plugin_id: str) -> FlextResult[bool]
     async def deactivate_plugin(self, plugin_id: str) -> FlextResult[bool]
@@ -578,7 +580,7 @@ class FlextPluginManagerPort(Protocol):
 # Plugin loading interface
 class FlextPluginLoaderPort(Protocol):
     """Port for plugin loading operations."""
-    
+
     async def load_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]
     async def unload_plugin(self, plugin_id: str) -> FlextResult[bool]
     async def reload_plugin(self, plugin_id: str) -> FlextResult[bool]
@@ -586,7 +588,7 @@ class FlextPluginLoaderPort(Protocol):
 # Plugin discovery interface
 class FlextPluginDiscoveryPort(Protocol):
     """Port for plugin discovery operations."""
-    
+
     async def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]
     async def scan_directory(self, directory: str) -> FlextResult[list[str]]
     async def validate_plugin(self, plugin_path: str) -> FlextResult[bool]
@@ -628,7 +630,7 @@ from flext_plugin.hot_reload import HotReloadConfig
 
 class HotReloadConfig:
     """Configuration for hot reload system."""
-    
+
     enabled: bool = True
     watch_paths: list[str] = []
     watch_interval: int = 2
@@ -692,7 +694,7 @@ try:
     result = await platform.activate_plugin("non-existent-plugin")
     if result.is_failure():
         print(f"Activation failed: {result.error}")
-        
+
 except PluginError as e:
     print(f"Plugin error: {e}")
     print(f"Plugin: {e.plugin_name}")
@@ -712,7 +714,7 @@ PluginVersion = str
 PluginConfig = Dict[str, Any]
 PluginData = Dict[str, Any]
 PluginMetadata = Dict[str, Any]
-PluginList = List[FlextPlugin] 
+PluginList = List[FlextPlugin]
 ExecutionResult = FlextResult[PluginExecutionResult]
 ```
 
@@ -726,7 +728,7 @@ T = TypeVar('T')
 
 class PluginResult(Generic[T]):
     """Generic plugin operation result."""
-    
+
     success: bool
     data: Optional[T]
     error: Optional[str]

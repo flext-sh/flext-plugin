@@ -50,12 +50,12 @@ EXPECTED_BULK_SIZE = 2
 
 class TestPluginDiscovery:
     """Comprehensive test suite for PluginDiscovery core functionality.
-    
+
     This test class validates all aspects of the plugin discovery system including
     directory scanning, metadata extraction, plugin validation, and lifecycle
     management. Tests ensure the discovery system can handle various plugin formats,
     invalid configurations, and edge cases while maintaining performance standards.
-    
+
     Test Categories:
         - Initialization: Discovery instance creation and configuration
         - Directory Management: Adding, scanning, and validating plugin directories
@@ -63,7 +63,7 @@ class TestPluginDiscovery:
         - Metadata Processing: Plugin manifest validation and extraction
         - Filtering: Blacklist management and type-based filtering
         - Error Handling: Invalid plugins, missing files, and corrupt metadata
-        
+
     Architecture Integration:
         - Clean Architecture: Tests domain logic isolation from infrastructure
         - Plugin Lifecycle: Validates discovery → loading → activation flow
@@ -114,19 +114,19 @@ class TestPluginDiscovery:
         discovery: PluginDiscovery,
     ) -> None:
         """Validate plugin discovery behavior with empty plugin directories.
-        
+
         Tests the discovery system's handling of valid directories that contain
         no plugin files, ensuring graceful handling without errors or exceptions.
-        
+
         Mock Configuration:
             - mock_exists: Simulates directory existence (True)
             - mock_glob: Returns empty list simulating no plugin files
-        
+
         Test Scenario:
             - Directory exists but contains no plugin files
             - Discovery system scans empty directories
             - System returns empty result without errors
-        
+
         Validates:
             - Empty directory scanning completes successfully
             - Returns empty dictionary as expected result
@@ -155,20 +155,20 @@ class TestPluginDiscovery:
         discovery: PluginDiscovery,
     ) -> None:
         """Validate plugin discovery with complete metadata processing.
-        
+
         Tests the discovery system's ability to process plugins with valid
         JSON metadata files, ensuring proper metadata extraction and validation.
-        
+
         Mock Configuration:
             - mock_file: Simulates JSON metadata file content reading
             - mock_exists: Controls directory and file existence checks
             - mock_glob: Returns mock plugin files for discovery
-        
+
         Test Scenario:
             - Valid plugin file with accompanying JSON manifest
             - Metadata contains name, version, and type information
             - Discovery processes both plugin file and metadata
-        
+
         Validates:
             - Plugin discovery processes metadata successfully
             - Returns dictionary result structure
@@ -200,18 +200,18 @@ class TestPluginDiscovery:
         discovery: PluginDiscovery,
     ) -> None:
         """Validate plugin discovery handling of non-existent directories.
-        
+
         Tests the discovery system's resilience when configured with directories
         that don't exist, ensuring graceful error handling without exceptions.
-        
+
         Mock Configuration:
             - mock_exists: Simulates directory non-existence (False)
-        
+
         Test Scenario:
             - Add non-existent directory to discovery configuration
             - Attempt to discover plugins from invalid path
             - System handles missing directory gracefully
-        
+
         Validates:
             - Non-existent directory doesn't cause discovery failure
             - Returns empty result dictionary
@@ -302,7 +302,21 @@ class TestPluginDiscovery:
         assert plugin_files[1] in result
 
     def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
-        """Test blacklisting a plugin."""
+        """Validate plugin blacklisting functionality and state management.
+
+        Tests the ability to blacklist specific plugins, preventing them from
+        being loaded or activated while maintaining the blacklist state correctly.
+
+        Test Scenario:
+            - Add specific plugin ID to blacklist
+            - Verify plugin is marked as blacklisted
+            - Confirm blacklist state persists correctly
+
+        Validates:
+            - Plugin blacklisting operation succeeds
+            - Blacklist state is properly maintained
+            - Blacklisted plugin is correctly identified
+        """
         plugin_id = "test-plugin"
         discovery.blacklist_plugin(plugin_id)
 
@@ -315,7 +329,26 @@ class TestPluginDiscovery:
         assert not discovery.is_blacklisted(plugin_id)
 
     def test_validate_plugin_class_valid(self, discovery: PluginDiscovery) -> None:
-        """Test validating valid plugin class."""
+        """Validate plugin class validation for compliant plugin implementations.
+
+        Tests the plugin class validation system with a properly implemented
+        plugin class that meets all required interface and metadata standards.
+
+        Mock Configuration:
+            - Creates mock plugin class with required attributes
+            - Mocks issubclass to simulate proper inheritance
+            - Provides required methods (initialize, cleanup, health_check, execute)
+
+        Test Scenario:
+            - Valid plugin class with proper name and metadata
+            - All required methods present and callable
+            - Proper inheritance from base plugin class
+
+        Validates:
+            - Valid plugin class passes validation successfully
+            - Returns True for compliant plugin implementation
+            - Validation logic correctly identifies valid plugins
+        """
         # Create mock plugin class
         mock_plugin_class = Mock()
         mock_plugin_class.__name__ = "TestPlugin"
@@ -332,7 +365,25 @@ class TestPluginDiscovery:
                 raise AssertionError(f"Expected True, got {result}")
 
     def test_validate_plugin_class_invalid(self, discovery: PluginDiscovery) -> None:
-        """Test validating invalid plugin class."""
+        """Validate plugin class validation for non-compliant implementations.
+
+        Tests the plugin class validation system's ability to reject classes
+        that don't meet the required plugin interface or inheritance standards.
+
+        Mock Configuration:
+            - Creates mock class without plugin inheritance
+            - Mocks issubclass to return False for invalid class
+
+        Test Scenario:
+            - Invalid class that doesn't inherit from plugin base
+            - Missing required plugin methods or metadata
+            - Improper class structure for plugin system
+
+        Validates:
+            - Invalid plugin class fails validation correctly
+            - Returns False for non-compliant implementations
+            - Validation prevents invalid plugins from registration
+        """
         # Create mock class that's not a plugin
         mock_class = Mock()
         mock_class.__name__ = "NotAPlugin"
@@ -353,7 +404,26 @@ class TestPluginDiscovery:
                 raise AssertionError(f"Expected {{}}, got {result}")
 
     def test_register_plugin_manually(self, discovery: PluginDiscovery) -> None:
-        """Test manually registering a plugin."""
+        """Validate manual plugin registration and retrieval functionality.
+
+        Tests the ability to manually register a plugin class with the discovery
+        system, bypassing automatic file system discovery for direct registration.
+
+        Mock Configuration:
+            - Creates properly structured mock plugin class
+            - Mocks validation to pass for registration testing
+            - Provides realistic plugin metadata structure
+
+        Test Scenario:
+            - Create valid plugin class with required attributes
+            - Register plugin manually with discovery system
+            - Retrieve registered plugin for validation
+
+        Validates:
+            - Manual plugin registration succeeds without errors
+            - Registered plugin is discoverable by name
+            - Plugin metadata is correctly preserved
+        """
         # Create mock plugin class
         mock_plugin_class = Mock()
         mock_plugin_class.__name__ = "TestPlugin"

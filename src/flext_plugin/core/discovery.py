@@ -1,4 +1,4 @@
-"""FLEXT Core Plugin Discovery - Advanced plugin scanning and metadata extraction system.
+"""FLEXT Core Plugin Discovery - Advanced plugin scanning and metadata extraction.
 
 This module implements the core layer plugin discovery functionality,
 providing sophisticated plugin scanning, metadata extraction, and plugin
@@ -25,10 +25,9 @@ Architecture:
 
 Example:
     >>> from flext_plugin.core.discovery import PluginDiscovery
-    >>> 
+    >>>
     >>> discovery = PluginDiscovery(
-    ...     entity_id="discovery-001",
-    ...     plugin_directory="/opt/plugins"
+    ...     entity_id="discovery-001", plugin_directory="/opt/plugins"
     ... )
     >>> plugins = await discovery.discover_plugins()
     >>> print(f"Discovered {len(plugins)} plugins")

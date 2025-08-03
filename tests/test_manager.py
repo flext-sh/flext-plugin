@@ -1,10 +1,43 @@
-"""Tests for flext_plugin.manager module.
+"""Comprehensive test suite for flext_plugin.manager module.
 
-# Constants
-EXPECTED_BULK_SIZE = 2
-EXPECTED_DATA_COUNT = 3
+This test module validates the complete plugin management system including registry
+operations, plugin lifecycle management, and execution context handling within
+the FLEXT plugin ecosystem architecture.
 
-Comprehensive tests for plugin manager functionality.
+Plugin Management Architecture Testing:
+    - SimplePluginRegistry: Core plugin registry with registration and discovery
+    - FlextPluginManager: Complete plugin lifecycle and execution management
+    - PluginExecutionContext: Plugin execution environment and context management
+    - Factory Functions: Plugin manager creation and configuration utilities
+
+Test Implementation Strategy:
+    - Real Implementation Testing: Uses actual manager components with strategic mocking
+    - FlextResult Pattern Validation: Tests railway-oriented programming patterns
+    - Registry State Management: Validates plugin registration and lifecycle states
+    - Execution Context Testing: Plugin execution environment and data flow validation
+
+Testing Coverage:
+    - Plugin Registration: Registry operations with success/failure scenarios
+    - Lifecycle Management: Complete plugin initialization, execution, and cleanup
+    - Context Management: Execution context creation and data handling
+    - Manager Factory: Plugin manager creation with configuration options
+    - Error Handling: Comprehensive exception handling and FlextResult patterns
+
+Enterprise Integration:
+    - Built on flext-core foundation with FlextResult patterns
+    - Architectural compliance with Clean Architecture principles
+    - Plugin ecosystem coordination and integration testing
+    - Performance validation for bulk operations and concurrent access
+
+Quality Standards:
+    - Enterprise-grade error handling with detailed context information
+    - Comprehensive state validation with proper lifecycle tracking
+    - Integration testing with realistic plugin scenarios
+    - Performance considerations for production deployment scenarios
+
+# Test Constants
+EXPECTED_BULK_SIZE = 2      # Expected size for bulk operation testing
+EXPECTED_DATA_COUNT = 3     # Expected data count for validation testing
 """
 
 from __future__ import annotations
@@ -18,8 +51,8 @@ from flext_core import FlextResult
 
 from flext_plugin import FlextPluginConfig, FlextPluginManager
 from flext_plugin.core.types import (
-    FlextPluginManagerResult,
     PluginExecutionContext,
+    PluginManagerResult,
     PluginType,
     SimplePluginRegistry,
     create_plugin_manager,
@@ -42,6 +75,7 @@ class TestSimplePluginRegistry:
         plugin.metadata.name = "test-plugin"
         return plugin
 
+    @pytest.mark.asyncio
     async def test_register_plugin_success(
         self,
         registry: SimplePluginRegistry,
@@ -50,13 +84,14 @@ class TestSimplePluginRegistry:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.success
+        assert result.is_success
         if result.data != mock_plugin:
             raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
         assert registry.get_plugin("test-plugin") == mock_plugin
         if registry.get_plugin_count() != 1:
             raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_register_plugin_failure(
         self,
         registry: SimplePluginRegistry,
@@ -68,7 +103,7 @@ class TestSimplePluginRegistry:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -77,6 +112,7 @@ class TestSimplePluginRegistry:
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_unregister_plugin(
         self,
         registry: SimplePluginRegistry,
@@ -91,13 +127,14 @@ class TestSimplePluginRegistry:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.success
+        assert result.is_success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
         assert registry.get_plugin("test-plugin") is None
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_unregister_nonexistent_plugin(
         self,
         registry: SimplePluginRegistry,
@@ -106,7 +143,7 @@ class TestSimplePluginRegistry:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.success
+        assert result.is_success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
 
@@ -147,6 +184,7 @@ class TestSimplePluginRegistry:
             raise AssertionError(f"Expected {1}, got {len(tap_plugins)}")
         assert tap_plugins[0].name == "tap-plugin"
 
+    @pytest.mark.asyncio
     async def test_cleanup_all(
         self,
         registry: SimplePluginRegistry,
@@ -253,12 +291,12 @@ class TestPluginExecutionContext:
         assert context.timeout_seconds is None
 
 
-class TestFlextPluginManagerResult:
-    """Test FlextPluginManagerResult model."""
+class TestPluginManagerResult:
+    """Test PluginManagerResult model."""
 
     def test_manager_result_creation(self) -> None:
         """Test creating manager result."""
-        result = FlextPluginManagerResult(
+        result = PluginManagerResult(
             operation="initialize",
             success=True,
             plugins_affected=["plugin1", "plugin2"],
@@ -270,8 +308,8 @@ class TestFlextPluginManagerResult:
         if result.operation != "initialize":
             expected = "initialize"
             raise AssertionError(f"Expected {expected}, got {result.operation}")
-        if not (result.success):
-            raise AssertionError(f"Expected True, got {result.success}")
+        if not (result.is_success):
+            raise AssertionError(f"Expected True, got {result.is_success}")
         if result.plugins_affected != ["plugin1", "plugin2"]:
             expected_plugins = ["plugin1", "plugin2"]
             raise AssertionError(
@@ -285,7 +323,7 @@ class TestFlextPluginManagerResult:
 
     def test_manager_result_with_errors(self) -> None:
         """Test manager result with errors."""
-        result = FlextPluginManagerResult(
+        result = PluginManagerResult(
             operation="load_plugins",
             success=False,
             plugins_affected=[],
@@ -296,8 +334,8 @@ class TestFlextPluginManagerResult:
 
         if result.operation != "load_plugins":
             raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
-        if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")
+        if result.is_success:
+            raise AssertionError(f"Expected False, got {result.is_success}")
         assert result.errors == ["Plugin not found", "Invalid configuration"]
 
 
@@ -309,20 +347,22 @@ class TestFlextPluginManager:
         """Create plugin manager for testing."""
         return FlextPluginManager(auto_discover=False, security_enabled=False)
 
+    @pytest.mark.asyncio
     async def test_manager_initialization(self, manager: FlextPluginManager) -> None:
         """Test plugin manager initialization."""
         assert not manager.is_initialized
 
         result = await manager.initialize()
 
-        assert result.success
+        assert result.is_success
         assert manager.is_initialized
-        assert isinstance(result.data, FlextPluginManagerResult)
+        assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
             raise AssertionError(
                 f"Expected {'initialize'}, got {result.data.operation}"
             )
 
+    @pytest.mark.asyncio
     async def test_manager_initialization_with_auto_discover(self) -> None:
         """Test manager initialization with auto-discovery."""
         manager = FlextPluginManager(auto_discover=True, security_enabled=False)
@@ -330,7 +370,7 @@ class TestFlextPluginManager:
         # Mock the discovery method to avoid actual file system operations
         with patch.object(manager, "discover_and_load_plugins") as mock_discover:
             mock_discover.return_value = FlextResult.ok(
-                FlextPluginManagerResult(
+                PluginManagerResult(
                     operation="discover_and_load",
                     success=True,
                     plugins_affected=["test-plugin"],
@@ -342,10 +382,11 @@ class TestFlextPluginManager:
 
             result = await manager.initialize()
 
-            assert result.success
+            assert result.is_success
             assert manager.is_initialized
             mock_discover.assert_called_once()
 
+    @pytest.mark.asyncio
     async def test_discover_and_load_plugins_empty(
         self,
         manager: FlextPluginManager,
@@ -357,7 +398,7 @@ class TestFlextPluginManager:
 
             result = await manager.discover_and_load_plugins()
 
-            assert not result.success
+            assert not result.is_success
             assert result.error is not None
         assert result.error is not None
         if "No plugins discovered" not in result.error:
@@ -365,6 +406,7 @@ class TestFlextPluginManager:
                 f"Expected {'No plugins discovered'} in {result.error}"
             )
 
+    @pytest.mark.asyncio
     async def test_execute_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test executing non-existent plugin."""
         await manager.initialize()
@@ -374,11 +416,12 @@ class TestFlextPluginManager:
             {"test": "data"},
         )
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
+    @pytest.mark.asyncio
     async def test_configure_plugin_not_found(
         self, manager: FlextPluginManager
     ) -> None:
@@ -388,11 +431,12 @@ class TestFlextPluginManager:
         config = FlextPluginConfig(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
+    @pytest.mark.asyncio
     async def test_reload_plugin_not_configured(
         self, manager: FlextPluginManager
     ) -> None:
@@ -401,26 +445,28 @@ class TestFlextPluginManager:
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
                 f"Expected {'not discovered'} in {result.error.lower()}"
             )
 
+    @pytest.mark.asyncio
     async def test_unload_plugin_not_found(self, manager: FlextPluginManager) -> None:
         """Test unloading non-existent plugin."""
         await manager.initialize()
 
-        result = await manager.unload_plugin("non-existent")
+        result = manager.unload_plugin("non-existent")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
             raise AssertionError(
                 f"Expected {'plugin unload failed'} in {result.error.lower()}"
             )
 
+    @pytest.mark.asyncio
     async def test_integrate_with_protocols(self, manager: FlextPluginManager) -> None:
         """Test protocol integration."""
         await manager.initialize()
@@ -428,7 +474,7 @@ class TestFlextPluginManager:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.success
+        assert result.is_success
 
     def test_get_plugin_status_not_found(self, manager: FlextPluginManager) -> None:
         """Test getting status of non-existent plugin."""
@@ -449,6 +495,7 @@ class TestFlextPluginManager:
         if plugins != []:
             raise AssertionError(f"Expected {[]}, got {plugins}")
 
+    @pytest.mark.asyncio
     async def test_cleanup(self, manager: FlextPluginManager) -> None:
         """Test plugin manager cleanup."""
         await manager.initialize()
@@ -462,18 +509,19 @@ class TestFlextPluginManager:
         if manager.plugin_count != 0:
             raise AssertionError(f"Expected {0}, got {manager.plugin_count}")
 
+    @pytest.mark.asyncio
     async def test_create_plugin_context(self, manager: FlextPluginManager) -> None:
         """Test creating plugin context."""
         context = await manager._create_plugin_context("test-plugin")
 
-        if context.plugin_name != "test-plugin":
-            raise AssertionError(f"Expected {'test-plugin'}, got {context.plugin_name}")
-        assert context.services == {}
-        if context.dependencies != {}:
-            raise AssertionError(f"Expected {{}}, got {context.dependencies}")
-        assert context.permissions == ["read", "execute"]
-        if context.security_level != "standard":
-            raise AssertionError(f"Expected {'standard'}, got {context.security_level}")
+        if context.plugin_id != "test-plugin":
+            raise AssertionError(f"Expected {'test-plugin'}, got {context.plugin_id}")
+        assert context.input_data == {}
+        if context.context != {}:
+            raise AssertionError(f"Expected {{}}, got {context.context}")
+        assert context.execution_id is not None
+        if context.timeout_seconds is not None:
+            raise AssertionError(f"Expected None, got {context.timeout_seconds}")
 
 
 class TestCreateFlextPluginManager:

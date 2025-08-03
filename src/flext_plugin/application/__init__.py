@@ -1,4 +1,4 @@
-"""FLEXT Plugin Application Layer - CQRS application services and use case orchestration.
+"""FLEXT Plugin Application Layer - CQRS services and use case orchestration.
 
 This package implements the application layer of the Clean Architecture, providing
 application services and CQRS handlers that orchestrate domain operations and
@@ -6,7 +6,7 @@ coordinate with external systems. The application layer translates between
 the presentation layer and domain layer while managing transactions and workflows.
 
 Key Components:
-    - services.py: Application services (FlextPluginService, FlextPluginDiscoveryService)
+    - services.py: Application services (FlextPluginService, DiscoveryService)
     - handlers.py: CQRS command and event handlers
 
 CQRS Patterns:

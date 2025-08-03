@@ -1,6 +1,39 @@
-"""Basic tests for flext-infrastructure.plugins.flext-plugin functionality.
+"""Basic integration test suite for flext_plugin core functionality.
 
-Tests following flext-core patterns and standards.
+This test module provides fundamental validation of the FLEXT plugin system's
+core functionality, ensuring proper integration with flext-core patterns and
+basic operational capabilities across the plugin ecosystem.
+
+Core Integration Testing:
+    - Import Validation: Verifies all core plugin components are properly importable
+    - FlextCore Dependencies: Tests integration with flext-core foundation patterns
+    - Plugin Type System: Validates plugin type enumeration and classification
+    - Manager Operations: Basic plugin manager functionality and lifecycle operations
+
+Test Implementation Philosophy:
+    - Basic Functionality Focus: Tests fundamental operations without complex scenarios
+    - Integration Validation: Ensures proper integration with FLEXT ecosystem
+    - Import Safety: Validates all required components are available and functional
+    - Error Resilience: Tests graceful handling of basic error conditions
+
+Testing Coverage:
+    - Component Import Validation: All core plugin system components
+    - FlextResult Integration: Railway-oriented programming pattern usage
+    - Plugin Type Enumeration: Singer/Meltano plugin type system validation
+    - Manager Lifecycle: Basic plugin manager initialization and operations
+    - Discovery Operations: Plugin discovery functionality and error handling
+
+Architecture Compliance:
+    - Built on flext-core foundation with proper architectural patterns
+    - Follows Clean Architecture principles with domain separation
+    - Implements enterprise-grade error handling and result patterns
+    - Ensures compatibility with broader FLEXT ecosystem integration
+
+Quality Standards:
+    - Enterprise-grade import validation with proper error handling
+    - Basic integration testing with realistic operational scenarios
+    - Error condition testing with proper exception handling
+    - Performance validation for core operational paths
 """
 
 from __future__ import annotations
@@ -68,7 +101,24 @@ async def test_plugin_manager_basic() -> None:
 
 
 class TestFlextPluginIntegration:
-    """Test flext-infrastructure.plugins.flext-plugin integration patterns."""
+    """Comprehensive test suite for FLEXT plugin system integration patterns.
+
+    Validates the complete integration of the plugin system with FLEXT ecosystem
+    components, ensuring proper lifecycle management, discovery operations, and
+    error handling across realistic usage scenarios.
+
+    Integration Test Categories:
+        - Plugin Lifecycle: Load, unload, and reload operations with proper state management
+        - Discovery Operations: Plugin discovery with realistic error scenarios
+        - Manager Operations: Plugin manager functionality and API compliance
+        - Error Handling: Graceful failure handling for missing plugins and invalid operations
+
+    Validation Focus:
+        - Real API Usage: Tests actual plugin manager methods and operations
+        - Error Resilience: Validates proper error handling for edge cases
+        - State Management: Ensures proper plugin lifecycle state transitions
+        - Integration Points: Tests coordination with broader FLEXT ecosystem
+    """
 
     async def test_plugin_load_unload(self) -> None:
         """Test plugin load/unload functionality."""

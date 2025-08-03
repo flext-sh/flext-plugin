@@ -5,22 +5,26 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 ## Example Categories
 
 ### 🚀 Getting Started
+
 - **[Basic Plugin](basic-plugin.md)** - Simple plugin implementation
 - **[Plugin Configuration](plugin-configuration.md)** - Configuration management patterns
 - **[Plugin Lifecycle](plugin-lifecycle.md)** - Lifecycle management examples
 
 ### 🔌 Plugin Types
+
 - **[Singer Tap Plugin](singer-tap.md)** - Data extraction plugin for Singer/Meltano
 - **[Singer Target Plugin](singer-target.md)** - Data loading plugin
 - **[Service Plugin](service-plugin.md)** - Microservice integration
 - **[Utility Plugin](utility-plugin.md)** - General-purpose utility plugin
 
 ### 🛠️ Development Workflow
+
 - **[Hot Reload Demo](hot-reload-demo.md)** - Development with live reloading
 - **[Testing Plugins](testing-plugins.md)** - Comprehensive testing strategies
 - **[Plugin Debugging](plugin-debugging.md)** - Debugging and troubleshooting
 
 ### 🏗️ Advanced Integration
+
 - **[FlexCore Integration](flexcore-integration.md)** - Go service integration
 - **[Multi-Plugin Orchestration](multi-plugin-orchestration.md)** - Coordinating multiple plugins
 - **[Custom Plugin Types](custom-plugin-types.md)** - Creating custom plugin categories
@@ -95,7 +99,7 @@ async def test_plugin_activation(platform):
     """Test plugin activation."""
     plugin = create_flext_plugin(name="test-plugin", version="1.0.0")
     await platform.register_plugin(plugin)
-    
+
     result = await platform.activate_plugin("test-plugin")
     assert result.is_success()
 ```
@@ -189,7 +193,7 @@ from typing import Dict, Any
 
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
-    
+
     def __init__(self, **kwargs):
         super().__init__(
             name="example-plugin",
@@ -201,7 +205,7 @@ class ExamplePlugin(FlextPlugin):
             },
             **kwargs
         )
-    
+
     async def initialize(self) -> FlextResult[bool]:
         """Initialize plugin resources."""
         try:
@@ -210,21 +214,21 @@ class ExamplePlugin(FlextPlugin):
             return FlextResult.ok(True)
         except Exception as e:
             return FlextResult.fail(f"Initialization failed: {e}")
-    
+
     async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
                 return FlextResult.fail("Plugin not active")
-            
+
             # Process data
             result = await self._process_data(data)
             return FlextResult.ok(result)
-            
+
         except Exception as e:
             return FlextResult.fail(f"Execution failed: {e}")
-    
+
     async def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         try:
@@ -232,15 +236,15 @@ class ExamplePlugin(FlextPlugin):
             return FlextResult.ok(True)
         except Exception as e:
             return FlextResult.fail(f"Cleanup failed: {e}")
-    
+
     async def _setup_resources(self):
         """Setup plugin-specific resources."""
         pass
-    
+
     async def _process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
-    
+
     async def _cleanup_resources(self):
         """Cleanup plugin-specific resources."""
         pass
@@ -255,60 +259,60 @@ from your_plugin import ExamplePlugin
 
 class TestExamplePlugin:
     """Test suite template for plugins."""
-    
+
     @pytest.fixture
     def plugin(self):
         """Create plugin instance for testing."""
         return ExamplePlugin()
-    
+
     @pytest.fixture
     async def platform(self):
         """Create test platform."""
         platform = create_flext_plugin_platform(config={"test_mode": True})
         yield platform
         await platform.shutdown()
-    
+
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "example-plugin"
         assert plugin.plugin_version == "1.0.0"
         assert plugin.is_valid()
-    
+
     async def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = await plugin.initialize()
         assert result.is_success()
-    
+
     async def test_plugin_execution(self, plugin):
         """Test plugin execution."""
         # Initialize first
         await plugin.initialize()
         plugin.activate()
-        
+
         # Test execution
         test_data = {"input": "test_value"}
         result = await plugin.execute(test_data)
-        
+
         assert result.is_success()
         assert "processed" in result.data
-    
+
     async def test_plugin_lifecycle(self, platform, plugin):
         """Test complete plugin lifecycle."""
         # Register plugin
         register_result = await platform.register_plugin(plugin)
         assert register_result.is_success()
-        
+
         # Activate plugin
         activate_result = await platform.activate_plugin(plugin.name)
         assert activate_result.is_success()
-        
+
         # Execute plugin
         execute_result = await platform.execute_plugin(
-            plugin.name, 
+            plugin.name,
             {"test": "data"}
         )
         assert execute_result.is_success()
-        
+
         # Deactivate plugin
         deactivate_result = await platform.deactivate_plugin(plugin.name)
         assert deactivate_result.is_success()
@@ -348,6 +352,7 @@ class TestExamplePlugin:
 ## Best Practices Demonstrated
 
 ### 1. Error Handling
+
 All examples demonstrate proper error handling using `FlextResult` pattern:
 
 ```python
@@ -364,6 +369,7 @@ except Exception as e:
 ```
 
 ### 2. Resource Management
+
 Proper resource cleanup in plugin lifecycle:
 
 ```python
@@ -372,17 +378,18 @@ async def cleanup(self) -> FlextResult[bool]:
     try:
         if hasattr(self, '_connection') and self._connection:
             await self._connection.close()
-        
+
         if hasattr(self, '_temp_files'):
             for file_path in self._temp_files:
                 os.unlink(file_path)
-        
+
         return FlextResult.ok(True)
     except Exception as e:
         return FlextResult.fail(f"Cleanup failed: {e}")
 ```
 
 ### 3. Type Safety
+
 All examples use proper type hints:
 
 ```python
@@ -390,7 +397,7 @@ from typing import Dict, List, Optional, Any
 from flext_core import FlextResult
 
 async def process_data(
-    self, 
+    self,
     data: Dict[str, Any]
 ) -> FlextResult[Dict[str, Any]]:
     """Type-safe data processing."""
@@ -398,6 +405,7 @@ async def process_data(
 ```
 
 ### 4. Testing Coverage
+
 Comprehensive test coverage for all plugin functionality:
 
 - Unit tests for individual methods
@@ -410,12 +418,14 @@ Comprehensive test coverage for all plugin functionality:
 ### Adding New Examples
 
 1. **Create Example Directory**:
+
    ```bash
    mkdir docs/examples/your-example
    cd docs/examples/your-example
    ```
 
 2. **Follow Template Structure**:
+
    - `plugin.py` - Main plugin implementation
    - `test_plugin.py` - Comprehensive tests
    - `config.json` - Configuration example
@@ -425,11 +435,12 @@ Comprehensive test coverage for all plugin functionality:
    Add your example to this README.md file
 
 4. **Test Example**:
+
    ```bash
    # Ensure example works
    python plugin.py
    pytest test_plugin.py -v
-   
+
    # Validate against quality gates
    make lint
    make type-check

@@ -61,18 +61,18 @@ class PluginStatus(Enum):
     """
 
     # Lifecycle states - Primary operational states
-    UNKNOWN = "unknown"          # Initial state, plugin not yet analyzed
-    DISCOVERED = "discovered"    # Plugin found but not yet loaded
-    LOADED = "loaded"           # Plugin loaded into memory, ready for activation
-    ACTIVE = "active"           # Plugin is running and available for execution
-    INACTIVE = "inactive"       # Plugin loaded but not currently active
-    LOADING = "loading"         # Transitional state during plugin loading
-    ERROR = "error"             # Plugin encountered error and cannot operate
-    DISABLED = "disabled"       # Plugin intentionally disabled by system/user
+    UNKNOWN = "unknown"  # Initial state, plugin not yet analyzed
+    DISCOVERED = "discovered"  # Plugin found but not yet loaded
+    LOADED = "loaded"  # Plugin loaded into memory, ready for activation
+    ACTIVE = "active"  # Plugin is running and available for execution
+    INACTIVE = "inactive"  # Plugin loaded but not currently active
+    LOADING = "loading"  # Transitional state during plugin loading
+    ERROR = "error"  # Plugin encountered error and cannot operate
+    DISABLED = "disabled"  # Plugin intentionally disabled by system/user
 
     # Health states - Can be combined with lifecycle states
-    HEALTHY = "healthy"         # Plugin is functioning normally
-    UNHEALTHY = "unhealthy"     # Plugin showing signs of degraded performance
+    HEALTHY = "healthy"  # Plugin is functioning normally
+    UNHEALTHY = "unhealthy"  # Plugin showing signs of degraded performance
 
 
 class PluginType(Enum):
@@ -100,34 +100,34 @@ class PluginType(Enum):
     """
 
     # Singer ETL types - Data pipeline integration with Meltano ecosystem
-    TAP = "tap"                     # Data extraction from sources (Singer spec)
-    TARGET = "target"               # Data loading to destinations (Singer spec)
-    TRANSFORM = "transform"         # Data transformation with DBT integration
+    TAP = "tap"  # Data extraction from sources (Singer spec)
+    TARGET = "target"  # Data loading to destinations (Singer spec)
+    TRANSFORM = "transform"  # Data transformation with DBT integration
 
     # Architecture types - Microservice and system integration patterns
-    EXTENSION = "extension"         # Platform extensions and add-ons
-    SERVICE = "service"             # Microservice components
-    MIDDLEWARE = "middleware"       # Request/response processing
-    TRANSFORMER = "transformer"    # Data transformation utilities
+    EXTENSION = "extension"  # Platform extensions and add-ons
+    SERVICE = "service"  # Microservice components
+    MIDDLEWARE = "middleware"  # Request/response processing
+    TRANSFORMER = "transformer"  # Data transformation utilities
 
     # Integration types - External system connectivity
-    API = "api"                     # REST/GraphQL API endpoints
-    DATABASE = "database"           # Database connectivity (Oracle, PostgreSQL)
-    NOTIFICATION = "notification"   # Notification and messaging services
+    API = "api"  # REST/GraphQL API endpoints
+    DATABASE = "database"  # Database connectivity (Oracle, PostgreSQL)
+    NOTIFICATION = "notification"  # Notification and messaging services
     AUTHENTICATION = "authentication"  # Authentication providers
-    AUTHORIZATION = "authorization"     # Authorization and access control
+    AUTHORIZATION = "authorization"  # Authorization and access control
 
     # Utility types - General-purpose tools and processors
-    UTILITY = "utility"             # General-purpose utilities
-    TOOL = "tool"                   # Development and REDACTED_LDAP_BIND_PASSWORDistrative tools
-    HANDLER = "handler"             # Event and message handlers
-    PROCESSOR = "processor"         # Data and content processors
+    UTILITY = "utility"  # General-purpose utilities
+    TOOL = "tool"  # Development and REDACTED_LDAP_BIND_PASSWORDistrative tools
+    HANDLER = "handler"  # Event and message handlers
+    PROCESSOR = "processor"  # Data and content processors
 
     # System types - Core platform components
-    CORE = "core"                   # Core system plugins
-    ADDON = "addon"                 # System add-ons and enhancements
-    THEME = "theme"                 # UI themes and customizations
-    LANGUAGE = "language"           # Language and localization plugins
+    CORE = "core"  # Core system plugins
+    ADDON = "addon"  # System add-ons and enhancements
+    THEME = "theme"  # UI themes and customizations
+    LANGUAGE = "language"  # Language and localization plugins
 
 
 class PluginError(FlextProcessingError):
@@ -206,7 +206,7 @@ class PluginExecutionResult:
         ...     success=True,
         ...     data={"processed": 100},
         ...     plugin_name="data-processor",
-        ...     execution_time=0.5
+        ...     execution_time=0.5,
         ... )
         >>> if result.is_success():
         ...     print(f"Processed {result.data['processed']} items")

@@ -9,6 +9,7 @@ This module implements the application layer of the Clean Architecture, providin
 ### Application Services
 
 #### `FlextPluginService`
+
 Core plugin management service coordinating business operations.
 
 ```python
@@ -31,6 +32,7 @@ if result.is_success():
 ```
 
 **Key Operations:**
+
 - **Plugin Creation**: Validate and create plugin entities
 - **Lifecycle Management**: Activate, deactivate, and manage plugin states
 - **Execution Coordination**: Orchestrate plugin execution with context
@@ -38,6 +40,7 @@ if result.is_success():
 - **Health Monitoring**: Track and report plugin health status
 
 #### `FlextPluginDiscoveryService`
+
 Plugin discovery and scanning service.
 
 ```python
@@ -53,7 +56,7 @@ if result.is_success():
 
 # Recursive discovery with depth control
 deep_result = await discovery.discover_plugins_recursive(
-    "./workspace", 
+    "./workspace",
     max_depth=3
 )
 
@@ -62,6 +65,7 @@ singer_result = await discovery.scan_for_singer_plugins("./meltano-project")
 ```
 
 **Discovery Features:**
+
 - **Directory Scanning**: Recursive plugin discovery with depth control
 - **Singer Integration**: Specialized Singer tap/target discovery
 - **Metadata Validation**: Plugin structure and metadata validation
@@ -71,6 +75,7 @@ singer_result = await discovery.scan_for_singer_plugins("./meltano-project")
 ### CQRS Handlers
 
 #### `FlextPluginHandler`
+
 Command and query handler for plugin operations.
 
 ```python
@@ -98,6 +103,7 @@ plugins = await handler.handle_list_plugins_query(list_query)
 ```
 
 **Command Operations:**
+
 - `create_plugin`: Create new plugin with validation
 - `activate_plugin`: Activate plugin with dependency checking
 - `deactivate_plugin`: Deactivate plugin with cleanup
@@ -105,12 +111,14 @@ plugins = await handler.handle_list_plugins_query(list_query)
 - `update_plugin_config`: Update plugin configuration
 
 **Query Operations:**
+
 - `get_plugin`: Retrieve plugin by identifier
 - `list_plugins`: List plugins with filtering and pagination
 - `get_plugin_status`: Get current plugin status and health
 - `list_active_plugins`: Get all currently active plugins
 
 #### `FlextPluginRegistrationHandler`
+
 Specialized handler for plugin registration operations.
 
 ```python
@@ -130,6 +138,7 @@ validation = await registration_handler.validate_registration(plugin)
 ```
 
 **Registration Features:**
+
 - **Individual Registration**: Single plugin registration with validation
 - **Bulk Registration**: Multiple plugin registration with rollback
 - **Validation**: Pre-registration validation and conflict detection
@@ -145,32 +154,32 @@ Application services coordinate domain operations without containing business lo
 class FlextPluginService:
     def __init__(self, registry: FlextPluginRegistry):
         self.registry = registry
-    
+
     async def create_plugin(self, config: dict) -> FlextResult[FlextPlugin]:
         """Create plugin by coordinating domain operations."""
         # Validate input (application concern)
         validation = await self._validate_plugin_config(config)
         if validation.is_failure():
             return validation
-        
+
         # Create domain entity (domain operation)
         plugin = FlextPlugin(**config)
-        
+
         # Register with registry (domain operation)
         return await self.registry.register_plugin(plugin)
-    
+
     async def activate_plugin(self, plugin_id: str) -> FlextResult[bool]:
         """Activate plugin with dependency coordination."""
         # Get plugin (domain query)
         plugin = self.registry.get_plugin(plugin_id)
         if not plugin:
             return FlextResult.fail(f"Plugin {plugin_id} not found")
-        
+
         # Check dependencies (application coordination)
         dep_check = await self._validate_dependencies(plugin)
         if dep_check.is_failure():
             return dep_check
-        
+
         # Activate plugin (domain operation)
         return plugin.activate()
 ```
@@ -180,9 +189,9 @@ class FlextPluginService:
 ```python
 class PluginDeploymentWorkflow:
     """Complex workflow coordinating multiple operations."""
-    
+
     async def deploy_plugin_package(
-        self, 
+        self,
         package_path: str
     ) -> FlextResult[FlextPlugin]:
         """Deploy plugin package with full workflow."""
@@ -193,29 +202,29 @@ class PluginDeploymentWorkflow:
             )
             if discovery_result.is_failure():
                 return discovery_result
-            
+
             plugin = discovery_result.data[0]  # Assume single plugin
-            
+
             # Validation phase
             validation_result = await self._validate_plugin_package(plugin)
             if validation_result.is_failure():
                 return validation_result
-            
+
             # Registration phase
             registration_result = await self.registry.register_plugin(plugin)
             if registration_result.is_failure():
                 return registration_result
-            
+
             # Configuration phase
             config_result = await self._apply_plugin_configuration(plugin)
             if config_result.is_failure():
                 # Rollback registration
                 await self.registry.unregister_plugin(plugin.name)
                 return config_result
-            
+
             # Activation phase
             return plugin.activate()
-            
+
         except Exception as e:
             return FlextResult.fail(f"Deployment failed: {e}")
 ```
@@ -280,36 +289,36 @@ class ListPluginsQuery:
 ```python
 class FlextPluginCommandHandler:
     """Handles plugin-related commands."""
-    
+
     async def handle(self, command: CreatePluginCommand) -> FlextResult[FlextPlugin]:
         """Handle plugin creation command."""
         try:
             # Validate command
             if not command.name:
                 return FlextResult.fail("Plugin name is required")
-            
+
             # Create plugin entity
             plugin = FlextPlugin(
                 name=command.name,
                 version=command.version,
                 config=command.config
             )
-            
+
             # Register plugin
             result = await self.registry.register_plugin(plugin)
-            
+
             # Publish domain events
             if result.is_success():
                 await self._publish_events(plugin.get_domain_events())
-            
+
             return result
-            
+
         except Exception as e:
             return FlextResult.fail(f"Command handling failed: {e}")
 
 class FlextPluginQueryHandler:
     """Handles plugin-related queries."""
-    
+
     async def handle(self, query: ListPluginsQuery) -> FlextResult[list[FlextPlugin]]:
         """Handle list plugins query."""
         try:
@@ -317,14 +326,14 @@ class FlextPluginQueryHandler:
                 plugin_type=query.plugin_type,
                 status=query.status
             )
-            
+
             # Apply pagination
             start = query.offset
             end = start + query.limit
             paginated = plugins[start:end]
-            
+
             return FlextResult.ok(paginated)
-            
+
         except Exception as e:
             return FlextResult.fail(f"Query handling failed: {e}")
 ```
@@ -336,34 +345,34 @@ class FlextPluginQueryHandler:
 ```python
 class PluginConfigValidator:
     """Validates plugin configuration data."""
-    
+
     REQUIRED_FIELDS = ["name", "version"]
     MAX_NAME_LENGTH = 100
-    
+
     def validate(self, config: dict) -> FlextResult[dict]:
         """Validate plugin configuration."""
         errors = []
-        
+
         # Check required fields
         for field in self.REQUIRED_FIELDS:
             if field not in config:
                 errors.append(f"Missing required field: {field}")
-        
+
         # Validate name length
         name = config.get("name", "")
         if len(name) > self.MAX_NAME_LENGTH:
             errors.append(f"Name too long (max {self.MAX_NAME_LENGTH} characters)")
-        
+
         # Validate version format
         version = config.get("version", "")
         if not self._is_valid_semver(version):
             errors.append("Version must follow semantic versioning format")
-        
+
         if errors:
             return FlextResult.fail(f"Validation failed: {'; '.join(errors)}")
-        
+
         return FlextResult.ok(config)
-    
+
     def _is_valid_semver(self, version: str) -> bool:
         """Check if version follows semantic versioning."""
         import re
@@ -396,16 +405,16 @@ async def create_plugin(self, config: dict) -> FlextResult[FlextPlugin]:
         validation = self.validator.validate(config)
         if validation.is_failure():
             raise PluginValidationError(validation.error)
-        
+
         # Check dependencies
         deps = await self._resolve_dependencies(config)
         if deps.is_failure():
             raise PluginDependencyError(deps.error)
-        
+
         # Create plugin
         plugin = FlextPlugin(**config)
         return FlextResult.ok(plugin)
-        
+
     except PluginServiceError as e:
         return FlextResult.fail(str(e))
     except Exception as e:
@@ -429,12 +438,12 @@ class TestFlextPluginService:
         registry.register_plugin = AsyncMock()
         registry.get_plugin = Mock()
         return registry
-    
+
     @pytest.fixture
     def service(self, mock_registry):
         """Create service with mocked dependencies."""
         return FlextPluginService(mock_registry)
-    
+
     async def test_create_plugin_success(self, service, mock_registry):
         """Test successful plugin creation."""
         config = {
@@ -442,13 +451,13 @@ class TestFlextPluginService:
             "version": "1.0.0",
             "description": "Test plugin"
         }
-        
+
         mock_registry.register_plugin.return_value = FlextResult.ok(
             FlextPlugin(**config)
         )
-        
+
         result = await service.create_plugin(config)
-        
+
         assert result.is_success()
         assert result.data.name == "test-plugin"
         mock_registry.register_plugin.assert_called_once()
@@ -456,9 +465,9 @@ class TestFlextPluginService:
     async def test_create_plugin_validation_failure(self, service):
         """Test plugin creation with invalid configuration."""
         config = {"name": ""}  # Invalid: empty name
-        
+
         result = await service.create_plugin(config)
-        
+
         assert result.is_failure()
         assert "validation" in result.error.lower()
 ```
@@ -474,12 +483,12 @@ class TestFlextPluginHandler:
         service.create_plugin = AsyncMock()
         service.activate_plugin = AsyncMock()
         return service
-    
+
     @pytest.fixture
     def handler(self, mock_service):
         """Create handler with mocked service."""
         return FlextPluginHandler(mock_service)
-    
+
     async def test_handle_create_command(self, handler, mock_service):
         """Test create plugin command handling."""
         command = {
@@ -487,13 +496,13 @@ class TestFlextPluginHandler:
             "version": "1.0.0",
             "config": {}
         }
-        
+
         mock_service.create_plugin.return_value = FlextResult.ok(
             FlextPlugin(name="test-plugin", version="1.0.0")
         )
-        
+
         result = await handler.handle_create_plugin_command(command)
-        
+
         assert result.is_success()
         mock_service.create_plugin.assert_called_once()
 ```
@@ -508,12 +517,12 @@ from typing import Optional
 
 class CachedPluginService(FlextPluginService):
     """Plugin service with caching for read operations."""
-    
+
     @lru_cache(maxsize=128)
     def get_plugin_cached(self, plugin_id: str) -> Optional[FlextPlugin]:
         """Get plugin with LRU caching."""
         return self.registry.get_plugin(plugin_id)
-    
+
     def invalidate_cache(self, plugin_id: str) -> None:
         """Invalidate cache for specific plugin."""
         # Clear specific entry from cache
@@ -530,28 +539,28 @@ async def bulk_plugin_operations(
     """Process multiple plugin operations efficiently."""
     results = []
     failed_operations = []
-    
+
     # Group operations by type for efficiency
     creates = [op for op in operations if op["type"] == "create"]
     activations = [op for op in operations if op["type"] == "activate"]
-    
+
     # Process creates in parallel
     create_tasks = [
-        self.create_plugin(op["config"]) 
+        self.create_plugin(op["config"])
         for op in creates
     ]
     create_results = await asyncio.gather(*create_tasks, return_exceptions=True)
-    
+
     # Process results and handle failures
     for result in create_results:
         if isinstance(result, Exception):
             failed_operations.append(str(result))
         elif result.is_success():
             results.append(result.data)
-    
+
     if failed_operations:
         return FlextResult.fail(f"Bulk operation failures: {failed_operations}")
-    
+
     return FlextResult.ok(results)
 ```
 
@@ -576,16 +585,16 @@ from flext_plugin.application.handlers import FlextPluginHandler
 
 class PluginPlatformIntegration:
     """Integration between platform and application layers."""
-    
+
     def __init__(self):
         self.registry = FlextPluginRegistry()
         self.service = FlextPluginService(self.registry)
         self.handler = FlextPluginHandler(self.service)
-    
+
     async def handle_platform_request(self, request: dict) -> FlextResult:
         """Handle platform requests through application layer."""
         operation = request.get("operation")
-        
+
         if operation == "create_plugin":
             return await self.handler.handle_create_plugin_command(request)
         elif operation == "list_plugins":

@@ -1,4 +1,4 @@
-"""FLEXT Plugin Discovery System - File system scanning and plugin detection infrastructure.
+"""FLEXT Plugin Discovery System - File system scanning and plugin detection.
 
 This module implements the infrastructure layer plugin discovery functionality,
 providing file system scanning, plugin detection, and metadata extraction
@@ -24,7 +24,7 @@ Architecture:
 
 Example:
     >>> from flext_plugin.discovery import PluginDiscovery
-    >>> 
+    >>>
     >>> discovery = PluginDiscovery(plugin_directory="./plugins")
     >>> plugins = await discovery.scan()
     >>> print(f"Found {len(plugins)} plugin files")
@@ -46,37 +46,37 @@ from pydantic import ConfigDict
 
 
 class PluginDiscovery(FlextEntity):
-    """File system-based plugin discovery system with comprehensive scanning capabilities.
-    
+    """File system-based plugin discovery system with comprehensive scanning.
+
     Infrastructure component implementing plugin discovery through file system
     scanning and analysis. Provides systematic discovery of Python plugin files
     with metadata extraction, validation, and comprehensive error handling.
-    
+
     The discovery system maintains plugin directory state and provides async
     scanning capabilities while integrating with the broader FLEXT plugin
     management infrastructure. Supports configurable scanning parameters
     and comprehensive plugin file analysis.
-    
+
     Key Capabilities:
         - Recursive directory scanning for Python plugin files
         - Plugin metadata extraction from file system attributes
         - File structure analysis and validation
         - Async scanning operations with error handling
         - Integration with plugin registry and management systems
-    
+
     Discovery Process:
         1. Directory validation and sanitization
         2. Recursive file system traversal
         3. Plugin file identification and filtering
         4. Metadata extraction and normalization
         5. Result compilation and validation
-    
+
     File Detection:
         - Python files (.py) with plugin patterns
         - Plugin manifest files and configuration
         - Module structure analysis and validation
         - Dependency detection and requirement analysis
-    
+
     Example:
         >>> discovery = PluginDiscovery(plugin_directory="./plugins")
         >>> # Validate directory before scanning

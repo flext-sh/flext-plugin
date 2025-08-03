@@ -22,11 +22,11 @@ Use Cases:
 
 Example:
     >>> from flext_plugin.simple_plugin import Plugin
-    >>> 
+    >>>
     >>> class MyPlugin(Plugin):
     ...     def execute(self):
     ...         return f"Plugin {self.name} executing"
-    >>> 
+    >>>
     >>> plugin = MyPlugin("my-plugin")
     >>> result = plugin.activate()
     >>> if result.is_success():
@@ -50,31 +50,31 @@ from flext_core import FlextResult
 
 class Plugin:
     """Lightweight plugin base class with essential lifecycle management.
-    
+
     Simplified plugin implementation providing basic lifecycle management,
     activation/deactivation capabilities, and integration with FLEXT patterns.
     This class serves as a lightweight alternative to full domain entities
     while maintaining compatibility with the broader plugin ecosystem.
-    
+
     The Plugin class provides essential functionality for plugin development
     without the complexity of full domain modeling, making it suitable for
     rapid prototyping, simple implementations, and educational purposes.
-    
+
     Key Features:
         - Basic lifecycle management (activate/deactivate)
         - FlextResult integration for consistent error handling
         - Extensible design for custom plugin implementations
         - Compatibility with FLEXT plugin management system
         - Minimal resource footprint and complexity
-    
+
     Lifecycle States:
         - Inactive: Plugin created but not activated
         - Active: Plugin activated and ready for execution
-    
+
     Usage Pattern:
         Extend this class to create custom plugin implementations,
         overriding methods as needed for specific functionality.
-    
+
     Example:
         >>> class DataProcessorPlugin(Plugin):
         ...     def execute(self, data):
@@ -82,7 +82,7 @@ class Plugin:
         ...             return FlextResult.fail("Plugin not active")
         ...         # Process data
         ...         return FlextResult.ok(processed_data)
-        >>> 
+        >>>
         >>> plugin = DataProcessorPlugin("data-processor")
         >>> activation = plugin.activate()
         >>> if activation.is_success():

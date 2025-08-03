@@ -9,6 +9,7 @@ This module provides the fundamental building blocks that define plugin behavior
 ### Core Types
 
 #### `PluginStatus` Enum
+
 Plugin lifecycle and health status management.
 
 ```python
@@ -21,11 +22,13 @@ status = PluginStatus.ACTIVE      # Plugin ready for execution
 ```
 
 **States:**
+
 - **Lifecycle**: UNKNOWN → DISCOVERED → LOADED → ACTIVE ↔ INACTIVE
 - **Error States**: ERROR, DISABLED
 - **Health States**: HEALTHY, UNHEALTHY
 
 #### `PluginType` Enum
+
 Comprehensive plugin categorization system.
 
 ```python
@@ -43,6 +46,7 @@ db_plugin = PluginType.DATABASE        # Database connectivity
 ```
 
 **Categories:**
+
 - **Singer ETL**: TAP, TARGET, TRANSFORM (Meltano integration)
 - **Architecture**: SERVICE, MIDDLEWARE, EXTENSION
 - **Integration**: API, DATABASE, AUTHENTICATION, AUTHORIZATION
@@ -52,6 +56,7 @@ db_plugin = PluginType.DATABASE        # Database connectivity
 ### Error Handling
 
 #### `PluginError` Exception
+
 Base exception for plugin-related errors.
 
 ```python
@@ -64,6 +69,7 @@ except PluginError as e:
 ```
 
 **Features:**
+
 - Plugin identification context
 - Integration with FlextProcessingError hierarchy
 - Detailed error metadata for debugging
@@ -71,6 +77,7 @@ except PluginError as e:
 ### Execution Management
 
 #### `PluginExecutionResult` Class
+
 Comprehensive result container for plugin operations.
 
 ```python
@@ -88,6 +95,7 @@ if result.is_success():
 ```
 
 **Attributes:**
+
 - `success`: Execution outcome boolean
 - `data`: Result payload (any serializable object)
 - `error`: Error message for failures
@@ -95,6 +103,7 @@ if result.is_success():
 - `plugin_name`: Plugin identification
 
 #### `PluginExecutionContext` Class
+
 Execution context and metadata container.
 
 ```python
@@ -111,6 +120,7 @@ context = PluginExecutionContext(
 ### Discovery Module
 
 #### Plugin Discovery Engine
+
 Core discovery algorithms and scanning logic.
 
 ```python
@@ -121,6 +131,7 @@ plugins = discovery.discover_in_directory("./plugins")
 ```
 
 **Features:**
+
 - Directory scanning and plugin identification
 - Metadata extraction and validation
 - Integration with plugin registry systems
@@ -128,6 +139,7 @@ plugins = discovery.discover_in_directory("./plugins")
 ## Architecture Integration
 
 ### Clean Architecture Positioning
+
 The core module sits at the foundation layer of the Clean Architecture:
 
 ```
@@ -135,12 +147,14 @@ Application Layer → Domain Layer → Core Layer (THIS MODULE) → Foundation
 ```
 
 **Dependencies:**
+
 - **Inbound**: Used by domain, application, and platform layers
 - **Outbound**: Depends only on flext-core foundation patterns
 
 ### Design Patterns
 
 #### Type Safety
+
 All types include comprehensive type annotations:
 
 ```python
@@ -152,6 +166,7 @@ def process_plugin(
 ```
 
 #### Error Handling
+
 Follows railway-oriented programming with FlextResult integration:
 
 ```python
@@ -169,6 +184,7 @@ def safe_operation() -> FlextResult[PluginExecutionResult]:
 ## Usage Patterns
 
 ### Plugin Status Management
+
 ```python
 from flext_plugin.core.types import PluginStatus
 
@@ -184,6 +200,7 @@ def transition_plugin_state(current: PluginStatus, target: PluginStatus) -> bool
 ```
 
 ### Plugin Type Validation
+
 ```python
 from flext_plugin.core.types import PluginType
 
@@ -206,6 +223,7 @@ def is_integration_plugin(plugin_type: PluginType) -> bool:
 ```
 
 ### Result Handling
+
 ```python
 def handle_execution_result(result: PluginExecutionResult) -> None:
     """Process plugin execution results with comprehensive handling."""
@@ -226,16 +244,19 @@ def handle_execution_result(result: PluginExecutionResult) -> None:
 ## Quality Standards
 
 ### Type Annotation Coverage
+
 - **100% type coverage** for all public APIs
 - **Strict MyPy compliance** with no type: ignore comments
 - **Generic types** where appropriate for flexibility
 
 ### Documentation Standards
+
 - **Comprehensive docstrings** for all classes and methods
 - **Usage examples** in docstrings and README
 - **Architecture context** explaining integration patterns
 
 ### Testing Requirements
+
 - **Unit tests** for all type validation logic
 - **Integration tests** with domain layer components
 - **Performance tests** for execution result handling
@@ -243,17 +264,20 @@ def handle_execution_result(result: PluginExecutionResult) -> None:
 ## Development Guidelines
 
 ### Adding New Types
+
 1. Follow existing naming conventions (PluginXxx pattern)
 2. Include comprehensive docstrings with examples
 3. Add appropriate type annotations
 4. Update this README with new type documentation
 
 ### Error Handling Extensions
+
 1. Extend PluginError for specific error categories
 2. Include plugin context in all error scenarios
 3. Maintain consistency with FlextProcessingError patterns
 
 ### Performance Considerations
+
 - Types are lightweight and designed for frequent instantiation
 - Execution results support large data payloads efficiently
 - Context objects minimize memory overhead

@@ -26,7 +26,7 @@ Example:
     >>> plugin = FlextPlugin(
     ...     name="data-processor",
     ...     version="1.0.0",
-    ...     config={"description": "Processes data efficiently"}
+    ...     config={"description": "Processes data efficiently"},
     ... )
     >>> result = plugin.activate()
     >>> if result.is_success():
@@ -90,8 +90,8 @@ class FlextPlugin(FlextEntity):
         ...     version="2.1.0",
         ...     config={
         ...         "description": "Oracle database connector",
-        ...         "author": "FLEXT Team"
-        ...     }
+        ...         "author": "FLEXT Team",
+        ...     },
         ... )
         >>> activation_result = plugin.activate()
         >>> if activation_result.is_success():

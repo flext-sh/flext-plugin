@@ -1,4 +1,4 @@
-"""FLEXT Plugin Simple API - Factory functions and convenience methods for plugin entity creation.
+"""FLEXT Plugin Simple API - Factory functions and convenience methods for plugins.
 
 This module provides simplified factory functions for creating plugin entities,
 configurations, and metadata objects. These functions serve as convenience
@@ -24,15 +24,15 @@ Factory Patterns:
 
 Example:
     >>> from flext_plugin.simple_api import create_flext_plugin
-    >>> 
+    >>>
     >>> # Create plugin with minimal configuration
     >>> plugin = create_flext_plugin(
     ...     name="data-processor",
     ...     version="1.0.0",
     ...     config={
     ...         "description": "Processes data efficiently",
-    ...         "author": "FLEXT Team"
-    ...     }
+    ...         "author": "FLEXT Team",
+    ...     },
     ... )
     >>> print(f"Created plugin: {plugin.name} v{plugin.plugin_version}")
 
@@ -67,13 +67,13 @@ def create_flext_plugin(
     *,
     config: dict[str, object] | None = None,
 ) -> FlextPlugin:
-    """Create a new FlextPlugin entity with automatic ID generation and timestamp management.
-    
+    """Create a new FlextPlugin entity with automatic ID generation and timestamps.
+
     Factory function that creates a properly initialized FlextPlugin domain entity
     with automatic UUID generation and timestamp management. This function provides
     a simplified interface for plugin creation while ensuring all required fields
     are properly initialized and validated.
-    
+
     The function handles entity initialization complexity, providing sensible defaults
     and proper integration with the domain model. All created plugins are ready for
     registration and use within the FLEXT plugin management system.
@@ -98,8 +98,8 @@ def create_flext_plugin(
         ...     config={
         ...         "description": "Advanced data processing plugin",
         ...         "author": "FLEXT Development Team",
-        ...         "dependencies": ["flext-core", "flext-db"]
-        ...     }
+        ...         "dependencies": ["flext-core", "flext-db"],
+        ...     },
         ... )
         >>> print(f"Plugin {plugin.name} v{plugin.plugin_version} created")
 
@@ -187,12 +187,12 @@ def create_flext_plugin_registry(
 
 def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
     """Create a FlextPlugin entity from dictionary data with comprehensive validation.
-    
+
     Factory function that creates a FlextPlugin entity from dictionary input,
     providing comprehensive validation and type conversion. This function is
     particularly useful for creating plugins from external data sources such
     as configuration files, API responses, or serialized data.
-    
+
     The function performs robust validation of required fields, handles type
     conversion where appropriate, and provides meaningful error messages for
     debugging and troubleshooting plugin creation issues.
@@ -200,7 +200,7 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
     Args:
         plugin_data: Dictionary containing plugin information with expected keys:
             - name (required): Plugin identifier string
-            - version (required): Plugin version string  
+            - version (required): Plugin version string
             - description (optional): Human-readable description
             - author (optional): Plugin developer or organization
             - dependencies (optional): List of plugin dependencies
@@ -221,11 +221,11 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
         ...     "description": "Oracle database connectivity plugin",
         ...     "author": "FLEXT Team",
         ...     "dependencies": ["cx_Oracle", "sqlalchemy"],
-        ...     "status": "inactive"
+        ...     "status": "inactive",
         ... }
         >>> plugin = create_plugin_from_dict(plugin_data)
         >>> print(f"Created {plugin.name} from dictionary data")
-    
+
     Validation Process:
         1. Required field validation (name, version)
         2. Type conversion and normalization

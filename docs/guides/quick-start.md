@@ -61,11 +61,13 @@ print(f"Valid: {hello_plugin.is_valid()}")
 ```
 
 Run it:
+
 ```bash
 python hello_plugin.py
 ```
 
 Expected output:
+
 ```
 Created plugin: hello-world v1.0.0
 Status: PluginStatus.INACTIVE
@@ -86,14 +88,14 @@ async def main():
     platform = create_flext_plugin_platform(config={
         "debug": True
     })
-    
+
     # Create plugin
     plugin = create_flext_plugin(
-        name="hello-world", 
+        name="hello-world",
         version="1.0.0",
         plugin_type=PluginType.UTILITY
     )
-    
+
     try:
         # Register plugin
         print("Registering plugin...")
@@ -103,7 +105,7 @@ async def main():
         else:
             print(f"❌ Registration failed: {result.error}")
             return
-        
+
         # Activate plugin
         print("Activating plugin...")
         result = await platform.activate_plugin("hello-world")
@@ -112,11 +114,11 @@ async def main():
         else:
             print(f"❌ Activation failed: {result.error}")
             return
-        
+
         # List active plugins
         active_plugins = await platform.list_active_plugins()
         print(f"Active plugins: {[p.name for p in active_plugins.data]}")
-        
+
     finally:
         # Cleanup
         await platform.shutdown()
@@ -126,11 +128,13 @@ asyncio.run(main())
 ```
 
 Run it:
+
 ```bash
 python platform_example.py
 ```
 
 Expected output:
+
 ```
 Registering plugin...
 ✅ Plugin registered successfully
@@ -152,7 +156,7 @@ from typing import Dict, Any
 
 class GreetingPlugin(FlextPlugin):
     """Custom plugin that generates personalized greetings."""
-    
+
     def __init__(self, **kwargs):
         super().__init__(
             name="greeting-generator",
@@ -164,24 +168,24 @@ class GreetingPlugin(FlextPlugin):
             },
             **kwargs
         )
-    
+
     async def initialize(self) -> FlextResult[bool]:
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
         return FlextResult.ok(True)
-    
+
     async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
                 return FlextResult.fail("Plugin not active")
-            
+
             # Extract name from input
             name = data.get("name", "World")
             language = data.get("language", "english")
-            
+
             # Generate greeting based on language
             greetings = {
                 "english": f"Hello, {name}!",
@@ -190,9 +194,9 @@ class GreetingPlugin(FlextPlugin):
                 "german": f"Hallo, {name}!",
                 "portuguese": f"Olá, {name}!"
             }
-            
+
             greeting = greetings.get(language.lower(), f"Hello, {name}!")
-            
+
             result = {
                 "greeting": greeting,
                 "name": name,
@@ -200,12 +204,12 @@ class GreetingPlugin(FlextPlugin):
                 "plugin": self.name,
                 "version": self.plugin_version
             }
-            
+
             return FlextResult.ok(result)
-            
+
         except Exception as e:
             return FlextResult.fail(f"Execution failed: {e}")
-    
+
     async def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
@@ -214,16 +218,16 @@ class GreetingPlugin(FlextPlugin):
 # Usage example
 async def demo_custom_plugin():
     from flext_plugin import create_flext_plugin_platform
-    
+
     # Create platform and plugin
     platform = create_flext_plugin_platform()
     plugin = GreetingPlugin()
-    
+
     try:
         # Register and activate
         await platform.register_plugin(plugin)
         await platform.activate_plugin(plugin.name)
-        
+
         # Test different greetings
         test_cases = [
             {"name": "Alice", "language": "english"},
@@ -232,7 +236,7 @@ async def demo_custom_plugin():
             {"name": "Hans", "language": "german"},
             {"name": "João", "language": "portuguese"},
         ]
-        
+
         print("\n--- Testing Greeting Plugin ---")
         for test_data in test_cases:
             result = await platform.execute_plugin(plugin.name, test_data)
@@ -241,7 +245,7 @@ async def demo_custom_plugin():
                 print(f"✅ {data['greeting']} (Language: {data['language']})")
             else:
                 print(f"❌ Failed: {result.error}")
-        
+
     finally:
         await platform.shutdown()
 
@@ -250,11 +254,13 @@ if __name__ == "__main__":
 ```
 
 Run it:
+
 ```bash
 python custom_plugin.py
 ```
 
 Expected output:
+
 ```
 Initializing greeting-generator...
 
@@ -278,10 +284,10 @@ from flext_plugin.application.services import FlextPluginDiscoveryService
 async def discover_plugins():
     """Discover plugins in current directory."""
     discovery = FlextPluginDiscoveryService()
-    
+
     # Discover plugins (this will scan for Python files with plugin classes)
     result = await discovery.discover_plugins("./")
-    
+
     if result.is_success():
         plugins = result.data
         print(f"Found {len(plugins)} plugins:")
@@ -306,58 +312,58 @@ from flext_plugin import create_flext_plugin_platform
 
 class TestGreetingPlugin:
     """Test suite for GreetingPlugin."""
-    
+
     @pytest.fixture
     def plugin(self):
         """Create plugin instance."""
         return GreetingPlugin()
-    
+
     @pytest.fixture
     async def platform(self):
         """Create test platform."""
         platform = create_flext_plugin_platform(config={"test_mode": True})
         yield platform
         await platform.shutdown()
-    
+
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "greeting-generator"
         assert plugin.plugin_version == "1.0.0"
         assert plugin.is_valid()
-    
+
     async def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = await plugin.initialize()
         assert result.is_success()
-    
+
     async def test_greeting_generation(self, plugin):
         """Test greeting generation."""
         await plugin.initialize()
         plugin.activate()
-        
+
         # Test English greeting
         result = await plugin.execute({"name": "Test", "language": "english"})
         assert result.is_success()
         assert result.data["greeting"] == "Hello, Test!"
-        
+
         # Test Spanish greeting
         result = await plugin.execute({"name": "Test", "language": "spanish"})
         assert result.is_success()
         assert result.data["greeting"] == "¡Hola, Test!"
-    
+
     async def test_platform_integration(self, platform, plugin):
         """Test plugin integration with platform."""
         # Register plugin
         register_result = await platform.register_plugin(plugin)
         assert register_result.is_success()
-        
+
         # Activate plugin
         activate_result = await platform.activate_plugin(plugin.name)
         assert activate_result.is_success()
-        
+
         # Execute through platform
         execute_result = await platform.execute_plugin(
-            plugin.name, 
+            plugin.name,
             {"name": "Platform", "language": "english"}
         )
         assert execute_result.is_success()
@@ -369,6 +375,7 @@ if __name__ == "__main__":
 ```
 
 Run tests:
+
 ```bash
 # Install pytest if not already installed
 pip install pytest
@@ -388,23 +395,23 @@ from flext_plugin import create_flext_plugin_platform
 
 async def development_server():
     """Development server with hot reload."""
-    
+
     # Enable hot reload
     await enable_hot_reload(
         watch_paths=["./"],  # Watch current directory
         reload_on_change=True
     )
-    
+
     # Create platform
     platform = create_flext_plugin_platform(config={
         "hot_reload": True,
         "debug": True
     })
-    
+
     print("🔥 Hot reload enabled!")
     print("Modify plugin files to see live updates...")
     print("Press Ctrl+C to stop")
-    
+
     try:
         # Keep server running
         while True:
@@ -451,16 +458,19 @@ bandit -r .          # Security scanning
 Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 ### Immediate Next Steps
+
 1. **[Plugin Development Guide](plugin-development.md)** - Learn advanced plugin patterns
 2. **[Testing Guide](testing.md)** - Comprehensive testing strategies
 3. **[Examples](../examples/README.md)** - More detailed examples
 
 ### Plugin Types to Explore
+
 1. **[Singer Integration](singer-integration.md)** - Create data extraction/loading plugins
 2. **[Service Plugins](service-plugins.md)** - Build microservice integrations
 3. **[Custom Plugin Types](custom-plugin-types.md)** - Define your own plugin categories
 
 ### Advanced Topics
+
 1. **[Architecture Guide](../architecture/README.md)** - Understand the system design
 2. **[Performance Optimization](performance-optimization.md)** - Scale your plugins
 3. **[FLEXT Ecosystem Integration](ecosystem-integration.md)** - Integrate with other FLEXT services
@@ -470,6 +480,7 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 ### Common Issues
 
 **Import Error: "No module named 'flext_plugin'"**
+
 ```bash
 # Verify installation
 pip list | grep flext-plugin
@@ -479,6 +490,7 @@ pip install --force-reinstall flext-plugin
 ```
 
 **Plugin Not Activating**
+
 ```python
 # Check plugin status and validation
 print(f"Plugin valid: {plugin.is_valid()}")
@@ -490,6 +502,7 @@ plugin.activate()
 ```
 
 **Hot Reload Not Working**
+
 ```bash
 # Ensure watchdog is installed
 pip install watchdog

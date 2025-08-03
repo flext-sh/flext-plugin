@@ -29,7 +29,7 @@ Port Pattern:
 Example:
     >>> from flext_plugin.domain.ports import FlextPluginDiscoveryPort
     >>> from flext_plugin.infrastructure.adapters import FileSystemDiscoveryAdapter
-    >>> 
+    >>>
     >>> # Infrastructure implements the domain port
     >>> discovery: FlextPluginDiscoveryPort = FileSystemDiscoveryAdapter()
     >>> result = discovery.discover_plugins("./plugins")
@@ -60,37 +60,37 @@ if TYPE_CHECKING:
 
 class FlextPluginDiscoveryPort(ABC):
     """Domain port interface for plugin discovery and validation operations.
-    
+
     Defines the contract for plugin discovery capabilities required by the
     domain layer. Implementations of this port provide concrete plugin
     discovery mechanisms such as file system scanning, registry queries,
     or network-based plugin repositories.
-    
+
     This port abstracts the complexity of plugin discovery, allowing the
     domain layer to request plugin discovery without being coupled to
     specific discovery mechanisms or storage formats.
-    
+
     Key Responsibilities:
         - Plugin discovery across various sources and formats
         - Plugin metadata extraction and validation
         - Plugin structure integrity verification
         - Discovery result filtering and organization
         - Integration with Singer/Meltano plugin discovery patterns
-    
+
     Discovery Patterns:
         - Directory-based plugin scanning with configurable depth
         - Plugin manifest parsing and metadata extraction
         - Plugin type detection and classification
         - Dependency analysis and requirement validation
         - Performance optimization through caching strategies
-    
+
     Implementation Considerations:
         - Should support multiple plugin formats and structures
         - Must provide comprehensive error handling and reporting
         - Should implement caching for performance optimization
         - Must validate plugin integrity and security requirements
         - Should support asynchronous discovery operations where beneficial
-    
+
     Example Implementation:
         >>> class FileSystemDiscoveryAdapter(FlextPluginDiscoveryPort):
         ...     def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
@@ -127,43 +127,43 @@ class FlextPluginDiscoveryPort(ABC):
 
 class FlextPluginLoaderPort(ABC):
     """Domain port interface for plugin loading and memory management operations.
-    
+
     Defines the contract for plugin loading capabilities required by the
     domain layer. Implementations of this port handle the complex aspects
     of plugin loading, memory management, and runtime lifecycle operations.
-    
+
     This port abstracts plugin loading complexity, enabling the domain layer
     to request plugin loading without being coupled to specific loading
     mechanisms, memory management strategies, or runtime environments.
-    
+
     Key Responsibilities:
         - Plugin loading into memory with proper isolation
         - Plugin unloading and cleanup operations
         - Plugin state tracking and status monitoring
         - Memory management and resource cleanup
         - Hot-reload and dynamic plugin management
-    
+
     Loading Patterns:
         - Dynamic loading with proper class isolation
         - Dependency injection and service registration
         - Plugin sandboxing and security boundaries
         - Resource management and cleanup coordination
         - Performance monitoring and optimization
-    
+
     Memory Management:
         - Plugin isolation to prevent conflicts
         - Resource cleanup on plugin unloading
         - Memory leak prevention and monitoring
         - Garbage collection coordination
         - Performance impact monitoring
-    
+
     Implementation Considerations:
         - Must provide proper plugin isolation and sandboxing
         - Should implement comprehensive resource cleanup
         - Must handle plugin dependencies and conflicts
         - Should support hot-reload and dynamic loading
         - Must provide robust error handling and recovery
-    
+
     Example Implementation:
         >>> class DynamicLoaderAdapter(FlextPluginLoaderPort):
         ...     def load_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
@@ -211,52 +211,52 @@ class FlextPluginLoaderPort(ABC):
 
 
 class FlextPluginManagerPort(ABC):
-    """Domain port interface for comprehensive plugin management and configuration operations.
-    
+    """Domain port interface for comprehensive plugin management and configuration.
+
     Defines the contract for high-level plugin management capabilities required
     by the domain layer. Implementations of this port handle complex plugin
     management workflows including installation, configuration, and lifecycle
     coordination across the entire plugin ecosystem.
-    
+
     This port abstracts the complexity of plugin management, enabling the domain
     layer to request sophisticated plugin operations without being coupled to
     specific management strategies, storage mechanisms, or configuration formats.
-    
+
     Key Responsibilities:
         - Plugin installation and removal operations
         - Plugin configuration management and persistence
         - Plugin enable/disable lifecycle coordination
         - Plugin dependency resolution and validation
         - Integration with plugin registries and repositories
-    
+
     Management Operations:
         - Installation with dependency resolution
         - Configuration validation and persistence
         - Lifecycle state management and coordination
         - Security validation and permission management
         - Performance monitoring and optimization
-    
+
     Configuration Management:
         - Schema validation and type checking
         - Configuration versioning and migration
         - Environment-specific configuration handling
         - Configuration backup and recovery
         - Real-time configuration updates and hot-reload
-    
+
     Security Considerations:
         - Plugin authentication and authorization
         - Permission validation and enforcement
         - Security scanning and vulnerability detection
         - Secure configuration storage and access
         - Audit logging and compliance tracking
-    
+
     Implementation Considerations:
         - Must provide comprehensive dependency resolution
         - Should implement robust configuration validation
         - Must handle complex plugin installation workflows
         - Should support rollback and recovery operations
         - Must provide secure configuration management
-    
+
     Example Implementation:
         >>> class ComprehensiveManagerAdapter(FlextPluginManagerPort):
         ...     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]:

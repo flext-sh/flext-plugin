@@ -9,6 +9,7 @@ This module implements the domain layer of the Clean Architecture, containing en
 ### Core Entities
 
 #### `FlextPlugin`
+
 Primary plugin entity with comprehensive business logic.
 
 ```python
@@ -30,18 +31,21 @@ if result.is_success():
 ```
 
 **Key Features:**
+
 - **Lifecycle Management**: Full plugin lifecycle with state transitions
 - **Business Rules**: Domain rule enforcement and validation
 - **Domain Events**: Event generation for plugin operations
 - **Type Safety**: Complete type annotations with Pydantic integration
 
 **Business Rules:**
+
 - Plugin names must be unique within a registry
 - Version strings follow semantic versioning
 - Status transitions follow defined lifecycle rules
 - Configuration changes require validation
 
 #### `FlextPluginConfig`
+
 Plugin configuration entity with validation and change tracking.
 
 ```python
@@ -62,12 +66,14 @@ value = config.get_config_value("timeout", default=60)
 ```
 
 **Features:**
+
 - **Change Tracking**: Automatic timestamp updates
 - **Validation**: Configuration schema validation
 - **Version Management**: Configuration versioning
 - **Audit Trail**: Change history maintenance
 
 #### `FlextPluginMetadata`
+
 Plugin descriptive information and external references.
 
 ```python
@@ -89,12 +95,14 @@ metadata_updated = metadata.add_tag("production-ready")
 ```
 
 **Attributes:**
+
 - **Tags**: Categorization and discovery tags
 - **URLs**: Homepage, repository, documentation links
 - **License**: Software license information
 - **Keywords**: Search and discovery keywords
 
 #### `FlextPluginRegistry`
+
 Aggregate root managing plugin collections with consistency rules.
 
 ```python
@@ -115,6 +123,7 @@ print(f"Registry health score: {health['health_score']}")
 ```
 
 **Key Responsibilities:**
+
 - **Plugin Registration**: Centralized plugin management
 - **Consistency Boundaries**: Domain rule enforcement
 - **Discovery Coordination**: Plugin scanning and validation
@@ -123,6 +132,7 @@ print(f"Registry health score: {health['health_score']}")
 ### Domain Ports
 
 #### Plugin Management Interfaces
+
 Abstract interfaces defining plugin system contracts.
 
 ```python
@@ -140,6 +150,7 @@ class MyPluginManager(FlextPluginManagerPort):
 ```
 
 **Available Ports:**
+
 - **FlextPluginManagerPort**: Plugin lifecycle management interface
 - **FlextPluginLoaderPort**: Plugin loading and unloading interface
 - **FlextPluginDiscoveryPort**: Plugin discovery and scanning interface
@@ -149,6 +160,7 @@ class MyPluginManager(FlextPluginManagerPort):
 ### Entity Patterns
 
 #### Rich Domain Model
+
 Entities contain business logic, not just data:
 
 ```python
@@ -157,7 +169,7 @@ class FlextPlugin(FlextEntity):
         """Business operation with domain validation."""
         if self.status == PluginStatus.ACTIVE:
             return FlextResult.fail("Plugin already active")
-        
+
         # Business logic and domain event generation
         self.status = PluginStatus.ACTIVE
         self.add_domain_event({
@@ -169,6 +181,7 @@ class FlextPlugin(FlextEntity):
 ```
 
 #### Identity and Equality
+
 Entities have unique identity and proper equality semantics:
 
 ```python
@@ -183,6 +196,7 @@ assert plugin1 != plugin2  # Different entities
 ### Aggregate Patterns
 
 #### Consistency Boundaries
+
 Aggregates maintain consistency within their boundaries:
 
 ```python
@@ -192,11 +206,11 @@ class FlextPluginRegistry(FlextEntity):
         # Validate uniqueness
         if plugin.name in self.plugins:
             return FlextResult.fail(f"Plugin {plugin.name} already registered")
-        
+
         # Enforce limits
         if len(self.plugins) >= self.MAX_PLUGINS:
             return FlextResult.fail("Maximum plugin limit reached")
-        
+
         # Register and generate events
         self.plugins[plugin.name] = plugin
         self.add_domain_event({
@@ -246,19 +260,19 @@ def validate_status_transition(current: PluginStatus, target: PluginStatus) -> b
 ```python
 class PluginRegistryRules:
     """Business rules for plugin registry operations."""
-    
+
     MAX_PLUGINS_PER_TYPE = 100
     RESERVED_NAMES = ["system", "core", "REDACTED_LDAP_BIND_PASSWORD"]
-    
+
     @staticmethod
     def validate_plugin_name(name: str) -> FlextResult[bool]:
         """Validate plugin name against business rules."""
         if not name or not name.strip():
             return FlextResult.fail("Plugin name cannot be empty")
-        
+
         if name.lower() in PluginRegistryRules.RESERVED_NAMES:
             return FlextResult.fail(f"Plugin name '{name}' is reserved")
-        
+
         return FlextResult.ok(True)
 ```
 
@@ -278,9 +292,10 @@ if result.is_success():
 ```
 
 **Common Events:**
+
 - `PluginRegistered`: Plugin added to registry
 - `PluginActivated`: Plugin became active
-- `PluginDeactivated`: Plugin became inactive  
+- `PluginDeactivated`: Plugin became inactive
 - `PluginConfigChanged`: Plugin configuration updated
 - `PluginError`: Plugin encountered error
 
@@ -293,10 +308,10 @@ class PluginActivatedHandler(DomainEventHandler):
     async def handle(self, event: dict) -> None:
         """Handle plugin activation events."""
         plugin_id = event["plugin_id"]
-        
+
         # Update monitoring systems
         await metrics_service.record_plugin_activation(plugin_id)
-        
+
         # Send notifications
         await notification_service.notify_plugin_activated(plugin_id)
 ```
@@ -313,9 +328,9 @@ class TestFlextPlugin:
     def test_plugin_activation_success(self):
         """Test successful plugin activation."""
         plugin = FlextPlugin(name="test", version="1.0.0")
-        
+
         result = plugin.activate()
-        
+
         assert result.is_success()
         assert plugin.status == PluginStatus.ACTIVE
         assert len(plugin.get_domain_events()) == 1
@@ -324,9 +339,9 @@ class TestFlextPlugin:
         """Test activation of already active plugin."""
         plugin = FlextPlugin(name="test", version="1.0.0")
         plugin.status = PluginStatus.ACTIVE
-        
+
         result = plugin.activate()
-        
+
         assert result.is_failure()
         assert "already active" in result.error.lower()
 ```
@@ -339,9 +354,9 @@ class TestFlextPluginRegistry:
         """Test successful plugin registration."""
         registry = FlextPluginRegistry()
         plugin = FlextPlugin(name="test", version="1.0.0")
-        
+
         result = await registry.register_plugin(plugin)
-        
+
         assert result.is_success()
         assert plugin.name in registry.plugins
         assert registry.get_plugin_count() == 1
@@ -351,10 +366,10 @@ class TestFlextPluginRegistry:
         registry = FlextPluginRegistry()
         plugin1 = FlextPlugin(name="test", version="1.0.0")
         plugin2 = FlextPlugin(name="test", version="2.0.0")
-        
+
         await registry.register_plugin(plugin1)
         result = await registry.register_plugin(plugin2)
-        
+
         assert result.is_failure()
         assert "already registered" in result.error.lower()
 ```
@@ -370,11 +385,13 @@ Platform Layer → Application Layer → Domain Layer (THIS MODULE) → Core Lay
 ### Dependencies
 
 **Inbound Dependencies (users of this module):**
+
 - Application services layer
 - Infrastructure adapters
 - Platform integration layer
 
 **Outbound Dependencies (dependencies of this module):**
+
 - flext-core foundation patterns
 - Core types and enumerations
 - Base entity and value object patterns
@@ -389,16 +406,16 @@ from flext_plugin.application.services import FlextPluginService
 class PluginManagementWorkflow:
     def __init__(self, registry: FlextPluginRegistry):
         self.registry = registry
-    
+
     async def deploy_plugin(self, plugin_config: dict) -> FlextResult[FlextPlugin]:
         """Complete plugin deployment workflow."""
         plugin = FlextPlugin(**plugin_config)
-        
+
         # Domain operations
         registration_result = await self.registry.register_plugin(plugin)
         if registration_result.is_failure():
             return registration_result
-        
+
         activation_result = plugin.activate()
         return activation_result.map(lambda _: plugin)
 ```

@@ -1,4 +1,4 @@
-"""FLEXT Plugin Loader - Dynamic plugin loading system with security and hot-reload capabilities.
+"""FLEXT Plugin Loader - Dynamic plugin loading with security and hot-reload.
 
 This module implements the infrastructure layer plugin loading functionality,
 providing dynamic Python module loading, plugin isolation, and hot-reload
@@ -31,7 +31,7 @@ Architecture:
 Example:
     >>> from flext_plugin.loader import PluginLoader
     >>> from pathlib import Path
-    >>> 
+    >>>
     >>> loader = PluginLoader(security_enabled=True)
     >>> plugin_path = Path("./plugins/my_plugin.py")
     >>> plugin = loader.load_plugin(plugin_path)
@@ -60,18 +60,18 @@ from flext_core.utilities import FlextGenerators
 
 
 class PluginLoader(FlextEntity):
-    """Dynamic plugin loading system with security validation and hot-reload capabilities.
-    
+    """Dynamic plugin loading system with security validation and hot-reload.
+
     Infrastructure component implementing dynamic Python module loading for the
     FLEXT plugin system. Provides plugin isolation, security validation, and
     hot-reload capabilities while maintaining proper resource management and
     error handling throughout the plugin lifecycle.
-    
+
     The loader maintains both class-level and instance-level plugin registries
     to support different loading scenarios and provide flexibility for testing
     and deployment environments. Security features are configurable to support
     both development and production use cases.
-    
+
     Key Capabilities:
         - Dynamic Python module loading from file paths
         - Plugin registry management with conflict detection
@@ -79,29 +79,29 @@ class PluginLoader(FlextEntity):
         - Hot-reload support for development workflows
         - Resource cleanup and memory management
         - Comprehensive error handling and validation
-    
+
     Architecture Integration:
         - Extends FlextEntity for domain-driven design compliance
         - Implements infrastructure layer patterns for Clean Architecture
         - Provides concrete implementation for plugin loading ports
         - Maintains state through entity lifecycle management
-    
+
     Plugin Registry:
         - Class-level registry for global plugin tracking
         - Instance-level registry for isolated loading scenarios
         - Conflict detection and resolution mechanisms
         - Module lifecycle management and cleanup
-    
+
     Security Model:
         - Configurable security validation for plugin loading
         - Path sanitization and validation
         - Module isolation and conflict prevention
         - Resource usage monitoring and limits
-    
+
     Example:
         >>> # Initialize loader with security enabled
         >>> loader = PluginLoader(security_enabled=True)
-        >>> 
+        >>>
         >>> # Load plugin from file path
         >>> plugin_path = Path("./plugins/data_processor.py")
         >>> try:

@@ -57,12 +57,12 @@ EXPECTED_DATA_COUNT = 3
 
 class TestPluginInstance:
     """Comprehensive test suite for PluginInstance domain entity.
-    
+
     Tests all aspects of the PluginInstance entity including creation,
     validation, business rules, lifecycle management, and integration
     scenarios. Ensures entity behavior aligns with domain-driven design
     principles and business requirements.
-    
+
     Test Categories:
         - Entity creation and initialization
         - Field validation and constraints
@@ -70,7 +70,7 @@ class TestPluginInstance:
         - Lifecycle state management
         - Integration with other entities
         - Error handling and edge cases
-    
+
     Coverage Areas:
         - Constructor parameter validation
         - Pydantic field validation and constraints
