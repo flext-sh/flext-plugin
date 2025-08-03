@@ -9,7 +9,6 @@ This is `flext-plugin`, an enterprise-grade plugin management system for the FLE
 **Key Features:**
 
 - Dynamic plugin discovery and loading
-- Hot-reload with file watching capabilities
 - Plugin lifecycle management (activate, deactivate, enable, disable)
 - Clean Architecture with strict layer separation
 - Domain-driven design with plugin entities and value objects
@@ -22,7 +21,7 @@ The project follows Clean Architecture with these layers:
 
 ### Core Layer (`src/flext_plugin/core/`)
 
-- **`types.py`**: Core plugin types, enums (`PluginStatus`, `PluginType`), and result objects
+- **`types.py`**: Core plugin types, enums (`PluginStatus`, `PluginType`), result objects, and error classes
 - **`discovery.py`**: Plugin discovery logic
 
 ### Domain Layer (`src/flext_plugin/domain/`)
@@ -33,17 +32,16 @@ The project follows Clean Architecture with these layers:
 ### Application Layer (`src/flext_plugin/application/`)
 
 - **`services.py`**: Application services (`FlextPluginService`, `FlextPluginDiscoveryService`)
-- **`handlers.py`**: Command/query handlers
+- **`handlers.py`**: Command/query handlers (`FlextPluginHandler`, `FlextPluginRegistrationHandler`)
 
-### Infrastructure Layer (`src/flext_plugin/infrastructure/`)
+### Root Level APIs
 
-- **`di_container.py`**: Dependency injection setup
-
-### Platform Integration
-
-- **`platform.py`**: Main platform class providing unified API access
-- **`simple_api.py`**: Simplified API for common operations
-- **Hot-reload system**: File watching and dynamic plugin reloading
+- **`platform.py`**: Main platform class (`FlextPluginPlatform`) providing unified API access
+- **`simple_api.py`**: Simplified factory functions for plugin creation
+- **`hot_reload.py`**: Hot-reload functionality
+- **`loader.py`**: Plugin loading mechanisms
+- **`discovery.py`**: High-level plugin discovery
+- **`simple_plugin.py`**: Simple plugin interface
 
 ## Development Commands
 
@@ -52,55 +50,88 @@ All commands use Poetry for dependency management and follow zero-tolerance qual
 ### Essential Quality Checks
 
 ```bash
-make validate          # Complete validation (lint + type + security + test) - MUST PASS
+make validate          # Complete validation (lint + type + security + test) - MUST PASS  
 make check             # Essential checks (lint + type + test)
-make lint              # Ruff linting with ALL rules enabled
+make lint              # Ruff linting with comprehensive rules
 make type-check        # MyPy strict mode (zero errors tolerated)
 make security          # Security scans (bandit + pip-audit)
+make fix               # Auto-fix linting and formatting issues
 ```
 
 ### Testing (85% coverage minimum)
 
 ```bash
 make test              # Full test suite with coverage validation
-make test-unit         # Unit tests only
+make test-unit         # Unit tests only (excludes integration tests)
 make test-integration  # Integration tests only
 make test-plugin       # Plugin-specific tests
-make coverage          # Generate detailed coverage report
-```
-
-### Plugin Management Commands
-
-```bash
-# Plugin lifecycle
-make plugin-create NAME=my-plugin TYPE=extractor    # Create new plugin
-make plugin-install NAME=tap-github                 # Install plugin
-make plugin-list                                    # List all plugins
-make plugin-watch                                   # Watch with hot-reload
-make plugin-reload                                  # Hot reload all plugins
-
-# Plugin state management
-make plugin-enable NAME=plugin-name                 # Enable plugin
-make plugin-disable NAME=plugin-name                # Disable plugin
-make plugin-validate                                # Validate plugin system
+make test-fast         # Run tests without coverage for quick feedback
+make coverage-html     # Generate HTML coverage report
 ```
 
 ### Development Setup
 
 ```bash
-make setup             # Complete development setup
-make install           # Install dependencies
-make dev-install       # Development environment setup
-make pre-commit        # Setup pre-commit hooks
+make setup             # Complete development setup with pre-commit hooks
+make install           # Install dependencies only
+make install-dev       # Install with dev dependencies
+make pre-commit        # Run pre-commit hooks on all files
+```
+
+### Plugin Management Commands
+
+```bash
+# Plugin operations (⚠️  CLI IMPLEMENTATION REQUIRED - THESE COMMANDS WILL FAIL)
+# make plugin-create NAME=my-plugin TYPE=extractor    # TODO: Requires flext-plugin CLI
+# make plugin-install NAME=tap-github                 # TODO: Requires flext-plugin CLI  
+# make plugin-list                                    # TODO: Requires flext-plugin CLI
+# make plugin-watch                                   # TODO: Requires flext-plugin CLI
+# make plugin-validate                                # Works - uses FlextPluginPlatform
+# make plugin-reload                                  # BROKEN: hot_reload_all function missing
+
+# Currently working plugin validation:
+make plugin-validate                                 # Validate plugin system
 ```
 
 ### Build & Cleanup
 
 ```bash
 make build             # Build distribution packages
-make clean             # Remove all artifacts
+make build-clean       # Clean then build
+make clean             # Remove build artifacts and caches
+make clean-all         # Deep clean including virtual environment
 make format            # Format code with ruff
-make fix               # Auto-fix all issues
+```
+
+### Documentation & Dependencies
+
+```bash
+make docs              # Build documentation with mkdocs
+make docs-serve        # Serve documentation locally
+make deps-update       # Update all dependencies
+make deps-show         # Show dependency tree
+make deps-audit        # Audit dependencies for security issues
+```
+
+### Diagnostics & Maintenance
+
+```bash
+make diagnose          # Show project diagnostics (Python, Poetry, versions)
+make doctor            # Complete health check (diagnose + check)
+make shell             # Open Python shell with project environment
+make reset             # Reset project (clean-all + setup)
+```
+
+### Quick Aliases
+
+```bash
+make t                 # Alias for test
+make l                 # Alias for lint  
+make f                 # Alias for format
+make tc                # Alias for type-check
+make c                 # Alias for clean
+make i                 # Alias for install
+make v                 # Alias for validate
 ```
 
 ## Key Domain Concepts
@@ -148,63 +179,122 @@ Plugins progress through states defined in `PluginStatus`:
 The project maintains 85% minimum test coverage with comprehensive test categories:
 
 ```bash
-# Run specific test categories
-pytest -m unit              # Unit tests
-pytest -m integration       # Integration tests
+# Run specific test categories with pytest markers
+pytest -m unit              # Isolated unit tests  
+pytest -m integration       # Cross-layer integration tests
 pytest -m plugin            # Plugin system tests
 pytest -m hot_reload        # Hot-reload functionality tests
+pytest -k "test_name"       # Run specific test by name pattern
 ```
 
 **Test Structure:**
 
 - `tests/unit/`: Isolated unit tests for each layer
-- `tests/integration/`: Cross-layer integration tests
+- `tests/integration/`: Cross-layer integration tests  
 - `tests/e2e/`: End-to-end plugin lifecycle tests
 - `tests/fixtures/`: Shared test data and fixtures
+- `tests/conftest.py`: Pytest configuration and shared fixtures
+
+**Actual Test Files:**
+
+- `test_core_types.py`: Core plugin types and enums
+- `test_domain_entities.py`: Domain entities (FlextPlugin, etc.)
+- `test_domain_ports.py`: Domain interfaces
+- `test_application_handlers.py`: Application layer handlers
+- `test_discovery.py`, `test_discovery_simple.py`: Plugin discovery
+- `test_hot_reload_package.py`: Hot-reload functionality
+- `test_manager.py`, `test_manager_comprehensive.py`: Plugin management
+- `test_plugin_basic.py`: Basic plugin functionality
+- `test_imports.py`: Import validation
 
 ## Configuration
 
-The plugin system uses environment variables for configuration:
+The plugin system uses environment variables and Makefile configuration:
 
 ```bash
-# Plugin discovery
+# Makefile configuration (in Makefile)
+MIN_COVERAGE=85                    # Minimum test coverage required
+FLEXT_PLUGIN_HOT_RELOAD=true      # Enable hot reload
+FLEXT_PLUGIN_WATCH_INTERVAL=2     # File watch interval in seconds
+
+# Runtime environment variables (when implemented)
 FLEXT_PLUGIN_DISCOVERY_PATHS=plugins:~/.flext/plugins:/opt/flext/plugins
 FLEXT_PLUGIN_CACHE_DIR=.plugin_cache
-
-# Hot reload
-FLEXT_PLUGIN_HOT_RELOAD=true
-FLEXT_PLUGIN_WATCH_INTERVAL=2
-FLEXT_PLUGIN_RELOAD_ON_CHANGE=true
-FLEXT_PLUGIN_PRESERVE_STATE=true
-FLEXT_PLUGIN_ROLLBACK_ON_ERROR=true
-
-# Performance
 FLEXT_PLUGIN_MAX_WORKERS=10
 ```
 
 ## Common Development Patterns
 
-### Creating a New Plugin
+### Working with Plugin Entities
 
-1. Use `make plugin-create NAME=my-plugin TYPE=extractor`
-2. Implement required interfaces from `domain/ports.py`
-3. Follow the plugin lifecycle: `initialize()` → `execute()` → `cleanup()`
-4. Add comprehensive tests with 85%+ coverage
-5. Validate with `make plugin-validate`
+```python
+# Creating a FlextPlugin entity
+from flext_plugin import FlextPlugin, create_flext_plugin
+from flext_plugin.core.types import PluginStatus, PluginType
 
-### Plugin Hot Reload Development
+# Using entity directly
+plugin = FlextPlugin(
+    name="my-plugin",
+    version="1.0.0", 
+    config={
+        "description": "My custom plugin",
+        "author": "Developer",
+        "status": PluginStatus.INACTIVE
+    }
+)
 
-1. Start file watcher: `make plugin-watch`
-2. Make changes to plugin files
-3. System automatically detects and reloads plugins
-4. Test with `make plugin-test-hot-reload`
+# Using factory function
+plugin = create_flext_plugin(
+    name="my-plugin",
+    version="1.0.0",
+    plugin_type=PluginType.EXTRACTOR
+)
+```
+
+### Using the Plugin Platform
+
+```python
+from flext_plugin import FlextPluginPlatform, FlextContainer
+
+# Create platform with dependency injection
+container = FlextContainer()
+platform = FlextPluginPlatform(container)
+
+# Or use the factory function
+from flext_plugin import create_flext_plugin_platform
+platform = create_flext_plugin_platform(config={"debug": True})
+```
+
+### Working with Plugin Discovery
+
+```python
+from flext_plugin.application.services import FlextPluginDiscoveryService
+from flext_plugin.core.discovery import PluginDiscovery
+
+# Use discovery service
+discovery = FlextPluginDiscoveryService()
+plugins = await discovery.discover_plugins(path="./plugins")
+
+# Direct discovery usage  
+direct_discovery = PluginDiscovery()
+found_plugins = direct_discovery.discover_in_directory("./plugins")
+```
 
 ### Quality Gate Workflow
 
-1. Make code changes
-2. Run `make fix` to auto-format and fix issues
-3. Run `make validate` - ALL checks must pass
-4. Commit only after validation succeeds
+1. Make code changes following Clean Architecture patterns
+2. Run `make fix` to auto-format and fix linting issues
+3. Run `make validate` - ALL checks must pass (lint + type + security + test)
+4. Ensure 85%+ test coverage is maintained
+5. Commit only after validation succeeds
+
+### Testing New Features
+
+1. Add unit tests in `tests/unit/` following existing patterns
+2. Add integration tests in `tests/integration/` for cross-layer functionality
+3. Use pytest markers: `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.plugin`
+4. Run specific tests: `pytest tests/test_your_feature.py -v`
+5. Verify coverage: `make coverage-html` and check report
 
 ## Integration with FLEXT Ecosystem
 
@@ -217,68 +307,67 @@ This plugin system integrates with the larger FLEXT platform:
 
 The plugin system is designed to be platform-agnostic while providing deep integration with FLEXT's data processing pipeline.
 
-## TODO: GAPS DE ARQUITETURA IDENTIFICADOS - PRIORIDADE CRÍTICA
+## Critical Implementation Gaps
 
-### 🚨 GAP 1: Plugin System Foundation Missing in flext-core
+### 🚨 GAP 1: CLI Implementation Missing
 
-**Status**: CRÍTICO - flext-core não tem plugin foundation mas flext-plugin implementa sistema completo
-**Problema**:
+**Status**: HIGH PRIORITY - CLI entry point defined but not implemented
+**Issue**: 
+- `pyproject.toml` defines `flext-plugin = "flext_plugin.cli:main"` 
+- No `cli.py` file exists in the codebase
+- Makefile plugin commands reference non-existent CLI
 
-- flext-plugin implementa sistema completo mas flext-core não tem plugin base
-- Inconsistência arquitetural: foundation missing in core library
-- Plugin interfaces podem não ser compatíveis com ecosystem expectations
+**Required Actions**:
+- [ ] Create `src/flext_plugin/cli.py` with main() entry point
+- [ ] Implement plugin management commands (create, install, list, watch, validate)  
+- [ ] Add CLI argument parsing and help documentation
+- [ ] Update Makefile commands to work with actual CLI implementation
 
-**TODO**:
+### 🚨 GAP 2: Hot Reload Implementation Incomplete  
 
-- [ ] Migrar plugin foundation patterns para flext-core
-- [ ] Criar FlextPlugin base interface em flext-core
-- [ ] Refatorar flext-plugin para usar flext-core plugin foundation
-- [ ] Documentar plugin architecture consistency com ecosystem
+**Status**: MEDIUM PRIORITY - Framework exists but needs completion
+**Issue**:
+- `hot_reload.py` exists at root level but integration unclear
+- Test files reference hot reload functionality
+- Makefile has hot reload configuration but no working implementation
 
-### 🚨 GAP 2: FlexCore (Go) Plugin Integration Missing
+**Required Actions**:
+- [ ] Complete hot reload integration with plugin platform
+- [ ] Implement file watching with watchdog library integration
+- [ ] Add hot reload testing and validation
+- [ ] Document hot reload usage patterns and limitations
 
-**Status**: CRÍTICO - FlexCore menciona plugin system mas sem integration
-**Problema**:
+### 🚨 GAP 3: Meltano/Singer Integration Superficial
 
-- FlexCore (Go) usa plugin system mas não integra com flext-plugin
-- Protocol para Go-Python plugin communication não definido
-- Plugin registry não shared entre Go e Python services
+**Status**: MEDIUM PRIORITY - Types defined but integration missing
+**Issue**:
+- `PluginType` enum defines TAP, TARGET, TRANSFORM for Singer/Meltano
+- No actual Singer SDK or Meltano integration code
+- Missing plugin discovery for Singer ecosystem
 
-**TODO**:
+**Required Actions**:
+- [ ] Implement Singer tap/target plugin interfaces
+- [ ] Add Meltano project configuration integration
+- [ ] Create Singer plugin discovery mechanisms
+- [ ] Add comprehensive examples for Singer plugin development
 
-- [ ] Criar shared plugin registry entre Go e Python
-- [ ] Implementar Go-Python plugin communication protocols
-- [ ] Documentar plugin integration patterns com FlexCore
-- [ ] Criar plugin testing patterns cross-language
+### 🚨 GAP 4: Documentation and Examples
 
-### 🚨 GAP 3: Meltano Plugin Integration Superficial
+**Status**: LOW PRIORITY - Foundation exists but needs practical examples  
+**Issue**:
+- Strong architectural foundation but missing practical examples
+- `examples/real_plugins/` directory exists but may be empty
+- Integration patterns need concrete implementation examples
 
-**Status**: ALTO - Singer plugin types mencionados mas integration incomplete
-**Problema**:
+**Required Actions**:
+- [ ] Create practical plugin examples in `examples/` directory
+- [ ] Add end-to-end integration examples
+- [ ] Document common plugin development workflows
+- [ ] Add troubleshooting guide for common issues
 
-- PluginType define TAP, TARGET, TRANSFORM mas Meltano integration não completa
-- Plugin discovery não integra com Meltano project structure
-- Hot-reload não compatível com Meltano plugin lifecycle
+## Next Steps for Development
 
-**TODO**:
-
-- [ ] Implementar complete Meltano plugin integration
-- [ ] Integrar plugin discovery com meltano.yml configuration
-- [ ] Criar Meltano-compatible plugin lifecycle management
-- [ ] Documentar Singer plugin development patterns
-
-### 🚨 GAP 4: Plugin CLI Integration Missing
-
-**Status**: ALTO - Plugin management não integrado com flext-cli
-**Problema**:
-
-- Plugin management commands não available via flext-cli
-- Plugin hot-reload não accessible via CLI
-- Plugin validation não integrated com CLI workflow
-
-**TODO**:
-
-- [ ] Integrar plugin commands com flext-cli
-- [ ] Implementar plugin management via flext CLI
-- [ ] Criar plugin development workflow via CLI
-- [ ] Documentar plugin CLI usage patterns
+1. **Immediate**: Implement CLI functionality to enable plugin management commands
+2. **Short-term**: Complete hot reload system integration and testing  
+3. **Medium-term**: Add Singer/Meltano plugin support for data pipeline integration
+4. **Long-term**: Expand examples and documentation for broader ecosystem adoption

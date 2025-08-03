@@ -1,10 +1,30 @@
-"""FLEXT Plugin - Enterprise Plugin Management System.
+"""FLEXT Plugin - Enterprise-grade plugin management system with Clean Architecture patterns.
+
+This package provides a comprehensive plugin management system built on Clean Architecture,
+Domain-Driven Design, and CQRS patterns. It enables dynamic plugin loading, hot-reload
+capabilities, and enterprise-grade plugin lifecycle management for the FLEXT ecosystem.
+
+Key Features:
+    - Clean Architecture with strict layer separation
+    - Domain-Driven Design with rich business entities
+    - CQRS command and query responsibility segregation
+    - Dynamic plugin loading with security validation
+    - Hot-reload capabilities for development workflows
+    - Enterprise-grade error handling and validation
+
+Architecture Layers:
+    - Platform: FlextPluginPlatform (unified facade)
+    - Application: Services and CQRS handlers
+    - Domain: Entities, ports, and business logic
+    - Infrastructure: Plugin loading and discovery
+
+Usage:
+    >>> from flext_plugin import FlextPluginPlatform
+    >>> platform = FlextPluginPlatform()
+    >>> result = platform.discover_plugins("./plugins")
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
-Modern plugin management system following Clean Architecture and Domain-Driven Design.
-Built on Python 3.13 with dynamic plugin loading and hot-reload capabilities.
 """
 
 from __future__ import annotations

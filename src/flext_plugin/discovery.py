@@ -1,4 +1,41 @@
-"""Plugin discovery system for scanning and finding plugins."""
+"""FLEXT Plugin Discovery System - File system scanning and plugin detection infrastructure.
+
+This module implements the infrastructure layer plugin discovery functionality,
+providing file system scanning, plugin detection, and metadata extraction
+capabilities. The discovery system serves as a concrete implementation of
+plugin discovery patterns for the FLEXT plugin management system.
+
+The discovery system integrates with Clean Architecture infrastructure patterns,
+providing concrete implementations for plugin discovery ports while maintaining
+proper separation of concerns and comprehensive error handling.
+
+Key Features:
+    - File system scanning for Python plugin files
+    - Plugin metadata extraction and validation
+    - Directory traversal with configurable depth limits
+    - Plugin file structure detection and analysis
+    - Integration with domain discovery patterns
+
+Architecture:
+    Built as FlextEntity following domain-driven design patterns,
+    the discovery system maintains state and provides lifecycle
+    management for plugin scanning operations while integrating
+    with the broader FLEXT infrastructure ecosystem.
+
+Example:
+    >>> from flext_plugin.discovery import PluginDiscovery
+    >>> 
+    >>> discovery = PluginDiscovery(plugin_directory="./plugins")
+    >>> plugins = await discovery.scan()
+    >>> print(f"Found {len(plugins)} plugin files")
+
+Integration:
+    - Implements infrastructure layer patterns for Clean Architecture
+    - Provides concrete plugin discovery for application services
+    - Supports comprehensive testing and validation strategies
+    - Integrates with file system monitoring and hot-reload systems
+
+"""
 
 from __future__ import annotations
 
@@ -9,7 +46,46 @@ from pydantic import ConfigDict
 
 
 class PluginDiscovery(FlextEntity):
-    """Plugin discovery system to find and scan plugin files."""
+    """File system-based plugin discovery system with comprehensive scanning capabilities.
+    
+    Infrastructure component implementing plugin discovery through file system
+    scanning and analysis. Provides systematic discovery of Python plugin files
+    with metadata extraction, validation, and comprehensive error handling.
+    
+    The discovery system maintains plugin directory state and provides async
+    scanning capabilities while integrating with the broader FLEXT plugin
+    management infrastructure. Supports configurable scanning parameters
+    and comprehensive plugin file analysis.
+    
+    Key Capabilities:
+        - Recursive directory scanning for Python plugin files
+        - Plugin metadata extraction from file system attributes
+        - File structure analysis and validation
+        - Async scanning operations with error handling
+        - Integration with plugin registry and management systems
+    
+    Discovery Process:
+        1. Directory validation and sanitization
+        2. Recursive file system traversal
+        3. Plugin file identification and filtering
+        4. Metadata extraction and normalization
+        5. Result compilation and validation
+    
+    File Detection:
+        - Python files (.py) with plugin patterns
+        - Plugin manifest files and configuration
+        - Module structure analysis and validation
+        - Dependency detection and requirement analysis
+    
+    Example:
+        >>> discovery = PluginDiscovery(plugin_directory="./plugins")
+        >>> # Validate directory before scanning
+        >>> validation = discovery.validate_domain_rules()
+        >>> if validation.is_success():
+        ...     plugins = await discovery.scan()
+        ...     print(f"Discovered {len(plugins)} plugin files")
+
+    """
 
     plugin_directory: str
 

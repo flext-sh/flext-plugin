@@ -1,4 +1,44 @@
-"""Simple Plugin System."""
+"""FLEXT Simple Plugin System - Lightweight plugin base classes and utilities.
+
+This module provides simplified plugin base classes and utilities for
+rapid plugin development and prototyping. The simple plugin system
+offers a lightweight alternative to the full domain entity system
+while maintaining compatibility and integration capabilities.
+
+The simple plugin system is designed for scenarios where full domain
+modeling complexity is not required but integration with the broader
+FLEXT plugin management system is still desired.
+
+Key Components:
+    - Plugin: Lightweight base class for simple plugin implementations
+    - SimplePluginManager: Basic plugin management and lifecycle
+    - Integration utilities for FLEXT ecosystem compatibility
+
+Use Cases:
+    - Rapid prototyping and development
+    - Simple plugin implementations without complex domain logic
+    - Educational and demonstration purposes
+    - Integration with legacy plugin systems
+
+Example:
+    >>> from flext_plugin.simple_plugin import Plugin
+    >>> 
+    >>> class MyPlugin(Plugin):
+    ...     def execute(self):
+    ...         return f"Plugin {self.name} executing"
+    >>> 
+    >>> plugin = MyPlugin("my-plugin")
+    >>> result = plugin.activate()
+    >>> if result.is_success():
+    ...     print("Plugin activated successfully")
+
+Integration:
+    - Compatible with FLEXT plugin management system
+    - Uses flext-core FlextResult patterns for consistency
+    - Provides upgrade path to full domain entities
+    - Supports comprehensive testing and validation
+
+"""
 
 from __future__ import annotations
 
@@ -9,7 +49,46 @@ from flext_core import FlextResult
 
 
 class Plugin:
-    """Simple plugin base class."""
+    """Lightweight plugin base class with essential lifecycle management.
+    
+    Simplified plugin implementation providing basic lifecycle management,
+    activation/deactivation capabilities, and integration with FLEXT patterns.
+    This class serves as a lightweight alternative to full domain entities
+    while maintaining compatibility with the broader plugin ecosystem.
+    
+    The Plugin class provides essential functionality for plugin development
+    without the complexity of full domain modeling, making it suitable for
+    rapid prototyping, simple implementations, and educational purposes.
+    
+    Key Features:
+        - Basic lifecycle management (activate/deactivate)
+        - FlextResult integration for consistent error handling
+        - Extensible design for custom plugin implementations
+        - Compatibility with FLEXT plugin management system
+        - Minimal resource footprint and complexity
+    
+    Lifecycle States:
+        - Inactive: Plugin created but not activated
+        - Active: Plugin activated and ready for execution
+    
+    Usage Pattern:
+        Extend this class to create custom plugin implementations,
+        overriding methods as needed for specific functionality.
+    
+    Example:
+        >>> class DataProcessorPlugin(Plugin):
+        ...     def execute(self, data):
+        ...         if not self.active:
+        ...             return FlextResult.fail("Plugin not active")
+        ...         # Process data
+        ...         return FlextResult.ok(processed_data)
+        >>> 
+        >>> plugin = DataProcessorPlugin("data-processor")
+        >>> activation = plugin.activate()
+        >>> if activation.is_success():
+        ...     result = plugin.execute(my_data)
+
+    """
 
     def __init__(self, name: str) -> None:
         self.name = name

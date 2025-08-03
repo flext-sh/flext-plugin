@@ -1,4 +1,45 @@
-"""Plugin discovery system for scanning and finding plugins."""
+"""FLEXT Core Plugin Discovery - Advanced plugin scanning and metadata extraction system.
+
+This module implements the core layer plugin discovery functionality,
+providing sophisticated plugin scanning, metadata extraction, and plugin
+classification capabilities. The discovery system serves as the foundation
+for plugin management operations throughout the FLEXT ecosystem.
+
+The core discovery system provides advanced features including plugin
+classification, dependency analysis, blacklisting capabilities, and
+comprehensive metadata extraction from various plugin formats and structures.
+
+Key Features:
+    - Multi-directory plugin scanning with recursive traversal
+    - Plugin metadata extraction and validation
+    - Plugin classification and type detection
+    - Blacklisting and security filtering capabilities
+    - Dependency analysis and resolution support
+    - JSON-based configuration and manifest processing
+
+Architecture:
+    Built as FlextEntity following domain-driven design patterns,
+    the discovery system maintains comprehensive state for plugin
+    scanning operations while providing enterprise-grade discovery
+    capabilities for the FLEXT plugin management infrastructure.
+
+Example:
+    >>> from flext_plugin.core.discovery import PluginDiscovery
+    >>> 
+    >>> discovery = PluginDiscovery(
+    ...     entity_id="discovery-001",
+    ...     plugin_directory="/opt/plugins"
+    ... )
+    >>> plugins = await discovery.discover_plugins()
+    >>> print(f"Discovered {len(plugins)} plugins")
+
+Integration:
+    - Provides core discovery capabilities for application services
+    - Integrates with plugin classification and security systems
+    - Supports comprehensive plugin metadata extraction
+    - Coordinates with plugin registry and management systems
+
+"""
 
 from __future__ import annotations
 

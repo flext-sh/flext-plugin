@@ -1,6 +1,36 @@
-"""Tests for flext_plugin.domain.entities module.
+"""Comprehensive test suite for flext_plugin.domain.entities module.
 
-Comprehensive tests for all domain entities and business logic.
+This test module provides comprehensive validation of domain entity behavior,
+business rules, and integration patterns following enterprise testing standards.
+Tests cover entity lifecycle, validation rules, business logic enforcement,
+and integration scenarios across all domain entities.
+
+Test Coverage:
+    - PluginInstance: Core plugin entity lifecycle and validation
+    - PluginConfiguration: Configuration entity behavior and updates
+    - PluginMetadata: Metadata entity creation and management
+    - PluginRegistry: Registry collection management and operations
+    - PluginExecution: Execution tracking and state management
+
+Testing Patterns:
+    - Unit tests for individual entity behavior
+    - Integration tests for entity interactions
+    - Business rule validation and enforcement
+    - Error handling and edge case scenarios
+    - Performance and resource management validation
+
+Quality Standards:
+    - Comprehensive test coverage for all entity methods
+    - Business rule validation with realistic scenarios
+    - Error condition testing with proper exception handling
+    - Integration testing with dependency validation
+    - Performance testing for critical operations
+
+Example Test Structure:
+    Each test class focuses on a specific domain entity with methods
+    testing creation, validation, business operations, and integration
+    scenarios. Test data uses realistic plugin scenarios and validates
+    both success and failure conditions.
 """
 
 from __future__ import annotations
@@ -26,7 +56,29 @@ EXPECTED_DATA_COUNT = 3
 
 
 class TestPluginInstance:
-    """Test PluginInstance entity functionality."""
+    """Comprehensive test suite for PluginInstance domain entity.
+    
+    Tests all aspects of the PluginInstance entity including creation,
+    validation, business rules, lifecycle management, and integration
+    scenarios. Ensures entity behavior aligns with domain-driven design
+    principles and business requirements.
+    
+    Test Categories:
+        - Entity creation and initialization
+        - Field validation and constraints
+        - Business rule enforcement
+        - Lifecycle state management
+        - Integration with other entities
+        - Error handling and edge cases
+    
+    Coverage Areas:
+        - Constructor parameter validation
+        - Pydantic field validation and constraints
+        - Business logic method behavior
+        - Entity state transitions
+        - Integration with PluginMetadata and PluginConfiguration
+        - Error scenarios and exception handling
+    """
 
     def create_test_metadata(self) -> PluginMetadata:
         """Create test plugin metadata."""

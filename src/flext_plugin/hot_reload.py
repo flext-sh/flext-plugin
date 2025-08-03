@@ -1,4 +1,42 @@
-"""Plugin hot reload system with watchdog integration."""
+"""FLEXT Plugin Hot Reload System - File system monitoring and automatic plugin reloading.
+
+This module implements the infrastructure layer hot-reload functionality,
+providing file system monitoring, automatic plugin reloading, and development
+workflow optimization. The system integrates with watchdog for reliable
+file system event detection and provides seamless plugin development experience.
+
+The hot-reload system enables rapid development cycles by automatically
+detecting plugin file changes and reloading affected plugins without
+requiring manual intervention or application restarts.
+
+Key Features:
+    - File system monitoring with watchdog integration
+    - Automatic plugin reloading on file changes
+    - Plugin dependency tracking and cascade reloading
+    - Development workflow optimization
+    - Comprehensive error handling and recovery
+
+Architecture:
+    Built on FlextEntity following domain-driven design patterns,
+    the hot-reload system maintains state and coordinates between
+    file system monitoring, plugin loading, and application lifecycle
+    management while providing robust error handling.
+
+Example:
+    >>> from flext_plugin.hot_reload import HotReloadManager
+    >>> from pathlib import Path
+    >>> 
+    >>> manager = HotReloadManager(watch_directory="./plugins")
+    >>> await manager.start_watching()
+    >>> print("Hot reload monitoring started")
+
+Integration:
+    - Integrates with PluginLoader for seamless reloading
+    - Provides development workflow optimization
+    - Supports comprehensive error handling and recovery
+    - Coordinates with plugin discovery and management systems
+
+"""
 
 from __future__ import annotations
 
@@ -24,10 +62,46 @@ if TYPE_CHECKING:
 
 
 class PluginFileHandler(FileSystemEventHandler):
-    """File system event handler for plugin files."""
+    """File system event handler for plugin file monitoring and change detection.
+    
+    Event handler that monitors plugin file changes and triggers reload
+    operations through callback mechanisms. Provides filtered event handling
+    to focus on relevant plugin file modifications while ignoring temporary
+    files and non-plugin changes.
+    
+    The handler integrates with the watchdog file system monitoring system
+    to provide reliable change detection with comprehensive filtering and
+    validation of plugin-related file modifications.
+    
+    Key Features:
+        - Plugin file change detection and filtering
+        - Callback-based reload triggering
+        - Temporary file filtering and validation
+        - Event debouncing for rapid file changes
+        - Integration with hot-reload management system
+    
+    Example:
+        >>> def reload_plugin(path: Path):
+        ...     print(f"Reloading plugin: {path}")
+        >>> 
+        >>> handler = PluginFileHandler(reload_callback=reload_plugin)
+        >>> # Handler will be used by watchdog Observer
+
+    """
 
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
-        """Initialize handler with reload callback function."""
+        """Initialize file system event handler with reload callback.
+        
+        Sets up the event handler with the provided callback function that
+        will be invoked when relevant plugin file changes are detected.
+        The callback receives the Path of the modified plugin file.
+        
+        Args:
+            reload_callback: Function to call when plugin files are modified.
+                           Must accept a single Path parameter representing
+                           the modified plugin file path.
+
+        """
         super().__init__()
         self.reload_callback = reload_callback
 

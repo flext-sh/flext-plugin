@@ -1,8 +1,52 @@
-"""FLEXT Plugin Loader - Dynamic Plugin Loading with Hot Reload Support.
+"""FLEXT Plugin Loader - Dynamic plugin loading system with security and hot-reload capabilities.
+
+This module implements the infrastructure layer plugin loading functionality,
+providing dynamic Python module loading, plugin isolation, and hot-reload
+capabilities. The loader maintains security boundaries while enabling flexible
+plugin development and deployment workflows.
+
+The loader integrates with the Clean Architecture infrastructure layer,
+implementing the FlextPluginLoaderPort interface to provide concrete plugin
+loading capabilities for the domain and application layers.
+
+Key Features:
+    - Dynamic Python module loading and unloading
+    - Plugin isolation and security boundary enforcement
+    - Hot-reload capabilities for development workflows
+    - Module registry and lifecycle management
+    - Comprehensive error handling and validation
+
+Security Considerations:
+    - Optional security validation for plugin loading
+    - Module isolation to prevent conflicts
+    - Path validation and sanitization
+    - Resource cleanup and memory management
+
+Architecture:
+    Built as a FlextEntity following domain-driven design patterns,
+    the loader maintains state and provides lifecycle management
+    for plugin loading operations while integrating with the
+    broader FLEXT infrastructure ecosystem.
+
+Example:
+    >>> from flext_plugin.loader import PluginLoader
+    >>> from pathlib import Path
+    >>> 
+    >>> loader = PluginLoader(security_enabled=True)
+    >>> plugin_path = Path("./plugins/my_plugin.py")
+    >>> plugin = loader.load_plugin(plugin_path)
+    >>> print(f"Loaded plugin from {plugin_path}")
+
+Integration:
+    - Implements infrastructure layer patterns for Clean Architecture
+    - Provides concrete implementation for plugin loading ports
+    - Integrates with hot-reload and development workflow systems
+    - Supports comprehensive testing and validation strategies
 
 REFACTORED:
     Uses flext-core patterns with proper error handling and security.
-    Zero tolerance for duplication.
+    Zero tolerance for duplication and architectural violations.
+
 """
 
 from __future__ import annotations
@@ -16,7 +60,57 @@ from flext_core.utilities import FlextGenerators
 
 
 class PluginLoader(FlextEntity):
-    """Simple plugin loader for development and hot reload."""
+    """Dynamic plugin loading system with security validation and hot-reload capabilities.
+    
+    Infrastructure component implementing dynamic Python module loading for the
+    FLEXT plugin system. Provides plugin isolation, security validation, and
+    hot-reload capabilities while maintaining proper resource management and
+    error handling throughout the plugin lifecycle.
+    
+    The loader maintains both class-level and instance-level plugin registries
+    to support different loading scenarios and provide flexibility for testing
+    and deployment environments. Security features are configurable to support
+    both development and production use cases.
+    
+    Key Capabilities:
+        - Dynamic Python module loading from file paths
+        - Plugin registry management with conflict detection
+        - Security validation and sandboxing (configurable)
+        - Hot-reload support for development workflows
+        - Resource cleanup and memory management
+        - Comprehensive error handling and validation
+    
+    Architecture Integration:
+        - Extends FlextEntity for domain-driven design compliance
+        - Implements infrastructure layer patterns for Clean Architecture
+        - Provides concrete implementation for plugin loading ports
+        - Maintains state through entity lifecycle management
+    
+    Plugin Registry:
+        - Class-level registry for global plugin tracking
+        - Instance-level registry for isolated loading scenarios
+        - Conflict detection and resolution mechanisms
+        - Module lifecycle management and cleanup
+    
+    Security Model:
+        - Configurable security validation for plugin loading
+        - Path sanitization and validation
+        - Module isolation and conflict prevention
+        - Resource usage monitoring and limits
+    
+    Example:
+        >>> # Initialize loader with security enabled
+        >>> loader = PluginLoader(security_enabled=True)
+        >>> 
+        >>> # Load plugin from file path
+        >>> plugin_path = Path("./plugins/data_processor.py")
+        >>> try:
+        ...     plugin = loader.load_plugin(plugin_path)
+        ...     print(f"Successfully loaded plugin from {plugin_path}")
+        ... except Exception as e:
+        ...     print(f"Failed to load plugin: {e}")
+
+    """
 
     loaded_plugins: ClassVar[dict[str, object]] = {}
     plugin_modules: ClassVar[dict[str, object]] = {}

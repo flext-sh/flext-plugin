@@ -1,9 +1,40 @@
-"""FLEXT Plugin Domain Entities - Core plugin business entities.
+"""FLEXT Plugin Domain Entities - Rich business entities for plugin management.
+
+This module implements the core domain entities following Domain-Driven Design
+principles. These entities encapsulate business logic, maintain consistency
+boundaries, and provide the primary abstractions for plugin management operations.
+
+Key Entities:
+    - FlextPlugin: Core plugin entity with lifecycle management
+    - FlextPluginConfig: Plugin configuration with validation
+    - FlextPluginMetadata: Plugin descriptive information
+    - FlextPluginRegistry: Aggregate managing plugin collections
+
+Architecture:
+    These entities form the domain layer of the Clean Architecture,
+    containing rich business logic and enforcing domain rules.
+    They integrate with flext-core patterns while maintaining
+    plugin-specific business semantics.
+
+Domain Rules:
+    - Plugin names must be unique within a registry
+    - Plugin status transitions follow defined lifecycle rules
+    - Configuration changes trigger validation and events
+    - Registry maintains consistency across plugin operations
+
+Example:
+    >>> plugin = FlextPlugin(
+    ...     name="data-processor",
+    ...     version="1.0.0",
+    ...     config={"description": "Processes data efficiently"}
+    ... )
+    >>> result = plugin.activate()
+    >>> if result.is_success():
+    ...     print(f"Plugin {plugin.name} is now active")
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Core domain entities for plugin management system.
 """
 
 from __future__ import annotations
@@ -18,16 +49,82 @@ from flext_plugin.core.types import PluginStatus
 
 
 class FlextPlugin(FlextEntity):
-    """Plugin entity representing a plugin in the system."""
+    """Rich plugin entity with comprehensive business logic and lifecycle management.
 
-    # Define Pydantic fields for proper type recognition
-    name: str = Field(default="", description="Plugin name")
-    plugin_version: str = Field(default="", description="Plugin version")
-    description: str = Field(default="", description="Plugin description")
-    author: str = Field(default="", description="Plugin author")
+    Core domain entity representing a plugin within the FLEXT ecosystem.
+    Encapsulates plugin identity, metadata, configuration, and business rules
+    while maintaining consistency with Domain-Driven Design principles.
+
+    This entity serves as the primary abstraction for plugin operations,
+    including lifecycle management, validation, activation/deactivation,
+    and integration with the broader FLEXT platform services.
+
+    Business Rules:
+        - Plugin names must be non-empty and unique within a registry
+        - Version strings must follow semantic versioning patterns
+        - Status transitions must follow defined lifecycle rules
+        - Configuration changes require validation before application
+
+    Lifecycle States:
+        DISCOVERED → LOADED → ACTIVE ↔ INACTIVE
+                           ↓
+                        ERROR → DISABLED
+
+    Attributes:
+        name: Unique plugin identifier within the system
+        plugin_version: Semantic version string (e.g., "1.2.3")
+        description: Human-readable plugin description
+        author: Plugin developer or organization name
+        status: Current plugin lifecycle status
+
+    Domain Events:
+        The entity generates domain events for:
+        - Plugin activation/deactivation
+        - Configuration changes
+        - Status transitions
+        - Error conditions
+
+    Example:
+        >>> plugin = FlextPlugin(
+        ...     name="oracle-connector",
+        ...     version="2.1.0",
+        ...     config={
+        ...         "description": "Oracle database connector",
+        ...         "author": "FLEXT Team"
+        ...     }
+        ... )
+        >>> activation_result = plugin.activate()
+        >>> if activation_result.is_success():
+        ...     print(f"Plugin {plugin.name} activated successfully")
+
+    """
+
+    # Pydantic field definitions with comprehensive metadata
+    name: str = Field(
+        default="",
+        description="Unique plugin identifier used for discovery and management",
+        min_length=1,
+        max_length=100,
+    )
+    plugin_version: str = Field(
+        default="",
+        description="Semantic version string following semver format (e.g., '1.2.3')",
+        min_length=1,
+        max_length=50,
+    )
+    description: str = Field(
+        default="",
+        description="Human-readable description of plugin functionality",
+        max_length=500,
+    )
+    author: str = Field(
+        default="",
+        description="Plugin developer or organization name",
+        max_length=100,
+    )
     status: PluginStatus = Field(
         default=PluginStatus.INACTIVE,
-        description="Plugin status",
+        description="Current plugin lifecycle and operational status",
     )
 
     def __init__(
