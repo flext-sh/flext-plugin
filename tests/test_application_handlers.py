@@ -91,7 +91,7 @@ class TestablePluginDiscoveryHandler:
 
             result = await self.discovery_service.discover_plugins(search_paths)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info(
                     "Plugin discovery completed",
                     extra={"plugin_count": len(result.data) if result.data else 0},
@@ -116,7 +116,7 @@ class TestablePluginDiscoveryHandler:
 
             result = await self.discovery_service.validate_plugin_metadata(metadata)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin metadata validation successful")
             else:
                 self.logger.warning(
@@ -141,7 +141,7 @@ class TestablePluginDiscoveryHandler:
 
             result = await self.discovery_service.get_plugin_manifest(plugin_path)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin manifest retrieved successfully")
             else:
                 self.logger.warning(
@@ -176,7 +176,7 @@ class TestablePluginValidationHandler:
 
             result = await self.validation_service.validate_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin validation successful")
             else:
                 self.logger.error(
@@ -209,7 +209,7 @@ class TestablePluginValidationHandler:
                 config,
             )
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin configuration validation successful")
             else:
                 self.logger.warning(
@@ -235,7 +235,7 @@ class TestablePluginValidationHandler:
 
             result = await self.validation_service.validate_dependencies(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.debug("Plugin dependencies validation successful")
             else:
                 self.logger.warning(
@@ -270,7 +270,7 @@ class TestablePluginLifecycleHandler:
 
             result = await self.lifecycle_service.register_plugin(plugin)
 
-            if result.is_success:
+            if result.success:
                 self.logger.info("Plugin registered successfully")
             else:
                 self.logger.error(
@@ -458,7 +458,9 @@ class TestPluginDiscoveryHandler:
         )
 
         if handler.discovery_service != mock_discovery_service:
-            msg = f"Expected {mock_discovery_service}, got {handler.discovery_service}"
+            msg: str = (
+                f"Expected {mock_discovery_service}, got {handler.discovery_service}"
+            )
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
@@ -479,9 +481,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.discover_plugins(search_paths)
 
-        assert result.is_success
+        assert result.success
         if result.data != expected_plugins:
-            msg = f"Expected {expected_plugins}, got {result.data}"
+            msg: str = f"Expected {expected_plugins}, got {result.data}"
             raise AssertionError(msg)
         mock_discovery_service.discover_plugins.assert_called_once_with(search_paths)
 
@@ -501,9 +503,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.discover_plugins(search_paths)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -519,11 +521,11 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.discover_plugins(search_paths)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Discovery handler failed: Service error" not in result.error:
-            msg = f"Expected {'Discovery handler failed: Service error'} in {result.error}"
+            msg: str = f"Expected {'Discovery handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -540,9 +542,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_discovery_service.validate_plugin_metadata.assert_called_once_with(
             mock_plugin_metadata,
@@ -563,9 +565,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -583,11 +585,11 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.validate_plugin_metadata(mock_plugin_metadata)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Validation handler failed: Validation error" not in result.error:
-            msg = f"Expected {'Validation handler failed: Validation error'} in {result.error}"
+            msg: str = f"Expected {'Validation handler failed: Validation error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -606,9 +608,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.get_plugin_manifest(plugin_path)
 
-        assert result.is_success
+        assert result.success
         if result.data != expected_manifest:
-            msg = f"Expected {expected_manifest}, got {result.data}"
+            msg: str = f"Expected {expected_manifest}, got {result.data}"
             raise AssertionError(msg)
         mock_discovery_service.get_plugin_manifest.assert_called_once_with(plugin_path)
 
@@ -628,9 +630,9 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.get_plugin_manifest(plugin_path)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -648,11 +650,11 @@ class TestPluginDiscoveryHandler:
 
         result = await handler.get_plugin_manifest(plugin_path)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Manifest handler failed: File read error" not in result.error:
-            msg = f"Expected {'Manifest handler failed: File read error'} in {result.error}"
+            msg: str = f"Expected {'Manifest handler failed: File read error'} in {result.error}"
             raise AssertionError(msg)
 
 
@@ -728,9 +730,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_validation_service.validate_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -751,9 +753,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -768,11 +770,11 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Validation handler failed: Service error" not in result.error:
-            msg = f"Expected {'Validation handler failed: Service error'} in {result.error}"
+            msg: str = f"Expected {'Validation handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -790,9 +792,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_validation_service.validate_configuration.assert_called_once_with(
             mock_plugin_instance,
@@ -815,9 +817,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -835,11 +837,11 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_configuration(mock_plugin_instance, config)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Configuration validation handler failed: Type error" not in result.error:
-            msg = f"Expected {'Configuration validation handler failed: Type error'} in {result.error}"
+            msg: str = f"Expected {'Configuration validation handler failed: Type error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -856,9 +858,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_dependencies(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_validation_service.validate_dependencies.assert_called_once_with(
             mock_plugin_instance,
@@ -879,9 +881,9 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_dependencies(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -898,7 +900,7 @@ class TestPluginValidationHandler:
 
         result = await handler.validate_dependencies(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         assert (
@@ -977,7 +979,9 @@ class TestPluginLifecycleHandler:
         )
 
         if handler.lifecycle_service != mock_lifecycle_service:
-            msg = f"Expected {mock_lifecycle_service}, got {handler.lifecycle_service}"
+            msg: str = (
+                f"Expected {mock_lifecycle_service}, got {handler.lifecycle_service}"
+            )
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
@@ -995,9 +999,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.register_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.register_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1018,9 +1022,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.register_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1035,11 +1039,11 @@ class TestPluginLifecycleHandler:
 
         result = await handler.register_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         assert result.error is not None
         if "Registration handler failed: Service error" not in result.error:
-            msg = f"Expected {'Registration handler failed: Service error'} in {result.error}"
+            msg: str = f"Expected {'Registration handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1056,9 +1060,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.load_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.load_plugin.assert_called_once_with(mock_plugin_instance)
 
@@ -1077,9 +1081,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.load_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1094,7 +1098,7 @@ class TestPluginLifecycleHandler:
 
         result = await handler.load_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Loading handler failed: Loading error" not in result.error:
             msg = (
@@ -1116,9 +1120,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.initialize_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.initialize_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1139,9 +1143,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.initialize_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1157,10 +1161,10 @@ class TestPluginLifecycleHandler:
 
         result = await handler.initialize_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Initialization handler failed: Type error" not in result.error:
-            msg = f"Expected {'Initialization handler failed: Type error'} in {result.error}"
+            msg: str = f"Expected {'Initialization handler failed: Type error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1177,9 +1181,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.activate_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.activate_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1198,7 +1202,7 @@ class TestPluginLifecycleHandler:
 
         result = await handler.activate_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Activation handler failed: Value error" not in result.error:
             msg = (
@@ -1220,9 +1224,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.suspend_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.suspend_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1243,10 +1247,10 @@ class TestPluginLifecycleHandler:
 
         result = await handler.suspend_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Suspension handler failed: Attribute error" not in result.error:
-            msg = f"Expected {'Suspension handler failed: Attribute error'} in {result.error}"
+            msg: str = f"Expected {'Suspension handler failed: Attribute error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1263,9 +1267,9 @@ class TestPluginLifecycleHandler:
 
         result = await handler.unload_plugin(mock_plugin_instance)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_instance:
-            msg = f"Expected {mock_plugin_instance}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_instance}, got {result.data}"
             raise AssertionError(msg)
         mock_lifecycle_service.unload_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1284,7 +1288,7 @@ class TestPluginLifecycleHandler:
 
         result = await handler.unload_plugin(mock_plugin_instance)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Unloading handler failed: Unload error" not in result.error:
             msg = (
@@ -1375,7 +1379,9 @@ class TestFlextPluginExecutionHandler:
         )
 
         if handler.execution_service != mock_execution_service:
-            msg = f"Expected {mock_execution_service}, got {handler.execution_service}"
+            msg: str = (
+                f"Expected {mock_execution_service}, got {handler.execution_service}"
+            )
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
@@ -1401,9 +1407,9 @@ class TestFlextPluginExecutionHandler:
             execution_context,
         )
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_execution:
-            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_execution}, got {result.data}"
             raise AssertionError(msg)
         mock_execution_service.execute_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1428,9 +1434,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_execution:
-            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_execution}, got {result.data}"
             raise AssertionError(msg)
         mock_execution_service.execute_plugin.assert_called_once_with(
             mock_plugin_instance,
@@ -1455,9 +1461,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1474,10 +1480,10 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.execute_plugin(mock_plugin_instance, input_data)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "Execution handler failed: Service error" not in result.error:
-            msg = f"Expected {'Execution handler failed: Service error'} in {result.error}"
+            msg: str = f"Expected {'Execution handler failed: Service error'} in {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1496,9 +1502,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.get_execution_status(execution_id)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_execution:
-            msg = f"Expected {mock_plugin_execution}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_execution}, got {result.data}"
             raise AssertionError(msg)
         mock_execution_service.get_execution_status.assert_called_once_with(
             execution_id,
@@ -1520,9 +1526,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.get_execution_status(execution_id)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1540,9 +1546,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.cancel_execution(execution_id)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_execution_service.cancel_execution.assert_called_once_with(execution_id)
 
@@ -1562,9 +1568,9 @@ class TestFlextPluginExecutionHandler:
 
         result = await handler.cancel_execution(execution_id)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
 
@@ -1622,7 +1628,9 @@ class TestFlextPluginRegistryHandler:
         )
 
         if handler.registry_service != mock_registry_service:
-            msg = f"Expected {mock_registry_service}, got {handler.registry_service}"
+            msg: str = (
+                f"Expected {mock_registry_service}, got {handler.registry_service}"
+            )
             raise AssertionError(msg)
         assert hasattr(handler, "logger")
 
@@ -1640,9 +1648,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.register_registry(mock_plugin_registry)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin_registry:
-            msg = f"Expected {mock_plugin_registry}, got {result.data}"
+            msg: str = f"Expected {mock_plugin_registry}, got {result.data}"
             raise AssertionError(msg)
         mock_registry_service.register_registry.assert_called_once_with(
             mock_plugin_registry,
@@ -1663,9 +1671,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.register_registry(mock_plugin_registry)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1682,9 +1690,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.sync_registry(mock_plugin_registry)
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
-            msg = f"Expected True, got {result.data}"
+            msg: str = f"Expected True, got {result.data}"
             raise AssertionError(msg)
         mock_registry_service.sync_registry.assert_called_once_with(
             mock_plugin_registry,
@@ -1705,9 +1713,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.sync_registry(mock_plugin_registry)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1728,9 +1736,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.search_plugins(mock_plugin_registry, query)
 
-        assert result.is_success
+        assert result.success
         if result.data != expected_plugins:
-            msg = f"Expected {expected_plugins}, got {result.data}"
+            msg: str = f"Expected {expected_plugins}, got {result.data}"
             raise AssertionError(msg)
         mock_registry_service.search_plugins.assert_called_once_with(
             mock_plugin_registry,
@@ -1754,9 +1762,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.search_plugins(mock_plugin_registry, query)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)
 
     @pytest.mark.asyncio
@@ -1777,9 +1785,9 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.download_plugin(mock_plugin_registry, plugin_id)
 
-        assert result.is_success
+        assert result.success
         if result.data != download_path:
-            msg = f"Expected {download_path}, got {result.data}"
+            msg: str = f"Expected {download_path}, got {result.data}"
             raise AssertionError(msg)
         mock_registry_service.download_plugin.assert_called_once_with(
             mock_plugin_registry,
@@ -1803,7 +1811,7 @@ class TestFlextPluginRegistryHandler:
 
         result = await handler.download_plugin(mock_plugin_registry, plugin_id)
 
-        assert not result.is_success
+        assert not result.success
         if result.error != error_message:
-            msg = f"Expected {error_message}, got {result.error}"
+            msg: str = f"Expected {error_message}, got {result.error}"
             raise AssertionError(msg)

@@ -81,7 +81,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate configuration
             validation_result = await self._validate_configuration()
-            if not validation_result.is_success():
+            if not validation_result.success():
                 return validation_result
 
             # Setup logging if enabled
@@ -97,7 +97,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             return FlextResult.ok(True)
 
         except Exception as e:
-            error_msg = f"Failed to initialize plugin {self.name}: {e}"
+            error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
             logger.error(error_msg)
             return FlextResult.fail(error_msg)
 
@@ -121,7 +121,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate input data
             validation_result = await self._validate_input_data(data)
-            if not validation_result.is_success():
+            if not validation_result.success():
                 return validation_result
 
             # Record execution start
@@ -152,7 +152,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
         except Exception as e:
             self._processing_stats["total_errors"] += 1
-            error_msg = f"Execution failed in plugin {self.name}: {e}"
+            error_msg: str = f"Execution failed in plugin {self.name}: {e}"
             logger.error(error_msg)
             return FlextResult.fail(error_msg)
 
@@ -179,7 +179,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             return FlextResult.ok(True)
 
         except Exception as e:
-            error_msg = f"Failed to cleanup plugin {self.name}: {e}"
+            error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
             logger.error(error_msg)
             return FlextResult.fail(error_msg)
 
@@ -333,7 +333,7 @@ async def main():
         # Register plugin
         logger.info("Registering plugin...")
         register_result = await platform.register_plugin(plugin)
-        if not register_result.is_success():
+        if not register_result.success():
             logger.error(f"Registration failed: {register_result.error}")
             return
 
@@ -342,7 +342,7 @@ async def main():
         # Activate plugin
         logger.info("Activating plugin...")
         activate_result = await platform.activate_plugin(plugin.name)
-        if not activate_result.is_success():
+        if not activate_result.success():
             logger.error(f"Activation failed: {activate_result.error}")
             return
 
@@ -365,7 +365,7 @@ async def main():
         logger.info("Executing plugin with sample data...")
         execution_result = await platform.execute_plugin(plugin.name, sample_data)
 
-        if execution_result.is_success():
+        if execution_result.success():
             logger.info("Plugin execution successful!")
 
             # Extract result data
@@ -400,7 +400,7 @@ async def main():
             }
 
             result = await platform.execute_plugin(plugin.name, test_data)
-            if result.is_success():
+            if result.success():
                 logger.info(f"Execution {i+1}: Success")
             else:
                 logger.error(f"Execution {i+1}: Failed - {result.error}")
@@ -414,7 +414,7 @@ async def main():
         # Deactivate plugin
         logger.info("\nDeactivating plugin...")
         deactivate_result = await platform.deactivate_plugin(plugin.name)
-        if deactivate_result.is_success():
+        if deactivate_result.success():
             logger.info("Plugin deactivated successfully")
         else:
             logger.error(f"Deactivation failed: {deactivate_result.error}")
@@ -485,7 +485,7 @@ class TestBasicDataProcessorPlugin:
     async def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = await plugin.initialize()
-        assert result.is_success()
+        assert result.success()
         assert plugin._is_initialized
 
     async def test_initialization_failure(self):
@@ -520,7 +520,7 @@ class TestBasicDataProcessorPlugin:
         # Execute plugin
         result = await plugin.execute(test_data)
 
-        assert result.is_success()
+        assert result.success()
         assert "processed_data" in result.data
         assert "metadata" in result.data
 
@@ -579,7 +579,7 @@ class TestBasicDataProcessorPlugin:
         # Execute plugin successfully
         test_data = {"payload": {"test": "data"}}
         result = await plugin.execute(test_data)
-        assert result.is_success()
+        assert result.success()
 
         # Check updated statistics
         updated_stats = plugin.get_statistics()
@@ -610,7 +610,7 @@ class TestBasicDataProcessorPlugin:
         await plugin.initialize()
 
         result = await plugin.cleanup()
-        assert result.is_success()
+        assert result.success()
         assert not plugin._is_initialized
 
         # Verify statistics were saved
@@ -624,11 +624,11 @@ class TestBasicDataProcessorPlugin:
 
         # Register plugin
         register_result = await platform.register_plugin(plugin)
-        assert register_result.is_success()
+        assert register_result.success()
 
         # Activate plugin
         activate_result = await platform.activate_plugin(plugin.name)
-        assert activate_result.is_success()
+        assert activate_result.success()
 
         # Execute plugin
         test_data = {
@@ -639,7 +639,7 @@ class TestBasicDataProcessorPlugin:
         }
 
         execute_result = await platform.execute_plugin(plugin.name, test_data)
-        assert execute_result.is_success()
+        assert execute_result.success()
 
         # Verify execution result
         result_data = execute_result.data
@@ -654,7 +654,7 @@ class TestBasicDataProcessorPlugin:
 
         # Deactivate plugin
         deactivate_result = await platform.deactivate_plugin(plugin.name)
-        assert deactivate_result.is_success()
+        assert deactivate_result.success()
 
     async def test_multiple_executions(self, platform):
         """Test multiple plugin executions."""
@@ -673,7 +673,7 @@ class TestBasicDataProcessorPlugin:
             }
 
             result = await platform.execute_plugin(plugin.name, test_data)
-            assert result.is_success()
+            assert result.success()
 
         # Check final statistics
         stats = plugin.get_statistics()
@@ -728,7 +728,7 @@ class TestPluginPerformance:
         result = await initialized_plugin.execute(test_data)
         execution_time = time.time() - start_time
 
-        assert result.is_success()
+        assert result.success()
         assert execution_time < 1.0  # Should complete in under 1 second
 
         # Verify processing time is recorded

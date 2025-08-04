@@ -35,11 +35,11 @@ Example:
     >>>
     >>> # Discover and load plugins
     >>> discovery_result = platform.discover_plugins("./plugins")
-    >>> if discovery_result.is_success():
+    >>> if discovery_result.success():
     ...     plugins = discovery_result.data
     ...     for plugin in plugins:
     ...         load_result = platform.load_plugin(plugin)
-    ...         if load_result.is_success():
+    ...         if load_result.success():
     ...             print(f"Successfully loaded: {plugin.name}")
 
 Integration:
@@ -112,19 +112,19 @@ class FlextPluginPlatform:
         >>>
         >>> # Full plugin management workflow
         >>> discovery_result = platform.discover_plugins("./plugins")
-        >>> if discovery_result.is_success():
+        >>> if discovery_result.success():
         ...     for plugin in discovery_result.data:
         ...         # Validate plugin before loading
         ...         validation = platform.validate_plugin(plugin)
-        ...         if validation.is_success() and validation.data:
+        ...         if validation.success() and validation.data:
         ...             # Load validated plugin
         ...             load_result = platform.load_plugin(plugin)
-        ...             if load_result.is_success():
+        ...             if load_result.success():
         ...                 print(f"Successfully loaded plugin: {plugin.name}")
         >>>
         >>> # Configuration management
         >>> config_result = platform.get_plugin_config("my-plugin")
-        >>> if config_result.is_success():
+        >>> if config_result.success():
         ...     config = config_result.data
         ...     # Modify configuration and update
         ...     update_result = platform.update_plugin_config("my-plugin", config)
@@ -183,18 +183,18 @@ class FlextPluginPlatform:
     def plugin_service(self) -> FlextPluginService:
         """Get plugin management service."""
         result = self.container.get("plugin_service")
-        if result.is_success and isinstance(result.data, FlextPluginService):
+        if result.success and isinstance(result.data, FlextPluginService):
             return result.data
-        msg = f"Failed to get plugin service: {result.error}"
+        msg: str = f"Failed to get plugin service: {result.error}"
         raise RuntimeError(msg)
 
     @property
     def discovery_service(self) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
         result = self.container.get("plugin_discovery_service")
-        if result.is_success and isinstance(result.data, FlextPluginDiscoveryService):
+        if result.success and isinstance(result.data, FlextPluginDiscoveryService):
             return result.data
-        msg = f"Failed to get discovery service: {result.error}"
+        msg: str = f"Failed to get discovery service: {result.error}"
         raise RuntimeError(msg)
 
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:

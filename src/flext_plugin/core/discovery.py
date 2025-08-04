@@ -157,6 +157,7 @@ class PluginDiscovery(FlextEntity):
     async def _discover_file_system(self) -> None:
         """Discover plugins from file system."""
         from pathlib import Path
+
         for directory_str in self.plugin_directories:
             directory = Path(directory_str)
             await self._scan_directory(directory)
@@ -195,6 +196,6 @@ class PluginDiscovery(FlextEntity):
 # Removed mock classes - use real implementations in tests
 
 
-__all__ = [
+__all__: list[str] = [
     "PluginDiscovery",
 ]

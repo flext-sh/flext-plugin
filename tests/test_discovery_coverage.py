@@ -10,21 +10,24 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import Generator
+from typing import TYPE_CHECKING
 
 import pytest
 
 from flext_plugin.discovery import PluginDiscovery
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
 
 class TestPluginDiscovery:
     """Coverage-focused tests for PluginDiscovery.
-    
+
     Tests the actual discovery system implementation with real file scenarios.
     """
 
     @pytest.fixture
-    def temp_dir(self) -> Generator[Path, None, None]:
+    def temp_dir(self) -> Generator[Path]:
         """Create temporary directory for testing."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             yield Path(tmp_dir)
@@ -52,20 +55,24 @@ class TestPluginDiscovery:
         discovery = PluginDiscovery(plugin_directory="")
         result = discovery.validate_domain_rules()
 
-        assert not result.is_success
+        assert not result.success
         assert "Plugin directory cannot be empty" in str(result.error)
 
-    def test_validate_domain_rules_valid_directory_succeeds(self, temp_dir: Path) -> None:
+    def test_validate_domain_rules_valid_directory_succeeds(
+        self, temp_dir: Path
+    ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
         discovery = PluginDiscovery(plugin_directory=plugin_dir)
         result = discovery.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
 
     @pytest.mark.asyncio
-    async def test_scan_nonexistent_directory_returns_empty_list(self, temp_dir: Path) -> None:
+    async def test_scan_nonexistent_directory_returns_empty_list(
+        self, temp_dir: Path
+    ) -> None:
         """Test scan with nonexistent directory returns empty list."""
         plugin_dir = str(temp_dir / "nonexistent")
         discovery = PluginDiscovery(plugin_directory=plugin_dir)
@@ -76,7 +83,9 @@ class TestPluginDiscovery:
         assert len(plugins) == 0
 
     @pytest.mark.asyncio
-    async def test_scan_empty_directory_returns_empty_list(self, temp_dir: Path) -> None:
+    async def test_scan_empty_directory_returns_empty_list(
+        self, temp_dir: Path
+    ) -> None:
         """Test scan with empty directory returns empty list."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -200,7 +209,9 @@ class TestPluginDiscovery:
         assert str(plugin["path"]).endswith("size_test_plugin.py")
 
     @pytest.mark.asyncio
-    async def test_discover_plugin_entry_points_empty_directory(self, temp_dir: Path) -> None:
+    async def test_discover_plugin_entry_points_empty_directory(
+        self, temp_dir: Path
+    ) -> None:
         """Test discover_plugin_entry_points with empty directory."""
         plugin_dir = str(temp_dir / "empty")
         discovery = PluginDiscovery(plugin_directory=plugin_dir)
@@ -211,7 +222,9 @@ class TestPluginDiscovery:
         assert len(entry_points) == 0
 
     @pytest.mark.asyncio
-    async def test_discover_plugin_entry_points_with_plugins(self, temp_dir: Path) -> None:
+    async def test_discover_plugin_entry_points_with_plugins(
+        self, temp_dir: Path
+    ) -> None:
         """Test discover_plugin_entry_points with plugin files."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -249,14 +262,18 @@ class TestPluginDiscovery:
             assert isinstance(entry_point["path"], Path)
 
     @pytest.mark.asyncio
-    async def test_discover_plugin_entry_points_integration_with_scan(self, temp_dir: Path) -> None:
+    async def test_discover_plugin_entry_points_integration_with_scan(
+        self, temp_dir: Path
+    ) -> None:
         """Test discover_plugin_entry_points integrates with scan method."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
 
         # Create test plugin
         plugin_file = plugin_dir / "integration_test.py"
-        plugin_file.write_text("class IntegrationTestPlugin:\n    def run(self):\n        return True\n")
+        plugin_file.write_text(
+            "class IntegrationTestPlugin:\n    def run(self):\n        return True\n"
+        )
 
         discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
@@ -307,8 +324,14 @@ class TestPluginDiscovery:
         # Create realistic plugin directory structure
         files_to_create = [
             ("tap_github.py", "# GitHub tap plugin\nclass GitHubTap:\n    pass\n"),
-            ("target_postgres.py", "# PostgreSQL target plugin\nclass PostgresTarget:\n    pass\n"),
-            ("transform_utils.py", "# Transform utilities\ndef transform_data():\n    pass\n"),
+            (
+                "target_postgres.py",
+                "# PostgreSQL target plugin\nclass PostgresTarget:\n    pass\n",
+            ),
+            (
+                "transform_utils.py",
+                "# Transform utilities\ndef transform_data():\n    pass\n",
+            ),
             ("__init__.py", "# Package init\n"),
             ("__pycache__.py", "# Cache file\n"),
             ("config.json", '{"version": "1.0"}'),
@@ -335,6 +358,7 @@ class TestPluginDiscovery:
         discovery = PluginDiscovery(plugin_directory=plugin_dir)
 
         from flext_core import FlextEntity
+
         assert isinstance(discovery, FlextEntity)
 
         # Should have FlextEntity attributes
@@ -356,7 +380,7 @@ class TestPluginDiscoveryErrorHandling:
     """Test error handling and edge cases."""
 
     @pytest.fixture
-    def temp_dir(self) -> Generator[Path, None, None]:
+    def temp_dir(self) -> Generator[Path]:
         """Create temporary directory for testing."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             yield Path(tmp_dir)
@@ -369,10 +393,12 @@ class TestPluginDiscoveryErrorHandling:
 
         # Validation should fail
         result = discovery.validate_domain_rules()
-        assert not result.is_success
+        assert not result.success
 
     @pytest.mark.asyncio
-    async def test_scan_handles_permission_errors_gracefully(self, temp_dir: Path) -> None:
+    async def test_scan_handles_permission_errors_gracefully(
+        self, temp_dir: Path
+    ) -> None:
         """Test scan handles permission errors gracefully."""
         plugin_dir = temp_dir / "restricted"
         plugin_dir.mkdir()
@@ -388,7 +414,9 @@ class TestPluginDiscoveryErrorHandling:
         assert isinstance(plugins, list)
 
     @pytest.mark.asyncio
-    async def test_discover_entry_points_handles_scan_errors(self, temp_dir: Path) -> None:
+    async def test_discover_entry_points_handles_scan_errors(
+        self, temp_dir: Path
+    ) -> None:
         """Test discover_entry_points handles scan errors gracefully."""
         # Use nonexistent directory
         plugin_dir = str(temp_dir / "nonexistent")

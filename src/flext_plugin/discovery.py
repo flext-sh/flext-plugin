@@ -82,7 +82,7 @@ class PluginDiscovery(FlextEntity):
         >>> discovery = PluginDiscovery(plugin_directory="./plugins")
         >>> # Validate directory before scanning
         >>> validation = discovery.validate_domain_rules()
-        >>> if validation.is_success():
+        >>> if validation.success():
         ...     plugins = await discovery.scan()
         ...     print(f"Discovered {len(plugins)} plugin files")
 

@@ -198,7 +198,7 @@ class TestPluginLoaderSimple:
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
         """Test getting all loaded plugins when none are loaded."""
         result = loader.get_all_loaded_plugins()
-        assert result.is_success
+        assert result.success
         if result.data != {}:
             raise AssertionError(f"Expected {{}}, got {result.data}")
 
@@ -236,7 +236,7 @@ class TestPluginLoaderSimple:
 
         # Should be able to retrieve it
         result = loader.get_loaded_plugin("test-plugin")
-        assert result.is_success
+        assert result.success
         if result.data != loaded_plugin:
             raise AssertionError(f"Expected {loaded_plugin}, got {result.data}")
         if not (loader.is_loaded("test-plugin")):
@@ -246,7 +246,7 @@ class TestPluginLoaderSimple:
 
         # Should appear in all loaded plugins
         all_plugins_result = loader.get_all_loaded_plugins()
-        assert all_plugins_result.is_success
+        assert all_plugins_result.success
         all_plugins = all_plugins_result.data
         if len(all_plugins) != 1:
             raise AssertionError(f"Expected {1}, got {len(all_plugins)}")

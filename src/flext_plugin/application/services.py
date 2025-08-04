@@ -24,7 +24,7 @@ Example:
     >>> from flext_plugin.application.services import FlextPluginService
     >>> service = FlextPluginService()
     >>> result = await service.discover_plugins("./plugins")
-    >>> if result.is_success():
+    >>> if result.success():
     ...     plugins = result.data
     ...     print(f"Discovered {len(plugins)} plugins")
 
@@ -89,11 +89,11 @@ class FlextPluginService(FlextDomainService):
         >>> service = FlextPluginService()
         >>> # Discover plugins in directory
         >>> discovery_result = service.discover_plugins("./plugins")
-        >>> if discovery_result.is_success():
+        >>> if discovery_result.success():
         ...     plugins = discovery_result.data
         ...     for plugin in plugins:
         ...         load_result = service.load_plugin(plugin)
-        ...         if load_result.is_success():
+        ...         if load_result.success():
         ...             print(f"Loaded plugin: {plugin.name}")
 
     Error Handling:
@@ -156,7 +156,7 @@ class FlextPluginService(FlextDomainService):
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            if result.is_success and isinstance(result.data, FlextPluginDiscoveryPort):
+            if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                 object.__setattr__(self, "_discovery_port", result.data)
                 return result.data
         if isinstance(discovery_port, FlextPluginDiscoveryPort):
@@ -180,7 +180,7 @@ class FlextPluginService(FlextDomainService):
         loader_port = getattr(self, "_loader_port", None)
         if loader_port is None:
             result = self.container.get("plugin_loader_port")
-            if result.is_success and isinstance(result.data, FlextPluginLoaderPort):
+            if result.success and isinstance(result.data, FlextPluginLoaderPort):
                 object.__setattr__(self, "_loader_port", result.data)
                 return result.data
         if isinstance(loader_port, FlextPluginLoaderPort):
@@ -209,7 +209,7 @@ class FlextPluginService(FlextDomainService):
         manager_port = getattr(self, "_manager_port", None)
         if manager_port is None:
             result = self.container.get("plugin_manager_port")
-            if result.is_success and isinstance(result.data, FlextPluginManagerPort):
+            if result.success and isinstance(result.data, FlextPluginManagerPort):
                 object.__setattr__(self, "_manager_port", result.data)
                 return result.data
         if isinstance(manager_port, FlextPluginManagerPort):
@@ -234,12 +234,15 @@ class FlextPluginService(FlextDomainService):
                 return FlextResult.ok(success)
 
             def get_plugin_config(
-                self, _plugin_name: str,
+                self,
+                _plugin_name: str,
             ) -> FlextResult[FlextPluginConfig]:
                 return FlextResult.fail("Mock implementation")
 
             def update_plugin_config(
-                self, _plugin_name: str, _config: FlextPluginConfig,
+                self,
+                _plugin_name: str,
+                _config: FlextPluginConfig,
             ) -> FlextResult[bool]:
                 success = True
                 return FlextResult.ok(success)
@@ -281,7 +284,7 @@ class FlextPluginService(FlextDomainService):
 
             # Validate plugin first
             validation_result = self.discovery_port.validate_plugin(plugin)
-            if not validation_result.is_success or not validation_result.data:
+            if not validation_result.success or not validation_result.data:
                 return FlextResult.fail("Plugin validation failed")
 
             return self.loader_port.load_plugin(plugin)
@@ -486,11 +489,11 @@ class FlextPluginDiscoveryService(FlextDomainService):
         >>> discovery_service = FlextPluginDiscoveryService()
         >>> # Scan directory for plugins
         >>> result = discovery_service.scan_directory("./plugins")
-        >>> if result.is_success():
+        >>> if result.success():
         ...     plugins = result.data
         ...     for plugin in plugins:
         ...         validation = discovery_service.validate_plugin_integrity(plugin)
-        ...         if validation.is_success() and validation.data:
+        ...         if validation.success() and validation.data:
         ...             print(f"Valid plugin found: {plugin.name}")
 
     Performance Considerations:
@@ -552,7 +555,7 @@ class FlextPluginDiscoveryService(FlextDomainService):
         discovery_port = getattr(self, "_discovery_port", None)
         if discovery_port is None:
             result = self.container.get("plugin_discovery_port")
-            if result.is_success and isinstance(result.data, FlextPluginDiscoveryPort):
+            if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                 object.__setattr__(self, "_discovery_port", result.data)
                 return result.data
         if isinstance(discovery_port, FlextPluginDiscoveryPort):

@@ -11,17 +11,20 @@ from __future__ import annotations
 import asyncio
 import tempfile
 from pathlib import Path
-from typing import Generator
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
 from flext_plugin.hot_reload import HotReloadManager, PluginFileHandler
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
 
 class TestPluginFileHandler:
     """Coverage-focused tests for PluginFileHandler.
-    
+
     Tests the actual file system event handler implementation.
     """
 
@@ -118,12 +121,12 @@ class TestPluginFileHandler:
 
 class TestHotReloadManager:
     """Coverage-focused tests for HotReloadManager.
-    
+
     Tests the actual hot reload manager implementation using real API.
     """
 
     @pytest.fixture
-    def temp_dir(self) -> Generator[Path, None, None]:
+    def temp_dir(self) -> Generator[Path]:
         """Create temporary directory for testing."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             yield Path(tmp_dir)
@@ -150,16 +153,18 @@ class TestHotReloadManager:
         manager = HotReloadManager(plugin_directory="")
         result = manager.validate_domain_rules()
 
-        assert not result.is_success
+        assert not result.success
         assert "Plugin directory cannot be empty" in str(result.error)
 
-    def test_validate_domain_rules_valid_directory_succeeds(self, temp_dir: Path) -> None:
+    def test_validate_domain_rules_valid_directory_succeeds(
+        self, temp_dir: Path
+    ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager(plugin_directory=plugin_dir)
         result = manager.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_manager_properties_initialization(self, temp_dir: Path) -> None:
         """Test manager properties are properly initialized."""
@@ -196,7 +201,7 @@ class TestHotReloadManager:
         manager = HotReloadManager(plugin_directory=str(plugin_dir))
 
         # Mock the observer to avoid real file watching
-        with patch.object(manager, 'observer') as mock_observer:
+        with patch.object(manager, "observer") as mock_observer:
             mock_observer.schedule = Mock()
             mock_observer.start = Mock()
 
@@ -207,7 +212,9 @@ class TestHotReloadManager:
             mock_observer.start.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_start_watching_without_observer_raises_error(self, temp_dir: Path) -> None:
+    async def test_start_watching_without_observer_raises_error(
+        self, temp_dir: Path
+    ) -> None:
         """Test start_watching without observer raises error."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager(plugin_directory=plugin_dir)
@@ -280,7 +287,9 @@ class TestHotReloadManager:
         mock_loader.load_plugin.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_initial_plugin_load_nonexistent_directory(self, temp_dir: Path) -> None:
+    async def test_initial_plugin_load_nonexistent_directory(
+        self, temp_dir: Path
+    ) -> None:
         """Test initial plugin load with nonexistent directory."""
         plugin_dir = temp_dir / "nonexistent"
         manager = HotReloadManager(plugin_directory=str(plugin_dir))
@@ -289,7 +298,9 @@ class TestHotReloadManager:
         await manager._initial_plugin_load()
 
     @pytest.mark.asyncio
-    async def test_initial_plugin_load_handles_errors_gracefully(self, temp_dir: Path) -> None:
+    async def test_initial_plugin_load_handles_errors_gracefully(
+        self, temp_dir: Path
+    ) -> None:
         """Test initial plugin load handles errors gracefully."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -310,7 +321,7 @@ class TestHotReloadManager:
 
         test_path = Path("/test/plugin.py")
 
-        with patch('asyncio.create_task') as mock_create_task:
+        with patch("asyncio.create_task") as mock_create_task:
             mock_task = Mock()
             mock_task.add_done_callback = Mock()
             mock_create_task.return_value = mock_task
@@ -339,7 +350,9 @@ class TestHotReloadManager:
         assert "test_plugin" not in manager.loaded_plugins
 
     @pytest.mark.asyncio
-    async def test_reload_plugin_handles_errors_gracefully(self, temp_dir: Path) -> None:
+    async def test_reload_plugin_handles_errors_gracefully(
+        self, temp_dir: Path
+    ) -> None:
         """Test reload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager(plugin_directory=plugin_dir)
@@ -435,7 +448,9 @@ class TestHotReloadManager:
         await manager._unload_plugin("nonexistent_plugin")
 
     @pytest.mark.asyncio
-    async def test_unload_plugin_handles_errors_gracefully(self, temp_dir: Path) -> None:
+    async def test_unload_plugin_handles_errors_gracefully(
+        self, temp_dir: Path
+    ) -> None:
         """Test unload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager(plugin_directory=plugin_dir)
@@ -487,7 +502,9 @@ class TestHotReloadConvenienceFunction:
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = str(Path(tmp_dir) / "plugins")
 
-            with patch('flext_plugin.hot_reload.HotReloadManager.start_watching') as mock_start:
+            with patch(
+                "flext_plugin.hot_reload.HotReloadManager.start_watching"
+            ) as mock_start:
                 mock_start.return_value = asyncio.Future()
                 mock_start.return_value.set_result(None)
 
@@ -517,7 +534,7 @@ class TestHotReloadIntegration:
             event.is_directory = False
             event.src_path = str(Path(tmp_dir) / "test_plugin.py")
 
-            with patch('asyncio.create_task') as mock_create_task:
+            with patch("asyncio.create_task") as mock_create_task:
                 mock_task = Mock()
                 mock_task.add_done_callback = Mock()
                 mock_create_task.return_value = mock_task
@@ -537,7 +554,7 @@ class TestHotReloadIntegration:
             manager = HotReloadManager(plugin_directory=str(plugin_dir))
 
             # Test complete lifecycle
-            with patch.object(manager, 'observer') as mock_observer:
+            with patch.object(manager, "observer") as mock_observer:
                 mock_observer.schedule = Mock()
                 mock_observer.start = Mock()
                 mock_observer.is_alive.return_value = True
@@ -572,4 +589,4 @@ class TestHotReloadIntegration:
 
             # Validation should work
             validation_result = manager.validate_domain_rules()
-            assert validation_result.is_success
+            assert validation_result.success

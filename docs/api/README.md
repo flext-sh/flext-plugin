@@ -123,7 +123,7 @@ class PluginExecutionResult:
     plugin_name: str
     execution_time: float
 
-    def is_success(self) -> bool
+    def success(self) -> bool
     def is_failure(self) -> bool
 
 # Plugin execution context
@@ -665,7 +665,7 @@ result = await platform.execute_plugin(
     "example-plugin",
     {"input": "data"}
 )
-print(f"Result: {result.data if result.is_success() else result.error}")
+print(f"Result: {result.data if result.success() else result.error}")
 ```
 
 ### Plugin Discovery

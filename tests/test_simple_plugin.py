@@ -26,7 +26,9 @@ Architecture Integration:
 
 from __future__ import annotations
 
+from collections import UserDict
 from unittest.mock import Mock, patch
+
 import pytest
 
 from flext_plugin.simple_plugin import (
@@ -39,7 +41,7 @@ from flext_plugin.simple_plugin import (
 
 class TestPlugin:
     """Comprehensive test suite for Plugin base class functionality.
-    
+
     Tests the lightweight plugin base class with essential lifecycle management,
     activation/deactivation capabilities, and FlextResult integration patterns.
     """
@@ -59,18 +61,20 @@ class TestPlugin:
         """Test successful plugin activation."""
         result = plugin.activate()
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
         assert plugin.active
         assert result.error is None
 
     def test_plugin_activate_exception_handling(self) -> None:
         """Test plugin activation exception handling."""
+
         # Create a plugin that will fail during activation
         class FailingPlugin(Plugin):
             def __setattr__(self, name: str, value: object) -> None:
                 if name == "active" and value is True:
-                    raise RuntimeError("Activation failed")
+                    msg = "Activation failed"
+                    raise RuntimeError(msg)
                 super().__setattr__(name, value)
 
         failing_plugin = FailingPlugin("failing-plugin")
@@ -87,13 +91,14 @@ class TestPlugin:
 
         result = plugin.deactivate()
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
         assert not plugin.active
         assert result.error is None
 
     def test_plugin_deactivate_exception_handling(self) -> None:
         """Test plugin deactivation exception handling."""
+
         # Create a plugin that will fail during deactivation
         class FailingDeactivatePlugin(Plugin):
             def __init__(self, name: str) -> None:
@@ -102,8 +107,9 @@ class TestPlugin:
                 self.active = True  # Start as active
 
             def __setattr__(self, name: str, value: object) -> None:
-                if name == "active" and value is False and hasattr(self, 'active'):
-                    raise ValueError("Deactivation failed")
+                if name == "active" and value is False and hasattr(self, "active"):
+                    msg = "Deactivation failed"
+                    raise ValueError(msg)
                 super().__setattr__(name, value)
 
         failing_plugin = FailingDeactivatePlugin("failing-deactivate-plugin")
@@ -121,30 +127,30 @@ class TestPlugin:
 
         # Activate
         activate_result = plugin.activate()
-        assert activate_result.is_success
+        assert activate_result.success
         assert plugin.active
 
         # Deactivate
         deactivate_result = plugin.deactivate()
-        assert deactivate_result.is_success
+        assert deactivate_result.success
         assert not plugin.active
 
     def test_plugin_multiple_activations(self, plugin: Plugin) -> None:
         """Test multiple activations are handled correctly."""
         # First activation
         result1 = plugin.activate()
-        assert result1.is_success
+        assert result1.success
         assert plugin.active
 
         # Second activation (should still work)
         result2 = plugin.activate()
-        assert result2.is_success
+        assert result2.success
         assert plugin.active
 
 
 class TestPluginRegistry:
     """Comprehensive test suite for PluginRegistry management functionality.
-    
+
     Tests plugin registration, unregistration, retrieval, and listing operations
     with complete error handling and edge case validation.
     """
@@ -165,11 +171,13 @@ class TestPluginRegistry:
         assert len(registry.plugins) == 0
         assert registry.list_plugins() == []
 
-    def test_register_plugin_success(self, registry: PluginRegistry, plugin: Plugin) -> None:
+    def test_register_plugin_success(
+        self, registry: PluginRegistry, plugin: Plugin
+    ) -> None:
         """Test successful plugin registration."""
         result = registry.register(plugin)
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
         assert result.error is None
         assert plugin.name in registry.plugins
@@ -178,14 +186,18 @@ class TestPluginRegistry:
 
     def test_register_plugin_exception_handling(self) -> None:
         """Test plugin registration exception handling."""
+
         # Create a registry that will fail during registration
         class FailingRegistry(PluginRegistry):
             def __init__(self) -> None:
                 super().__init__()
+
                 # Create a dict that will raise exception on assignment
-                class FailingDict(dict):
-                    def __setitem__(self, key, value):
-                        raise RuntimeError("Registration failed")
+                class FailingDict(UserDict):
+                    def __setitem__(self, key, value) -> None:
+                        msg = "Registration failed"
+                        raise RuntimeError(msg)
+
                 self.plugins = FailingDict()
 
         registry = FailingRegistry()
@@ -197,7 +209,9 @@ class TestPluginRegistry:
         assert "Plugin registration failed" in result.error
         assert "Registration failed" in result.error
 
-    def test_unregister_plugin_success(self, registry: PluginRegistry, plugin: Plugin) -> None:
+    def test_unregister_plugin_success(
+        self, registry: PluginRegistry, plugin: Plugin
+    ) -> None:
         """Test successful plugin unregistration."""
         # First register the plugin
         registry.register(plugin)
@@ -206,7 +220,7 @@ class TestPluginRegistry:
         # Then unregister
         result = registry.unregister(plugin.name)
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
         assert result.error is None
         assert plugin.name not in registry.plugins
@@ -217,20 +231,24 @@ class TestPluginRegistry:
         result = registry.unregister("nonexistent-plugin")
 
         # Should succeed (graceful handling)
-        assert result.is_success
+        assert result.success
         assert result.data is None
         assert result.error is None
 
     def test_unregister_plugin_exception_handling(self) -> None:
         """Test plugin unregistration exception handling."""
+
         # Create a registry that will fail during unregistration
         class FailingUnregisterRegistry(PluginRegistry):
             def __init__(self) -> None:
                 super().__init__()
+
                 # Create a dict that will raise exception on deletion
-                class FailingDeleteDict(dict):
-                    def __delitem__(self, key):
-                        raise ValueError("Unregistration failed")
+                class FailingDeleteDict(UserDict):
+                    def __delitem__(self, key) -> None:
+                        msg = "Unregistration failed"
+                        raise ValueError(msg)
+
                 self.plugins = FailingDeleteDict()
 
         registry = FailingUnregisterRegistry()
@@ -293,8 +311,8 @@ class TestPluginRegistry:
         # Register plugins
         result1 = registry.register(plugin1)
         result2 = registry.register(plugin2)
-        assert result1.is_success
-        assert result2.is_success
+        assert result1.success
+        assert result2.success
         assert len(registry.list_plugins()) == 2
 
         # Retrieve plugins
@@ -303,7 +321,7 @@ class TestPluginRegistry:
 
         # Unregister one plugin
         unregister_result = registry.unregister("plugin-1")
-        assert unregister_result.is_success
+        assert unregister_result.success
         assert len(registry.list_plugins()) == 1
         assert "plugin-2" in registry.list_plugins()
         assert "plugin-1" not in registry.list_plugins()
@@ -311,7 +329,7 @@ class TestPluginRegistry:
 
 class TestUtilityFunctions:
     """Comprehensive test suite for utility functions in simple_plugin module.
-    
+
     Tests load_plugin and create_registry functions with complete error handling
     and edge case validation to achieve 100% coverage.
     """
@@ -332,7 +350,7 @@ class TestUtilityFunctions:
         assert registry1 is not registry2
         assert registry1.plugins is not registry2.plugins
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_success(self, mock_import: Mock) -> None:
         """Test successful plugin loading from module."""
         # Create mock module with mock plugin class
@@ -346,12 +364,12 @@ class TestUtilityFunctions:
 
         result = load_plugin("test_module", "Plugin")
 
-        assert result.is_success
+        assert result.success
         assert result.data is mock_plugin_instance
         assert result.error is None
         mock_import.assert_called_once_with("test_module")
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_custom_class_name(self, mock_import: Mock) -> None:
         """Test loading plugin with custom class name."""
         mock_module = Mock()
@@ -364,11 +382,11 @@ class TestUtilityFunctions:
 
         result = load_plugin("test_module", "CustomPlugin")
 
-        assert result.is_success
+        assert result.success
         assert result.data is mock_plugin_instance
         mock_import.assert_called_once_with("test_module")
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_import_error(self, mock_import: Mock) -> None:
         """Test plugin loading with import error."""
         mock_import.side_effect = ImportError("Module not found")
@@ -379,7 +397,7 @@ class TestUtilityFunctions:
         assert "Module import failed" in result.error
         assert "Module not found" in result.error
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_attribute_error(self, mock_import: Mock) -> None:
         """Test plugin loading with missing class."""
         mock_module = Mock()
@@ -387,17 +405,21 @@ class TestUtilityFunctions:
         mock_import.return_value = mock_module
 
         # Simulate getattr raising AttributeError
-        with patch('builtins.getattr', side_effect=AttributeError("Plugin class not found")):
+        with patch(
+            "builtins.getattr", side_effect=AttributeError("Plugin class not found")
+        ):
             result = load_plugin("test_module", "Plugin")
 
         assert result.is_failure
         assert "Plugin class not found" in result.error
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_runtime_error(self, mock_import: Mock) -> None:
         """Test plugin loading with runtime error during instantiation."""
         mock_module = Mock()
-        mock_plugin_class = Mock(side_effect=RuntimeError("Plugin instantiation failed"))
+        mock_plugin_class = Mock(
+            side_effect=RuntimeError("Plugin instantiation failed")
+        )
         mock_module.Plugin = mock_plugin_class
         mock_import.return_value = mock_module
 
@@ -407,7 +429,7 @@ class TestUtilityFunctions:
         assert "Plugin loading failed" in result.error
         assert "Plugin instantiation failed" in result.error
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_value_error(self, mock_import: Mock) -> None:
         """Test plugin loading with value error during instantiation."""
         mock_module = Mock()
@@ -421,7 +443,7 @@ class TestUtilityFunctions:
         assert "Plugin loading failed" in result.error
         assert "Invalid plugin configuration" in result.error
 
-    @patch('importlib.import_module')
+    @patch("importlib.import_module")
     def test_load_plugin_type_error(self, mock_import: Mock) -> None:
         """Test plugin loading with type error during instantiation."""
         mock_module = Mock()
@@ -438,7 +460,7 @@ class TestUtilityFunctions:
 
 class TestSimplePluginIntegration:
     """Integration tests for complete simple plugin system workflow.
-    
+
     Tests end-to-end scenarios combining Plugin, PluginRegistry, and utility
     functions to validate complete system integration and workflow patterns.
     """
@@ -451,11 +473,11 @@ class TestSimplePluginIntegration:
         # Create and register plugin
         plugin = Plugin("workflow-plugin")
         register_result = registry.register(plugin)
-        assert register_result.is_success
+        assert register_result.success
 
         # Activate plugin
         activate_result = plugin.activate()
-        assert activate_result.is_success
+        assert activate_result.success
         assert plugin.active
 
         # Verify plugin in registry
@@ -469,12 +491,12 @@ class TestSimplePluginIntegration:
 
         # Deactivate plugin
         deactivate_result = plugin.deactivate()
-        assert deactivate_result.is_success
+        assert deactivate_result.success
         assert not plugin.active
 
         # Unregister plugin
         unregister_result = registry.unregister("workflow-plugin")
-        assert unregister_result.is_success
+        assert unregister_result.success
         assert len(registry.list_plugins()) == 0
 
     def test_multiple_plugin_management(self) -> None:
@@ -482,15 +504,12 @@ class TestSimplePluginIntegration:
         registry = create_registry()
 
         # Create multiple plugins
-        plugins = [
-            Plugin(f"plugin-{i}")
-            for i in range(5)
-        ]
+        plugins = [Plugin(f"plugin-{i}") for i in range(5)]
 
         # Register all plugins
         for plugin in plugins:
             result = registry.register(plugin)
-            assert result.is_success
+            assert result.success
 
         # Verify all registered
         plugin_names = registry.list_plugins()
@@ -501,7 +520,7 @@ class TestSimplePluginIntegration:
         # Activate some plugins
         for i in [0, 2, 4]:
             result = plugins[i].activate()
-            assert result.is_success
+            assert result.success
             assert plugins[i].active
 
         # Verify inactive plugins remain inactive
@@ -522,7 +541,7 @@ class TestSimplePluginIntegration:
 
         # Test unregistering nonexistent plugin
         result = registry.unregister("nonexistent")
-        assert result.is_success  # Graceful handling
+        assert result.success  # Graceful handling
 
         # Test getting nonexistent plugin
         plugin = registry.get("nonexistent")
@@ -534,19 +553,19 @@ class TestSimplePluginIntegration:
         # Multiple registrations
         result1 = registry.register(test_plugin)
         result2 = registry.register(test_plugin)  # Overwrites previous
-        assert result1.is_success
-        assert result2.is_success
+        assert result1.success
+        assert result2.success
 
         # Multiple activations
         activate1 = test_plugin.activate()
         activate2 = test_plugin.activate()
-        assert activate1.is_success
-        assert activate2.is_success
+        assert activate1.success
+        assert activate2.success
         assert test_plugin.active
 
         # Multiple deactivations
         deactivate1 = test_plugin.deactivate()
         deactivate2 = test_plugin.deactivate()
-        assert deactivate1.is_success
-        assert deactivate2.is_success
+        assert deactivate1.success
+        assert deactivate2.success
         assert not test_plugin.active

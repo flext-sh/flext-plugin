@@ -208,7 +208,7 @@ class PluginExecutionResult:
         ...     plugin_name="data-processor",
         ...     execution_time=0.5,
         ... )
-        >>> if result.is_success():
+        >>> if result.success():
         ...     print(f"Processed {result.data['processed']} items")
 
     """
@@ -259,7 +259,7 @@ class PluginExecutionResult:
         self.output_data = self.data
         self.error_message = self.error
 
-    def is_success(self) -> bool:
+    def success(self) -> bool:
         """Check if plugin execution was successful.
 
         Returns:
@@ -279,7 +279,7 @@ class PluginExecutionResult:
             True if the plugin execution encountered errors, False otherwise.
 
         Note:
-            This is the logical inverse of is_success() for convenience
+            This is the logical inverse of success() for convenience
             in error handling and control flow.
 
         """
@@ -410,7 +410,7 @@ def create_plugin_manager(
     return SimplePluginRegistry()
 
 
-__all__ = [
+__all__: list[str] = [
     "PluginError",
     "PluginExecutionContext",
     "PluginExecutionResult",

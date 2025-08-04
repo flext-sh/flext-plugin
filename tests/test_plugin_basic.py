@@ -68,7 +68,7 @@ def test_flext_core_dependencies() -> None:
 
     # Test FlextResult works
     result = FlextResult.ok({"test": "data"})
-    assert result.is_success
+    assert result.success
     expected_data = {"test": "data"}
     if result.data != expected_data:
         raise AssertionError(f"Expected {expected_data}, got {result.data}")

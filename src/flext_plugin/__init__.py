@@ -180,7 +180,8 @@ class FlextPluginManager:
         from flext_plugin.core.types import PluginExecutionContext  # noqa: PLC0415
 
         return PluginExecutionContext(
-            plugin_id=plugin_name, execution_id=str(uuid.uuid4()),
+            plugin_id=plugin_name,
+            execution_id=str(uuid.uuid4()),
         )
 
     def __getattr__(self, name: str) -> object:
@@ -219,7 +220,7 @@ flext_plugin_create_registry = create_flext_plugin_registry
 flext_plugin_create_manager = create_flext_plugin_platform
 flext_plugin_create_platform = create_flext_plugin_platform
 
-__all__ = [
+__all__: list[str] = [
     "FlextContainer",
     "FlextPlugin",
     "FlextPluginConfig",

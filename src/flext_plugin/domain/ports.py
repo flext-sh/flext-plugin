@@ -33,7 +33,7 @@ Example:
     >>> # Infrastructure implements the domain port
     >>> discovery: FlextPluginDiscoveryPort = FileSystemDiscoveryAdapter()
     >>> result = discovery.discover_plugins("./plugins")
-    >>> if result.is_success():
+    >>> if result.success():
     ...     plugins = result.data
 
 Integration:

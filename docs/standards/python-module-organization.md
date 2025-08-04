@@ -499,7 +499,7 @@ class PluginLifecycleManager:
 
         # Activate plugin
         activation_result = await plugin.activate()
-        if activation_result.is_success:
+        if activation_result.success:
             plugin.status = PluginStatus.ACTIVE
             self._emit_plugin_event("PluginActivated", plugin)
 
@@ -566,7 +566,7 @@ class AdvancedPluginDiscovery:
 
             for path in paths:
                 result = await self.discovery_service.discover_plugins(path)
-                if result.is_success:
+                if result.success:
                     # Filter by type
                     typed_plugins = [
                         p for p in result.data
@@ -599,12 +599,12 @@ class AdvancedPluginDiscovery:
             # Validate against meltano.yml
             validated_plugins = {}
             for category, plugins_result in singer_plugins.items():
-                if plugins_result.is_success:
+                if plugins_result.success:
                     validated = await self._validate_against_meltano_config(
                         plugins_result.data,
                         meltano_config.get(category, [])
                     )
-                    validated_plugins[category] = validated.data if validated.is_success else []
+                    validated_plugins[category] = validated.data if validated.success else []
 
             return FlextResult.ok(validated_plugins)
 
@@ -1042,7 +1042,7 @@ class PluginCache:
                 result = await func(*args, **kwargs)
 
                 # Cache successful results
-                if result.is_success:
+                if result.success:
                     self._cache_result(cache_key, result.data, {
                         "invalidate_on_plugin_change": invalidate_on_plugin_change
                     })
@@ -1274,7 +1274,7 @@ class DataProcessorPlugin(FlextPlugin):
         >>> plugin = DataProcessorPlugin(config=config)
         >>> await plugin.initialize()
         >>> result = await plugin.execute({"data": [...]})
-        >>> if result.is_success:
+        >>> if result.success:
         ...     print(f"Processed {len(result.data)} records")
 
     Singer Integration:
@@ -1394,7 +1394,7 @@ class DataProcessorPlugin(FlextPlugin):
             ...     "batch_mode": True
             ... }
             >>> result = await plugin.execute(input_data)
-            >>> if result.is_success:
+            >>> if result.success:
             ...     stats = result.data["statistics"]
             ...     print(f"Processed {stats['records_processed']} records")
             ...     print(f"Processing time: {stats['processing_time']}s")
@@ -1543,10 +1543,10 @@ class EcosystemPluginManager:
 
         for source_path in plugin_sources:
             discovery_result = await self.platform.discover_plugins(source_path)
-            if discovery_result.is_success:
+            if discovery_result.success:
                 for plugin in discovery_result.data:
                     register_result = await self.registry.register_plugin(plugin)
-                    if register_result.is_success:
+                    if register_result.success:
                         registered_plugins.append(plugin.name)
 
         return FlextResult.ok(registered_plugins)

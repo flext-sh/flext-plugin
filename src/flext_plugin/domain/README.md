@@ -26,7 +26,7 @@ plugin = FlextPlugin(
 
 # Business operations
 result = plugin.activate()
-if result.is_success():
+if result.success():
     print(f"Plugin {plugin.name} is now active")
 ```
 
@@ -285,7 +285,7 @@ Entities generate domain events for important business operations:
 ```python
 # Plugin activation generates domain event
 result = plugin.activate()
-if result.is_success():
+if result.success():
     events = plugin.get_domain_events()
     for event in events:
         await event_bus.publish(event)
@@ -331,7 +331,7 @@ class TestFlextPlugin:
 
         result = plugin.activate()
 
-        assert result.is_success()
+        assert result.success()
         assert plugin.status == PluginStatus.ACTIVE
         assert len(plugin.get_domain_events()) == 1
 
@@ -357,7 +357,7 @@ class TestFlextPluginRegistry:
 
         result = await registry.register_plugin(plugin)
 
-        assert result.is_success()
+        assert result.success()
         assert plugin.name in registry.plugins
         assert registry.get_plugin_count() == 1
 

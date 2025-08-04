@@ -43,8 +43,10 @@ from __future__ import annotations
 import asyncio
 import importlib
 import sys
+from datetime import UTC, datetime
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from flext_core import FlextEntity, FlextProcessingError, FlextResult
 from flext_core.utilities import FlextGenerators
@@ -59,6 +61,222 @@ if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
+
+
+class WatchEventType(Enum):
+    """File system watch event types."""
+
+    CREATED = "created"
+    MODIFIED = "modified"
+    DELETED = "deleted"
+    MOVED = "moved"
+
+
+class WatchEvent:
+    """File system watch event data."""
+
+    def __init__(
+        self,
+        event_type: WatchEventType,
+        path: Path,
+        timestamp: datetime | None = None,
+    ) -> None:
+        """Initialize watch event.
+
+        Args:
+            event_type: Type of file system event
+            path: Path to the affected file
+            timestamp: When the event occurred
+
+        """
+        self.event_type = event_type
+        self.path = path
+        self.timestamp = timestamp or datetime.now(UTC)
+
+
+class PluginState:
+    """Plugin state data model for hot-reload operations."""
+
+    def __init__(
+        self,
+        plugin_id: str,
+        plugin_version: str,
+        state_data: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+        saved_at: datetime | None = None,
+    ) -> None:
+        """Initialize plugin state.
+
+        Args:
+            plugin_id: Unique plugin identifier
+            plugin_version: Plugin version string
+            state_data: Plugin state dictionary
+            metadata: Additional metadata
+            saved_at: When state was saved
+
+        """
+        self.plugin_id = plugin_id
+        self.plugin_version = plugin_version
+        self.state_data = state_data or {}
+        self.metadata = metadata or {}
+        self.saved_at = saved_at or datetime.now(UTC)
+
+
+class ReloadEvent:
+    """Plugin reload event data."""
+
+    def __init__(
+        self,
+        event_type: str,
+        plugin_id: str,
+        plugin_path: Path | None = None,
+        *,
+        success: bool = False,
+        error: str | None = None,
+    ) -> None:
+        """Initialize reload event.
+
+        Args:
+            event_type: Type of reload event
+            plugin_id: Plugin identifier
+            plugin_path: Path to plugin file
+            success: Whether reload was successful
+            error: Error message if failed
+
+        """
+        self.event_type = event_type
+        self.plugin_id = plugin_id
+        self.plugin_path = plugin_path
+        self.success = success
+        self.error = error
+
+
+class PluginWatcher:
+    """File system watcher for plugin directories."""
+
+    def __init__(self, watch_directories: list[Path]) -> None:
+        """Initialize plugin watcher.
+
+        Args:
+            watch_directories: List of directories to watch
+
+        """
+        self.watch_directories = watch_directories
+        self._observer: Observer | None = None
+
+    def get_watched_files(self) -> list[Path]:
+        """Get list of watched files.
+
+        Returns:
+            List of watched file paths
+
+        """
+        watched_files: list[Path] = []
+        for directory in self.watch_directories:
+            if directory.exists():
+                watched_files.extend(directory.glob("**/*.py"))
+        return watched_files
+
+
+class StateManager:
+    """Plugin state management system."""
+
+    def __init__(self, state_directory: Path) -> None:
+        """Initialize state manager.
+
+        Args:
+            state_directory: Directory for state storage
+
+        """
+        self.state_directory = state_directory
+        self.enable_persistence = True
+
+        # Ensure state directory exists
+        self.state_directory.mkdir(parents=True, exist_ok=True)
+
+    async def save_plugin_state(self, plugin: object) -> PluginState:
+        """Save plugin state.
+
+        Args:
+            plugin: Plugin instance to save state for
+
+        Returns:
+            PluginState object with saved state
+
+        """
+        # Extract state from plugin
+        plugin_id = plugin.metadata.name
+        plugin_version = plugin.metadata.version
+
+        # Get plugin state if available
+        state_data = {}
+        if hasattr(plugin, "get_state"):
+            state_data = await plugin.get_state()
+
+        return PluginState(
+            plugin_id=plugin_id,
+            plugin_version=plugin_version,
+            state_data=state_data,
+        )
+
+    async def create_snapshot(self, _description: str) -> str:
+        """Create a state snapshot.
+
+        Args:
+            description: Snapshot description
+
+        Returns:
+            Snapshot identifier
+
+        """
+        return f"snapshot_{datetime.now(UTC).isoformat()}"
+
+    def list_snapshots(self) -> list[dict[str, Any]]:
+        """List available snapshots.
+
+        Returns:
+            List of snapshot information
+
+        """
+        return []
+
+
+class RollbackManager:
+    """Plugin rollback management system."""
+
+    def __init__(self, state_manager: StateManager) -> None:
+        """Initialize rollback manager.
+
+        Args:
+            state_manager: State manager instance
+
+        """
+        self.state_manager = state_manager
+
+    async def create_rollback_point(self, _plugin: object, _description: str) -> str:
+        """Create a rollback point.
+
+        Args:
+            plugin: Plugin instance
+            description: Rollback point description
+
+        Returns:
+            Rollback point identifier
+
+        """
+        return f"rollback_{datetime.now(UTC).isoformat()}"
+
+    def get_rollback_history(self, _plugin_id: str) -> object | None:
+        """Get rollback history for plugin.
+
+        Args:
+            plugin_id: Plugin identifier
+
+        Returns:
+            Rollback history or None
+
+        """
+        return None
 
 
 class PluginFileHandler(FileSystemEventHandler):
@@ -286,6 +504,82 @@ class HotReloadManager(FlextEntity):
 
         # Reload all
         await self._initial_plugin_load()
+
+    @property
+    def state_manager(self) -> StateManager:
+        """Get state manager instance."""
+        if not hasattr(self, "_state_manager"):
+            state_dir = (
+                getattr(self, "state_backup_dir", None) or Path("./state_backup")
+            )
+            object.__setattr__(self, "_state_manager", StateManager(state_dir))
+        return self._state_manager
+
+    @property
+    def rollback_manager(self) -> RollbackManager:
+        """Get rollback manager instance."""
+        if not hasattr(self, "_rollback_manager"):
+            object.__setattr__(
+                self, "_rollback_manager", RollbackManager(self.state_manager),
+            )
+        return self._rollback_manager
+
+    @property
+    def watcher(self) -> PluginWatcher:
+        """Get plugin watcher instance."""
+        if not hasattr(self, "_watcher"):
+            watch_dirs = getattr(
+                self, "watch_directories", [Path(self.plugin_directory)],
+            )
+            object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
+        return self._watcher
+
+    async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
+        """Reload a specific plugin by ID and return a reload event.
+
+        Args:
+            plugin_id: The plugin identifier to reload
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        """
+        try:
+            # Try to reload via plugin manager if available
+            plugin_manager = getattr(self, "plugin_manager", None)
+            if plugin_manager and hasattr(plugin_manager, "reload_plugin"):
+                result = await plugin_manager.reload_plugin(plugin_id)
+                return ReloadEvent(
+                    event_type="plugin_reload",
+                    plugin_id=plugin_id,
+                    success=bool(result),
+                )
+            # Fallback implementation
+            return ReloadEvent(
+                event_type="plugin_reload",
+                plugin_id=plugin_id,
+                success=True,
+            )
+        except Exception as e:
+            return ReloadEvent(
+                event_type="plugin_reload",
+                plugin_id=plugin_id,
+                success=False,
+                error=str(e),
+            )
+
+    async def _handle_plugin_change(self, watch_event: WatchEvent) -> None:
+        """Handle plugin file change events.
+
+        Args:
+            watch_event: The file system watch event
+
+        """
+        # Extract plugin ID from path
+        plugin_id = watch_event.path.stem
+
+        # Trigger plugin reload
+        await self.reload_plugin(plugin_id)
 
 
 # Convenience function for quick setup

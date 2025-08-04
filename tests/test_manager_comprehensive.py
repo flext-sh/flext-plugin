@@ -95,7 +95,7 @@ class TestSimplePluginRegistryComprehensive:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin:
             raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
         assert registry.get_plugin("test-plugin") == mock_plugin
@@ -112,13 +112,13 @@ class TestSimplePluginRegistryComprehensive:
         """Test registering multiple plugins."""
         # Register first plugin
         result1 = await registry.register_plugin(mock_plugin)
-        assert result1.is_success
+        assert result1.success
         if registry.get_plugin_count() != 1:
             raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
         # Register second plugin
         result2 = await registry.register_plugin(mock_plugin_2)
-        assert result2.is_success
+        assert result2.success
         if registry.get_plugin_count() != 2:
             raise AssertionError(f"Expected {2}, got {registry.get_plugin_count()}")
 
@@ -140,7 +140,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -162,7 +162,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -186,7 +186,7 @@ class TestSimplePluginRegistryComprehensive:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
         assert registry.get_plugin("test-plugin") is None
@@ -202,7 +202,7 @@ class TestSimplePluginRegistryComprehensive:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.is_success
+        assert result.success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
 
@@ -460,7 +460,11 @@ class TestPluginManagerResultComprehensive:
         result.plugins_affected = []
         result.execution_time_ms = 50.0
         result.details = {"attempted": 3, "failed": 3}
-        result.errors = ["Plugin not found", "Invalid configuration", "Permission denied"]
+        result.errors = [
+            "Plugin not found",
+            "Invalid configuration",
+            "Permission denied",
+        ]
 
         if result.operation != "load_plugins":
             raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
@@ -518,7 +522,7 @@ class TestPluginManagerComprehensive:
 
         result = await manager.initialize()
 
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
@@ -551,7 +555,7 @@ class TestPluginManagerComprehensive:
 
             result = await manager_with_auto_discover.initialize()
 
-            assert result.is_success
+            assert result.success
             assert manager_with_auto_discover.is_initialized
             mock_discover.assert_called_once()
 
@@ -565,7 +569,7 @@ class TestPluginManagerComprehensive:
 
         # After initialization
         result = await manager.initialize()
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
         expected_count = 0  # No plugins loaded
         if manager.plugin_count != expected_count:
@@ -583,7 +587,7 @@ class TestPluginManagerComprehensive:
         with patch.object(manager.discovery, "discover_all", return_value={}):
             result = await manager.discover_and_load_plugins()
 
-            assert not result.is_success
+            assert not result.success
             assert result.error is not None
             if "No plugins discovered" not in result.error:
                 raise AssertionError(
@@ -600,7 +604,7 @@ class TestPluginManagerComprehensive:
             {"test": "data"},
         )
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
@@ -613,7 +617,7 @@ class TestPluginManagerComprehensive:
         config = PluginConfiguration(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
@@ -625,7 +629,7 @@ class TestPluginManagerComprehensive:
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
@@ -639,7 +643,7 @@ class TestPluginManagerComprehensive:
 
         result = await manager.unload_plugin("non-existent")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
             raise AssertionError(
@@ -654,7 +658,7 @@ class TestPluginManagerComprehensive:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.is_success
+        assert result.success
 
     def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
         """Test getting status of non-existent plugin."""

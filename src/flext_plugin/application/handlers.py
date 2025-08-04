@@ -29,7 +29,7 @@ Example:
     >>> service = FlextPluginService()
     >>> handler = FlextPluginRegistrationHandler(service)
     >>> result = handler.handle_register_plugin(plugin)
-    >>> if result.is_success():
+    >>> if result.success():
     ...     print("Plugin registered successfully")
 
 Integration:
@@ -150,7 +150,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
         >>> handler = FlextPluginRegistrationHandler(service)
         >>> plugin = FlextPlugin(name="test-plugin", version="1.0.0")
         >>> result = handler.handle_register_plugin(plugin)
-        >>> if result.is_success():
+        >>> if result.success():
         ...     print("Plugin registered successfully")
         >>>
         >>> # Unregister when no longer needed
@@ -254,7 +254,7 @@ class FlextPluginEventHandler(FlextHandlers.EventHandler[FlextPlugin]):
         >>>
         >>> # Handle plugin loaded event
         >>> result = event_handler.handle_plugin_loaded(plugin)
-        >>> if result.is_success():
+        >>> if result.success():
         ...     print("Plugin load event processed successfully")
         >>>
         >>> # Handle plugin unload event

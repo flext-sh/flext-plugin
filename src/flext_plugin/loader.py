@@ -170,13 +170,13 @@ class PluginLoader(FlextEntity):
                 file_path,
             )
             if spec is None:
-                msg = f"Failed to create spec for {file_path}"
+                msg: str = f"Failed to create spec for {file_path}"
                 _handle_import_error(msg)
                 return FlextResult.fail(msg)  # Early return for type narrowing
 
             # Type narrowing: spec is not None after check
             if spec.loader is None:
-                msg = f"No loader available for {file_path}"
+                msg: str = f"No loader available for {file_path}"
                 _handle_import_error(msg)
                 return FlextResult.fail(msg)  # Early return for type narrowing
 
@@ -205,10 +205,10 @@ class PluginLoader(FlextEntity):
                     self.loaded_plugins[file_path.stem] = plugin
                     return plugin
 
-            msg = f"No plugin found in {file_path}"
+            msg: str = f"No plugin found in {file_path}"
             _handle_value_error(msg)
         except (RuntimeError, ValueError, TypeError) as e:
-            msg = f"Failed to load plugin from {file_path}: {e}"
+            msg: str = f"Failed to load plugin from {file_path}: {e}"
             _handle_import_error(msg)
 
         # This should never be reached, all paths above either return or raise

@@ -6,7 +6,7 @@ factory functions by testing all branches, error conditions, and edge cases.
 Strategy: Test all 6 factory functions comprehensively:
 - create_flext_plugin: Main plugin factory with config handling
 - create_flext_plugin_config: Plugin configuration factory
-- create_flext_plugin_metadata: Plugin metadata factory  
+- create_flext_plugin_metadata: Plugin metadata factory
 - create_flext_plugin_registry: Plugin registry factory
 - create_plugin_from_dict: Dictionary-based plugin creation with validation
 - create_plugin_config_from_dict: Dictionary-based config creation
@@ -110,7 +110,7 @@ class TestCreateFlextPlugin:
         after_creation = datetime.now(UTC)
 
         # Verify timestamp was added
-        assert hasattr(plugin, 'created_at')
+        assert hasattr(plugin, "created_at")
         assert plugin.created_at is not None
         assert before_creation <= plugin.created_at <= after_creation
 
@@ -293,7 +293,7 @@ class TestCreateFlextPluginMetadata:
         after_creation = datetime.now(UTC)
 
         # Verify timestamp was added to metadata dict
-        assert hasattr(metadata, 'created_at')
+        assert hasattr(metadata, "created_at")
         assert metadata.created_at is not None
         assert before_creation <= metadata.created_at <= after_creation
 

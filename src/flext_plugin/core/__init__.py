@@ -15,7 +15,7 @@ from flext_plugin.core.types import (
     PluginType,
 )
 
-__all__ = [
+__all__: list[str] = [
     "PluginError",
     "PluginExecutionResult",
     "PluginStatus",

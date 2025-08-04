@@ -100,7 +100,7 @@ async def main():
         # Register plugin
         print("Registering plugin...")
         result = await platform.register_plugin(plugin)
-        if result.is_success():
+        if result.success():
             print("✅ Plugin registered successfully")
         else:
             print(f"❌ Registration failed: {result.error}")
@@ -109,7 +109,7 @@ async def main():
         # Activate plugin
         print("Activating plugin...")
         result = await platform.activate_plugin("hello-world")
-        if result.is_success():
+        if result.success():
             print("✅ Plugin activated successfully")
         else:
             print(f"❌ Activation failed: {result.error}")
@@ -240,7 +240,7 @@ async def demo_custom_plugin():
         print("\n--- Testing Greeting Plugin ---")
         for test_data in test_cases:
             result = await platform.execute_plugin(plugin.name, test_data)
-            if result.is_success():
+            if result.success():
                 data = result.data
                 print(f"✅ {data['greeting']} (Language: {data['language']})")
             else:
@@ -288,7 +288,7 @@ async def discover_plugins():
     # Discover plugins (this will scan for Python files with plugin classes)
     result = await discovery.discover_plugins("./")
 
-    if result.is_success():
+    if result.success():
         plugins = result.data
         print(f"Found {len(plugins)} plugins:")
         for plugin in plugins:
@@ -334,7 +334,7 @@ class TestGreetingPlugin:
     async def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = await plugin.initialize()
-        assert result.is_success()
+        assert result.success()
 
     async def test_greeting_generation(self, plugin):
         """Test greeting generation."""
@@ -343,30 +343,30 @@ class TestGreetingPlugin:
 
         # Test English greeting
         result = await plugin.execute({"name": "Test", "language": "english"})
-        assert result.is_success()
+        assert result.success()
         assert result.data["greeting"] == "Hello, Test!"
 
         # Test Spanish greeting
         result = await plugin.execute({"name": "Test", "language": "spanish"})
-        assert result.is_success()
+        assert result.success()
         assert result.data["greeting"] == "¡Hola, Test!"
 
     async def test_platform_integration(self, platform, plugin):
         """Test plugin integration with platform."""
         # Register plugin
         register_result = await platform.register_plugin(plugin)
-        assert register_result.is_success()
+        assert register_result.success()
 
         # Activate plugin
         activate_result = await platform.activate_plugin(plugin.name)
-        assert activate_result.is_success()
+        assert activate_result.success()
 
         # Execute through platform
         execute_result = await platform.execute_plugin(
             plugin.name,
             {"name": "Platform", "language": "english"}
         )
-        assert execute_result.is_success()
+        assert execute_result.success()
         assert "Hello, Platform!" in str(execute_result.data)
 
 # Run tests

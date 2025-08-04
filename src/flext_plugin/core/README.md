@@ -90,7 +90,7 @@ result = PluginExecutionResult(
     execution_time=0.5
 )
 
-if result.is_success():
+if result.success():
     print(f"Processed in {result.execution_time}s")
 ```
 
@@ -227,7 +227,7 @@ def is_integration_plugin(plugin_type: PluginType) -> bool:
 ```python
 def handle_execution_result(result: PluginExecutionResult) -> None:
     """Process plugin execution results with comprehensive handling."""
-    if result.is_success():
+    if result.success():
         logger.info(
             f"Plugin {result.plugin_name} executed successfully",
             execution_time=result.execution_time,

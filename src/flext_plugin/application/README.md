@@ -26,7 +26,7 @@ result = await service.create_plugin({
     "description": "Data processing plugin"
 })
 
-if result.is_success():
+if result.success():
     plugin = result.data
     activation = await service.activate_plugin(plugin.name)
 ```
@@ -50,7 +50,7 @@ discovery = FlextPluginDiscoveryService()
 
 # Discover plugins in directories
 result = await discovery.discover_plugins("./plugins")
-if result.is_success():
+if result.success():
     plugins = result.data
     print(f"Found {len(plugins)} plugins")
 
@@ -308,7 +308,7 @@ class FlextPluginCommandHandler:
             result = await self.registry.register_plugin(plugin)
 
             # Publish domain events
-            if result.is_success():
+            if result.success():
                 await self._publish_events(plugin.get_domain_events())
 
             return result
@@ -458,7 +458,7 @@ class TestFlextPluginService:
 
         result = await service.create_plugin(config)
 
-        assert result.is_success()
+        assert result.success()
         assert result.data.name == "test-plugin"
         mock_registry.register_plugin.assert_called_once()
 
@@ -503,7 +503,7 @@ class TestFlextPluginHandler:
 
         result = await handler.handle_create_plugin_command(command)
 
-        assert result.is_success()
+        assert result.success()
         mock_service.create_plugin.assert_called_once()
 ```
 
@@ -555,7 +555,7 @@ async def bulk_plugin_operations(
     for result in create_results:
         if isinstance(result, Exception):
             failed_operations.append(str(result))
-        elif result.is_success():
+        elif result.success():
             results.append(result.data)
 
     if failed_operations:

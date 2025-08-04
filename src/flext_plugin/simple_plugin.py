@@ -29,7 +29,7 @@ Example:
     >>>
     >>> plugin = MyPlugin("my-plugin")
     >>> result = plugin.activate()
-    >>> if result.is_success():
+    >>> if result.success():
     ...     print("Plugin activated successfully")
 
 Integration:
@@ -85,7 +85,7 @@ class Plugin:
         >>>
         >>> plugin = DataProcessorPlugin("data-processor")
         >>> activation = plugin.activate()
-        >>> if activation.is_success():
+        >>> if activation.success():
         ...     result = plugin.execute(my_data)
 
     """

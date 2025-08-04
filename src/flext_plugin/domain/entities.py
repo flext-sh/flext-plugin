@@ -29,7 +29,7 @@ Example:
     ...     config={"description": "Processes data efficiently"},
     ... )
     >>> result = plugin.activate()
-    >>> if result.is_success():
+    >>> if result.success():
     ...     print(f"Plugin {plugin.name} is now active")
 
 Copyright (c) 2025 FLEXT Contributors
@@ -94,7 +94,7 @@ class FlextPlugin(FlextEntity):
         ...     },
         ... )
         >>> activation_result = plugin.activate()
-        >>> if activation_result.is_success():
+        >>> if activation_result.success():
         ...     print(f"Plugin {plugin.name} activated successfully")
 
     """
@@ -278,7 +278,10 @@ class FlextPlugin(FlextEntity):
         return self.status == PluginStatus.ACTIVE
 
     def record_execution(
-        self, execution_time_ms: float, *, success: bool = True,
+        self,
+        execution_time_ms: float,
+        *,
+        success: bool = True,
     ) -> None:
         """Record plugin execution for metrics tracking.
 
@@ -349,13 +352,16 @@ class FlextPluginConfig(FlextEntity):
 
     # Configuration fields for backward compatibility
     enabled: bool = Field(
-        default=True, description="Whether plugin configuration is enabled",
+        default=True,
+        description="Whether plugin configuration is enabled",
     )
     settings: dict[str, object] = Field(
-        default_factory=dict, description="Plugin settings",
+        default_factory=dict,
+        description="Plugin settings",
     )
     dependencies: list[str] = Field(
-        default_factory=list, description="Plugin dependencies",
+        default_factory=list,
+        description="Plugin dependencies",
     )
     priority: int = Field(default=100, description="Plugin priority")
     max_memory_mb: int = Field(default=512, description="Maximum memory usage in MB")
@@ -475,12 +481,14 @@ class FlextPluginMetadata(FlextEntity):
     plugin_type: str = Field(default="", description="Plugin type")
     description: str = Field(default="", description="Plugin description")
     dependencies: list[str] = Field(
-        default_factory=list, description="Plugin dependencies",
+        default_factory=list,
+        description="Plugin dependencies",
     )
     trusted: bool = Field(default=False, description="Whether plugin is trusted")
     homepage: str | None = Field(default=None, description="Plugin homepage (alias)")
     repository: str | None = Field(
-        default=None, description="Plugin repository (alias)",
+        default=None,
+        description="Plugin repository (alias)",
     )
 
     def __init__(
@@ -617,16 +625,19 @@ class FlextPluginRegistry(FlextEntity):
 
     # Authentication fields
     requires_authentication: bool = Field(
-        default=False, description="Whether authentication is required",
+        default=False,
+        description="Whether authentication is required",
     )
     api_key: str = Field(default="", description="API key for authentication")
 
     # Security fields
     verify_signatures: bool = Field(
-        default=False, description="Whether to verify signatures",
+        default=False,
+        description="Whether to verify signatures",
     )
     trusted_publishers: list[str] = Field(
-        default_factory=list, description="List of trusted publishers",
+        default_factory=list,
+        description="List of trusted publishers",
     )
 
     def __init__(
@@ -807,7 +818,8 @@ class FlextPluginExecution(FlextEntity):
     result: object | None = Field(default=None, description="Execution result")
     error: str = Field(default="", description="Execution error message")
     error_message: str | None = Field(
-        default=None, description="Error message (compatibility)",
+        default=None,
+        description="Error message (compatibility)",
     )
     input_data: dict[str, object] = Field(
         default_factory=dict,
@@ -855,7 +867,9 @@ class FlextPluginExecution(FlextEntity):
         object.__setattr__(self, "plugin_id", kwargs.get("plugin_id", plugin_name))
         object.__setattr__(self, "execution_id", execution_id)
         object.__setattr__(
-            self, "start_time", execution_config.get("start_time", datetime.now(UTC)),
+            self,
+            "start_time",
+            execution_config.get("start_time", datetime.now(UTC)),
         )
         object.__setattr__(self, "end_time", execution_config.get("end_time"))
         object.__setattr__(self, "status", execution_config.get("status", "pending"))
@@ -907,7 +921,9 @@ class FlextPluginExecution(FlextEntity):
         object.__setattr__(self, "start_time", datetime.now(UTC))
 
     def mark_completed(
-        self, success: bool = True, error_message: str | None = None,
+        self,
+        success: bool = True,
+        error_message: str | None = None,
     ) -> None:
         """Mark execution as completed.
 
@@ -926,7 +942,9 @@ class FlextPluginExecution(FlextEntity):
                 object.__setattr__(self, "error_message", error_message)
 
     def update_resource_usage(
-        self, memory_mb: float = 0.0, cpu_time_ms: float = 0.0,
+        self,
+        memory_mb: float = 0.0,
+        cpu_time_ms: float = 0.0,
     ) -> None:
         """Update resource usage tracking.
 

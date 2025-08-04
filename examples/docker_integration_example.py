@@ -203,8 +203,8 @@ def test_service_connections(test_connections: bool = False) -> dict[str, bool]:
     """Test connectivity to Docker services."""
     services = {
         "PostgreSQL": ("localhost", 5434),  # Actual Docker container port
-        "Redis": ("localhost", 6381),       # Actual Docker container port
-        "LDAP": ("localhost", 389),         # LDAP service (disabled - has issues)
+        "Redis": ("localhost", 6381),  # Actual Docker container port
+        "LDAP": ("localhost", 389),  # LDAP service (disabled - has issues)
     }
 
     results = {}
@@ -248,7 +248,7 @@ def main() -> None:
 
     # Validate PostgreSQL plugin
     postgres_validation = postgres_plugin.validate_domain_rules()
-    if postgres_validation.is_success:
+    if postgres_validation.success:
         print("   ✅ PostgreSQL plugin validation passed")
 
         # Test activation
@@ -273,7 +273,7 @@ def main() -> None:
 
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_domain_rules()
-    if redis_validation.is_success:
+    if redis_validation.success:
         print("   ✅ Redis plugin validation passed")
 
         # Test activation
@@ -300,7 +300,7 @@ def main() -> None:
 
     # Validate LDAP plugin
     ldap_validation = ldap_plugin.validate_domain_rules()
-    if ldap_validation.is_success:
+    if ldap_validation.success:
         print("   ✅ LDAP plugin validation passed")
 
         # Test activation

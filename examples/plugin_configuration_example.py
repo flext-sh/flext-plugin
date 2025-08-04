@@ -187,7 +187,7 @@ def main() -> None:
     plugins_to_validate = [db_plugin, ldap_plugin]
     for plugin in plugins_to_validate:
         validation_result = plugin.validate_domain_rules()
-        if validation_result.is_success:
+        if validation_result.success:
             print(f"   ✅ {plugin.name}: Configuration valid")
         else:
             print(f"   ❌ {plugin.name}: {validation_result.error}")

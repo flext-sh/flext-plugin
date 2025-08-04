@@ -84,12 +84,12 @@ platform = create_flext_plugin_platform(config={
 
 # Register plugin
 result = await platform.register_plugin(plugin)
-if result.is_success():
+if result.success():
     print(f"Plugin registered: {result.data}")
 
 # Activate plugin
 activation_result = await platform.activate_plugin("hello-world")
-if activation_result.is_success():
+if activation_result.success():
     print("Plugin activated successfully")
 ```
 
@@ -228,7 +228,7 @@ class ConfigurablePlugin(FlextPlugin):
             # Use type-safe configuration
             for batch in self._create_batches(data, self.settings.batch_size):
                 result = await self._process_batch(batch)
-                if not result.is_success():
+                if not result.success():
                     return result
 
             return FlextResult.ok({"processed": True})
@@ -435,7 +435,7 @@ class APIServicePlugin(FlextPlugin):
         @self.app.post("/process")
         async def process_data(data: Dict[str, Any]):
             result = await self.execute(data)
-            if result.is_success():
+            if result.success():
                 return result.data
             else:
                 raise HTTPException(status_code=500, detail=result.error)
@@ -548,7 +548,7 @@ class PluginFileHandler(FileSystemEventHandler):
             plugin_name = self._extract_plugin_name(file_path)
             result = await self.platform.reload_plugin(plugin_name)
 
-            if result.is_success():
+            if result.success():
                 print(f"✅ Plugin reloaded: {plugin_name}")
             else:
                 print(f"❌ Reload failed: {result.error}")
@@ -599,7 +599,7 @@ class TestCustomPlugin:
         test_data = {"input": "test"}
         result = await plugin.execute(test_data)
 
-        assert result.is_success()
+        assert result.success()
         assert "processed" in result.data
 ```
 
@@ -628,7 +628,7 @@ class TestPluginIntegration:
 
         # Register plugin
         result = await platform.register_plugin(plugin)
-        assert result.is_success()
+        assert result.success()
 
         # Verify registration
         registered_plugin = await platform.get_plugin("integration-test-plugin")
@@ -646,16 +646,16 @@ class TestPluginIntegration:
         await platform.register_plugin(plugin)
 
         activation = await platform.activate_plugin("lifecycle-test-plugin")
-        assert activation.is_success()
+        assert activation.success()
 
         execution = await platform.execute_plugin(
             "lifecycle-test-plugin",
             {"test": "data"}
         )
-        assert execution.is_success()
+        assert execution.success()
 
         deactivation = await platform.deactivate_plugin("lifecycle-test-plugin")
-        assert deactivation.is_success()
+        assert deactivation.success()
 ```
 
 ## Best Practices
@@ -702,7 +702,7 @@ class SecurePlugin(FlextPlugin):
         try:
             # Input validation
             validated_data = await self._validate_input(data)
-            if not validated_data.is_success():
+            if not validated_data.success():
                 return validated_data
 
             # Permission check

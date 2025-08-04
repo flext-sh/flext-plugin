@@ -82,7 +82,7 @@ class TestSimplePluginRegistry:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.is_success
+        assert result.success
         if result.data != mock_plugin:
             raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
         assert registry.get_plugin("test-plugin") == mock_plugin
@@ -101,7 +101,7 @@ class TestSimplePluginRegistry:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -125,7 +125,7 @@ class TestSimplePluginRegistry:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.is_success
+        assert result.success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
         assert registry.get_plugin("test-plugin") is None
@@ -141,7 +141,7 @@ class TestSimplePluginRegistry:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.is_success
+        assert result.success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
 
@@ -360,7 +360,7 @@ class TestFlextPluginManager:
 
         result = await manager.initialize()
 
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
@@ -377,7 +377,7 @@ class TestFlextPluginManager:
         # it initializes successfully without calling discover
         result = await manager.initialize()
 
-        assert result.is_success
+        assert result.success
         assert manager.is_initialized
         # Our backwards compatibility wrapper doesn't implement auto-discover
         # This test just verifies basic initialization works
@@ -391,7 +391,7 @@ class TestFlextPluginManager:
         # The backwards compatibility wrapper always returns failure
         result = await manager.discover_and_load_plugins()
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "No plugins discovered" not in result.error:
             raise AssertionError(
@@ -408,7 +408,7 @@ class TestFlextPluginManager:
             {"test": "data"},
         )
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
@@ -424,7 +424,7 @@ class TestFlextPluginManager:
         config = Mock()
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
@@ -438,7 +438,7 @@ class TestFlextPluginManager:
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
@@ -453,7 +453,7 @@ class TestFlextPluginManager:
         result = manager.unload_plugin("non-existent")
 
         # Mock implementation always succeeds (idempotent operation)
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     @pytest.mark.asyncio
@@ -464,13 +464,13 @@ class TestFlextPluginManager:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.is_success
+        assert result.success
 
     def test_get_plugin_status_not_found(self, manager: FlextPluginManager) -> None:
         """Test getting status of non-existent plugin."""
         result = manager.get_plugin_status("non-existent")
         # Method returns FlextResult.fail(), not a status dict
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected 'not found' in {result.error.lower()}")

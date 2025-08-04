@@ -101,7 +101,7 @@ async def test_plugin_activation(platform):
     await platform.register_plugin(plugin)
 
     result = await platform.activate_plugin("test-plugin")
-    assert result.is_success()
+    assert result.success()
 ```
 
 ## Example Projects Structure
@@ -281,7 +281,7 @@ class TestExamplePlugin:
     async def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = await plugin.initialize()
-        assert result.is_success()
+        assert result.success()
 
     async def test_plugin_execution(self, plugin):
         """Test plugin execution."""
@@ -293,29 +293,29 @@ class TestExamplePlugin:
         test_data = {"input": "test_value"}
         result = await plugin.execute(test_data)
 
-        assert result.is_success()
+        assert result.success()
         assert "processed" in result.data
 
     async def test_plugin_lifecycle(self, platform, plugin):
         """Test complete plugin lifecycle."""
         # Register plugin
         register_result = await platform.register_plugin(plugin)
-        assert register_result.is_success()
+        assert register_result.success()
 
         # Activate plugin
         activate_result = await platform.activate_plugin(plugin.name)
-        assert activate_result.is_success()
+        assert activate_result.success()
 
         # Execute plugin
         execute_result = await platform.execute_plugin(
             plugin.name,
             {"test": "data"}
         )
-        assert execute_result.is_success()
+        assert execute_result.success()
 
         # Deactivate plugin
         deactivate_result = await platform.deactivate_plugin(plugin.name)
-        assert deactivate_result.is_success()
+        assert deactivate_result.success()
 ```
 
 ### Configuration Template
@@ -358,7 +358,7 @@ All examples demonstrate proper error handling using `FlextResult` pattern:
 ```python
 try:
     result = await operation()
-    if result.is_success():
+    if result.success():
         return result.data
     else:
         logger.error(f"Operation failed: {result.error}")
