@@ -86,6 +86,7 @@ class TestSimplePluginRegistryComprehensive:
         plugin.metadata.plugin_type = PluginType.TARGET
         return plugin
 
+    @pytest.mark.asyncio
     async def test_register_plugin_success(
         self,
         registry: SimplePluginRegistry,
@@ -94,13 +95,14 @@ class TestSimplePluginRegistryComprehensive:
         """Test successful plugin registration."""
         result = await registry.register_plugin(mock_plugin)
 
-        assert result.success
+        assert result.is_success
         if result.data != mock_plugin:
             raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
         assert registry.get_plugin("test-plugin") == mock_plugin
         if registry.get_plugin_count() != 1:
             raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_register_multiple_plugins(
         self,
         registry: SimplePluginRegistry,
@@ -127,6 +129,7 @@ class TestSimplePluginRegistryComprehensive:
             )
         assert registry.get_plugin("test-plugin-2") == mock_plugin_2
 
+    @pytest.mark.asyncio
     async def test_register_plugin_without_metadata(
         self,
         registry: SimplePluginRegistry,
@@ -137,7 +140,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -146,6 +149,7 @@ class TestSimplePluginRegistryComprehensive:
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_register_plugin_without_name(
         self,
         registry: SimplePluginRegistry,
@@ -158,7 +162,7 @@ class TestSimplePluginRegistryComprehensive:
 
         result = await registry.register_plugin(invalid_plugin)
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
@@ -167,6 +171,7 @@ class TestSimplePluginRegistryComprehensive:
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_unregister_plugin_success(
         self,
         registry: SimplePluginRegistry,
@@ -181,13 +186,14 @@ class TestSimplePluginRegistryComprehensive:
         # Then unregister it
         result = await registry.unregister_plugin("test-plugin")
 
-        assert result.success
+        assert result.is_success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
         assert registry.get_plugin("test-plugin") is None
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_unregister_nonexistent_plugin(
         self,
         registry: SimplePluginRegistry,
@@ -196,7 +202,7 @@ class TestSimplePluginRegistryComprehensive:
         result = await registry.unregister_plugin("non-existent")
 
         # Should still succeed (idempotent operation)
-        assert result.success
+        assert result.is_success
         if not (result.data):
             raise AssertionError(f"Expected True, got {result.data}")
 
@@ -261,12 +267,14 @@ class TestSimplePluginRegistryComprehensive:
         if len(transform_plugins) != 0:
             raise AssertionError(f"Expected {0}, got {len(transform_plugins)}")
 
+    @pytest.mark.asyncio
     async def test_cleanup_all_empty(self, registry: SimplePluginRegistry) -> None:
         """Test cleaning up empty registry."""
         await registry.cleanup_all()
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
 
+    @pytest.mark.asyncio
     async def test_cleanup_all_with_plugins(
         self,
         registry: SimplePluginRegistry,
@@ -423,11 +431,11 @@ class TestPluginManagerResultComprehensive:
         result = PluginManagerResult(
             operation="initialize",
             success=True,
-            plugins_affected=["plugin1", "plugin2"],
-            execution_time_ms=150.5,
-            details={"plugins_loaded": 2, "config_applied": True},
-            errors=[],
         )
+        result.plugins_affected = ["plugin1", "plugin2"]
+        result.execution_time_ms = 150.5
+        result.details = {"plugins_loaded": 2, "config_applied": True}
+        result.errors = []
 
         if result.operation != "initialize":
             raise AssertionError(f"Expected {'initialize'}, got {result.operation}")
@@ -448,11 +456,11 @@ class TestPluginManagerResultComprehensive:
         result = PluginManagerResult(
             operation="load_plugins",
             success=False,
-            plugins_affected=[],
-            execution_time_ms=50.0,
-            details={"attempted": 3, "failed": 3},
-            errors=["Plugin not found", "Invalid configuration", "Permission denied"],
         )
+        result.plugins_affected = []
+        result.execution_time_ms = 50.0
+        result.details = {"attempted": 3, "failed": 3}
+        result.errors = ["Plugin not found", "Invalid configuration", "Permission denied"]
 
         if result.operation != "load_plugins":
             raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
@@ -472,11 +480,11 @@ class TestPluginManagerResultComprehensive:
         result = PluginManagerResult(
             operation="",
             success=False,
-            plugins_affected=[],
-            execution_time_ms=0.0,
-            details={},
-            errors=[],
         )
+        result.plugins_affected = []
+        result.execution_time_ms = 0.0
+        result.details = {}
+        result.errors = []
 
         if result.operation != "":
             raise AssertionError(f"Expected {''}, got {result.operation}")
@@ -503,13 +511,14 @@ class TestPluginManagerComprehensive:
         """Create plugin manager with auto-discovery enabled."""
         return PluginManager(auto_discover=True, security_enabled=False)
 
+    @pytest.mark.asyncio
     async def test_manager_initialization_basic(self, manager: PluginManager) -> None:
         """Test basic plugin manager initialization."""
         assert not manager.is_initialized
 
         result = await manager.initialize()
 
-        assert result.success
+        assert result.is_success
         assert manager.is_initialized
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
@@ -519,6 +528,7 @@ class TestPluginManagerComprehensive:
         if not (result.data.success):
             raise AssertionError(f"Expected True, got {result.data.success}")
 
+    @pytest.mark.asyncio
     async def test_manager_initialization_with_auto_discover(
         self,
         manager_with_auto_discover: PluginManager,
@@ -529,23 +539,23 @@ class TestPluginManagerComprehensive:
             manager_with_auto_discover,
             "discover_and_load_plugins",
         ) as mock_discover:
-            mock_discover.return_value = FlextResult.ok(
-                PluginManagerResult(
-                    operation="discover_and_load",
-                    success=True,
-                    plugins_affected=["test-plugin"],
-                    execution_time_ms=100.0,
-                    details={"plugins_discovered": 1},
-                    errors=[],
-                ),
+            manager_result = PluginManagerResult(
+                operation="discover_and_load",
+                success=True,
             )
+            manager_result.plugins_affected = ["test-plugin"]
+            manager_result.execution_time_ms = 100.0
+            manager_result.details = {"plugins_discovered": 1}
+            manager_result.errors = []
+            mock_discover.return_value = FlextResult.ok(manager_result)
 
             result = await manager_with_auto_discover.initialize()
 
-            assert result.success
+            assert result.is_success
             assert manager_with_auto_discover.is_initialized
             mock_discover.assert_called_once()
 
+    @pytest.mark.asyncio
     async def test_manager_properties(self, manager: PluginManager) -> None:
         """Test manager properties."""
         # Before initialization
@@ -555,7 +565,7 @@ class TestPluginManagerComprehensive:
 
         # After initialization
         result = await manager.initialize()
-        assert result.success
+        assert result.is_success
         assert manager.is_initialized
         expected_count = 0  # No plugins loaded
         if manager.plugin_count != expected_count:
@@ -563,6 +573,7 @@ class TestPluginManagerComprehensive:
                 f"Expected {expected_count}, got {manager.plugin_count}"
             )
 
+    @pytest.mark.asyncio
     async def test_discover_and_load_plugins_empty(
         self,
         manager: PluginManager,
@@ -572,13 +583,14 @@ class TestPluginManagerComprehensive:
         with patch.object(manager.discovery, "discover_all", return_value={}):
             result = await manager.discover_and_load_plugins()
 
-            assert not result.success
+            assert not result.is_success
             assert result.error is not None
             if "No plugins discovered" not in result.error:
                 raise AssertionError(
                     f"Expected {'No plugins discovered'} in {result.error}"
                 )
 
+    @pytest.mark.asyncio
     async def test_execute_plugin_not_found(self, manager: PluginManager) -> None:
         """Test executing non-existent plugin."""
         await manager.initialize()
@@ -588,11 +600,12 @@ class TestPluginManagerComprehensive:
             {"test": "data"},
         )
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
+    @pytest.mark.asyncio
     async def test_configure_plugin_not_found(self, manager: PluginManager) -> None:
         """Test configuring non-existent plugin."""
         await manager.initialize()
@@ -600,37 +613,40 @@ class TestPluginManagerComprehensive:
         config = PluginConfiguration(plugin_id="non-existent")
         result = await manager.configure_plugin("non-existent", config)
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not found" not in result.error.lower():
             raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
+    @pytest.mark.asyncio
     async def test_reload_plugin_not_configured(self, manager: PluginManager) -> None:
         """Test reloading plugin that doesn't exist."""
         await manager.initialize()
 
         result = await manager.reload_plugin("test-plugin")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
                 f"Expected {'not discovered'} in {result.error.lower()}"
             )
 
+    @pytest.mark.asyncio
     async def test_unload_plugin_not_found(self, manager: PluginManager) -> None:
         """Test unloading non-existent plugin."""
         await manager.initialize()
 
         result = await manager.unload_plugin("non-existent")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
             raise AssertionError(
                 f"Expected {'plugin unload failed'} in {result.error.lower()}"
             )
 
+    @pytest.mark.asyncio
     async def test_integrate_with_protocols(self, manager: PluginManager) -> None:
         """Test protocol integration."""
         await manager.initialize()
@@ -638,7 +654,7 @@ class TestPluginManagerComprehensive:
         result = await manager.integrate_with_protocols()
 
         # Should succeed as it's currently a placeholder
-        assert result.success
+        assert result.is_success
 
     def test_get_plugin_status_not_found(self, manager: PluginManager) -> None:
         """Test getting status of non-existent plugin."""
@@ -665,6 +681,7 @@ class TestPluginManagerComprehensive:
         if plugins != []:
             raise AssertionError(f"Expected {[]}, got {plugins}")
 
+    @pytest.mark.asyncio
     async def test_cleanup(self, manager: PluginManager) -> None:
         """Test plugin manager cleanup."""
         await manager.initialize()
@@ -673,6 +690,7 @@ class TestPluginManagerComprehensive:
         await manager.cleanup()
         assert not manager.is_initialized
 
+    @pytest.mark.asyncio
     async def test_create_plugin_context(self, manager: PluginManager) -> None:
         """Test creating plugin context."""
         context = await manager._create_plugin_context("test-plugin")

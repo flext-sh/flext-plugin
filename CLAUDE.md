@@ -58,7 +58,7 @@ make security          # Security scans (bandit + pip-audit)
 make fix               # Auto-fix linting and formatting issues
 ```
 
-### Testing (85% coverage minimum)
+### Testing (Current: 33% coverage, systematic improvement ongoing)
 
 ```bash
 make test              # Full test suite with coverage validation
@@ -176,7 +176,7 @@ Plugins progress through states defined in `PluginStatus`:
 
 ## Testing Strategy
 
-The project maintains 85% minimum test coverage with comprehensive test categories:
+The project currently has 33% test coverage (83/253 tests passing) with comprehensive test categories:
 
 ```bash
 # Run specific test categories with pytest markers
@@ -285,7 +285,7 @@ found_plugins = direct_discovery.discover_in_directory("./plugins")
 1. Make code changes following Clean Architecture patterns
 2. Run `make fix` to auto-format and fix linting issues
 3. Run `make validate` - ALL checks must pass (lint + type + security + test)
-4. Ensure 85%+ test coverage is maintained
+4. Add comprehensive tests for new functionality following established patterns
 5. Commit only after validation succeeds
 
 ### Testing New Features

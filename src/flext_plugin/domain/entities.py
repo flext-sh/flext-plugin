@@ -43,7 +43,7 @@ from datetime import UTC, datetime
 
 from flext_core import FlextEntity, FlextEntityId, FlextResult
 from flext_core.utilities import FlextGenerators
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from flext_plugin.core.types import PluginStatus
 
@@ -155,11 +155,14 @@ class FlextPlugin(FlextEntity):
         # Extract config values
         config = config or {}
 
-        # Initialize FlextEntity base first
+        # Handle backward compatibility for plugin_id in kwargs
+        plugin_name = kwargs.get("plugin_id", name)
+
+        # Initialize FlextEntity base with ONLY base fields
         super().__init__(id=final_entity_id)
 
-        # Set plugin-specific fields using object.__setattr__ for frozen models
-        object.__setattr__(self, "name", kwargs.get("plugin_id", name))
+        # Set business fields directly (frozen model workaround)
+        object.__setattr__(self, "name", plugin_name)
         object.__setattr__(self, "plugin_version", version)
         object.__setattr__(self, "description", config.get("description", ""))
         object.__setattr__(self, "author", config.get("author", ""))
@@ -176,9 +179,61 @@ class FlextPlugin(FlextEntity):
         return self.plugin_version
 
     @property
-    def plugin_status(self) -> PluginStatus:
-        """Get plugin status (compatibility)."""
-        return self.status
+    def plugin_status(self) -> str:
+        """Get plugin status (compatibility) - returns value string."""
+        return self.status.value
+
+    def __setattr__(self, name: str, value: object) -> None:
+        """Override setattr to handle plugin_status setter for frozen model."""
+        if name == "plugin_status" and isinstance(value, PluginStatus):
+            # Use object.__setattr__ to bypass frozen model restrictions
+            object.__setattr__(self, "status", value)
+        else:
+            # For all other attributes, use the parent's __setattr__
+            super().__setattr__(name, value)
+
+    # Health and status checking properties
+    @property
+    def is_healthy(self) -> bool:
+        """Check if plugin is healthy."""
+        return self.status == PluginStatus.HEALTHY
+
+    # Execution tracking properties (for backward compatibility)
+    @property
+    def execution_count(self) -> int:
+        """Get number of executions recorded."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_execution_count", 0)
+
+    @property
+    def average_execution_time_ms(self) -> float:
+        """Get average execution time in milliseconds."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_average_execution_time_ms", 0.0)
+
+    @property
+    def last_execution(self) -> datetime | None:
+        """Get timestamp of last execution."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_last_execution", None)
+
+    @property
+    def error_count(self) -> int:
+        """Get number of errors recorded."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_error_count", 0)
+
+    @property
+    def last_error(self) -> str:
+        """Get last error message."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_last_error", "")
+
+    @property
+    def last_error_time(self) -> datetime | None:
+        """Get timestamp of last error."""
+        # For backward compatibility, return a placeholder
+        return getattr(self, "_last_error_time", None)
 
     def is_valid(self) -> bool:
         """Validate plugin entity state.
@@ -222,6 +277,45 @@ class FlextPlugin(FlextEntity):
         """
         return self.status == PluginStatus.ACTIVE
 
+    def record_execution(
+        self, execution_time_ms: float, *, success: bool = True,
+    ) -> None:
+        """Record plugin execution for metrics tracking.
+
+        Args:
+            execution_time_ms: Execution time in milliseconds
+            success: Whether execution was successful
+
+        """
+        # Get current counts
+        current_count = getattr(self, "_execution_count", 0)
+        current_avg = getattr(self, "_average_execution_time_ms", 0.0)
+
+        # Calculate new average
+        new_count = current_count + 1
+        new_avg = ((current_avg * current_count) + execution_time_ms) / new_count
+
+        # Set new values using object.__setattr__ for frozen model
+        object.__setattr__(self, "_execution_count", new_count)
+        object.__setattr__(self, "_average_execution_time_ms", new_avg)
+        object.__setattr__(self, "_last_execution", datetime.now(UTC))
+
+    def record_error(self, error_message: str) -> None:
+        """Record plugin error for tracking.
+
+        Args:
+            error_message: Error message to record
+
+        """
+        # Get current error count
+        current_error_count = getattr(self, "_error_count", 0)
+
+        # Set new values using object.__setattr__ for frozen model
+        object.__setattr__(self, "_error_count", current_error_count + 1)
+        object.__setattr__(self, "_last_error", error_message)
+        object.__setattr__(self, "_last_error_time", datetime.now(UTC))
+        object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
+
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin entity.
 
@@ -239,6 +333,35 @@ class FlextPlugin(FlextEntity):
 class FlextPluginConfig(FlextEntity):
     """Plugin configuration entity."""
 
+    # Pydantic fields
+    plugin_name: str = Field(
+        default="",
+        description="Name of the plugin this config belongs to",
+    )
+    config_data: dict[str, object] = Field(
+        default_factory=dict,
+        description="Configuration data",
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Last update timestamp",
+    )
+
+    # Configuration fields for backward compatibility
+    enabled: bool = Field(
+        default=True, description="Whether plugin configuration is enabled",
+    )
+    settings: dict[str, object] = Field(
+        default_factory=dict, description="Plugin settings",
+    )
+    dependencies: list[str] = Field(
+        default_factory=list, description="Plugin dependencies",
+    )
+    priority: int = Field(default=100, description="Plugin priority")
+    max_memory_mb: int = Field(default=512, description="Maximum memory usage in MB")
+    max_cpu_percent: int = Field(default=50, description="Maximum CPU usage percentage")
+    timeout_seconds: int = Field(default=30, description="Timeout in seconds")
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
@@ -247,6 +370,14 @@ class FlextPluginConfig(FlextEntity):
         config_data: dict[str, object] | None = None,
         created_at: datetime | None = None,  # noqa: ARG002
         updated_at: datetime | None = None,
+        enabled: bool = True,
+        settings: dict[str, object] | None = None,
+        dependencies: list[str] | None = None,
+        priority: int = 100,
+        max_memory_mb: int = 512,
+        max_cpu_percent: int = 50,
+        timeout_seconds: int = 30,
+        **kwargs: object,  # noqa: ARG002
     ) -> None:
         """Initialize plugin configuration entity.
 
@@ -256,15 +387,33 @@ class FlextPluginConfig(FlextEntity):
             config_data: Configuration data
             created_at: Creation timestamp
             updated_at: Last update timestamp
+            enabled: Whether plugin configuration is enabled
+            settings: Plugin settings
+            dependencies: Plugin dependencies
+            priority: Plugin priority
+            max_memory_mb: Maximum memory usage in MB
+            max_cpu_percent: Maximum CPU usage percentage
+            timeout_seconds: Timeout in seconds
+            **kwargs: Additional keyword arguments for backward compatibility
 
         """
         # FlextEntity expects keyword argument 'id'
         final_id = entity_id or FlextGenerators.generate_entity_id()
+
+        # Initialize FlextEntity base with ONLY base fields
         super().__init__(id=final_id)
-        self.plugin_name = plugin_name
-        self.config_data = config_data or {}
-        # created_at is automatically handled by FlextEntity base class
-        self.updated_at = updated_at or datetime.now(UTC)
+
+        # Set business fields directly (frozen model workaround)
+        object.__setattr__(self, "plugin_name", plugin_name)
+        object.__setattr__(self, "config_data", config_data or {})
+        object.__setattr__(self, "updated_at", updated_at or datetime.now(UTC))
+        object.__setattr__(self, "enabled", enabled)
+        object.__setattr__(self, "settings", settings or {})
+        object.__setattr__(self, "dependencies", dependencies or [])
+        object.__setattr__(self, "priority", priority)
+        object.__setattr__(self, "max_memory_mb", max_memory_mb)
+        object.__setattr__(self, "max_cpu_percent", max_cpu_percent)
+        object.__setattr__(self, "timeout_seconds", timeout_seconds)
 
     def is_valid(self) -> bool:
         """Validate plugin configuration entity state.
@@ -282,8 +431,10 @@ class FlextPluginConfig(FlextEntity):
             new_config: New configuration data
 
         """
+        # Update mutable dict in place
         self.config_data.update(new_config)
-        self.updated_at = datetime.now(UTC)
+        # Update timestamp using frozen model workaround
+        object.__setattr__(self, "updated_at", datetime.now(UTC))
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin configuration entity.
@@ -300,36 +451,131 @@ class FlextPluginConfig(FlextEntity):
 class FlextPluginMetadata(FlextEntity):
     """Plugin metadata entity containing additional plugin information."""
 
+    # Pydantic fields for the entity
+    plugin_name: str = Field(
+        default="",
+        description="Name of the plugin this metadata belongs to",
+    )
+    tags: list[str] = Field(
+        default_factory=list,
+        description="Plugin tags for categorization",
+    )
+    categories: list[str] = Field(
+        default_factory=list,
+        description="Plugin categories",
+    )
+    homepage_url: str = Field(default="", description="Plugin homepage URL")
+    documentation_url: str = Field(default="", description="Plugin documentation URL")
+    repository_url: str = Field(default="", description="Plugin repository URL")
+    license_info: str = Field(default="", description="Plugin license information")
+
+    # Additional fields for backward compatibility
+    name: str = Field(min_length=1, description="Plugin name (alias for plugin_name)")
+    entry_point: str = Field(min_length=1, description="Plugin entry point")
+    plugin_type: str = Field(default="", description="Plugin type")
+    description: str = Field(default="", description="Plugin description")
+    dependencies: list[str] = Field(
+        default_factory=list, description="Plugin dependencies",
+    )
+    trusted: bool = Field(default=False, description="Whether plugin is trusted")
+    homepage: str | None = Field(default=None, description="Plugin homepage (alias)")
+    repository: str | None = Field(
+        default=None, description="Plugin repository (alias)",
+    )
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
         *,
         plugin_name: str = "",
         metadata: dict[str, object] | None = None,
+        name: str = "",
+        entry_point: str = "",
+        plugin_type: object = "",
+        description: str = "",
+        dependencies: list[str] | None = None,
+        trusted: bool = False,
+        homepage: str | None = None,
+        repository: str | None = None,
+        **kwargs: object,  # noqa: ARG002
     ) -> None:
         """Initialize plugin metadata entity.
 
         Args:
             entity_id: Unique entity identifier
             plugin_name: Name of the plugin this metadata belongs to
-            metadata: Metadata dict containing tags, categories, URLs, license,
-                created_at
+            metadata: Metadata dict containing tags, categories, URLs, license
+            name: Plugin name (alias for plugin_name)
+            entry_point: Plugin entry point
+            plugin_type: Plugin type (PluginType enum or string)
+            description: Plugin description
+            dependencies: Plugin dependencies
+            trusted: Whether plugin is trusted
+            homepage: Plugin homepage (alias)
+            repository: Plugin repository (alias)
+            **kwargs: Additional keyword arguments for backward compatibility
 
         """
+        # Import PluginType here to avoid circular imports
+
         # FlextEntity expects keyword argument 'id'
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        super().__init__(id=final_id)
-        self.plugin_name = plugin_name
 
         # Extract from metadata dict
         metadata = metadata or {}
-        self.tags = metadata.get("tags", [])
-        self.categories = metadata.get("categories", [])
-        self.homepage_url = metadata.get("homepage_url", "")
-        self.documentation_url = metadata.get("documentation_url", "")
-        self.repository_url = metadata.get("repository_url", "")
-        self.license_info = metadata.get("license_info", "")
-        # created_at is automatically handled by FlextEntity base class
+
+        # Handle plugin_type conversion
+        plugin_type_value = ""
+        if hasattr(plugin_type, "value"):  # PluginType enum
+            plugin_type_value = plugin_type.value
+        elif isinstance(plugin_type, str):
+            plugin_type_value = plugin_type
+
+        # Use name parameter or fall back to plugin_name
+        final_name = name or plugin_name
+
+        # Extract values from metadata dict when not provided directly
+        final_entry_point = entry_point or metadata.get("entry_point", "")
+        final_description = description or metadata.get("description", "")
+
+        # For FlextPluginMetadata, we need to use standard Pydantic initialization
+        # to ensure validation works properly for required fields
+        super().__init__(
+            id=final_id,
+            plugin_name=final_name,
+            name=final_name,
+            entry_point=final_entry_point,
+            plugin_type=plugin_type_value,
+            description=final_description,
+            dependencies=dependencies or [],
+            trusted=trusted,
+            homepage=homepage,
+            repository=repository,
+            tags=metadata.get("tags", []),
+            categories=metadata.get("categories", []),
+            homepage_url=metadata.get("homepage_url", ""),
+            documentation_url=metadata.get("documentation_url", ""),
+            repository_url=metadata.get("repository_url", ""),
+            license_info=metadata.get("license_info", ""),
+        )
+
+    @field_validator("name")
+    @classmethod
+    def validate_name_not_empty(cls, v: str) -> str:
+        """Validate that name is not empty."""
+        if not v or not v.strip():
+            msg = "Plugin name cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("entry_point")
+    @classmethod
+    def validate_entry_point_not_empty(cls, v: str) -> str:
+        """Validate that entry_point is not empty when provided."""
+        if v is not None and v != "" and not v.strip():
+            msg = "Plugin entry point cannot be empty"
+            raise ValueError(msg)
+        return v
 
     def is_valid(self) -> bool:
         """Validate plugin metadata entity state.
@@ -355,6 +601,34 @@ class FlextPluginMetadata(FlextEntity):
 class FlextPluginRegistry(FlextEntity):
     """Plugin registry entity managing registered plugins."""
 
+    # Pydantic fields
+    name: str = Field(default="", description="Registry name")
+    plugins: dict[str, FlextPlugin] = Field(
+        default_factory=dict,
+        description="Dictionary of registered plugins",
+    )
+
+    # Registry configuration fields for backward compatibility
+    registry_url: str = Field(default="", description="Registry URL")
+    is_enabled: bool = Field(default=True, description="Whether registry is enabled")
+    plugin_count: int = Field(default=0, description="Number of plugins in registry")
+    sync_error_count: int = Field(default=0, description="Number of sync errors")
+    last_sync: datetime | None = Field(default=None, description="Last sync timestamp")
+
+    # Authentication fields
+    requires_authentication: bool = Field(
+        default=False, description="Whether authentication is required",
+    )
+    api_key: str = Field(default="", description="API key for authentication")
+
+    # Security fields
+    verify_signatures: bool = Field(
+        default=False, description="Whether to verify signatures",
+    )
+    trusted_publishers: list[str] = Field(
+        default_factory=list, description="List of trusted publishers",
+    )
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
@@ -362,6 +636,16 @@ class FlextPluginRegistry(FlextEntity):
         name: str = "",
         plugins: dict[str, FlextPlugin] | None = None,
         created_at: datetime | None = None,  # noqa: ARG002
+        registry_url: str = "",
+        is_enabled: bool = True,
+        plugin_count: int = 0,
+        sync_error_count: int = 0,
+        last_sync: datetime | None = None,
+        requires_authentication: bool = False,
+        api_key: str = "",
+        verify_signatures: bool = False,
+        trusted_publishers: list[str] | None = None,
+        **kwargs: object,  # noqa: ARG002
     ) -> None:
         """Initialize plugin registry entity.
 
@@ -370,14 +654,57 @@ class FlextPluginRegistry(FlextEntity):
             name: Registry name
             plugins: Dictionary of registered plugins (name -> plugin)
             created_at: Creation timestamp
+            registry_url: Registry URL
+            is_enabled: Whether registry is enabled
+            plugin_count: Number of plugins in registry
+            sync_error_count: Number of sync errors
+            last_sync: Last sync timestamp
+            requires_authentication: Whether authentication is required
+            api_key: API key for authentication
+            verify_signatures: Whether to verify signatures
+            trusted_publishers: List of trusted publishers
+            **kwargs: Additional keyword arguments for backward compatibility
 
         """
         # FlextEntity expects keyword argument 'id'
         final_id = entity_id or FlextGenerators.generate_entity_id()
+
+        # Initialize FlextEntity base with ONLY base fields
         super().__init__(id=final_id)
-        self.name = name
-        self.plugins = plugins or {}
-        # created_at is automatically handled by FlextEntity base class
+
+        # Set business fields directly (frozen model workaround)
+        object.__setattr__(self, "name", name)
+        object.__setattr__(self, "plugins", plugins or {})
+        object.__setattr__(self, "registry_url", registry_url)
+        object.__setattr__(self, "is_enabled", is_enabled)
+        object.__setattr__(self, "plugin_count", plugin_count)
+        object.__setattr__(self, "sync_error_count", sync_error_count)
+        object.__setattr__(self, "last_sync", last_sync)
+        object.__setattr__(self, "requires_authentication", requires_authentication)
+        object.__setattr__(self, "api_key", api_key)
+        object.__setattr__(self, "verify_signatures", verify_signatures)
+        object.__setattr__(self, "trusted_publishers", trusted_publishers or [])
+
+    @property
+    def is_available(self) -> bool:
+        """Check if registry is available (enabled and has URL)."""
+        return self.is_enabled and bool(self.registry_url)
+
+    def record_sync(self, *, success: bool, plugin_count: int | None = None) -> None:
+        """Record sync attempt results.
+
+        Args:
+            success: Whether sync was successful
+            plugin_count: Number of plugins synced (only updated on success)
+
+        """
+        object.__setattr__(self, "last_sync", datetime.now(UTC))
+
+        if success and plugin_count is not None:
+            object.__setattr__(self, "plugin_count", plugin_count)
+        elif not success:
+            # Increment error count on failure
+            object.__setattr__(self, "sync_error_count", self.sync_error_count + 1)
 
     def is_valid(self) -> bool:
         """Validate plugin registry entity state.
@@ -455,30 +782,171 @@ class FlextPluginRegistry(FlextEntity):
 class FlextPluginExecution(FlextEntity):
     """Plugin execution entity for tracking plugin executions."""
 
+    # Pydantic fields
+    plugin_name: str = Field(
+        default="",
+        description="Name of the plugin being executed",
+    )
+    plugin_id: str = Field(
+        default="",
+        description="Plugin identifier (backward compatibility)",
+    )
+    execution_id: str = Field(
+        default="",
+        description="Execution identifier",
+    )
+    start_time: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Execution start time",
+    )
+    end_time: datetime | None = Field(
+        default=None,
+        description="Execution end time",
+    )
+    status: str = Field(default="pending", description="Execution status")
+    result: object | None = Field(default=None, description="Execution result")
+    error: str = Field(default="", description="Execution error message")
+    error_message: str | None = Field(
+        default=None, description="Error message (compatibility)",
+    )
+    input_data: dict[str, object] = Field(
+        default_factory=dict,
+        description="Input data for execution",
+    )
+    output_data: dict[str, object] = Field(
+        default_factory=dict,
+        description="Output data from execution",
+    )
+
     def __init__(
         self,
         entity_id: FlextEntityId | None = None,
         *,
         plugin_name: str = "",
         execution_config: dict[str, object] | None = None,
+        **kwargs: object,
     ) -> None:
-        """Initialize plugin execution entity."""
+        """Initialize plugin execution entity.
+
+        Args:
+            entity_id: Unique entity identifier
+            plugin_name: Name of the plugin being executed
+            execution_config: Execution configuration dictionary
+            **kwargs: Additional keyword arguments for backward compatibility
+
+        """
         # FlextEntity expects keyword argument 'id'
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        super().__init__(id=final_id)
-        self.plugin_name = plugin_name
 
         # Extract from execution_config dict
         execution_config = execution_config or {}
-        self.start_time = execution_config.get("start_time", datetime.now(UTC))
-        self.end_time = execution_config.get("end_time")
-        self.status = execution_config.get("status", "pending")
-        self.result = execution_config.get("result")
-        self.error = execution_config.get("error", "")
+
+        # Initialize FlextEntity base with ONLY base fields
+        super().__init__(id=final_id)
+
+        # Handle backward compatibility - tests may pass plugin_id
+        if "plugin_id" in kwargs:
+            plugin_name = plugin_name or kwargs["plugin_id"]
+        execution_id = kwargs.get("execution_id", final_id)
+        input_data = kwargs.get("input_data", {})
+
+        # Set business fields directly (frozen model workaround)
+        object.__setattr__(self, "plugin_name", plugin_name)
+        object.__setattr__(self, "plugin_id", kwargs.get("plugin_id", plugin_name))
+        object.__setattr__(self, "execution_id", execution_id)
+        object.__setattr__(
+            self, "start_time", execution_config.get("start_time", datetime.now(UTC)),
+        )
+        object.__setattr__(self, "end_time", execution_config.get("end_time"))
+        object.__setattr__(self, "status", execution_config.get("status", "pending"))
+        object.__setattr__(self, "result", execution_config.get("result"))
+        object.__setattr__(self, "error", execution_config.get("error", ""))
+        object.__setattr__(self, "error_message", execution_config.get("error_message"))
+        object.__setattr__(self, "input_data", input_data)
+        object.__setattr__(self, "output_data", execution_config.get("output_data", {}))
 
     def is_valid(self) -> bool:
         """Validate plugin execution entity state."""
         return bool(self.plugin_name)
+
+    @property
+    def success(self) -> bool:
+        """Check if execution was successful."""
+        return self.status == "completed"
+
+    @property
+    def execution_status(self) -> str:
+        """Get execution status (compatibility alias)."""
+        return self.status
+
+    @property
+    def memory_usage_mb(self) -> float:
+        """Get memory usage in MB from resource tracking."""
+        resource_usage = self.output_data.get("resource_usage", {})
+        return resource_usage.get("memory_mb", 0.0)
+
+    @property
+    def cpu_time_ms(self) -> float:
+        """Get CPU time in milliseconds from resource tracking."""
+        resource_usage = self.output_data.get("resource_usage", {})
+        return resource_usage.get("cpu_time_ms", 0.0)
+
+    @property
+    def is_running(self) -> bool:
+        """Check if execution is currently running."""
+        return self.status == "running"
+
+    @property
+    def is_completed(self) -> bool:
+        """Check if execution is completed (successful or failed)."""
+        return self.status in {"completed", "failed"}
+
+    def mark_started(self) -> None:
+        """Mark execution as started."""
+        object.__setattr__(self, "status", "running")
+        object.__setattr__(self, "start_time", datetime.now(UTC))
+
+    def mark_completed(
+        self, success: bool = True, error_message: str | None = None,
+    ) -> None:
+        """Mark execution as completed.
+
+        Args:
+            success: Whether execution was successful
+            error_message: Error message if execution failed
+
+        """
+        object.__setattr__(self, "end_time", datetime.now(UTC))
+        if success:
+            object.__setattr__(self, "status", "completed")
+        else:
+            object.__setattr__(self, "status", "failed")
+            if error_message:
+                object.__setattr__(self, "error", error_message)
+                object.__setattr__(self, "error_message", error_message)
+
+    def update_resource_usage(
+        self, memory_mb: float = 0.0, cpu_time_ms: float = 0.0,
+    ) -> None:
+        """Update resource usage tracking.
+
+        Args:
+            memory_mb: Memory usage in MB
+            cpu_time_ms: CPU time in milliseconds
+
+        """
+        # Add resource usage to output_data for tracking
+        current_output = dict(self.output_data)
+        current_output.update(
+            {
+                "resource_usage": {
+                    "memory_mb": memory_mb,
+                    "cpu_time_ms": cpu_time_ms,
+                    "timestamp": datetime.now(UTC).isoformat(),
+                },
+            },
+        )
+        object.__setattr__(self, "output_data", current_output)
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin execution entity.

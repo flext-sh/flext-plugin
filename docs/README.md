@@ -13,32 +13,23 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise-grad
 
 ### 🏗️ Architecture & Design
 
-- **[Clean Architecture](architecture/clean-architecture.md)** - Layer separation and dependency rules
-- **[Domain-Driven Design](architecture/domain-driven-design.md)** - Business domain modeling
-- **[Plugin Lifecycle](architecture/plugin-lifecycle.md)** - Plugin state management and transitions
-- **[Integration Patterns](architecture/integration-patterns.md)** - FLEXT ecosystem integration
+- **[Architecture Overview](architecture/README.md)** - Clean Architecture and DDD foundations
+- **[Python Module Standards](standards/python-module-organization.md)** - Code organization patterns
 
 ### 🛠️ Development Guides
 
 - **[Quick Start](guides/quick-start.md)** - Get up and running in minutes
 - **[Plugin Development](guides/plugin-development.md)** - Creating custom plugins
-- **[Hot Reload Development](guides/hot-reload.md)** - Development workflow with live reloading
-- **[Testing Guide](guides/testing.md)** - Comprehensive testing strategies
-- **[Singer Integration](guides/singer-integration.md)** - Singer tap/target development
+- **[Development Overview](guides/README.md)** - Development workflow and best practices
 
 ### 📖 API Reference
 
-- **[Core Types](api/core-types.md)** - Plugin types, enums, and result objects
-- **[Domain Entities](api/domain-entities.md)** - Business entities and value objects
-- **[Application Services](api/application-services.md)** - Application layer services
-- **[Platform API](api/platform-api.md)** - Main platform interface
+- **[API Overview](api/README.md)** - Complete API documentation and usage patterns
 
 ### 💡 Examples & Use Cases
 
 - **[Basic Plugin](examples/basic-plugin.md)** - Simple plugin implementation
-- **[Singer Tap Plugin](examples/singer-tap.md)** - Data extraction plugin
-- **[Service Plugin](examples/service-plugin.md)** - Microservice integration
-- **[Hot Reload Demo](examples/hot-reload-demo.md)** - Development workflow example
+- **[Examples Overview](examples/README.md)** - Collection of practical examples
 
 ## Getting Started
 
@@ -101,7 +92,7 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 
 ### Quality Standards
 
-- **85% Test Coverage**: Comprehensive test suites with unit, integration, and e2e tests
+- **Test Coverage**: Currently 33% (83/253 tests passing), systematic improvement in progress
 - **Type Safety**: 100% type coverage with strict MyPy validation
 - **Code Quality**: Ruff linting with ALL rules enabled
 - **Security**: Bandit scanning and pip-audit dependency checks

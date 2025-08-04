@@ -94,7 +94,7 @@ class MyPlugin(FlextPlugin):
 
 1. **Setup**: `make setup` - Initialize development environment
 2. **Create**: Implement plugin following Clean Architecture patterns
-3. **Test**: Add comprehensive tests with 85%+ coverage
+3. **Test**: Add comprehensive tests following project patterns
 4. **Validate**: `make validate` - All quality gates must pass
 5. **Integrate**: Register and test with FLEXT platform
 

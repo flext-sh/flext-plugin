@@ -42,6 +42,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from flext_core import FlextEntity, FlextResult
+from flext_core.utilities import FlextGenerators
 from pydantic import ConfigDict
 
 
@@ -90,6 +91,14 @@ class PluginDiscovery(FlextEntity):
     plugin_directory: str
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def __init__(self, *, plugin_directory: str, **kwargs: object) -> None:
+        """Initialize plugin discovery with directory and entity ID."""
+        # Generate ID for FlextEntity
+        entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+
+        # Initialize FlextEntity with id AND plugin_directory (required field)
+        super().__init__(id=entity_id, plugin_directory=plugin_directory)
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""

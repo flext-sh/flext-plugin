@@ -142,12 +142,14 @@ def create_flext_plugin_metadata(
     plugin_name: str,
     *,
     metadata: dict[str, object] | None = None,
+    entry_point: str = "",
 ) -> FlextPluginMetadata:
     """Create a new FlextPluginMetadata entity.
 
     Args:
         plugin_name: Name of the plugin this metadata belongs to
         metadata: Metadata dict containing tags, categories, URLs, license info
+        entry_point: Plugin entry point (defaults to plugin_name if not provided)
 
     Returns:
         New FlextPluginMetadata entity
@@ -156,10 +158,14 @@ def create_flext_plugin_metadata(
     metadata = metadata or {}
     metadata["created_at"] = datetime.now(UTC)
 
+    # Use plugin_name as entry_point if not provided
+    final_entry_point = entry_point or plugin_name
+
     return FlextPluginMetadata(
         entity_id=str(uuid.uuid4()),
         plugin_name=plugin_name,
         metadata=metadata,
+        entry_point=final_entry_point,
     )
 
 

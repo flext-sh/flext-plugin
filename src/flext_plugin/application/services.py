@@ -234,12 +234,12 @@ class FlextPluginService(FlextDomainService):
                 return FlextResult.ok(success)
 
             def get_plugin_config(
-                self, _plugin_name: str
+                self, _plugin_name: str,
             ) -> FlextResult[FlextPluginConfig]:
                 return FlextResult.fail("Mock implementation")
 
             def update_plugin_config(
-                self, _plugin_name: str, _config: FlextPluginConfig
+                self, _plugin_name: str, _config: FlextPluginConfig,
             ) -> FlextResult[bool]:
                 success = True
                 return FlextResult.ok(success)

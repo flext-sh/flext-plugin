@@ -79,7 +79,7 @@ class TestPluginDiscoverySimple:
         Returns:
             PluginDiscovery: Real instance with clean state for testing
         """
-        return PluginDiscovery()
+        return PluginDiscovery(entity_id="test-simple-discovery-001")
 
     def test_discovery_initialization(self, discovery: PluginDiscovery) -> None:
         """Test plugin discovery initialization."""
@@ -147,6 +147,7 @@ class TestPluginDiscoverySimple:
         # Now should be blacklisted
         assert discovery.is_blacklisted(plugin_id)
 
+    @pytest.mark.asyncio
     async def test_discover_all_empty(self, discovery: PluginDiscovery) -> None:
         """Validate plugin discovery behavior with no available plugins.
 
@@ -178,6 +179,7 @@ class TestPluginDiscoverySimple:
             if result != {}:
                 raise AssertionError(f"Expected {{}}, got {result}")
 
+    @pytest.mark.asyncio
     async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
         plugin_type = PluginType.TAP
@@ -288,6 +290,7 @@ class TestPluginDiscoverySimple:
                     f"Expected {'test-plugin'}, got {result.metadata.name}"
                 )
 
+    @pytest.mark.asyncio
     async def test_discover_entry_points_empty(
         self,
         discovery: PluginDiscovery,
@@ -300,6 +303,7 @@ class TestPluginDiscoverySimple:
             # Should complete without errors
             assert True
 
+    @pytest.mark.asyncio
     async def test_discover_file_system_no_directories(
         self,
         discovery: PluginDiscovery,
@@ -314,6 +318,7 @@ class TestPluginDiscoverySimple:
         # Should complete without errors
         assert True
 
+    @pytest.mark.asyncio
     async def test_discover_file_system_nonexistent_dir(
         self,
         discovery: PluginDiscovery,

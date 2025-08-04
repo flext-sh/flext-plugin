@@ -83,7 +83,7 @@ from flext_plugin.simple_api import (
 # Main FlextPlugin aliases with backwards compatibility
 class FlextPluginManager:
     """Backwards compatibility wrapper for FlextPluginPlatform.
-    
+
     This class maintains compatibility with legacy test code that expects
     different constructor parameters while delegating all functionality
     to the modern FlextPluginPlatform implementation.
@@ -92,9 +92,10 @@ class FlextPluginManager:
     def __init__(
         self,
         container: FlextContainer | None = None,
-        auto_discover: bool = True,  # Legacy parameter - ignored
-        security_enabled: bool = True,  # Legacy parameter - ignored
-        **kwargs: object,  # Catch any other legacy parameters
+        *,
+        auto_discover: bool = True,  # noqa: ARG002
+        security_enabled: bool = True,  # noqa: ARG002
+        **kwargs: object,  # noqa: ARG002
     ) -> None:
         """Initialize with backwards compatibility for legacy parameters."""
         # Ignore legacy parameters and create modern platform
@@ -118,7 +119,8 @@ class FlextPluginManager:
 
     async def initialize(self) -> FlextResult[object]:
         """Legacy async initialize method for backwards compatibility."""
-        from flext_plugin.core.types import PluginManagerResult
+        # Import here to avoid module-level import issues
+        from flext_plugin.core.types import PluginManagerResult  # noqa: PLC0415
 
         # Mark as initialized
         self._initialized = True
@@ -143,11 +145,19 @@ class FlextPluginManager:
         """Legacy plugin reload method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not discovered")
 
-    async def execute_plugin(self, plugin_name: str, data: dict[str, object]) -> FlextResult[object]:
+    async def execute_plugin(
+        self,
+        plugin_name: str,
+        data: dict[str, object],  # noqa: ARG002
+    ) -> FlextResult[object]:
         """Legacy plugin execution method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-    async def configure_plugin(self, plugin_name: str, config: object) -> FlextResult[object]:
+    async def configure_plugin(
+        self,
+        plugin_name: str,
+        config: object,  # noqa: ARG002
+    ) -> FlextResult[object]:
         """Legacy plugin configuration method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
@@ -155,7 +165,7 @@ class FlextPluginManager:
         """Legacy plugin status method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-    def list_plugins(self, enabled_only: bool = False) -> list[object]:
+    def list_plugins(self, *, enabled_only: bool = False) -> list[object]:  # noqa: ARG002
         """Legacy list plugins method."""
         return []
 
@@ -165,17 +175,18 @@ class FlextPluginManager:
 
     async def _create_plugin_context(self, plugin_name: str) -> object:
         """Legacy create plugin context method."""
-        import uuid
+        import uuid  # noqa: PLC0415
 
-        from flext_plugin.core.types import PluginExecutionContext
+        from flext_plugin.core.types import PluginExecutionContext  # noqa: PLC0415
+
         return PluginExecutionContext(
-            plugin_id=plugin_name,
-            execution_id=str(uuid.uuid4())
+            plugin_id=plugin_name, execution_id=str(uuid.uuid4()),
         )
 
     def __getattr__(self, name: str) -> object:
         """Delegate all method calls to the underlying platform."""
         return getattr(self._platform, name)
+
 
 FlextPluginResult = FlextResult
 

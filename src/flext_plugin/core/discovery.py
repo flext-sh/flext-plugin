@@ -46,6 +46,8 @@ import json
 from typing import TYPE_CHECKING
 
 from flext_core import FlextEntity, FlextResult
+from flext_core.utilities import FlextGenerators
+from pydantic import Field
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -56,18 +58,46 @@ if TYPE_CHECKING:
 class PluginDiscovery(FlextEntity):
     """Plugin discovery system to find and scan plugin files."""
 
+    # Pydantic fields
+    plugin_directory: str = Field(
+        default="/usr/local/plugins",
+        description="Primary plugin directory path",
+    )
+    plugin_directories: list[str] = Field(
+        default_factory=list,
+        description="Additional plugin directories to scan",
+    )
+    discovered_plugins: dict[str, object] = Field(
+        default_factory=dict,
+        description="Cache of discovered plugins",
+        exclude=True,
+    )
+    blacklisted_plugins: set[str] = Field(
+        default_factory=set,
+        description="Set of blacklisted plugin IDs",
+        exclude=True,
+    )
+
     def __init__(
         self,
         *,
-        entity_id: str,
+        entity_id: str | None = None,
         plugin_directory: str = "/usr/local/plugins",
+        plugin_directories: list[str] | None = None,
+        **kwargs: object,
     ) -> None:
         """Initialize plugin discovery system."""
-        super().__init__(id=entity_id)
-        self.plugin_directory = plugin_directory
-        self.plugin_directories: list[Path] = []
-        self._discovered_plugins: dict[str, object] = {}
-        self._blacklisted_plugins: set[str] = set()
+        # Generate ID if not provided
+        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
+
+        # Initialize FlextEntity base with ONLY base fields
+        super().__init__(id=final_entity_id)
+
+        # Set business fields directly (frozen model workaround)
+        object.__setattr__(self, "plugin_directory", plugin_directory)
+        object.__setattr__(self, "plugin_directories", plugin_directories or [])
+        object.__setattr__(self, "discovered_plugins", {})
+        object.__setattr__(self, "blacklisted_plugins", set())
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
@@ -77,14 +107,16 @@ class PluginDiscovery(FlextEntity):
 
     def add_plugin_directory(self, directory: Path) -> None:
         """Add a plugin directory to scan."""
-        if directory not in self.plugin_directories:
-            self.plugin_directories.append(directory)
+        directory_str = str(directory)
+        if directory_str not in self.plugin_directories:
+            # Modify the list in place (mutable object)
+            self.plugin_directories.append(directory_str)
 
     async def discover_all(self) -> dict[str, object]:
         """Discover all plugins from configured directories."""
         await self._discover_entry_points()
         await self._discover_file_system()
-        return self._discovered_plugins
+        return self.discovered_plugins
 
     async def discover_by_type(self, plugin_type: PluginType) -> dict[str, object]:
         """Discover plugins by type."""
@@ -97,15 +129,15 @@ class PluginDiscovery(FlextEntity):
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:
         """Get a discovered plugin by name."""
-        return self._discovered_plugins.get(plugin_name)
+        return self.discovered_plugins.get(plugin_name)
 
     def blacklist_plugin(self, plugin_id: str) -> None:
         """Blacklist a plugin."""
-        self._blacklisted_plugins.add(plugin_id)
+        self.blacklisted_plugins.add(plugin_id)
 
     def is_blacklisted(self, plugin_id: str) -> bool:
         """Check if a plugin is blacklisted."""
-        return plugin_id in self._blacklisted_plugins
+        return plugin_id in self.blacklisted_plugins
 
     def register_plugin(self, plugin_class: type) -> None:
         """Manually register a plugin class."""
@@ -116,7 +148,7 @@ class PluginDiscovery(FlextEntity):
                 plugin_class.__name__,
             )
             plugin_instance = plugin_class()
-            self._discovered_plugins[plugin_name] = plugin_instance
+            self.discovered_plugins[plugin_name] = plugin_instance
 
     async def _discover_entry_points(self) -> None:
         """Discover plugins from entry points."""
@@ -124,7 +156,9 @@ class PluginDiscovery(FlextEntity):
 
     async def _discover_file_system(self) -> None:
         """Discover plugins from file system."""
-        for directory in self.plugin_directories:
+        from pathlib import Path
+        for directory_str in self.plugin_directories:
+            directory = Path(directory_str)
             await self._scan_directory(directory)
 
     async def _scan_directory(self, directory: Path) -> None:
@@ -142,7 +176,7 @@ class PluginDiscovery(FlextEntity):
                 try:
                     with manifest_file.open() as f:
                         metadata = json.load(f)
-                        self._discovered_plugins[metadata.get("name", py_file.stem)] = (
+                        self.discovered_plugins[metadata.get("name", py_file.stem)] = (
                             metadata
                         )
                 except (json.JSONDecodeError, OSError):

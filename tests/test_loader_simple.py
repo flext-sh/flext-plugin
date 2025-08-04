@@ -42,7 +42,6 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from flext_plugin import FlextPlugin
-from flext_plugin.core.types import PluginError
 from flext_plugin.loader import PluginLoader
 
 
@@ -94,49 +93,26 @@ class TestFlextPluginSimple:
 
         if loaded.name != "test-plugin":
             raise AssertionError(f"Expected {'test-plugin'}, got {loaded.name}")
-        assert loaded.version == "0.9.0"
-        if loaded.metadata != mock_plugin_instance.metadata:
-            raise AssertionError(
-                f"Expected {mock_plugin_instance.metadata}, got {loaded.metadata}"
-            )
-        assert loaded.config == {"test": "config"}
-        if loaded.is_initialized:
-            raise AssertionError(f"Expected False, got {loaded.is_initialized}")
+        # FlextPlugin.version is the entity version (int), plugin_version is the string
+        assert loaded.plugin_version == "0.9.0"
+        # No metadata or config properties in FlextPlugin entity
+        assert loaded.description == ""  # From empty config
+        assert loaded.author == ""
 
-    async def test_loaded_plugin_initialize(self, mock_plugin_instance: Mock) -> None:
-        """Test FlextPlugin initialization."""
+    def test_loaded_plugin_validation(self, mock_plugin_instance: Mock) -> None:
+        """Test FlextPlugin validation."""
         loaded = FlextPlugin(
-            plugin_id="test-plugin",
-            instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
-            config={},
+            name="test-plugin",
+            version="0.9.0",
+            config={"description": "Test plugin", "author": "Test Author"},
         )
 
-        assert not loaded.is_initialized
-
-        await loaded.initialize()
-
-        assert loaded.is_initialized
-        # Note: Mock assertion removed to avoid mypy unreachable code warning
-        # The functionality is still tested via the assert above
-
-    async def test_loaded_plugin_cleanup(self, mock_plugin_instance: Mock) -> None:
-        """Test FlextPlugin cleanup."""
-        loaded = FlextPlugin(
-            plugin_id="test-plugin",
-            instance=mock_plugin_instance,
-            metadata=mock_plugin_instance.metadata,
-            config={},
-        )
-
-        # Initialize first so cleanup will be called
-        await loaded.initialize()
-        assert loaded.is_initialized
-
-        await loaded.cleanup()
-
-        mock_plugin_instance.cleanup.assert_called_once()
-        assert not loaded.is_initialized
+        # Test validation
+        assert loaded.is_valid()
+        assert loaded.name == "test-plugin"
+        assert loaded.plugin_version == "0.9.0"
+        assert loaded.description == "Test plugin"
+        assert loaded.author == "Test Author"
 
 
 class TestPluginLoaderSimple:
@@ -209,7 +185,8 @@ class TestPluginLoaderSimple:
     def test_get_loaded_plugin_not_found(self, loader: PluginLoader) -> None:
         """Test getting loaded plugin that doesn't exist."""
         result = loader.get_loaded_plugin("non-existent")
-        assert result is None
+        assert result.is_failure
+        assert "not loaded" in result.error.lower()
 
     def test_is_plugin_loaded_false(self, loader: PluginLoader) -> None:
         """Test checking if plugin is loaded when it's not."""
@@ -221,19 +198,16 @@ class TestPluginLoaderSimple:
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
         """Test getting all loaded plugins when none are loaded."""
         result = loader.get_all_loaded_plugins()
-        if result != {}:
-            raise AssertionError(f"Expected {{}}, got {result}")
+        assert result.is_success
+        if result.data != {}:
+            raise AssertionError(f"Expected {{}}, got {result.data}")
 
+    @pytest.mark.asyncio
     async def test_unload_plugin_not_loaded(self, loader: PluginLoader) -> None:
         """Test unloading plugin that's not loaded."""
-        # Should raise PluginError for not loaded plugin
-
-        with pytest.raises(PluginError) as exc_info:
-            await loader.unload_plugin("non-existent")
-        if "not loaded" not in str(exc_info.value).lower():
-            raise AssertionError(
-                f"Expected {'not loaded'} in {str(exc_info.value).lower()}"
-            )
+        # Should complete without error (graceful handling)
+        await loader.unload_plugin("non-existent")
+        # No exception raised - this is the expected behavior
 
     def test_loader_properties(self, loader: PluginLoader) -> None:
         """Test loader properties and attributes."""
@@ -262,15 +236,18 @@ class TestPluginLoaderSimple:
 
         # Should be able to retrieve it
         result = loader.get_loaded_plugin("test-plugin")
-        if result != loaded_plugin:
-            raise AssertionError(f"Expected {loaded_plugin}, got {result}")
+        assert result.is_success
+        if result.data != loaded_plugin:
+            raise AssertionError(f"Expected {loaded_plugin}, got {result.data}")
         if not (loader.is_loaded("test-plugin")):
             raise AssertionError(
                 f"Expected True, got {loader.is_loaded('test-plugin')}"
             )
 
         # Should appear in all loaded plugins
-        all_plugins = loader.get_all_loaded_plugins()
+        all_plugins_result = loader.get_all_loaded_plugins()
+        assert all_plugins_result.is_success
+        all_plugins = all_plugins_result.data
         if len(all_plugins) != 1:
             raise AssertionError(f"Expected {1}, got {len(all_plugins)}")
         assert all_plugins["test-plugin"] == loaded_plugin

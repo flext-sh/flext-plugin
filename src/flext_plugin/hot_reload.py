@@ -136,15 +136,11 @@ class HotReloadManager(FlextEntity):
         # Generate ID for FlextEntity
         entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
 
-        super().__init__(id=entity_id)
+        # Initialize FlextEntity with id AND plugin_directory (required field)
+        super().__init__(id=entity_id, plugin_directory=plugin_directory)
 
-        # Store plugin_directory as instance attribute (not Pydantic field)
-        object.__setattr__(self, "plugin_directory", plugin_directory)
-        # Store non-Pydantic attributes directly
-        object.__setattr__(self, "_discovery", None)
-        object.__setattr__(self, "_loader", None)
-        object.__setattr__(self, "_observer", None)
-        object.__setattr__(self, "_loaded_plugins", {})
+        # Manually initialize attributes (since model_post_init may not be called)
+        self.model_post_init(None)
 
     @property
     def discovery(self) -> PluginDiscovery | None:

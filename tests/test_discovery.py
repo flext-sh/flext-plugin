@@ -74,7 +74,7 @@ class TestPluginDiscovery:
     @pytest.fixture
     def discovery(self) -> PluginDiscovery:
         """Create plugin discovery instance for testing."""
-        return PluginDiscovery()
+        return PluginDiscovery(entity_id="test-discovery-001")
 
     def test_discovery_initialization(self, discovery: PluginDiscovery) -> None:
         """Test plugin discovery initialization."""
@@ -107,6 +107,7 @@ class TestPluginDiscovery:
 
     @patch("pathlib.Path.glob")
     @patch("pathlib.Path.exists")
+    @pytest.mark.asyncio
     async def test_discover_all_empty(
         self,
         mock_exists: Mock,
@@ -147,6 +148,7 @@ class TestPluginDiscovery:
         new_callable=mock_open,
         read_data='{"name": "test-plugin", "version": "0.9.0", "type": "tap"}',
     )
+    @pytest.mark.asyncio
     async def test_discover_plugins_with_metadata(
         self,
         mock_file: Mock,
@@ -194,6 +196,7 @@ class TestPluginDiscovery:
             assert isinstance(result, dict)
 
     @patch("pathlib.Path.exists")
+    @pytest.mark.asyncio
     async def test_discover_all_nonexistent_directory(
         self,
         mock_exists: Mock,
@@ -227,6 +230,7 @@ class TestPluginDiscovery:
         if result != {}:
             raise AssertionError(f"Expected {{}}, got {result}")
 
+    @pytest.mark.asyncio
     async def test_discover_plugins_empty_result(
         self,
         discovery: PluginDiscovery,
@@ -247,6 +251,7 @@ class TestPluginDiscovery:
             mock_entry_points.assert_called_once()
             mock_file_system.assert_called_once()
 
+    @pytest.mark.asyncio
     async def test_discover_plugins_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
         plugin_type = PluginType.TAP
@@ -274,6 +279,7 @@ class TestPluginDiscovery:
 
     @patch("pathlib.Path.glob")
     @patch("pathlib.Path.exists")
+    @pytest.mark.asyncio
     async def test_scan_directory_for_plugins(
         self,
         mock_exists: Mock,
@@ -393,6 +399,7 @@ class TestPluginDiscovery:
             if result:
                 raise AssertionError(f"Expected False, got {result}")
 
+    @pytest.mark.asyncio
     async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
         """Test discovering plugins by type."""
         plugin_type = PluginType.TAP
