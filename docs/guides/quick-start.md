@@ -434,8 +434,8 @@ poetry add --group dev ruff mypy pytest pytest-cov bandit
 
 # Create basic pyproject.toml configuration
 cat > pyproject.toml << EOF
-[tool.ruff]
-line-length = 88
+extend = "../.ruff-shared.toml"
+lint.isort.known-first-party = ["flext_plugin"]
 
 [tool.mypy]
 python_version = "3.13"
