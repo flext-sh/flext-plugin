@@ -58,7 +58,7 @@ def test_basic_plugin_example_functionality() -> None:
     assert not plugin.is_active()
 
     # Test domain validation
-    validation_result = plugin.validate_domain_rules()
+    validation_result = plugin.validate_business_rules()
     assert validation_result.success
 
     # Test activation
@@ -216,7 +216,7 @@ def test_plugin_configuration_example_functionality() -> None:
 
     # Test validation on complex plugins
     for plugin in [db_plugin, ldap_plugin]:
-        validation_result = plugin.validate_domain_rules()
+        validation_result = plugin.validate_business_rules()
         assert validation_result.success, (
             f"Plugin {plugin.name} validation failed: {validation_result.error}"
         )
@@ -262,7 +262,7 @@ def test_plugin_configuration_docker_compatibility() -> None:
 
     # Verify Docker database plugin
     assert docker_db_plugin.name == "docker-postgres-connector"
-    validation_result = docker_db_plugin.validate_domain_rules()
+    validation_result = docker_db_plugin.validate_business_rules()
     assert validation_result.success
 
     # Test Docker-compatible LDAP configuration
@@ -302,7 +302,7 @@ def test_plugin_configuration_docker_compatibility() -> None:
 
     # Verify Docker LDAP plugin
     assert docker_ldap_plugin.name == "docker-ldap-directory"
-    validation_result = docker_ldap_plugin.validate_domain_rules()
+    validation_result = docker_ldap_plugin.validate_business_rules()
     assert validation_result.success
 
     # Test Redis cache configuration (also available in Docker)
@@ -335,7 +335,7 @@ def test_plugin_configuration_docker_compatibility() -> None:
 
     # Verify Docker Redis plugin
     assert docker_redis_plugin.name == "docker-redis-cache"
-    validation_result = docker_redis_plugin.validate_domain_rules()
+    validation_result = docker_redis_plugin.validate_business_rules()
     assert validation_result.success
 
 
@@ -404,7 +404,7 @@ def test_docker_integration_example_functionality() -> None:
     assert postgres_config["database"]["pool_size"] == 10
 
     # Test PostgreSQL plugin validation and activation
-    validation_result = postgres_plugin.validate_domain_rules()
+    validation_result = postgres_plugin.validate_business_rules()
     assert validation_result.success
 
     activation_result = postgres_plugin.activate()
@@ -428,7 +428,7 @@ def test_docker_integration_example_functionality() -> None:
     assert redis_config["cache"]["default_ttl"] == 300
 
     # Test Redis plugin validation and activation
-    validation_result = redis_plugin.validate_domain_rules()
+    validation_result = redis_plugin.validate_business_rules()
     assert validation_result.success
 
     activation_result = redis_plugin.activate()
@@ -453,7 +453,7 @@ def test_docker_integration_example_functionality() -> None:
     assert ldap_config["REDACTED_LDAP_BIND_PASSWORD"]["REDACTED_LDAP_BIND_PASSWORD_password"] == "flext_ldap_REDACTED_LDAP_BIND_PASSWORD"
 
     # Test LDAP plugin validation and activation
-    validation_result = ldap_plugin.validate_domain_rules()
+    validation_result = ldap_plugin.validate_business_rules()
     assert validation_result.success
 
     activation_result = ldap_plugin.activate()

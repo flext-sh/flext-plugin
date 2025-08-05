@@ -46,7 +46,7 @@ import sys
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_core import FlextEntity, FlextProcessingError, FlextResult
 from flext_core.utilities import FlextGenerators
@@ -58,6 +58,7 @@ from flext_plugin.loader import PluginLoader
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from flext_core.flext_types import TAnyDict
     from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
@@ -101,8 +102,8 @@ class PluginState:
         self,
         plugin_id: str,
         plugin_version: str,
-        state_data: dict[str, Any] | None = None,
-        metadata: dict[str, Any] | None = None,
+        state_data: TAnyDict | None = None,
+        metadata: TAnyDict | None = None,
         saved_at: datetime | None = None,
     ) -> None:
         """Initialize plugin state.
@@ -231,7 +232,7 @@ class StateManager:
         """
         return f"snapshot_{datetime.now(UTC).isoformat()}"
 
-    def list_snapshots(self) -> list[dict[str, Any]]:
+    def list_snapshots(self) -> list[TAnyDict]:
         """List available snapshots.
 
         Returns:
@@ -380,7 +381,7 @@ class HotReloadManager(FlextEntity):
         """Get loaded plugins dictionary."""
         return getattr(self, "_loaded_plugins", {})
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
         if not self.plugin_directory:
             return FlextResult.fail("Plugin directory cannot be empty")
@@ -509,8 +510,8 @@ class HotReloadManager(FlextEntity):
     def state_manager(self) -> StateManager:
         """Get state manager instance."""
         if not hasattr(self, "_state_manager"):
-            state_dir = (
-                getattr(self, "state_backup_dir", None) or Path("./state_backup")
+            state_dir = getattr(self, "state_backup_dir", None) or Path(
+                "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
         return self._state_manager
@@ -520,7 +521,9 @@ class HotReloadManager(FlextEntity):
         """Get rollback manager instance."""
         if not hasattr(self, "_rollback_manager"):
             object.__setattr__(
-                self, "_rollback_manager", RollbackManager(self.state_manager),
+                self,
+                "_rollback_manager",
+                RollbackManager(self.state_manager),
             )
         return self._rollback_manager
 
@@ -529,7 +532,9 @@ class HotReloadManager(FlextEntity):
         """Get plugin watcher instance."""
         if not hasattr(self, "_watcher"):
             watch_dirs = getattr(
-                self, "watch_directories", [Path(self.plugin_directory)],
+                self,
+                "watch_directories",
+                [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
         return self._watcher

@@ -136,7 +136,7 @@ class PluginLoader(FlextEntity):
         """Get security enabled status."""
         return getattr(self, "_security_enabled", True)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
         return FlextResult.ok(None)
 
@@ -170,15 +170,15 @@ class PluginLoader(FlextEntity):
                 file_path,
             )
             if spec is None:
-                msg: str = f"Failed to create spec for {file_path}"
-                _handle_import_error(msg)
-                return FlextResult.fail(msg)  # Early return for type narrowing
+                spec_msg: str = f"Failed to create spec for {file_path}"
+                _handle_import_error(spec_msg)
+                return FlextResult.fail(spec_msg)  # Early return for type narrowing
 
             # Type narrowing: spec is not None after check
             if spec.loader is None:
-                msg: str = f"No loader available for {file_path}"
-                _handle_import_error(msg)
-                return FlextResult.fail(msg)  # Early return for type narrowing
+                loader_msg: str = f"No loader available for {file_path}"
+                _handle_import_error(loader_msg)
+                return FlextResult.fail(loader_msg)  # Early return for type narrowing
 
             module = importlib.util.module_from_spec(spec)
             # spec and spec.loader are guaranteed to be non-None here
@@ -205,11 +205,11 @@ class PluginLoader(FlextEntity):
                     self.loaded_plugins[file_path.stem] = plugin
                     return plugin
 
-            msg: str = f"No plugin found in {file_path}"
-            _handle_value_error(msg)
+            not_found_msg: str = f"No plugin found in {file_path}"
+            _handle_value_error(not_found_msg)
         except (RuntimeError, ValueError, TypeError) as e:
-            msg: str = f"Failed to load plugin from {file_path}: {e}"
-            _handle_import_error(msg)
+            load_error_msg: str = f"Failed to load plugin from {file_path}: {e}"
+            _handle_import_error(load_error_msg)
 
         # This should never be reached, all paths above either return or raise
         return None

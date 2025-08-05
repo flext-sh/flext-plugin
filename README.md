@@ -1,233 +1,143 @@
-# FLEXT Plugin
+# flext-plugin
 
-**Version**: 0.9.0 | **Status**: Development | **Test Coverage**: 33% (83/253 tests passing) | **Architecture**: Clean Architecture + DDD
+**Type**: Infrastructure Library | **Status**: Development | **Dependencies**: flext-core
 
-Enterprise-grade plugin management system for the FLEXT data integration platform. Provides dynamic plugin loading, lifecycle management, and hot-reload capabilities following Clean Architecture and Domain-Driven Design patterns.
+Plugin management system for the FLEXT ecosystem with dynamic loading and lifecycle management.
 
-[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
-[![Poetry](https://img.shields.io/badge/dependency%20management-poetry-blue.svg)](https://python-poetry.org/)
-[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue.svg)](https://mypy.readthedocs.io/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
-## Overview
-
-FLEXT Plugin is the foundational plugin management system for the FLEXT ecosystem, enabling dynamic loading and lifecycle management of plugins across the entire platform. It serves as the core plugin infrastructure for all FLEXT services, including FlexCore (Go runtime), FLEXT Service (data platform), and the broader Singer/Meltano ecosystem.
-
-## Current Status
-
-- **Architecture**: Core domain entities fixed, Clean Architecture patterns implemented
-- **Test Coverage**: 33% (83/253 tests passing) with systematic improvement ongoing
-- **API Compatibility**: Systematic refactoring addressing legacy API mismatches
-- **Enterprise Ready**: Production-compatible foundation with comprehensive type safety
-- **Development**: Active development with proven systematic methodology for issue resolution
-
-### Key Features
-
-- **Dynamic Plugin Loading**: Hot-pluggable components with runtime discovery
-- **Lifecycle Management**: Complete plugin lifecycle (discover � load � activate � deactivate)
-- **Hot Reload**: File watching and automatic plugin reloading for development
-- **Clean Architecture**: Strict layer separation following enterprise patterns
-- **Type Safety**: 100% type coverage with strict MyPy validation
-- **Singer Integration**: Native support for Singer taps, targets, and transforms
-- **Quality Gates**: Comprehensive linting, type checking, and security scanning
-
-### FLEXT Ecosystem Integration
-
-```mermaid
-graph TB
-    A[FlexCore Go Service<br/>Port 8080] --> B[FLEXT Plugin System]
-    C[FLEXT Service<br/>Port 8081] --> B
-    B --> D[flext-core<br/>Foundation Patterns]
-    B --> E[flext-observability<br/>Monitoring]
-    B --> F[Singer Ecosystem<br/>15 Projects]
-    B --> G[Application Services<br/>5 Projects]
-
-    F --> H[Taps: Data Extraction]
-    F --> I[Targets: Data Loading]
-    F --> J[DBT: Transformations]
-```
+> **⚠️ Development Status**: Core domain entities working, CLI implementation missing, 33% test coverage
 
 ## Quick Start
+
+```bash
+# Install dependencies
+poetry install
+
+# Test basic functionality
+python -c "from flext_plugin import FlextPluginPlatform; platform = FlextPluginPlatform(); print('✅ Working')"
+
+# Development setup
+make setup
+```
+
+## Current Reality
+
+**What Actually Works:**
+
+- Domain entities (FlextPlugin, FlextPluginConfig, FlextPluginRegistry)
+- Plugin lifecycle management (discover → load → activate)
+- Clean Architecture implementation with DDD patterns
+- FlextResult pattern integration
+
+**What Needs Work:**
+
+- CLI implementation missing (entry point defined but no cli.py file)
+- Hot reload system incomplete
+- Test coverage improvement (33% → 90% target)
+- Singer/Meltano integration superficial
+
+## Architecture Role in FLEXT Ecosystem
+
+### **Infrastructure Component**
+
+FLEXT Plugin provides plugin management infrastructure for distributed services:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    FLEXT ECOSYSTEM (32 Projects)                 │
+├─────────────────────────────────────────────────────────────────┤
+│ Services: FlexCore(Go) | FLEXT Service(Go/Python) | Clients     │
+├─────────────────────────────────────────────────────────────────┤
+│ Applications: API | Auth | Web | CLI | Quality | Observability  │
+├═════════════════════════════════════════════════════════════════┤
+│ Infrastructure: Oracle | LDAP | LDIF | gRPC | [FLEXT-PLUGIN]   │
+├─────────────────────────────────────────────────────────────────┤
+│ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
+├─────────────────────────────────────────────────────────────────┤
+│ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### **Core Responsibilities**
+
+1. **Plugin Discovery**: Dynamic loading of plugins from directories
+2. **Lifecycle Management**: Plugin activation, deactivation, hot-reload
+3. **Singer Integration**: Support for Singer taps, targets, transforms
+
+## Key Features
+
+### **Current Capabilities**
+
+- **Dynamic Plugin Loading**: Hot-pluggable components with runtime discovery
+- **Lifecycle Management**: Plugin activation, deactivation, lifecycle states
+- **Clean Architecture**: Domain/application/infrastructure layer separation
+- **FlextResult Pattern**: Type-safe error handling throughout
+
+### **FLEXT Core Integration**
+
+- **FlextResult Pattern**: Railway-oriented programming for error handling
+- **FlextEntity**: Domain entities with validation and business rules
+- **Dependency Injection**: Global container integration (via flext-core)
+
+## Installation & Usage
 
 ### Installation
 
 ```bash
-# Install with Poetry (recommended)
-poetry add flext-plugin
+# Clone and install
+cd /path/to/flext-plugin
+poetry install
 
-# Or with pip
-pip install flext-plugin
+# Development setup
+make setup
 ```
 
 ### Basic Usage
 
 ```python
-from flext_plugin import create_flext_plugin_platform, create_flext_plugin
+from flext_plugin import FlextPluginPlatform, create_flext_plugin
 from flext_plugin.core.types import PluginType
 
 # Create plugin platform
-platform = create_flext_plugin_platform(config={"debug": True})
+platform = FlextPluginPlatform()
 
 # Create a plugin
 plugin = create_flext_plugin(
-    name="data-extractor",
-    version="1.0.0"
+    name="my-data-extractor",
+    version="1.0.0",
+    plugin_type=PluginType.TAP
 )
 
-# Access plugin information
-print(f"Plugin: {plugin.name} v{plugin.version}")
-print(f"Status: {plugin.status}")
+# Register plugin
+result = platform.register_plugin(plugin)
+if result.success:
+    print(f"Plugin {plugin.name} registered successfully")
+else:
+    print(f"Registration failed: {result.error}")
 ```
-
-### Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/flext-sh/flext.git
-cd flext/flext-plugin
-
-# Install development environment
-make setup
-
-# Run quality gates
-make validate
-
-# Start development with hot reload
-make plugin-watch
-```
-
-## Architecture
-
-FLEXT Plugin follows Clean Architecture with strict layer separation:
-
-### Core Layer (`src/flext_plugin/core/`)
-
-- **Plugin Types**: Core enums, result objects, and error handling
-- **Discovery**: Plugin discovery and scanning mechanisms
-
-### Domain Layer (`src/flext_plugin/domain/`)
-
-- **Entities**: Business objects (`FlextPlugin`, `FlextPluginRegistry`)
-- **Ports**: Domain interfaces and contracts
-
-### Application Layer (`src/flext_plugin/application/`)
-
-- **Services**: Application logic (`FlextPluginService`, `FlextPluginDiscoveryService`)
-- **Handlers**: Command/query handlers for CQRS pattern
-
-### Platform APIs
-
-- **FlextPluginPlatform**: Main platform interface
-- **Simple API**: Factory functions for easy plugin creation
-- **Hot Reload**: Development-time plugin reloading
-
-## Plugin Types
-
-The system supports comprehensive plugin categories for the FLEXT ecosystem:
-
-### Singer ETL Plugins
-
-- **TAP**: Data extraction from sources (Oracle, LDAP, LDIF)
-- **TARGET**: Data loading to destinations
-- **TRANSFORM**: DBT-based data transformations
-
-### Architecture Plugins
-
-- **SERVICE**: Microservice components
-- **MIDDLEWARE**: Request/response processing
-- **EXTENSION**: Platform extensions
-
-### Integration Plugins
-
-- **API**: REST/GraphQL API endpoints
-- **DATABASE**: Database connectivity (Oracle, PostgreSQL)
-- **AUTHENTICATION**: Auth providers and strategies
 
 ## Development Commands
 
-### Quality Gates (Required Before Commit)
+### Quality Gates (Zero Tolerance)
 
 ```bash
-make validate          # Complete validation (lint + type + security + test)
-make check             # Quick health check (lint + type + test)
-make fix               # Auto-fix linting and formatting issues
+# Complete validation pipeline (run before commits)
+make validate              # Full validation pipeline
+make check                 # Quick lint + type check
+make test                  # Run all tests (85% coverage target)
+make lint                  # Code linting
+make type-check            # Type checking
+make format                # Code formatting
+make security              # Security scanning
 ```
 
-### Testing (Current Coverage: 33%)
+### Plugin Development
 
 ```bash
-make test              # Full test suite with coverage
-make test-unit         # Unit tests only
-make test-integration  # Integration tests only
-make coverage-html     # Generate HTML coverage report
-```
+# Development setup
+make setup                 # Complete development environment
 
-### Plugin Management
-
-```bash
-make plugin-create NAME=my-plugin TYPE=extractor    # Create new plugin
-make plugin-validate                                # Validate plugin system
-make plugin-watch                                   # Hot reload development
-```
-
-### Build & Maintenance
-
-```bash
-make build             # Build distribution packages
-make docs              # Build documentation
-make clean             # Clean artifacts
-make reset             # Reset development environment
-```
-
-## Integration Examples
-
-### With FlexCore (Go Service)
-
-```python
-# Plugin platform integration with FlexCore
-from flext_plugin import FlextPluginPlatform
-from flext_core import FlextContainer
-
-container = FlextContainer()
-platform = FlextPluginPlatform(container)
-
-# Register plugins for FlexCore consumption
-await platform.discover_plugins("./flexcore-plugins")
-active_plugins = await platform.get_active_plugins()
-```
-
-### Singer/Meltano Integration
-
-```python
-from flext_plugin.core.types import PluginType
-
-# Create Singer tap plugin
-tap_plugin = create_flext_plugin(
-    name="tap-oracle-wms",
-    version="1.2.3",
-    plugin_type=PluginType.TAP,
-    config={
-        "description": "Oracle WMS data extraction",
-        "author": "FLEXT Team"
-    }
-)
-
-# Register with Meltano-compatible registry
-await platform.register_singer_plugin(tap_plugin)
-```
-
-### Hot Reload Development
-
-```python
-# Enable hot reload for development
-from flext_plugin.hot_reload import enable_hot_reload
-
-await enable_hot_reload(
-    watch_paths=["./plugins", "./custom-plugins"],
-    reload_on_change=True,
-    preserve_state=True
-)
+# Plugin operations (requires CLI implementation)
+make plugin-validate       # Validate plugin system
 ```
 
 ## Configuration
@@ -236,141 +146,92 @@ await enable_hot_reload(
 
 ```bash
 # Plugin discovery paths
-FLEXT_PLUGIN_DISCOVERY_PATHS=plugins:~/.flext/plugins:/opt/flext/plugins
+export FLEXT_PLUGIN_DISCOVERY_PATHS="plugins:~/.flext/plugins"
 
 # Hot reload settings
-FLEXT_PLUGIN_HOT_RELOAD=true
-FLEXT_PLUGIN_WATCH_INTERVAL=2
-
-# Performance tuning
-FLEXT_PLUGIN_MAX_WORKERS=10
+export FLEXT_PLUGIN_HOT_RELOAD=true
+export FLEXT_PLUGIN_WATCH_INTERVAL=2
 ```
 
-### Makefile Configuration
+## Quality Standards
 
-```makefile
-# Project configuration
-MIN_COVERAGE=85                    # Test coverage requirement
-FLEXT_PLUGIN_HOT_RELOAD=true      # Development hot reload
-PYTHON_VERSION=3.13               # Required Python version
+### **Zero Tolerance Quality Gates**
+
+- **Coverage**: 85% test coverage enforced (currently 33%)
+- **Type Safety**: Strict MyPy configuration
+- **Linting**: Ruff with comprehensive rules
+- **Security**: Bandit + pip-audit scanning
+
+## Integration with FLEXT Ecosystem
+
+### **FLEXT Core Patterns**
+
+```python
+# FlextResult for all operations
+def register_plugin(plugin: FlextPlugin) -> FlextResult[FlextPlugin]:
+    try:
+        # Plugin registration logic
+        return FlextResult.ok(registered_plugin)
+    except Exception as e:
+        return FlextResult.fail(f"Registration failed: {e}")
 ```
 
-## Dependencies
+### **Service Integration**
 
-### Core Dependencies
+- **FlexCore (Go)**: Plugin management via gRPC interface
+- **FLEXT Service**: Data processing pipeline plugin integration
+- **Singer Ecosystem**: Native tap/target/transform plugin support
 
-- **flext-core**: Foundation patterns, FlextResult, dependency injection
-- **flext-observability**: Monitoring, metrics, health checks
-- **pydantic**: Data validation and serialization
-- **watchdog**: File system monitoring for hot reload
-- **psutil**: System utilities and process management
+## Current Status
 
-### Development Dependencies
+**Version**: 0.9.0 (Development)
 
-- **pytest**: Testing framework with comprehensive plugin support
-- **ruff**: Fast Python linter and formatter
-- **mypy**: Static type checking with strict mode
-- **bandit**: Security vulnerability scanning
+**Completed**:
 
-## Testing
+- ✅ Domain entities (FlextPlugin, FlextPluginRegistry)
+- ✅ Clean Architecture implementation
+- ✅ Plugin lifecycle management
 
-### Test Structure
+**In Progress**:
 
-```
-tests/
-   unit/                    # Isolated unit tests
-   integration/             # Cross-layer integration tests
-   e2e/                     # End-to-end plugin lifecycle tests
-   fixtures/                # Shared test data and fixtures
-   conftest.py             # Pytest configuration
-```
+- 🔄 CLI implementation (entry point defined but missing cli.py)
+- 🔄 Test coverage improvement (33% → 85%)
+- 🔄 Hot reload system completion
 
-### Running Tests
+**Planned**:
 
-```bash
-# Full test suite
-make test
-
-# Specific test categories
-pytest -m unit              # Unit tests only
-pytest -m integration       # Integration tests
-pytest -m plugin            # Plugin system tests
-pytest -m hot_reload        # Hot reload tests
-
-# Coverage analysis
-make coverage-html
-open htmlcov/index.html
-```
+- 📋 Singer/Meltano integration
+- 📋 Plugin discovery enhancements
+- 📋 Performance optimization
 
 ## Contributing
 
+### Development Standards
+
+- **FLEXT Core Integration**: Use established patterns
+- **Type Safety**: All code must pass MyPy
+- **Testing**: Maintain coverage and ensure tests pass
+- **Code Quality**: Follow linting rules
+
 ### Development Workflow
 
-1. **Setup**: `make setup` - Complete development environment
-2. **Development**: Follow Clean Architecture patterns and DDD principles
-3. **Quality**: `make validate` - All quality gates must pass (lint + type + security)
-4. **Testing**: Add comprehensive tests for new functionality
-5. **Documentation**: Update docs for public APIs and architectural changes
-
-### Code Standards
-
-- **Python 3.13+**: Modern Python with type hints
-- **Clean Architecture**: Strict layer separation and dependency rules
-- **Type Safety**: 100% type coverage with mypy strict mode
-- **Test Coverage**: Currently 33%, ongoing improvement through systematic refactoring
-- **Documentation**: Comprehensive docstrings following FLEXT standards
-
-### Plugin Development
-
-See [Plugin Development Guide](docs/plugin-development.md) for creating custom plugins.
-
-## Documentation
-
-- **[Architecture Guide](docs/architecture.md)**: Clean Architecture and DDD implementation
-- **[Plugin Development](docs/plugin-development.md)**: Creating custom plugins
-- **[Singer Integration](docs/singer-integration.md)**: Singer tap/target development
-- **[Hot Reload Guide](docs/hot-reload.md)**: Development workflow with hot reload
-- **[API Reference](docs/api-reference.md)**: Complete API documentation
-- **[Examples](examples/)**: Practical plugin examples and use cases
-
-## Ecosystem Status
-
-FLEXT Plugin is part of the broader FLEXT ecosystem with **33 interconnected projects**:
-
-### Foundation
-
--  **flext-core**: Base patterns and utilities
--  **flext-observability**: Monitoring and metrics
-
-### Core Services
-
-- =� **FlexCore** (Go): Runtime container service
-- =� **FLEXT Service** (Go/Python): Data platform service
-
-### Plugin Integration
-
--  **15 Singer Projects**: Taps, targets, and DBT transforms
--  **5 Application Services**: API, auth, web, quality, CLI
--  **6 Infrastructure Libraries**: Oracle, LDAP, gRPC, Meltano
-
-## Support
-
-### Getting Help
-
-- **Documentation**: [docs/](docs/) directory
-- **Examples**: [examples/](examples/) directory
-- **Issues**: [GitHub Issues](https://github.com/flext-sh/flext/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/flext-sh/flext/discussions)
-
-### Commercial Support
-
-Enterprise support and consulting available through [team@flext.sh](mailto:team@flext.sh).
+```bash
+# Setup and validate
+make setup
+make validate
+make test
+```
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - See [LICENSE](LICENSE) file for details.
+
+## Links
+
+- **[flext-core](../flext-core)**: Foundation library
+- **[CLAUDE.md](CLAUDE.md)**: Development guidance
+- **[Documentation](docs/)**: Complete documentation
 
 ---
 
-**FLEXT Plugin** - Enterprise Plugin Management for Data Integration  
-Part of the [FLEXT Ecosystem](https://github.com/flext-sh/flext) | Built with d by the FLEXT Team
+_Part of the FLEXT ecosystem - Enterprise data integration platform_

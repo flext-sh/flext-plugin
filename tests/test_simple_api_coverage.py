@@ -61,11 +61,7 @@ class TestCreateFlextPlugin:
             "dependencies": ["dep1", "dep2"],
         }
 
-        plugin = create_flext_plugin(
-            name="test-plugin",
-            version="2.0.0",
-            config=config
-        )
+        plugin = create_flext_plugin(name="test-plugin", version="2.0.0", config=config)
 
         assert plugin is not None
         assert plugin.name == "test-plugin"
@@ -75,11 +71,7 @@ class TestCreateFlextPlugin:
 
     def test_create_plugin_with_none_config(self) -> None:
         """Test plugin creation with None config parameter."""
-        plugin = create_flext_plugin(
-            name="test-plugin",
-            version="1.0.0",
-            config=None
-        )
+        plugin = create_flext_plugin(name="test-plugin", version="1.0.0", config=None)
 
         assert plugin is not None
         assert plugin.name == "test-plugin"
@@ -87,11 +79,7 @@ class TestCreateFlextPlugin:
 
     def test_create_plugin_with_empty_config(self) -> None:
         """Test plugin creation with empty config dictionary."""
-        plugin = create_flext_plugin(
-            name="test-plugin",
-            version="1.0.0",
-            config={}
-        )
+        plugin = create_flext_plugin(name="test-plugin", version="1.0.0", config={})
 
         assert plugin is not None
         assert plugin.name == "test-plugin"
@@ -102,9 +90,7 @@ class TestCreateFlextPlugin:
         before_creation = datetime.now(UTC)
 
         plugin = create_flext_plugin(
-            name="test-plugin",
-            version="1.0.0",
-            config={"description": "Test"}
+            name="test-plugin", version="1.0.0", config={"description": "Test"}
         )
 
         after_creation = datetime.now(UTC)
@@ -146,9 +132,7 @@ class TestCreateFlextPlugin:
         }
 
         plugin = create_flext_plugin(
-            name="complex-plugin",
-            version="1.0.0",
-            config=config
+            name="complex-plugin", version="1.0.0", config=config
         )
 
         assert plugin is not None
@@ -180,8 +164,7 @@ class TestCreateFlextPluginConfig:
         }
 
         config = create_flext_plugin_config(
-            plugin_name="test-plugin",
-            config_data=config_data
+            plugin_name="test-plugin", config_data=config_data
         )
 
         assert config is not None
@@ -190,10 +173,7 @@ class TestCreateFlextPluginConfig:
 
     def test_create_config_with_none_data(self) -> None:
         """Test config creation with None config data."""
-        config = create_flext_plugin_config(
-            plugin_name="test-plugin",
-            config_data=None
-        )
+        config = create_flext_plugin_config(plugin_name="test-plugin", config_data=None)
 
         assert config is not None
         assert config.plugin_name == "test-plugin"
@@ -245,8 +225,7 @@ class TestCreateFlextPluginMetadata:
         }
 
         metadata = create_flext_plugin_metadata(
-            plugin_name="test-plugin",
-            metadata=metadata_dict
+            plugin_name="test-plugin", metadata=metadata_dict
         )
 
         assert metadata is not None
@@ -255,8 +234,7 @@ class TestCreateFlextPluginMetadata:
     def test_create_metadata_with_entry_point(self) -> None:
         """Test metadata creation with explicit entry point."""
         metadata = create_flext_plugin_metadata(
-            plugin_name="test-plugin",
-            entry_point="test_plugin.main"
+            plugin_name="test-plugin", entry_point="test_plugin.main"
         )
 
         assert metadata is not None
@@ -266,8 +244,7 @@ class TestCreateFlextPluginMetadata:
     def test_create_metadata_entry_point_defaults_to_plugin_name(self) -> None:
         """Test that entry point defaults to plugin name when not provided."""
         metadata = create_flext_plugin_metadata(
-            plugin_name="test-plugin",
-            entry_point=""
+            plugin_name="test-plugin", entry_point=""
         )
 
         assert metadata is not None
@@ -277,8 +254,7 @@ class TestCreateFlextPluginMetadata:
     def test_create_metadata_with_none_metadata_dict(self) -> None:
         """Test metadata creation with None metadata dictionary."""
         metadata = create_flext_plugin_metadata(
-            plugin_name="test-plugin",
-            metadata=None
+            plugin_name="test-plugin", metadata=None
         )
 
         assert metadata is not None
@@ -317,10 +293,7 @@ class TestCreateFlextPluginRegistry:
         plugin2 = create_flext_plugin(name="plugin2", version="2.0.0")
         plugins = {"plugin1": plugin1, "plugin2": plugin2}
 
-        registry = create_flext_plugin_registry(
-            name="test-registry",
-            plugins=plugins
-        )
+        registry = create_flext_plugin_registry(name="test-registry", plugins=plugins)
 
         assert registry is not None
         assert registry.name == "test-registry"
@@ -328,10 +301,7 @@ class TestCreateFlextPluginRegistry:
 
     def test_create_registry_with_none_plugins(self) -> None:
         """Test registry creation with None plugins."""
-        registry = create_flext_plugin_registry(
-            name="test-registry",
-            plugins=None
-        )
+        registry = create_flext_plugin_registry(name="test-registry", plugins=None)
 
         assert registry is not None
         assert registry.name == "test-registry"
@@ -514,8 +484,7 @@ class TestCreatePluginConfigFromDict:
         }
 
         config = create_plugin_config_from_dict(
-            plugin_name="test-plugin",
-            config_dict=config_dict
+            plugin_name="test-plugin", config_dict=config_dict
         )
 
         assert config is not None
@@ -526,10 +495,7 @@ class TestCreatePluginConfigFromDict:
     def test_create_config_from_dict_empty_name_fails(self) -> None:
         """Test config creation fails with empty plugin name."""
         with pytest.raises(ValueError) as exc_info:
-            create_plugin_config_from_dict(
-                plugin_name="",
-                config_dict={"key": "value"}
-            )
+            create_plugin_config_from_dict(plugin_name="", config_dict={"key": "value"})
 
         assert "Plugin name is required" in str(exc_info.value)
 
@@ -537,8 +503,7 @@ class TestCreatePluginConfigFromDict:
         """Test config creation fails with None plugin name."""
         with pytest.raises(ValueError) as exc_info:
             create_plugin_config_from_dict(
-                plugin_name=None,
-                config_dict={"key": "value"}
+                plugin_name=None, config_dict={"key": "value"}
             )
 
         assert "Plugin name is required" in str(exc_info.value)
@@ -546,8 +511,7 @@ class TestCreatePluginConfigFromDict:
     def test_create_config_from_dict_empty_config(self) -> None:
         """Test config creation with empty config dictionary."""
         config = create_plugin_config_from_dict(
-            plugin_name="test-plugin",
-            config_dict={}
+            plugin_name="test-plugin", config_dict={}
         )
 
         assert config is not None
@@ -637,26 +601,24 @@ class TestEdgeCasesAndIntegration:
             config={
                 "description": "Comprehensive test plugin",
                 "author": "Test Suite",
-            }
+            },
         )
 
         # Create related config
         config = create_flext_plugin_config(
-            plugin_name="comprehensive-plugin",
-            config_data={"advanced_setting": True}
+            plugin_name="comprehensive-plugin", config_data={"advanced_setting": True}
         )
 
         # Create metadata
         metadata = create_flext_plugin_metadata(
             plugin_name="comprehensive-plugin",
             metadata={"tags": ["test", "comprehensive"]},
-            entry_point="comprehensive_plugin.main"
+            entry_point="comprehensive_plugin.main",
         )
 
         # Create registry and add plugin
         registry = create_flext_plugin_registry(
-            name="test-registry",
-            plugins={"comprehensive-plugin": plugin}
+            name="test-registry", plugins={"comprehensive-plugin": plugin}
         )
 
         # Verify all components work together

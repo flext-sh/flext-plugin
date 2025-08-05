@@ -53,7 +53,7 @@ class TestPluginDiscovery:
     def test_validate_domain_rules_empty_directory_fails(self) -> None:
         """Test domain validation with empty directory fails."""
         discovery = PluginDiscovery(plugin_directory="")
-        result = discovery.validate_domain_rules()
+        result = discovery.validate_business_rules()
 
         assert not result.success
         assert "Plugin directory cannot be empty" in str(result.error)
@@ -64,7 +64,7 @@ class TestPluginDiscovery:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
         discovery = PluginDiscovery(plugin_directory=plugin_dir)
-        result = discovery.validate_domain_rules()
+        result = discovery.validate_business_rules()
 
         assert result.success
         assert result.data is None
@@ -392,7 +392,7 @@ class TestPluginDiscoveryErrorHandling:
         assert discovery is not None
 
         # Validation should fail
-        result = discovery.validate_domain_rules()
+        result = discovery.validate_business_rules()
         assert not result.success
 
     @pytest.mark.asyncio

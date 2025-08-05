@@ -50,7 +50,7 @@ def main() -> None:
 
     # Demonstrate domain validation
     print("\n3. Domain validation:")
-    validation_result = plugin.validate_domain_rules()
+    validation_result = plugin.validate_business_rules()
     if validation_result.success:
         print("   ✅ Plugin validation passed")
     else:

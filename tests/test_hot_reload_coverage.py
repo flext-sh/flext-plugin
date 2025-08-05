@@ -151,7 +151,7 @@ class TestHotReloadManager:
     def test_validate_domain_rules_empty_directory_fails(self) -> None:
         """Test domain validation with empty directory fails."""
         manager = HotReloadManager(plugin_directory="")
-        result = manager.validate_domain_rules()
+        result = manager.validate_business_rules()
 
         assert not result.success
         assert "Plugin directory cannot be empty" in str(result.error)
@@ -162,7 +162,7 @@ class TestHotReloadManager:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager(plugin_directory=plugin_dir)
-        result = manager.validate_domain_rules()
+        result = manager.validate_business_rules()
 
         assert result.success
 
@@ -588,5 +588,5 @@ class TestHotReloadIntegration:
             assert isinstance(manager.loaded_plugins, dict)
 
             # Validation should work
-            validation_result = manager.validate_domain_rules()
+            validation_result = manager.validate_business_rules()
             assert validation_result.success

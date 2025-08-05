@@ -99,7 +99,7 @@ class PluginDiscovery(FlextEntity):
         object.__setattr__(self, "discovered_plugins", {})
         object.__setattr__(self, "blacklisted_plugins", set())
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
         if not self.plugin_directory:
             return FlextResult.fail("Plugin directory is required")

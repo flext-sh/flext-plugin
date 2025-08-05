@@ -247,7 +247,7 @@ def main() -> None:
     )
 
     # Validate PostgreSQL plugin
-    postgres_validation = postgres_plugin.validate_domain_rules()
+    postgres_validation = postgres_plugin.validate_business_rules()
     if postgres_validation.success:
         print("   ✅ PostgreSQL plugin validation passed")
 
@@ -272,7 +272,7 @@ def main() -> None:
     print(f"   Key prefix: {redis_config['cache']['key_prefix']}")
 
     # Validate Redis plugin
-    redis_validation = redis_plugin.validate_domain_rules()
+    redis_validation = redis_plugin.validate_business_rules()
     if redis_validation.success:
         print("   ✅ Redis plugin validation passed")
 
@@ -299,7 +299,7 @@ def main() -> None:
     )
 
     # Validate LDAP plugin
-    ldap_validation = ldap_plugin.validate_domain_rules()
+    ldap_validation = ldap_plugin.validate_business_rules()
     if ldap_validation.success:
         print("   ✅ LDAP plugin validation passed")
 

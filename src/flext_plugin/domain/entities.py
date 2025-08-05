@@ -158,15 +158,15 @@ class FlextPlugin(FlextEntity):
         # Handle backward compatibility for plugin_id in kwargs
         plugin_name = kwargs.get("plugin_id", name)
 
-        # Initialize FlextEntity base with ONLY base fields
-        super().__init__(id=final_entity_id)
-
-        # Set business fields directly (frozen model workaround)
-        object.__setattr__(self, "name", plugin_name)
-        object.__setattr__(self, "plugin_version", version)
-        object.__setattr__(self, "description", config.get("description", ""))
-        object.__setattr__(self, "author", config.get("author", ""))
-        object.__setattr__(self, "status", config.get("status", PluginStatus.INACTIVE))
+        # Initialize FlextEntity base with ALL required fields to pass Pydantic validation
+        super().__init__(
+            id=final_entity_id,
+            name=plugin_name,
+            plugin_version=version,
+            description=config.get("description", ""),
+            author=config.get("author", ""),
+            status=config.get("status", PluginStatus.INACTIVE),
+        )
 
     # Backward compatibility properties (without conflicting names)
     @property
@@ -319,7 +319,7 @@ class FlextPlugin(FlextEntity):
         object.__setattr__(self, "_last_error_time", datetime.now(UTC))
         object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin entity.
 
         Returns:
@@ -442,7 +442,7 @@ class FlextPluginConfig(FlextEntity):
         # Update timestamp using frozen model workaround
         object.__setattr__(self, "updated_at", datetime.now(UTC))
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin configuration entity.
 
         Returns:
@@ -594,7 +594,7 @@ class FlextPluginMetadata(FlextEntity):
         """
         return bool(self.plugin_name)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin metadata entity.
 
         Returns:
@@ -777,7 +777,7 @@ class FlextPluginRegistry(FlextEntity):
         """
         return list(self.plugins.values())
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin registry entity.
 
         Returns:
@@ -966,7 +966,7 @@ class FlextPluginExecution(FlextEntity):
         )
         object.__setattr__(self, "output_data", current_output)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin execution entity.
 
         Returns:

@@ -100,7 +100,7 @@ class PluginDiscovery(FlextEntity):
         # Initialize FlextEntity with id AND plugin_directory (required field)
         super().__init__(id=entity_id, plugin_directory=plugin_directory)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
         if not self.plugin_directory:
             return FlextResult.fail("Plugin directory cannot be empty")
