@@ -285,7 +285,7 @@ class TestFlextPluginRegistrationHandler:
         self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock
     ) -> None:
         """Test plugin unregistration with None name fails."""
-        result = handler.handle_unregister_plugin(None)  # type: ignore
+        result = handler.handle_unregister_plugin(None)
 
         assert not result.success
         assert "Plugin name is required" in result.error
@@ -422,7 +422,7 @@ class TestFlextPluginEventHandler:
         # Create object without name attribute
         plugin_without_name_attr = object()
 
-        result = handler.handle_plugin_loaded(plugin_without_name_attr)  # type: ignore
+        result = handler.handle_plugin_loaded(plugin_without_name_attr)
 
         assert not result.success
         assert "Plugin loaded event: plugin missing name" in result.error
@@ -442,7 +442,7 @@ class TestFlextPluginEventHandler:
 
         import builtins
 
-        builtins.getattr = mock_getattr  # type: ignore
+        builtins.getattr = mock_getattr
 
         try:
             result = handler.handle_plugin_loaded(mock_plugin)
@@ -453,7 +453,7 @@ class TestFlextPluginEventHandler:
                 in result.error
             )
         finally:
-            builtins.getattr = original_getattr  # type: ignore
+            builtins.getattr = original_getattr
 
     def test_handle_plugin_loaded_value_exception(
         self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin
@@ -470,7 +470,7 @@ class TestFlextPluginEventHandler:
 
         import builtins
 
-        builtins.getattr = mock_getattr  # type: ignore
+        builtins.getattr = mock_getattr
 
         try:
             result = handler.handle_plugin_loaded(mock_plugin)
@@ -478,7 +478,7 @@ class TestFlextPluginEventHandler:
             assert not result.success
             assert "Failed to handle plugin loaded event: Value error" in result.error
         finally:
-            builtins.getattr = original_getattr  # type: ignore
+            builtins.getattr = original_getattr
 
     def test_handle_plugin_loaded_type_exception(
         self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin
@@ -495,7 +495,7 @@ class TestFlextPluginEventHandler:
 
         import builtins
 
-        builtins.getattr = mock_getattr  # type: ignore
+        builtins.getattr = mock_getattr
 
         try:
             result = handler.handle_plugin_loaded(mock_plugin)
@@ -503,7 +503,7 @@ class TestFlextPluginEventHandler:
             assert not result.success
             assert "Failed to handle plugin loaded event: Type error" in result.error
         finally:
-            builtins.getattr = original_getattr  # type: ignore
+            builtins.getattr = original_getattr
 
     def test_handle_plugin_unloaded_success(
         self, handler: FlextPluginEventHandler
@@ -538,7 +538,7 @@ class TestFlextPluginEventHandler:
         self, handler: FlextPluginEventHandler
     ) -> None:
         """Test plugin unloaded event with None name fails."""
-        result = handler.handle_plugin_unloaded(None)  # type: ignore
+        result = handler.handle_plugin_unloaded(None)
 
         assert not result.success
         assert "Plugin unloaded event: plugin name is required" in result.error
