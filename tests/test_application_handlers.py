@@ -437,18 +437,13 @@ class TestPluginDiscoveryHandler:
     @pytest.fixture
     def mock_plugin_metadata(self) -> FlextPluginMetadata:
         """Create mock plugin metadata."""
-        return FlextPluginMetadata(
-            plugin_name="test-plugin",
-            metadata={
-                "version": "0.9.0",
-                "description": "Test plugin",
-                "author": "Test Author",
-                "license": "MIT",
-                "entry_point": "test_plugin:main",
-                "plugin_type": PluginType.TAP,
-                "dependencies": [],
-                "capabilities": [],
-            },
+        return FlextPluginMetadata.create(
+            name="test-plugin",
+            entry_point="test_plugin:main",
+            entity_id="test-plugin-metadata-123",
+            plugin_type=PluginType.TAP,
+            description="Test plugin",
+            dependencies=[],
         )
 
     def test_handler_initialization(self, mock_discovery_service: Mock) -> None:
@@ -680,23 +675,10 @@ class TestPluginValidationHandler:
     @pytest.fixture
     def mock_plugin_instance(self) -> FlextPlugin:
         """Create mock plugin instance."""
-        FlextPluginMetadata(
-            plugin_name="test-plugin",
-            metadata={
-                "version": "0.9.0",
-                "description": "Test plugin",
-                "author": "Test Author",
-                "license": "MIT",
-                "entry_point": "test_plugin:main",
-                "plugin_type": PluginType.TAP,
-                "dependencies": [],
-                "capabilities": [],
-            },
-        )
-        return FlextPlugin(
-            entity_id="test-plugin-123",
+        return FlextPlugin.create(
             name="test-plugin",
-            version="0.9.0",
+            plugin_version="0.9.0",
+            entity_id="test-plugin-123",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -949,23 +931,10 @@ class TestPluginLifecycleHandler:
     @pytest.fixture
     def mock_plugin_instance(self) -> FlextPlugin:
         """Create mock plugin instance."""
-        FlextPluginMetadata(
-            plugin_name="test-plugin",
-            metadata={
-                "version": "0.9.0",
-                "description": "Test plugin",
-                "author": "Test Author",
-                "license": "MIT",
-                "entry_point": "test_plugin:main",
-                "plugin_type": PluginType.TAP,
-                "dependencies": [],
-                "capabilities": [],
-            },
-        )
-        return FlextPlugin(
-            entity_id="test-plugin-123",
+        return FlextPlugin.create(
             name="test-plugin",
-            version="0.9.0",
+            plugin_version="0.9.0",
+            entity_id="test-plugin-123",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -1341,23 +1310,10 @@ class TestFlextPluginExecutionHandler:
     @pytest.fixture
     def mock_plugin_instance(self) -> FlextPlugin:
         """Create mock plugin instance."""
-        FlextPluginMetadata(
-            plugin_name="test-plugin",
-            metadata={
-                "version": "0.9.0",
-                "description": "Test plugin",
-                "author": "Test Author",
-                "license": "MIT",
-                "entry_point": "test_plugin:main",
-                "plugin_type": PluginType.TAP,
-                "dependencies": [],
-                "capabilities": [],
-            },
-        )
-        return FlextPlugin(
-            entity_id="test-plugin-123",
+        return FlextPlugin.create(
             name="test-plugin",
-            version="0.9.0",
+            plugin_version="0.9.0",
+            entity_id="test-plugin-123",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -1599,26 +1555,22 @@ class TestFlextPluginRegistryHandler:
     @pytest.fixture
     def mock_plugin_registry(self) -> FlextPluginRegistry:
         """Create mock plugin registry."""
-        return FlextPluginRegistry(
+        return FlextPluginRegistry.create(
             name="test-registry",
+            entity_id="test-registry-123",
             registry_url="https://registry.example.com",
         )
 
     @pytest.fixture
     def mock_plugin_metadata(self) -> FlextPluginMetadata:
         """Create mock plugin metadata."""
-        return FlextPluginMetadata(
-            plugin_name="test-plugin",
-            metadata={
-                "version": "0.9.0",
-                "description": "Test plugin",
-                "author": "Test Author",
-                "license": "MIT",
-                "entry_point": "test_plugin:main",
-                "plugin_type": PluginType.TAP,
-                "dependencies": [],
-                "capabilities": [],
-            },
+        return FlextPluginMetadata.create(
+            name="test-plugin",
+            entry_point="test_plugin:main",
+            entity_id="test-plugin-metadata-456",
+            plugin_type=PluginType.TAP,
+            description="Test plugin",
+            dependencies=[],
         )
 
     def test_handler_initialization(self, mock_registry_service: Mock) -> None:

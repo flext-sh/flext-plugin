@@ -41,6 +41,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import cast
 
 from flext_core import FlextEntity, FlextEntityId, FlextResult
 from flext_core.utilities import FlextGenerators
@@ -52,8 +53,9 @@ from flext_plugin.core.types import PluginStatus
 @dataclass
 class FlextPluginConfigParams:
     """Parameter Object pattern for FlextPluginConfig initialization - SOLID Single Responsibility."""
+
     plugin_name: str = ""
-    config_data: dict[str, object] | None = None  
+    config_data: dict[str, object] | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
     enabled: bool = True
@@ -68,6 +70,7 @@ class FlextPluginConfigParams:
 @dataclass
 class FlextPluginMetadataParams:
     """Parameter Object pattern for FlextPluginMetadata initialization - SOLID Single Responsibility."""
+
     plugin_name: str = ""
     metadata: dict[str, object] | None = None
     name: str = ""
@@ -80,9 +83,10 @@ class FlextPluginMetadataParams:
     repository: str | None = None
 
 
-@dataclass  
+@dataclass
 class FlextPluginRegistryParams:
     """Parameter Object pattern for FlextPluginRegistry initialization - SOLID Single Responsibility."""
+
     name: str = ""
     plugins: dict[str, FlextPlugin] | None = None
     created_at: datetime | None = None
@@ -134,13 +138,15 @@ class FlextPlugin(FlextEntity):
         - Error conditions
 
     Example:
-        >>> plugin = FlextPlugin.model_validate({
-        ...     "id": "plugin-123",
-        ...     "name": "oracle-connector",
-        ...     "plugin_version": "2.1.0",
-        ...     "description": "Oracle database connector",
-        ...     "author": "FLEXT Team",
-        ... })
+        >>> plugin = FlextPlugin.model_validate(
+        ...     {
+        ...         "id": "plugin-123",
+        ...         "name": "oracle-connector",
+        ...         "plugin_version": "2.1.0",
+        ...         "description": "Oracle database connector",
+        ...         "author": "FLEXT Team",
+        ...     }
+        ... )
         >>> activation_result = plugin.activate()
         >>> if activation_result.success():
         ...     print(f"Plugin {plugin.name} activated successfully")
@@ -172,6 +178,10 @@ class FlextPlugin(FlextEntity):
         default=PluginStatus.INACTIVE,
         description="Current plugin lifecycle and operational status",
     )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Plugin creation timestamp",
+    )
 
     @classmethod
     def create(
@@ -182,28 +192,29 @@ class FlextPlugin(FlextEntity):
         entity_id: str | None = None,
         config: dict[str, object] | None = None,
         **kwargs: object,
-    ) -> "FlextPlugin":
+    ) -> FlextPlugin:
         """Create plugin entity with proper validation.
-        
+
         Args:
             name: Plugin name (required)
-            plugin_version: Plugin version (required) 
+            plugin_version: Plugin version (required)
             entity_id: Unique entity identifier
             config: Configuration dict containing description, author, etc.
             **kwargs: Additional arguments for backward compatibility
-            
+
         Returns:
             FlextPlugin: Validated plugin entity
+
         """
         # Generate ID if not provided
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        
+
         # Extract config values
         config = config or {}
-        
+
         # Handle backward compatibility for plugin_id in kwargs
         plugin_name = kwargs.get("plugin_id", name)
-        
+
         # Create instance data
         instance_data = {
             "id": final_id,
@@ -215,46 +226,11 @@ class FlextPlugin(FlextEntity):
             "author": config.get("author", ""),
             "status": config.get("status", PluginStatus.INACTIVE),
         }
-        
+
         return cls.model_validate(instance_data)
 
-    def __init__(
-        self,
-        entity_id: FlextEntityId | None = None,
-        *,
-        name: str = "",
-        version: str = "",
-        config: dict[str, object] | None = None,
-        _metadata: object = None,
-        **kwargs: object,  # Accept additional arguments for backward compatibility
-    ) -> None:
-        """Legacy constructor for backward compatibility - use create() instead.
-
-        Args:
-            entity_id: Unique entity identifier
-            name: Plugin name
-            version: Plugin version
-            config: Configuration dict containing description, author, etc.
-            _metadata: Plugin metadata object (unused)
-            **kwargs: Additional arguments for backward compatibility
-
-        """
-        # Use the create class method for proper construction
-        # Remove plugin_version from kwargs to avoid duplicate
-        kwargs_copy = dict(kwargs)
-        kwargs_copy.pop("plugin_version", None)
-        
-        instance = self.create(
-            name=name,
-            plugin_version=version,
-            entity_id=entity_id,
-            config=config,
-            **kwargs_copy
-        )
-        
-        # Copy all attributes to self
-        for field_name, field_value in instance.model_dump().items():
-            object.__setattr__(self, field_name, field_value)
+    # Remove __new__ method - let Pydantic handle object creation naturally
+    # Use factory method create() for backward compatibility
 
     # Backward compatibility properties (without conflicting names)
     @property
@@ -269,7 +245,8 @@ class FlextPlugin(FlextEntity):
     @property
     def plugin_status(self) -> str:
         """Get plugin status (compatibility) - returns value string."""
-        return self.status.value
+        # FlextEntity uses use_enum_values=True, so status is already a string
+        return self.status if isinstance(self.status, str) else self.status.value
 
     def __setattr__(self, name: str, value: object) -> None:
         """Override setattr to handle plugin_status setter for frozen model."""
@@ -284,7 +261,8 @@ class FlextPlugin(FlextEntity):
     @property
     def is_healthy(self) -> bool:
         """Check if plugin is healthy."""
-        return self.status == PluginStatus.HEALTHY
+        # Handle both enum and string values due to use_enum_values=True
+        return self.status in {PluginStatus.HEALTHY, PluginStatus.HEALTHY.value}
 
     # Execution tracking properties (for backward compatibility)
     @property
@@ -339,7 +317,8 @@ class FlextPlugin(FlextEntity):
             True if activation successful, False otherwise
 
         """
-        if self.status == PluginStatus.INACTIVE:
+        # Handle both enum and string values due to use_enum_values=True
+        if self.status in {PluginStatus.INACTIVE, PluginStatus.INACTIVE.value}:
             object.__setattr__(self, "status", PluginStatus.ACTIVE)
             return True
         return False
@@ -351,7 +330,8 @@ class FlextPlugin(FlextEntity):
             True if deactivation successful, False otherwise
 
         """
-        if self.status == PluginStatus.ACTIVE:
+        # Handle both enum and string values due to use_enum_values=True
+        if self.status in {PluginStatus.ACTIVE, PluginStatus.ACTIVE.value}:
             object.__setattr__(self, "status", PluginStatus.INACTIVE)
             return True
         return False
@@ -363,13 +343,14 @@ class FlextPlugin(FlextEntity):
             True if plugin is active, False otherwise
 
         """
-        return self.status == PluginStatus.ACTIVE
+        # Handle both enum and string values due to use_enum_values=True
+        return self.status in {PluginStatus.ACTIVE, PluginStatus.ACTIVE.value}
 
     def record_execution(
         self,
         execution_time_ms: float,
         *,
-        _success: bool = True,
+        success: bool = True,
     ) -> None:
         """Record plugin execution for metrics tracking.
 
@@ -390,6 +371,10 @@ class FlextPlugin(FlextEntity):
         object.__setattr__(self, "_execution_count", new_count)
         object.__setattr__(self, "_average_execution_time_ms", new_avg)
         object.__setattr__(self, "_last_execution", datetime.now(UTC))
+
+        # Update status based on success
+        if not success:
+            object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
 
     def record_error(self, error_message: str) -> None:
         """Record plugin error for tracking.
@@ -424,7 +409,7 @@ class FlextPlugin(FlextEntity):
 class FlextPluginConfig(FlextEntity):
     """Plugin configuration entity with validation and business rules."""
 
-    # Pydantic fields  
+    # Pydantic fields
     plugin_name: str = Field(
         description="Name of the plugin this config belongs to",
         min_length=1,
@@ -432,6 +417,10 @@ class FlextPluginConfig(FlextEntity):
     config_data: dict[str, object] = Field(
         default_factory=dict,
         description="Configuration data",
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Configuration creation timestamp",
     )
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
@@ -464,15 +453,15 @@ class FlextPluginConfig(FlextEntity):
         entity_id: str | None = None,
         params: FlextPluginConfigParams | None = None,
         **kwargs: object,
-    ) -> "FlextPluginConfig":
+    ) -> FlextPluginConfig:
         """Create plugin configuration entity with proper validation."""
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        
+
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
             p = params
         else:
-            from typing import cast
+
             p = FlextPluginConfigParams(
                 plugin_name=plugin_name,
                 config_data=cast("dict[str, object] | None", kwargs.get("config_data")),
@@ -506,25 +495,7 @@ class FlextPluginConfig(FlextEntity):
 
         return cls.model_validate(instance_data)
 
-    def __init__(
-        self,
-        entity_id: FlextEntityId | None = None,
-        *,
-        params: FlextPluginConfigParams | None = None,
-        plugin_name: str = "",
-        **kwargs: object,
-    ) -> None:
-        """Legacy constructor - use create() method instead."""
-        instance = self.create(
-            plugin_name=plugin_name,
-            entity_id=entity_id,
-            params=params,
-            **kwargs
-        )
-        
-        # Copy all attributes to self  
-        for field_name, field_value in instance.model_dump().items():
-            object.__setattr__(self, field_name, field_value)
+    # Remove __init__ override to prevent recursion - let Pydantic handle construction
 
     def is_valid(self) -> bool:
         """Validate plugin configuration entity state.
@@ -595,8 +566,12 @@ class FlextPluginMetadata(FlextEntity):
         default=None,
         description="Plugin repository (alias)",
     )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Metadata creation timestamp",
+    )
 
-    @classmethod  
+    @classmethod
     def create(
         cls,
         *,
@@ -605,15 +580,15 @@ class FlextPluginMetadata(FlextEntity):
         entity_id: str | None = None,
         params: FlextPluginMetadataParams | None = None,
         **kwargs: object,
-    ) -> "FlextPluginMetadata":
+    ) -> FlextPluginMetadata:
         """Create plugin metadata entity with proper validation."""
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        
+
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
             p = params
         else:
-            from typing import cast
+
             p = FlextPluginMetadataParams(
                 plugin_name=cast("str", kwargs.get("plugin_name", name)),
                 metadata=cast("dict[str, object] | None", kwargs.get("metadata")),
@@ -664,27 +639,7 @@ class FlextPluginMetadata(FlextEntity):
 
         return cls.model_validate(instance_data)
 
-    def __init__(
-        self,
-        entity_id: FlextEntityId | None = None,
-        *,
-        params: FlextPluginMetadataParams | None = None,
-        name: str = "",
-        entry_point: str = "",
-        **kwargs: object,
-    ) -> None:
-        """Legacy constructor - use create() method instead."""
-        instance = self.create(
-            name=name,
-            entry_point=entry_point,
-            entity_id=entity_id,
-            params=params,
-            **kwargs
-        )
-        
-        # Copy all attributes to self
-        for field_name, field_value in instance.model_dump().items():
-            object.__setattr__(self, field_name, field_value)
+    # Remove __init__ override to prevent recursion - let Pydantic handle construction
 
     @field_validator("name")
     @classmethod
@@ -725,7 +680,9 @@ class FlextPluginMetadata(FlextEntity):
         if not self.name or not self.name.strip():
             return FlextResult.fail("Plugin name field is required and cannot be empty")
         if not self.entry_point or not self.entry_point.strip():
-            return FlextResult.fail("Plugin entry point is required and cannot be empty")
+            return FlextResult.fail(
+                "Plugin entry point is required and cannot be empty",
+            )
         return FlextResult.ok(None)
 
 
@@ -737,6 +694,10 @@ class FlextPluginRegistry(FlextEntity):
     plugins: dict[str, FlextPlugin] = Field(
         default_factory=dict,
         description="Dictionary of registered plugins",
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Registry creation timestamp",
     )
 
     # Registry configuration fields for backward compatibility
@@ -771,15 +732,15 @@ class FlextPluginRegistry(FlextEntity):
         entity_id: str | None = None,
         params: FlextPluginRegistryParams | None = None,
         **kwargs: object,
-    ) -> "FlextPluginRegistry":
+    ) -> FlextPluginRegistry:
         """Create plugin registry entity with proper validation."""
         final_id = entity_id or FlextGenerators.generate_entity_id()
-        
+
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
             p = params
         else:
-            from typing import cast
+
             p = FlextPluginRegistryParams(
                 name=name,
                 plugins=cast("dict[str, FlextPlugin] | None", kwargs.get("plugins")),
@@ -789,10 +750,14 @@ class FlextPluginRegistry(FlextEntity):
                 plugin_count=cast("int", kwargs.get("plugin_count", 0)),
                 sync_error_count=cast("int", kwargs.get("sync_error_count", 0)),
                 last_sync=cast("datetime | None", kwargs.get("last_sync")),
-                requires_authentication=cast("bool", kwargs.get("requires_authentication", False)),
+                requires_authentication=cast(
+                    "bool", kwargs.get("requires_authentication", False),
+                ),
                 api_key=cast("str", kwargs.get("api_key", "")),
                 verify_signatures=cast("bool", kwargs.get("verify_signatures", False)),
-                trusted_publishers=cast("list[str] | None", kwargs.get("trusted_publishers")),
+                trusted_publishers=cast(
+                    "list[str] | None", kwargs.get("trusted_publishers"),
+                ),
             )
 
         # Create instance data
@@ -815,25 +780,7 @@ class FlextPluginRegistry(FlextEntity):
 
         return cls.model_validate(instance_data)
 
-    def __init__(
-        self,
-        entity_id: FlextEntityId | None = None,
-        *,
-        name: str = "",
-        params: FlextPluginRegistryParams | None = None,
-        **kwargs: object,
-    ) -> None:
-        """Legacy constructor - use create() method instead."""
-        instance = self.create(
-            name=name,
-            entity_id=entity_id,
-            params=params,
-            **kwargs
-        )
-        
-        # Copy all attributes to self
-        for field_name, field_value in instance.model_dump().items():
-            object.__setattr__(self, field_name, field_value)
+    # Remove __init__ override to prevent recursion - let Pydantic handle construction
 
     @property
     def is_available(self) -> bool:
@@ -1035,31 +982,43 @@ class FlextPluginExecution(FlextEntity):
     @property
     def memory_usage_mb(self) -> float:
         """Get memory usage in MB from resource tracking."""
-        from typing import cast
-        resource_usage = cast("dict[str, object]", self.output_data.get("resource_usage", {}))
+        resource_usage = cast(
+            "dict[str, object]", self.output_data.get("resource_usage", {}),
+        )
         memory_value = resource_usage.get("memory_mb", 0.0)
         if isinstance(memory_value, (int, float)):
             return float(memory_value)
         if isinstance(memory_value, str):
             try:
                 return float(memory_value)
-            except ValueError:
-                return 0.0
+            except ValueError as e:
+                # Log critical error and raise proper exception instead of returning fake data
+                from flext_core import get_logger
+                logger = get_logger(__name__)
+                logger.error(f"Invalid memory value '{memory_value}' for plugin execution: {e}")
+                raise ValueError(f"Invalid memory value: {memory_value}") from e
+        # Only return 0.0 for valid empty/None values, not for conversion failures
         return 0.0
 
     @property
     def cpu_time_ms(self) -> float:
         """Get CPU time in milliseconds from resource tracking."""
-        from typing import cast
-        resource_usage = cast("dict[str, object]", self.output_data.get("resource_usage", {}))
+        resource_usage = cast(
+            "dict[str, object]", self.output_data.get("resource_usage", {}),
+        )
         cpu_value = resource_usage.get("cpu_time_ms", 0.0)
         if isinstance(cpu_value, (int, float)):
             return float(cpu_value)
         if isinstance(cpu_value, str):
             try:
                 return float(cpu_value)
-            except ValueError:
-                return 0.0
+            except ValueError as e:
+                # Log critical error and raise proper exception instead of returning fake data
+                from flext_core import get_logger
+                logger = get_logger(__name__)
+                logger.error(f"Invalid CPU time value '{cpu_value}' for plugin execution: {e}")
+                raise ValueError(f"Invalid CPU time value: {cpu_value}") from e
+        # Only return 0.0 for valid empty/None values, not for conversion failures
         return 0.0
 
     @property

@@ -40,6 +40,7 @@ Integration:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 from flext_core import FlextEntity, FlextResult
 from flext_core.utilities import FlextGenerators
@@ -93,21 +94,20 @@ class PluginDiscovery(FlextEntity):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def create(cls, *, plugin_directory: str, **kwargs: object) -> "PluginDiscovery":
+    def create(cls, *, plugin_directory: str, **kwargs: object) -> PluginDiscovery:
         """Create plugin discovery instance with proper validation."""
-        from typing import cast
         entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
-        version = cast(int, kwargs.get("version", 1))
-        metadata = cast(dict[str, object], kwargs.get("metadata", {}))
-        
+        version = cast("int", kwargs.get("version", 1))
+        metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
+
         # Create instance using Pydantic model_validate
         instance_data = {
             "id": entity_id,
             "version": version,
             "metadata": metadata,
-            "plugin_directory": plugin_directory
+            "plugin_directory": plugin_directory,
         }
-        
+
         return cls.model_validate(instance_data)
 
     # Removed __init__ - use create() class method instead

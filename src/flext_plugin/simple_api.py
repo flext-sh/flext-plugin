@@ -107,10 +107,10 @@ def create_flext_plugin(
     config = config or {}
     config["created_at"] = datetime.now(UTC)
 
-    return FlextPlugin(
-        entity_id=str(uuid.uuid4()),
+    return FlextPlugin.create(
         name=name,
-        version=version,
+        plugin_version=version,
+        entity_id=str(uuid.uuid4()),
         config=config,
     )
 
@@ -129,9 +129,9 @@ def create_flext_plugin_config(
         New FlextPluginConfig entity
 
     """
-    return FlextPluginConfig(
-        entity_id=str(uuid.uuid4()),
+    return FlextPluginConfig.create(
         plugin_name=plugin_name,
+        entity_id=str(uuid.uuid4()),
         config_data=config_data,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
@@ -161,11 +161,11 @@ def create_flext_plugin_metadata(
     # Use plugin_name as entry_point if not provided
     final_entry_point = entry_point or plugin_name
 
-    return FlextPluginMetadata(
-        entity_id=str(uuid.uuid4()),
-        plugin_name=plugin_name,
-        metadata=metadata,
+    return FlextPluginMetadata.create(
+        name=plugin_name,
         entry_point=final_entry_point,
+        entity_id=str(uuid.uuid4()),
+        metadata=metadata,
     )
 
 
@@ -183,9 +183,9 @@ def create_flext_plugin_registry(
         New FlextPluginRegistry entity
 
     """
-    return FlextPluginRegistry(
-        entity_id=str(uuid.uuid4()),
+    return FlextPluginRegistry.create(
         name=name,
+        entity_id=str(uuid.uuid4()),
         plugins=plugins,
         created_at=datetime.now(UTC),
     )

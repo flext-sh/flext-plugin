@@ -29,7 +29,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import importlib.metadata  
+import importlib.metadata
 import uuid
 
 # Import from flext-core for foundational patterns
@@ -169,7 +169,9 @@ class FlextPluginManager:
         """Legacy plugin status method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-    def list_plugins(self, *, _enabled_only: bool = False, enabled_only: bool | None = None) -> list[object]:
+    def list_plugins(
+        self, *, _enabled_only: bool = False, enabled_only: bool | None = None,
+    ) -> list[object]:
         """Legacy list plugins method."""
         # Handle both parameter names for backward compatibility
         if enabled_only is not None:
@@ -179,6 +181,10 @@ class FlextPluginManager:
     async def discover_and_load_plugins(self) -> FlextResult[object]:
         """Legacy discover and load method."""
         return FlextResult.fail("No plugins discovered")
+
+    async def unload_plugin(self, plugin_name: str) -> FlextResult[object]:
+        """Legacy plugin unload method."""
+        return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     async def _create_plugin_context(self, plugin_name: str) -> object:
         """Legacy create plugin context method."""

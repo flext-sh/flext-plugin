@@ -52,7 +52,6 @@ from flext_core import FlextEntity, FlextProcessingError, FlextResult
 from flext_core.utilities import FlextGenerators
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
-from watchdog.observers.api import BaseObserver
 
 from flext_plugin.loader import PluginLoader
 
@@ -60,6 +59,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from flext_core.flext_types import TAnyDict
+    from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
 
@@ -351,24 +351,22 @@ class HotReloadManager(FlextEntity):
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     @classmethod
-    def create(cls, *, plugin_directory: str, **kwargs: object) -> "HotReloadManager":
+    def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
-        from typing import cast
         entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
-        version = cast(int, kwargs.get("version", 1))
-        metadata = cast(dict[str, object], kwargs.get("metadata", {}))
-        
+        version = cast("int", kwargs.get("version", 1))
+        metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
+
         # Create instance using Pydantic model_validate to bypass __init__
         instance_data = {
             "id": entity_id,
-            "version": version, 
+            "version": version,
             "metadata": metadata,
-            "plugin_directory": plugin_directory
+            "plugin_directory": plugin_directory,
         }
-        
-        instance = cls.model_validate(instance_data)
+
+        return cls.model_validate(instance_data)
         # model_post_init is called automatically by Pydantic
-        return instance
 
     # Removed __init__ - use create() class method instead
 
@@ -391,6 +389,11 @@ class HotReloadManager(FlextEntity):
     def loaded_plugins(self) -> dict[str, object]:
         """Get loaded plugins dictionary."""
         return getattr(self, "_loaded_plugins", {})
+
+    @property
+    def plugin_manager(self) -> object | None:
+        """Get plugin manager instance."""
+        return getattr(self, "_plugin_manager", None)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
@@ -450,8 +453,12 @@ class HotReloadManager(FlextEntity):
                 for py_file in plugin_dir.glob("*.py"):
                     if not py_file.name.startswith("__"):
                         await self._load_plugin(py_file)
-        except (OSError, RuntimeError, ValueError, KeyError):
-            pass
+        except (OSError, RuntimeError, ValueError, KeyError) as e:
+            # Log plugin discovery error and continue
+            from flext_core import get_logger
+            logger = get_logger(__name__)
+            logger.warning(f"Plugin discovery failed during hot reload: {e}")
+            # Continue hot reload process despite discovery failure
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
         """Handle plugin file change events."""
@@ -474,8 +481,11 @@ class HotReloadManager(FlextEntity):
             # Load updated plugin
             await self._load_plugin(file_path)
 
-        except (OSError, RuntimeError, ValueError, ImportError, AttributeError):
-            pass
+        except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
+            # Log plugin reload error and continue hot-reload process
+            from flext_core import get_logger
+            logger = get_logger(__name__)
+            logger.warning(f"Plugin reload failed for {file_path}: {e}")
 
     async def _load_plugin(self, file_path: Path) -> None:
         """Load a plugin from file path."""
@@ -486,8 +496,11 @@ class HotReloadManager(FlextEntity):
                 plugin_instance = loader.load_plugin(file_path)
                 loaded_plugins = getattr(self, "_loaded_plugins", {})
                 loaded_plugins[plugin_name] = plugin_instance
-        except (OSError, RuntimeError, ValueError, ImportError, AttributeError):
-            pass
+        except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
+            # Log plugin loading error and continue hot-reload process
+            from flext_core import get_logger
+            logger = get_logger(__name__)
+            logger.warning(f"Plugin loading failed for {file_path}: {e}")
 
     async def _unload_plugin(self, plugin_name: str) -> None:
         """Unload a specific plugin."""
@@ -499,8 +512,11 @@ class HotReloadManager(FlextEntity):
                 if hasattr(plugin, "cleanup"):
                     await plugin.cleanup()
                 del loaded_plugins[plugin_name]
-        except (RuntimeError, ValueError, AttributeError, KeyError):
-            pass
+        except (RuntimeError, ValueError, AttributeError, KeyError) as e:
+            # Log plugin unload error and continue hot-reload process
+            from flext_core import get_logger
+            logger = get_logger(__name__)
+            logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
 
     def get_loaded_plugins(self) -> dict[str, object]:
         """Get a copy of currently loaded plugins.

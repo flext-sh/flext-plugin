@@ -35,7 +35,7 @@ class TestPluginDiscovery:
     def test_discovery_initialization(self, temp_dir: Path) -> None:
         """Test discovery initialization with plugin directory."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         assert discovery is not None
         assert discovery.plugin_directory == plugin_dir
@@ -44,7 +44,7 @@ class TestPluginDiscovery:
         """Test discovery initialization with custom ID."""
         plugin_dir = str(temp_dir / "plugins")
         custom_id = "custom-discovery-id"
-        discovery = PluginDiscovery(plugin_directory=plugin_dir, id=custom_id)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir, id=custom_id)
 
         assert discovery is not None
         assert discovery.id == custom_id
@@ -52,7 +52,7 @@ class TestPluginDiscovery:
 
     def test_validate_domain_rules_empty_directory_fails(self) -> None:
         """Test domain validation with empty directory fails."""
-        discovery = PluginDiscovery(plugin_directory="")
+        discovery = PluginDiscovery.create(plugin_directory="")
         result = discovery.validate_business_rules()
 
         assert not result.success
@@ -63,7 +63,7 @@ class TestPluginDiscovery:
     ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
         result = discovery.validate_business_rules()
 
         assert result.success
@@ -75,7 +75,7 @@ class TestPluginDiscovery:
     ) -> None:
         """Test scan with nonexistent directory returns empty list."""
         plugin_dir = str(temp_dir / "nonexistent")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         plugins = await discovery.scan()
 
@@ -90,7 +90,7 @@ class TestPluginDiscovery:
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert isinstance(plugins, list)
@@ -109,7 +109,7 @@ class TestPluginDiscovery:
         plugin2 = plugin_dir / "another_plugin.py"
         plugin2.write_text("# Test plugin 2\nclass AnotherPlugin:\n    pass\n")
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert isinstance(plugins, list)
@@ -155,7 +155,7 @@ class TestPluginDiscovery:
         cache_file = plugin_dir / "__pycache__.py"
         cache_file.write_text("# Cache file\n")
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert isinstance(plugins, list)
@@ -178,7 +178,7 @@ class TestPluginDiscovery:
         config_file = plugin_dir / "config.json"
         config_file.write_text('{"name": "config"}')
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert isinstance(plugins, list)
@@ -196,7 +196,7 @@ class TestPluginDiscovery:
         plugin_file = plugin_dir / "size_test_plugin.py"
         plugin_file.write_text(plugin_content)
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert len(plugins) == 1
@@ -214,7 +214,7 @@ class TestPluginDiscovery:
     ) -> None:
         """Test discover_plugin_entry_points with empty directory."""
         plugin_dir = str(temp_dir / "empty")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         entry_points = await discovery.discover_plugin_entry_points()
 
@@ -236,7 +236,7 @@ class TestPluginDiscovery:
         plugin2 = plugin_dir / "transformer_plugin.py"
         plugin2.write_text("class TransformerPlugin:\n    pass\n")
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         entry_points = await discovery.discover_plugin_entry_points()
 
         assert isinstance(entry_points, list)
@@ -275,7 +275,7 @@ class TestPluginDiscovery:
             "class IntegrationTestPlugin:\n    def run(self):\n        return True\n"
         )
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
 
         # Get results from both methods
         plugins = await discovery.scan()
@@ -305,7 +305,7 @@ class TestPluginDiscovery:
             plugin_file = plugin_dir / f"plugin_{i:02d}.py"
             plugin_file.write_text(f"# Plugin {i}\nclass Plugin{i}:\n    pass\n")
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         assert len(plugins) == num_plugins
@@ -343,7 +343,7 @@ class TestPluginDiscovery:
             file_path = plugin_dir / filename
             file_path.write_text(content)
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
         plugins = await discovery.scan()
 
         # Should only find the 3 non-dunder Python files
@@ -355,7 +355,7 @@ class TestPluginDiscovery:
     def test_discovery_inheritance(self, temp_dir: Path) -> None:
         """Test discovery inherits from FlextEntity."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         from flext_core import FlextEntity
 
@@ -364,12 +364,13 @@ class TestPluginDiscovery:
         # Should have FlextEntity attributes
         assert hasattr(discovery, "id")
         assert hasattr(discovery, "version")
-        assert hasattr(discovery, "created_at")
+        assert hasattr(discovery, "metadata")
+        assert hasattr(discovery, "domain_events")
 
     def test_discovery_model_config(self, temp_dir: Path) -> None:
         """Test discovery has correct model configuration."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         # Should have correct model config
         assert hasattr(discovery, "model_config")
@@ -388,7 +389,7 @@ class TestPluginDiscoveryErrorHandling:
     def test_discovery_with_none_directory(self) -> None:
         """Test discovery handles None directory gracefully."""
         # Should not raise exception during creation
-        discovery = PluginDiscovery(plugin_directory="")
+        discovery = PluginDiscovery.create(plugin_directory="")
         assert discovery is not None
 
         # Validation should fail
@@ -407,7 +408,7 @@ class TestPluginDiscoveryErrorHandling:
         plugin_file = plugin_dir / "test_plugin.py"
         plugin_file.write_text("class TestPlugin:\n    pass\n")
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
 
         # Should complete without raising exceptions
         plugins = await discovery.scan()
@@ -420,7 +421,7 @@ class TestPluginDiscoveryErrorHandling:
         """Test discover_entry_points handles scan errors gracefully."""
         # Use nonexistent directory
         plugin_dir = str(temp_dir / "nonexistent")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         # Should complete without raising exceptions
         entry_points = await discovery.discover_plugin_entry_points()
@@ -430,7 +431,7 @@ class TestPluginDiscoveryErrorHandling:
     def test_discovery_string_representation(self, temp_dir: Path) -> None:
         """Test discovery has reasonable string representation."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = PluginDiscovery.create(plugin_directory=plugin_dir)
 
         # Should not raise exception when converted to string
         discovery_str = str(discovery)

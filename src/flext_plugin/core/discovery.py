@@ -51,8 +51,6 @@ from flext_core.utilities import FlextGenerators
 from pydantic import Field
 
 if TYPE_CHECKING:
-    pass
-
     from flext_plugin.core.types import PluginType
 
 
@@ -179,8 +177,11 @@ class PluginDiscovery(FlextEntity):
                         self.discovered_plugins[metadata.get("name", py_file.stem)] = (
                             metadata
                         )
-                except (json.JSONDecodeError, OSError):
-                    pass
+                except (json.JSONDecodeError, OSError) as e:
+                    # Log manifest parsing error but continue discovery process
+                    from flext_core import get_logger
+                    logger = get_logger(__name__)
+                    logger.warning(f"Failed to parse plugin manifest {manifest_file}: {e}")
 
     def _validate_plugin_class(self, plugin_class: type) -> bool:
         """Validate if a class is a valid plugin."""
@@ -188,8 +189,12 @@ class PluginDiscovery(FlextEntity):
             # Mock validation - check if it has required attributes
             required_methods = ["initialize", "cleanup", "health_check", "execute"]
             return all(hasattr(plugin_class, method) for method in required_methods)
-        except (RuntimeError, ValueError, TypeError):
-            return False
+        except (RuntimeError, ValueError, TypeError) as e:
+            # Log critical validation error and raise proper exception instead of returning fake data
+            from flext_core import get_logger
+            logger = get_logger(__name__)
+            logger.error(f"Plugin class validation failed for {plugin_class}: {e}")
+            raise RuntimeError(f"Plugin validation failed: {plugin_class}") from e
 
 
 # Removed mock classes - use real implementations in tests

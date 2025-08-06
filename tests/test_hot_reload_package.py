@@ -237,6 +237,7 @@ class TestStateManager:
             msg: str = f"Expected True, got {state_manager.enable_persistence}"
             raise AssertionError(msg)
 
+    @pytest.mark.asyncio
     async def test_save_plugin_state_without_plugin(
         self,
         state_manager: StateManager,
@@ -256,6 +257,7 @@ class TestStateManager:
             msg: str = f"Expected {'test-plugin'}, got {state.plugin_id}"
             raise AssertionError(msg)
 
+    @pytest.mark.asyncio
     async def test_create_snapshot(self, state_manager: StateManager) -> None:
         """Test creating state snapshot."""
         snapshot_id = await state_manager.create_snapshot("Test snapshot")
@@ -295,6 +297,7 @@ class TestRollbackManager:
         """Test rollback manager initialization."""
         assert hasattr(rollback_manager, "state_manager")
 
+    @pytest.mark.asyncio
     async def test_create_rollback_point(
         self,
         rollback_manager: RollbackManager,
@@ -366,10 +369,9 @@ class TestHotReloadManager:
         temp_dir: Path,
     ) -> HotReloadManager:
         """Create hot reload manager for testing."""
-        return HotReloadManager(
-            plugin_manager=mock_plugin_manager,
-            watch_directories=[temp_dir / "plugins"],
-            state_backup_dir=temp_dir / "backup",
+        return HotReloadManager.create(
+            plugin_directory=str(temp_dir / "plugins"),
+            entity_id="hot-reload-manager-test",
         )
 
     def test_manager_initialization(
@@ -384,6 +386,7 @@ class TestHotReloadManager:
         assert hasattr(hot_reload_manager, "rollback_manager")
         assert hasattr(hot_reload_manager, "watcher")
 
+    @pytest.mark.asyncio
     async def test_watching_lifecycle(
         self,
         hot_reload_manager: HotReloadManager,
@@ -393,6 +396,7 @@ class TestHotReloadManager:
         await hot_reload_manager.start_watching()
         await hot_reload_manager.stop_watching()
 
+    @pytest.mark.asyncio
     async def test_reload_plugin(self, hot_reload_manager: HotReloadManager) -> None:
         """Test reloading specific plugin."""
         plugin_id = "test-plugin"
@@ -407,6 +411,7 @@ class TestHotReloadManager:
             result = await hot_reload_manager.reload_plugin(plugin_id)
             assert isinstance(result, ReloadEvent)
 
+    @pytest.mark.asyncio
     async def test_handle_plugin_change(
         self,
         hot_reload_manager: HotReloadManager,
@@ -438,6 +443,7 @@ class TestHotReloadManager:
         assert hasattr(hot_reload_manager, "rollback_manager")
         assert hasattr(hot_reload_manager, "watcher")
 
+    @pytest.mark.asyncio
     async def test_error_handling_graceful_failures(
         self,
         hot_reload_manager: HotReloadManager,

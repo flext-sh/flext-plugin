@@ -31,8 +31,8 @@ dependencies = [
     "pydantic (>=2.11.7)",
     "pydantic-settings (>=2.10.1)",
     "watchdog (>=6.0.0)",
-    "flext-core @ ../flext-core",
-    "flext-observability @ ../flext-observability",
+    "flext-core @ file:///home/marlonsc/flext/flext-core",
+    "flext-observability @ file:///home/marlonsc/flext/flext-observability",
 ]
 keywords = [
     "architecture",

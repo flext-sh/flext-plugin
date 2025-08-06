@@ -93,9 +93,9 @@ class TestFlextPluginRegistrationHandler:
     @pytest.fixture
     def mock_plugin(self) -> FlextPlugin:
         """Create mock plugin for testing."""
-        return FlextPlugin(
+        return FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -365,9 +365,9 @@ class TestFlextPluginEventHandler:
     @pytest.fixture
     def mock_plugin(self) -> FlextPlugin:
         """Create mock plugin for testing."""
-        return FlextPlugin(
+        return FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -597,9 +597,9 @@ class TestHandlerIntegration:
         event_handler = FlextPluginEventHandler()
 
         # Create plugin
-        plugin = FlextPlugin(
+        plugin = FlextPlugin.create(
             name="integration-test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
             config={
                 "description": "Integration test plugin",
                 "author": "Test Author",

@@ -450,11 +450,11 @@ class TestFlextPluginManager:
         """Test unloading non-existent plugin."""
         await manager.initialize()
 
-        result = manager.unload_plugin("non-existent")
+        result = await manager.unload_plugin("non-existent")
 
-        # Mock implementation always succeeds (idempotent operation)
-        assert result.success
-        assert result.data is True
+        # Plugin not found should return failure (not idempotent in current implementation)
+        assert result.is_failure
+        assert "not found" in result.error
 
     @pytest.mark.asyncio
     async def test_integrate_with_protocols(self, manager: FlextPluginManager) -> None:

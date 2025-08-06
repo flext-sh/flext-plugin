@@ -85,9 +85,9 @@ class TestFlextPluginSimple:
 
     def test_loaded_plugin_creation(self, mock_plugin_instance: Mock) -> None:
         """Test creating FlextPlugin."""
-        loaded = FlextPlugin(
+        loaded = FlextPlugin.create(
             name="test-plugin",
-            version="0.9.0",
+            plugin_version="0.9.0",
             config={"test": "config"},
         )
 
@@ -101,9 +101,9 @@ class TestFlextPluginSimple:
 
     def test_loaded_plugin_validation(self, mock_plugin_instance: Mock) -> None:
         """Test FlextPlugin validation."""
-        loaded = FlextPlugin(
+        loaded = FlextPlugin.create(
             name="test-plugin",
-            version="0.9.0",
+            plugin_version="0.9.0",
             config={"description": "Test plugin", "author": "Test Author"},
         )
 
@@ -224,11 +224,14 @@ class TestPluginLoaderSimple:
         mock_instance.metadata = Mock()
         mock_instance.metadata.name = "test-plugin"
 
-        loaded_plugin = FlextPlugin(
-            plugin_id="test-plugin",
-            instance=mock_instance,
-            metadata=mock_instance.metadata,
-            config={},
+        # Create plugin using factory method with proper parameters
+        loaded_plugin = FlextPlugin.create(
+            name="test-plugin",
+            plugin_version="1.0.0",
+            config={
+                "description": "Test plugin",
+                "author": "Test Author"
+            }
         )
 
         # Manually add to loader's registry

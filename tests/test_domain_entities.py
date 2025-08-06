@@ -83,11 +83,13 @@ class TestFlextPlugin:
     def create_test_metadata(self) -> FlextPluginMetadata:
         """Create test plugin metadata."""
         return FlextPluginMetadata(
+            id="test-metadata-id",  # Required FlextEntity field
             plugin_name="test-plugin",
+            name="test-plugin",  # Required field
+            entry_point="test.entry:main",  # Required field
+            plugin_type=PluginType.TAP.value,  # Convert enum to value
+            description="Test plugin",
             metadata={
-                "entry_point": "test.entry:main",
-                "plugin_type": PluginType.TAP,
-                "description": "Test plugin",
                 "author": "Test Author",
                 "license": "MIT",
             },
@@ -96,10 +98,11 @@ class TestFlextPlugin:
     def test_plugin_instance_creation(self) -> None:
         """Test creating FlextPlugin entity."""
         self.create_test_metadata()
-        plugin = FlextPlugin(
-            entity_id="test-id",
+        # Use factory method for proper construction
+        plugin = FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
+            entity_id="test-id",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -110,18 +113,20 @@ class TestFlextPlugin:
             raise AssertionError(f"Expected {'test-id'}, got {plugin.id}")
         # Note: metadata is not directly accessible as a property on FlextPlugin
         # assert plugin.metadata == metadata  # Removed this assertion
-        if plugin.status != PluginStatus.INACTIVE:
+        # FlextEntity uses use_enum_values=True, so status is stored as string
+        if plugin.status != PluginStatus.INACTIVE.value:
             raise AssertionError(
-                f"Expected {PluginStatus.INACTIVE}, got {plugin.status}"
+                f"Expected {PluginStatus.INACTIVE.value}, got {plugin.status}"
             )
 
     def test_plugin_status_transitions(self) -> None:
         """Test plugin status can be updated."""
         self.create_test_metadata()
-        plugin = FlextPlugin(
-            entity_id="test-id",
+        # Use factory method for proper construction
+        plugin = FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
+            entity_id="test-id",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -144,10 +149,10 @@ class TestFlextPlugin:
     def test_plugin_health_check(self) -> None:
         """Test plugin health status checking."""
         self.create_test_metadata()
-        plugin = FlextPlugin(
-            entity_id="test-id",
+        plugin = FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
+            entity_id="test-id",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -167,10 +172,10 @@ class TestFlextPlugin:
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics."""
         self.create_test_metadata()
-        plugin = FlextPlugin(
-            entity_id="test-id",
+        plugin = FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
+            entity_id="test-id",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -193,10 +198,10 @@ class TestFlextPlugin:
     def test_plugin_error_recording(self) -> None:
         """Test recording plugin errors."""
         self.create_test_metadata()
-        plugin = FlextPlugin(
-            entity_id="test-id",
+        plugin = FlextPlugin.create(
             name="test-plugin",
-            version="1.0.0",
+            plugin_version="1.0.0",
+            entity_id="test-id",
             config={
                 "description": "Test plugin",
                 "author": "Test Author",
@@ -220,7 +225,7 @@ class TestFlextPluginConfig:
 
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginConfig."""
-        config = FlextPluginConfig(
+        config = FlextPluginConfig.create(
             plugin_name="test-plugin",
             config_data={
                 "enabled": True,
@@ -242,7 +247,9 @@ class TestFlextPluginConfig:
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginConfig default values."""
-        config = FlextPluginConfig()
+        config = FlextPluginConfig.create(
+            plugin_name="test-plugin"
+        )
 
         if not (config.enabled):
             raise AssertionError(f"Expected True, got {config.enabled}")
@@ -254,7 +261,8 @@ class TestFlextPluginConfig:
 
     def test_configuration_resource_limits(self) -> None:
         """Test configuration resource limits."""
-        config = FlextPluginConfig(
+        config = FlextPluginConfig.create(
+            plugin_name="test-plugin",
             max_memory_mb=800,
             max_cpu_percent=75,
             timeout_seconds=300,
@@ -359,7 +367,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_creation(self) -> None:
         """Test creating FlextPluginRegistry entity."""
-        registry = FlextPluginRegistry(
+        registry = FlextPluginRegistry.create(
             name="test-registry",
             registry_url="https://plugins.example.com",
         )
@@ -376,7 +384,7 @@ class TestFlextPluginRegistryEntity:
     def test_registry_availability(self) -> None:
         """Test registry availability check."""
         # Enabled registry with URL should be available
-        enabled_registry = FlextPluginRegistry(
+        enabled_registry = FlextPluginRegistry.create(
             name="enabled",
             registry_url="https://plugins.example.com",
             is_enabled=True,
@@ -385,7 +393,7 @@ class TestFlextPluginRegistryEntity:
             raise AssertionError(f"Expected True, got {enabled_registry.is_available}")
 
         # Disabled registry should not be available
-        disabled_registry = FlextPluginRegistry(
+        disabled_registry = FlextPluginRegistry.create(
             name="disabled",
             registry_url="https://plugins.example.com",
             is_enabled=False,
@@ -397,7 +405,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_sync_recording(self) -> None:
         """Test recording sync attempts."""
-        registry = FlextPluginRegistry(
+        registry = FlextPluginRegistry.create(
             name="test",
             registry_url="https://example.com",
         )
@@ -417,7 +425,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_authentication_settings(self) -> None:
         """Test registry authentication configuration."""
-        registry = FlextPluginRegistry(
+        registry = FlextPluginRegistry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             requires_authentication=True,
@@ -433,7 +441,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_security_settings(self) -> None:
         """Test registry security configuration."""
-        registry = FlextPluginRegistry(
+        registry = FlextPluginRegistry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             verify_signatures=True,
@@ -454,7 +462,7 @@ class TestFlextPluginMetadata:
 
     def test_metadata_creation(self) -> None:
         """Test creating FlextPluginMetadata."""
-        metadata = FlextPluginMetadata(
+        metadata = FlextPluginMetadata.create(
             name="test-plugin",
             entry_point="test.entry:main",
             plugin_type=PluginType.TAP,
@@ -476,7 +484,7 @@ class TestFlextPluginMetadata:
 
     def test_metadata_defaults(self) -> None:
         """Test FlextPluginMetadata default values."""
-        metadata = FlextPluginMetadata(
+        metadata = FlextPluginMetadata.create(
             name="minimal-plugin",
             entry_point="minimal.entry:main",
             plugin_type=PluginType.UTILITY,
