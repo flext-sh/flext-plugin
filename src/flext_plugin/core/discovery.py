@@ -43,6 +43,7 @@ Integration:
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from flext_core import FlextEntity, FlextResult
@@ -50,7 +51,7 @@ from flext_core.utilities import FlextGenerators
 from pydantic import Field
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    pass
 
     from flext_plugin.core.types import PluginType
 
@@ -84,7 +85,7 @@ class PluginDiscovery(FlextEntity):
         entity_id: str | None = None,
         plugin_directory: str = "/usr/local/plugins",
         plugin_directories: list[str] | None = None,
-        **kwargs: object,
+        **_kwargs: object,
     ) -> None:
         """Initialize plugin discovery system."""
         # Generate ID if not provided
@@ -156,8 +157,6 @@ class PluginDiscovery(FlextEntity):
 
     async def _discover_file_system(self) -> None:
         """Discover plugins from file system."""
-        from pathlib import Path
-
         for directory_str in self.plugin_directories:
             directory = Path(directory_str)
             await self._scan_directory(directory)

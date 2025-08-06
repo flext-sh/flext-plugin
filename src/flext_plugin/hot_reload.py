@@ -46,12 +46,13 @@ import sys
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from flext_core import FlextEntity, FlextProcessingError, FlextResult
 from flext_core.utilities import FlextGenerators
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
 
 from flext_plugin.loader import PluginLoader
 
@@ -59,7 +60,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from flext_core.flext_types import TAnyDict
-    from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
 
@@ -163,7 +163,7 @@ class PluginWatcher:
 
         """
         self.watch_directories = watch_directories
-        self._observer: Observer | None = None
+        self._observer: BaseObserver | None = None
 
     def get_watched_files(self) -> list[Path]:
         """Get list of watched files.
@@ -206,8 +206,8 @@ class StateManager:
 
         """
         # Extract state from plugin
-        plugin_id = plugin.metadata.name
-        plugin_version = plugin.metadata.version
+        plugin_id = getattr(plugin, "name", "unknown")
+        plugin_version = getattr(plugin, "version", "1.0.0")
 
         # Get plugin state if available
         state_data = {}
@@ -350,16 +350,27 @@ class HotReloadManager(FlextEntity):
 
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    def __init__(self, *, plugin_directory: str, **kwargs: object) -> None:
-        """Initialize hot reload manager."""
-        # Generate ID for FlextEntity
+    @classmethod
+    def create(cls, *, plugin_directory: str, **kwargs: object) -> "HotReloadManager":
+        """Create hot reload manager instance with proper validation."""
+        from typing import cast
         entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+        version = cast(int, kwargs.get("version", 1))
+        metadata = cast(dict[str, object], kwargs.get("metadata", {}))
+        
+        # Create instance using Pydantic model_validate to bypass __init__
+        instance_data = {
+            "id": entity_id,
+            "version": version, 
+            "metadata": metadata,
+            "plugin_directory": plugin_directory
+        }
+        
+        instance = cls.model_validate(instance_data)
+        # model_post_init is called automatically by Pydantic
+        return instance
 
-        # Initialize FlextEntity with id AND plugin_directory (required field)
-        super().__init__(id=entity_id, plugin_directory=plugin_directory)
-
-        # Manually initialize attributes (since model_post_init may not be called)
-        self.model_post_init(None)
+    # Removed __init__ - use create() class method instead
 
     @property
     def discovery(self) -> PluginDiscovery | None:
@@ -399,6 +410,10 @@ class HotReloadManager(FlextEntity):
         object.__setattr__(self, "_loader", PluginLoader())
         object.__setattr__(self, "_observer", Observer())
         object.__setattr__(self, "_loaded_plugins", {})
+        # Pre-initialize lazy properties to avoid attribute errors
+        object.__setattr__(self, "_state_manager", None)
+        object.__setattr__(self, "_rollback_manager", None)
+        object.__setattr__(self, "_watcher", None)
 
     async def start_watching(self) -> None:
         """Start watching for plugin file changes.
@@ -514,7 +529,7 @@ class HotReloadManager(FlextEntity):
                 "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return self._state_manager
+        return cast("StateManager", self._state_manager)  # type: ignore[attr-defined]
 
     @property
     def rollback_manager(self) -> RollbackManager:
@@ -525,7 +540,7 @@ class HotReloadManager(FlextEntity):
                 "_rollback_manager",
                 RollbackManager(self.state_manager),
             )
-        return self._rollback_manager
+        return cast("RollbackManager", self._rollback_manager)  # type: ignore[attr-defined]
 
     @property
     def watcher(self) -> PluginWatcher:
@@ -537,7 +552,7 @@ class HotReloadManager(FlextEntity):
                 [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return self._watcher
+        return cast("PluginWatcher", self._watcher)  # type: ignore[attr-defined]
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.
@@ -590,6 +605,6 @@ class HotReloadManager(FlextEntity):
 # Convenience function for quick setup
 async def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
     """Create and start hot reload manager for plugin directory."""
-    manager = HotReloadManager(plugin_directory=plugin_directory)
+    manager = HotReloadManager.create(plugin_directory=plugin_directory)
     await manager.start_watching()
     return manager

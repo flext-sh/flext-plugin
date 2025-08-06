@@ -245,7 +245,7 @@ class PluginExecutionResult:
             output_data, error_message, and duration_ms.
 
         """
-        self.success = success
+        self._success = success
         self.data = kwargs.get("output_data", data)
         self.error = kwargs.get("error_message", error)
         self.plugin_name = plugin_name
@@ -259,6 +259,7 @@ class PluginExecutionResult:
         self.output_data = self.data
         self.error_message = self.error
 
+    @property
     def success(self) -> bool:
         """Check if plugin execution was successful.
 
@@ -270,7 +271,7 @@ class PluginExecutionResult:
             not by the presence or absence of data or error messages.
 
         """
-        return self.success
+        return self._success
 
     def is_failure(self) -> bool:
         """Check if plugin execution failed.
@@ -283,7 +284,7 @@ class PluginExecutionResult:
             in error handling and control flow.
 
         """
-        return not self.success
+        return not self._success
 
 
 class PluginExecutionContext:
@@ -312,11 +313,16 @@ class PluginManagerResult:
     def __init__(self, operation: str, *, success: bool = False) -> None:
         """Initialize plugin manager result with minimal parameters."""
         self.operation = operation
-        self.success = success
+        self._success = success
         self.plugins_affected: list[str] = []
         self.execution_time_ms: float = 0.0
         self.details: dict[str, object] = {}
         self.errors: list[str] = []
+
+    @property
+    def success(self) -> bool:
+        """Check if the operation was successful."""
+        return self._success
 
     @classmethod
     def create_detailed(

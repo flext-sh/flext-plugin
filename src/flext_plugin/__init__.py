@@ -29,10 +29,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import importlib.metadata
+import importlib.metadata  
+import uuid
 
 # Import from flext-core for foundational patterns
 from flext_core import FlextContainer, FlextResult
+
+# Core types needed throughout the module
+from flext_plugin.core.types import (
+    PluginExecutionContext,
+    PluginManagerResult,
+)
 
 try:
     __version__ = importlib.metadata.version("flext-plugin")
@@ -93,9 +100,9 @@ class FlextPluginManager:
         self,
         container: FlextContainer | None = None,
         *,
-        auto_discover: bool = True,  # noqa: ARG002
-        security_enabled: bool = True,  # noqa: ARG002
-        **kwargs: object,  # noqa: ARG002
+        _auto_discover: bool = True,
+        _security_enabled: bool = True,
+        **_kwargs: object,
     ) -> None:
         """Initialize with backwards compatibility for legacy parameters."""
         # Ignore legacy parameters and create modern platform
@@ -119,9 +126,6 @@ class FlextPluginManager:
 
     async def initialize(self) -> FlextResult[object]:
         """Legacy async initialize method for backwards compatibility."""
-        # Import here to avoid module-level import issues
-        from flext_plugin.core.types import PluginManagerResult  # noqa: PLC0415
-
         # Mark as initialized
         self._initialized = True
 
@@ -148,7 +152,7 @@ class FlextPluginManager:
     async def execute_plugin(
         self,
         plugin_name: str,
-        data: dict[str, object],  # noqa: ARG002
+        _data: dict[str, object],
     ) -> FlextResult[object]:
         """Legacy plugin execution method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
@@ -156,7 +160,7 @@ class FlextPluginManager:
     async def configure_plugin(
         self,
         plugin_name: str,
-        config: object,  # noqa: ARG002
+        _config: object,
     ) -> FlextResult[object]:
         """Legacy plugin configuration method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
@@ -165,8 +169,11 @@ class FlextPluginManager:
         """Legacy plugin status method."""
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-    def list_plugins(self, *, enabled_only: bool = False) -> list[object]:  # noqa: ARG002
+    def list_plugins(self, *, _enabled_only: bool = False, enabled_only: bool | None = None) -> list[object]:
         """Legacy list plugins method."""
+        # Handle both parameter names for backward compatibility
+        if enabled_only is not None:
+            _enabled_only = enabled_only
         return []
 
     async def discover_and_load_plugins(self) -> FlextResult[object]:
@@ -175,10 +182,6 @@ class FlextPluginManager:
 
     async def _create_plugin_context(self, plugin_name: str) -> object:
         """Legacy create plugin context method."""
-        import uuid  # noqa: PLC0415
-
-        from flext_plugin.core.types import PluginExecutionContext  # noqa: PLC0415
-
         return PluginExecutionContext(
             plugin_id=plugin_name,
             execution_id=str(uuid.uuid4()),

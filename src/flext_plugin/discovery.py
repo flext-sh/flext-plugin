@@ -92,13 +92,25 @@ class PluginDiscovery(FlextEntity):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def __init__(self, *, plugin_directory: str, **kwargs: object) -> None:
-        """Initialize plugin discovery with directory and entity ID."""
-        # Generate ID for FlextEntity
+    @classmethod
+    def create(cls, *, plugin_directory: str, **kwargs: object) -> "PluginDiscovery":
+        """Create plugin discovery instance with proper validation."""
+        from typing import cast
         entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+        version = cast(int, kwargs.get("version", 1))
+        metadata = cast(dict[str, object], kwargs.get("metadata", {}))
+        
+        # Create instance using Pydantic model_validate
+        instance_data = {
+            "id": entity_id,
+            "version": version,
+            "metadata": metadata,
+            "plugin_directory": plugin_directory
+        }
+        
+        return cls.model_validate(instance_data)
 
-        # Initialize FlextEntity with id AND plugin_directory (required field)
-        super().__init__(id=entity_id, plugin_directory=plugin_directory)
+    # Removed __init__ - use create() class method instead
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""

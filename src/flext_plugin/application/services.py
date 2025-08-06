@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from flext_plugin.domain.entities import FlextPlugin, FlextPluginConfig
 
 
-class FlextPluginService(FlextDomainService):
+class FlextPluginService(FlextDomainService[object]):
     """Core plugin management service orchestrating plugin lifecycle operations.
 
     Application service providing comprehensive plugin management capabilities
@@ -453,7 +453,7 @@ class FlextPluginService(FlextDomainService):
             return FlextResult.fail(f"Failed to check plugin status: {e}")
 
 
-class FlextPluginDiscoveryService(FlextDomainService):
+class FlextPluginDiscoveryService(FlextDomainService[object]):
     """Specialized service for plugin discovery and validation operations.
 
     Application service focused specifically on plugin discovery workflows,
