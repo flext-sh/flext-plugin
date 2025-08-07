@@ -46,7 +46,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextEntity, FlextResult, get_logger
 from flext_core.utilities import FlextGenerators
 from pydantic import Field
 
@@ -179,7 +179,6 @@ class PluginDiscovery(FlextEntity):
                         )
                 except (json.JSONDecodeError, OSError) as e:
                     # Log manifest parsing error but continue discovery process
-                    from flext_core import get_logger
                     logger = get_logger(__name__)
                     logger.warning(f"Failed to parse plugin manifest {manifest_file}: {e}")
 
@@ -191,10 +190,10 @@ class PluginDiscovery(FlextEntity):
             return all(hasattr(plugin_class, method) for method in required_methods)
         except (RuntimeError, ValueError, TypeError) as e:
             # Log critical validation error and raise proper exception instead of returning fake data
-            from flext_core import get_logger
             logger = get_logger(__name__)
-            logger.error(f"Plugin class validation failed for {plugin_class}: {e}")
-            raise RuntimeError(f"Plugin validation failed: {plugin_class}") from e
+            logger.exception(f"Plugin class validation failed for {plugin_class}")
+            msg = f"Plugin validation failed: {plugin_class}"
+            raise RuntimeError(msg) from e
 
 
 # Removed mock classes - use real implementations in tests

@@ -60,10 +60,11 @@ from flext_plugin.application.services import (
     FlextPluginService,
 )
 
-# Domain entities
+# Domain entities - Use new naming to avoid conflicts
 from flext_plugin.domain.entities import (
-    FlextPlugin,
+    FlextPlugin,  # DEPRECATED: This is the domain entity, not the interface
     FlextPluginConfig,
+    FlextPluginEntity,  # New preferred name for domain entity
     FlextPluginMetadata,
     FlextPluginRegistry,
 )
@@ -73,6 +74,17 @@ from flext_plugin.domain.ports import (
     FlextPluginDiscoveryPort,
     FlextPluginLoaderPort,
     FlextPluginManagerPort,
+)
+
+# Concrete implementations of interfaces from flext-core
+from flext_plugin.implementations import (
+    ConcreteDataPlugin,
+    ConcreteExecutablePlugin,
+    ConcretePlugin,
+    ConcretePluginContext,
+    ConcretePluginLoader,
+    ConcretePluginRegistry,
+    ConcreteTransformPlugin,
 )
 
 # Platform
@@ -230,11 +242,23 @@ flext_plugin_create_manager = create_flext_plugin_platform
 flext_plugin_create_platform = create_flext_plugin_platform
 
 __all__: list[str] = [
+    "ConcreteDataPlugin",
+    "ConcreteExecutablePlugin",
+    # Concrete implementations
+    "ConcretePlugin",
+    "ConcretePluginContext",
+    "ConcretePluginLoader",
+    "ConcretePluginRegistry",
+    "ConcreteTransformPlugin",
+    # Core imports
     "FlextContainer",
-    "FlextPlugin",
+    # Domain entities (use FlextPluginEntity for new code)
+    "FlextPlugin",  # DEPRECATED: Use FlextPluginEntity
     "FlextPluginConfig",
+    # Application layer
     "FlextPluginDiscoveryPort",
     "FlextPluginDiscoveryService",
+    "FlextPluginEntity",
     "FlextPluginHandler",
     "FlextPluginLoaderPort",
     "FlextPluginManager",
@@ -248,6 +272,7 @@ __all__: list[str] = [
     "FlextResult",
     "__version__",
     "__version_info__",
+    # Factory functions
     "create_flext_plugin",
     "create_flext_plugin_config",
     "create_flext_plugin_metadata",

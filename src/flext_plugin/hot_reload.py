@@ -48,7 +48,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, cast
 
-from flext_core import FlextEntity, FlextProcessingError, FlextResult
+from flext_core import FlextEntity, FlextProcessingError, FlextResult, get_logger
 from flext_core.utilities import FlextGenerators
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -455,7 +455,6 @@ class HotReloadManager(FlextEntity):
                         await self._load_plugin(py_file)
         except (OSError, RuntimeError, ValueError, KeyError) as e:
             # Log plugin discovery error and continue
-            from flext_core import get_logger
             logger = get_logger(__name__)
             logger.warning(f"Plugin discovery failed during hot reload: {e}")
             # Continue hot reload process despite discovery failure
@@ -483,7 +482,6 @@ class HotReloadManager(FlextEntity):
 
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin reload error and continue hot-reload process
-            from flext_core import get_logger
             logger = get_logger(__name__)
             logger.warning(f"Plugin reload failed for {file_path}: {e}")
 
@@ -498,7 +496,6 @@ class HotReloadManager(FlextEntity):
                 loaded_plugins[plugin_name] = plugin_instance
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin loading error and continue hot-reload process
-            from flext_core import get_logger
             logger = get_logger(__name__)
             logger.warning(f"Plugin loading failed for {file_path}: {e}")
 
@@ -514,7 +511,6 @@ class HotReloadManager(FlextEntity):
                 del loaded_plugins[plugin_name]
         except (RuntimeError, ValueError, AttributeError, KeyError) as e:
             # Log plugin unload error and continue hot-reload process
-            from flext_core import get_logger
             logger = get_logger(__name__)
             logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
 

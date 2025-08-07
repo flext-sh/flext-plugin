@@ -43,7 +43,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import cast
 
-from flext_core import FlextEntity, FlextEntityId, FlextResult
+from flext_core import FlextEntity, FlextEntityId, FlextResult, get_logger
 from flext_core.utilities import FlextGenerators
 from pydantic import Field, field_validator
 
@@ -101,16 +101,17 @@ class FlextPluginRegistryParams:
     trusted_publishers: list[str] | None = None
 
 
-class FlextPlugin(FlextEntity):
-    """Rich plugin entity with comprehensive business logic and lifecycle management.
+class FlextPluginEntity(FlextEntity):
+    """Rich plugin domain entity with comprehensive business logic and lifecycle management.
 
     Core domain entity representing a plugin within the FLEXT ecosystem.
-    Encapsulates plugin identity, metadata, configuration, and business rules
-    while maintaining consistency with Domain-Driven Design principles.
+    This is a DOMAIN ENTITY, not a plugin implementation. It encapsulates
+    plugin identity, metadata, configuration, and business rules while
+    maintaining consistency with Domain-Driven Design principles.
 
-    This entity serves as the primary abstraction for plugin operations,
-    including lifecycle management, validation, activation/deactivation,
-    and integration with the broader FLEXT platform services.
+    IMPORTANT: This entity is distinct from flext_core.interfaces.FlextPlugin,
+    which is the abstract interface that actual plugin implementations must follow.
+    This entity represents the domain concept of a plugin in the business layer.
 
     Business Rules:
         - Plugin names must be non-empty and unique within a registry
@@ -138,7 +139,7 @@ class FlextPlugin(FlextEntity):
         - Error conditions
 
     Example:
-        >>> plugin = FlextPlugin.model_validate(
+        >>> plugin = FlextPluginEntity.model_validate(
         ...     {
         ...         "id": "plugin-123",
         ...         "name": "oracle-connector",
@@ -691,7 +692,7 @@ class FlextPluginRegistry(FlextEntity):
 
     # Pydantic fields
     name: str = Field(default="", description="Registry name")
-    plugins: dict[str, FlextPlugin] = Field(
+    plugins: dict[str, FlextPluginEntity] = Field(
         default_factory=dict,
         description="Dictionary of registered plugins",
     )
@@ -743,7 +744,7 @@ class FlextPluginRegistry(FlextEntity):
 
             p = FlextPluginRegistryParams(
                 name=name,
-                plugins=cast("dict[str, FlextPlugin] | None", kwargs.get("plugins")),
+                plugins=cast("dict[str, FlextPluginEntity] | None", kwargs.get("plugins")),
                 created_at=cast("datetime | None", kwargs.get("created_at")),
                 registry_url=cast("str", kwargs.get("registry_url", "")),
                 is_enabled=cast("bool", kwargs.get("is_enabled", True)),
@@ -812,7 +813,7 @@ class FlextPluginRegistry(FlextEntity):
         """
         return bool(self.name)
 
-    def register_plugin(self, plugin: FlextPlugin) -> bool:
+    def register_plugin(self, plugin: FlextPluginEntity) -> bool:
         """Register a plugin in the registry.
 
         Args:
@@ -842,7 +843,7 @@ class FlextPluginRegistry(FlextEntity):
             return True
         return False
 
-    def get_plugin(self, plugin_name: str) -> FlextPlugin | None:
+    def get_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
         """Get a plugin by name.
 
         Args:
@@ -854,7 +855,7 @@ class FlextPluginRegistry(FlextEntity):
         """
         return self.plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[FlextPlugin]:
+    def list_plugins(self) -> list[FlextPluginEntity]:
         """List all registered plugins.
 
         Returns:
@@ -993,10 +994,10 @@ class FlextPluginExecution(FlextEntity):
                 return float(memory_value)
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
-                from flext_core import get_logger
                 logger = get_logger(__name__)
-                logger.error(f"Invalid memory value '{memory_value}' for plugin execution: {e}")
-                raise ValueError(f"Invalid memory value: {memory_value}") from e
+                logger.exception(f"Invalid memory value '{memory_value}' for plugin execution")
+                msg = f"Invalid memory value: {memory_value}"
+                raise ValueError(msg) from e
         # Only return 0.0 for valid empty/None values, not for conversion failures
         return 0.0
 
@@ -1014,10 +1015,10 @@ class FlextPluginExecution(FlextEntity):
                 return float(cpu_value)
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
-                from flext_core import get_logger
                 logger = get_logger(__name__)
-                logger.error(f"Invalid CPU time value '{cpu_value}' for plugin execution: {e}")
-                raise ValueError(f"Invalid CPU time value: {cpu_value}") from e
+                logger.exception(f"Invalid CPU time value '{cpu_value}' for plugin execution")
+                msg = f"Invalid CPU time value: {cpu_value}"
+                raise ValueError(msg) from e
         # Only return 0.0 for valid empty/None values, not for conversion failures
         return 0.0
 
@@ -1095,11 +1096,14 @@ class FlextPluginExecution(FlextEntity):
         return FlextResult.ok(None)
 
 
-# Backwards compatibility aliases
-Plugin = FlextPlugin
+# Backwards compatibility aliases - DEPRECATED: Use FlextPluginEntity instead
+# These aliases are maintained for backward compatibility but should be migrated
+# to use the new naming convention to avoid confusion with interface names.
+Plugin = FlextPluginEntity  # DEPRECATED: Use FlextPluginEntity
+FlextPlugin = FlextPluginEntity  # DEPRECATED: Conflicts with interface, use FlextPluginEntity
 PluginConfig = FlextPluginConfig
 PluginConfiguration = FlextPluginConfig  # Additional alias for tests
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
-PluginInstance = FlextPlugin  # Alias for compatibility
+PluginInstance = FlextPluginEntity  # DEPRECATED: Use FlextPluginEntity
 PluginExecution = FlextPluginExecution
