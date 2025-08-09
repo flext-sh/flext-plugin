@@ -58,7 +58,7 @@ from flext_plugin.loader import PluginLoader
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from flext_core.flext_types import TAnyDict
+    from flext_core.typings import TAnyDict
     from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
@@ -541,7 +541,7 @@ class HotReloadManager(FlextEntity):
                 "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return cast("StateManager", self._state_manager)  # type: ignore[attr-defined]
+        return cast("StateManager", self._state_manager)
 
     @property
     def rollback_manager(self) -> RollbackManager:
@@ -552,7 +552,7 @@ class HotReloadManager(FlextEntity):
                 "_rollback_manager",
                 RollbackManager(self.state_manager),
             )
-        return cast("RollbackManager", self._rollback_manager)  # type: ignore[attr-defined]
+        return cast("RollbackManager", self._rollback_manager)
 
     @property
     def watcher(self) -> PluginWatcher:
@@ -564,7 +564,7 @@ class HotReloadManager(FlextEntity):
                 [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return cast("PluginWatcher", self._watcher)  # type: ignore[attr-defined]
+        return cast("PluginWatcher", self._watcher)
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.
