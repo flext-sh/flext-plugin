@@ -291,7 +291,7 @@ class FlextPluginEventHandler(FlextHandlers.EventHandler[FlextPlugin]):
             if not hasattr(plugin, "name") or not plugin.name:
                 return FlextResult.fail("Plugin loaded event: plugin missing name")
 
-            return FlextResult.ok(data=True)
+            return FlextResult.ok(True)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin loaded event: {e}")
@@ -319,7 +319,7 @@ class FlextPluginEventHandler(FlextHandlers.EventHandler[FlextPlugin]):
             # - Notify dependent services
 
             # For now, we validate plugin_name and consider it successful
-            return FlextResult.ok(data=True)
+            return FlextResult.ok(True)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin unloaded event: {e}")
