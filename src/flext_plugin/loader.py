@@ -55,8 +55,7 @@ import importlib.util
 from pathlib import Path
 from typing import ClassVar
 
-from flext_core import FlextEntity, FlextResult
-from flext_core.utilities import FlextGenerators
+from flext_core import FlextEntity, FlextGenerators, FlextResult
 
 
 class PluginLoader(FlextEntity):

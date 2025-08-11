@@ -43,8 +43,13 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import cast
 
-from flext_core import FlextEntity, FlextEntityId, FlextResult, get_logger
-from flext_core.utilities import FlextGenerators
+from flext_core import (
+    FlextEntity,
+    FlextEntityId,
+    FlextGenerators,
+    FlextResult,
+    get_logger,
+)
 from pydantic import Field, field_validator
 
 from flext_plugin.core.types import PluginStatus

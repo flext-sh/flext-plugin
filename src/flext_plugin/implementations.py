@@ -39,15 +39,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import FlextResult, get_logger
-from flext_core.interfaces import (
+from flext_core import (
     FlextDataPlugin,
     FlextExecutablePlugin,
     FlextPlugin,
     FlextPluginContext,
     FlextPluginLoader,
     FlextPluginRegistry,
+    FlextResult,
     FlextTransformPlugin,
+    get_logger,
 )
 
 if TYPE_CHECKING:

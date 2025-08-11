@@ -46,8 +46,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_core import FlextEntity, FlextResult, get_logger
-from flext_core.utilities import FlextGenerators
+from flext_core import FlextEntity, FlextGenerators, FlextResult, get_logger
 from pydantic import Field
 
 if TYPE_CHECKING:

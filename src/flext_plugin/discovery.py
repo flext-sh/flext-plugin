@@ -42,8 +42,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextEntity, FlextResult
-from flext_core.utilities import FlextGenerators
+from flext_core import FlextEntity, FlextGenerators, FlextResult
 from pydantic import ConfigDict
 
 

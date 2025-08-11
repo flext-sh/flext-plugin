@@ -48,8 +48,13 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, cast
 
-from flext_core import FlextEntity, FlextProcessingError, FlextResult, get_logger
-from flext_core.utilities import FlextGenerators
+from flext_core import (
+    FlextEntity,
+    FlextGenerators,
+    FlextProcessingError,
+    FlextResult,
+    get_logger,
+)
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -58,7 +63,6 @@ from flext_plugin.loader import PluginLoader
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from flext_core.typings import TAnyDict
     from watchdog.observers.api import BaseObserver
 
     from flext_plugin.discovery import PluginDiscovery
@@ -232,7 +236,7 @@ class StateManager:
         """
         return f"snapshot_{datetime.now(UTC).isoformat()}"
 
-    def list_snapshots(self) -> list[TAnyDict]:
+    def list_snapshots(self) -> list[dict[str, object]]:
         """List available snapshots.
 
         Returns:
