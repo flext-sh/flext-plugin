@@ -106,8 +106,8 @@ class PluginState:
         self,
         plugin_id: str,
         plugin_version: str,
-        state_data: TAnyDict | None = None,
-        metadata: TAnyDict | None = None,
+        state_data: dict[str, object] | None = None,
+        metadata: dict[str, object] | None = None,
         saved_at: datetime | None = None,
     ) -> None:
         """Initialize plugin state.
@@ -545,7 +545,7 @@ class HotReloadManager(FlextEntity):
                 "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return cast("StateManager", self._state_manager)
+        return cast("StateManager", self._state_manager)  # type: ignore[attr-defined]
 
     @property
     def rollback_manager(self) -> RollbackManager:
@@ -556,7 +556,7 @@ class HotReloadManager(FlextEntity):
                 "_rollback_manager",
                 RollbackManager(self.state_manager),
             )
-        return cast("RollbackManager", self._rollback_manager)
+        return cast("RollbackManager", self._rollback_manager)  # type: ignore[attr-defined]
 
     @property
     def watcher(self) -> PluginWatcher:
@@ -568,7 +568,7 @@ class HotReloadManager(FlextEntity):
                 [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return cast("PluginWatcher", self._watcher)
+        return cast("PluginWatcher", self._watcher)  # type: ignore[attr-defined]
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.

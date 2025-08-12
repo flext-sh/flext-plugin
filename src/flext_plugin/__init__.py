@@ -242,48 +242,17 @@ flext_plugin_create_manager = create_flext_plugin_platform
 flext_plugin_create_platform = create_flext_plugin_platform
 
 __all__: list[str] = [
-    "ConcreteDataPlugin",
-    "ConcreteExecutablePlugin",
-    # Concrete implementations
-    "ConcretePlugin",
-    "ConcretePluginContext",
-    "ConcretePluginLoader",
-    "ConcretePluginRegistry",
-    "ConcreteTransformPlugin",
-    # Core imports
-    "FlextContainer",
-    # Domain entities (use FlextPluginEntity for new code)
-    "FlextPlugin",  # DEPRECATED: Use FlextPluginEntity
-    "FlextPluginConfig",
-    # Application layer
-    "FlextPluginDiscoveryPort",
-    "FlextPluginDiscoveryService",
-    "FlextPluginEntity",
-    "FlextPluginHandler",
-    "FlextPluginLoaderPort",
-    "FlextPluginManager",
-    "FlextPluginManagerPort",
-    "FlextPluginMetadata",
-    "FlextPluginPlatform",
-    "FlextPluginRegistrationHandler",
-    "FlextPluginRegistry",
-    "FlextPluginResult",
-    "FlextPluginService",
-    "FlextResult",
-    "__version__",
-    "__version_info__",
-    # Factory functions
-    "create_flext_plugin",
-    "create_flext_plugin_config",
-    "create_flext_plugin_metadata",
-    "create_flext_plugin_platform",
-    "create_flext_plugin_registry",
-    "flext_plugin_create_config",
-    "flext_plugin_create_manager",
-    "flext_plugin_create_metadata",
+    "annotations", "FlextContainer", "FlextResult", "PluginExecutionContext", "PluginManagerResult",
+    "FlextPluginHandler", "FlextPluginRegistrationHandler", "FlextPluginDiscoveryService",
+    "FlextPluginService", "FlextPlugin", "FlextPluginConfig", "FlextPluginEntity", "FlextPluginMetadata",
+    "FlextPluginRegistry", "FlextPluginDiscoveryPort", "FlextPluginLoaderPort", "FlextPluginManagerPort",
+    "ConcreteDataPlugin", "ConcreteExecutablePlugin", "ConcretePlugin", "ConcretePluginContext",
+    "ConcretePluginLoader", "ConcretePluginRegistry", "ConcreteTransformPlugin", "FlextPluginPlatform",
+    "create_flext_plugin", "create_flext_plugin_config", "create_flext_plugin_metadata",
+    "create_flext_plugin_registry", "__version_info__", "FlextPluginManager", "FlextPluginResult",
+    "create_flext_plugin_platform", "flext_plugin_create_plugin", "flext_plugin_create_config",
+    "flext_plugin_create_metadata", "flext_plugin_create_registry", "flext_plugin_create_manager",
     "flext_plugin_create_platform",
-    "flext_plugin_create_plugin",
-    "flext_plugin_create_registry",
 ]
 
 # Module metadata

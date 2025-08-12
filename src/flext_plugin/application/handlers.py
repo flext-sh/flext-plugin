@@ -49,10 +49,9 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextHandlers, FlextResult
 
-from flext_plugin.domain.entities import FlextPlugin
-
 if TYPE_CHECKING:
     from flext_plugin.application.services import FlextPluginService
+    from flext_plugin.domain.entities import FlextPlugin
 
 
 class FlextPluginHandler(FlextHandlers.CommandHandler):
@@ -215,7 +214,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             return FlextResult.fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler(FlextHandlers.EventHandler[FlextPlugin]):
+class FlextPluginEventHandler(FlextHandlers.EventHandler):
     """CQRS event handler for plugin lifecycle events and domain event processing.
 
     Event handler implementing the Event Handler pattern from CQRS architecture,

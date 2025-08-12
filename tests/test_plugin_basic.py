@@ -76,7 +76,6 @@ def test_flext_core_dependencies() -> None:
 
 def test_plugin_type_enum() -> None:
     """Test PluginType enum from flext_plugin."""
-
     # Test standard plugin types
     if PluginType.TAP.value != "tap":
         raise AssertionError(f"Expected {'tap'}, got {PluginType.TAP.value}")
@@ -90,7 +89,6 @@ def test_plugin_type_enum() -> None:
 
 async def test_plugin_manager_basic() -> None:
     """Test PluginManager basic functionality."""
-
     manager = PluginManager()
     assert manager is not None
 
@@ -122,7 +120,6 @@ class TestFlextPluginIntegration:
 
     async def test_plugin_load_unload(self) -> None:
         """Test plugin load/unload functionality."""
-
         manager = PluginManager()
         await manager.initialize()
 
@@ -136,7 +133,6 @@ class TestFlextPluginIntegration:
 
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""
-
         manager = PluginManager()
 
         # Test discovery doesn't crash
@@ -145,7 +141,6 @@ class TestFlextPluginIntegration:
 
     def test_plugin_lifecycle(self) -> None:
         """Test basic plugin lifecycle operations."""
-
         manager = PluginManager()
 
         # Test operations exist based on real API

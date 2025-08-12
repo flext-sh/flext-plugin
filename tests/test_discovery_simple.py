@@ -78,6 +78,7 @@ class TestPluginDiscoverySimple:
 
         Returns:
             PluginDiscovery: Real instance with clean state for testing
+
         """
         return PluginDiscovery(entity_id="test-simple-discovery-001")
 

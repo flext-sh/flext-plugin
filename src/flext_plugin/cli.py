@@ -68,7 +68,7 @@ def handle_result(result: FlextResult[object], success_msg: str = "") -> None:
 @click.group(name="flext-plugin")
 @click.version_option()
 @click.option(
-    "--verbose/--no-verbose", "-v", default=False, help="Enable verbose output"
+    "--verbose/--no-verbose", "-v", default=False, help="Enable verbose output",
 )
 @click.option(
     "--format",
@@ -101,7 +101,7 @@ def cli(ctx: click.Context, verbose: bool, output_format: str) -> None:
 )
 @click.option("--meta", "-m", help="Plugin metadata as 'description:author'")
 @click.option(
-    "--output-dir", "-o", type=click.Path(), default=".", help="Output directory"
+    "--output-dir", "-o", type=click.Path(), default=".", help="Output directory",
 )
 @click.pass_context
 def create(
@@ -132,7 +132,7 @@ def create(
             output_dir=output_dir,
         )
         handle_result(
-            plugin_result, f"Plugin '{name}' created successfully in {output_dir}"
+            plugin_result, f"Plugin '{name}' created successfully in {output_dir}",
         )
 
     except Exception as e:
@@ -169,7 +169,7 @@ def install(ctx: click.Context, plugin_name: str, registry: str, file: str) -> N
 @cli.command()
 @click.argument("plugin_name")
 @click.option(
-    "--force/--no-force", default=False, help="Force uninstall without confirmation"
+    "--force/--no-force", default=False, help="Force uninstall without confirmation",
 )
 @click.pass_context
 def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
@@ -177,7 +177,7 @@ def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
     cli_handler = ctx.obj["cli_handler"]
 
     if not force and not click.confirm(
-        f"Are you sure you want to uninstall '{plugin_name}'?"
+        f"Are you sure you want to uninstall '{plugin_name}'?",
     ):
         click.echo("Uninstall cancelled.")
         return
@@ -194,10 +194,10 @@ def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
 
 @cli.command("list")
 @click.option(
-    "--installed/--no-installed", default=False, help="Show only installed plugins"
+    "--installed/--no-installed", default=False, help="Show only installed plugins",
 )
 @click.option(
-    "--available/--no-available", default=False, help="Show only available plugins"
+    "--available/--no-available", default=False, help="Show only available plugins",
 )
 @click.option(
     "--type",
@@ -208,7 +208,7 @@ def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
 )
 @click.pass_context
 def list_plugins(
-    ctx: click.Context, installed: bool, available: bool, plugin_type: str | None
+    ctx: click.Context, installed: bool, available: bool, plugin_type: str | None,
 ) -> None:
     """List installed and available plugins."""
     cli_handler = ctx.obj["cli_handler"]
@@ -255,7 +255,7 @@ def list_plugins(
 @cli.command()
 @click.option("--plugin", "-p", help="Validate specific plugin")
 @click.option(
-    "--all/--no-all", "validate_all", default=False, help="Validate all plugins"
+    "--all/--no-all", "validate_all", default=False, help="Validate all plugins",
 )
 @click.pass_context
 def validate(ctx: click.Context, plugin: str, validate_all: bool) -> None:
@@ -295,7 +295,7 @@ def watch(ctx: click.Context, directory: str, interval: int) -> None:
 
     try:
         click.echo(
-            f"Starting hot reload monitoring on {directory} (interval: {interval}s)"
+            f"Starting hot reload monitoring on {directory} (interval: {interval}s)",
         )
         click.echo("Press Ctrl+C to stop...")
 
@@ -329,13 +329,13 @@ def platform(ctx: click.Context, status: bool, health: bool, reset: bool) -> Non
                 else:
                     status_data = result.data
                     click.echo(
-                        f"Platform Status: {status_data.get('status', 'unknown')}"
+                        f"Platform Status: {status_data.get('status', 'unknown')}",
                     )
                     click.echo(
-                        f"Plugins Loaded: {status_data.get('plugins_loaded', 0)}"
+                        f"Plugins Loaded: {status_data.get('plugins_loaded', 0)}",
                     )
                     click.echo(
-                        f"Hot Reload: {status_data.get('hot_reload_active', False)}"
+                        f"Hot Reload: {status_data.get('hot_reload_active', False)}",
                     )
             else:
                 handle_result(result)
@@ -346,7 +346,7 @@ def platform(ctx: click.Context, status: bool, health: bool, reset: bool) -> Non
 
         elif reset:
             if click.confirm(
-                "Are you sure you want to reset the platform configuration?"
+                "Are you sure you want to reset the platform configuration?",
             ):
                 result = cli_handler.platform.reset()
                 handle_result(result, "Platform reset successfully")
