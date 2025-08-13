@@ -81,7 +81,7 @@ def handle_result(result: FlextResult[object], success_msg: str = "") -> None:
     help="Output format",
 )
 @click.pass_context
-def cli(ctx: click.Context, verbose: bool, output_format: str) -> None:  # noqa: FBT001
+def cli(ctx: click.Context, *, verbose: bool, output_format: str) -> None:
     """FLEXT Plugin Management CLI - Enterprise plugin management system."""
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
@@ -182,7 +182,7 @@ def install(ctx: click.Context, plugin_name: str, registry: str, file: str) -> N
     help="Force uninstall without confirmation",
 )
 @click.pass_context
-def uninstall(ctx: click.Context, plugin_name: str, *, force: bool) -> None:  # noqa: FBT001
+def uninstall(ctx: click.Context, plugin_name: str, *, force: bool) -> None:
     """Uninstall plugin from system."""
     cli_handler = ctx.obj["cli_handler"]
 
@@ -223,6 +223,7 @@ def uninstall(ctx: click.Context, plugin_name: str, *, force: bool) -> None:  # 
 @click.pass_context
 def list_plugins(
     ctx: click.Context,
+    *,
     installed: bool,
     available: bool,
     plugin_type: str | None,
@@ -278,7 +279,7 @@ def list_plugins(
     help="Validate all plugins",
 )
 @click.pass_context
-def validate(ctx: click.Context, plugin: str, *, validate_all: bool) -> None:  # noqa: FBT001
+def validate(ctx: click.Context, plugin: str, *, validate_all: bool) -> None:
     """Validate plugin configuration and dependencies."""
     cli_handler = ctx.obj["cli_handler"]
 
@@ -335,7 +336,7 @@ def watch(ctx: click.Context, directory: str, interval: int) -> None:
 @click.option("--health", is_flag=True, help="Show platform health")
 @click.option("--reset", is_flag=True, help="Reset platform configuration")
 @click.pass_context
-def platform(ctx: click.Context, *, status: bool, health: bool, reset: bool) -> None:  # noqa: FBT001
+def platform(ctx: click.Context, *, status: bool, health: bool, reset: bool) -> None:
     """Manage plugin platform."""
     cli_handler = ctx.obj["cli_handler"]
     format_output = ctx.obj["format"]
