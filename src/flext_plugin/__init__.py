@@ -47,6 +47,7 @@ except importlib.metadata.PackageNotFoundError:
     __version__ = "0.9.0"
 
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
+__all_version__: tuple[int, ...] | None
 
 # Application handlers
 from flext_plugin.application.handlers import (
@@ -274,6 +275,7 @@ __all__: list[str] = [
     "create_flext_plugin_config",
     "create_flext_plugin_metadata",
     "create_flext_plugin_registry",
+    "__version__",
     "__version_info__",
     "FlextPluginManager",
     "FlextPluginResult",
