@@ -114,7 +114,7 @@ class FlextPluginEntity(FlextEntity):
     plugin identity, metadata, configuration, and business rules while
     maintaining consistency with Domain-Driven Design principles.
 
-    IMPORTANT: This entity is distinct from flext_core.interfaces.FlextPlugin,
+    IMPORTANT: This entity is distinct from flext_core.FlextPlugin,
     which is the abstract interface that actual plugin implementations must follow.
     This entity represents the domain concept of a plugin in the business layer.
 

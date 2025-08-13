@@ -91,6 +91,7 @@ class Plugin:
     """
 
     def __init__(self, name: str) -> None:
+        """Initialize plugin with a name."""
         self.name = name
         self.active = False
 
@@ -115,6 +116,7 @@ class PluginRegistry:
     """Simple plugin registry."""
 
     def __init__(self) -> None:
+        """Initialize empty plugin registry."""
         self.plugins: dict[str, Plugin] = {}
 
     def register(self, plugin: Plugin) -> FlextResult[None]:

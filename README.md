@@ -1,10 +1,10 @@
 # flext-plugin
 
-**Type**: Infrastructure Library | **Status**: Development | **Dependencies**: flext-core
+**Type**: Infrastructure Library | **Status**: Active Development | **Dependencies**: flext-core
 
 Plugin management system for the FLEXT ecosystem with dynamic loading and lifecycle management.
 
-> **⚠️ Development Status**: Core domain entities working, CLI implementation missing, 33% test coverage
+> ⚠️ Development Status: Core domain entities working; CLI implementation missing; ~33% test coverage.
 
 ## Quick Start
 
@@ -155,10 +155,10 @@ export FLEXT_PLUGIN_WATCH_INTERVAL=2
 
 ## Quality Standards
 
-### **Zero Tolerance Quality Gates**
+### **Quality Targets**
 
-- **Coverage**: 85% test coverage enforced (currently 33%)
-- **Type Safety**: Strict MyPy configuration
+- **Coverage**: 85% target (currently ~33%)
+- **Type Safety**: MyPy strict mode adoption
 - **Linting**: Ruff with comprehensive rules
 - **Security**: Bandit + pip-audit scanning
 

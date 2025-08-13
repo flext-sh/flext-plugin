@@ -93,7 +93,7 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 ### Quality Standards
 
 - **Test Coverage**: Currently 33% (83/253 tests passing), systematic improvement in progress
-- **Type Safety**: 100% type coverage with strict MyPy validation
+- **Type Safety**: MyPy strict mode target; aiming for 100% coverage
 - **Code Quality**: Ruff linting with ALL rules enabled
 - **Security**: Bandit scanning and pip-audit dependency checks
 

@@ -5,7 +5,7 @@ defined in flext-core. These implementations bridge the gap between the pure
 abstractions in flext-core and the domain entities in flext-plugin.
 
 Architecture Principles:
-    - Implements flext_core.interfaces.FlextPlugin and related interfaces
+    - Implements flext_core.FlextPlugin and related interfaces
     - Uses composition with FlextPluginEntity for domain logic
     - Maintains clean separation between interface and implementation
     - Provides concrete plugin lifecycle management

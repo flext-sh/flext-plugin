@@ -208,7 +208,7 @@ def plugin_config_samples(tmp_path: Path) -> dict[str, dict[str, object]]:
             "endpoint": "https://api.test.com/process",
             "timeout": 30,
             "retry_count": 3,
-            "headers": {"Content-Type": "application/json"},
+            "headers": {"Content-Type": FlextApiConstants.ContentTypes.JSON},
         },
     }
 

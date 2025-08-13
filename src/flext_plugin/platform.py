@@ -167,7 +167,7 @@ class FlextPluginPlatform:
         self._setup_services()
 
     def _setup_services(self) -> None:
-        """Setup platform services."""
+        """Set up platform services in the container."""
         # Register services in container
         # DRY SOLID pattern: Use container kwarg for service initialization
         self.container.register(

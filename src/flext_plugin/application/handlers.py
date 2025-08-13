@@ -47,14 +47,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import FlextHandlers, FlextResult
+from flext_core import FlextResult
+from flext_core.handlers import FlextBaseHandler
 
 if TYPE_CHECKING:
     from flext_plugin.application.services import FlextPluginService
     from flext_plugin.domain.entities import FlextPlugin
 
 
-class FlextPluginHandler(FlextHandlers.CommandHandler):
+class FlextPluginHandler(FlextBaseHandler):
     """Base command handler for plugin-related operations with service coordination.
 
     Abstract base handler that provides common functionality for plugin command
@@ -214,7 +215,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             return FlextResult.fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler(FlextHandlers.EventHandler):
+class FlextPluginEventHandler(FlextBaseHandler):
     """CQRS event handler for plugin lifecycle events and domain event processing.
 
     Event handler implementing the Event Handler pattern from CQRS architecture,
@@ -290,12 +291,12 @@ class FlextPluginEventHandler(FlextHandlers.EventHandler):
             if not hasattr(plugin, "name") or not plugin.name:
                 return FlextResult.fail("Plugin loaded event: plugin missing name")
 
-            return FlextResult.ok(True)
+            return FlextResult.ok(success=True)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin loaded event: {e}")
 
-    def handle_plugin_unloaded(self, plugin_name: str) -> FlextResult[bool]:
+    def handle_plugin_unloaded(self, plugin_name: str) -> FlextResult[None]:
         """Handle plugin unloaded event.
 
         Args:
@@ -318,7 +319,7 @@ class FlextPluginEventHandler(FlextHandlers.EventHandler):
             # - Notify dependent services
 
             # For now, we validate plugin_name and consider it successful
-            return FlextResult.ok(True)
+            return FlextResult.ok(None)
 
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to handle plugin unloaded event: {e}")

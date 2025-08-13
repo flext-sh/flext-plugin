@@ -78,7 +78,7 @@ def handle_result(result: FlextResult[object], success_msg: str = "") -> None:
     help="Output format",
 )
 @click.pass_context
-def cli(ctx: click.Context, verbose: bool, output_format: str) -> None:
+def cli(ctx: click.Context, verbose: bool, output_format: str) -> None:  # noqa: FBT001
     """FLEXT Plugin Management CLI - Enterprise plugin management system."""
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
@@ -172,7 +172,7 @@ def install(ctx: click.Context, plugin_name: str, registry: str, file: str) -> N
     "--force/--no-force", default=False, help="Force uninstall without confirmation",
 )
 @click.pass_context
-def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
+def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:  # noqa: FBT001
     """Uninstall plugin from system."""
     cli_handler = ctx.obj["cli_handler"]
 
@@ -208,7 +208,7 @@ def uninstall(ctx: click.Context, plugin_name: str, force: bool) -> None:
 )
 @click.pass_context
 def list_plugins(
-    ctx: click.Context, installed: bool, available: bool, plugin_type: str | None,
+    ctx: click.Context, installed: bool, available: bool, plugin_type: str | None,  # noqa: FBT001
 ) -> None:
     """List installed and available plugins."""
     cli_handler = ctx.obj["cli_handler"]
@@ -258,7 +258,7 @@ def list_plugins(
     "--all/--no-all", "validate_all", default=False, help="Validate all plugins",
 )
 @click.pass_context
-def validate(ctx: click.Context, plugin: str, validate_all: bool) -> None:
+def validate(ctx: click.Context, plugin: str, validate_all: bool) -> None:  # noqa: FBT001
     """Validate plugin configuration and dependencies."""
     cli_handler = ctx.obj["cli_handler"]
 
@@ -315,7 +315,7 @@ def watch(ctx: click.Context, directory: str, interval: int) -> None:
 @click.option("--health/--no-health", default=False, help="Show platform health")
 @click.option("--reset/--no-reset", default=False, help="Reset platform configuration")
 @click.pass_context
-def platform(ctx: click.Context, status: bool, health: bool, reset: bool) -> None:
+def platform(ctx: click.Context, status: bool, health: bool, reset: bool) -> None:  # noqa: FBT001
     """Manage plugin platform."""
     cli_handler = ctx.obj["cli_handler"]
     format_output = ctx.obj["format"]
@@ -362,7 +362,7 @@ def platform(ctx: click.Context, status: bool, health: bool, reset: bool) -> Non
 
 
 def main() -> None:
-    """Main entry point for the CLI."""
+    """Provide CLI entry point."""
     try:
         cli()
     except Exception as e:
