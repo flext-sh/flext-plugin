@@ -31,8 +31,6 @@ dependencies = [
     "pydantic (>=2.11.7)",
     "pydantic-settings (>=2.10.1)",
     "watchdog (>=6.0.0)",
-    "flext-core @ file:///home/marlonsc/flext/flext-core",
-    "flext-observability @ file:///home/marlonsc/flext/flext-observability",
 ]
 keywords = [
     "architecture",
@@ -96,6 +94,15 @@ flext-plugin = "flext_plugin.cli:main"
 
 [tool.poetry]
 packages = [{ include = "flext_plugin", from = "src" }]
+
+# Local workspace dependencies (path-based)
+[tool.poetry.dependencies.flext-core]
+path = "../flext-core"
+develop = true
+
+[tool.poetry.dependencies.flext-observability]
+path = "../flext-observability"
+develop = true
 
 [tool.bandit]
 extend = "../.bandit-shared.toml"
@@ -217,7 +224,30 @@ warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
 [tool.pytest.ini_options]
-extend = "../.pytest-ini-options-shared.toml"
+minversion = "8.0"
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=flext_plugin",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:reports/coverage",
+    "--cov-report=xml:reports/coverage.xml",
+    "--cov-fail-under=90",
+    "--maxfail=1",
+    "--tb=short",
+]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+    "smoke: Smoke tests",
+    "e2e: End-to-end tests",
+]
+filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 
 [tool.ruff]
 extend = "../.ruff-shared.toml"
