@@ -747,7 +747,8 @@ class FlextPluginRegistry(FlextEntity):
             p = FlextPluginRegistryParams(
                 name=name,
                 plugins=cast(
-                    "dict[str, FlextPluginEntity] | None", kwargs.get("plugins"),
+                    "dict[str, FlextPluginEntity] | None",
+                    kwargs.get("plugins"),
                 ),
                 created_at=cast("datetime | None", kwargs.get("created_at")),
                 registry_url=cast("str", kwargs.get("registry_url", "")),

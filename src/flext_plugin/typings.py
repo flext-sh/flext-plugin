@@ -56,7 +56,11 @@ class PluginError(FlextProcessingError):
     """Domain error for plugin operations with context fields."""
 
     def __init__(
-        self, message: str, plugin_name: str = "", plugin_id: str = "", **kwargs: object,
+        self,
+        message: str,
+        plugin_name: str = "",
+        plugin_id: str = "",
+        **kwargs: object,
     ) -> None:
         """Initialize plugin error with message and identifiers."""
         super().__init__(message)
@@ -140,7 +144,9 @@ class PluginManagerResult:
 
     @classmethod
     def create_detailed(
-        cls, operation: str, config: dict[str, object],
+        cls,
+        operation: str,
+        config: dict[str, object],
     ) -> PluginManagerResult:
         """Create detailed manager result from a configuration mapping."""
         result = cls(operation, success=bool(config.get("success")))

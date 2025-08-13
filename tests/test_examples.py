@@ -21,7 +21,10 @@ def test_basic_plugin_example_execution() -> None:
         return process.returncode, stdout.decode(), stderr.decode()
 
     rc, out, err = asyncio.run(
-        _run([sys.executable, str(example_path)], cwd=str(Path(__file__).parent.parent)),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
@@ -82,11 +85,14 @@ def test_plugin_configuration_example_execution() -> None:
 
     # Execute the example script
     rc, out, err = asyncio.run(
-        _run([sys.executable, str(example_path)], cwd=str(Path(__file__).parent.parent)),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
-    assert rc == 0, (f"Configuration example failed with error: {err}")
+    assert rc == 0, f"Configuration example failed with error: {err}"
 
     # Verify expected output content
     output = out
@@ -347,13 +353,14 @@ def test_docker_integration_example_execution() -> None:
 
     # Execute the example script
     rc, out, err = asyncio.run(
-        _run([sys.executable, str(example_path)], cwd=str(Path(__file__).parent.parent)),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
-    assert rc == 0, (
-        f"Docker integration example failed with error: {err}"
-    )
+    assert rc == 0, f"Docker integration example failed with error: {err}"
 
     # Verify expected output content
     output = out
@@ -464,7 +471,9 @@ def test_docker_integration_example_functionality() -> None:
 
     # Test with an invalid service that should never be available
     invalid_available = check_service_availability(
-        "192.0.2.1", 99999, timeout=0.1,
+        "192.0.2.1",
+        99999,
+        timeout=0.1,
     )  # RFC5737 test address
     assert invalid_available is False
 
@@ -484,9 +493,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Verify successful execution
-    assert rc == 0, (
-        f"Docker integration example with connections failed: {err}"
-    )
+    assert rc == 0, f"Docker integration example with connections failed: {err}"
 
     # Verify connection testing output appears
     output = out

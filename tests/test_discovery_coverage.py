@@ -59,7 +59,8 @@ class TestPluginDiscovery:
         assert "Plugin directory cannot be empty" in str(result.error)
 
     def test_validate_domain_rules_valid_directory_succeeds(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
@@ -71,7 +72,8 @@ class TestPluginDiscovery:
 
     @pytest.mark.asyncio
     async def test_scan_nonexistent_directory_returns_empty_list(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test scan with nonexistent directory returns empty list."""
         plugin_dir = str(temp_dir / "nonexistent")
@@ -84,7 +86,8 @@ class TestPluginDiscovery:
 
     @pytest.mark.asyncio
     async def test_scan_empty_directory_returns_empty_list(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test scan with empty directory returns empty list."""
         plugin_dir = temp_dir / "plugins"
@@ -210,7 +213,8 @@ class TestPluginDiscovery:
 
     @pytest.mark.asyncio
     async def test_discover_plugin_entry_points_empty_directory(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test discover_plugin_entry_points with empty directory."""
         plugin_dir = str(temp_dir / "empty")
@@ -223,7 +227,8 @@ class TestPluginDiscovery:
 
     @pytest.mark.asyncio
     async def test_discover_plugin_entry_points_with_plugins(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test discover_plugin_entry_points with plugin files."""
         plugin_dir = temp_dir / "plugins"
@@ -263,7 +268,8 @@ class TestPluginDiscovery:
 
     @pytest.mark.asyncio
     async def test_discover_plugin_entry_points_integration_with_scan(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test discover_plugin_entry_points integrates with scan method."""
         plugin_dir = temp_dir / "plugins"
@@ -398,7 +404,8 @@ class TestPluginDiscoveryErrorHandling:
 
     @pytest.mark.asyncio
     async def test_scan_handles_permission_errors_gracefully(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test scan handles permission errors gracefully."""
         plugin_dir = temp_dir / "restricted"
@@ -416,7 +423,8 @@ class TestPluginDiscoveryErrorHandling:
 
     @pytest.mark.asyncio
     async def test_discover_entry_points_handles_scan_errors(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test discover_entry_points handles scan errors gracefully."""
         # Use nonexistent directory

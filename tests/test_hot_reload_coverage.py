@@ -157,7 +157,8 @@ class TestHotReloadManager:
         assert "Plugin directory cannot be empty" in str(result.error)
 
     def test_validate_domain_rules_valid_directory_succeeds(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
@@ -213,7 +214,8 @@ class TestHotReloadManager:
 
     @pytest.mark.asyncio
     async def test_start_watching_without_observer_raises_error(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test start_watching without observer raises error."""
         plugin_dir = str(temp_dir / "plugins")
@@ -288,7 +290,8 @@ class TestHotReloadManager:
 
     @pytest.mark.asyncio
     async def test_initial_plugin_load_nonexistent_directory(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test initial plugin load with nonexistent directory."""
         plugin_dir = temp_dir / "nonexistent"
@@ -299,7 +302,8 @@ class TestHotReloadManager:
 
     @pytest.mark.asyncio
     async def test_initial_plugin_load_handles_errors_gracefully(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test initial plugin load handles errors gracefully."""
         plugin_dir = temp_dir / "plugins"
@@ -351,7 +355,8 @@ class TestHotReloadManager:
 
     @pytest.mark.asyncio
     async def test_reload_plugin_handles_errors_gracefully(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test reload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
@@ -449,7 +454,8 @@ class TestHotReloadManager:
 
     @pytest.mark.asyncio
     async def test_unload_plugin_handles_errors_gracefully(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test unload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")

@@ -187,7 +187,9 @@ class ConcreteExecutablePlugin(ConcretePlugin):
         self._operations = operations or {}
 
     def execute(
-        self, operation: str, _params: Mapping[str, object],
+        self,
+        operation: str,
+        _params: Mapping[str, object],
     ) -> FlextResult[object]:
         """Execute a plugin operation.
 

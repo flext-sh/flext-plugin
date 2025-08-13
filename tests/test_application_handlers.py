@@ -380,7 +380,9 @@ class TestableFlextPluginRegistryHandler:
             return FlextResult.fail(f"Sync handler failed: {e}")
 
     async def search_plugins(
-        self, registry: object, query: object,
+        self,
+        registry: object,
+        query: object,
     ) -> FlextResult[object]:
         """Search plugins in registry."""
         try:
@@ -1300,7 +1302,8 @@ class TestFlextPluginExecutionHandler:
 
     @pytest.fixture
     def handler(
-        self, mock_execution_service: Mock,
+        self,
+        mock_execution_service: Mock,
     ) -> TestableFlextPluginExecutionHandler:
         """Create execution handler for testing."""
         return TestableFlextPluginExecutionHandler(
@@ -1545,7 +1548,8 @@ class TestFlextPluginRegistryHandler:
 
     @pytest.fixture
     def handler(
-        self, mock_registry_service: Mock,
+        self,
+        mock_registry_service: Mock,
     ) -> TestableFlextPluginRegistryHandler:
         """Create registry handler for testing."""
         return TestableFlextPluginRegistryHandler(

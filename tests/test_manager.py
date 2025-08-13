@@ -415,7 +415,8 @@ class TestFlextPluginManager:
 
     @pytest.mark.asyncio
     async def test_configure_plugin_not_found(
-        self, manager: FlextPluginManager,
+        self,
+        manager: FlextPluginManager,
     ) -> None:
         """Test configuring non-existent plugin."""
         await manager.initialize()
@@ -431,7 +432,8 @@ class TestFlextPluginManager:
 
     @pytest.mark.asyncio
     async def test_reload_plugin_not_configured(
-        self, manager: FlextPluginManager,
+        self,
+        manager: FlextPluginManager,
     ) -> None:
         """Test reloading plugin that doesn't exist."""
         await manager.initialize()

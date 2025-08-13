@@ -132,7 +132,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.load_plugin.assert_called_once_with(mock_plugin)
 
     def test_handle_register_plugin_empty_name_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin registration with empty name fails."""
         # Create mock plugin with empty name (bypass Pydantic validation)
@@ -147,7 +149,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.load_plugin.assert_not_called()
 
     def test_handle_register_plugin_none_name_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin registration with None name fails."""
         # Create mock plugin with None name
@@ -162,7 +166,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.load_plugin.assert_not_called()
 
     def test_handle_register_plugin_empty_version_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin registration with empty version fails."""
         # Create mock plugin with empty version
@@ -177,7 +183,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.load_plugin.assert_not_called()
 
     def test_handle_register_plugin_none_version_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin registration with None version fails."""
         # Create mock plugin with None version
@@ -192,7 +200,8 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.load_plugin.assert_not_called()
 
     def test_handle_register_plugin_no_service_fails(
-        self, mock_plugin: FlextPlugin,
+        self,
+        mock_plugin: FlextPlugin,
     ) -> None:
         """Test plugin registration without service fails."""
         handler = FlextPluginRegistrationHandler(plugin_service=None)
@@ -259,7 +268,9 @@ class TestFlextPluginRegistrationHandler:
         assert "Failed to register plugin: Type error" in result.error
 
     def test_handle_unregister_plugin_success(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test successful plugin unregistration."""
         plugin_name = "test-plugin"
@@ -272,7 +283,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.unload_plugin.assert_called_once_with(plugin_name)
 
     def test_handle_unregister_plugin_empty_name_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with empty name fails."""
         result = handler.handle_unregister_plugin("")
@@ -282,7 +295,9 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin_service.unload_plugin.assert_not_called()
 
     def test_handle_unregister_plugin_none_name_fails(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with None name fails."""
         result = handler.handle_unregister_plugin(None)
@@ -301,7 +316,9 @@ class TestFlextPluginRegistrationHandler:
         assert "Plugin service not available" in result.error
 
     def test_handle_unregister_plugin_service_failure(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with service failure."""
         plugin_name = "test-plugin"
@@ -315,7 +332,9 @@ class TestFlextPluginRegistrationHandler:
         assert result.error == "Unload error"
 
     def test_handle_unregister_plugin_runtime_exception(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with RuntimeError exception."""
         plugin_name = "test-plugin"
@@ -327,7 +346,9 @@ class TestFlextPluginRegistrationHandler:
         assert "Failed to unregister plugin: Runtime error" in result.error
 
     def test_handle_unregister_plugin_value_exception(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with ValueError exception."""
         plugin_name = "test-plugin"
@@ -339,7 +360,9 @@ class TestFlextPluginRegistrationHandler:
         assert "Failed to unregister plugin: Value error" in result.error
 
     def test_handle_unregister_plugin_type_exception(
-        self, handler: FlextPluginRegistrationHandler, mock_plugin_service: Mock,
+        self,
+        handler: FlextPluginRegistrationHandler,
+        mock_plugin_service: Mock,
     ) -> None:
         """Test plugin unregistration with TypeError exception."""
         plugin_name = "test-plugin"
@@ -381,7 +404,9 @@ class TestFlextPluginEventHandler:
         assert handler is not None
 
     def test_handle_plugin_loaded_success(
-        self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin,
+        self,
+        handler: FlextPluginEventHandler,
+        mock_plugin: FlextPlugin,
     ) -> None:
         """Test successful plugin loaded event handling."""
         result = handler.handle_plugin_loaded(mock_plugin)
@@ -390,7 +415,8 @@ class TestFlextPluginEventHandler:
         assert result.data is True
 
     def test_handle_plugin_loaded_missing_name_fails(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin loaded event with missing name fails."""
         # Create mock plugin with empty name
@@ -403,7 +429,8 @@ class TestFlextPluginEventHandler:
         assert "Plugin loaded event: plugin missing name" in result.error
 
     def test_handle_plugin_loaded_none_name_fails(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin loaded event with None name fails."""
         # Create mock plugin with None name
@@ -416,7 +443,8 @@ class TestFlextPluginEventHandler:
         assert "Plugin loaded event: plugin missing name" in result.error
 
     def test_handle_plugin_loaded_plugin_without_name_attribute(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin loaded event with plugin missing name attribute."""
         # Create object without name attribute
@@ -428,7 +456,9 @@ class TestFlextPluginEventHandler:
         assert "Plugin loaded event: plugin missing name" in result.error
 
     def test_handle_plugin_loaded_runtime_exception(
-        self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin,
+        self,
+        handler: FlextPluginEventHandler,
+        mock_plugin: FlextPlugin,
     ) -> None:
         """Test plugin loaded event with RuntimeError exception."""
         # Mock getattr to raise exception
@@ -456,7 +486,9 @@ class TestFlextPluginEventHandler:
             builtins.getattr = original_getattr
 
     def test_handle_plugin_loaded_value_exception(
-        self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin,
+        self,
+        handler: FlextPluginEventHandler,
+        mock_plugin: FlextPlugin,
     ) -> None:
         """Test plugin loaded event with ValueError exception."""
         # Mock getattr to raise exception
@@ -481,7 +513,9 @@ class TestFlextPluginEventHandler:
             builtins.getattr = original_getattr
 
     def test_handle_plugin_loaded_type_exception(
-        self, handler: FlextPluginEventHandler, mock_plugin: FlextPlugin,
+        self,
+        handler: FlextPluginEventHandler,
+        mock_plugin: FlextPlugin,
     ) -> None:
         """Test plugin loaded event with TypeError exception."""
         # Mock getattr to raise exception
@@ -506,7 +540,8 @@ class TestFlextPluginEventHandler:
             builtins.getattr = original_getattr
 
     def test_handle_plugin_unloaded_success(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test successful plugin unloaded event handling."""
         plugin_name = "test-plugin"
@@ -517,7 +552,8 @@ class TestFlextPluginEventHandler:
         assert result.data is True
 
     def test_handle_plugin_unloaded_empty_name_fails(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with empty name fails."""
         result = handler.handle_plugin_unloaded("")
@@ -526,7 +562,8 @@ class TestFlextPluginEventHandler:
         assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_whitespace_name_fails(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with whitespace-only name fails."""
         result = handler.handle_plugin_unloaded("   ")
@@ -535,7 +572,8 @@ class TestFlextPluginEventHandler:
         assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_none_name_fails(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with None name fails."""
         result = handler.handle_plugin_unloaded(None)
@@ -544,7 +582,8 @@ class TestFlextPluginEventHandler:
         assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_runtime_exception(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with RuntimeError exception."""
         # Create a mock string that raises exception on strip()
@@ -557,7 +596,8 @@ class TestFlextPluginEventHandler:
         assert "Failed to handle plugin unloaded event: Strip error" in result.error
 
     def test_handle_plugin_unloaded_value_exception(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with ValueError exception."""
         # Create a mock string that raises exception on strip()
@@ -570,7 +610,8 @@ class TestFlextPluginEventHandler:
         assert "Failed to handle plugin unloaded event: Value error" in result.error
 
     def test_handle_plugin_unloaded_type_exception(
-        self, handler: FlextPluginEventHandler,
+        self,
+        handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event with TypeError exception."""
         # Create a mock string that raises exception on strip()
