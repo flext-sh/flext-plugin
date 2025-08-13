@@ -468,7 +468,7 @@ def test_docker_integration_example_functionality() -> None:
 
     # Test with an invalid service that should never be available
     invalid_available = check_service_availability(
-        "192.0.2.1", 99999, timeout=0.1
+        "192.0.2.1", 99999, timeout=0.1,
     )  # RFC5737 test address
     assert invalid_available is False
 

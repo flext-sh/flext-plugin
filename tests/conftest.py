@@ -46,6 +46,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_api.constants import FlextApiConstants
 
 if TYPE_CHECKING:
     from collections.abc import Generator

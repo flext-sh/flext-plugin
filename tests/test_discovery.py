@@ -89,7 +89,7 @@ class TestPluginDiscovery:
 
         if test_dir not in discovery.plugin_directories:
             raise AssertionError(
-                f"Expected {test_dir} in {discovery.plugin_directories}"
+                f"Expected {test_dir} in {discovery.plugin_directories}",
             )
 
     def test_add_multiple_plugin_directories(self, discovery: PluginDiscovery) -> None:
@@ -102,7 +102,7 @@ class TestPluginDiscovery:
         for test_dir in test_dirs:
             if test_dir not in discovery.plugin_directories:
                 raise AssertionError(
-                    f"Expected {test_dir} in {discovery.plugin_directories}"
+                    f"Expected {test_dir} in {discovery.plugin_directories}",
                 )
 
     @patch("pathlib.Path.glob")
@@ -447,7 +447,7 @@ class TestPluginDiscovery:
             assert result is not None
             if result.metadata.name != "test-plugin":
                 raise AssertionError(
-                    f"Expected {'test-plugin'}, got {result.metadata.name}"
+                    f"Expected {'test-plugin'}, got {result.metadata.name}",
                 )
 
     def test_plugin_directory_management(self, discovery: PluginDiscovery) -> None:
@@ -465,7 +465,7 @@ class TestPluginDiscovery:
             raise AssertionError(f"Expected {expected_count}, got {actual_count}")
         if test_dir not in discovery.plugin_directories:
             raise AssertionError(
-                f"Expected {test_dir} in {discovery.plugin_directories}"
+                f"Expected {test_dir} in {discovery.plugin_directories}",
             )
 
         # Adding same directory again should not increase count

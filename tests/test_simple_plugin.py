@@ -172,7 +172,7 @@ class TestPluginRegistry:
         assert registry.list_plugins() == []
 
     def test_register_plugin_success(
-        self, registry: PluginRegistry, plugin: Plugin
+        self, registry: PluginRegistry, plugin: Plugin,
     ) -> None:
         """Test successful plugin registration."""
         result = registry.register(plugin)
@@ -210,7 +210,7 @@ class TestPluginRegistry:
         assert "Registration failed" in result.error
 
     def test_unregister_plugin_success(
-        self, registry: PluginRegistry, plugin: Plugin
+        self, registry: PluginRegistry, plugin: Plugin,
     ) -> None:
         """Test successful plugin unregistration."""
         # First register the plugin
@@ -406,7 +406,7 @@ class TestUtilityFunctions:
 
         # Simulate getattr raising AttributeError
         with patch(
-            "builtins.getattr", side_effect=AttributeError("Plugin class not found")
+            "builtins.getattr", side_effect=AttributeError("Plugin class not found"),
         ):
             result = load_plugin("test_module", "Plugin")
 
@@ -418,7 +418,7 @@ class TestUtilityFunctions:
         """Test plugin loading with runtime error during instantiation."""
         mock_module = Mock()
         mock_plugin_class = Mock(
-            side_effect=RuntimeError("Plugin instantiation failed")
+            side_effect=RuntimeError("Plugin instantiation failed"),
         )
         mock_module.Plugin = mock_plugin_class
         mock_import.return_value = mock_module

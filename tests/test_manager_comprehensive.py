@@ -125,7 +125,7 @@ class TestSimplePluginRegistryComprehensive:
         # Both should be retrievable
         if registry.get_plugin("test-plugin") != mock_plugin:
             raise AssertionError(
-                f"Expected {mock_plugin}, got {registry.get_plugin('test-plugin')}"
+                f"Expected {mock_plugin}, got {registry.get_plugin('test-plugin')}",
             )
         assert registry.get_plugin("test-plugin-2") == mock_plugin_2
 
@@ -144,7 +144,7 @@ class TestSimplePluginRegistryComprehensive:
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'registration failed'} in {result.error.lower()}"
+                f"Expected {'registration failed'} in {result.error.lower()}",
             )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
@@ -166,7 +166,7 @@ class TestSimplePluginRegistryComprehensive:
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'registration failed'} in {result.error.lower()}"
+                f"Expected {'registration failed'} in {result.error.lower()}",
             )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
@@ -314,7 +314,7 @@ class TestPluginConfigurationComprehensive:
         if config.configuration != {"key": "value", "nested": {"item": 123}}:
             expected_config = {"key": "value", "nested": {"item": 123}}
             raise AssertionError(
-                f"Expected {expected_config}, got {config.configuration}"
+                f"Expected {expected_config}, got {config.configuration}",
             )
         assert config.permissions == ["read", "write", "execute"]
         if config.auto_load:
@@ -443,7 +443,7 @@ class TestPluginManagerResultComprehensive:
             raise AssertionError(f"Expected True, got {result.success}")
         if result.plugins_affected != ["plugin1", "plugin2"]:
             raise AssertionError(
-                f"Expected {['plugin1', 'plugin2']}, got {result.plugins_affected}"
+                f"Expected {['plugin1', 'plugin2']}, got {result.plugins_affected}",
             )
         assert result.execution_time_ms == 150.5
         expected_details = {"plugins_loaded": 2, "config_applied": True}
@@ -527,7 +527,7 @@ class TestPluginManagerComprehensive:
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
             raise AssertionError(
-                f"Expected {'initialize'}, got {result.data.operation}"
+                f"Expected {'initialize'}, got {result.data.operation}",
             )
         if not (result.data.success):
             raise AssertionError(f"Expected True, got {result.data.success}")
@@ -574,7 +574,7 @@ class TestPluginManagerComprehensive:
         expected_count = 0  # No plugins loaded
         if manager.plugin_count != expected_count:
             raise AssertionError(
-                f"Expected {expected_count}, got {manager.plugin_count}"
+                f"Expected {expected_count}, got {manager.plugin_count}",
             )
 
     @pytest.mark.asyncio
@@ -591,7 +591,7 @@ class TestPluginManagerComprehensive:
             assert result.error is not None
             if "No plugins discovered" not in result.error:
                 raise AssertionError(
-                    f"Expected {'No plugins discovered'} in {result.error}"
+                    f"Expected {'No plugins discovered'} in {result.error}",
                 )
 
     @pytest.mark.asyncio
@@ -633,7 +633,7 @@ class TestPluginManagerComprehensive:
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'not discovered'} in {result.error.lower()}"
+                f"Expected {'not discovered'} in {result.error.lower()}",
             )
 
     @pytest.mark.asyncio
@@ -647,7 +647,7 @@ class TestPluginManagerComprehensive:
         assert result.error is not None
         if "plugin unload failed" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'plugin unload failed'} in {result.error.lower()}"
+                f"Expected {'plugin unload failed'} in {result.error.lower()}",
             )
 
     @pytest.mark.asyncio

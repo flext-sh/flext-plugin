@@ -150,7 +150,7 @@ def main() -> None:
 
     print(f"   Config for: {standalone_config.plugin_name}")
     print(
-        f"   Routes configured: {len(standalone_config.config_data.get('routes', {}))}"
+        f"   Routes configured: {len(standalone_config.config_data.get('routes', {}))}",
     )
     print(f"   Middleware: {standalone_config.config_data.get('middleware', [])}")
 

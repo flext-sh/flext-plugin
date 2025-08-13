@@ -192,7 +192,7 @@ class TestPluginLoaderSimple:
         """Test checking if plugin is loaded when it's not."""
         if loader.is_loaded("non-existent"):
             raise AssertionError(
-                f"Expected False, got {loader.is_loaded('non-existent')}"
+                f"Expected False, got {loader.is_loaded('non-existent')}",
             )
 
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
@@ -228,10 +228,7 @@ class TestPluginLoaderSimple:
         loaded_plugin = FlextPlugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
-            config={
-                "description": "Test plugin",
-                "author": "Test Author"
-            }
+            config={"description": "Test plugin", "author": "Test Author"},
         )
 
         # Manually add to loader's registry
@@ -244,7 +241,7 @@ class TestPluginLoaderSimple:
             raise AssertionError(f"Expected {loaded_plugin}, got {result.data}")
         if not (loader.is_loaded("test-plugin")):
             raise AssertionError(
-                f"Expected True, got {loader.is_loaded('test-plugin')}"
+                f"Expected True, got {loader.is_loaded('test-plugin')}",
             )
 
         # Should appear in all loaded plugins

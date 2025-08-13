@@ -467,7 +467,6 @@ class FlextPluginConfig(FlextEntity):
         if params is not None:
             p = params
         else:
-
             p = FlextPluginConfigParams(
                 plugin_name=plugin_name,
                 config_data=cast("dict[str, object] | None", kwargs.get("config_data")),
@@ -594,7 +593,6 @@ class FlextPluginMetadata(FlextEntity):
         if params is not None:
             p = params
         else:
-
             p = FlextPluginMetadataParams(
                 plugin_name=cast("str", kwargs.get("plugin_name", name)),
                 metadata=cast("dict[str, object] | None", kwargs.get("metadata")),
@@ -746,10 +744,11 @@ class FlextPluginRegistry(FlextEntity):
         if params is not None:
             p = params
         else:
-
             p = FlextPluginRegistryParams(
                 name=name,
-                plugins=cast("dict[str, FlextPluginEntity] | None", kwargs.get("plugins")),
+                plugins=cast(
+                    "dict[str, FlextPluginEntity] | None", kwargs.get("plugins"),
+                ),
                 created_at=cast("datetime | None", kwargs.get("created_at")),
                 registry_url=cast("str", kwargs.get("registry_url", "")),
                 is_enabled=cast("bool", kwargs.get("is_enabled", True)),
@@ -757,12 +756,14 @@ class FlextPluginRegistry(FlextEntity):
                 sync_error_count=cast("int", kwargs.get("sync_error_count", 0)),
                 last_sync=cast("datetime | None", kwargs.get("last_sync")),
                 requires_authentication=cast(
-                    "bool", kwargs.get("requires_authentication", False),
+                    "bool",
+                    kwargs.get("requires_authentication", False),
                 ),
                 api_key=cast("str", kwargs.get("api_key", "")),
                 verify_signatures=cast("bool", kwargs.get("verify_signatures", False)),
                 trusted_publishers=cast(
-                    "list[str] | None", kwargs.get("trusted_publishers"),
+                    "list[str] | None",
+                    kwargs.get("trusted_publishers"),
                 ),
             )
 
@@ -989,7 +990,8 @@ class FlextPluginExecution(FlextEntity):
     def memory_usage_mb(self) -> float:
         """Get memory usage in MB from resource tracking."""
         resource_usage = cast(
-            "dict[str, object]", self.output_data.get("resource_usage", {}),
+            "dict[str, object]",
+            self.output_data.get("resource_usage", {}),
         )
         memory_value = resource_usage.get("memory_mb", 0.0)
         if isinstance(memory_value, (int, float)):
@@ -1000,7 +1002,9 @@ class FlextPluginExecution(FlextEntity):
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
                 logger = get_logger(__name__)
-                logger.exception(f"Invalid memory value '{memory_value}' for plugin execution")
+                logger.exception(
+                    f"Invalid memory value '{memory_value}' for plugin execution",
+                )
                 msg = f"Invalid memory value: {memory_value}"
                 raise ValueError(msg) from e
         # Only return 0.0 for valid empty/None values, not for conversion failures
@@ -1010,7 +1014,8 @@ class FlextPluginExecution(FlextEntity):
     def cpu_time_ms(self) -> float:
         """Get CPU time in milliseconds from resource tracking."""
         resource_usage = cast(
-            "dict[str, object]", self.output_data.get("resource_usage", {}),
+            "dict[str, object]",
+            self.output_data.get("resource_usage", {}),
         )
         cpu_value = resource_usage.get("cpu_time_ms", 0.0)
         if isinstance(cpu_value, (int, float)):
@@ -1021,7 +1026,9 @@ class FlextPluginExecution(FlextEntity):
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
                 logger = get_logger(__name__)
-                logger.exception(f"Invalid CPU time value '{cpu_value}' for plugin execution")
+                logger.exception(
+                    f"Invalid CPU time value '{cpu_value}' for plugin execution",
+                )
                 msg = f"Invalid CPU time value: {cpu_value}"
                 raise ValueError(msg) from e
         # Only return 0.0 for valid empty/None values, not for conversion failures
@@ -1105,7 +1112,9 @@ class FlextPluginExecution(FlextEntity):
 # These aliases are maintained for backward compatibility but should be migrated
 # to use the new naming convention to avoid confusion with interface names.
 Plugin = FlextPluginEntity  # DEPRECATED: Use FlextPluginEntity
-FlextPlugin = FlextPluginEntity  # DEPRECATED: Conflicts with interface, use FlextPluginEntity
+FlextPlugin = (
+    FlextPluginEntity  # DEPRECATED: Conflicts with interface, use FlextPluginEntity
+)
 PluginConfig = FlextPluginConfig
 PluginConfiguration = FlextPluginConfig  # Additional alias for tests
 PluginMetadata = FlextPluginMetadata

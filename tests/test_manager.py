@@ -105,7 +105,7 @@ class TestSimplePluginRegistry:
         assert result.error is not None
         if "registration failed" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'registration failed'} in {result.error.lower()}"
+                f"Expected {'registration failed'} in {result.error.lower()}",
             )
         if registry.get_plugin_count() != 0:
             raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
@@ -220,7 +220,7 @@ class TestFlextPluginConfig:
         expected_config = {"key": "value"}
         if config.config_data != expected_config:
             raise AssertionError(
-                f"Expected {expected_config}, got {config.config_data}"
+                f"Expected {expected_config}, got {config.config_data}",
             )
         assert config.permissions == ["read", "write"]
         if config.auto_load:
@@ -319,7 +319,7 @@ class TestPluginManagerResult:
         if result.plugins_affected != ["plugin1", "plugin2"]:
             expected_plugins = ["plugin1", "plugin2"]
             raise AssertionError(
-                f"Expected {expected_plugins}, got {result.plugins_affected}"
+                f"Expected {expected_plugins}, got {result.plugins_affected}",
             )
         assert result.execution_time_ms == 150.5
         if result.details != {"plugins_loaded": 2}:
@@ -365,7 +365,7 @@ class TestFlextPluginManager:
         assert isinstance(result.data, PluginManagerResult)
         if result.data.operation != "initialize":
             raise AssertionError(
-                f"Expected {'initialize'}, got {result.data.operation}"
+                f"Expected {'initialize'}, got {result.data.operation}",
             )
 
     @pytest.mark.asyncio
@@ -395,7 +395,7 @@ class TestFlextPluginManager:
         assert result.error is not None
         if "No plugins discovered" not in result.error:
             raise AssertionError(
-                f"Expected {'No plugins discovered'} in {result.error}"
+                f"Expected {'No plugins discovered'} in {result.error}",
             )
 
     @pytest.mark.asyncio
@@ -415,7 +415,7 @@ class TestFlextPluginManager:
 
     @pytest.mark.asyncio
     async def test_configure_plugin_not_found(
-        self, manager: FlextPluginManager
+        self, manager: FlextPluginManager,
     ) -> None:
         """Test configuring non-existent plugin."""
         await manager.initialize()
@@ -431,7 +431,7 @@ class TestFlextPluginManager:
 
     @pytest.mark.asyncio
     async def test_reload_plugin_not_configured(
-        self, manager: FlextPluginManager
+        self, manager: FlextPluginManager,
     ) -> None:
         """Test reloading plugin that doesn't exist."""
         await manager.initialize()
@@ -442,7 +442,7 @@ class TestFlextPluginManager:
         assert result.error is not None
         if "not discovered" not in result.error.lower():
             raise AssertionError(
-                f"Expected {'not discovered'} in {result.error.lower()}"
+                f"Expected {'not discovered'} in {result.error.lower()}",
             )
 
     @pytest.mark.asyncio

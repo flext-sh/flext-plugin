@@ -380,7 +380,7 @@ class TestableFlextPluginRegistryHandler:
             return FlextResult.fail(f"Sync handler failed: {e}")
 
     async def search_plugins(
-        self, registry: object, query: object
+        self, registry: object, query: object,
     ) -> FlextResult[object]:
         """Search plugins in registry."""
         try:
@@ -707,7 +707,7 @@ class TestPluginValidationHandler:
     ) -> None:
         """Test successful plugin validation."""
         mock_validation_service.validate_plugin.return_value = FlextResult.ok(
-            VALIDATION_SUCCESS
+            VALIDATION_SUCCESS,
         )
 
         result = await handler.validate_plugin(mock_plugin_instance)
@@ -1300,11 +1300,11 @@ class TestFlextPluginExecutionHandler:
 
     @pytest.fixture
     def handler(
-        self, mock_execution_service: Mock
+        self, mock_execution_service: Mock,
     ) -> TestableFlextPluginExecutionHandler:
         """Create execution handler for testing."""
         return TestableFlextPluginExecutionHandler(
-            execution_service=mock_execution_service
+            execution_service=mock_execution_service,
         )
 
     @pytest.fixture
@@ -1497,7 +1497,7 @@ class TestFlextPluginExecutionHandler:
         execution_id = "exec-123"
 
         mock_execution_service.cancel_execution.return_value = FlextResult.ok(
-            OPERATION_SUCCESS
+            OPERATION_SUCCESS,
         )
 
         result = await handler.cancel_execution(execution_id)
@@ -1545,11 +1545,11 @@ class TestFlextPluginRegistryHandler:
 
     @pytest.fixture
     def handler(
-        self, mock_registry_service: Mock
+        self, mock_registry_service: Mock,
     ) -> TestableFlextPluginRegistryHandler:
         """Create registry handler for testing."""
         return TestableFlextPluginRegistryHandler(
-            registry_service=mock_registry_service
+            registry_service=mock_registry_service,
         )
 
     @pytest.fixture
@@ -1576,7 +1576,7 @@ class TestFlextPluginRegistryHandler:
     def test_handler_initialization(self, mock_registry_service: Mock) -> None:
         """Test registry handler initialization."""
         handler = TestableFlextPluginRegistryHandler(
-            registry_service=mock_registry_service
+            registry_service=mock_registry_service,
         )
 
         if handler.registry_service != mock_registry_service:
@@ -1637,7 +1637,7 @@ class TestFlextPluginRegistryHandler:
     ) -> None:
         """Test successful registry synchronization."""
         mock_registry_service.sync_registry.return_value = FlextResult.ok(
-            OPERATION_SUCCESS
+            OPERATION_SUCCESS,
         )
 
         result = await handler.sync_registry(mock_plugin_registry)

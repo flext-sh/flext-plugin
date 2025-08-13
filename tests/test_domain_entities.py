@@ -116,7 +116,7 @@ class TestFlextPlugin:
         # FlextEntity uses use_enum_values=True, so status is stored as string
         if plugin.status != PluginStatus.INACTIVE.value:
             raise AssertionError(
-                f"Expected {PluginStatus.INACTIVE.value}, got {plugin.status}"
+                f"Expected {PluginStatus.INACTIVE.value}, got {plugin.status}",
             )
 
     def test_plugin_status_transitions(self) -> None:
@@ -137,13 +137,13 @@ class TestFlextPlugin:
         plugin.plugin_status = PluginStatus.LOADED
         if plugin.plugin_status != PluginStatus.LOADED.value:
             raise AssertionError(
-                f"Expected {PluginStatus.LOADED.value}, got {plugin.plugin_status}"
+                f"Expected {PluginStatus.LOADED.value}, got {plugin.plugin_status}",
             )
 
         plugin.plugin_status = PluginStatus.ACTIVE
         if plugin.plugin_status != PluginStatus.ACTIVE.value:
             raise AssertionError(
-                f"Expected {PluginStatus.ACTIVE.value}, got {plugin.plugin_status}"
+                f"Expected {PluginStatus.ACTIVE.value}, got {plugin.plugin_status}",
             )
 
     def test_plugin_health_check(self) -> None:
@@ -216,7 +216,7 @@ class TestFlextPlugin:
         assert plugin.last_error_time is not None
         if plugin.plugin_status != PluginStatus.UNHEALTHY.value:
             raise AssertionError(
-                f"Expected {PluginStatus.UNHEALTHY.value}, got {plugin.plugin_status}"
+                f"Expected {PluginStatus.UNHEALTHY.value}, got {plugin.plugin_status}",
             )
 
 
@@ -236,20 +236,18 @@ class TestFlextPluginConfig:
 
         if not config.config_data.get("enabled"):
             raise AssertionError(
-                f"Expected True, got {config.config_data.get('enabled')}"
+                f"Expected True, got {config.config_data.get('enabled')}",
             )
         if config.config_data.get("settings") != {"key": "value"}:
             expected = {"key": "value"}
             raise AssertionError(
-                f"Expected {expected}, got {config.config_data.get('settings')}"
+                f"Expected {expected}, got {config.config_data.get('settings')}",
             )
         assert config.config_data.get("dependencies") == ["dep1", "dep2"]
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginConfig default values."""
-        config = FlextPluginConfig.create(
-            plugin_name="test-plugin"
-        )
+        config = FlextPluginConfig.create(plugin_name="test-plugin")
 
         if not (config.enabled):
             raise AssertionError(f"Expected True, got {config.enabled}")
@@ -293,7 +291,7 @@ class TestFlextPluginExecution:
         if execution.input_data != {"test": "input"}:
             expected_input = {"test": "input"}
             raise AssertionError(
-                f"Expected {expected_input}, got {execution.input_data}"
+                f"Expected {expected_input}, got {execution.input_data}",
             )
         assert execution.end_time is None
         if execution.output_data != {}:
@@ -311,7 +309,7 @@ class TestFlextPluginExecution:
         execution.mark_started()
         if execution.execution_status != "running":
             raise AssertionError(
-                f"Expected {'running'}, got {execution.execution_status}"
+                f"Expected {'running'}, got {execution.execution_status}",
             )
         if not (execution.is_running):
             raise AssertionError(f"Expected True, got {execution.is_running}")
@@ -324,7 +322,7 @@ class TestFlextPluginExecution:
             raise AssertionError(f"Expected True, got {execution.success}")
         if execution.execution_status != "completed":
             raise AssertionError(
-                f"Expected {'completed'}, got {execution.execution_status}"
+                f"Expected {'completed'}, got {execution.execution_status}",
             )
         if not (execution.is_completed):
             raise AssertionError(f"Expected True, got {execution.is_completed}")
@@ -345,7 +343,7 @@ class TestFlextPluginExecution:
         assert execution.error_message == "Plugin execution failed"
         if execution.execution_status != "failed":
             raise AssertionError(
-                f"Expected {'failed'}, got {execution.execution_status}"
+                f"Expected {'failed'}, got {execution.execution_status}",
             )
 
     def test_execution_resource_tracking(self) -> None:
@@ -400,7 +398,7 @@ class TestFlextPluginRegistryEntity:
         )
         if disabled_registry.is_available:
             raise AssertionError(
-                f"Expected False, got {disabled_registry.is_available}"
+                f"Expected False, got {disabled_registry.is_available}",
             )
 
     def test_registry_sync_recording(self) -> None:
@@ -434,7 +432,7 @@ class TestFlextPluginRegistryEntity:
 
         if not (registry.requires_authentication):
             raise AssertionError(
-                f"Expected True, got {registry.requires_authentication}"
+                f"Expected True, got {registry.requires_authentication}",
             )
         if registry.api_key != "secret-key":
             raise AssertionError(f"Expected {'secret-key'}, got {registry.api_key}")
@@ -452,7 +450,7 @@ class TestFlextPluginRegistryEntity:
             raise AssertionError(f"Expected True, got {registry.verify_signatures}")
         if "acme-corp" not in registry.trusted_publishers:
             raise AssertionError(
-                f"Expected {'acme-corp'} in {registry.trusted_publishers}"
+                f"Expected {'acme-corp'} in {registry.trusted_publishers}",
             )
         assert "trusted-dev" in registry.trusted_publishers
 
@@ -475,7 +473,7 @@ class TestFlextPluginMetadata:
         assert metadata.entry_point == "test.entry:main"
         if metadata.plugin_type != PluginType.TAP.value:
             raise AssertionError(
-                f"Expected {PluginType.TAP.value}, got {metadata.plugin_type}"
+                f"Expected {PluginType.TAP.value}, got {metadata.plugin_type}",
             )
         assert metadata.description == "Test extractor plugin"
         if "requests" not in metadata.dependencies:

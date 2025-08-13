@@ -53,7 +53,7 @@ class TestFlextPluginService:
         assert isinstance(service, FlextDomainService)
 
     def test_execute_method_fails_as_expected(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test execute method returns failure as designed."""
         result = service.execute()
@@ -61,7 +61,7 @@ class TestFlextPluginService:
         assert "Use specific service methods instead of execute" in str(result.error)
 
     def test_discovery_port_property_mock_fallback(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test discovery_port property returns mock when no port registered."""
         port = service.discovery_port
@@ -72,7 +72,7 @@ class TestFlextPluginService:
         assert result.data == []
 
     def test_loader_port_property_mock_fallback(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test loader_port property returns mock when no port registered."""
         port = service.loader_port
@@ -83,7 +83,7 @@ class TestFlextPluginService:
         assert result.data is False
 
     def test_manager_port_property_mock_fallback(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test manager_port property returns mock when no port registered."""
         port = service.manager_port
@@ -93,7 +93,7 @@ class TestFlextPluginService:
         assert result.success
 
     def test_discover_plugins_empty_path_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test discover_plugins with empty path fails."""
         result = service.discover_plugins("")
@@ -101,7 +101,7 @@ class TestFlextPluginService:
         assert "Path is required" in str(result.error)
 
     def test_discover_plugins_valid_path_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test discover_plugins with valid path uses mock port."""
         result = service.discover_plugins("/test/path")
@@ -109,7 +109,7 @@ class TestFlextPluginService:
         assert result.data == []
 
     def test_load_plugin_invalid_plugin_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test load_plugin with invalid plugin fails."""
         # Create plugin that passes creation but might fail service validation
@@ -126,12 +126,10 @@ class TestFlextPluginService:
             assert "Invalid plugin" in str(result.error)
 
     def test_load_plugin_valid_plugin_uses_ports(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test load_plugin with valid plugin uses mock ports."""
-        plugin = FlextPlugin.create(
-            name="test-plugin", plugin_version="1.0.0"
-        )
+        plugin = FlextPlugin.create(name="test-plugin", plugin_version="1.0.0")
         result = service.load_plugin(plugin)
         # Should succeed with mock ports (validation passes, then load succeeds)
         assert result.success
@@ -143,7 +141,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_unload_plugin_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test unload_plugin with valid name uses mock port."""
         result = service.unload_plugin("test-plugin")
@@ -156,7 +154,7 @@ class TestFlextPluginService:
         assert "Plugin path is required" in str(result.error)
 
     def test_install_plugin_valid_path_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test install_plugin with valid path uses mock port."""
         result = service.install_plugin("/test/plugin.py")
@@ -165,7 +163,7 @@ class TestFlextPluginService:
         assert "Mock implementation" in str(result.error)
 
     def test_uninstall_plugin_empty_name_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test uninstall_plugin with empty name fails."""
         result = service.uninstall_plugin("")
@@ -173,7 +171,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_uninstall_plugin_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test uninstall_plugin with valid name uses mock port."""
         result = service.uninstall_plugin("test-plugin")
@@ -186,7 +184,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_enable_plugin_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test enable_plugin with valid name uses mock port."""
         result = service.enable_plugin("test-plugin")
@@ -199,14 +197,14 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_disable_plugin_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test disable_plugin with valid name uses mock port."""
         result = service.disable_plugin("test-plugin")
         assert result.success
 
     def test_get_plugin_config_empty_name_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test get_plugin_config with empty name fails."""
         result = service.get_plugin_config("")
@@ -214,7 +212,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_get_plugin_config_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test get_plugin_config with valid name uses mock port."""
         result = service.get_plugin_config("test-plugin")
@@ -223,7 +221,7 @@ class TestFlextPluginService:
         assert "Mock implementation" in str(result.error)
 
     def test_update_plugin_config_empty_name_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
         config = FlextPluginConfig.create(plugin_name="test")
@@ -232,7 +230,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_update_plugin_config_invalid_config_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with invalid config fails."""
         # Create invalid config (empty plugin_name)
@@ -242,7 +240,7 @@ class TestFlextPluginService:
         assert "Invalid plugin configuration" in str(result.error)
 
     def test_update_plugin_config_valid_params_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with valid params uses mock port."""
         config = FlextPluginConfig.create(plugin_name="test-plugin")
@@ -250,7 +248,7 @@ class TestFlextPluginService:
         assert result.success
 
     def test_is_plugin_loaded_empty_name_fails(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test is_plugin_loaded with empty name fails."""
         result = service.is_plugin_loaded("")
@@ -258,7 +256,7 @@ class TestFlextPluginService:
         assert "Plugin name is required" in str(result.error)
 
     def test_is_plugin_loaded_valid_name_uses_mock(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test is_plugin_loaded with valid name uses mock port."""
         result = service.is_plugin_loaded("test-plugin")
@@ -292,7 +290,7 @@ class TestFlextPluginDiscoveryService:
         assert service.container is container
 
     def test_discovery_service_inheritance(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test discovery service inherits correctly."""
         from flext_core import FlextDomainService
@@ -300,7 +298,7 @@ class TestFlextPluginDiscoveryService:
         assert isinstance(discovery_service, FlextDomainService)
 
     def test_execute_method_fails_as_expected(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test execute method returns failure as designed."""
         result = discovery_service.execute()
@@ -308,7 +306,7 @@ class TestFlextPluginDiscoveryService:
         assert "Use specific service methods instead of execute" in str(result.error)
 
     def test_discovery_port_property_mock_fallback(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test discovery_port property returns mock when no port registered."""
         port = discovery_service.discovery_port
@@ -319,7 +317,7 @@ class TestFlextPluginDiscoveryService:
         assert result.data == []
 
     def test_scan_directory_empty_path_fails(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test scan_directory with empty path fails."""
         result = discovery_service.scan_directory("")
@@ -327,7 +325,7 @@ class TestFlextPluginDiscoveryService:
         assert "Directory path is required" in str(result.error)
 
     def test_scan_directory_valid_path_uses_mock(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test scan_directory with valid path uses mock port."""
         result = discovery_service.scan_directory("/test/directory")
@@ -335,7 +333,7 @@ class TestFlextPluginDiscoveryService:
         assert result.data == []
 
     def test_validate_plugin_integrity_none_plugin_fails(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test validate_plugin_integrity with None plugin fails."""
         result = discovery_service.validate_plugin_integrity(None)
@@ -343,12 +341,10 @@ class TestFlextPluginDiscoveryService:
         assert "Plugin is required" in str(result.error)
 
     def test_validate_plugin_integrity_valid_plugin_uses_mock(
-        self, discovery_service: FlextPluginDiscoveryService
+        self, discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test validate_plugin_integrity with valid plugin uses mock port."""
-        plugin = FlextPlugin.create(
-            name="test-plugin", plugin_version="1.0.0"
-        )
+        plugin = FlextPlugin.create(name="test-plugin", plugin_version="1.0.0")
         result = discovery_service.validate_plugin_integrity(plugin)
         assert result.success
         assert result.data is True
@@ -464,7 +460,7 @@ class TestServiceErrorHandling:
 
     @patch("flext_plugin.application.services.FlextPluginService.discovery_port")
     def test_service_handles_discovery_exceptions(
-        self, mock_discovery_port: Mock
+        self, mock_discovery_port: Mock,
     ) -> None:
         """Test service handles discovery port exceptions."""
         # Setup mock to raise exception
@@ -489,10 +485,10 @@ class TestServiceErrorHandling:
         assert "Failed to unload plugin" in str(result.error)
 
     @patch(
-        "flext_plugin.application.services.FlextPluginDiscoveryService.discovery_port"
+        "flext_plugin.application.services.FlextPluginDiscoveryService.discovery_port",
     )
     def test_discovery_service_handles_scan_exceptions(
-        self, mock_discovery_port: Mock
+        self, mock_discovery_port: Mock,
     ) -> None:
         """Test discovery service handles scan exceptions."""
         # Setup mock to raise exception

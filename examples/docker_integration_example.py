@@ -199,7 +199,7 @@ def create_docker_ldap_plugin() -> tuple[Any, dict[str, Any]]:
     return plugin, config
 
 
-def test_service_connections(test_connections: bool = False) -> dict[str, bool]:
+def test_service_connections(*, test_connections: bool) -> dict[str, bool]:
     """Test connectivity to Docker services."""
     services = {
         "PostgreSQL": ("localhost", 5434),  # Actual Docker container port
@@ -219,13 +219,13 @@ def test_service_connections(test_connections: bool = False) -> dict[str, bool]:
         else:
             results[service_name] = None
             print(
-                f"   {service_name:12} ({host}:{port:4d}): ⏭️  Skipped (use --test-connections to test)"
+                f"   {service_name:12} ({host}:{port:4d}): ⏭️  Skipped (use --test-connections to test)",
             )
 
     return results
 
 
-def main() -> None:
+def main() -> None:  # noqa: PLR0912, PLR0915
     """Demonstrate Docker-integrated plugin configuration."""
     print("=== FLEXT Plugin Docker Integration Example ===")
 
@@ -233,7 +233,7 @@ def main() -> None:
     test_connections = len(sys.argv) > 1 and "--test-connections" in sys.argv
 
     # Test service connectivity
-    connectivity_results = test_service_connections(test_connections)
+    connectivity_results = test_service_connections(test_connections=test_connections)
 
     # 1. Create PostgreSQL plugin
     print("\n1. Creating Docker PostgreSQL plugin...")
@@ -243,7 +243,7 @@ def main() -> None:
     print(f"   Database: {postgres_config['database']['database']}")
     print(f"   Connection pool: {postgres_config['database']['pool_size']} connections")
     print(
-        f"   Monitoring: {'enabled' if postgres_config['monitoring']['enable_metrics'] else 'disabled'}"
+        f"   Monitoring: {'enabled' if postgres_config['monitoring']['enable_metrics'] else 'disabled'}",
     )
 
     # Validate PostgreSQL plugin
@@ -267,7 +267,7 @@ def main() -> None:
     print(f"   Plugin: {redis_plugin.name} v{redis_plugin.plugin_version}")
     print(f"   Cache TTL: {redis_config['cache']['default_ttl']} seconds")
     print(
-        f"   Connection pool: {redis_config['connection_pool']['max_connections']} connections"
+        f"   Connection pool: {redis_config['connection_pool']['max_connections']} connections",
     )
     print(f"   Key prefix: {redis_config['cache']['key_prefix']}")
 
@@ -291,11 +291,11 @@ def main() -> None:
 
     print(f"   Plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
     print(
-        f"   LDAP server: {ldap_config['ldap']['server']}:{ldap_config['ldap']['port']}"
+        f"   LDAP server: {ldap_config['ldap']['server']}:{ldap_config['ldap']['port']}",
     )
     print(f"   Base DN: {ldap_config['ldap']['base_dn']}")
     print(
-        f"   Connection pool: {ldap_config['connection_pool']['pool_size']} connections"
+        f"   Connection pool: {ldap_config['connection_pool']['pool_size']} connections",
     )
 
     # Validate LDAP plugin

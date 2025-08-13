@@ -82,7 +82,7 @@ def test_plugin_type_enum() -> None:
     assert PluginType.TARGET.value == "target"
     if PluginType.TRANSFORM.value != "transform":
         raise AssertionError(
-            f"Expected {'transform'}, got {PluginType.TRANSFORM.value}"
+            f"Expected {'transform'}, got {PluginType.TRANSFORM.value}",
         )
     assert PluginType.UTILITY.value == "utility"
 

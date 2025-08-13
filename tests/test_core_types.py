@@ -46,7 +46,7 @@ class TestPluginType:
         assert PluginType.TARGET.value == "target"
         if PluginType.TRANSFORM.value != "transform":
             raise AssertionError(
-                f"Expected {'transform'}, got {PluginType.TRANSFORM.value}"
+                f"Expected {'transform'}, got {PluginType.TRANSFORM.value}",
             )
         assert PluginType.UTILITY.value == "utility"
 
@@ -57,7 +57,7 @@ class TestPluginType:
         assert PluginType("target") == PluginType.TARGET
         if PluginType("transform") != PluginType.TRANSFORM:
             raise AssertionError(
-                f"Expected {PluginType.TRANSFORM}, got {PluginType('transform')}"
+                f"Expected {PluginType.TRANSFORM}, got {PluginType('transform')}",
             )
         assert PluginType("utility") == PluginType.UTILITY
 
@@ -74,12 +74,12 @@ class TestPluginStatus:
         """Test all plugin status enum values."""
         if PluginStatus.UNKNOWN.value != "unknown":
             raise AssertionError(
-                f"Expected {'unknown'}, got {PluginStatus.UNKNOWN.value}"
+                f"Expected {'unknown'}, got {PluginStatus.UNKNOWN.value}",
             )
         assert PluginStatus.DISCOVERED.value == "discovered"
         if PluginStatus.LOADED.value != "loaded":
             raise AssertionError(
-                f"Expected {'loaded'}, got {PluginStatus.LOADED.value}"
+                f"Expected {'loaded'}, got {PluginStatus.LOADED.value}",
             )
         assert PluginStatus.ACTIVE.value == "active"
         if PluginStatus.ERROR.value != "error":
@@ -89,17 +89,17 @@ class TestPluginStatus:
         """Test creating PluginStatus from string values."""
         if PluginStatus("unknown") != PluginStatus.UNKNOWN:
             raise AssertionError(
-                f"Expected {PluginStatus.UNKNOWN}, got {PluginStatus('unknown')}"
+                f"Expected {PluginStatus.UNKNOWN}, got {PluginStatus('unknown')}",
             )
         assert PluginStatus("discovered") == PluginStatus.DISCOVERED
         if PluginStatus("loaded") != PluginStatus.LOADED:
             raise AssertionError(
-                f"Expected {PluginStatus.LOADED}, got {PluginStatus('loaded')}"
+                f"Expected {PluginStatus.LOADED}, got {PluginStatus('loaded')}",
             )
         assert PluginStatus("active") == PluginStatus.ACTIVE
         if PluginStatus("error") != PluginStatus.ERROR:
             raise AssertionError(
-                f"Expected {PluginStatus.ERROR}, got {PluginStatus('error')}"
+                f"Expected {PluginStatus.ERROR}, got {PluginStatus('error')}",
             )
 
 
@@ -112,7 +112,7 @@ class TestPluginError:
         # Real implementation prefixes with [PROCESSING_ERROR]
         if str(error) != "[PROCESSING_ERROR] Test error message":
             raise AssertionError(
-                f"Expected {'[PROCESSING_ERROR] Test error message'}, got {error!s}"
+                f"Expected {'[PROCESSING_ERROR] Test error message'}, got {error!s}",
             )
 
     def test_plugin_error_with_plugin_id(self) -> None:
@@ -129,7 +129,7 @@ class TestPluginError:
         # Real implementation ignores error_code parameter and uses PROCESSING_ERROR
         if error.error_code != "PROCESSING_ERROR":
             raise AssertionError(
-                f"Expected {'PROCESSING_ERROR'}, got {error.error_code}"
+                f"Expected {'PROCESSING_ERROR'}, got {error.error_code}",
             )
         # Real implementation always uses PROCESSING_ERROR regardless of parameter
         assert str(error) == "[PROCESSING_ERROR] Test error"
@@ -178,7 +178,7 @@ class TestPluginExecutionResult:
         assert result.duration_ms == 75
         if result.error_message != "Something went wrong":
             raise AssertionError(
-                f"Expected {'Something went wrong'}, got {result.error_message}"
+                f"Expected {'Something went wrong'}, got {result.error_message}",
             )
         # Real implementation defaults output_data to None
         assert result.output_data is None

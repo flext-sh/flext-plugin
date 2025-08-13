@@ -182,7 +182,10 @@ class FlextPluginManager:
         return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     def list_plugins(
-        self, *, _enabled_only: bool = False, enabled_only: bool | None = None,
+        self,
+        *,
+        _enabled_only: bool = False,
+        enabled_only: bool | None = None,
     ) -> list[object]:
         """Legacy list plugins method."""
         # Handle both parameter names for backward compatibility
@@ -242,16 +245,44 @@ flext_plugin_create_manager = create_flext_plugin_platform
 flext_plugin_create_platform = create_flext_plugin_platform
 
 __all__: list[str] = [
-    "annotations", "FlextContainer", "FlextResult", "PluginExecutionContext", "PluginManagerResult",
-    "FlextPluginHandler", "FlextPluginRegistrationHandler", "FlextPluginDiscoveryService",
-    "FlextPluginService", "FlextPlugin", "FlextPluginConfig", "FlextPluginEntity", "FlextPluginMetadata",
-    "FlextPluginRegistry", "FlextPluginDiscoveryPort", "FlextPluginLoaderPort", "FlextPluginManagerPort",
-    "ConcreteDataPlugin", "ConcreteExecutablePlugin", "ConcretePlugin", "ConcretePluginContext",
-    "ConcretePluginLoader", "ConcretePluginRegistry", "ConcreteTransformPlugin", "FlextPluginPlatform",
-    "create_flext_plugin", "create_flext_plugin_config", "create_flext_plugin_metadata",
-    "create_flext_plugin_registry", "__version_info__", "FlextPluginManager", "FlextPluginResult",
-    "create_flext_plugin_platform", "flext_plugin_create_plugin", "flext_plugin_create_config",
-    "flext_plugin_create_metadata", "flext_plugin_create_registry", "flext_plugin_create_manager",
+    "annotations",
+    "FlextContainer",
+    "FlextResult",
+    "PluginExecutionContext",
+    "PluginManagerResult",
+    "FlextPluginHandler",
+    "FlextPluginRegistrationHandler",
+    "FlextPluginDiscoveryService",
+    "FlextPluginService",
+    "FlextPlugin",
+    "FlextPluginConfig",
+    "FlextPluginEntity",
+    "FlextPluginMetadata",
+    "FlextPluginRegistry",
+    "FlextPluginDiscoveryPort",
+    "FlextPluginLoaderPort",
+    "FlextPluginManagerPort",
+    "ConcreteDataPlugin",
+    "ConcreteExecutablePlugin",
+    "ConcretePlugin",
+    "ConcretePluginContext",
+    "ConcretePluginLoader",
+    "ConcretePluginRegistry",
+    "ConcreteTransformPlugin",
+    "FlextPluginPlatform",
+    "create_flext_plugin",
+    "create_flext_plugin_config",
+    "create_flext_plugin_metadata",
+    "create_flext_plugin_registry",
+    "__version_info__",
+    "FlextPluginManager",
+    "FlextPluginResult",
+    "create_flext_plugin_platform",
+    "flext_plugin_create_plugin",
+    "flext_plugin_create_config",
+    "flext_plugin_create_metadata",
+    "flext_plugin_create_registry",
+    "flext_plugin_create_manager",
     "flext_plugin_create_platform",
 ]
 

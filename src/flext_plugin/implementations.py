@@ -24,7 +24,7 @@ Example:
     >>> plugin = ConcretePlugin(
     ...     name="my-plugin",
     ...     version="1.0.0",
-    ...     entity=plugin_entity  # Domain entity for business logic
+    ...     entity=plugin_entity,  # Domain entity for business logic
     ... )
     >>> result = plugin.initialize(context)
     >>> if result.success:
@@ -186,7 +186,9 @@ class ConcreteExecutablePlugin(ConcretePlugin):
         super().__init__(name, version, entity)
         self._operations = operations or {}
 
-    def execute(self, operation: str, _params: Mapping[str, object]) -> FlextResult[object]:
+    def execute(
+        self, operation: str, _params: Mapping[str, object],
+    ) -> FlextResult[object]:
         """Execute a plugin operation.
 
         Args:
@@ -531,7 +533,9 @@ class ConcretePluginLoader(FlextPluginLoader):
             # Register loaded plugin
             reg_result = self._registry.register(plugin)  # type: ignore[attr-defined]
             if not reg_result.success:
-                return FlextResult.fail(f"Failed to register loaded plugin: {reg_result.error}")
+                return FlextResult.fail(
+                    f"Failed to register loaded plugin: {reg_result.error}",
+                )
 
             return FlextResult.ok(plugin)
 

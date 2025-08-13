@@ -179,7 +179,9 @@ class PluginDiscovery(FlextEntity):
                 except (json.JSONDecodeError, OSError) as e:
                     # Log manifest parsing error but continue discovery process
                     logger = get_logger(__name__)
-                    logger.warning(f"Failed to parse plugin manifest {manifest_file}: {e}")
+                    logger.warning(
+                        f"Failed to parse plugin manifest {manifest_file}: {e}",
+                    )
 
     def _validate_plugin_class(self, plugin_class: type) -> bool:
         """Validate if a class is a valid plugin."""

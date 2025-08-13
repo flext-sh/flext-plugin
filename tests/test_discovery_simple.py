@@ -101,7 +101,7 @@ class TestPluginDiscoverySimple:
             raise AssertionError(f"Expected {expected_count}, got {actual_count}")
         if test_dir not in discovery.plugin_directories:
             raise AssertionError(
-                f"Expected {test_dir} in {discovery.plugin_directories}"
+                f"Expected {test_dir} in {discovery.plugin_directories}",
             )
 
     def test_add_duplicate_plugin_directory(self, discovery: PluginDiscovery) -> None:
@@ -132,7 +132,7 @@ class TestPluginDiscoverySimple:
         # Should not increase count
         if len(discovery.plugin_directories) != initial_count:
             raise AssertionError(
-                f"Expected {initial_count}, got {len(discovery.plugin_directories)}"
+                f"Expected {initial_count}, got {len(discovery.plugin_directories)}",
             )
 
     def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
@@ -288,7 +288,7 @@ class TestPluginDiscoverySimple:
             assert result is not None
             if result.metadata.name != "test-plugin":
                 raise AssertionError(
-                    f"Expected {'test-plugin'}, got {result.metadata.name}"
+                    f"Expected {'test-plugin'}, got {result.metadata.name}",
                 )
 
     @pytest.mark.asyncio
