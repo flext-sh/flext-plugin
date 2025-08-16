@@ -105,10 +105,18 @@ class FlextPluginDiscoveryPort(ABC):
         """Discover plugins in the given path.
 
         Args:
-            path: Path to search for plugins
+                    path: Path to search for plugins
 
         Returns:
-            FlextResult containing list of discovered plugins
+                    FlextResult containing list of discovered plugins
+
+
+
+        Args:
+            path (str): Description.
+
+        Returns:
+            FlextResult[list[FlextPlugin]]: Description.
 
         """
 
@@ -117,10 +125,18 @@ class FlextPluginDiscoveryPort(ABC):
         """Validate a plugin.
 
         Args:
-            plugin: Plugin to validate
+                    plugin: Plugin to validate
 
         Returns:
-            FlextResult indicating if plugin is valid
+                    FlextResult indicating if plugin is valid
+
+
+
+        Args:
+            plugin (FlextPlugin): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -178,10 +194,18 @@ class FlextPluginLoaderPort(ABC):
         """Load a plugin.
 
         Args:
-            plugin: Plugin to load
+                    plugin: Plugin to load
 
         Returns:
-            FlextResult indicating if loading was successful
+                    FlextResult indicating if loading was successful
+
+
+
+        Args:
+            plugin (FlextPlugin): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -190,10 +214,18 @@ class FlextPluginLoaderPort(ABC):
         """Unload a plugin.
 
         Args:
-            plugin_name: Name of plugin to unload
+                    plugin_name: Name of plugin to unload
 
         Returns:
-            FlextResult indicating if unloading was successful
+                    FlextResult indicating if unloading was successful
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -202,10 +234,18 @@ class FlextPluginLoaderPort(ABC):
         """Check if a plugin is loaded.
 
         Args:
-            plugin_name: Name of plugin to check
+                    plugin_name: Name of plugin to check
 
         Returns:
-            FlextResult indicating if plugin is loaded
+                    FlextResult indicating if plugin is loaded
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -272,10 +312,18 @@ class FlextPluginManagerPort(ABC):
         """Install a plugin from the given path.
 
         Args:
-            plugin_path: Path to plugin to install
+                    plugin_path: Path to plugin to install
 
         Returns:
-            FlextResult containing installed plugin
+                    FlextResult containing installed plugin
+
+
+
+        Args:
+            plugin_path (str): Description.
+
+        Returns:
+            FlextResult[FlextPlugin]: Description.
 
         """
 
@@ -284,10 +332,18 @@ class FlextPluginManagerPort(ABC):
         """Uninstall a plugin.
 
         Args:
-            plugin_name: Name of plugin to uninstall
+                    plugin_name: Name of plugin to uninstall
 
         Returns:
-            FlextResult indicating if uninstallation was successful
+                    FlextResult indicating if uninstallation was successful
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -296,10 +352,18 @@ class FlextPluginManagerPort(ABC):
         """Enable a plugin.
 
         Args:
-            plugin_name: Name of plugin to enable
+                    plugin_name: Name of plugin to enable
 
         Returns:
-            FlextResult indicating if enabling was successful
+                    FlextResult indicating if enabling was successful
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -308,10 +372,18 @@ class FlextPluginManagerPort(ABC):
         """Disable a plugin.
 
         Args:
-            plugin_name: Name of plugin to disable
+                    plugin_name: Name of plugin to disable
 
         Returns:
-            FlextResult indicating if disabling was successful
+                    FlextResult indicating if disabling was successful
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 
@@ -320,10 +392,18 @@ class FlextPluginManagerPort(ABC):
         """Get configuration for a plugin.
 
         Args:
-            plugin_name: Name of plugin to get config for
+                    plugin_name: Name of plugin to get config for
 
         Returns:
-            FlextResult containing plugin configuration
+                    FlextResult containing plugin configuration
+
+
+
+        Args:
+            plugin_name (str): Description.
+
+        Returns:
+            FlextResult[FlextPluginConfig]: Description.
 
         """
 
@@ -336,11 +416,20 @@ class FlextPluginManagerPort(ABC):
         """Update configuration for a plugin.
 
         Args:
-            plugin_name: Name of plugin to update config for
-            config: New plugin configuration
+                    plugin_name: Name of plugin to update config for
+                    config: New plugin configuration
 
         Returns:
-            FlextResult indicating if update was successful
+                    FlextResult indicating if update was successful
+
+
+
+        Args:
+            plugin_name (str): Description.
+            config (FlextPluginConfig): Description.
+
+        Returns:
+            FlextResult[bool]: Description.
 
         """
 

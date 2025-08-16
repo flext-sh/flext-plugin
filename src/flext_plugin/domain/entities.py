@@ -206,7 +206,7 @@ class FlextPluginEntity(FlextEntity):
             plugin_version: Plugin version (required)
             entity_id: Unique entity identifier
             config: Configuration dict containing description, author, etc.
-            **kwargs: Additional arguments for backward compatibility
+            **kwargs: Additional arguments for testing convenience
 
         Returns:
             FlextPlugin: Validated plugin entity
@@ -218,7 +218,7 @@ class FlextPluginEntity(FlextEntity):
         # Extract config values
         config = config or {}
 
-        # Handle backward compatibility for plugin_id in kwargs
+        # Handle testing convenience for plugin_id in kwargs
         plugin_name = kwargs.get("plugin_id", name)
 
         # Create instance data
@@ -238,19 +238,19 @@ class FlextPluginEntity(FlextEntity):
     # Remove __new__ method - let Pydantic handle object creation naturally
     # Use factory method create() for backward compatibility
 
-    # Backward compatibility properties (without conflicting names)
+    # Testing convenience properties (without conflicting names)
     @property
     def plugin_name(self) -> str:
-        """Get plugin name (compatibility)."""
+        """Get plugin name (convenience)."""
         return self.name
 
     def get_version(self) -> str:
-        """Get plugin version (compatibility)."""
+        """Get plugin version (convenience)."""
         return self.plugin_version
 
     @property
     def plugin_status(self) -> str:
-        """Get plugin status (compatibility) - returns value string."""
+        """Get plugin status (convenience) - returns value string."""
         # FlextEntity uses use_enum_values=True, so status is already a string
         return self.status if isinstance(self.status, str) else self.status.value
 
@@ -270,41 +270,41 @@ class FlextPluginEntity(FlextEntity):
         # Handle both enum and string values due to use_enum_values=True
         return self.status in {PluginStatus.HEALTHY, PluginStatus.HEALTHY.value}
 
-    # Execution tracking properties (for backward compatibility)
+    # Execution tracking properties (for testing convenience)
     @property
     def execution_count(self) -> int:
         """Get number of executions recorded."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_execution_count", 0)
 
     @property
     def average_execution_time_ms(self) -> float:
         """Get average execution time in milliseconds."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_average_execution_time_ms", 0.0)
 
     @property
     def last_execution(self) -> datetime | None:
         """Get timestamp of last execution."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_last_execution", None)
 
     @property
     def error_count(self) -> int:
         """Get number of errors recorded."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_error_count", 0)
 
     @property
     def last_error(self) -> str:
         """Get last error message."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_last_error", "")
 
     @property
     def last_error_time(self) -> datetime | None:
         """Get timestamp of last error."""
-        # For backward compatibility, return a placeholder
+        # For testing convenience, return a placeholder
         return getattr(self, "_last_error_time", None)
 
     def is_valid(self) -> bool:
@@ -433,7 +433,7 @@ class FlextPluginConfig(FlextEntity):
         description="Last update timestamp",
     )
 
-    # Configuration fields for backward compatibility
+    # Configuration fields for testing convenience
     enabled: bool = Field(
         default=True,
         description="Whether plugin configuration is enabled",
@@ -556,7 +556,7 @@ class FlextPluginMetadata(FlextEntity):
     repository_url: str = Field(default="", description="Plugin repository URL")
     license_info: str = Field(default="", description="Plugin license information")
 
-    # Additional fields for backward compatibility
+    # Additional fields for testing convenience
     name: str = Field(min_length=1, description="Plugin name (alias for plugin_name)")
     entry_point: str = Field(min_length=1, description="Plugin entry point")
     plugin_type: str = Field(default="", description="Plugin type")
@@ -704,7 +704,7 @@ class FlextPluginRegistry(FlextEntity):
         description="Registry creation timestamp",
     )
 
-    # Registry configuration fields for backward compatibility
+    # Registry configuration fields for testing convenience
     registry_url: str = Field(default="", description="Registry URL")
     is_enabled: bool = Field(default=True, description="Whether registry is enabled")
     plugin_count: int = Field(default=0, description="Number of plugins in registry")
@@ -938,7 +938,7 @@ class FlextPluginExecution(FlextEntity):
             entity_id: Unique entity identifier
             plugin_name: Name of the plugin being executed
             execution_config: Execution configuration dictionary
-            **kwargs: Additional keyword arguments for backward compatibility
+            **kwargs: Additional keyword arguments for testing convenience
 
         """
         # FlextEntity expects keyword argument 'id'
@@ -950,7 +950,7 @@ class FlextPluginExecution(FlextEntity):
         # Initialize FlextEntity base with ONLY base fields
         super().__init__(id=final_id)
 
-        # Handle backward compatibility - tests may pass plugin_id
+        # Handle testing convenience - tests may pass plugin_id
         if "plugin_id" in kwargs:
             plugin_name = plugin_name or str(kwargs["plugin_id"])
         execution_id = kwargs.get("execution_id", final_id)
@@ -1109,16 +1109,16 @@ class FlextPluginExecution(FlextEntity):
         return FlextResult.ok(None)
 
 
-# Backwards compatibility aliases - DEPRECATED: Use FlextPluginEntity instead
-# These aliases are maintained for backward compatibility but should be migrated
+# Testing convenience aliases - TRANSITIONAL: Use FlextPluginEntity instead
+# These aliases are maintained for testing convenience but should be migrated
 # to use the new naming convention to avoid confusion with interface names.
-Plugin = FlextPluginEntity  # DEPRECATED: Use FlextPluginEntity
+Plugin = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
 FlextPlugin = (
-    FlextPluginEntity  # DEPRECATED: Conflicts with interface, use FlextPluginEntity
+    FlextPluginEntity  # TRANSITIONAL: Conflicts with interface, use FlextPluginEntity
 )
 PluginConfig = FlextPluginConfig
 PluginConfiguration = FlextPluginConfig  # Additional alias for tests
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
-PluginInstance = FlextPluginEntity  # DEPRECATED: Use FlextPluginEntity
+PluginInstance = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
 PluginExecution = FlextPluginExecution
