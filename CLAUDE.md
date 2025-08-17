@@ -81,16 +81,19 @@ make pre-commit        # Run pre-commit hooks on all files
 ### Plugin Management Commands
 
 ```bash
-# Plugin operations (⚠️  CLI IMPLEMENTATION REQUIRED - THESE COMMANDS WILL FAIL)
-# make plugin-create NAME=my-plugin TYPE=extractor    # TODO: Requires flext-plugin CLI
-# make plugin-install NAME=tap-github                 # TODO: Requires flext-plugin CLI
-# make plugin-list                                    # TODO: Requires flext-plugin CLI
-# make plugin-watch                                   # TODO: Requires flext-plugin CLI
-# make plugin-validate                                # Works - uses FlextPluginPlatform
-# make plugin-reload                                  # BROKEN: hot_reload_all function missing
+# Direct CLI usage (preferred method)
+flext-plugin create --name my-plugin --type tap     # Create new plugin
+flext-plugin install plugin-name                    # Install plugin from registry
+flext-plugin list --format json                     # List plugins with JSON output
+flext-plugin validate --all                         # Validate all plugins
+flext-plugin watch --directory ./plugins            # Monitor with hot reload
+flext-plugin platform --status                      # Check platform status
 
-# Currently working plugin validation:
+# Makefile shortcuts (delegate to CLI)
 make plugin-validate                                 # Validate plugin system
+make plugin-test                                     # Test plugin platform
+make plugin-discovery                               # Test discovery service
+make plugin-operations                              # Run all validations
 ```
 
 ### Build & Cleanup
@@ -185,6 +188,14 @@ pytest -m integration       # Cross-layer integration tests
 pytest -m plugin            # Plugin system tests
 pytest -m hot_reload        # Hot-reload functionality tests
 pytest -k "test_name"       # Run specific test by name pattern
+
+# Run specific test files for development
+pytest tests/test_core_types.py -v           # Core type system tests
+pytest tests/test_domain_entities.py -v     # Entity behavior tests
+pytest tests/test_application_handlers.py -v # Handler integration tests
+pytest tests/test_discovery.py -v           # Discovery functionality
+pytest tests/test_manager.py -v             # Manager integration tests
+pytest tests/test_platform.py -v            # Platform layer tests (if exists)
 ```
 
 **Test Structure:**
@@ -224,6 +235,37 @@ FLEXT_PLUGIN_MAX_WORKERS=10
 ```
 
 ## Common Development Patterns
+
+### Key Implementation Patterns
+
+**Clean Architecture Implementation:**
+- **Core Layer**: Pure domain types and business logic (PluginType, PluginStatus enums)
+- **Domain Layer**: Business entities (FlextPlugin, FlextPluginConfig) with behavior
+- **Application Layer**: Services and handlers coordinating business logic
+- **Platform Layer**: Unified facade (FlextPluginPlatform) for external integration
+
+**Result Pattern Usage:**
+All operations return `FlextResult[T]` for consistent error handling:
+```python
+from flext_core import FlextResult
+
+def create_plugin(...) -> FlextResult[FlextPlugin]:
+    try:
+        # Implementation
+        return FlextResult.ok(plugin)
+    except Exception as e:
+        return FlextResult.fail(f"Creation failed: {e}")
+```
+
+**Dependency Injection Pattern:**
+The platform uses FlextContainer for dependency management:
+```python
+from flext_core import FlextContainer
+from flext_plugin import FlextPluginPlatform
+
+container = FlextContainer()
+platform = FlextPluginPlatform(container)
+```
 
 ### Working with Plugin Entities
 
@@ -309,21 +351,26 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 
 ## Critical Implementation Gaps
 
-### 🚨 GAP 1: CLI Implementation Missing
+### ✅ UPDATED: CLI Implementation Complete
 
-**Status**: HIGH PRIORITY - CLI entry point defined but not implemented
-**Issue**:
+**Status**: IMPLEMENTED - CLI is fully functional with comprehensive commands
+**Implementation**:
 
-- `pyproject.toml` defines `flext-plugin = "flext_plugin.cli:main"`
-- No `cli.py` file exists in the codebase
-- Makefile plugin commands reference non-existent CLI
+- ✅ `src/flext_plugin/cli.py` exists with complete CLI implementation
+- ✅ Comprehensive command set: create, install, uninstall, list, validate, watch, platform
+- ✅ Click framework with proper error handling and FlextResult integration
+- ✅ JSON and text output formats supported
+- ✅ All Makefile plugin commands properly reference working CLI
 
-**Required Actions**:
-
-- [ ] Create `src/flext_plugin/cli.py` with main() entry point
-- [ ] Implement plugin management commands (create, install, list, watch, validate)
-- [ ] Add CLI argument parsing and help documentation
-- [ ] Update Makefile commands to work with actual CLI implementation
+**Available Commands**:
+```bash
+flext-plugin create --name my-plugin --type tap    # Create new plugin
+flext-plugin install plugin-name                   # Install plugin
+flext-plugin list --format json                    # List plugins
+flext-plugin validate --all                        # Validate plugins
+flext-plugin watch --directory ./plugins           # Hot reload monitoring
+flext-plugin platform --status                     # Platform status
+```
 
 ### 🚨 GAP 2: Hot Reload Implementation Incomplete
 
@@ -375,7 +422,50 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 
 ## Next Steps for Development
 
-1. **Immediate**: Implement CLI functionality to enable plugin management commands
-2. **Short-term**: Complete hot reload system integration and testing
-3. **Medium-term**: Add Singer/Meltano plugin support for data pipeline integration
+1. **Immediate**: Complete hot reload system integration and improve test coverage
+2. **Short-term**: Enhance Singer/Meltano plugin support for data pipeline integration  
+3. **Medium-term**: Improve platform method implementations (install, uninstall, etc.)
 4. **Long-term**: Expand examples and documentation for broader ecosystem adoption
+
+## Troubleshooting Common Issues
+
+### CLI Issues
+
+```bash
+# CLI not found after installation
+pip install -e .  # Reinstall in development mode
+poetry install     # Or reinstall with poetry
+
+# Permission issues with plugin creation
+chmod +x $(which flext-plugin)  # Make CLI executable
+
+# Platform initialization failures
+python -c "from flext_plugin import FlextPluginPlatform; FlextPluginPlatform()"  # Test platform
+```
+
+### Test Issues
+
+```bash
+# MyPy type errors during development
+poetry run mypy src --show-error-codes  # See specific error codes
+poetry run mypy src --strict             # Run in strict mode
+
+# Test failures due to missing dependencies
+poetry install --with dev,test          # Install all test dependencies
+poetry run pytest tests/ -v             # Run with verbose output
+
+# Coverage issues
+pytest --cov=flext_plugin --cov-report=html  # Generate detailed coverage report
+```
+
+### Plugin Development Issues
+
+```bash
+# Plugin discovery not working
+export FLEXT_PLUGIN_DISCOVERY_PATHS="./plugins:~/.flext/plugins"  # Set paths
+flext-plugin validate --all                                        # Validate system
+
+# Hot reload not responding
+flext-plugin watch --directory ./plugins --interval 1  # Reduce interval
+ps aux | grep flext-plugin                              # Check running processes
+```

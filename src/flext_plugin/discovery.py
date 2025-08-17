@@ -59,32 +59,32 @@ class PluginDiscovery(FlextEntity):
     and comprehensive plugin file analysis.
 
     Key Capabilities:
-        - Recursive directory scanning for Python plugin files
-        - Plugin metadata extraction from file system attributes
-        - File structure analysis and validation
-        - Async scanning operations with error handling
-        - Integration with plugin registry and management systems
+      - Recursive directory scanning for Python plugin files
+      - Plugin metadata extraction from file system attributes
+      - File structure analysis and validation
+      - Async scanning operations with error handling
+      - Integration with plugin registry and management systems
 
     Discovery Process:
-        1. Directory validation and sanitization
-        2. Recursive file system traversal
-        3. Plugin file identification and filtering
-        4. Metadata extraction and normalization
-        5. Result compilation and validation
+      1. Directory validation and sanitization
+      2. Recursive file system traversal
+      3. Plugin file identification and filtering
+      4. Metadata extraction and normalization
+      5. Result compilation and validation
 
     File Detection:
-        - Python files (.py) with plugin patterns
-        - Plugin manifest files and configuration
-        - Module structure analysis and validation
-        - Dependency detection and requirement analysis
+      - Python files (.py) with plugin patterns
+      - Plugin manifest files and configuration
+      - Module structure analysis and validation
+      - Dependency detection and requirement analysis
 
     Example:
-        >>> discovery = PluginDiscovery(plugin_directory="./plugins")
-        >>> # Validate directory before scanning
-        >>> validation = discovery.validate_domain_rules()
-        >>> if validation.success():
-        ...     plugins = await discovery.scan()
-        ...     print(f"Discovered {len(plugins)} plugin files")
+      >>> discovery = PluginDiscovery(plugin_directory="./plugins")
+      >>> # Validate directory before scanning
+      >>> validation = discovery.validate_domain_rules()
+      >>> if validation.success():
+      ...     plugins = await discovery.scan()
+      ...     print(f"Discovered {len(plugins)} plugin files")
 
     """
 
@@ -94,77 +94,77 @@ class PluginDiscovery(FlextEntity):
 
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> PluginDiscovery:
-        """Create plugin discovery instance with proper validation."""
-        entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
-        version = cast("int", kwargs.get("version", 1))
-        metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
+      """Create plugin discovery instance with proper validation."""
+      entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+      version = cast("int", kwargs.get("version", 1))
+      metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
 
-        # Create instance using Pydantic model_validate
-        instance_data = {
-            "id": entity_id,
-            "version": version,
-            "metadata": metadata,
-            "plugin_directory": plugin_directory,
-        }
+      # Create instance using Pydantic model_validate
+      instance_data = {
+          "id": entity_id,
+          "version": version,
+          "metadata": metadata,
+          "plugin_directory": plugin_directory,
+      }
 
-        return cls.model_validate(instance_data)
+      return cls.model_validate(instance_data)
 
     # Removed __init__ - use create() class method instead
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate domain rules for plugin discovery."""
-        if not self.plugin_directory:
-            return FlextResult.fail("Plugin directory cannot be empty")
-        return FlextResult.ok(None)
+      """Validate domain rules for plugin discovery."""
+      if not self.plugin_directory:
+          return FlextResult.fail("Plugin directory cannot be empty")
+      return FlextResult.ok(None)
 
     async def scan(self) -> list[dict[str, object]]:
-        """Scan the plugin directory for Python plugin files.
+      """Scan the plugin directory for Python plugin files.
 
-        Returns:
-            List of dictionaries containing plugin file information including
-            name, path, file_name, size, and modified time.
+      Returns:
+          List of dictionaries containing plugin file information including
+          name, path, file_name, size, and modified time.
 
-        """
-        plugins: list[dict[str, object]] = []
-        plugin_path = Path(self.plugin_directory)
+      """
+      plugins: list[dict[str, object]] = []
+      plugin_path = Path(self.plugin_directory)
 
-        if not plugin_path.exists():
-            return plugins
+      if not plugin_path.exists():
+          return plugins
 
-        for py_file in plugin_path.glob("*.py"):
-            if py_file.name.startswith("__"):
-                continue
+      for py_file in plugin_path.glob("*.py"):
+          if py_file.name.startswith("__"):
+              continue
 
-            plugin_info = {
-                "name": py_file.stem,
-                "path": py_file,
-                "file_name": py_file.name,
-                "size": py_file.stat().st_size,
-                "modified": py_file.stat().st_mtime,
-            }
-            plugins.append(plugin_info)
+          plugin_info = {
+              "name": py_file.stem,
+              "path": py_file,
+              "file_name": py_file.name,
+              "size": py_file.stat().st_size,
+              "modified": py_file.stat().st_mtime,
+          }
+          plugins.append(plugin_info)
 
-        return plugins
+      return plugins
 
     async def discover_plugin_entry_points(self) -> list[dict[str, object]]:
-        """Discover plugin entry points from scanned plugin files.
+      """Discover plugin entry points from scanned plugin files.
 
-        Returns:
-            List of dictionaries containing entry point information including
-            name, module_name, plugin_class, path, and type.
+      Returns:
+          List of dictionaries containing entry point information including
+          name, module_name, plugin_class, path, and type.
 
-        """
-        plugins = await self.scan()
-        entry_points = []
+      """
+      plugins = await self.scan()
+      entry_points = []
 
-        for plugin in plugins:
-            entry_point = {
-                "name": plugin["name"],
-                "module_name": plugin["name"],
-                "plugin_class": "Plugin",  # Default class name
-                "path": plugin["path"],
-                "type": "generic",
-            }
-            entry_points.append(entry_point)
+      for plugin in plugins:
+          entry_point = {
+              "name": plugin["name"],
+              "module_name": plugin["name"],
+              "plugin_class": "Plugin",  # Default class name
+              "path": plugin["path"],
+              "type": "generic",
+          }
+          entry_points.append(entry_point)
 
-        return entry_points
+      return entry_points

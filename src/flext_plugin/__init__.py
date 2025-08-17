@@ -10,6 +10,10 @@ from flext_core import FlextContainer, FlextResult
 
 # Core types needed throughout the module
 from flext_plugin.core.types import (
+    PluginType,
+    PluginStatus,
+    PluginError,
+    PluginExecutionResult,
     PluginExecutionContext,
     PluginManagerResult,
 )
@@ -61,8 +65,18 @@ from flext_plugin.implementations import (
     ConcreteTransformPlugin,
 )
 
+# Loader
+from flext_plugin.loader import PluginLoader
+
 # Platform
 from flext_plugin.platform import FlextPluginPlatform
+
+# Hot Reload
+from flext_plugin.hot_reload import (
+    HotReloadManager,
+    PluginFileHandler,
+    create_hot_reload_manager,
+)
 
 # Simple API
 from flext_plugin.simple_api import (
@@ -83,108 +97,108 @@ class FlextPluginManager:
     """
 
     def __init__(
-        self,
-        container: FlextContainer | None = None,
-        *,
-        _auto_discover: bool = True,
-        _security_enabled: bool = True,
-        **_kwargs: object,
+      self,
+      container: FlextContainer | None = None,
+      *,
+      _auto_discover: bool = True,
+      _security_enabled: bool = True,
+      **_kwargs: object,
     ) -> None:
-        """Initialize with backwards compatibility for legacy parameters."""
-        # Ignore legacy parameters and create modern platform
-        self._platform = FlextPluginPlatform(container)
-        self._initialized = False  # Legacy state tracking
+      """Initialize with backwards compatibility for legacy parameters."""
+      # Ignore legacy parameters and create modern platform
+      self._platform = FlextPluginPlatform(container)
+      self._initialized = False  # Legacy state tracking
 
     @property
     def is_initialized(self) -> bool:
-        """Legacy property for backwards compatibility."""
-        return self._initialized
+      """Legacy property for backwards compatibility."""
+      return self._initialized
 
     @property
     def plugin_count(self) -> int:
-        """Legacy property for plugin count."""
-        return 0  # Placeholder for compatibility
+      """Legacy property for plugin count."""
+      return 0  # Placeholder for compatibility
 
     @property
     def discovery(self) -> object:
-        """Legacy discovery object."""
-        return self._platform.discovery_service
+      """Legacy discovery object."""
+      return self._platform.discovery_service
 
     async def initialize(self) -> FlextResult[object]:
-        """Legacy async initialize method for backwards compatibility."""
-        # Mark as initialized
-        self._initialized = True
+      """Legacy async initialize method for backwards compatibility."""
+      # Mark as initialized
+      self._initialized = True
 
-        # Return legacy result format
-        result_data = PluginManagerResult(
-            operation="initialize",
-            success=True,
-        )
-        result_data.details = {"platform": self._platform}
-        return FlextResult.ok(result_data)
+      # Return legacy result format
+      result_data = PluginManagerResult(
+          operation="initialize",
+          success=True,
+      )
+      result_data.details = {"platform": self._platform}
+      return FlextResult.ok(result_data)
 
     async def cleanup(self) -> None:
-        """Legacy cleanup method for backwards compatibility."""
-        self._initialized = False
+      """Legacy cleanup method for backwards compatibility."""
+      self._initialized = False
 
     async def integrate_with_protocols(self) -> FlextResult[object]:
-        """Legacy protocol integration (placeholder)."""
-        return FlextResult.ok("Protocol integration completed")
+      """Legacy protocol integration (placeholder)."""
+      return FlextResult.ok("Protocol integration completed")
 
     async def reload_plugin(self, plugin_name: str) -> FlextResult[object]:
-        """Legacy plugin reload method."""
-        return FlextResult.fail(f"Plugin '{plugin_name}' not discovered")
+      """Legacy plugin reload method."""
+      return FlextResult.fail(f"Plugin '{plugin_name}' not discovered")
 
     async def execute_plugin(
-        self,
-        plugin_name: str,
-        _data: dict[str, object],
+      self,
+      plugin_name: str,
+      _data: dict[str, object],
     ) -> FlextResult[object]:
-        """Legacy plugin execution method."""
-        return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+      """Legacy plugin execution method."""
+      return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     async def configure_plugin(
-        self,
-        plugin_name: str,
-        _config: object,
+      self,
+      plugin_name: str,
+      _config: object,
     ) -> FlextResult[object]:
-        """Legacy plugin configuration method."""
-        return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+      """Legacy plugin configuration method."""
+      return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     def get_plugin_status(self, plugin_name: str) -> FlextResult[object]:
-        """Legacy plugin status method."""
-        return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+      """Legacy plugin status method."""
+      return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     def list_plugins(
-        self,
-        *,
-        _enabled_only: bool = False,
-        enabled_only: bool | None = None,
+      self,
+      *,
+      _enabled_only: bool = False,
+      enabled_only: bool | None = None,
     ) -> list[object]:
-        """Legacy list plugins method."""
-        # Handle both parameter names for backward compatibility
-        if enabled_only is not None:
-            _enabled_only = enabled_only
-        return []
+      """Legacy list plugins method."""
+      # Handle both parameter names for backward compatibility
+      if enabled_only is not None:
+          _enabled_only = enabled_only
+      return []
 
     async def discover_and_load_plugins(self) -> FlextResult[object]:
-        """Legacy discover and load method."""
-        return FlextResult.fail("No plugins discovered")
+      """Legacy discover and load method."""
+      return FlextResult.fail("No plugins discovered")
 
     async def unload_plugin(self, plugin_name: str) -> FlextResult[object]:
-        """Legacy plugin unload method."""
-        return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+      """Legacy plugin unload method."""
+      return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
     async def _create_plugin_context(self, plugin_name: str) -> object:
-        """Legacy create plugin context method."""
-        return PluginExecutionContext(
-            plugin_id=plugin_name,
-            execution_id=str(uuid.uuid4()),
-        )
+      """Legacy create plugin context method."""
+      return PluginExecutionContext(
+          plugin_id=plugin_name,
+          execution_id=str(uuid.uuid4()),
+      )
 
     def __getattr__(self, name: str) -> object:
-        """Delegate all method calls to the underlying platform."""
-        return getattr(self._platform, name)
+      """Delegate all method calls to the underlying platform."""
+      return getattr(self._platform, name)
 
 
 FlextPluginResult = FlextResult
@@ -196,17 +210,17 @@ def create_flext_plugin_platform(
     """Create unified FLEXT Plugin platform instance.
 
     Args:
-        config: Optional configuration dictionary
+      config: Optional configuration dictionary
 
     Returns:
-        Configured FlextPluginPlatform instance
+      Configured FlextPluginPlatform instance
 
     """
     container = FlextContainer()
     # Configure container with config dict if provided
     if config:
-        for key, value in config.items():
-            container.register(key, value)
+      for key, value in config.items():
+          container.register(key, value)
     return FlextPluginPlatform(container)
 
 
@@ -228,6 +242,11 @@ __all__: list[str] = [
     "FlextPluginRegistrationHandler",
     "FlextPluginDiscoveryService",
     "FlextPluginService",
+    # Core Types
+    "PluginType",
+    "PluginStatus",
+    "PluginError",
+    "PluginExecutionResult",
     "FlextPlugin",
     "FlextPluginConfig",
     "FlextPluginEntity",
@@ -243,6 +262,10 @@ __all__: list[str] = [
     "ConcretePluginLoader",
     "ConcretePluginRegistry",
     "ConcreteTransformPlugin",
+    "PluginLoader",
+    "HotReloadManager",
+    "PluginFileHandler",
+    "create_hot_reload_manager",
     "FlextPluginPlatform",
     "create_flext_plugin",
     "create_flext_plugin_config",
@@ -260,6 +283,3 @@ __all__: list[str] = [
     "flext_plugin_create_manager",
     "flext_plugin_create_platform",
 ]
-
-# Module metadata
-__architecture__ = "Clean Architecture + DDD"

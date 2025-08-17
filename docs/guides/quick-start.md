@@ -217,7 +217,7 @@ class GreetingPlugin(FlextPlugin):
 
 # Usage example
 async def demo_custom_plugin():
-    from flext_plugin import create_flext_plugin_platform
+from flext_plugin import create_flext_plugin_platform
 
     # Create platform and plugin
     platform = create_flext_plugin_platform()

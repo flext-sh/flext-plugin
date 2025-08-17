@@ -72,42 +72,42 @@ class PluginLoader(FlextEntity):
     both development and production use cases.
 
     Key Capabilities:
-        - Dynamic Python module loading from file paths
-        - Plugin registry management with conflict detection
-        - Security validation and sandboxing (configurable)
-        - Hot-reload support for development workflows
-        - Resource cleanup and memory management
-        - Comprehensive error handling and validation
+      - Dynamic Python module loading from file paths
+      - Plugin registry management with conflict detection
+      - Security validation and sandboxing (configurable)
+      - Hot-reload support for development workflows
+      - Resource cleanup and memory management
+      - Comprehensive error handling and validation
 
     Architecture Integration:
-        - Extends FlextEntity for domain-driven design compliance
-        - Implements infrastructure layer patterns for Clean Architecture
-        - Provides concrete implementation for plugin loading ports
-        - Maintains state through entity lifecycle management
+      - Extends FlextEntity for domain-driven design compliance
+      - Implements infrastructure layer patterns for Clean Architecture
+      - Provides concrete implementation for plugin loading ports
+      - Maintains state through entity lifecycle management
 
     Plugin Registry:
-        - Class-level registry for global plugin tracking
-        - Instance-level registry for isolated loading scenarios
-        - Conflict detection and resolution mechanisms
-        - Module lifecycle management and cleanup
+      - Class-level registry for global plugin tracking
+      - Instance-level registry for isolated loading scenarios
+      - Conflict detection and resolution mechanisms
+      - Module lifecycle management and cleanup
 
     Security Model:
-        - Configurable security validation for plugin loading
-        - Path sanitization and validation
-        - Module isolation and conflict prevention
-        - Resource usage monitoring and limits
+      - Configurable security validation for plugin loading
+      - Path sanitization and validation
+      - Module isolation and conflict prevention
+      - Resource usage monitoring and limits
 
     Example:
-        >>> # Initialize loader with security enabled
-        >>> loader = PluginLoader(security_enabled=True)
-        >>>
-        >>> # Load plugin from file path
-        >>> plugin_path = Path("./plugins/data_processor.py")
-        >>> try:
-        ...     plugin = loader.load_plugin(plugin_path)
-        ...     print(f"Successfully loaded plugin from {plugin_path}")
-        ... except Exception as e:
-        ...     print(f"Failed to load plugin: {e}")
+      >>> # Initialize loader with security enabled
+      >>> loader = PluginLoader(security_enabled=True)
+      >>>
+      >>> # Load plugin from file path
+      >>> plugin_path = Path("./plugins/data_processor.py")
+      >>> try:
+      ...     plugin = loader.load_plugin(plugin_path)
+      ...     print(f"Successfully loaded plugin from {plugin_path}")
+      ... except Exception as e:
+      ...     print(f"Failed to load plugin: {e}")
 
     """
 
@@ -117,161 +117,161 @@ class PluginLoader(FlextEntity):
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
     def __init__(
-        self,
-        *,
-        entity_id: str = "",
-        security_enabled: bool = True,
+      self,
+      *,
+      entity_id: str = "",
+      security_enabled: bool = True,
     ) -> None:
-        """Initialize plugin loader."""
-        # Generate ID if not provided for backward compatibility
-        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
-        super().__init__(id=final_entity_id)
-        # Store security setting as instance attribute (not Pydantic field)
-        object.__setattr__(self, "_security_enabled", security_enabled)
-        self._loaded_plugins: dict[str, object] = {}
+      """Initialize plugin loader."""
+      # Generate ID if not provided for backward compatibility
+      final_entity_id = entity_id or FlextGenerators.generate_entity_id()
+      super().__init__(id=final_entity_id)
+      # Store security setting as instance attribute (not Pydantic field)
+      object.__setattr__(self, "_security_enabled", security_enabled)
+      self._loaded_plugins: dict[str, object] = {}
 
     @property
     def security_enabled(self) -> bool:
-        """Get security enabled status."""
-        return getattr(self, "_security_enabled", True)
+      """Get security enabled status."""
+      return getattr(self, "_security_enabled", True)
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate domain rules for plugin loader."""
-        return FlextResult.ok(None)
+      """Validate domain rules for plugin loader."""
+      return FlextResult.ok(None)
 
     def load_plugin(self, file_path: Path) -> object:
-        """Load a plugin from a Python file.
+      """Load a plugin from a Python file.
 
-        Args:
-            file_path: Path to the plugin file
+      Args:
+          file_path: Path to the plugin file
 
-        Returns:
-            Loaded plugin instance
+      Returns:
+          Loaded plugin instance
 
-        Raises:
-            ImportError: If plugin cannot be loaded
-            ValueError: If plugin is invalid
+      Raises:
+          ImportError: If plugin cannot be loaded
+          ValueError: If plugin is invalid
 
-        """
+      """
 
-        def _handle_import_error(error: str) -> None:
-            """Handle import error by raising appropriate exception."""
-            raise ImportError(error)
+      def _handle_import_error(error: str) -> None:
+          """Handle import error by raising appropriate exception."""
+          raise ImportError(error)
 
-        def _handle_value_error(error: str) -> None:
-            """Handle value error by raising appropriate exception."""
-            raise ValueError(error)
+      def _handle_value_error(error: str) -> None:
+          """Handle value error by raising appropriate exception."""
+          raise ValueError(error)
 
-        try:
-            # Create module spec
-            spec = importlib.util.spec_from_file_location(
-                file_path.stem,
-                file_path,
-            )
-            if spec is None:
-                spec_msg: str = f"Failed to create spec for {file_path}"
-                _handle_import_error(spec_msg)
-                return FlextResult.fail(spec_msg)  # Early return for type narrowing
+      try:
+          # Create module spec
+          spec = importlib.util.spec_from_file_location(
+              file_path.stem,
+              file_path,
+          )
+          if spec is None:
+              spec_msg: str = f"Failed to create spec for {file_path}"
+              _handle_import_error(spec_msg)
+              return FlextResult.fail(spec_msg)  # Early return for type narrowing
 
-            # Type narrowing: spec is not None after check
-            if spec.loader is None:
-                loader_msg: str = f"No loader available for {file_path}"
-                _handle_import_error(loader_msg)
-                return FlextResult.fail(loader_msg)  # Early return for type narrowing
+          # Type narrowing: spec is not None after check
+          if spec.loader is None:
+              loader_msg: str = f"No loader available for {file_path}"
+              _handle_import_error(loader_msg)
+              return FlextResult.fail(loader_msg)  # Early return for type narrowing
 
-            module = importlib.util.module_from_spec(spec)
-            # spec and spec.loader are guaranteed to be non-None here
-            spec.loader.exec_module(module)
+          module = importlib.util.module_from_spec(spec)
+          # spec and spec.loader are guaranteed to be non-None here
+          spec.loader.exec_module(module)
 
-            # Store module for hot reload
-            self.plugin_modules[file_path.stem] = module
+          # Store module for hot reload
+          self.plugin_modules[file_path.stem] = module
 
-            # Look for get_plugin function first
-            if hasattr(module, "get_plugin"):
-                plugin = module.get_plugin()
-                self.loaded_plugins[file_path.stem] = plugin
-                return plugin
+          # Look for get_plugin function first
+          if hasattr(module, "get_plugin"):
+              plugin = module.get_plugin()
+              self.loaded_plugins[file_path.stem] = plugin
+              return plugin
 
-            # Fallback to any class that has execute method
-            for attr_name in dir(module):
-                attr = getattr(module, attr_name)
-                if (
-                    hasattr(attr, "execute")
-                    and callable(attr)
-                    and attr_name != "execute"
-                ):
-                    plugin = attr()
-                    self.loaded_plugins[file_path.stem] = plugin
-                    return plugin
+          # Fallback to any class that has execute method
+          for attr_name in dir(module):
+              attr = getattr(module, attr_name)
+              if (
+                  hasattr(attr, "execute")
+                  and callable(attr)
+                  and attr_name != "execute"
+              ):
+                  plugin = attr()
+                  self.loaded_plugins[file_path.stem] = plugin
+                  return plugin
 
-            not_found_msg: str = f"No plugin found in {file_path}"
-            _handle_value_error(not_found_msg)
-        except (RuntimeError, ValueError, TypeError) as e:
-            load_error_msg: str = f"Failed to load plugin from {file_path}: {e}"
-            _handle_import_error(load_error_msg)
+          not_found_msg: str = f"No plugin found in {file_path}"
+          _handle_value_error(not_found_msg)
+      except (RuntimeError, ValueError, TypeError) as e:
+          load_error_msg: str = f"Failed to load plugin from {file_path}: {e}"
+          _handle_import_error(load_error_msg)
 
-        # This should never be reached, all paths above either return or raise
-        return None
+      # This should never be reached, all paths above either return or raise
+      return None
 
     async def unload_plugin(self, plugin_name: str) -> None:
-        """Unload plugin by name."""
-        if plugin_name in self.loaded_plugins:
-            plugin = self.loaded_plugins[plugin_name]
-            if hasattr(plugin, "cleanup"):
-                await plugin.cleanup()
-            del self.loaded_plugins[plugin_name]
+      """Unload plugin by name."""
+      if plugin_name in self.loaded_plugins:
+          plugin = self.loaded_plugins[plugin_name]
+          if hasattr(plugin, "cleanup"):
+              await plugin.cleanup()
+          del self.loaded_plugins[plugin_name]
 
-        if plugin_name in self.plugin_modules:
-            del self.plugin_modules[plugin_name]
+      if plugin_name in self.plugin_modules:
+          del self.plugin_modules[plugin_name]
 
     async def reload_plugin(self, plugin_name: str, file_path: str) -> object:
-        """Reload plugin from file."""
-        await self.unload_plugin(plugin_name)
-        return self.load_plugin(Path(file_path))
+      """Reload plugin from file."""
+      await self.unload_plugin(plugin_name)
+      return self.load_plugin(Path(file_path))
 
     def get_loaded_plugins(self) -> dict[str, object]:
-        """Get copy of loaded plugins."""
-        return self.loaded_plugins.copy()
+      """Get copy of loaded plugins."""
+      return self.loaded_plugins.copy()
 
     async def cleanup_all(self) -> None:
-        """Cleanup all loaded plugins."""
-        for plugin_name in list(self.loaded_plugins.keys()):
-            await self.unload_plugin(plugin_name)
+      """Cleanup all loaded plugins."""
+      for plugin_name in list(self.loaded_plugins.keys()):
+          await self.unload_plugin(plugin_name)
 
-        self.loaded_plugins.clear()
-        self.plugin_modules.clear()
+      self.loaded_plugins.clear()
+      self.plugin_modules.clear()
 
     def get_loaded_plugin(self, plugin_name: str) -> FlextResult[object]:
-        """Get a loaded plugin by name.
+      """Get a loaded plugin by name.
 
-        Args:
-            plugin_name: Name of the plugin to retrieve
+      Args:
+          plugin_name: Name of the plugin to retrieve
 
-        Returns:
-            FlextResult containing the loaded plugin or error
+      Returns:
+          FlextResult containing the loaded plugin or error
 
-        """
-        if plugin_name in self._loaded_plugins:
-            return FlextResult.ok(self._loaded_plugins[plugin_name])
-        return FlextResult.fail(f"Plugin '{plugin_name}' not loaded")
+      """
+      if plugin_name in self._loaded_plugins:
+          return FlextResult.ok(self._loaded_plugins[plugin_name])
+      return FlextResult.fail(f"Plugin '{plugin_name}' not loaded")
 
     def is_loaded(self, plugin_name: str) -> bool:
-        """Check if a plugin is loaded.
+      """Check if a plugin is loaded.
 
-        Args:
-            plugin_name: Name of the plugin to check
+      Args:
+          plugin_name: Name of the plugin to check
 
-        Returns:
-            True if plugin is loaded, False otherwise
+      Returns:
+          True if plugin is loaded, False otherwise
 
-        """
-        return plugin_name in self._loaded_plugins
+      """
+      return plugin_name in self._loaded_plugins
 
     def get_all_loaded_plugins(self) -> FlextResult[dict[str, object]]:
-        """Get all loaded plugins.
+      """Get all loaded plugins.
 
-        Returns:
-            FlextResult containing dictionary of loaded plugins
+      Returns:
+          FlextResult containing dictionary of loaded plugins
 
-        """
-        return FlextResult.ok(self._loaded_plugins.copy())
+      """
+      return FlextResult.ok(self._loaded_plugins.copy())

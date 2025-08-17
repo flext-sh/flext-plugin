@@ -42,7 +42,7 @@ Integration:
     - Supports dictionary-based plugin creation for external integration
     - Maintains enterprise-grade validation and error handling
 
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
@@ -79,39 +79,39 @@ def create_flext_plugin(
     registration and use within the FLEXT plugin management system.
 
     Args:
-        name: Unique plugin identifier name, must be non-empty string
-        version: Plugin version string, should follow semantic versioning
-        config: Optional configuration dict containing:
-            - description: Human-readable plugin description
-            - author: Plugin developer or organization name
-            - dependencies: List of plugin dependencies
-            - metadata: Additional plugin metadata
-            - status: Plugin lifecycle status (defaults to INACTIVE)
+      name: Unique plugin identifier name, must be non-empty string
+      version: Plugin version string, should follow semantic versioning
+      config: Optional configuration dict containing:
+          - description: Human-readable plugin description
+          - author: Plugin developer or organization name
+          - dependencies: List of plugin dependencies
+          - metadata: Additional plugin metadata
+          - status: Plugin lifecycle status (defaults to INACTIVE)
 
     Returns:
-        Fully initialized FlextPlugin domain entity with generated ID and timestamps
+      Fully initialized FlextPlugin domain entity with generated ID and timestamps
 
     Example:
-        >>> plugin = create_flext_plugin(
-        ...     name="data-processor",
-        ...     version="1.2.0",
-        ...     config={
-        ...         "description": "Advanced data processing plugin",
-        ...         "author": "FLEXT Development Team",
-        ...         "dependencies": ["flext-core", "flext-db"],
-        ...     },
-        ... )
-        >>> print(f"Plugin {plugin.name} v{plugin.plugin_version} created")
+      >>> plugin = create_flext_plugin(
+      ...     name="data-processor",
+      ...     version="1.2.0",
+      ...     config={
+      ...         "description": "Advanced data processing plugin",
+      ...         "author": "FLEXT Development Team",
+      ...         "dependencies": ["flext-core", "flext-db"],
+      ...     },
+      ... )
+      >>> print(f"Plugin {plugin.name} v{plugin.plugin_version} created")
 
     """
     config = config or {}
     config["created_at"] = datetime.now(UTC)
 
     return FlextPlugin.create(
-        name=name,
-        plugin_version=version,
-        entity_id=str(uuid.uuid4()),
-        config=config,
+      name=name,
+      plugin_version=version,
+      entity_id=str(uuid.uuid4()),
+      config=config,
     )
 
 
@@ -122,19 +122,19 @@ def create_flext_plugin_config(
     """Create a new FlextPluginConfig entity.
 
     Args:
-        plugin_name: Name of the plugin this config belongs to
-        config_data: Configuration data
+      plugin_name: Name of the plugin this config belongs to
+      config_data: Configuration data
 
     Returns:
-        New FlextPluginConfig entity
+      New FlextPluginConfig entity
 
     """
     return FlextPluginConfig.create(
-        plugin_name=plugin_name,
-        entity_id=str(uuid.uuid4()),
-        config_data=config_data,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+      plugin_name=plugin_name,
+      entity_id=str(uuid.uuid4()),
+      config_data=config_data,
+      created_at=datetime.now(UTC),
+      updated_at=datetime.now(UTC),
     )
 
 
@@ -147,12 +147,12 @@ def create_flext_plugin_metadata(
     """Create a new FlextPluginMetadata entity.
 
     Args:
-        plugin_name: Name of the plugin this metadata belongs to
-        metadata: Metadata dict containing tags, categories, URLs, license info
-        entry_point: Plugin entry point (defaults to plugin_name if not provided)
+      plugin_name: Name of the plugin this metadata belongs to
+      metadata: Metadata dict containing tags, categories, URLs, license info
+      entry_point: Plugin entry point (defaults to plugin_name if not provided)
 
     Returns:
-        New FlextPluginMetadata entity
+      New FlextPluginMetadata entity
 
     """
     metadata = metadata or {}
@@ -162,10 +162,10 @@ def create_flext_plugin_metadata(
     final_entry_point = entry_point or plugin_name
 
     return FlextPluginMetadata.create(
-        name=plugin_name,
-        entry_point=final_entry_point,
-        entity_id=str(uuid.uuid4()),
-        metadata=metadata,
+      name=plugin_name,
+      entry_point=final_entry_point,
+      entity_id=str(uuid.uuid4()),
+      metadata=metadata,
     )
 
 
@@ -176,18 +176,18 @@ def create_flext_plugin_registry(
     """Create a new FlextPluginRegistry entity.
 
     Args:
-        name: Registry name
-        plugins: Dictionary of registered plugins (name -> plugin)
+      name: Registry name
+      plugins: Dictionary of registered plugins (name -> plugin)
 
     Returns:
-        New FlextPluginRegistry entity
+      New FlextPluginRegistry entity
 
     """
     return FlextPluginRegistry.create(
-        name=name,
-        entity_id=str(uuid.uuid4()),
-        plugins=plugins,
-        created_at=datetime.now(UTC),
+      name=name,
+      entity_id=str(uuid.uuid4()),
+      plugins=plugins,
+      created_at=datetime.now(UTC),
     )
 
 
@@ -204,90 +204,90 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
     debugging and troubleshooting plugin creation issues.
 
     Args:
-        plugin_data: Dictionary containing plugin information with expected keys:
-            - name (required): Plugin identifier string
-            - version (required): Plugin version string
-            - description (optional): Human-readable description
-            - author (optional): Plugin developer or organization
-            - dependencies (optional): List of plugin dependencies
-            - metadata (optional): Additional metadata dictionary
-            - status (optional): Plugin status string (defaults to "inactive")
+      plugin_data: Dictionary containing plugin information with expected keys:
+          - name (required): Plugin identifier string
+          - version (required): Plugin version string
+          - description (optional): Human-readable description
+          - author (optional): Plugin developer or organization
+          - dependencies (optional): List of plugin dependencies
+          - metadata (optional): Additional metadata dictionary
+          - status (optional): Plugin status string (defaults to "inactive")
 
     Returns:
-        Fully initialized FlextPlugin domain entity created from dictionary data
+      Fully initialized FlextPlugin domain entity created from dictionary data
 
     Raises:
-        KeyError: If required fields ('name' or 'version') are missing from input
-        ValueError: If plugin data is invalid, empty, or contains invalid values
+      KeyError: If required fields ('name' or 'version') are missing from input
+      ValueError: If plugin data is invalid, empty, or contains invalid values
 
     Example:
-        >>> plugin_data = {
-        ...     "name": "oracle-connector",
-        ...     "version": "2.1.0",
-        ...     "description": "Oracle database connectivity plugin",
-        ...     "author": "FLEXT Team",
-        ...     "dependencies": ["cx_Oracle", "sqlalchemy"],
-        ...     "status": "inactive",
-        ... }
-        >>> plugin = create_plugin_from_dict(plugin_data)
-        >>> print(f"Created {plugin.name} from dictionary data")
+      >>> plugin_data = {
+      ...     "name": "oracle-connector",
+      ...     "version": "2.1.0",
+      ...     "description": "Oracle database connectivity plugin",
+      ...     "author": "FLEXT Team",
+      ...     "dependencies": ["cx_Oracle", "sqlalchemy"],
+      ...     "status": "inactive",
+      ... }
+      >>> plugin = create_plugin_from_dict(plugin_data)
+      >>> print(f"Created {plugin.name} from dictionary data")
 
     Validation Process:
-        1. Required field validation (name, version)
-        2. Type conversion and normalization
-        3. Status enum validation with fallback
-        4. Configuration object assembly
-        5. Entity creation with proper error handling
+      1. Required field validation (name, version)
+      2. Type conversion and normalization
+      3. Status enum validation with fallback
+      4. Configuration object assembly
+      5. Entity creation with proper error handling
 
     """
 
     # Helper function for validation
     def _handle_value_error(error: str) -> None:
-        """Handle value error by raising appropriate exception."""
-        raise ValueError(error)
+      """Handle value error by raising appropriate exception."""
+      raise ValueError(error)
 
     try:
-        # Extract required fields with validation
-        name_obj = plugin_data.get("name", "")
-        if not name_obj:
-            msg = "Plugin name is required"
-            _handle_value_error(msg)
-        name = str(name_obj)
+      # Extract required fields with validation
+      name_obj = plugin_data.get("name", "")
+      if not name_obj:
+          msg = "Plugin name is required"
+          _handle_value_error(msg)
+      name = str(name_obj)
 
-        version_obj = plugin_data.get("version", "")
-        if not version_obj:
-            msg = "Plugin version is required"
-            _handle_value_error(msg)
-        version = str(version_obj)
+      version_obj = plugin_data.get("version", "")
+      if not version_obj:
+          msg = "Plugin version is required"
+          _handle_value_error(msg)
+      version = str(version_obj)
 
-        # Extract optional fields
-        description = str(plugin_data.get("description", ""))
-        author = str(plugin_data.get("author", ""))
-        dependencies = plugin_data.get("dependencies", [])
-        metadata = plugin_data.get("metadata", {})
+      # Extract optional fields
+      description = str(plugin_data.get("description", ""))
+      author = str(plugin_data.get("author", ""))
+      dependencies = plugin_data.get("dependencies", [])
+      metadata = plugin_data.get("metadata", {})
 
-        # Handle status conversion
-        status_str = plugin_data.get("status", "inactive")
-        try:
-            status = PluginStatus(status_str)
-        except ValueError:
-            status = PluginStatus.INACTIVE
+      # Handle status conversion
+      status_str = plugin_data.get("status", "inactive")
+      try:
+          status = PluginStatus(status_str)
+      except ValueError:
+          status = PluginStatus.INACTIVE
 
-        return create_flext_plugin(
-            name=name,
-            version=version,
-            config={
-                "description": description,
-                "author": author,
-                "dependencies": dependencies,
-                "metadata": metadata,
-                "status": status,
-            },
-        )
+      return create_flext_plugin(
+          name=name,
+          version=version,
+          config={
+              "description": description,
+              "author": author,
+              "dependencies": dependencies,
+              "metadata": metadata,
+              "status": status,
+          },
+      )
 
     except (RuntimeError, ValueError, TypeError) as e:
-        error_msg: str = f"Failed to create plugin from dictionary: {e}"
-        raise ValueError(error_msg) from e
+      error_msg: str = f"Failed to create plugin from dictionary: {e}"
+      raise ValueError(error_msg) from e
 
 
 def create_plugin_config_from_dict(
@@ -297,23 +297,23 @@ def create_plugin_config_from_dict(
     """Create a FlextPluginConfig from dictionary data.
 
     Args:
-        plugin_name: Name of the plugin
-        config_dict: Dictionary containing configuration data
+      plugin_name: Name of the plugin
+      config_dict: Dictionary containing configuration data
 
     Returns:
-        New FlextPluginConfig entity
+      New FlextPluginConfig entity
 
     Raises:
-        ValueError: If plugin name is empty
+      ValueError: If plugin name is empty
 
     """
     if not plugin_name:
-        msg = "Plugin name is required"
-        raise ValueError(msg)
+      msg = "Plugin name is required"
+      raise ValueError(msg)
 
     return create_flext_plugin_config(
-        plugin_name=plugin_name,
-        config_data=config_dict,
+      plugin_name=plugin_name,
+      config_data=config_dict,
     )
 
 

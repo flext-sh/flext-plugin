@@ -61,103 +61,103 @@ class Plugin:
     rapid prototyping, simple implementations, and educational purposes.
 
     Key Features:
-        - Basic lifecycle management (activate/deactivate)
-        - FlextResult integration for consistent error handling
-        - Extensible design for custom plugin implementations
-        - Compatibility with FLEXT plugin management system
-        - Minimal resource footprint and complexity
+      - Basic lifecycle management (activate/deactivate)
+      - FlextResult integration for consistent error handling
+      - Extensible design for custom plugin implementations
+      - Compatibility with FLEXT plugin management system
+      - Minimal resource footprint and complexity
 
     Lifecycle States:
-        - Inactive: Plugin created but not activated
-        - Active: Plugin activated and ready for execution
+      - Inactive: Plugin created but not activated
+      - Active: Plugin activated and ready for execution
 
     Usage Pattern:
-        Extend this class to create custom plugin implementations,
-        overriding methods as needed for specific functionality.
+      Extend this class to create custom plugin implementations,
+      overriding methods as needed for specific functionality.
 
     Example:
-        >>> class DataProcessorPlugin(Plugin):
-        ...     def execute(self, data):
-        ...         if not self.active:
-        ...             return FlextResult.fail("Plugin not active")
-        ...         # Process data
-        ...         return FlextResult.ok(processed_data)
-        >>>
-        >>> plugin = DataProcessorPlugin("data-processor")
-        >>> activation = plugin.activate()
-        >>> if activation.success():
-        ...     result = plugin.execute(my_data)
+      >>> class DataProcessorPlugin(Plugin):
+      ...     def execute(self, data):
+      ...         if not self.active:
+      ...             return FlextResult.fail("Plugin not active")
+      ...         # Process data
+      ...         return FlextResult.ok(processed_data)
+      >>>
+      >>> plugin = DataProcessorPlugin("data-processor")
+      >>> activation = plugin.activate()
+      >>> if activation.success():
+      ...     result = plugin.execute(my_data)
 
     """
 
     def __init__(self, name: str) -> None:
-        """Initialize plugin with a name."""
-        self.name = name
-        self.active = False
+      """Initialize plugin with a name."""
+      self.name = name
+      self.active = False
 
     def activate(self) -> FlextResult[None]:
-        """Activate plugin."""
-        try:
-            self.active = True
-            return FlextResult.ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin activation failed: {e}")
+      """Activate plugin."""
+      try:
+          self.active = True
+          return FlextResult.ok(None)
+      except (RuntimeError, ValueError, TypeError) as e:
+          return FlextResult.fail(f"Plugin activation failed: {e}")
 
     def deactivate(self) -> FlextResult[None]:
-        """Deactivate plugin."""
-        try:
-            self.active = False
-            return FlextResult.ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin deactivation failed: {e}")
+      """Deactivate plugin."""
+      try:
+          self.active = False
+          return FlextResult.ok(None)
+      except (RuntimeError, ValueError, TypeError) as e:
+          return FlextResult.fail(f"Plugin deactivation failed: {e}")
 
 
 class PluginRegistry:
     """Simple plugin registry."""
 
     def __init__(self) -> None:
-        """Initialize empty plugin registry."""
-        self.plugins: dict[str, Plugin] = {}
+      """Initialize empty plugin registry."""
+      self.plugins: dict[str, Plugin] = {}
 
     def register(self, plugin: Plugin) -> FlextResult[None]:
-        """Register a plugin."""
-        try:
-            self.plugins[plugin.name] = plugin
-            return FlextResult.ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin registration failed: {e}")
+      """Register a plugin."""
+      try:
+          self.plugins[plugin.name] = plugin
+          return FlextResult.ok(None)
+      except (RuntimeError, ValueError, TypeError) as e:
+          return FlextResult.fail(f"Plugin registration failed: {e}")
 
     def unregister(self, name: str) -> FlextResult[None]:
-        """Unregister a plugin."""
-        try:
-            if name in self.plugins:
-                del self.plugins[name]
-            return FlextResult.ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin unregistration failed: {e}")
+      """Unregister a plugin."""
+      try:
+          if name in self.plugins:
+              del self.plugins[name]
+          return FlextResult.ok(None)
+      except (RuntimeError, ValueError, TypeError) as e:
+          return FlextResult.fail(f"Plugin unregistration failed: {e}")
 
     def get(self, name: str) -> Plugin | None:
-        """Get a plugin by name."""
-        return self.plugins.get(name)
+      """Get a plugin by name."""
+      return self.plugins.get(name)
 
     def list_plugins(self) -> list[str]:
-        """List all registered plugins."""
-        return list(self.plugins.keys())
+      """List all registered plugins."""
+      return list(self.plugins.keys())
 
 
 def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plugin]:
     """Load a plugin from module."""
     try:
-        module = importlib.import_module(module_name)
-        plugin_class = getattr(module, class_name)
-        plugin = plugin_class()
-        return FlextResult.ok(plugin)
+      module = importlib.import_module(module_name)
+      plugin_class = getattr(module, class_name)
+      plugin = plugin_class()
+      return FlextResult.ok(plugin)
     except Exception as e:
-        return FlextResult.fail(f"Module import failed: {e}")
+      return FlextResult.fail(f"Module import failed: {e}")
     except AttributeError as e:
-        return FlextResult.fail(f"Plugin class not found: {e}")
+      return FlextResult.fail(f"Plugin class not found: {e}")
     except (RuntimeError, ValueError, TypeError) as e:
-        return FlextResult.fail(f"Plugin loading failed: {e}")
+      return FlextResult.fail(f"Plugin loading failed: {e}")
 
 
 def create_registry() -> PluginRegistry:
