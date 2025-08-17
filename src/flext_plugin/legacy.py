@@ -53,9 +53,9 @@ from flext_plugin.simple_api import (
 def _deprecation_warning(old_name: str, new_name: str) -> None:
     """Issue a deprecation warning for legacy imports."""
     warnings.warn(
-      f"{old_name} is deprecated, use {new_name} instead",
-      DeprecationWarning,
-      stacklevel=3,
+        f"{old_name} is deprecated, use {new_name} instead",
+        DeprecationWarning,
+        stacklevel=3,
     )
 
 
@@ -64,8 +64,8 @@ def plugin_service(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginService."""
     _deprecation_warning("PluginService", "FlextPluginService")
     if FlextPluginService is None:
-      msg = "FlextPluginService not available"
-      raise ImportError(msg)
+        msg = "FlextPluginService not available"
+        raise ImportError(msg)
     return FlextPluginService(*args, **kwargs)
 
 
@@ -73,8 +73,8 @@ def plugin_manager(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginPlatform."""
     _deprecation_warning("PluginManager", "FlextPluginPlatform")
     if FlextPluginPlatform is None:
-      msg = "FlextPluginPlatform not available"
-      raise ImportError(msg)
+        msg = "FlextPluginPlatform not available"
+        raise ImportError(msg)
     return FlextPluginPlatform(*args, **kwargs)
 
 
@@ -82,8 +82,8 @@ def plugin_discovery(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginDiscoveryService."""
     _deprecation_warning("PluginDiscovery", "FlextPluginDiscoveryService")
     if FlextPluginDiscoveryService is None:
-      msg = "FlextPluginDiscoveryService not available"
-      raise ImportError(msg)
+        msg = "FlextPluginDiscoveryService not available"
+        raise ImportError(msg)
     return FlextPluginDiscoveryService(*args, **kwargs)
 
 
@@ -91,8 +91,8 @@ def plugin_registry(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginRegistry."""
     _deprecation_warning("PluginRegistry", "FlextPluginRegistry")
     if FlextPluginRegistry is None:
-      msg = "FlextPluginRegistry not available"
-      raise ImportError(msg)
+        msg = "FlextPluginRegistry not available"
+        raise ImportError(msg)
     return FlextPluginRegistry(*args, **kwargs)
 
 
@@ -100,8 +100,8 @@ def plugin_config(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginConfig."""
     _deprecation_warning("PluginConfig", "FlextPluginConfig")
     if FlextPluginConfig is None:
-      msg = "FlextPluginConfig not available"
-      raise ImportError(msg)
+        msg = "FlextPluginConfig not available"
+        raise ImportError(msg)
     return FlextPluginConfig(*args, **kwargs)
 
 
@@ -109,8 +109,8 @@ def plugin(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPlugin."""
     _deprecation_warning("Plugin", "FlextPlugin")
     if FlextPlugin is None:
-      msg = "FlextPlugin not available"
-      raise ImportError(msg)
+        msg = "FlextPlugin not available"
+        raise ImportError(msg)
     return FlextPlugin(*args, **kwargs)
 
 
@@ -119,8 +119,8 @@ def create_plugin(*args: object, **kwargs: object) -> object:
     """Legacy alias for create_flext_plugin."""
     _deprecation_warning("create_plugin", "create_flext_plugin")
     if create_flext_plugin is None:
-      msg = "create_flext_plugin not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin not available"
+        raise ImportError(msg)
     return create_flext_plugin(*args, **kwargs)
 
 
@@ -128,8 +128,8 @@ def create_plugin_config(*args: object, **kwargs: object) -> object:
     """Legacy alias for create_flext_plugin_config."""
     _deprecation_warning("create_plugin_config", "create_flext_plugin_config")
     if create_flext_plugin_config is None:
-      msg = "create_flext_plugin_config not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin_config not available"
+        raise ImportError(msg)
     return create_flext_plugin_config(*args, **kwargs)
 
 
@@ -137,8 +137,8 @@ def create_plugin_registry(*args: object, **kwargs: object) -> object:
     """Legacy alias for create_flext_plugin_registry."""
     _deprecation_warning("create_plugin_registry", "create_flext_plugin_registry")
     if create_flext_plugin_registry is None:
-      msg = "create_flext_plugin_registry not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin_registry not available"
+        raise ImportError(msg)
     return create_flext_plugin_registry(*args, **kwargs)
 
 
@@ -146,8 +146,8 @@ def create_plugin_metadata(*args: object, **kwargs: object) -> object:
     """Legacy alias for create_flext_plugin_metadata."""
     _deprecation_warning("create_plugin_metadata", "create_flext_plugin_metadata")
     if create_flext_plugin_metadata is None:
-      msg = "create_flext_plugin_metadata not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin_metadata not available"
+        raise ImportError(msg)
     return create_flext_plugin_metadata(*args, **kwargs)
 
 
@@ -159,7 +159,8 @@ def plugin_error(*args: object, **kwargs: object) -> FlextPluginError:
 
 
 def plugin_discovery_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginDiscoveryError:
     """Legacy alias for FlextPluginDiscoveryError."""
     _deprecation_warning("PluginDiscoveryError", "FlextPluginDiscoveryError")
@@ -173,7 +174,8 @@ def plugin_loading_error(*args: object, **kwargs: object) -> FlextPluginLoadingE
 
 
 def plugin_execution_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginExecutionError:
     """Legacy alias for FlextPluginExecutionError."""
     _deprecation_warning("PluginExecutionError", "FlextPluginExecutionError")
@@ -181,7 +183,8 @@ def plugin_execution_error(
 
 
 def plugin_configuration_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginConfigurationError:
     """Legacy alias for FlextPluginConfigurationError."""
     _deprecation_warning("PluginConfigurationError", "FlextPluginConfigurationError")
@@ -189,7 +192,8 @@ def plugin_configuration_error(
 
 
 def plugin_validation_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginValidationError:
     """Legacy alias for FlextPluginValidationError."""
     _deprecation_warning("PluginValidationError", "FlextPluginValidationError")
@@ -197,7 +201,8 @@ def plugin_validation_error(
 
 
 def plugin_lifecycle_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginLifecycleError:
     """Legacy alias for FlextPluginLifecycleError."""
     _deprecation_warning("PluginLifecycleError", "FlextPluginLifecycleError")
@@ -211,7 +216,8 @@ def plugin_registry_error(*args: object, **kwargs: object) -> FlextPluginRegistr
 
 
 def plugin_hot_reload_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginHotReloadError:
     """Legacy alias for FlextPluginHotReloadError."""
     _deprecation_warning("PluginHotReloadError", "FlextPluginHotReloadError")
@@ -225,7 +231,8 @@ def plugin_security_error(*args: object, **kwargs: object) -> FlextPluginSecurit
 
 
 def plugin_compatibility_error(
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextPluginCompatibilityError:
     """Legacy alias for FlextPluginCompatibilityError."""
     _deprecation_warning("PluginCompatibilityError", "FlextPluginCompatibilityError")
@@ -249,8 +256,8 @@ def flext_plugin_manager(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginPlatform (alternate naming)."""
     _deprecation_warning("FlextPluginManager", "FlextPluginPlatform")
     if FlextPluginPlatform is None:
-      msg = "FlextPluginPlatform not available"
-      raise ImportError(msg)
+        msg = "FlextPluginPlatform not available"
+        raise ImportError(msg)
     return FlextPluginPlatform(*args, **kwargs)
 
 
@@ -258,8 +265,8 @@ def simple_plugin_manager(*args: object, **kwargs: object) -> object:
     """Legacy alias for FlextPluginPlatform (simple variant)."""
     _deprecation_warning("SimplePluginManager", "FlextPluginPlatform")
     if FlextPluginPlatform is None:
-      msg = "FlextPluginPlatform not available"
-      raise ImportError(msg)
+        msg = "FlextPluginPlatform not available"
+        raise ImportError(msg)
     return FlextPluginPlatform(*args, **kwargs)
 
 
@@ -268,8 +275,8 @@ def init_plugin_system(*args: object, **kwargs: object) -> object:
     """Legacy alias for creating plugin platform."""
     _deprecation_warning("init_plugin_system", "create_flext_plugin_platform")
     if create_flext_plugin_registry is None:
-      msg = "create_flext_plugin_registry not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin_registry not available"
+        raise ImportError(msg)
     return create_flext_plugin_registry(*args, **kwargs)
 
 
@@ -277,8 +284,8 @@ def setup_plugins(*args: object, **kwargs: object) -> object:
     """Legacy alias for creating plugin platform."""
     _deprecation_warning("setup_plugins", "create_flext_plugin_platform")
     if create_flext_plugin_registry is None:
-      msg = "create_flext_plugin_registry not available"
-      raise ImportError(msg)
+        msg = "create_flext_plugin_registry not available"
+        raise ImportError(msg)
     return create_flext_plugin_registry(*args, **kwargs)
 
 

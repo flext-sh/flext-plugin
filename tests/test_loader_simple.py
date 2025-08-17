@@ -70,48 +70,48 @@ class TestFlextPluginSimple:
 
     @pytest.fixture
     def mock_plugin_instance(self) -> Mock:
-      """Create mock plugin instance."""
-      instance = Mock()
-      instance.metadata = Mock()
-      instance.metadata.name = "test-plugin"
-      instance.metadata.version = "0.9.0"
-      instance.initialize = AsyncMock()
-      instance.cleanup = AsyncMock()
-      instance._initialized = False
-      instance._update_lifecycle_state = Mock()
-      instance._update_status = Mock()
-      return instance
+        """Create mock plugin instance."""
+        instance = Mock()
+        instance.metadata = Mock()
+        instance.metadata.name = "test-plugin"
+        instance.metadata.version = "0.9.0"
+        instance.initialize = AsyncMock()
+        instance.cleanup = AsyncMock()
+        instance._initialized = False
+        instance._update_lifecycle_state = Mock()
+        instance._update_status = Mock()
+        return instance
 
     def test_loaded_plugin_creation(self, mock_plugin_instance: Mock) -> None:  # noqa: ARG002
-      """Test creating FlextPlugin."""
-      loaded = FlextPlugin.create(
-          name="test-plugin",
-          plugin_version="0.9.0",
-          config={"test": "config"},
-      )
+        """Test creating FlextPlugin."""
+        loaded = FlextPlugin.create(
+            name="test-plugin",
+            plugin_version="0.9.0",
+            config={"test": "config"},
+        )
 
-      if loaded.name != "test-plugin":
-          raise AssertionError(f"Expected {'test-plugin'}, got {loaded.name}")
-      # FlextPlugin.version is the entity version (int), plugin_version is the string
-      assert loaded.plugin_version == "0.9.0"
-      # No metadata or config properties in FlextPlugin entity
-      assert loaded.description == ""  # From empty config
-      assert loaded.author == ""
+        if loaded.name != "test-plugin":
+            raise AssertionError(f"Expected {'test-plugin'}, got {loaded.name}")
+        # FlextPlugin.version is the entity version (int), plugin_version is the string
+        assert loaded.plugin_version == "0.9.0"
+        # No metadata or config properties in FlextPlugin entity
+        assert loaded.description == ""  # From empty config
+        assert loaded.author == ""
 
     def test_loaded_plugin_validation(self, mock_plugin_instance: Mock) -> None:  # noqa: ARG002
-      """Test FlextPlugin validation."""
-      loaded = FlextPlugin.create(
-          name="test-plugin",
-          plugin_version="0.9.0",
-          config={"description": "Test plugin", "author": "Test Author"},
-      )
+        """Test FlextPlugin validation."""
+        loaded = FlextPlugin.create(
+            name="test-plugin",
+            plugin_version="0.9.0",
+            config={"description": "Test plugin", "author": "Test Author"},
+        )
 
-      # Test validation
-      assert loaded.is_valid()
-      assert loaded.name == "test-plugin"
-      assert loaded.plugin_version == "0.9.0"
-      assert loaded.description == "Test plugin"
-      assert loaded.author == "Test Author"
+        # Test validation
+        assert loaded.is_valid()
+        assert loaded.name == "test-plugin"
+        assert loaded.plugin_version == "0.9.0"
+        assert loaded.description == "Test plugin"
+        assert loaded.author == "Test Author"
 
 
 class TestPluginLoaderSimple:
@@ -143,110 +143,110 @@ class TestPluginLoaderSimple:
 
     @pytest.fixture
     def loader(self) -> PluginLoader:
-      """Create plugin loader for testing."""
-      return PluginLoader(security_enabled=False)
+        """Create plugin loader for testing."""
+        return PluginLoader(security_enabled=False)
 
     @pytest.fixture
     def secure_loader(self) -> PluginLoader:
-      """Create secure plugin loader for testing."""
-      return PluginLoader(security_enabled=True)
+        """Create secure plugin loader for testing."""
+        return PluginLoader(security_enabled=True)
 
     @pytest.fixture
     def mock_discovered_plugin(self) -> Mock:
-      """Create mock discovered plugin."""
-      discovered = Mock()
-      discovered.metadata = Mock()
-      discovered.metadata.name = "test-plugin"
-      discovered.metadata.version = "0.9.0"
-      discovered.plugin_class = Mock()
-      discovered.source = "file"
-      return discovered
+        """Create mock discovered plugin."""
+        discovered = Mock()
+        discovered.metadata = Mock()
+        discovered.metadata.name = "test-plugin"
+        discovered.metadata.version = "0.9.0"
+        discovered.plugin_class = Mock()
+        discovered.source = "file"
+        return discovered
 
     def test_loader_initialization_default(self) -> None:
-      """Test plugin loader initialization with defaults."""
-      loader = PluginLoader()
+        """Test plugin loader initialization with defaults."""
+        loader = PluginLoader()
 
-      if not (loader.security_enabled):
-          raise AssertionError(f"Expected True, got {loader.security_enabled}")
-      assert hasattr(loader, "_loaded_plugins")
-      assert isinstance(loader._loaded_plugins, dict)
-      if len(loader._loaded_plugins) != 0:
-          raise AssertionError(f"Expected {0}, got {len(loader._loaded_plugins)}")
+        if not (loader.security_enabled):
+            raise AssertionError(f"Expected True, got {loader.security_enabled}")
+        assert hasattr(loader, "_loaded_plugins")
+        assert isinstance(loader._loaded_plugins, dict)
+        if len(loader._loaded_plugins) != 0:
+            raise AssertionError(f"Expected {0}, got {len(loader._loaded_plugins)}")
 
     def test_loader_initialization_custom(self) -> None:
-      """Test plugin loader initialization with custom settings."""
-      loader = PluginLoader(security_enabled=False)
+        """Test plugin loader initialization with custom settings."""
+        loader = PluginLoader(security_enabled=False)
 
-      if loader.security_enabled:
-          raise AssertionError(f"Expected False, got {loader.security_enabled}")
-      assert hasattr(loader, "_loaded_plugins")
+        if loader.security_enabled:
+            raise AssertionError(f"Expected False, got {loader.security_enabled}")
+        assert hasattr(loader, "_loaded_plugins")
 
     def test_get_loaded_plugin_not_found(self, loader: PluginLoader) -> None:
-      """Test getting loaded plugin that doesn't exist."""
-      result = loader.get_loaded_plugin("non-existent")
-      assert result.is_failure
-      assert "not loaded" in result.error.lower()
+        """Test getting loaded plugin that doesn't exist."""
+        result = loader.get_loaded_plugin("non-existent")
+        assert result.is_failure
+        assert "not loaded" in result.error.lower()
 
     def test_is_plugin_loaded_false(self, loader: PluginLoader) -> None:
-      """Test checking if plugin is loaded when it's not."""
-      if loader.is_loaded("non-existent"):
-          raise AssertionError(
-              f"Expected False, got {loader.is_loaded('non-existent')}",
-          )
+        """Test checking if plugin is loaded when it's not."""
+        if loader.is_loaded("non-existent"):
+            raise AssertionError(
+                f"Expected False, got {loader.is_loaded('non-existent')}",
+            )
 
     def test_get_all_loaded_plugins_empty(self, loader: PluginLoader) -> None:
-      """Test getting all loaded plugins when none are loaded."""
-      result = loader.get_all_loaded_plugins()
-      assert result.success
-      if result.data != {}:
-          raise AssertionError(f"Expected {{}}, got {result.data}")
+        """Test getting all loaded plugins when none are loaded."""
+        result = loader.get_all_loaded_plugins()
+        assert result.success
+        if result.data != {}:
+            raise AssertionError(f"Expected {{}}, got {result.data}")
 
     @pytest.mark.asyncio
     async def test_unload_plugin_not_loaded(self, loader: PluginLoader) -> None:
-      """Test unloading plugin that's not loaded."""
-      # Should complete without error (graceful handling)
-      await loader.unload_plugin("non-existent")
-      # No exception raised - this is the expected behavior
+        """Test unloading plugin that's not loaded."""
+        # Should complete without error (graceful handling)
+        await loader.unload_plugin("non-existent")
+        # No exception raised - this is the expected behavior
 
     def test_loader_properties(self, loader: PluginLoader) -> None:
-      """Test loader properties and attributes."""
-      assert hasattr(loader, "security_enabled")
-      assert hasattr(loader, "_loaded_plugins")
-      assert hasattr(loader, "get_loaded_plugin")
-      assert hasattr(loader, "get_all_loaded_plugins")
-      assert hasattr(loader, "is_loaded")
+        """Test loader properties and attributes."""
+        assert hasattr(loader, "security_enabled")
+        assert hasattr(loader, "_loaded_plugins")
+        assert hasattr(loader, "get_loaded_plugin")
+        assert hasattr(loader, "get_all_loaded_plugins")
+        assert hasattr(loader, "is_loaded")
 
     def test_loaded_plugin_in_registry(self, loader: PluginLoader) -> None:
-      """Test manually adding and retrieving loaded plugin."""
-      # Create a mock loaded plugin
-      mock_instance = Mock()
-      mock_instance.metadata = Mock()
-      mock_instance.metadata.name = "test-plugin"
+        """Test manually adding and retrieving loaded plugin."""
+        # Create a mock loaded plugin
+        mock_instance = Mock()
+        mock_instance.metadata = Mock()
+        mock_instance.metadata.name = "test-plugin"
 
-      # Create plugin using factory method with proper parameters
-      loaded_plugin = FlextPlugin.create(
-          name="test-plugin",
-          plugin_version="1.0.0",
-          config={"description": "Test plugin", "author": "Test Author"},
-      )
+        # Create plugin using factory method with proper parameters
+        loaded_plugin = FlextPlugin.create(
+            name="test-plugin",
+            plugin_version="1.0.0",
+            config={"description": "Test plugin", "author": "Test Author"},
+        )
 
-      # Manually add to loader's registry
-      loader._loaded_plugins["test-plugin"] = loaded_plugin
+        # Manually add to loader's registry
+        loader._loaded_plugins["test-plugin"] = loaded_plugin
 
-      # Should be able to retrieve it
-      result = loader.get_loaded_plugin("test-plugin")
-      assert result.success
-      if result.data != loaded_plugin:
-          raise AssertionError(f"Expected {loaded_plugin}, got {result.data}")
-      if not (loader.is_loaded("test-plugin")):
-          raise AssertionError(
-              f"Expected True, got {loader.is_loaded('test-plugin')}",
-          )
+        # Should be able to retrieve it
+        result = loader.get_loaded_plugin("test-plugin")
+        assert result.success
+        if result.data != loaded_plugin:
+            raise AssertionError(f"Expected {loaded_plugin}, got {result.data}")
+        if not (loader.is_loaded("test-plugin")):
+            raise AssertionError(
+                f"Expected True, got {loader.is_loaded('test-plugin')}",
+            )
 
-      # Should appear in all loaded plugins
-      all_plugins_result = loader.get_all_loaded_plugins()
-      assert all_plugins_result.success
-      all_plugins = all_plugins_result.data
-      if len(all_plugins) != 1:
-          raise AssertionError(f"Expected {1}, got {len(all_plugins)}")
-      assert all_plugins["test-plugin"] == loaded_plugin
+        # Should appear in all loaded plugins
+        all_plugins_result = loader.get_all_loaded_plugins()
+        assert all_plugins_result.success
+        all_plugins = all_plugins_result.data
+        if len(all_plugins) != 1:
+            raise AssertionError(f"Expected {1}, got {len(all_plugins)}")
+        assert all_plugins["test-plugin"] == loaded_plugin

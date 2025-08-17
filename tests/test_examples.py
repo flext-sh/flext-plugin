@@ -4,6 +4,21 @@ import asyncio
 import sys
 from pathlib import Path
 
+from docker_integration_example import (
+    check_service_availability,
+    create_docker_ldap_plugin,
+    create_docker_postgres_plugin,
+    create_docker_redis_plugin,
+)
+
+from flext_plugin import (
+    PluginStatus,
+    PluginType,
+    create_flext_plugin,
+    create_flext_plugin_config,
+    create_flext_plugin_metadata,
+)
+
 
 def test_basic_plugin_example_execution() -> None:
     """Test that basic_plugin_example.py runs successfully without errors."""
@@ -11,20 +26,20 @@ def test_basic_plugin_example_execution() -> None:
 
     # Execute the example script
     async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
-      process = await asyncio.create_subprocess_exec(
-          *cmd_list,
-          stdout=asyncio.subprocess.PIPE,
-          stderr=asyncio.subprocess.PIPE,
-          cwd=cwd,
-      )
-      stdout, stderr = await process.communicate()
-      return process.returncode, stdout.decode(), stderr.decode()
+        process = await asyncio.create_subprocess_exec(
+            *cmd_list,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=cwd,
+        )
+        stdout, stderr = await process.communicate()
+        return process.returncode, stdout.decode(), stderr.decode()
 
     rc, out, err = asyncio.run(
-      _run(
-          [sys.executable, str(example_path)],
-          cwd=str(Path(__file__).parent.parent),
-      ),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
@@ -43,16 +58,15 @@ def test_basic_plugin_example_execution() -> None:
 def test_basic_plugin_example_functionality() -> None:
     """Test the actual functionality demonstrated in basic_plugin_example.py."""
     # Import the functionality directly
-from flext_plugin import PluginStatus, create_flext_plugin
 
     # Test plugin creation
     plugin = create_flext_plugin(
-      name="test-plugin",
-      version="1.0.0",
-      config={
-          "description": "Test plugin",
-          "author": "Test Author",
-      },
+        name="test-plugin",
+        version="1.0.0",
+        config={
+            "description": "Test plugin",
+            "author": "Test Author",
+        },
     )
 
     # Verify plugin properties
@@ -77,15 +91,15 @@ from flext_plugin import PluginStatus, create_flext_plugin
 def test_plugin_configuration_example_execution() -> None:
     """Test that plugin_configuration_example.py runs successfully without errors."""
     example_path = (
-      Path(__file__).parent.parent / "examples" / "plugin_configuration_example.py"
+        Path(__file__).parent.parent / "examples" / "plugin_configuration_example.py"
     )
 
     # Execute the example script
     rc, out, err = asyncio.run(
-      _run(
-          [sys.executable, str(example_path)],
-          cwd=str(Path(__file__).parent.parent),
-      ),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
@@ -105,43 +119,37 @@ def test_plugin_configuration_example_execution() -> None:
 def test_plugin_configuration_example_functionality() -> None:
     """Test the actual functionality demonstrated in plugin_configuration_example.py."""
     # Import the functionality directly
-from flext_plugin import (
-      PluginType,
-      create_flext_plugin,
-      create_flext_plugin_config,
-      create_flext_plugin_metadata,
-    )
 
     # Test database plugin creation with complex configuration
     db_config = {
-      "database": {
-          "host": "localhost",
-          "port": 5432,
-          "database": "test_db",
-          "username": "test_user",
-          "password": "test_pass",
-          "pool_size": 5,
-      },
-      "retry_config": {
-          "max_retries": 3,
-          "retry_delay": 1.0,
-          "exponential_backoff": True,
-      },
-      "features": {
-          "enable_metrics": True,
-          "enable_tracing": True,
-      },
+        "database": {
+            "host": "localhost",
+            "port": 5432,
+            "database": "test_db",
+            "username": "test_user",
+            "password": "test_pass",
+            "pool_size": 5,
+        },
+        "retry_config": {
+            "max_retries": 3,
+            "retry_delay": 1.0,
+            "exponential_backoff": True,
+        },
+        "features": {
+            "enable_metrics": True,
+            "enable_tracing": True,
+        },
     }
 
     db_plugin = create_flext_plugin(
-      name="test-postgres-connector",
-      version="2.1.0",
-      config={
-          "description": "Test PostgreSQL connector",
-          "author": "Test Team",
-          "plugin_type": PluginType.DATABASE,
-          **db_config,
-      },
+        name="test-postgres-connector",
+        version="2.1.0",
+        config={
+            "description": "Test PostgreSQL connector",
+            "author": "Test Team",
+            "plugin_type": PluginType.DATABASE,
+            **db_config,
+        },
     )
 
     # Verify database plugin properties
@@ -151,27 +159,27 @@ from flext_plugin import (
 
     # Test LDAP plugin creation
     ldap_config = {
-      "ldap": {
-          "server": "localhost",
-          "port": 389,
-          "base_dn": "dc=test,dc=dev",
-          "bind_dn": "cn=readonly,dc=test,dc=dev",
-      },
-      "search": {
-          "user_filter": "(objectClass=person)",
-          "group_filter": "(objectClass=group)",
-          "attributes": ["cn", "mail", "memberOf"],
-      },
+        "ldap": {
+            "server": "localhost",
+            "port": 389,
+            "base_dn": "dc=test,dc=dev",
+            "bind_dn": "cn=readonly,dc=test,dc=dev",
+        },
+        "search": {
+            "user_filter": "(objectClass=person)",
+            "group_filter": "(objectClass=group)",
+            "attributes": ["cn", "mail", "memberOf"],
+        },
     }
 
     ldap_plugin = create_flext_plugin(
-      name="test-ldap-directory",
-      version="1.5.0",
-      config={
-          "description": "Test LDAP directory service",
-          "plugin_type": PluginType.AUTHENTICATION,
-          **ldap_config,
-      },
+        name="test-ldap-directory",
+        version="1.5.0",
+        config={
+            "description": "Test LDAP directory service",
+            "plugin_type": PluginType.AUTHENTICATION,
+            **ldap_config,
+        },
     )
 
     # Verify LDAP plugin properties
@@ -180,14 +188,14 @@ from flext_plugin import (
 
     # Test standalone configuration creation
     standalone_config = create_flext_plugin_config(
-      plugin_name="test-api-gateway",
-      config_data={
-          "routes": {
-              "/api/v1/health": {"method": "GET", "auth": False},
-              "/api/v1/plugins": {"method": "GET", "auth": True},
-          },
-          "middleware": ["cors", "rate_limit", "auth"],
-      },
+        plugin_name="test-api-gateway",
+        config_data={
+            "routes": {
+                "/api/v1/health": {"method": "GET", "auth": False},
+                "/api/v1/plugins": {"method": "GET", "auth": True},
+            },
+            "middleware": ["cors", "rate_limit", "auth"],
+        },
     )
 
     # Verify standalone configuration
@@ -197,16 +205,16 @@ from flext_plugin import (
 
     # Test metadata creation
     metadata = create_flext_plugin_metadata(
-      plugin_name="test-data-processor",
-      metadata={
-          "tags": ["etl", "transform", "test"],
-          "categories": ["data-processing"],
-          "license_info": "MIT",  # Correct field name
-          "compatibility": {
-              "python": ">=3.13",
-              "flext": ">=0.9.0",
-          },
-      },
+        plugin_name="test-data-processor",
+        metadata={
+            "tags": ["etl", "transform", "test"],
+            "categories": ["data-processing"],
+            "license_info": "MIT",  # Correct field name
+            "compatibility": {
+                "python": ">=3.13",
+                "flext": ">=0.9.0",
+            },
+        },
     )
 
     # Verify metadata properties
@@ -217,45 +225,44 @@ from flext_plugin import (
 
     # Test validation on complex plugins
     for plugin in [db_plugin, ldap_plugin]:
-      validation_result = plugin.validate_business_rules()
-      assert validation_result.success, (
-          f"Plugin {plugin.name} validation failed: {validation_result.error}"
-      )
+        validation_result = plugin.validate_business_rules()
+        assert validation_result.success, (
+            f"Plugin {plugin.name} validation failed: {validation_result.error}"
+        )
 
 
 def test_plugin_configuration_docker_compatibility() -> None:
     """Test plugin configuration compatibility with Docker services."""
     # Import the functionality directly
-from flext_plugin import PluginType, create_flext_plugin
 
     # Test Docker-compatible database configuration
     # These settings match /home/marlonsc/flext/docker/docker-compose.yml
     docker_db_config = {
-      "database": {
-          "host": "localhost",  # Would be flext-postgres in Docker network
-          "port": 5432,
-          "database": "flext_db",  # Matches POSTGRES_DB in docker-compose.yml
-          "username": "flext",  # Matches POSTGRES_USER
-          "password": "flext_dev_password",  # Matches POSTGRES_PASSWORD
-          "pool_size": 5,
-          "pool_recycle": 3600,
-      },
-      "connection": {
-          "ssl_mode": "prefer",
-          "application_name": "flext-plugin-test",
-          "connect_timeout": 30,
-      },
+        "database": {
+            "host": "localhost",  # Would be flext-postgres in Docker network
+            "port": 5432,
+            "database": "flext_db",  # Matches POSTGRES_DB in docker-compose.yml
+            "username": "flext",  # Matches POSTGRES_USER
+            "password": "flext_dev_password",  # Matches POSTGRES_PASSWORD
+            "pool_size": 5,
+            "pool_recycle": 3600,
+        },
+        "connection": {
+            "ssl_mode": "prefer",
+            "application_name": "flext-plugin-test",
+            "connect_timeout": 30,
+        },
     }
 
     docker_db_plugin = create_flext_plugin(
-      name="docker-postgres-connector",
-      version="2.1.0",
-      config={
-          "description": "Docker-compatible PostgreSQL connector",
-          "author": "FLEXT Team",
-          "plugin_type": PluginType.DATABASE,
-          **docker_db_config,
-      },
+        name="docker-postgres-connector",
+        version="2.1.0",
+        config={
+            "description": "Docker-compatible PostgreSQL connector",
+            "author": "FLEXT Team",
+            "plugin_type": PluginType.DATABASE,
+            **docker_db_config,
+        },
     )
 
     # Verify Docker database plugin
@@ -266,36 +273,36 @@ from flext_plugin import PluginType, create_flext_plugin
     # Test Docker-compatible LDAP configuration
     # These settings match the OpenLDAP service in docker-compose.yml
     docker_ldap_config = {
-      "ldap": {
-          "server": "localhost",  # Would be flext-ldap in Docker network
-          "port": 389,
-          "base_dn": "dc=flext,dc=dev",  # Matches LDAP_DOMAIN
-          "bind_dn": "cn=readonly,dc=flext,dc=dev",  # Matches readonly user
-          "bind_password": "readonly",  # Matches LDAP_READONLY_USER_PASSWORD
-          "use_ssl": False,
-          "timeout": 30,
-      },
-      "REDACTED_LDAP_BIND_PASSWORD": {
-          "REDACTED_LDAP_BIND_PASSWORD_dn": "cn=REDACTED_LDAP_BIND_PASSWORD,dc=flext,dc=dev",
-          "REDACTED_LDAP_BIND_PASSWORD_password": "flext_ldap_REDACTED_LDAP_BIND_PASSWORD",  # Matches LDAP_ADMIN_PASSWORD
-      },
-      "search": {
-          "user_filter": "(objectClass=inetOrgPerson)",
-          "group_filter": "(objectClass=groupOfNames)",
-          "attributes": ["cn", "mail", "memberOf", "uid"],
-          "page_size": 1000,
-      },
+        "ldap": {
+            "server": "localhost",  # Would be flext-ldap in Docker network
+            "port": 389,
+            "base_dn": "dc=flext,dc=dev",  # Matches LDAP_DOMAIN
+            "bind_dn": "cn=readonly,dc=flext,dc=dev",  # Matches readonly user
+            "bind_password": "readonly",  # Matches LDAP_READONLY_USER_PASSWORD
+            "use_ssl": False,
+            "timeout": 30,
+        },
+        "REDACTED_LDAP_BIND_PASSWORD": {
+            "REDACTED_LDAP_BIND_PASSWORD_dn": "cn=REDACTED_LDAP_BIND_PASSWORD,dc=flext,dc=dev",
+            "REDACTED_LDAP_BIND_PASSWORD_password": "flext_ldap_REDACTED_LDAP_BIND_PASSWORD",  # Matches LDAP_ADMIN_PASSWORD
+        },
+        "search": {
+            "user_filter": "(objectClass=inetOrgPerson)",
+            "group_filter": "(objectClass=groupOfNames)",
+            "attributes": ["cn", "mail", "memberOf", "uid"],
+            "page_size": 1000,
+        },
     }
 
     docker_ldap_plugin = create_flext_plugin(
-      name="docker-ldap-directory",
-      version="1.5.0",
-      config={
-          "description": "Docker-compatible LDAP directory service",
-          "author": "FLEXT Team",
-          "plugin_type": PluginType.AUTHENTICATION,
-          **docker_ldap_config,
-      },
+        name="docker-ldap-directory",
+        version="1.5.0",
+        config={
+            "description": "Docker-compatible LDAP directory service",
+            "author": "FLEXT Team",
+            "plugin_type": PluginType.AUTHENTICATION,
+            **docker_ldap_config,
+        },
     )
 
     # Verify Docker LDAP plugin
@@ -305,30 +312,30 @@ from flext_plugin import PluginType, create_flext_plugin
 
     # Test Redis cache configuration (also available in Docker)
     docker_redis_config = {
-      "redis": {
-          "host": "localhost",  # Would be flext-redis in Docker network
-          "port": 6379,
-          "password": "flext_redis_password",  # Matches docker-compose.yml
-          "db": 0,
-          "socket_timeout": 30,
-          "socket_connect_timeout": 30,
-      },
-      "cache": {
-          "default_ttl": 300,
-          "max_connections": 50,
-          "retry_on_timeout": True,
-      },
+        "redis": {
+            "host": "localhost",  # Would be flext-redis in Docker network
+            "port": 6379,
+            "password": "flext_redis_password",  # Matches docker-compose.yml
+            "db": 0,
+            "socket_timeout": 30,
+            "socket_connect_timeout": 30,
+        },
+        "cache": {
+            "default_ttl": 300,
+            "max_connections": 50,
+            "retry_on_timeout": True,
+        },
     }
 
     docker_redis_plugin = create_flext_plugin(
-      name="docker-redis-cache",
-      version="1.0.0",
-      config={
-          "description": "Docker-compatible Redis cache service",
-          "author": "FLEXT Team",
-          "plugin_type": PluginType.DATABASE,
-          **docker_redis_config,
-      },
+        name="docker-redis-cache",
+        version="1.0.0",
+        config={
+            "description": "Docker-compatible Redis cache service",
+            "author": "FLEXT Team",
+            "plugin_type": PluginType.DATABASE,
+            **docker_redis_config,
+        },
     )
 
     # Verify Docker Redis plugin
@@ -340,15 +347,15 @@ from flext_plugin import PluginType, create_flext_plugin
 def test_docker_integration_example_execution() -> None:
     """Test that docker_integration_example.py runs successfully without errors."""
     example_path = (
-      Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
+        Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
     )
 
     # Execute the example script
     rc, out, err = asyncio.run(
-      _run(
-          [sys.executable, str(example_path)],
-          cwd=str(Path(__file__).parent.parent),
-      ),
+        _run(
+            [sys.executable, str(example_path)],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
@@ -369,14 +376,6 @@ def test_docker_integration_example_execution() -> None:
 def test_docker_integration_example_functionality() -> None:
     """Test the actual functionality demonstrated in docker_integration_example.py."""
     # Import the functionality directly
-from docker_integration_example import (
-      check_service_availability,
-      create_docker_ldap_plugin,
-      create_docker_postgres_plugin,
-      create_docker_redis_plugin,
-    )
-
-from flext_plugin import PluginStatus
 
     # Test PostgreSQL plugin creation
     postgres_plugin, postgres_config = create_docker_postgres_plugin()
@@ -385,8 +384,8 @@ from flext_plugin import PluginStatus
     assert postgres_plugin.name == "docker-postgres-connector"
     assert postgres_plugin.plugin_version == "2.1.0"
     assert (
-      postgres_plugin.description
-      == "PostgreSQL connector for Docker development environment"
+        postgres_plugin.description
+        == "PostgreSQL connector for Docker development environment"
     )
     assert postgres_config["database"]["host"] == "localhost"
     assert postgres_config["database"]["port"] == 5434  # Actual Docker container port
@@ -410,8 +409,8 @@ from flext_plugin import PluginStatus
     assert redis_plugin.name == "docker-redis-cache"
     assert redis_plugin.plugin_version == "1.2.0"
     assert (
-      redis_plugin.description
-      == "Redis cache service for Docker development environment"
+        redis_plugin.description
+        == "Redis cache service for Docker development environment"
     )
     assert redis_config["redis"]["host"] == "localhost"
     assert redis_config["redis"]["port"] == 6381  # Actual Docker container port
@@ -434,8 +433,8 @@ from flext_plugin import PluginStatus
     assert ldap_plugin.name == "docker-ldap-directory"
     assert ldap_plugin.plugin_version == "1.5.0"
     assert (
-      ldap_plugin.description
-      == "LDAP directory service for Docker development environment"
+        ldap_plugin.description
+        == "LDAP directory service for Docker development environment"
     )
     assert ldap_config["ldap"]["server"] == "localhost"
     assert ldap_config["ldap"]["port"] == 389
@@ -460,9 +459,9 @@ from flext_plugin import PluginStatus
 
     # Test with an invalid service that should never be available
     invalid_available = check_service_availability(
-      "192.0.2.1",
-      99999,
-      timeout=0.1,
+        "192.0.2.1",
+        99999,
+        timeout=0.1,
     )  # RFC5737 test address
     assert invalid_available is False
 
@@ -470,15 +469,15 @@ from flext_plugin import PluginStatus
 def test_docker_integration_example_with_connection_testing() -> None:
     """Test docker integration example with connection testing enabled."""
     example_path = (
-      Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
+        Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
     )
 
     # Execute the example script with connection testing
     rc, out, err = asyncio.run(
-      _run(
-          [sys.executable, str(example_path), "--test-connections"],
-          cwd=str(Path(__file__).parent.parent),
-      ),
+        _run(
+            [sys.executable, str(example_path), "--test-connections"],
+            cwd=str(Path(__file__).parent.parent),
+        ),
     )
 
     # Verify successful execution
@@ -490,5 +489,5 @@ def test_docker_integration_example_with_connection_testing() -> None:
     # Should show either Available or Unavailable (not Skipped)
     assert ("Available" in output) or ("Unavailable" in output)
     assert (
-      "Skipped" not in output
+        "Skipped" not in output
     )  # No services should be skipped with --test-connections

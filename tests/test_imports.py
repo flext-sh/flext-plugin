@@ -40,4 +40,4 @@ modules_to_test = [
 
 for module in modules_to_test:
     with contextlib.suppress(Exception):
-      __import__(module)
+        __import__(module)

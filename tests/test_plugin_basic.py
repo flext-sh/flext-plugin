@@ -50,12 +50,12 @@ def test_flext_plugin_imports() -> None:
     This verifies that the core plugin components are available for import.
     """
     try:
-      assert PluginManager is not None
-      assert PluginType is not None
+        assert PluginManager is not None
+        assert PluginType is not None
     except ImportError:
-      pytest.fail(
-          "flext-infrastructure.plugins.flext-plugin core components not available",
-      )
+        pytest.fail(
+            "flext-infrastructure.plugins.flext-plugin core components not available",
+        )
 
 
 def test_flext_core_dependencies() -> None:
@@ -70,19 +70,19 @@ def test_flext_core_dependencies() -> None:
     assert result.success
     expected_data = {"test": "data"}
     if result.data != expected_data:
-      raise AssertionError(f"Expected {expected_data}, got {result.data}")
+        raise AssertionError(f"Expected {expected_data}, got {result.data}")
 
 
 def test_plugin_type_enum() -> None:
     """Test PluginType enum from flext_plugin."""
     # Test standard plugin types
     if PluginType.TAP.value != "tap":
-      raise AssertionError(f"Expected {'tap'}, got {PluginType.TAP.value}")
+        raise AssertionError(f"Expected {'tap'}, got {PluginType.TAP.value}")
     assert PluginType.TARGET.value == "target"
     if PluginType.TRANSFORM.value != "transform":
-      raise AssertionError(
-          f"Expected {'transform'}, got {PluginType.TRANSFORM.value}",
-      )
+        raise AssertionError(
+            f"Expected {'transform'}, got {PluginType.TRANSFORM.value}",
+        )
     assert PluginType.UTILITY.value == "utility"
 
 
@@ -118,32 +118,32 @@ class TestFlextPluginIntegration:
     """
 
     async def test_plugin_load_unload(self) -> None:
-      """Test plugin load/unload functionality."""
-      manager = PluginManager()
-      await manager.initialize()
+        """Test plugin load/unload functionality."""
+        manager = PluginManager()
+        await manager.initialize()
 
-      # Test load operation exists and handles missing plugins gracefully
-      result = await manager.load_plugin("nonexistent-plugin")
+        # Test load operation exists and handles missing plugins gracefully
+        result = await manager.load_plugin("nonexistent-plugin")
 
-      assert not result.success
-      assert result.error is not None
-      if "not found" not in result.error.lower():
-          raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
+        assert not result.success
+        assert result.error is not None
+        if "not found" not in result.error.lower():
+            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
 
     async def test_plugin_discovery(self) -> None:
-      """Test plugin discovery functionality."""
-      manager = PluginManager()
+        """Test plugin discovery functionality."""
+        manager = PluginManager()
 
-      # Test discovery doesn't crash
-      available = await manager.discover_plugins()
-      assert isinstance(available, dict)
+        # Test discovery doesn't crash
+        available = await manager.discover_plugins()
+        assert isinstance(available, dict)
 
     def test_plugin_lifecycle(self) -> None:
-      """Test basic plugin lifecycle operations."""
-      manager = PluginManager()
+        """Test basic plugin lifecycle operations."""
+        manager = PluginManager()
 
-      # Test operations exist based on real API
-      assert hasattr(manager, "load_plugin")
-      assert hasattr(manager, "unload_plugin")
-      assert hasattr(manager, "reload_plugin")
-      assert hasattr(manager, "discover_plugins")
+        # Test operations exist based on real API
+        assert hasattr(manager, "load_plugin")
+        assert hasattr(manager, "unload_plugin")
+        assert hasattr(manager, "reload_plugin")
+        assert hasattr(manager, "discover_plugins")

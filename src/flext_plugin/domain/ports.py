@@ -13,205 +13,148 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
 
- from flext_core import FlextResult
+from flext_core import FlextResult
 
-    from flext_plugin.domain.entities import FlextPlugin, FlextPluginConfig
+from flext_plugin.domain.entities import FlextPluginConfig, FlextPluginEntity
 
 
 class FlextPluginDiscoveryPort(ABC):
     """Domain port interface for plugin discovery and validation operations."""
 
     @abstractmethod
-    def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
-      """Discover plugins in the given path.
+    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
+        """Discover plugins in the given path.
 
-      Args:
-                  path: Path to search for plugins
-      Returns:
-                  FlextResult containing list of discovered plugins
-      Args:
-          path (str): Description.
+        Args:
+            path: Path to search for plugins
+        Returns:
+            FlextResult containing list of discovered plugins
 
-      Returns:
-          FlextResult[list[FlextPlugin]]: Description.
-
-      """
+        """
 
     @abstractmethod
-    def validate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-      """Validate a plugin.
+    def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+        """Validate a plugin.
 
-      Args:
-                  plugin: Plugin to validate
-      Returns:
-                  FlextResult indicating if plugin is valid
-      Args:
-          plugin (FlextPlugin): Description.
+        Args:
+            plugin: Plugin to validate
+        Returns:
+            FlextResult indicating if plugin is valid
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
 
 class FlextPluginLoaderPort(ABC):
     """Domain port interface for plugin loading and memory management operations."""
 
     @abstractmethod
-    def load_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-      """Load a plugin.
+    def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+        """Load a plugin.
 
-      Args:
-                  plugin: Plugin to load
-      Returns:
-                  FlextResult indicating if loading was successful
-      Args:
-          plugin (FlextPlugin): Description.
+        Args:
+            plugin: Plugin to load
+        Returns:
+            FlextResult indicating if loading was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
     @abstractmethod
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Unload a plugin.
+        """Unload a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to unload
-      Returns:
-                  FlextResult indicating if unloading was successful
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to unload
+        Returns:
+            FlextResult indicating if unloading was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
     @abstractmethod
     def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
-      """Check if a plugin is loaded.
+        """Check if a plugin is loaded.
 
-      Args:
-                  plugin_name: Name of plugin to check
-      Returns:
-                  FlextResult indicating if plugin is loaded
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to check
+        Returns:
+            FlextResult indicating if plugin is loaded
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
 
 class FlextPluginManagerPort(ABC):
     """Domain port interface for comprehensive plugin management and configuration."""
 
     @abstractmethod
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]:
-      """Install a plugin from the given path.
+    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:
+        """Install a plugin from the given path.
 
-      Args:
-                  plugin_path: Path to plugin to install
-      Returns:
-                  FlextResult containing installed plugin
-      Args:
-          plugin_path (str): Description.
+        Args:
+            plugin_path: Path to plugin to install
+        Returns:
+            FlextResult containing installed plugin
 
-      Returns:
-          FlextResult[FlextPlugin]: Description.
-
-      """
+        """
 
     @abstractmethod
     def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Uninstall a plugin.
+        """Uninstall a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to uninstall
-      Returns:
-                  FlextResult indicating if uninstallation was successful
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to uninstall
+        Returns:
+            FlextResult indicating if uninstallation was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
     @abstractmethod
     def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Enable a plugin.
+        """Enable a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to enable
-      Returns:
-                  FlextResult indicating if enabling was successful
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to enable
+        Returns:
+            FlextResult indicating if enabling was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
     @abstractmethod
     def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Disable a plugin.
+        """Disable a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to disable
-      Returns:
-                  FlextResult indicating if disabling was successful
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to disable
+        Returns:
+            FlextResult indicating if disabling was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
     @abstractmethod
     def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
-      """Get configuration for a plugin.
+        """Get configuration for a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to get config for
-      Returns:
-                  FlextResult containing plugin configuration
-      Args:
-          plugin_name (str): Description.
+        Args:
+            plugin_name: Name of plugin to get config for
+        Returns:
+            FlextResult containing plugin configuration
 
-      Returns:
-          FlextResult[FlextPluginConfig]: Description.
-
-      """
+        """
 
     @abstractmethod
     def update_plugin_config(
-      self,
-      plugin_name: str,
-      config: FlextPluginConfig,
+        self,
+        plugin_name: str,
+        config: FlextPluginConfig,
     ) -> FlextResult[bool]:
-      """Update configuration for a plugin.
+        """Update configuration for a plugin.
 
-      Args:
-                  plugin_name: Name of plugin to update config for
-                  config: New plugin configuration
-      Returns:
-                  FlextResult indicating if update was successful
-      Args:
-          plugin_name (str): Description.
-          config (FlextPluginConfig): Description.
+        Args:
+            plugin_name: Name of plugin to update config for
+            config: New plugin configuration
+        Returns:
+            FlextResult indicating if update was successful
 
-      Returns:
-          FlextResult[bool]: Description.
-
-      """
+        """
 
 
 # Backwards compatibility aliases

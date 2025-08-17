@@ -108,10 +108,10 @@ def create_flext_plugin(
     config["created_at"] = datetime.now(UTC)
 
     return FlextPlugin.create(
-      name=name,
-      plugin_version=version,
-      entity_id=str(uuid.uuid4()),
-      config=config,
+        name=name,
+        plugin_version=version,
+        entity_id=str(uuid.uuid4()),
+        config=config,
     )
 
 
@@ -130,11 +130,11 @@ def create_flext_plugin_config(
 
     """
     return FlextPluginConfig.create(
-      plugin_name=plugin_name,
-      entity_id=str(uuid.uuid4()),
-      config_data=config_data,
-      created_at=datetime.now(UTC),
-      updated_at=datetime.now(UTC),
+        plugin_name=plugin_name,
+        entity_id=str(uuid.uuid4()),
+        config_data=config_data,
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
 
@@ -162,10 +162,10 @@ def create_flext_plugin_metadata(
     final_entry_point = entry_point or plugin_name
 
     return FlextPluginMetadata.create(
-      name=plugin_name,
-      entry_point=final_entry_point,
-      entity_id=str(uuid.uuid4()),
-      metadata=metadata,
+        name=plugin_name,
+        entry_point=final_entry_point,
+        entity_id=str(uuid.uuid4()),
+        metadata=metadata,
     )
 
 
@@ -184,10 +184,10 @@ def create_flext_plugin_registry(
 
     """
     return FlextPluginRegistry.create(
-      name=name,
-      entity_id=str(uuid.uuid4()),
-      plugins=plugins,
-      created_at=datetime.now(UTC),
+        name=name,
+        entity_id=str(uuid.uuid4()),
+        plugins=plugins,
+        created_at=datetime.now(UTC),
     )
 
 
@@ -243,51 +243,51 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
 
     # Helper function for validation
     def _handle_value_error(error: str) -> None:
-      """Handle value error by raising appropriate exception."""
-      raise ValueError(error)
+        """Handle value error by raising appropriate exception."""
+        raise ValueError(error)
 
     try:
-      # Extract required fields with validation
-      name_obj = plugin_data.get("name", "")
-      if not name_obj:
-          msg = "Plugin name is required"
-          _handle_value_error(msg)
-      name = str(name_obj)
+        # Extract required fields with validation
+        name_obj = plugin_data.get("name", "")
+        if not name_obj:
+            msg = "Plugin name is required"
+            _handle_value_error(msg)
+        name = str(name_obj)
 
-      version_obj = plugin_data.get("version", "")
-      if not version_obj:
-          msg = "Plugin version is required"
-          _handle_value_error(msg)
-      version = str(version_obj)
+        version_obj = plugin_data.get("version", "")
+        if not version_obj:
+            msg = "Plugin version is required"
+            _handle_value_error(msg)
+        version = str(version_obj)
 
-      # Extract optional fields
-      description = str(plugin_data.get("description", ""))
-      author = str(plugin_data.get("author", ""))
-      dependencies = plugin_data.get("dependencies", [])
-      metadata = plugin_data.get("metadata", {})
+        # Extract optional fields
+        description = str(plugin_data.get("description", ""))
+        author = str(plugin_data.get("author", ""))
+        dependencies = plugin_data.get("dependencies", [])
+        metadata = plugin_data.get("metadata", {})
 
-      # Handle status conversion
-      status_str = plugin_data.get("status", "inactive")
-      try:
-          status = PluginStatus(status_str)
-      except ValueError:
-          status = PluginStatus.INACTIVE
+        # Handle status conversion
+        status_str = plugin_data.get("status", "inactive")
+        try:
+            status = PluginStatus(status_str)
+        except ValueError:
+            status = PluginStatus.INACTIVE
 
-      return create_flext_plugin(
-          name=name,
-          version=version,
-          config={
-              "description": description,
-              "author": author,
-              "dependencies": dependencies,
-              "metadata": metadata,
-              "status": status,
-          },
-      )
+        return create_flext_plugin(
+            name=name,
+            version=version,
+            config={
+                "description": description,
+                "author": author,
+                "dependencies": dependencies,
+                "metadata": metadata,
+                "status": status,
+            },
+        )
 
     except (RuntimeError, ValueError, TypeError) as e:
-      error_msg: str = f"Failed to create plugin from dictionary: {e}"
-      raise ValueError(error_msg) from e
+        error_msg: str = f"Failed to create plugin from dictionary: {e}"
+        raise ValueError(error_msg) from e
 
 
 def create_plugin_config_from_dict(
@@ -308,12 +308,12 @@ def create_plugin_config_from_dict(
 
     """
     if not plugin_name:
-      msg = "Plugin name is required"
-      raise ValueError(msg)
+        msg = "Plugin name is required"
+        raise ValueError(msg)
 
     return create_flext_plugin_config(
-      plugin_name=plugin_name,
-      config_data=config_dict,
+        plugin_name=plugin_name,
+        config_data=config_dict,
     )
 
 

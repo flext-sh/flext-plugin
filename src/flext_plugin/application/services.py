@@ -43,9 +43,10 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from flext_core import FlextContainer, FlextDomainService, FlextResult
+from flext_core import FlextContainer, FlextResult
+from flext_core.domain_services import FlextDomainService
 
-from flext_plugin.domain.entities import FlextPlugin, FlextPluginConfig
+from flext_plugin.domain.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.domain.ports import (
     FlextPluginDiscoveryPort,
     FlextPluginLoaderPort,
@@ -98,315 +99,325 @@ class FlextPluginService(FlextDomainService[object]):
     model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
     def __init__(self, **kwargs: object) -> None:
-      """Initialize plugin management service with dependency injection container.
+        """Initialize plugin management service with dependency injection container.
 
-      Sets up the application service with proper dependency injection container
-      and initializes infrastructure port references. The service uses lazy loading
-      for ports to support various deployment and testing scenarios.
+        Sets up the application service with proper dependency injection container
+        and initializes infrastructure port references. The service uses lazy loading
+        for ports to support various deployment and testing scenarios.
 
-      Args:
-          **kwargs: Configuration parameters including:
-              - container: FlextContainer instance for dependency injection
-              - Additional configuration parameters passed to base service
-      Note:
-          If no container is provided, a default FlextContainer instance is created.
-          Port dependencies are resolved lazily through the container.
+        Args:
+            **kwargs: Configuration parameters including:
+                - container: FlextContainer instance for dependency injection
+                - Additional configuration parameters passed to base service
+        Note:
+            If no container is provided, a default FlextContainer instance is created.
+            Port dependencies are resolved lazily through the container.
 
-      """
-      # Extract container from kwargs or create default
-      container_arg = kwargs.pop("container", None)
-      if container_arg is not None:
-          kwargs["container"] = container_arg
-      else:
-          kwargs["container"] = FlextContainer()
-      super().__init__(**kwargs)
-      # Store private attributes
-      object.__setattr__(self, "_discovery_port", None)
-      object.__setattr__(self, "_loader_port", None)
-      object.__setattr__(self, "_manager_port", None)
+        """
+        # Extract container from kwargs or create default
+        container_arg = kwargs.pop("container", None)
+        if container_arg is not None:
+            kwargs["container"] = container_arg
+        else:
+            kwargs["container"] = FlextContainer()
+        super().__init__(**kwargs)
+        # Store private attributes
+        object.__setattr__(self, "_discovery_port", None)
+        object.__setattr__(self, "_loader_port", None)
+        object.__setattr__(self, "_manager_port", None)
 
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
-      """Execute service operation (required by FlextDomainService).
+        """Execute service operation (required by FlextDomainService).
 
-      This method is required by the abstract base class but services
-      provide specific methods for their operations.
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
 
-      Returns:
-          FlextResult indicating this method should not be used directly
+        Returns:
+            FlextResult indicating this method should not be used directly
 
-      """
-      _ = args, kwargs  # Mark as intentionally unused
-      return FlextResult.fail("Use specific service methods instead of execute")
+        """
+        _ = args, kwargs  # Mark as intentionally unused
+        return FlextResult[object].fail(
+            "Use specific service methods instead of execute"
+        )
 
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
-      """Get plugin discovery port."""
-      discovery_port = getattr(self, "_discovery_port", None)
-      if discovery_port is None:
-          result = self.container.get("plugin_discovery_port")
-          if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
-              object.__setattr__(self, "_discovery_port", result.data)
-              return result.data
-      if isinstance(discovery_port, FlextPluginDiscoveryPort):
-          return discovery_port
+        """Get plugin discovery port."""
+        discovery_port = getattr(self, "_discovery_port", None)
+        if discovery_port is None:
+            result = self.container.get("plugin_discovery_port")
+            if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
+                object.__setattr__(self, "_discovery_port", result.data)
+                return result.data
+        if isinstance(discovery_port, FlextPluginDiscoveryPort):
+            return discovery_port
 
-      # Return a mock implementation if none available
-      # Create a simple adapter that implements the interface
-      class MockDiscoveryPort(FlextPluginDiscoveryPort):
-          def discover_plugins(self, _path: str) -> FlextResult[list[FlextPlugin]]:
-              return FlextResult.ok([])
+        # Return a mock implementation if none available
+        # Create a simple adapter that implements the interface
+        class MockDiscoveryPort(FlextPluginDiscoveryPort):
+            def discover_plugins(
+                self, path: str
+            ) -> FlextResult[list[FlextPluginEntity]]:
+                return FlextResult[list[FlextPluginEntity]].ok([])
 
-          def validate_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-      return MockDiscoveryPort()
+        return MockDiscoveryPort()
 
     @property
     def loader_port(self) -> FlextPluginLoaderPort:
-      """Get plugin loader port."""
-      loader_port = getattr(self, "_loader_port", None)
-      if loader_port is None:
-          result = self.container.get("plugin_loader_port")
-          if result.success and isinstance(result.data, FlextPluginLoaderPort):
-              object.__setattr__(self, "_loader_port", result.data)
-              return result.data
-      if isinstance(loader_port, FlextPluginLoaderPort):
-          return loader_port
+        """Get plugin loader port."""
+        loader_port = getattr(self, "_loader_port", None)
+        if loader_port is None:
+            result = self.container.get("plugin_loader_port")
+            if result.success and isinstance(result.data, FlextPluginLoaderPort):
+                object.__setattr__(self, "_loader_port", result.data)
+                return result.data
+        if isinstance(loader_port, FlextPluginLoaderPort):
+            return loader_port
 
-      # Return a mock implementation if none available
-      # Create a simple adapter that implements the interface
-      class MockLoaderPort(FlextPluginLoaderPort):
-          def load_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+        # Return a mock implementation if none available
+        # Create a simple adapter that implements the interface
+        class MockLoaderPort(FlextPluginLoaderPort):
+            def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-          def unload_plugin(self, _plugin_name: str, /) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-          def is_plugin_loaded(self, _plugin_name: str, /) -> FlextResult[bool]:
-              loaded = False
-              return FlextResult.ok(loaded)
+            def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
+                loaded = False
+                return FlextResult[bool].ok(loaded)
 
-      return MockLoaderPort()
+        return MockLoaderPort()
 
     @property
     def manager_port(self) -> FlextPluginManagerPort:
-      """Get plugin manager port."""
-      manager_port = getattr(self, "_manager_port", None)
-      if manager_port is None:
-          result = self.container.get("plugin_manager_port")
-          if result.success and isinstance(result.data, FlextPluginManagerPort):
-              object.__setattr__(self, "_manager_port", result.data)
-              return result.data
-      if isinstance(manager_port, FlextPluginManagerPort):
-          return manager_port
+        """Get plugin manager port."""
+        manager_port = getattr(self, "_manager_port", None)
+        if manager_port is None:
+            result = self.container.get("plugin_manager_port")
+            if result.success and isinstance(result.data, FlextPluginManagerPort):
+                object.__setattr__(self, "_manager_port", result.data)
+                return result.data
+        if isinstance(manager_port, FlextPluginManagerPort):
+            return manager_port
 
-      # Return a mock implementation if none available
-      # Create a simple adapter that implements the interface
-      class MockManagerPort(FlextPluginManagerPort):
-          def install_plugin(self, _plugin_path: str) -> FlextResult[FlextPlugin]:
-              return FlextResult.fail("Mock implementation")
+        # Return a mock implementation if none available
+        # Create a simple adapter that implements the interface
+        class MockManagerPort(FlextPluginManagerPort):
+            def install_plugin(
+                self, plugin_path: str
+            ) -> FlextResult[FlextPluginEntity]:
+                return FlextResult[FlextPluginEntity].fail("Mock implementation")
 
-          def uninstall_plugin(self, _plugin_name: str) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-          def enable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-          def disable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-          def get_plugin_config(
-              self,
-              _plugin_name: str,
-          ) -> FlextResult[FlextPluginConfig]:
-              return FlextResult.fail("Mock implementation")
+            def get_plugin_config(
+                self,
+                plugin_name: str,
+            ) -> FlextResult[FlextPluginConfig]:
+                return FlextResult[FlextPluginConfig].fail("Mock implementation")
 
-          def update_plugin_config(
-              self,
-              _plugin_name: str,
-              _config: FlextPluginConfig,
-          ) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def update_plugin_config(
+                self,
+                plugin_name: str,
+                config: FlextPluginConfig,
+            ) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-      return MockManagerPort()
+        return MockManagerPort()
 
-    def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]:
-      """Discover plugins in the given path.
+    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
+        """Discover plugins in the given path.
 
-      Args:
-          path: Path to search for plugins
-      Returns:
-          FlextResult containing list of discovered plugins
+        Args:
+            path: Path to search for plugins
+        Returns:
+            FlextResult containing list of discovered plugins
 
-      """
-      try:
-          if not path:
-              return FlextResult.fail("Path is required for plugin discovery")
-          return self.discovery_port.discover_plugins(path)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to discover plugins: {e}")
+        """
+        try:
+            if not path:
+                return FlextResult[list[FlextPluginEntity]].fail(
+                    "Path is required for plugin discovery"
+                )
+            return self.discovery_port.discover_plugins(path)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[list[FlextPluginEntity]].fail(
+                f"Failed to discover plugins: {e}"
+            )
 
-    def load_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
-      """Load a plugin.
+    def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+        """Load a plugin.
 
-      Args:
-          plugin: Plugin to load
-      Returns:
-          FlextResult indicating if loading was successful
+        Args:
+            plugin: Plugin to load
+        Returns:
+            FlextResult indicating if loading was successful
 
-      """
-      try:
-          if not plugin.is_valid():
-              return FlextResult.fail("Invalid plugin")
-          # Validate plugin first
-          validation_result = self.discovery_port.validate_plugin(plugin)
-          if not validation_result.success or not validation_result.data:
-              return FlextResult.fail("Plugin validation failed")
-          return self.loader_port.load_plugin(plugin)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to load plugin: {e}")
+        """
+        try:
+            if not plugin.is_valid():
+                return FlextResult[bool].fail("Invalid plugin")
+            # Validate plugin first
+            validation_result = self.discovery_port.validate_plugin(plugin)
+            if not validation_result.success or not validation_result.data:
+                return FlextResult[bool].fail("Plugin validation failed")
+            return self.loader_port.load_plugin(plugin)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[bool].fail(f"Failed to load plugin: {e}")
 
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Unload a plugin.
+        """Unload a plugin.
 
-      Args:
-          plugin_name: Name of plugin to unload
-      Returns:
-          FlextResult indicating if unloading was successful
+        Args:
+            plugin_name: Name of plugin to unload
+        Returns:
+            FlextResult indicating if unloading was successful
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.loader_port.unload_plugin(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to unload plugin: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult[bool].fail("Plugin name is required")
+            return self.loader_port.unload_plugin(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[bool].fail(f"Failed to unload plugin: {e}")
 
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPlugin]:
-      """Install a plugin from the given path.
+    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:
+        """Install a plugin from the given path.
 
-      Args:
-          plugin_path: Path to plugin to install
-      Returns:
-          FlextResult containing installed plugin
+        Args:
+            plugin_path: Path to plugin to install
+        Returns:
+            FlextResult containing installed plugin
 
-      """
-      try:
-          if not plugin_path:
-              return FlextResult.fail("Plugin path is required")
-          return self.manager_port.install_plugin(plugin_path)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to install plugin: {e}")
+        """
+        try:
+            if not plugin_path:
+                return FlextResult[FlextPluginEntity].fail("Plugin path is required")
+            return self.manager_port.install_plugin(plugin_path)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[FlextPluginEntity].fail(f"Failed to install plugin: {e}")
 
     def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Uninstall a plugin.
+        """Uninstall a plugin.
 
-      Args:
-          plugin_name: Name of plugin to uninstall
-      Returns:
-          FlextResult indicating if uninstallation was successful
+        Args:
+            plugin_name: Name of plugin to uninstall
+        Returns:
+            FlextResult indicating if uninstallation was successful
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.manager_port.uninstall_plugin(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to uninstall plugin: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult[bool].fail("Plugin name is required")
+            return self.manager_port.uninstall_plugin(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[bool].fail(f"Failed to uninstall plugin: {e}")
 
     def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Enable a plugin.
+        """Enable a plugin.
 
-      Args:
-          plugin_name: Name of plugin to enable
-      Returns:
-          FlextResult indicating if enabling was successful
+        Args:
+            plugin_name: Name of plugin to enable
+        Returns:
+            FlextResult indicating if enabling was successful
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.manager_port.enable_plugin(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to enable plugin: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult[bool].fail("Plugin name is required")
+            return self.manager_port.enable_plugin(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[bool].fail(f"Failed to enable plugin: {e}")
 
     def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-      """Disable a plugin.
+        """Disable a plugin.
 
-      Args:
-          plugin_name: Name of plugin to disable
-      Returns:
-          FlextResult indicating if disabling was successful
+        Args:
+            plugin_name: Name of plugin to disable
+        Returns:
+            FlextResult indicating if disabling was successful
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.manager_port.disable_plugin(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to disable plugin: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult[bool].fail("Plugin name is required")
+            return self.manager_port.disable_plugin(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[bool].fail(f"Failed to disable plugin: {e}")
 
     def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
-      """Get configuration for a plugin.
+        """Get configuration for a plugin.
 
-      Args:
-          plugin_name: Name of plugin to get config for
-      Returns:
-          FlextResult containing plugin configuration
+        Args:
+            plugin_name: Name of plugin to get config for
+        Returns:
+            FlextResult containing plugin configuration
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.manager_port.get_plugin_config(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to get plugin config: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult.fail("Plugin name is required")
+            return self.manager_port.get_plugin_config(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult.fail(f"Failed to get plugin config: {e}")
 
     def update_plugin_config(
-      self,
-      plugin_name: str,
-      config: FlextPluginConfig,
+        self,
+        plugin_name: str,
+        config: FlextPluginConfig,
     ) -> FlextResult[bool]:
-      """Update configuration for a plugin.
+        """Update configuration for a plugin.
 
-      Args:
-          plugin_name: Name of plugin to update config for
-          config: New plugin configuration
-      Returns:
-          FlextResult indicating if update was successful
+        Args:
+            plugin_name: Name of plugin to update config for
+            config: New plugin configuration
+        Returns:
+            FlextResult indicating if update was successful
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          if not config.is_valid():
-              return FlextResult.fail("Invalid plugin configuration")
-          return self.manager_port.update_plugin_config(plugin_name, config)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to update plugin config: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult.fail("Plugin name is required")
+            if not config.is_valid():
+                return FlextResult.fail("Invalid plugin configuration")
+            return self.manager_port.update_plugin_config(plugin_name, config)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult.fail(f"Failed to update plugin config: {e}")
 
     def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
-      """Check if a plugin is loaded.
+        """Check if a plugin is loaded.
 
-      Args:
-          plugin_name: Name of plugin to check
-      Returns:
-          FlextResult indicating if plugin is loaded
+        Args:
+            plugin_name: Name of plugin to check
+        Returns:
+            FlextResult indicating if plugin is loaded
 
-      """
-      try:
-          if not plugin_name:
-              return FlextResult.fail("Plugin name is required")
-          return self.loader_port.is_plugin_loaded(plugin_name)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to check plugin status: {e}")
+        """
+        try:
+            if not plugin_name:
+                return FlextResult.fail("Plugin name is required")
+            return self.loader_port.is_plugin_loaded(plugin_name)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult.fail(f"Failed to check plugin status: {e}")
 
 
 class FlextPluginDiscoveryService(FlextDomainService[object]):
@@ -416,85 +427,89 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
     model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
 
     def __init__(self, **kwargs: object) -> None:
-      """Initialize plugin discovery service with dependency injection container."""
-      # Extract container from kwargs or create default
-      container_arg = kwargs.pop("container", None)
-      if container_arg is not None:
-          kwargs["container"] = container_arg
-      else:
-          kwargs["container"] = FlextContainer()
-      super().__init__(**kwargs)
-      # Store private attributes
-      object.__setattr__(self, "_discovery_port", None)
+        """Initialize plugin discovery service with dependency injection container."""
+        # Extract container from kwargs or create default
+        container_arg = kwargs.pop("container", None)
+        if container_arg is not None:
+            kwargs["container"] = container_arg
+        else:
+            kwargs["container"] = FlextContainer()
+        super().__init__(**kwargs)
+        # Store private attributes
+        object.__setattr__(self, "_discovery_port", None)
 
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
-      """Execute service operation (required by FlextDomainService).
+        """Execute service operation (required by FlextDomainService).
 
-      This method is required by the abstract base class but services
-      provide specific methods for their operations.
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
 
-      Returns:
-          FlextResult indicating this method should not be used directly
+        Returns:
+            FlextResult indicating this method should not be used directly
 
-      """
-      _ = args, kwargs  # Mark as intentionally unused
-      return FlextResult.fail("Use specific service methods instead of execute")
+        """
+        _ = args, kwargs  # Mark as intentionally unused
+        return FlextResult.fail("Use specific service methods instead of execute")
 
     @property
     def discovery_port(self) -> FlextPluginDiscoveryPort:
-      """Get plugin discovery port."""
-      discovery_port = getattr(self, "_discovery_port", None)
-      if discovery_port is None:
-          result = self.container.get("plugin_discovery_port")
-          if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
-              object.__setattr__(self, "_discovery_port", result.data)
-              return result.data
-      if isinstance(discovery_port, FlextPluginDiscoveryPort):
-          return discovery_port
+        """Get plugin discovery port."""
+        discovery_port = getattr(self, "_discovery_port", None)
+        if discovery_port is None:
+            result = self.container.get("plugin_discovery_port")
+            if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
+                object.__setattr__(self, "_discovery_port", result.data)
+                return result.data
+        if isinstance(discovery_port, FlextPluginDiscoveryPort):
+            return discovery_port
 
-      # Return a mock implementation if none available
-      # Create a simple adapter that implements the interface
-      class MockDiscoveryPort(FlextPluginDiscoveryPort):
-          def discover_plugins(self, _path: str) -> FlextResult[list[FlextPlugin]]:
-              return FlextResult.ok([])
+        # Return a mock implementation if none available
+        # Create a simple adapter that implements the interface
+        class MockDiscoveryPort(FlextPluginDiscoveryPort):
+            def discover_plugins(
+                self, path: str
+            ) -> FlextResult[list[FlextPluginEntity]]:
+                return FlextResult[list[FlextPluginEntity]].ok([])
 
-          def validate_plugin(self, _plugin: FlextPlugin) -> FlextResult[bool]:
-              success = True
-              return FlextResult.ok(success)
+            def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+                success = True
+                return FlextResult[bool].ok(success)
 
-      return MockDiscoveryPort()
+        return MockDiscoveryPort()
 
-    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPlugin]]:
-      """Scan directory for plugins.
+    def scan_directory(
+        self, directory_path: str
+    ) -> FlextResult[list[FlextPluginEntity]]:
+        """Scan directory for plugins.
 
-      Args:
-          directory_path: Directory to scan
-      Returns:
-          FlextResult containing discovered plugins
+        Args:
+            directory_path: Directory to scan
+        Returns:
+            FlextResult containing discovered plugins
 
-      """
-      try:
-          if not directory_path:
-              return FlextResult.fail("Directory path is required")
-          return self.discovery_port.discover_plugins(directory_path)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to scan directory: {e}")
+        """
+        try:
+            if not directory_path:
+                return FlextResult.fail("Directory path is required")
+            return self.discovery_port.discover_plugins(directory_path)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult.fail(f"Failed to scan directory: {e}")
 
-    def validate_plugin_integrity(self, plugin: FlextPlugin) -> FlextResult[bool]:
-      """Validate plugin integrity.
+    def validate_plugin_integrity(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+        """Validate plugin integrity.
 
-      Args:
-          plugin: Plugin to validate
-      Returns:
-          FlextResult indicating if plugin is valid
+        Args:
+            plugin: Plugin to validate
+        Returns:
+            FlextResult indicating if plugin is valid
 
-      """
-      try:
-          if not plugin:
-              return FlextResult.fail("Plugin is required")
-          return self.discovery_port.validate_plugin(plugin)
-      except (RuntimeError, ValueError, TypeError) as e:
-          return FlextResult.fail(f"Failed to validate plugin: {e}")
+        """
+        try:
+            if not plugin:
+                return FlextResult.fail("Plugin is required")
+            return self.discovery_port.validate_plugin(plugin)
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult.fail(f"Failed to validate plugin: {e}")
 
 
 # Backwards compatibility aliases

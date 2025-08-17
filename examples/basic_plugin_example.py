@@ -20,13 +20,13 @@ def main() -> None:
     # Create a basic plugin
     print("\n1. Creating a basic plugin...")
     plugin = create_flext_plugin(
-      name="example-plugin",
-      version="1.0.0",
-      config={
-          "description": "A basic example plugin",
-          "author": "FLEXT Team",
-          "tags": ["example", "demo"],
-      },
+        name="example-plugin",
+        version="1.0.0",
+        config={
+            "description": "A basic example plugin",
+            "author": "FLEXT Team",
+            "tags": ["example", "demo"],
+        },
     )
 
     print(f"   Plugin created: {plugin.name}")
@@ -45,20 +45,20 @@ def main() -> None:
     print("\n3. Domain validation:")
     validation_result = plugin.validate_business_rules()
     if validation_result.success:
-      print("   ✅ Plugin validation passed")
+        print("   ✅ Plugin validation passed")
     else:
-      print(f"   ❌ Plugin validation failed: {validation_result.error}")
+        print(f"   ❌ Plugin validation failed: {validation_result.error}")
 
     # Demonstrate status transitions
     print("\n4. Status transitions:")
     if plugin.status == PluginStatus.INACTIVE:
-      print(f"   Current status: {plugin.status}")
-      activate_result = plugin.activate()
-      if activate_result:
-          print("   ✅ Plugin activation successful")
-          print(f"   New status: {plugin.status}")
-      else:
-          print("   ❌ Plugin activation failed")
+        print(f"   Current status: {plugin.status}")
+        activate_result = plugin.activate()
+        if activate_result:
+            print("   ✅ Plugin activation successful")
+            print(f"   New status: {plugin.status}")
+        else:
+            print("   ❌ Plugin activation failed")
 
     print("\n=== Example completed successfully ===")
 
