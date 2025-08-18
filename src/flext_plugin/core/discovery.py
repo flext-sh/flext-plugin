@@ -62,8 +62,8 @@ class PluginDiscovery(FlextEntity):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
         if not self.plugin_directory:
-            return FlextResult.fail("Plugin directory is required")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Plugin directory is required")
+        return FlextResult[None].ok(None)
 
     def add_plugin_directory(self, directory: Path) -> None:
         """Add a plugin directory to scan."""
@@ -84,7 +84,7 @@ class PluginDiscovery(FlextEntity):
         return {
             name: plugin
             for name, plugin in all_plugins.items()
-            if isinstance(plugin, dict) and plugin.get("type") == plugin_type
+            if isinstance(plugin, dict) and plugin.get("type", "") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:

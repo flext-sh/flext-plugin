@@ -114,8 +114,8 @@ class PluginDiscovery(FlextEntity):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
         if not self.plugin_directory:
-            return FlextResult.fail("Plugin directory cannot be empty")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Plugin directory cannot be empty")
+        return FlextResult[None].ok(None)
 
     async def scan(self) -> list[dict[str, object]]:
         """Scan the plugin directory for Python plugin files.
@@ -154,8 +154,8 @@ class PluginDiscovery(FlextEntity):
             name, module_name, plugin_class, path, and type.
 
         """
-        plugins = await self.scan()
-        entry_points = []
+        plugins: list[dict[str, object]] = await self.scan()
+        entry_points: list[dict[str, object]] = []
 
         for plugin in plugins:
             entry_point = {

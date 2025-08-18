@@ -20,12 +20,11 @@ from flext_plugin.application.services import (
     FlextPluginService,
 )
 from flext_plugin.domain.entities import (
-    FlextPlugin,
     FlextPluginConfig,
+    FlextPluginEntity,
+    FlextPluginMetadata,
     FlextPluginRegistry,
 )
-
-# Import modern implementations to re-export under legacy names
 from flext_plugin.exceptions import (
     FlextPluginCompatibilityError,
     FlextPluginConfigurationError,
@@ -60,262 +59,213 @@ def _deprecation_warning(old_name: str, new_name: str) -> None:
 
 
 # Legacy aliases for common plugin services - likely used names
-def plugin_service(*args: object, **kwargs: object) -> object:
+def plugin_service() -> FlextPluginService:
     """Legacy alias for FlextPluginService."""
     _deprecation_warning("PluginService", "FlextPluginService")
-    if FlextPluginService is None:
-        msg = "FlextPluginService not available"
-        raise ImportError(msg)
-    return FlextPluginService(*args, **kwargs)
+    return FlextPluginService()
 
 
-def plugin_manager(*args: object, **kwargs: object) -> object:
+def plugin_manager() -> FlextPluginPlatform:
     """Legacy alias for FlextPluginPlatform."""
     _deprecation_warning("PluginManager", "FlextPluginPlatform")
-    if FlextPluginPlatform is None:
-        msg = "FlextPluginPlatform not available"
-        raise ImportError(msg)
-    return FlextPluginPlatform(*args, **kwargs)
+    return FlextPluginPlatform()
 
 
-def plugin_discovery(*args: object, **kwargs: object) -> object:
+def plugin_discovery() -> FlextPluginDiscoveryService:
     """Legacy alias for FlextPluginDiscoveryService."""
     _deprecation_warning("PluginDiscovery", "FlextPluginDiscoveryService")
-    if FlextPluginDiscoveryService is None:
-        msg = "FlextPluginDiscoveryService not available"
-        raise ImportError(msg)
-    return FlextPluginDiscoveryService(*args, **kwargs)
+    return FlextPluginDiscoveryService()
 
 
-def plugin_registry(*args: object, **kwargs: object) -> object:
+def plugin_registry() -> FlextPluginRegistry:
     """Legacy alias for FlextPluginRegistry."""
     _deprecation_warning("PluginRegistry", "FlextPluginRegistry")
-    if FlextPluginRegistry is None:
-        msg = "FlextPluginRegistry not available"
-        raise ImportError(msg)
-    return FlextPluginRegistry(*args, **kwargs)
+    return FlextPluginRegistry.create(name="legacy_registry")
 
 
-def plugin_config(*args: object, **kwargs: object) -> object:
+def plugin_config() -> FlextPluginConfig:
     """Legacy alias for FlextPluginConfig."""
     _deprecation_warning("PluginConfig", "FlextPluginConfig")
-    if FlextPluginConfig is None:
-        msg = "FlextPluginConfig not available"
-        raise ImportError(msg)
-    return FlextPluginConfig(*args, **kwargs)
+    return FlextPluginConfig.create(plugin_name="legacy_config")
 
 
-def plugin(*args: object, **kwargs: object) -> object:
-    """Legacy alias for FlextPlugin."""
-    _deprecation_warning("Plugin", "FlextPlugin")
-    if FlextPlugin is None:
-        msg = "FlextPlugin not available"
-        raise ImportError(msg)
-    return FlextPlugin(*args, **kwargs)
+def plugin() -> FlextPluginEntity:
+    """Legacy alias for FlextPluginEntity."""
+    _deprecation_warning("Plugin", "FlextPluginEntity")
+    return FlextPluginEntity.create(name="legacy_plugin", plugin_version="1.0.0")
 
 
-# Legacy factory function aliases
-def create_plugin(*args: object, **kwargs: object) -> object:
+# Legacy aliases for factory functions
+def create_plugin(name: str, version: str) -> FlextPluginEntity:
     """Legacy alias for create_flext_plugin."""
     _deprecation_warning("create_plugin", "create_flext_plugin")
-    if create_flext_plugin is None:
-        msg = "create_flext_plugin not available"
-        raise ImportError(msg)
-    return create_flext_plugin(*args, **kwargs)
+    return create_flext_plugin(name=name, version=version)
 
 
-def create_plugin_config(*args: object, **kwargs: object) -> object:
+def create_plugin_config(
+    plugin_name: str, config_data: dict[str, object] | None = None
+) -> FlextPluginConfig:
     """Legacy alias for create_flext_plugin_config."""
     _deprecation_warning("create_plugin_config", "create_flext_plugin_config")
-    if create_flext_plugin_config is None:
-        msg = "create_flext_plugin_config not available"
-        raise ImportError(msg)
-    return create_flext_plugin_config(*args, **kwargs)
+    return create_flext_plugin_config(plugin_name=plugin_name, config_data=config_data)
 
 
-def create_plugin_registry(*args: object, **kwargs: object) -> object:
+def create_plugin_registry(
+    name: str, plugins: dict[str, FlextPluginEntity] | None = None
+) -> FlextPluginRegistry:
     """Legacy alias for create_flext_plugin_registry."""
     _deprecation_warning("create_plugin_registry", "create_flext_plugin_registry")
-    if create_flext_plugin_registry is None:
-        msg = "create_flext_plugin_registry not available"
-        raise ImportError(msg)
-    return create_flext_plugin_registry(*args, **kwargs)
+    return create_flext_plugin_registry(name=name, plugins=plugins)
 
 
-def create_plugin_metadata(*args: object, **kwargs: object) -> object:
+def create_plugin_metadata(
+    plugin_name: str, metadata: dict[str, object] | None = None
+) -> FlextPluginMetadata:
     """Legacy alias for create_flext_plugin_metadata."""
     _deprecation_warning("create_plugin_metadata", "create_flext_plugin_metadata")
-    if create_flext_plugin_metadata is None:
-        msg = "create_flext_plugin_metadata not available"
-        raise ImportError(msg)
-    return create_flext_plugin_metadata(*args, **kwargs)
+    return create_flext_plugin_metadata(plugin_name=plugin_name, metadata=metadata)
 
 
-# Legacy exception aliases (more concise names that were probably used)
-def plugin_error(*args: object, **kwargs: object) -> FlextPluginError:
+# Legacy aliases for exception classes
+def plugin_error(message: str) -> FlextPluginError:
     """Legacy alias for FlextPluginError."""
-    _deprecation_warning("PluginError", "FlextPluginError")
-    return FlextPluginError(*args, **kwargs)
+    _deprecation_warning("plugin_error", "FlextPluginError")
+    return FlextPluginError(message)
 
 
-def plugin_discovery_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginDiscoveryError:
+def plugin_discovery_error(message: str) -> FlextPluginDiscoveryError:
     """Legacy alias for FlextPluginDiscoveryError."""
-    _deprecation_warning("PluginDiscoveryError", "FlextPluginDiscoveryError")
-    return FlextPluginDiscoveryError(*args, **kwargs)
+    _deprecation_warning("plugin_discovery_error", "FlextPluginDiscoveryError")
+    return FlextPluginDiscoveryError(message)
 
 
-def plugin_loading_error(*args: object, **kwargs: object) -> FlextPluginLoadingError:
+def plugin_loading_error(message: str) -> FlextPluginLoadingError:
     """Legacy alias for FlextPluginLoadingError."""
-    _deprecation_warning("PluginLoadingError", "FlextPluginLoadingError")
-    return FlextPluginLoadingError(*args, **kwargs)
+    _deprecation_warning("plugin_loading_error", "FlextPluginLoadingError")
+    return FlextPluginLoadingError(message)
 
 
-def plugin_execution_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginExecutionError:
+def plugin_execution_error(message: str) -> FlextPluginExecutionError:
     """Legacy alias for FlextPluginExecutionError."""
-    _deprecation_warning("PluginExecutionError", "FlextPluginExecutionError")
-    return FlextPluginExecutionError(*args, **kwargs)
+    _deprecation_warning("plugin_execution_error", "FlextPluginExecutionError")
+    return FlextPluginExecutionError(message)
 
 
-def plugin_configuration_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginConfigurationError:
+def plugin_configuration_error(message: str) -> FlextPluginConfigurationError:
     """Legacy alias for FlextPluginConfigurationError."""
-    _deprecation_warning("PluginConfigurationError", "FlextPluginConfigurationError")
-    return FlextPluginConfigurationError(*args, **kwargs)
+    _deprecation_warning("plugin_configuration_error", "FlextPluginConfigurationError")
+    return FlextPluginConfigurationError(message)
 
 
-def plugin_validation_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginValidationError:
+def plugin_validation_error(message: str) -> FlextPluginValidationError:
     """Legacy alias for FlextPluginValidationError."""
-    _deprecation_warning("PluginValidationError", "FlextPluginValidationError")
-    return FlextPluginValidationError(*args, **kwargs)
+    _deprecation_warning("plugin_validation_error", "FlextPluginValidationError")
+    return FlextPluginValidationError(message)
 
 
-def plugin_lifecycle_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginLifecycleError:
+def plugin_lifecycle_error(message: str) -> FlextPluginLifecycleError:
     """Legacy alias for FlextPluginLifecycleError."""
-    _deprecation_warning("PluginLifecycleError", "FlextPluginLifecycleError")
-    return FlextPluginLifecycleError(*args, **kwargs)
+    _deprecation_warning("plugin_lifecycle_error", "FlextPluginLifecycleError")
+    return FlextPluginLifecycleError(message)
 
 
-def plugin_registry_error(*args: object, **kwargs: object) -> FlextPluginRegistryError:
+def plugin_registry_error(message: str) -> FlextPluginRegistryError:
     """Legacy alias for FlextPluginRegistryError."""
-    _deprecation_warning("PluginRegistryError", "FlextPluginRegistryError")
-    return FlextPluginRegistryError(*args, **kwargs)
+    _deprecation_warning("plugin_registry_error", "FlextPluginRegistryError")
+    return FlextPluginRegistryError(message)
 
 
-def plugin_hot_reload_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginHotReloadError:
+def plugin_hot_reload_error(message: str) -> FlextPluginHotReloadError:
     """Legacy alias for FlextPluginHotReloadError."""
-    _deprecation_warning("PluginHotReloadError", "FlextPluginHotReloadError")
-    return FlextPluginHotReloadError(*args, **kwargs)
+    _deprecation_warning("plugin_hot_reload_error", "FlextPluginHotReloadError")
+    return FlextPluginHotReloadError(message)
 
 
-def plugin_security_error(*args: object, **kwargs: object) -> FlextPluginSecurityError:
+def plugin_security_error(message: str) -> FlextPluginSecurityError:
     """Legacy alias for FlextPluginSecurityError."""
-    _deprecation_warning("PluginSecurityError", "FlextPluginSecurityError")
-    return FlextPluginSecurityError(*args, **kwargs)
+    _deprecation_warning("plugin_security_error", "FlextPluginSecurityError")
+    return FlextPluginSecurityError(message)
 
 
-def plugin_compatibility_error(
-    *args: object,
-    **kwargs: object,
-) -> FlextPluginCompatibilityError:
+def plugin_compatibility_error(message: str) -> FlextPluginCompatibilityError:
     """Legacy alias for FlextPluginCompatibilityError."""
-    _deprecation_warning("PluginCompatibilityError", "FlextPluginCompatibilityError")
-    return FlextPluginCompatibilityError(*args, **kwargs)
+    _deprecation_warning("plugin_compatibility_error", "FlextPluginCompatibilityError")
+    return FlextPluginCompatibilityError(message)
 
 
-def plugin_metadata_error(*args: object, **kwargs: object) -> FlextPluginMetadataError:
+def plugin_metadata_error(message: str) -> FlextPluginMetadataError:
     """Legacy alias for FlextPluginMetadataError."""
-    _deprecation_warning("PluginMetadataError", "FlextPluginMetadataError")
-    return FlextPluginMetadataError(*args, **kwargs)
+    _deprecation_warning("plugin_metadata_error", "FlextPluginMetadataError")
+    return FlextPluginMetadataError(message)
 
 
-def plugin_platform_error(*args: object, **kwargs: object) -> FlextPluginPlatformError:
+def plugin_platform_error(message: str) -> FlextPluginPlatformError:
     """Legacy alias for FlextPluginPlatformError."""
-    _deprecation_warning("PluginPlatformError", "FlextPluginPlatformError")
-    return FlextPluginPlatformError(*args, **kwargs)
+    _deprecation_warning("plugin_platform_error", "FlextPluginPlatformError")
+    return FlextPluginPlatformError(message)
 
 
-# Alternative naming patterns that might have been used
-def flext_plugin_manager(*args: object, **kwargs: object) -> object:
-    """Legacy alias for FlextPluginPlatform (alternate naming)."""
-    _deprecation_warning("FlextPluginManager", "FlextPluginPlatform")
-    if FlextPluginPlatform is None:
-        msg = "FlextPluginPlatform not available"
-        raise ImportError(msg)
-    return FlextPluginPlatform(*args, **kwargs)
+# Legacy aliases for platform management
+def flext_plugin_manager() -> FlextPluginPlatform:
+    """Legacy alias for FlextPluginPlatform."""
+    _deprecation_warning("flext_plugin_manager", "FlextPluginPlatform")
+    return FlextPluginPlatform()
 
 
-def simple_plugin_manager(*args: object, **kwargs: object) -> object:
-    """Legacy alias for FlextPluginPlatform (simple variant)."""
-    _deprecation_warning("SimplePluginManager", "FlextPluginPlatform")
-    if FlextPluginPlatform is None:
-        msg = "FlextPluginPlatform not available"
-        raise ImportError(msg)
-    return FlextPluginPlatform(*args, **kwargs)
+def simple_plugin_manager() -> FlextPluginPlatform:
+    """Legacy alias for FlextPluginPlatform."""
+    _deprecation_warning("simple_plugin_manager", "FlextPluginPlatform")
+    return FlextPluginPlatform()
 
 
-# Legacy setup function aliases
-def init_plugin_system(*args: object, **kwargs: object) -> object:
-    """Legacy alias for creating plugin platform."""
-    _deprecation_warning("init_plugin_system", "create_flext_plugin_platform")
-    if create_flext_plugin_registry is None:
-        msg = "create_flext_plugin_registry not available"
-        raise ImportError(msg)
-    return create_flext_plugin_registry(*args, **kwargs)
+# Legacy aliases for system initialization
+def init_plugin_system(
+    name: str, plugins: dict[str, FlextPluginEntity] | None = None
+) -> FlextPluginRegistry:
+    """Legacy alias for create_flext_plugin_registry."""
+    _deprecation_warning("init_plugin_system", "create_flext_plugin_registry")
+    return create_flext_plugin_registry(name=name, plugins=plugins)
 
 
-def setup_plugins(*args: object, **kwargs: object) -> object:
-    """Legacy alias for creating plugin platform."""
-    _deprecation_warning("setup_plugins", "create_flext_plugin_platform")
-    if create_flext_plugin_registry is None:
-        msg = "create_flext_plugin_registry not available"
-        raise ImportError(msg)
-    return create_flext_plugin_registry(*args, **kwargs)
+def setup_plugins(
+    name: str, plugins: dict[str, FlextPluginEntity] | None = None
+) -> FlextPluginRegistry:
+    """Legacy alias for create_flext_plugin_registry."""
+    _deprecation_warning("setup_plugins", "create_flext_plugin_registry")
+    return create_flext_plugin_registry(name=name, plugins=plugins)
 
 
-# Export legacy aliases for backward compatibility
-__all__ = [
-    "create_plugin",
-    "create_plugin_config",
-    "create_plugin_metadata",
-    "create_plugin_registry",
-    "flext_plugin_manager",
-    "init_plugin_system",
-    "plugin",
+__all__: list[str] = [  # noqa: RUF022
+    # Legacy exception aliases
     "plugin_compatibility_error",
-    "plugin_config",
     "plugin_configuration_error",
-    "plugin_discovery",
     "plugin_discovery_error",
     "plugin_error",
     "plugin_execution_error",
     "plugin_hot_reload_error",
     "plugin_lifecycle_error",
     "plugin_loading_error",
-    "plugin_manager",
     "plugin_metadata_error",
     "plugin_platform_error",
-    "plugin_registry",
     "plugin_registry_error",
     "plugin_security_error",
-    "plugin_service",
     "plugin_validation_error",
-    "setup_plugins",
+    # Legacy factory aliases
+    "create_plugin",
+    "create_plugin_config",
+    "create_plugin_metadata",
+    "create_plugin_registry",
+    # Legacy platform aliases
+    "flext_plugin_manager",
     "simple_plugin_manager",
+    # Legacy service aliases
+    "plugin",
+    "plugin_config",
+    "plugin_discovery",
+    "plugin_manager",
+    "plugin_registry",
+    "plugin_service",
+    # Legacy system aliases
+    "init_plugin_system",
+    "setup_plugins",
 ]

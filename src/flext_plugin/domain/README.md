@@ -14,7 +14,7 @@ Primary plugin entity with comprehensive business logic.
 
 ```python
 from flext_plugin.domain.entities import FlextPlugin
-
+ddddddd
 plugin = FlextPlugin(
     name="data-processor",
     version="1.0.0",

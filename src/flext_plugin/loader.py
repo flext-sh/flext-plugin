@@ -137,7 +137,7 @@ class PluginLoader(FlextEntity):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def load_plugin(self, file_path: Path) -> object:
         """Load a plugin from a Python file.
@@ -171,13 +171,17 @@ class PluginLoader(FlextEntity):
             if spec is None:
                 spec_msg: str = f"Failed to create spec for {file_path}"
                 _handle_import_error(spec_msg)
-                return FlextResult.fail(spec_msg)  # Early return for type narrowing
+                return FlextResult[None].fail(
+                    spec_msg
+                )  # Early return for type narrowing
 
             # Type narrowing: spec is not None after check
             if spec.loader is None:
                 loader_msg: str = f"No loader available for {file_path}"
                 _handle_import_error(loader_msg)
-                return FlextResult.fail(loader_msg)  # Early return for type narrowing
+                return FlextResult[None].fail(
+                    loader_msg
+                )  # Early return for type narrowing
 
             module = importlib.util.module_from_spec(spec)
             # spec and spec.loader are guaranteed to be non-None here
@@ -252,8 +256,8 @@ class PluginLoader(FlextEntity):
 
         """
         if plugin_name in self._loaded_plugins:
-            return FlextResult.ok(self._loaded_plugins[plugin_name])
-        return FlextResult.fail(f"Plugin '{plugin_name}' not loaded")
+            return FlextResult[None].ok(self._loaded_plugins[plugin_name])
+        return FlextResult[None].fail(f"Plugin '{plugin_name}' not loaded")
 
     def is_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is loaded.
@@ -274,4 +278,4 @@ class PluginLoader(FlextEntity):
             FlextResult containing dictionary of loaded plugins
 
         """
-        return FlextResult.ok(self._loaded_plugins.copy())
+        return FlextResult[None].ok(self._loaded_plugins.copy())

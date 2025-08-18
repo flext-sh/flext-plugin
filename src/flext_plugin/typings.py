@@ -7,12 +7,11 @@ here to avoid duplication. Prefer importing from this module.
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from flext_core import FlextProcessingError, FlextResult
 
-if TYPE_CHECKING:
-    from flext_plugin.domain.entities import FlextPluginEntity
+from flext_plugin.domain.entities import FlextPluginEntity
 
 
 class PluginStatus(Enum):
@@ -155,9 +154,7 @@ class PluginManagerResult:
         result = cls(operation, success=bool(config.get("success")))
         result.plugins_affected = cast("list[str]", config.get("plugins_affected", []))
         execution_time = cast("float", config.get("execution_time_ms", 0.0))
-        result.execution_time_ms = (
-            float(execution_time) if execution_time is not None else 0.0
-        )
+        result.execution_time_ms = float(execution_time)
         result.details = cast("dict[str, object]", config.get("details", {}))
         result.errors = cast("list[str]", config.get("errors", []))
         return result
@@ -173,22 +170,25 @@ class SimplePluginRegistry:
     async def register_plugin(
         self, plugin: FlextPluginEntity
     ) -> FlextResult[FlextPluginEntity]:
-        """Register plugin instance ensuring required metadata fields."""
+        """Register plugin instance ensuring required fields."""
         try:
-            if not hasattr(plugin, "metadata") or plugin.metadata is None:
-                return FlextResult.fail("Plugin registration failed: missing metadata")
-            if not hasattr(plugin.metadata, "name"):
-                return FlextResult.fail("Plugin registration failed: missing name")
-            self._plugins[plugin.metadata.name] = plugin
-            return FlextResult.ok(plugin)
+            if not hasattr(plugin, "name"):
+                return FlextResult[FlextPluginEntity].fail(
+                    "Plugin registration failed: missing name"
+                )
+            plugin_name: str = plugin.name
+            self._plugins[plugin_name] = plugin
+            return FlextResult[FlextPluginEntity].ok(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Plugin registration failed: {e}")
+            return FlextResult[FlextPluginEntity].fail(
+                f"Plugin registration failed: {e}"
+            )
 
     async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister plugin by name."""
         if plugin_name in self._plugins:
             del self._plugins[plugin_name]
-        return FlextResult.ok(data=True)
+        return FlextResult[bool].ok(data=True)
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
         """Get plugin instance by name."""
@@ -198,21 +198,11 @@ class SimplePluginRegistry:
         """Return number of registered plugins."""
         return len(self._plugins)
 
-    def list_plugins(
-        self, plugin_type: PluginType | None = None
-    ) -> list[FlextPluginEntity]:
+    def list_plugins(self, plugin_type: PluginType | None = None) -> list[object]:
         """List plugin metadata optionally filtered by type."""
         if plugin_type is None:
-            return [
-                p.metadata for p in self._plugins.values() if hasattr(p, "metadata")
-            ]
-        return [
-            p.metadata
-            for p in self._plugins.values()
-            if hasattr(p, "metadata")
-            and hasattr(p.metadata, "plugin_type")
-            and p.metadata.plugin_type == plugin_type
-        ]
+            return list(self._plugins.values())
+        return [p for p in self._plugins.values() if p.plugin_type == plugin_type]
 
     async def cleanup_all(self) -> None:
         """Clear all registered plugins."""

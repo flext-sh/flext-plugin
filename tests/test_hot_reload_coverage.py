@@ -10,16 +10,13 @@ from __future__ import annotations
 
 import asyncio
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
 from flext_plugin import HotReloadManager, PluginFileHandler, create_hot_reload_manager
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
 
 
 class TestPluginFileHandler:

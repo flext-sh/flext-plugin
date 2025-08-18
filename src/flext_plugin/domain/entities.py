@@ -16,15 +16,16 @@ from typing import cast
 
 from flext_core import (
     FlextEntity,
-    FlextEntityId,
     FlextGenerators,
     FlextResult,
     FlextTimestamp,
+    get_logger,
 )
 from pydantic import Field, field_validator
 
 from flext_plugin.typings import (
     PluginStatus,
+    PluginType,
 )
 
 
@@ -114,13 +115,15 @@ class FlextPluginEntity(FlextEntity):
       - Error conditions
 
     Example:
-      >>> plugin = FlextPluginEntity.model_validate({
-      ...     "id": "plugin-123",
-      ...     "name": "oracle-connector",
-      ...     "plugin_version": "2.1.0",
-      ...     "description": "Oracle database connector",
-      ...     "author": "FLEXT Team",
-      ... })
+      >>> plugin = FlextPluginEntity.model_validate(
+      ...     {
+      ...         "id": "plugin-123",
+      ...         "name": "oracle-connector",
+      ...         "plugin_version": "2.1.0",
+      ...         "description": "Oracle database connector",
+      ...         "author": "FLEXT Team",
+      ...     }
+      ... )
       >>> activation_result = plugin.activate()
       >>> if activation_result.success():
       ...     print(f"Plugin {plugin.name} activated successfully")
@@ -152,8 +155,12 @@ class FlextPluginEntity(FlextEntity):
         default=PluginStatus.INACTIVE,
         description="Current plugin lifecycle and operational status",
     )
+    plugin_type: PluginType = Field(
+        default=PluginType.UTILITY,
+        description="Plugin category and type for classification",
+    )
     created_at: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Plugin creation timestamp",
     )
 
@@ -199,6 +206,7 @@ class FlextPluginEntity(FlextEntity):
             "description": config.get("description", ""),
             "author": config.get("author", ""),
             "status": config.get("status", PluginStatus.INACTIVE),
+            "plugin_type": config.get("plugin_type", PluginType.UTILITY),
         }
 
         return cls.model_validate(instance_data)
@@ -374,10 +382,12 @@ class FlextPluginEntity(FlextEntity):
 
         """
         if not self.name or not self.name.strip():
-            return FlextResult.fail("Plugin name is required and cannot be empty")
+            return FlextResult[None].fail("Plugin name is required and cannot be empty")
         if not self.plugin_version or not self.plugin_version.strip():
-            return FlextResult.fail("Plugin version is required and cannot be empty")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail(
+                "Plugin version is required and cannot be empty"
+            )
+        return FlextResult[None].ok(None)
 
 
 class FlextPluginConfig(FlextEntity):
@@ -393,11 +403,11 @@ class FlextPluginConfig(FlextEntity):
         description="Configuration data",
     )
     created_at: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Configuration creation timestamp",
     )
     updated_at: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Last update timestamp",
     )
 
@@ -435,19 +445,18 @@ class FlextPluginConfig(FlextEntity):
         if params is not None:
             p = params
         else:
-            p = FlextPluginConfigParams(
-                plugin_name=plugin_name,
-                config_data=cast("dict[str, object] | None", kwargs.get("config_data")),
-                created_at=cast("FlextTimestamp | None", kwargs.get("created_at")),
-                updated_at=cast("FlextTimestamp | None", kwargs.get("updated_at")),
-                enabled=cast("bool", kwargs.get("enabled", True)),
-                settings=cast("dict[str, object] | None", kwargs.get("settings")),
-                dependencies=cast("list[str] | None", kwargs.get("dependencies")),
-                priority=cast("int", kwargs.get("priority", 100)),
-                max_memory_mb=cast("int", kwargs.get("max_memory_mb", 512)),
-                max_cpu_percent=cast("int", kwargs.get("max_cpu_percent", 50)),
-                timeout_seconds=cast("int", kwargs.get("timeout_seconds", 30)),
-            )
+            p = FlextPluginConfigParams()
+            p.plugin_name = plugin_name
+            p.config_data = cast("dict[str, object] | None", kwargs.get("config_data"))
+            p.created_at = cast("FlextTimestamp | None", kwargs.get("created_at"))
+            p.updated_at = cast("FlextTimestamp | None", kwargs.get("updated_at"))
+            p.enabled = cast("bool", kwargs.get("enabled", True))
+            p.settings = cast("dict[str, object] | None", kwargs.get("settings"))
+            p.dependencies = cast("list[str] | None", kwargs.get("dependencies"))
+            p.priority = cast("int", kwargs.get("priority", 100))
+            p.max_memory_mb = cast("int", kwargs.get("max_memory_mb", 512))
+            p.max_cpu_percent = cast("int", kwargs.get("max_cpu_percent", 50))
+            p.timeout_seconds = cast("int", kwargs.get("timeout_seconds", 30))
 
         # Create instance data
         instance_data = {
@@ -499,8 +508,8 @@ class FlextPluginConfig(FlextEntity):
 
         """
         if not self.plugin_name or not self.plugin_name.strip():
-            return FlextResult.fail("Plugin name is required and cannot be empty")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Plugin name is required and cannot be empty")
+        return FlextResult[None].ok(None)
 
 
 class FlextPluginMetadata(FlextEntity):
@@ -540,7 +549,7 @@ class FlextPluginMetadata(FlextEntity):
         description="Plugin repository (alias)",
     )
     created_at: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Metadata creation timestamp",
     )
 
@@ -561,28 +570,23 @@ class FlextPluginMetadata(FlextEntity):
         if params is not None:
             p = params
         else:
-            p = FlextPluginMetadataParams(
-                plugin_name=cast("str", kwargs.get("plugin_name", name)),
-                metadata=cast("dict[str, object] | None", kwargs.get("metadata")),
-                name=name,
-                entry_point=entry_point,
-                plugin_type=kwargs.get("plugin_type", ""),
-                description=cast("str", kwargs.get("description", "")),
-                dependencies=cast("list[str] | None", kwargs.get("dependencies")),
-                trusted=cast("bool", kwargs.get("trusted", False)),
-                homepage=cast("str | None", kwargs.get("homepage")),
-                repository=cast("str | None", kwargs.get("repository")),
-            )
+            p = FlextPluginMetadataParams()
+            p.plugin_name = cast("str", kwargs.get("plugin_name", name))
+            p.metadata = cast("dict[str, object] | None", kwargs.get("metadata"))
+            p.name = name
+            p.entry_point = entry_point
+            p.plugin_type = kwargs.get("plugin_type", "")
+            p.description = cast("str", kwargs.get("description", ""))
+            p.dependencies = cast("list[str] | None", kwargs.get("dependencies"))
+            p.trusted = cast("bool", kwargs.get("trusted", False))
+            p.homepage = cast("str | None", kwargs.get("homepage"))
+            p.repository = cast("str | None", kwargs.get("repository"))
 
         # Extract from metadata dict
         metadata_dict = p.metadata or {}
 
         # Handle plugin_type conversion
-        plugin_type_value = ""
-        if hasattr(p.plugin_type, "value"):  # PluginType enum
-            plugin_type_value = p.plugin_type.value
-        elif isinstance(p.plugin_type, str):
-            plugin_type_value = str(p.plugin_type)
+        plugin_type_value: str = str(p.plugin_type) if p.plugin_type is not None else ""
 
         # Use name parameter or fall back to plugin_name
         final_name = p.name or p.plugin_name
@@ -626,7 +630,7 @@ class FlextPluginMetadata(FlextEntity):
     @classmethod
     def validate_entry_point_not_empty(cls, v: str) -> str:
         """Validate that entry_point is not empty when provided."""
-        if v is not None and v != "" and not v.strip():
+        if v != "" and not v.strip():
             msg = "Plugin entry point cannot be empty"
             raise ValueError(msg)
         return v
@@ -648,14 +652,16 @@ class FlextPluginMetadata(FlextEntity):
 
         """
         if not self.plugin_name or not self.plugin_name.strip():
-            return FlextResult.fail("Plugin name is required and cannot be empty")
+            return FlextResult[None].fail("Plugin name is required and cannot be empty")
         if not self.name or not self.name.strip():
-            return FlextResult.fail("Plugin name field is required and cannot be empty")
+            return FlextResult[None].fail(
+                "Plugin name field is required and cannot be empty"
+            )
         if not self.entry_point or not self.entry_point.strip():
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 "Plugin entry point is required and cannot be empty",
             )
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
 
 class FlextPluginRegistry(FlextEntity):
@@ -668,7 +674,7 @@ class FlextPluginRegistry(FlextEntity):
         description="Dictionary of registered plugins",
     )
     created_at: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Registry creation timestamp",
     )
 
@@ -714,28 +720,27 @@ class FlextPluginRegistry(FlextEntity):
         if params is not None:
             p = params
         else:
-            p = FlextPluginRegistryParams(
-                name=name,
-                plugins=cast(
-                    "dict[str, FlextPluginEntity] | None",
-                    kwargs.get("plugins"),
-                ),
-                created_at=cast("FlextTimestamp | None", kwargs.get("created_at")),
-                registry_url=cast("str", kwargs.get("registry_url", "")),
-                is_enabled=cast("bool", kwargs.get("is_enabled", True)),
-                plugin_count=cast("int", kwargs.get("plugin_count", 0)),
-                sync_error_count=cast("int", kwargs.get("sync_error_count", 0)),
-                last_sync=cast("FlextTimestamp | None", kwargs.get("last_sync")),
-                requires_authentication=cast(
-                    "bool",
-                    kwargs.get("requires_authentication", False),
-                ),
-                api_key=cast("str", kwargs.get("api_key", "")),
-                verify_signatures=cast("bool", kwargs.get("verify_signatures", False)),
-                trusted_publishers=cast(
-                    "list[str] | None",
-                    kwargs.get("trusted_publishers"),
-                ),
+            p = FlextPluginRegistryParams()
+            p.name = name
+            p.plugins = cast(
+                "dict[str, FlextPluginEntity] | None",
+                kwargs.get("plugins"),
+            )
+            p.created_at = cast("FlextTimestamp | None", kwargs.get("created_at"))
+            p.registry_url = cast("str", kwargs.get("registry_url", ""))
+            p.is_enabled = cast("bool", kwargs.get("is_enabled", True))
+            p.plugin_count = cast("int", kwargs.get("plugin_count", 0))
+            p.sync_error_count = cast("int", kwargs.get("sync_error_count", 0))
+            p.last_sync = cast("FlextTimestamp | None", kwargs.get("last_sync"))
+            p.requires_authentication = cast(
+                "bool",
+                kwargs.get("requires_authentication", False),
+            )
+            p.api_key = cast("str", kwargs.get("api_key", ""))
+            p.verify_signatures = cast("bool", kwargs.get("verify_signatures", False))
+            p.trusted_publishers = cast(
+                "list[str] | None",
+                kwargs.get("trusted_publishers"),
             )
 
         # Create instance data
@@ -849,8 +854,10 @@ class FlextPluginRegistry(FlextEntity):
 
         """
         if not self.name or not self.name.strip():
-            return FlextResult.fail("Registry name is required and cannot be empty")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail(
+                "Registry name is required and cannot be empty"
+            )
+        return FlextResult[None].ok(None)
 
 
 # Additional domain entities
@@ -871,7 +878,7 @@ class FlextPluginExecution(FlextEntity):
         description="Execution identifier",
     )
     start_time: FlextTimestamp = Field(
-        default_factory=lambda: FlextTimestamp.now(),
+        default_factory=FlextTimestamp.now,
         description="Execution start time",
     )
     end_time: datetime | None = Field(
@@ -894,31 +901,32 @@ class FlextPluginExecution(FlextEntity):
         description="Output data from execution",
     )
 
-    def __init__(
-        self,
-        entity_id: FlextEntityId | None = None,
+    @classmethod
+    def create(
+        cls,
         *,
         plugin_name: str = "",
         execution_config: dict[str, object] | None = None,
+        entity_id: str | None = None,
         **kwargs: object,
-    ) -> None:
-        """Initialize plugin execution entity.
+    ) -> FlextPluginExecution:
+        """Create plugin execution entity with proper validation.
 
         Args:
-            entity_id: Unique entity identifier
             plugin_name: Name of the plugin being executed
             execution_config: Execution configuration dictionary
-            **kwargs: Additional keyword arguments for testing convenience
+            entity_id: Unique entity identifier
+            **kwargs: Additional arguments for testing convenience
+
+        Returns:
+            FlextPluginExecution: Validated plugin execution entity
 
         """
-        # FlextEntity expects keyword argument 'id'
+        # Generate ID if not provided
         final_id = entity_id or FlextGenerators.generate_entity_id()
 
         # Extract from execution_config dict
         execution_config = execution_config or {}
-
-        # Initialize FlextEntity base with ONLY base fields
-        super().__init__(id=final_id)
 
         # Handle testing convenience - tests may pass plugin_id
         if "plugin_id" in kwargs:
@@ -926,22 +934,25 @@ class FlextPluginExecution(FlextEntity):
         execution_id = kwargs.get("execution_id", final_id)
         input_data = kwargs.get("input_data", {})
 
-        # Set business fields directly (frozen model workaround)
-        object.__setattr__(self, "plugin_name", plugin_name)
-        object.__setattr__(self, "plugin_id", kwargs.get("plugin_id", plugin_name))
-        object.__setattr__(self, "execution_id", execution_id)
-        object.__setattr__(
-            self,
-            "start_time",
-            execution_config.get("start_time", FlextTimestamp.now()),
-        )
-        object.__setattr__(self, "end_time", execution_config.get("end_time"))
-        object.__setattr__(self, "status", execution_config.get("status", "pending"))
-        object.__setattr__(self, "result", execution_config.get("result"))
-        object.__setattr__(self, "error", execution_config.get("error", ""))
-        object.__setattr__(self, "error_message", execution_config.get("error_message"))
-        object.__setattr__(self, "input_data", input_data)
-        object.__setattr__(self, "output_data", execution_config.get("output_data", {}))
+        # Create instance data with all required fields including base entity fields
+        instance_data = {
+            "id": final_id,
+            "version": kwargs.get("version", 1),
+            "metadata": kwargs.get("metadata", {}),
+            "plugin_name": plugin_name,
+            "plugin_id": kwargs.get("plugin_id", plugin_name),
+            "execution_id": execution_id,
+            "start_time": execution_config.get("start_time", FlextTimestamp.now()),
+            "end_time": execution_config.get("end_time"),
+            "status": execution_config.get("status", "pending"),
+            "result": execution_config.get("result"),
+            "error": execution_config.get("error", ""),
+            "error_message": execution_config.get("error_message"),
+            "input_data": input_data,
+            "output_data": execution_config.get("output_data", {}),
+        }
+
+        return cls.model_validate(instance_data)
 
     def is_valid(self) -> bool:
         """Validate plugin execution entity state."""
@@ -1061,7 +1072,7 @@ class FlextPluginExecution(FlextEntity):
                 "resource_usage": {
                     "memory_mb": memory_mb,
                     "cpu_time_ms": cpu_time_ms,
-                    "timestamp": FlextTimestamp.now().isoformat(),
+                    "timestamp": str(FlextTimestamp.now()),
                 },
             },
         )
@@ -1075,8 +1086,8 @@ class FlextPluginExecution(FlextEntity):
 
         """
         if not self.plugin_name:
-            return FlextResult.fail("Plugin name is required")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Plugin name is required")
+        return FlextResult[None].ok(None)
 
 
 # Testing convenience aliases - TRANSITIONAL: Use FlextPluginEntity instead

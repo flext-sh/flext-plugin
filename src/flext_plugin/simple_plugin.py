@@ -44,7 +44,6 @@ from __future__ import annotations
 
 import importlib
 
-# 🚨 ARCHITECTURAL COMPLIANCE: Using real flext-core imports
 from flext_core import FlextResult
 
 
@@ -123,18 +122,18 @@ class PluginRegistry:
         """Register a plugin."""
         try:
             self.plugins[plugin.name] = plugin
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin registration failed: {e}")
+            return FlextResult[None].fail(f"Plugin registration failed: {e}")
 
     def unregister(self, name: str) -> FlextResult[None]:
         """Unregister a plugin."""
         try:
             if name in self.plugins:
                 del self.plugins[name]
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Plugin unregistration failed: {e}")
+            return FlextResult[None].fail(f"Plugin unregistration failed: {e}")
 
     def get(self, name: str) -> Plugin | None:
         """Get a plugin by name."""
@@ -151,9 +150,9 @@ def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plu
         module = importlib.import_module(module_name)
         plugin_class = getattr(module, class_name)
         plugin = plugin_class()
-        return FlextResult.ok(plugin)
+        return FlextResult[Plugin].ok(plugin)
     except Exception as e:
-        return FlextResult.fail(f"Plugin loading failed: {e}")
+        return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
 
 
 def create_registry() -> PluginRegistry:

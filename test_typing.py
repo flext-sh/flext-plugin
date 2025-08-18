@@ -9,7 +9,7 @@ from flext_core import FlextResult
 T = TypeVar("T")
 
 
-def test_generic_function(data: T) -> FlextResult[T]:
+def test_generic_function[T](data: T) -> FlextResult[T]:
     """Test function with generic typing."""
     return FlextResult[T].ok(data)
 
@@ -35,10 +35,6 @@ result1 = test_string_function()
 result2 = test_int_function()
 result3 = test_bool_function()
 
-print(f"String result: {result1.data}, success: {result1.success}")
-print(f"Int result: {result2.data}, success: {result2.success}")
-print(f"Bool result: {result3.data}, success: {result3.success}")
 
 # Test generic function
 generic_result = test_generic_function("generic test")
-print(f"Generic result: {generic_result.data}, success: {generic_result.success}")

@@ -13,7 +13,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import Enum
 
-from flext_core import FlextError, FlextErrorMixin
+from flext_core import FlextError
+from flext_core.exceptions import FlextErrorMixin
 
 
 class FlextPluginErrorCodes(Enum):
@@ -36,7 +37,7 @@ class FlextPluginErrorCodes(Enum):
 
 
 # Base plugin exception hierarchy using FlextErrorMixin pattern
-class FlextPluginError(FlextErrorMixin, FlextError):
+class FlextPluginError(FlextError, FlextErrorMixin):
     """Base exception for all plugin domain errors."""
 
 
@@ -119,11 +120,11 @@ class FlextPluginDiscoveryOperationError(FlextPluginDiscoveryError):
         if discovered_count is not None:
             context_dict["discovered_count"] = discovered_count
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 class FlextPluginLoadOperationError(FlextPluginLoadingError):
@@ -148,11 +149,11 @@ class FlextPluginLoadOperationError(FlextPluginLoadingError):
         if load_stage is not None:
             context_dict["load_stage"] = load_stage
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 class FlextPluginExecutionOperationError(FlextPluginExecutionError):
@@ -181,11 +182,11 @@ class FlextPluginExecutionOperationError(FlextPluginExecutionError):
         if timeout_seconds is not None:
             context_dict["timeout_seconds"] = timeout_seconds
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 class FlextPluginConfigurationOperationError(FlextPluginConfigurationError):
@@ -214,11 +215,11 @@ class FlextPluginConfigurationOperationError(FlextPluginConfigurationError):
         if validation_rule is not None:
             context_dict["validation_rule"] = validation_rule
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 class FlextPluginLifecycleOperationError(FlextPluginLifecycleError):
@@ -247,11 +248,11 @@ class FlextPluginLifecycleOperationError(FlextPluginLifecycleError):
         if lifecycle_operation is not None:
             context_dict["lifecycle_operation"] = lifecycle_operation
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 class FlextPluginHotReloadOperationError(FlextPluginHotReloadError):
@@ -280,11 +281,11 @@ class FlextPluginHotReloadOperationError(FlextPluginHotReloadError):
         if reload_stage is not None:
             context_dict["reload_stage"] = reload_stage
 
-        super().__init__(
-            message,
-            code=code,
-            context=context_dict,
-        )
+        # Initialize base exception with message
+        super().__init__(message)
+        # Set additional attributes from FlextErrorMixin
+        self.code = str(code) if code is not None else "PLUGIN_ERROR"
+        self.context = context_dict
 
 
 __all__: list[str] = [

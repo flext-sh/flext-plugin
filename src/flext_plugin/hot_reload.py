@@ -176,7 +176,7 @@ class StateManager:
         plugin_id = getattr(plugin, "name", "unknown")
         plugin_version = getattr(plugin, "version", "1.0.0")
         # Get plugin state if available
-        state_data = {}
+        state_data: dict[str, object] = {}
         if hasattr(plugin, "get_state"):
             state_data = await plugin.get_state()
         return PluginState(
@@ -351,8 +351,8 @@ class HotReloadManager(FlextEntity):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
         if not self.plugin_directory:
-            return FlextResult.fail("Plugin directory cannot be empty")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Plugin directory cannot be empty")
+        return FlextResult[None].ok(None)
 
     def model_post_init(self, __context: dict[str, object] | None, /) -> None:
         """Initialize model after creation.
@@ -487,7 +487,7 @@ class HotReloadManager(FlextEntity):
                 "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return cast("StateManager", self._state_manager)  # type: ignore[attr-defined]
+        return cast("StateManager", self._state_manager)
 
     @property
     def rollback_manager(self) -> RollbackManager:
@@ -498,7 +498,7 @@ class HotReloadManager(FlextEntity):
                 "_rollback_manager",
                 RollbackManager(self.state_manager),
             )
-        return cast("RollbackManager", self._rollback_manager)  # type: ignore[attr-defined]
+        return cast("RollbackManager", self._rollback_manager)
 
     @property
     def watcher(self) -> PluginWatcher:
@@ -510,7 +510,7 @@ class HotReloadManager(FlextEntity):
                 [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return cast("PluginWatcher", self._watcher)  # type: ignore[attr-defined]
+        return cast("PluginWatcher", self._watcher)
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.
