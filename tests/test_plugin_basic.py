@@ -66,7 +66,7 @@ def test_flext_core_dependencies() -> None:
     # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 
     # Test FlextResult works
-    result = FlextResult.ok({"test": "data"})
+    result = FlextResult[None].ok({"test": "data"})
     assert result.success
     expected_data = {"test": "data"}
     if result.data != expected_data:

@@ -470,7 +470,7 @@ class TestFlextPluginManager:
     def test_get_plugin_status_not_found(self, manager: FlextPluginManager) -> None:
         """Test getting status of non-existent plugin."""
         result = manager.get_plugin_status("non-existent")
-        # Method returns FlextResult.fail(), not a status dict
+        # Method returns FlextResult[None].fail(), not a status dict
         assert not result.success
         assert result.error is not None
         if "not found" not in result.error.lower():

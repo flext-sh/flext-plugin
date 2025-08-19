@@ -551,7 +551,7 @@ class TestPluginManagerComprehensive:
             manager_result.execution_time_ms = 100.0
             manager_result.details = {"plugins_discovered": 1}
             manager_result.errors = []
-            mock_discover.return_value = FlextResult.ok(manager_result)
+            mock_discover.return_value = FlextResult[None].ok(manager_result)
 
             result = await manager_with_auto_discover.initialize()
 

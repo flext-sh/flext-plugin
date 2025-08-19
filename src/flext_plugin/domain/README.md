@@ -168,7 +168,7 @@ class FlextPlugin(FlextEntity):
     def activate(self) -> FlextResult[bool]:
         """Business operation with domain validation."""
         if self.status == PluginStatus.ACTIVE:
-            return FlextResult.fail("Plugin already active")
+            return FlextResult[None].fail("Plugin already active")
 
         # Business logic and domain event generation
         self.status = PluginStatus.ACTIVE
@@ -177,7 +177,7 @@ class FlextPlugin(FlextEntity):
             "plugin_id": str(self.id),
             "timestamp": datetime.utcnow().isoformat()
         })
-        return FlextResult.ok(True)
+        return FlextResult[None].ok(True)
 ```
 
 #### Identity and Equality
@@ -205,11 +205,11 @@ class FlextPluginRegistry(FlextEntity):
         """Enforce business rules across the aggregate."""
         # Validate uniqueness
         if plugin.name in self.plugins:
-            return FlextResult.fail(f"Plugin {plugin.name} already registered")
+            return FlextResult[None].fail(f"Plugin {plugin.name} already registered")
 
         # Enforce limits
         if len(self.plugins) >= self.MAX_PLUGINS:
-            return FlextResult.fail("Maximum plugin limit reached")
+            return FlextResult[None].fail("Maximum plugin limit reached")
 
         # Register and generate events
         self.plugins[plugin.name] = plugin
@@ -217,7 +217,7 @@ class FlextPluginRegistry(FlextEntity):
             "type": "PluginRegistered",
             "plugin_name": plugin.name
         })
-        return FlextResult.ok(plugin)
+        return FlextResult[None].ok(plugin)
 ```
 
 ### Value Object Patterns
@@ -268,12 +268,12 @@ class PluginRegistryRules:
     def validate_plugin_name(name: str) -> FlextResult[bool]:
         """Validate plugin name against business rules."""
         if not name or not name.strip():
-            return FlextResult.fail("Plugin name cannot be empty")
+            return FlextResult[None].fail("Plugin name cannot be empty")
 
         if name.lower() in PluginRegistryRules.RESERVED_NAMES:
-            return FlextResult.fail(f"Plugin name '{name}' is reserved")
+            return FlextResult[None].fail(f"Plugin name '{name}' is reserved")
 
-        return FlextResult.ok(True)
+        return FlextResult[None].ok(True)
 ```
 
 ## Event Sourcing Integration

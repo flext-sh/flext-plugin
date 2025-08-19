@@ -93,7 +93,7 @@ class FlextPluginEventHandler(FlextBaseHandler):
                 return FlextResult[bool].fail(
                     "Plugin loaded event: plugin missing name"
                 )
-            return FlextResult[bool].ok(data=True)
+            return FlextResult[bool].ok(True)
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult[bool].fail(f"Failed to handle plugin loaded event: {e}")
 

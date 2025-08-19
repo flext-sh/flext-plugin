@@ -252,9 +252,9 @@ from flext_core import FlextResult
 def create_plugin(...) -> FlextResult[FlextPlugin]:
     try:
         # Implementation
-        return FlextResult.ok(plugin)
+        return FlextResult[None].ok(plugin)
     except Exception as e:
-        return FlextResult.fail(f"Creation failed: {e}")
+        return FlextResult[None].fail(f"Creation failed: {e}")
 ```
 
 **Dependency Injection Pattern:**

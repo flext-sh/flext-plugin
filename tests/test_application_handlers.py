@@ -101,7 +101,7 @@ class TestablePluginDiscoveryHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin discovery handler error")
-            return FlextResult.fail(f"Discovery handler failed: {e}")
+            return FlextResult[None].fail(f"Discovery handler failed: {e}")
 
     async def validate_plugin_metadata(self, metadata: object) -> FlextResult[object]:
         """Validate plugin metadata."""
@@ -123,7 +123,7 @@ class TestablePluginDiscoveryHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin metadata validation handler error")
-            return FlextResult.fail(f"Validation handler failed: {e}")
+            return FlextResult[None].fail(f"Validation handler failed: {e}")
 
     async def get_plugin_manifest(
         self,
@@ -148,7 +148,7 @@ class TestablePluginDiscoveryHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin manifest handler error")
-            return FlextResult.fail(f"Manifest handler failed: {e}")
+            return FlextResult[None].fail(f"Manifest handler failed: {e}")
 
 
 class TestablePluginValidationHandler:
@@ -183,7 +183,7 @@ class TestablePluginValidationHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin validation handler error")
-            return FlextResult.fail(f"Validation handler failed: {e}")
+            return FlextResult[None].fail(f"Validation handler failed: {e}")
 
     async def validate_configuration(
         self,
@@ -216,7 +216,7 @@ class TestablePluginValidationHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin configuration validation handler error")
-            return FlextResult.fail(f"Configuration validation handler failed: {e}")
+            return FlextResult[None].fail(f"Configuration validation handler failed: {e}")
 
     async def validate_dependencies(self, plugin: object) -> FlextResult[object]:
         """Validate plugin dependencies."""
@@ -242,7 +242,7 @@ class TestablePluginValidationHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin dependencies validation handler error")
-            return FlextResult.fail(f"Dependencies validation handler failed: {e}")
+            return FlextResult[None].fail(f"Dependencies validation handler failed: {e}")
 
 
 class TestablePluginLifecycleHandler:
@@ -277,42 +277,42 @@ class TestablePluginLifecycleHandler:
             return result
         except Exception as e:
             self.logger.exception("Plugin registration handler error")
-            return FlextResult.fail(f"Registration handler failed: {e}")
+            return FlextResult[None].fail(f"Registration handler failed: {e}")
 
     async def load_plugin(self, plugin: object) -> FlextResult[object]:
         """Load plugin."""
         try:
             return await self.lifecycle_service.load_plugin(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Loading handler failed: {e}")
+            return FlextResult[None].fail(f"Loading handler failed: {e}")
 
     async def initialize_plugin(self, plugin: object) -> FlextResult[object]:
         """Initialize plugin."""
         try:
             return await self.lifecycle_service.initialize_plugin(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Initialization handler failed: {e}")
+            return FlextResult[None].fail(f"Initialization handler failed: {e}")
 
     async def activate_plugin(self, plugin: object) -> FlextResult[object]:
         """Activate plugin."""
         try:
             return await self.lifecycle_service.activate_plugin(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Activation handler failed: {e}")
+            return FlextResult[None].fail(f"Activation handler failed: {e}")
 
     async def suspend_plugin(self, plugin: object) -> FlextResult[object]:
         """Suspend plugin."""
         try:
             return await self.lifecycle_service.suspend_plugin(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Suspension handler failed: {e}")
+            return FlextResult[None].fail(f"Suspension handler failed: {e}")
 
     async def unload_plugin(self, plugin: object) -> FlextResult[object]:
         """Unload plugin."""
         try:
             return await self.lifecycle_service.unload_plugin(plugin)
         except Exception as e:
-            return FlextResult.fail(f"Unloading handler failed: {e}")
+            return FlextResult[None].fail(f"Unloading handler failed: {e}")
 
 
 class TestableFlextPluginExecutionHandler:
@@ -337,21 +337,21 @@ class TestableFlextPluginExecutionHandler:
                 execution_context,
             )
         except Exception as e:
-            return FlextResult.fail(f"Execution handler failed: {e}")
+            return FlextResult[None].fail(f"Execution handler failed: {e}")
 
     async def get_execution_status(self, execution_id: object) -> FlextResult[object]:
         """Get execution status."""
         try:
             return await self.execution_service.get_execution_status(execution_id)
         except Exception as e:
-            return FlextResult.fail(f"Status handler failed: {e}")
+            return FlextResult[None].fail(f"Status handler failed: {e}")
 
     async def cancel_execution(self, execution_id: object) -> FlextResult[object]:
         """Cancel execution."""
         try:
             return await self.execution_service.cancel_execution(execution_id)
         except Exception as e:
-            return FlextResult.fail(f"Cancellation handler failed: {e}")
+            return FlextResult[None].fail(f"Cancellation handler failed: {e}")
 
 
 class TestableFlextPluginRegistryHandler:
@@ -367,14 +367,14 @@ class TestableFlextPluginRegistryHandler:
         try:
             return await self.registry_service.register_registry(registry)
         except Exception as e:
-            return FlextResult.fail(f"Registry registration handler failed: {e}")
+            return FlextResult[None].fail(f"Registry registration handler failed: {e}")
 
     async def sync_registry(self, registry: object) -> FlextResult[object]:
         """Sync plugin registry."""
         try:
             return await self.registry_service.sync_registry(registry)
         except Exception as e:
-            return FlextResult.fail(f"Sync handler failed: {e}")
+            return FlextResult[None].fail(f"Sync handler failed: {e}")
 
     async def search_plugins(
         self,
@@ -385,7 +385,7 @@ class TestableFlextPluginRegistryHandler:
         try:
             return await self.registry_service.search_plugins(registry, query)
         except Exception as e:
-            return FlextResult.fail(f"Search handler failed: {e}")
+            return FlextResult[None].fail(f"Search handler failed: {e}")
 
     async def download_plugin(
         self,
@@ -396,7 +396,7 @@ class TestableFlextPluginRegistryHandler:
         try:
             return await self.registry_service.download_plugin(registry, plugin_id)
         except Exception as e:
-            return FlextResult.fail(f"Download handler failed: {e}")
+            return FlextResult[None].fail(f"Download handler failed: {e}")
 
 
 class TestPluginDiscoveryHandler:
@@ -469,7 +469,7 @@ class TestPluginDiscoveryHandler:
         search_paths = ["/test/plugins", "/other/plugins"]
         expected_plugins = [mock_plugin_metadata]
 
-        mock_discovery_service.discover_plugins.return_value = FlextResult.ok(
+        mock_discovery_service.discover_plugins.return_value = FlextResult[None].ok(
             expected_plugins,
         )
 
@@ -491,7 +491,7 @@ class TestPluginDiscoveryHandler:
         search_paths = ["/test/plugins"]
         error_message = "Discovery failed"
 
-        mock_discovery_service.discover_plugins.return_value = FlextResult.fail(
+        mock_discovery_service.discover_plugins.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -530,7 +530,7 @@ class TestPluginDiscoveryHandler:
         mock_plugin_metadata: FlextPluginMetadata,
     ) -> None:
         """Test successful plugin metadata validation."""
-        mock_discovery_service.validate_plugin_metadata.return_value = FlextResult.ok(
+        mock_discovery_service.validate_plugin_metadata.return_value = FlextResult[None].ok(
             VALIDATION_SUCCESS,
         )
 
@@ -553,7 +553,7 @@ class TestPluginDiscoveryHandler:
     ) -> None:
         """Test plugin metadata validation failure."""
         error_message = "Invalid metadata"
-        mock_discovery_service.validate_plugin_metadata.return_value = FlextResult.fail(
+        mock_discovery_service.validate_plugin_metadata.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -596,7 +596,7 @@ class TestPluginDiscoveryHandler:
         plugin_path = "/test/plugins/manifest.json"
         expected_manifest = {"name": "test-plugin", "version": "0.9.0"}
 
-        mock_discovery_service.get_plugin_manifest.return_value = FlextResult.ok(
+        mock_discovery_service.get_plugin_manifest.return_value = FlextResult[None].ok(
             expected_manifest,
         )
 
@@ -618,7 +618,7 @@ class TestPluginDiscoveryHandler:
         plugin_path = "/test/plugins/nonexistent.json"
         error_message = "Manifest not found"
 
-        mock_discovery_service.get_plugin_manifest.return_value = FlextResult.fail(
+        mock_discovery_service.get_plugin_manifest.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -705,7 +705,7 @@ class TestPluginValidationHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin validation."""
-        mock_validation_service.validate_plugin.return_value = FlextResult.ok(
+        mock_validation_service.validate_plugin.return_value = FlextResult[None].ok(
             VALIDATION_SUCCESS,
         )
 
@@ -728,7 +728,7 @@ class TestPluginValidationHandler:
     ) -> None:
         """Test plugin validation failure."""
         error_message = "Plugin validation failed"
-        mock_validation_service.validate_plugin.return_value = FlextResult.fail(
+        mock_validation_service.validate_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -767,7 +767,7 @@ class TestPluginValidationHandler:
     ) -> None:
         """Test successful configuration validation."""
         config = {"setting1": "value1", "setting2": 42}
-        mock_validation_service.validate_configuration.return_value = FlextResult.ok(
+        mock_validation_service.validate_configuration.return_value = FlextResult[None].ok(
             VALIDATION_SUCCESS,
         )
 
@@ -792,7 +792,7 @@ class TestPluginValidationHandler:
         """Test configuration validation failure."""
         config = {"invalid": "config"}
         error_message = "Invalid configuration"
-        mock_validation_service.validate_configuration.return_value = FlextResult.fail(
+        mock_validation_service.validate_configuration.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -833,7 +833,7 @@ class TestPluginValidationHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful dependencies validation."""
-        mock_validation_service.validate_dependencies.return_value = FlextResult.ok(
+        mock_validation_service.validate_dependencies.return_value = FlextResult[None].ok(
             VALIDATION_SUCCESS,
         )
 
@@ -856,7 +856,7 @@ class TestPluginValidationHandler:
     ) -> None:
         """Test dependencies validation failure."""
         error_message = "Dependency conflicts found"
-        mock_validation_service.validate_dependencies.return_value = FlextResult.fail(
+        mock_validation_service.validate_dependencies.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -961,7 +961,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin registration."""
-        mock_lifecycle_service.register_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.register_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -984,7 +984,7 @@ class TestPluginLifecycleHandler:
     ) -> None:
         """Test plugin registration failure."""
         error_message = "Registration failed"
-        mock_lifecycle_service.register_plugin.return_value = FlextResult.fail(
+        mock_lifecycle_service.register_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1022,7 +1022,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin loading."""
-        mock_lifecycle_service.load_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.load_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -1043,7 +1043,7 @@ class TestPluginLifecycleHandler:
     ) -> None:
         """Test plugin loading failure."""
         error_message = "Loading failed"
-        mock_lifecycle_service.load_plugin.return_value = FlextResult.fail(
+        mock_lifecycle_service.load_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1082,7 +1082,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin initialization."""
-        mock_lifecycle_service.initialize_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.initialize_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -1105,7 +1105,7 @@ class TestPluginLifecycleHandler:
     ) -> None:
         """Test plugin initialization failure."""
         error_message = "Initialization failed"
-        mock_lifecycle_service.initialize_plugin.return_value = FlextResult.fail(
+        mock_lifecycle_service.initialize_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1143,7 +1143,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin activation."""
-        mock_lifecycle_service.activate_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.activate_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -1186,7 +1186,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin suspension."""
-        mock_lifecycle_service.suspend_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.suspend_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -1229,7 +1229,7 @@ class TestPluginLifecycleHandler:
         mock_plugin_instance: FlextPlugin,
     ) -> None:
         """Test successful plugin unloading."""
-        mock_lifecycle_service.unload_plugin.return_value = FlextResult.ok(
+        mock_lifecycle_service.unload_plugin.return_value = FlextResult[None].ok(
             mock_plugin_instance,
         )
 
@@ -1353,7 +1353,7 @@ class TestFlextPluginExecutionHandler:
         input_data = {"test": "data"}
         execution_context = {"env": "test"}
 
-        mock_execution_service.execute_plugin.return_value = FlextResult.ok(
+        mock_execution_service.execute_plugin.return_value = FlextResult[None].ok(
             mock_plugin_execution,
         )
 
@@ -1384,7 +1384,7 @@ class TestFlextPluginExecutionHandler:
         """Test plugin execution without context."""
         input_data = {"test": "data"}
 
-        mock_execution_service.execute_plugin.return_value = FlextResult.ok(
+        mock_execution_service.execute_plugin.return_value = FlextResult[None].ok(
             mock_plugin_execution,
         )
 
@@ -1411,7 +1411,7 @@ class TestFlextPluginExecutionHandler:
         input_data = {"test": "data"}
         error_message = "Execution failed"
 
-        mock_execution_service.execute_plugin.return_value = FlextResult.fail(
+        mock_execution_service.execute_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1452,7 +1452,7 @@ class TestFlextPluginExecutionHandler:
         """Test successful execution status retrieval."""
         execution_id = "exec-123"
 
-        mock_execution_service.get_execution_status.return_value = FlextResult.ok(
+        mock_execution_service.get_execution_status.return_value = FlextResult[None].ok(
             mock_plugin_execution,
         )
 
@@ -1476,7 +1476,7 @@ class TestFlextPluginExecutionHandler:
         execution_id = "non-existent"
         error_message = "Execution not found"
 
-        mock_execution_service.get_execution_status.return_value = FlextResult.fail(
+        mock_execution_service.get_execution_status.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1496,7 +1496,7 @@ class TestFlextPluginExecutionHandler:
         """Test successful execution cancellation."""
         execution_id = "exec-123"
 
-        mock_execution_service.cancel_execution.return_value = FlextResult.ok(
+        mock_execution_service.cancel_execution.return_value = FlextResult[None].ok(
             OPERATION_SUCCESS,
         )
 
@@ -1518,7 +1518,7 @@ class TestFlextPluginExecutionHandler:
         execution_id = "exec-123"
         error_message = "Cannot cancel execution"
 
-        mock_execution_service.cancel_execution.return_value = FlextResult.fail(
+        mock_execution_service.cancel_execution.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1595,7 +1595,7 @@ class TestFlextPluginRegistryHandler:
         mock_plugin_registry: FlextPluginRegistry,
     ) -> None:
         """Test successful registry registration."""
-        mock_registry_service.register_registry.return_value = FlextResult.ok(
+        mock_registry_service.register_registry.return_value = FlextResult[None].ok(
             mock_plugin_registry,
         )
 
@@ -1618,7 +1618,7 @@ class TestFlextPluginRegistryHandler:
     ) -> None:
         """Test registry registration failure."""
         error_message = "Registry registration failed"
-        mock_registry_service.register_registry.return_value = FlextResult.fail(
+        mock_registry_service.register_registry.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1637,7 +1637,7 @@ class TestFlextPluginRegistryHandler:
         mock_plugin_registry: FlextPluginRegistry,
     ) -> None:
         """Test successful registry synchronization."""
-        mock_registry_service.sync_registry.return_value = FlextResult.ok(
+        mock_registry_service.sync_registry.return_value = FlextResult[None].ok(
             OPERATION_SUCCESS,
         )
 
@@ -1660,7 +1660,7 @@ class TestFlextPluginRegistryHandler:
     ) -> None:
         """Test registry synchronization failure."""
         error_message = "Sync failed"
-        mock_registry_service.sync_registry.return_value = FlextResult.fail(
+        mock_registry_service.sync_registry.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1683,7 +1683,7 @@ class TestFlextPluginRegistryHandler:
         query = "tap-postgres"
         expected_plugins = [mock_plugin_metadata]
 
-        mock_registry_service.search_plugins.return_value = FlextResult.ok(
+        mock_registry_service.search_plugins.return_value = FlextResult[None].ok(
             expected_plugins,
         )
 
@@ -1709,7 +1709,7 @@ class TestFlextPluginRegistryHandler:
         query = "non-existent"
         error_message = "Search failed"
 
-        mock_registry_service.search_plugins.return_value = FlextResult.fail(
+        mock_registry_service.search_plugins.return_value = FlextResult[None].fail(
             error_message,
         )
 
@@ -1732,7 +1732,7 @@ class TestFlextPluginRegistryHandler:
         plugin_id = "tap-postgres"
         download_path = str(tmp_path / "downloads" / "tap-postgres-1.0.0.tar.gz")
 
-        mock_registry_service.download_plugin.return_value = FlextResult.ok(
+        mock_registry_service.download_plugin.return_value = FlextResult[None].ok(
             download_path,
         )
 
@@ -1758,7 +1758,7 @@ class TestFlextPluginRegistryHandler:
         plugin_id = "non-existent"
         error_message = "Plugin not found"
 
-        mock_registry_service.download_plugin.return_value = FlextResult.fail(
+        mock_registry_service.download_plugin.return_value = FlextResult[None].fail(
             error_message,
         )
 

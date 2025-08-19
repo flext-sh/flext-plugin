@@ -123,7 +123,7 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin: FlextPlugin,
     ) -> None:
         """Test successful plugin registration."""
-        mock_plugin_service.load_plugin.return_value = FlextResult.ok(True)
+        mock_plugin_service.load_plugin.return_value = FlextResult[None].ok(True)
 
         result = handler.handle_register_plugin(mock_plugin)
 
@@ -218,7 +218,7 @@ class TestFlextPluginRegistrationHandler:
         mock_plugin: FlextPlugin,
     ) -> None:
         """Test plugin registration with service failure."""
-        mock_plugin_service.load_plugin.return_value = FlextResult.fail("Service error")
+        mock_plugin_service.load_plugin.return_value = FlextResult[None].fail("Service error")
 
         result = handler.handle_register_plugin(mock_plugin)
 
@@ -274,7 +274,7 @@ class TestFlextPluginRegistrationHandler:
     ) -> None:
         """Test successful plugin unregistration."""
         plugin_name = "test-plugin"
-        mock_plugin_service.unload_plugin.return_value = FlextResult.ok(True)
+        mock_plugin_service.unload_plugin.return_value = FlextResult[None].ok(True)
 
         result = handler.handle_unregister_plugin(plugin_name)
 
@@ -322,7 +322,7 @@ class TestFlextPluginRegistrationHandler:
     ) -> None:
         """Test plugin unregistration with service failure."""
         plugin_name = "test-plugin"
-        mock_plugin_service.unload_plugin.return_value = FlextResult.fail(
+        mock_plugin_service.unload_plugin.return_value = FlextResult[None].fail(
             "Unload error",
         )
 
@@ -630,7 +630,7 @@ class TestHandlerIntegration:
     def test_registration_and_event_handler_integration(self) -> None:
         """Test integration between registration and event handlers."""
         mock_service = Mock(spec=FlextPluginService)
-        mock_service.load_plugin.return_value = FlextResult.ok(True)
+        mock_service.load_plugin.return_value = FlextResult[None].ok(True)
 
         registration_handler = FlextPluginRegistrationHandler(
             plugin_service=mock_service,

@@ -171,9 +171,9 @@ export FLEXT_PLUGIN_WATCH_INTERVAL=2
 def register_plugin(plugin: FlextPlugin) -> FlextResult[FlextPlugin]:
     try:
         # Plugin registration logic
-        return FlextResult.ok(registered_plugin)
+        return FlextResult[None].ok(registered_plugin)
     except Exception as e:
-        return FlextResult.fail(f"Registration failed: {e}")
+        return FlextResult[None].fail(f"Registration failed: {e}")
 ```
 
 ### **Service Integration**

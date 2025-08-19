@@ -188,7 +188,7 @@ class SimplePluginRegistry:
         """Unregister plugin by name."""
         if plugin_name in self._plugins:
             del self._plugins[plugin_name]
-        return FlextResult[bool].ok(data=True)
+        return FlextResult[bool].ok(True)
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
         """Get plugin instance by name."""

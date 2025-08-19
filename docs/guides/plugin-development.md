@@ -142,32 +142,32 @@ class DataProcessorPlugin(FlextPlugin):
         try:
             # Setup processing resources
             self._processing_config = await self._load_config()
-            return FlextResult.ok(True)
+            return FlextResult[None].ok(True)
         except Exception as e:
-            return FlextResult.fail(f"Initialization failed: {e}")
+            return FlextResult[None].fail(f"Initialization failed: {e}")
 
     async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Execute plugin processing logic."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult.fail("Plugin not active")
+                return FlextResult[None].fail("Plugin not active")
 
             # Process data
             processed_data = await self._process_data(data)
-            return FlextResult.ok(processed_data)
+            return FlextResult[None].ok(processed_data)
 
         except Exception as e:
-            return FlextResult.fail(f"Execution failed: {e}")
+            return FlextResult[None].fail(f"Execution failed: {e}")
 
     async def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         try:
             # Release resources
             await self._cleanup_resources()
-            return FlextResult.ok(True)
+            return FlextResult[None].ok(True)
         except Exception as e:
-            return FlextResult.fail(f"Cleanup failed: {e}")
+            return FlextResult[None].fail(f"Cleanup failed: {e}")
 
     async def _load_config(self) -> Dict[str, Any]:
         """Load plugin-specific configuration."""
@@ -231,10 +231,10 @@ class ConfigurablePlugin(FlextPlugin):
                 if not result.success():
                     return result
 
-            return FlextResult.ok({"processed": True})
+            return FlextResult[None].ok({"processed": True})
 
         except Exception as e:
-            return FlextResult.fail(f"Processing failed: {e}")
+            return FlextResult[None].fail(f"Processing failed: {e}")
 ```
 
 ## Singer Plugin Development
@@ -313,13 +313,13 @@ class CustomTapPlugin(FlextPlugin):
                 for record in stream.get_records():
                     records.append(record)
 
-            return FlextResult.ok({
+            return FlextResult[None].ok({
                 "records_extracted": len(records),
                 "streams": [stream.name for stream in tap.discover_streams()]
             })
 
         except Exception as e:
-            return FlextResult.fail(f"Tap execution failed: {e}")
+            return FlextResult[None].fail(f"Tap execution failed: {e}")
 ```
 
 ### Singer Target Plugin
@@ -412,10 +412,10 @@ class APIServicePlugin(FlextPlugin):
 
             # Add routes
             await self._setup_routes()
-            return FlextResult.ok(True)
+            return FlextResult[None].ok(True)
 
         except Exception as e:
-            return FlextResult.fail(f"Service initialization failed: {e}")
+            return FlextResult[None].fail(f"Service initialization failed: {e}")
 
     async def _setup_routes(self):
         """Setup API routes."""
@@ -707,14 +707,14 @@ class SecurePlugin(FlextPlugin):
 
             # Permission check
             if not await self._check_permissions():
-                return FlextResult.fail("Insufficient permissions")
+                return FlextResult[None].fail("Insufficient permissions")
 
             # Safe execution
             return await self._safe_execute(validated_data.data)
 
         except Exception as e:
             # Don't expose internal details
-            return FlextResult.fail("Execution failed")
+            return FlextResult[None].fail("Execution failed")
 
     async def _validate_input(self, data: Dict[str, Any]) -> FlextResult:
         """Validate and sanitize input data."""

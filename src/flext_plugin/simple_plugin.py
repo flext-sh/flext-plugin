@@ -78,9 +78,9 @@ class Plugin:
       >>> class DataProcessorPlugin(Plugin):
       ...     def execute(self, data):
       ...         if not self.active:
-      ...             return FlextResult.fail("Plugin not active")
+      ...             return FlextResult[None].fail("Plugin not active")
       ...         # Process data
-      ...         return FlextResult.ok(processed_data)
+      ...         return FlextResult[None].ok(processed_data)
       >>>
       >>> plugin = DataProcessorPlugin("data-processor")
       >>> activation = plugin.activate()

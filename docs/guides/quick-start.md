@@ -173,14 +173,14 @@ class GreetingPlugin(FlextPlugin):
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return FlextResult.ok(True)
+        return FlextResult[None].ok(True)
 
     async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult.fail("Plugin not active")
+                return FlextResult[None].fail("Plugin not active")
 
             # Extract name from input
             name = data.get("name", "World")
@@ -205,15 +205,15 @@ class GreetingPlugin(FlextPlugin):
                 "version": self.plugin_version
             }
 
-            return FlextResult.ok(result)
+            return FlextResult[None].ok(result)
 
         except Exception as e:
-            return FlextResult.fail(f"Execution failed: {e}")
+            return FlextResult[None].fail(f"Execution failed: {e}")
 
     async def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return FlextResult.ok(True)
+        return FlextResult[None].ok(True)
 
 # Usage example
 async def demo_custom_plugin():

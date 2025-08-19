@@ -173,7 +173,7 @@ class FlextPluginService:
         # Get plugin (domain query)
         plugin = self.registry.get_plugin(plugin_id)
         if not plugin:
-            return FlextResult.fail(f"Plugin {plugin_id} not found")
+            return FlextResult[None].fail(f"Plugin {plugin_id} not found")
 
         # Check dependencies (application coordination)
         dep_check = await self._validate_dependencies(plugin)
@@ -226,7 +226,7 @@ class PluginDeploymentWorkflow:
             return plugin.activate()
 
         except Exception as e:
-            return FlextResult.fail(f"Deployment failed: {e}")
+            return FlextResult[None].fail(f"Deployment failed: {e}")
 ```
 
 ## CQRS Implementation
@@ -295,7 +295,7 @@ class FlextPluginCommandHandler:
         try:
             # Validate command
             if not command.name:
-                return FlextResult.fail("Plugin name is required")
+                return FlextResult[None].fail("Plugin name is required")
 
             # Create plugin entity
             plugin = FlextPlugin(
@@ -314,7 +314,7 @@ class FlextPluginCommandHandler:
             return result
 
         except Exception as e:
-            return FlextResult.fail(f"Command handling failed: {e}")
+            return FlextResult[None].fail(f"Command handling failed: {e}")
 
 class FlextPluginQueryHandler:
     """Handles plugin-related queries."""
@@ -332,10 +332,10 @@ class FlextPluginQueryHandler:
             end = start + query.limit
             paginated = plugins[start:end]
 
-            return FlextResult.ok(paginated)
+            return FlextResult[None].ok(paginated)
 
         except Exception as e:
-            return FlextResult.fail(f"Query handling failed: {e}")
+            return FlextResult[None].fail(f"Query handling failed: {e}")
 ```
 
 ## Error Handling and Validation
@@ -369,9 +369,9 @@ class PluginConfigValidator:
             errors.append("Version must follow semantic versioning format")
 
         if errors:
-            return FlextResult.fail(f"Validation failed: {'; '.join(errors)}")
+            return FlextResult[None].fail(f"Validation failed: {'; '.join(errors)}")
 
-        return FlextResult.ok(config)
+        return FlextResult[None].ok(config)
 
     def _is_valid_semver(self, version: str) -> bool:
         """Check if version follows semantic versioning."""
@@ -413,12 +413,12 @@ async def create_plugin(self, config: dict) -> FlextResult[FlextPlugin]:
 
         # Create plugin
         plugin = FlextPlugin(**config)
-        return FlextResult.ok(plugin)
+        return FlextResult[None].ok(plugin)
 
     except PluginServiceError as e:
-        return FlextResult.fail(str(e))
+        return FlextResult[None].fail(str(e))
     except Exception as e:
-        return FlextResult.fail(f"Unexpected error: {e}")
+        return FlextResult[None].fail(f"Unexpected error: {e}")
 ```
 
 ## Testing Patterns
@@ -452,7 +452,7 @@ class TestFlextPluginService:
             "description": "Test plugin"
         }
 
-        mock_registry.register_plugin.return_value = FlextResult.ok(
+        mock_registry.register_plugin.return_value = FlextResult[None].ok(
             FlextPlugin(**config)
         )
 
@@ -497,7 +497,7 @@ class TestFlextPluginHandler:
             "config": {}
         }
 
-        mock_service.create_plugin.return_value = FlextResult.ok(
+        mock_service.create_plugin.return_value = FlextResult[None].ok(
             FlextPlugin(name="test-plugin", version="1.0.0")
         )
 
@@ -559,9 +559,9 @@ async def bulk_plugin_operations(
             results.append(result.data)
 
     if failed_operations:
-        return FlextResult.fail(f"Bulk operation failures: {failed_operations}")
+        return FlextResult[None].fail(f"Bulk operation failures: {failed_operations}")
 
-    return FlextResult.ok(results)
+    return FlextResult[None].ok(results)
 ```
 
 ## Architecture Integration
@@ -600,7 +600,7 @@ class PluginPlatformIntegration:
         elif operation == "list_plugins":
             return await self.handler.handle_list_plugins_query(request)
         else:
-            return FlextResult.fail(f"Unknown operation: {operation}")
+            return FlextResult[None].fail(f"Unknown operation: {operation}")
 ```
 
 ---

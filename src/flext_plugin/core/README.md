@@ -176,9 +176,9 @@ from flext_plugin.core.types import PluginError
 def safe_operation() -> FlextResult[PluginExecutionResult]:
     try:
         result = execute_plugin()
-        return FlextResult.ok(result)
+        return FlextResult[None].ok(result)
     except PluginError as e:
-        return FlextResult.fail(str(e))
+        return FlextResult[None].fail(str(e))
 ```
 
 ## Usage Patterns
