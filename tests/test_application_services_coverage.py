@@ -12,13 +12,15 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextContainer
+from flext_core import FlextContainer, FlextDomainService
 
 from flext_plugin import (
     FlextPlugin,
     FlextPluginConfig,
     FlextPluginDiscoveryService,
     FlextPluginService,
+    PluginDiscoveryService,
+    PluginService,
 )
 
 
@@ -49,8 +51,6 @@ class TestFlextPluginService:
 
     def test_service_inheritance(self, service: FlextPluginService) -> None:
         """Test service inherits from FlextDomainService."""
-        from flext_core import FlextDomainService
-
         assert isinstance(service, FlextDomainService)
 
     def test_execute_method_fails_as_expected(
@@ -252,8 +252,10 @@ class TestFlextPluginService:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with invalid config fails."""
-        # Create invalid config (empty plugin_name)
-        config = FlextPluginConfig.create(plugin_name="")
+        # Create config and make it invalid using object.__setattr__ to bypass validation
+        config = FlextPluginConfig.create(plugin_name="test-plugin")
+        # Directly set to empty to bypass Pydantic validation
+        object.__setattr__(config, "plugin_name", "")
         result = service.update_plugin_config("test-plugin", config)
         assert not result.success
         assert "Invalid plugin configuration" in str(result.error)
@@ -316,8 +318,6 @@ class TestFlextPluginDiscoveryService:
         discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test discovery service inherits correctly."""
-        from flext_core import FlextDomainService
-
         assert isinstance(discovery_service, FlextDomainService)
 
     def test_execute_method_fails_as_expected(
@@ -537,16 +537,12 @@ class TestBackwardsCompatibilityAliases:
 
     def test_plugin_service_alias_exists(self) -> None:
         """Test PluginService alias exists and works."""
-        from flext_plugin import PluginService
-
         service = PluginService()
         assert service is not None
         assert isinstance(service, FlextPluginService)
 
     def test_plugin_discovery_service_alias_exists(self) -> None:
         """Test PluginDiscoveryService alias exists and works."""
-        from flext_plugin import PluginDiscoveryService
-
         service = PluginDiscoveryService()
         assert service is not None
         assert isinstance(service, FlextPluginDiscoveryService)

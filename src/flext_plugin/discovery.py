@@ -135,9 +135,9 @@ class PluginDiscovery(FlextEntity):
             if py_file.name.startswith("__"):
                 continue
 
-            plugin_info = {
+            plugin_info: dict[str, object] = {
                 "name": py_file.stem,
-                "path": py_file,
+                "path": str(py_file),  # Convert Path to str
                 "file_name": py_file.name,
                 "size": py_file.stat().st_size,
                 "modified": py_file.stat().st_mtime,

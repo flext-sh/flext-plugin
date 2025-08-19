@@ -18,6 +18,7 @@ Usage:
 from __future__ import annotations
 
 import socket
+import sys
 from typing import Any
 
 from flext_plugin import PluginType, create_flext_plugin

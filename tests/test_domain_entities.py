@@ -136,16 +136,10 @@ class TestFlextPlugin:
 
         # Test status can be changed
         plugin.plugin_status = PluginStatus.LOADED
-        if plugin.plugin_status != PluginStatus.LOADED.value:
-            raise AssertionError(
-                f"Expected {PluginStatus.LOADED.value}, got {plugin.plugin_status}",
-            )
+        assert str(plugin.plugin_status) == str(PluginStatus.LOADED)
 
         plugin.plugin_status = PluginStatus.ACTIVE
-        if plugin.plugin_status != PluginStatus.ACTIVE.value:
-            raise AssertionError(
-                f"Expected {PluginStatus.ACTIVE.value}, got {plugin.plugin_status}",
-            )
+        assert str(plugin.plugin_status) == str(PluginStatus.ACTIVE)
 
     def test_plugin_health_check(self) -> None:
         """Test plugin health status checking."""
@@ -215,10 +209,7 @@ class TestFlextPlugin:
             raise AssertionError(f"Expected {1}, got {plugin.error_count}")
         assert plugin.last_error == "Test error message"
         assert plugin.last_error_time is not None
-        if plugin.plugin_status != PluginStatus.UNHEALTHY.value:
-            raise AssertionError(
-                f"Expected {PluginStatus.UNHEALTHY.value}, got {plugin.plugin_status}",
-            )
+        assert str(plugin.plugin_status) == str(PluginStatus.UNHEALTHY)
 
 
 class TestFlextPluginConfig:
@@ -281,6 +272,7 @@ class TestFlextPluginExecution:
         """Test creating FlextPluginExecution."""
         datetime.now(UTC)
         execution = FlextPluginExecution(
+            id="exec-123",
             plugin_id="test-plugin",
             execution_id="exec-123",
             input_data={"test": "input"},
@@ -302,6 +294,7 @@ class TestFlextPluginExecution:
     def test_execution_lifecycle(self) -> None:
         """Test execution lifecycle management."""
         execution = FlextPluginExecution(
+            id="exec-123",
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -332,6 +325,7 @@ class TestFlextPluginExecution:
     def test_execution_failure(self) -> None:
         """Test failed plugin execution."""
         execution = FlextPluginExecution(
+            id="exec-123",
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -350,6 +344,7 @@ class TestFlextPluginExecution:
     def test_execution_resource_tracking(self) -> None:
         """Test execution resource usage tracking."""
         execution = FlextPluginExecution(
+            id="exec-123",
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -472,10 +467,7 @@ class TestFlextPluginMetadata:
         if metadata.name != "test-plugin":
             raise AssertionError(f"Expected {'test-plugin'}, got {metadata.name}")
         assert metadata.entry_point == "test.entry:main"
-        if metadata.plugin_type != PluginType.TAP.value:
-            raise AssertionError(
-                f"Expected {PluginType.TAP.value}, got {metadata.plugin_type}",
-            )
+        assert str(metadata.plugin_type) == str(PluginType.TAP)
         assert metadata.description == "Test extractor plugin"
         if "requests" not in metadata.dependencies:
             raise AssertionError(f"Expected {'requests'} in {metadata.dependencies}")

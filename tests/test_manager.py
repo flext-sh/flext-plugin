@@ -68,6 +68,7 @@ class TestSimplePluginRegistry:
     def mock_plugin(self) -> Mock:
         """Create mock plugin for testing."""
         plugin = Mock()
+        plugin.name = "test-plugin"  # SimplePluginRegistry uses plugin.name directly
         plugin.metadata = Mock()
         plugin.metadata.name = "test-plugin"
         return plugin
@@ -94,9 +95,11 @@ class TestSimplePluginRegistry:
         registry: SimplePluginRegistry,
     ) -> None:
         """Test failed plugin registration."""
-        # Plugin without metadata should fail
+        # Plugin without name should fail (legacy implementation check)
         invalid_plugin = Mock()
-        invalid_plugin.metadata = None
+        # Don't set name attribute to trigger failure
+        if hasattr(invalid_plugin, 'name'):
+            del invalid_plugin.name
 
         result = await registry.register_plugin(invalid_plugin)
 
@@ -158,11 +161,15 @@ class TestSimplePluginRegistry:
         """Test listing plugins with type filter."""
         # Create mock plugins with different types
         tap_plugin = Mock()
+        tap_plugin.name = "tap-plugin"
+        tap_plugin.plugin_type = PluginType.TAP  # Legacy implementation looks for plugin_type directly
         tap_plugin.metadata = Mock()
         tap_plugin.metadata.name = "tap-plugin"
         tap_plugin.metadata.plugin_type = PluginType.TAP
 
         target_plugin = Mock()
+        target_plugin.name = "target-plugin"
+        target_plugin.plugin_type = PluginType.TARGET  # Legacy implementation looks for plugin_type directly
         target_plugin.metadata = Mock()
         target_plugin.metadata.name = "target-plugin"
         target_plugin.metadata.plugin_type = PluginType.TARGET

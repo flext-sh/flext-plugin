@@ -147,10 +147,10 @@ class TestPluginDiscovery:
         new_callable=mock_open,
         read_data='{"name": "test-plugin", "version": "0.9.0", "type": "tap"}',
     )
+    @pytest.mark.usefixtures("_mock_file")
     @pytest.mark.asyncio
     async def test_discover_plugins_with_metadata(
         self,
-        mock_file: Mock,
         mock_exists: Mock,
         mock_glob: Mock,
         discovery: PluginDiscovery,

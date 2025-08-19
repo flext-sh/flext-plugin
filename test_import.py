@@ -11,6 +11,7 @@ result3: FlextResult[bool] = FlextResult[bool].fail("error")
 
 # Test generic typing
 def test_function() -> FlextResult[str]:
+    """Test function for FlextResult typing."""
     return FlextResult[str].ok("success")
 
 

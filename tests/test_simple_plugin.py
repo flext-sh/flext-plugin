@@ -196,7 +196,7 @@ class TestPluginRegistry:
 
                 # Create a dict that will raise exception on assignment
                 class FailingDict(UserDict):
-                    def __setitem__(self, key, value) -> None:
+                    def __setitem__(self, key: str, value: object) -> None:
                         msg = "Registration failed"
                         raise RuntimeError(msg)
 
@@ -249,7 +249,7 @@ class TestPluginRegistry:
 
                 # Create a dict that will raise exception on deletion
                 class FailingDeleteDict(UserDict):
-                    def __delitem__(self, key) -> None:
+                    def __delitem__(self, key: str) -> None:
                         msg = "Unregistration failed"
                         raise ValueError(msg)
 

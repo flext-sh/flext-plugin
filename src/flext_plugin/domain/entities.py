@@ -228,7 +228,7 @@ class FlextPluginEntity(FlextEntity):
     def plugin_status(self) -> str:
         """Get plugin status (convenience) - returns value string."""
         # FlextEntity uses use_enum_values=True, so status is already a string
-        return self.status if isinstance(self.status, str) else self.status.value
+        return str(self.status)
 
     def __setattr__(self, name: str, value: object) -> None:
         """Override setattr to handle plugin_status setter for frozen model."""

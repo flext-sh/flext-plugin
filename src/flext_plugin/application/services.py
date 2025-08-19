@@ -41,7 +41,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import ClassVar, override
 
 from flext_core import FlextContainer, FlextResult
 from flext_core.domain_services import FlextDomainService
@@ -126,6 +126,7 @@ class FlextPluginService(FlextDomainService[object]):
         object.__setattr__(self, "_loader_port", None)
         object.__setattr__(self, "_manager_port", None)
 
+    @override
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
 
@@ -189,7 +190,7 @@ class FlextPluginService(FlextDomainService[object]):
                 success = True
                 return FlextResult[bool].ok(success)
 
-            def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
@@ -241,8 +242,8 @@ class FlextPluginService(FlextDomainService[object]):
 
             def update_plugin_config(
                 self,
-                plugin_name: str,
-                config: FlextPluginConfig,
+                plugin_name: str,  # noqa: ARG002
+                config: FlextPluginConfig,  # noqa: ARG002
             ) -> FlextResult[bool]:
                 success = True
                 return FlextResult[bool].ok(success)
@@ -446,6 +447,7 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
         # Store private attributes
         object.__setattr__(self, "_discovery_port", None)
 
+    @override
     def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
         """Execute service operation (required by FlextDomainService).
 
@@ -478,11 +480,11 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
         # Create a simple adapter that implements the interface
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
             def discover_plugins(
-                self, path: str
+                self, path: str  # noqa: ARG002
             ) -> FlextResult[list[FlextPluginEntity]]:
                 return FlextResult[list[FlextPluginEntity]].ok([])
 
-            def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+            def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
@@ -510,11 +512,11 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
                 f"Failed to scan directory: {e}"
             )
 
-    def validate_plugin_integrity(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def validate_plugin_integrity(self, plugin: FlextPluginEntity | None) -> FlextResult[bool]:
         """Validate plugin integrity.
 
         Args:
-            plugin: Plugin to validate
+            plugin: Plugin to validate (can be None)
         Returns:
             FlextResult indicating if plugin is valid
 

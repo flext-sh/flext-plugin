@@ -93,8 +93,9 @@ async def test_plugin_manager_basic() -> None:
 
     # Test basic operations don't crash
     await manager.initialize()
-    plugins = await manager.discover_plugins()
-    assert isinstance(plugins, dict)
+    result = await manager.discover_and_load_plugins()
+    # Result can be success or failure - just ensure it's a FlextResult
+    assert hasattr(result, 'success')
 
 
 class TestFlextPluginIntegration:

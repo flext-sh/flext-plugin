@@ -21,6 +21,7 @@ from flext_plugin import HotReloadManager, PluginFileHandler, create_hot_reload_
 
 class TestPluginFileHandler:
     """Coverage-focused tests for PluginFileHandler.
+
     Tests the actual file system event handler implementation.
     """
 
@@ -101,6 +102,7 @@ class TestPluginFileHandler:
 
 class TestHotReloadManager:
     """Coverage-focused tests for HotReloadManager.
+
     Tests the actual hot reload manager implementation using real API.
     """
 
@@ -113,7 +115,7 @@ class TestHotReloadManager:
     def test_manager_initialization(self, temp_dir: Path) -> None:
         """Test manager initialization with plugin directory."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         assert manager is not None
         assert manager.plugin_directory == plugin_dir
 
@@ -121,13 +123,13 @@ class TestHotReloadManager:
         """Test manager initialization with custom ID."""
         plugin_dir = str(temp_dir / "plugins")
         custom_id = "custom-hot-reload-id"
-        manager = HotReloadManager(plugin_directory=plugin_dir, id=custom_id)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir, id=custom_id)
         assert manager is not None
         assert manager.id == custom_id
 
     def test_validate_domain_rules_empty_directory_fails(self) -> None:
         """Test domain validation with empty directory fails."""
-        manager = HotReloadManager(plugin_directory="")
+        manager = HotReloadManager.create(plugin_directory="")
         result = manager.validate_business_rules()
         assert not result.success
         assert "Plugin directory cannot be empty" in str(result.error)
@@ -138,14 +140,14 @@ class TestHotReloadManager:
     ) -> None:
         """Test domain validation with valid directory succeeds."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         result = manager.validate_business_rules()
         assert result.success
 
     def test_manager_properties_initialization(self, temp_dir: Path) -> None:
         """Test manager properties are properly initialized."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Properties should be accessible
         assert manager.discovery is None  # Lazy loaded
         assert manager.loader is not None
@@ -155,7 +157,7 @@ class TestHotReloadManager:
     def test_get_loaded_plugins_returns_copy(self, temp_dir: Path) -> None:
         """Test get_loaded_plugins returns a copy."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         loaded_plugins = manager.get_loaded_plugins()
         assert isinstance(loaded_plugins, dict)
         # Should be empty initially
@@ -169,11 +171,12 @@ class TestHotReloadManager:
         """Test start_watching initializes file system observer."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
-        manager = HotReloadManager(plugin_directory=str(plugin_dir))
+        manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
         # Mock the observer to avoid real file watching
-        with patch.object(manager, "observer") as mock_observer:
-            mock_observer.schedule = Mock()
-            mock_observer.start = Mock()
+        mock_observer = Mock()
+        mock_observer.schedule = Mock()
+        mock_observer.start = Mock()
+        with patch.object(type(manager), "observer", new_callable=lambda: property(lambda self: mock_observer)):
             await manager.start_watching()
             # Verify observer was configured and started
             mock_observer.schedule.assert_called_once()
@@ -186,7 +189,7 @@ class TestHotReloadManager:
     ) -> None:
         """Test start_watching without observer raises error."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Remove observer to simulate initialization failure
         object.__setattr__(manager, "_observer", None)
         with pytest.raises(Exception) as exc_info:
@@ -197,7 +200,7 @@ class TestHotReloadManager:
     async def test_stop_watching_stops_observer(self, temp_dir: Path) -> None:
         """Test stop_watching properly stops observer."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Mock observer
         mock_observer = Mock()
         mock_observer.is_alive.return_value = True
@@ -212,7 +215,7 @@ class TestHotReloadManager:
     async def test_stop_watching_with_dead_observer(self, temp_dir: Path) -> None:
         """Test stop_watching with already stopped observer."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Mock dead observer
         mock_observer = Mock()
         mock_observer.is_alive.return_value = False
@@ -232,7 +235,7 @@ class TestHotReloadManager:
         # Create a test plugin file
         test_plugin = plugin_dir / "test_plugin.py"
         test_plugin.write_text("# Test plugin content")
-        manager = HotReloadManager(plugin_directory=str(plugin_dir))
+        manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
         # Mock the loader to avoid actual loading
         mock_loader = Mock()
         mock_loader.load_plugin = Mock(return_value="mock_plugin_instance")
@@ -248,7 +251,7 @@ class TestHotReloadManager:
     ) -> None:
         """Test initial plugin load with nonexistent directory."""
         plugin_dir = temp_dir / "nonexistent"
-        manager = HotReloadManager(plugin_directory=str(plugin_dir))
+        manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
         # Should not raise exception
         await manager._initial_plugin_load()
 
@@ -263,14 +266,14 @@ class TestHotReloadManager:
         # Create a test plugin file
         test_plugin = plugin_dir / "test_plugin.py"
         test_plugin.write_text("# Test plugin content")
-        manager = HotReloadManager(plugin_directory=str(plugin_dir))
+        manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
         # Should not raise exception even with errors
         await manager._initial_plugin_load()
 
     def test_on_plugin_file_changed_creates_task(self, temp_dir: Path) -> None:
         """Test file change handler creates async task."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         test_path = Path("/test/plugin.py")
         with patch("asyncio.create_task") as mock_create_task:
             mock_task = Mock()
@@ -285,7 +288,7 @@ class TestHotReloadManager:
     async def test_reload_plugin_with_existing_plugin(self, temp_dir: Path) -> None:
         """Test reload plugin with existing loaded plugin."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Setup existing plugin without cleanup method (plain object)
         test_path = Path("test_plugin.py")
         existing_plugin = object()  # Plain object has no cleanup method
@@ -302,7 +305,7 @@ class TestHotReloadManager:
     ) -> None:
         """Test reload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         test_path = Path("test_plugin.py")
         # Should not raise exception
         await manager._reload_plugin(test_path)
@@ -311,7 +314,7 @@ class TestHotReloadManager:
     async def test_load_plugin_with_loader(self, temp_dir: Path) -> None:
         """Test load plugin with mock loader."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Mock loader
         mock_loader = Mock()
         mock_loader.load_plugin = Mock(return_value="mock_plugin_instance")
@@ -325,7 +328,7 @@ class TestHotReloadManager:
     async def test_load_plugin_without_loader(self, temp_dir: Path) -> None:
         """Test load plugin without loader."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Remove loader
         object.__setattr__(manager, "_loader", None)
         test_path = Path("test_plugin.py")
@@ -336,7 +339,7 @@ class TestHotReloadManager:
     async def test_load_plugin_handles_errors_gracefully(self, temp_dir: Path) -> None:
         """Test load plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         test_path = Path("test_plugin.py")
         # Should not raise exception
         await manager._load_plugin(test_path)
@@ -345,7 +348,7 @@ class TestHotReloadManager:
     async def test_unload_plugin_with_cleanup(self, temp_dir: Path) -> None:
         """Test unload plugin with cleanup method."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Setup plugin with cleanup method
         mock_plugin = AsyncMock()
         mock_plugin.cleanup = AsyncMock()
@@ -360,7 +363,7 @@ class TestHotReloadManager:
     async def test_unload_plugin_without_cleanup(self, temp_dir: Path) -> None:
         """Test unload plugin without cleanup method."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Setup plugin without cleanup method (regular object)
         mock_plugin = object()  # Plain object has no cleanup method
         loaded_plugins = {"test_plugin": mock_plugin}
@@ -373,7 +376,7 @@ class TestHotReloadManager:
     async def test_unload_plugin_nonexistent(self, temp_dir: Path) -> None:
         """Test unload nonexistent plugin."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Should not raise exception
         await manager._unload_plugin("nonexistent_plugin")
 
@@ -384,7 +387,7 @@ class TestHotReloadManager:
     ) -> None:
         """Test unload plugin handles errors gracefully."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Should not raise exception
         await manager._unload_plugin("test_plugin")
 
@@ -393,12 +396,19 @@ class TestHotReloadManager:
         """Test reload all plugins functionality."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
-        manager = HotReloadManager(plugin_directory=str(plugin_dir))
-        # Setup multiple loaded plugins
+        manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
+        # Setup multiple loaded plugins with async cleanup
+        mock_plugin1 = Mock()
+        mock_plugin1.cleanup = AsyncMock()
+        mock_plugin2 = Mock()
+        mock_plugin2.cleanup = AsyncMock()
+        mock_plugin3 = Mock()
+        mock_plugin3.cleanup = AsyncMock()
+        
         loaded_plugins = {
-            "plugin1": Mock(),
-            "plugin2": Mock(),
-            "plugin3": Mock(),
+            "plugin1": mock_plugin1,
+            "plugin2": mock_plugin2,
+            "plugin3": mock_plugin3,
         }
         object.__setattr__(manager, "_loaded_plugins", loaded_plugins)
         await manager.reload_all_plugins()
@@ -409,7 +419,7 @@ class TestHotReloadManager:
     async def test_reload_all_plugins_empty(self, temp_dir: Path) -> None:
         """Test reload all plugins with no loaded plugins."""
         plugin_dir = str(temp_dir / "plugins")
-        manager = HotReloadManager(plugin_directory=plugin_dir)
+        manager = HotReloadManager.create(plugin_directory=plugin_dir)
         # Should not raise exception
         await manager.reload_all_plugins()
         assert len(manager.loaded_plugins) == 0
@@ -423,16 +433,10 @@ class TestHotReloadConvenienceFunction:
         """Test create_hot_reload_manager convenience function."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = str(Path(tmp_dir) / "plugins")
-            with patch(
-                "flext_plugin.hot_reload.HotReloadManager.start_watching",
-            ) as mock_start:
-                mock_start.return_value = asyncio.Future()
-                mock_start.return_value.set_result(None)
-                manager = await create_hot_reload_manager(plugin_dir)
-                assert manager is not None
-                assert isinstance(manager, HotReloadManager)
-                assert manager.plugin_directory == plugin_dir
-                mock_start.assert_called_once()
+            manager = create_hot_reload_manager(plugin_dir)
+            assert manager is not None
+            assert isinstance(manager, HotReloadManager)
+            assert manager.plugin_directory == plugin_dir
 
 
 class TestHotReloadIntegration:
@@ -443,7 +447,7 @@ class TestHotReloadIntegration:
         """Test file handler integration with manager."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = str(Path(tmp_dir) / "plugins")
-            manager = HotReloadManager(plugin_directory=plugin_dir)
+            manager = HotReloadManager.create(plugin_directory=plugin_dir)
             # Test file handler callback integration
             handler = PluginFileHandler(manager._on_plugin_file_changed)
             # Create mock event
@@ -464,14 +468,15 @@ class TestHotReloadIntegration:
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = Path(tmp_dir) / "plugins"
             plugin_dir.mkdir()
-            manager = HotReloadManager(plugin_directory=str(plugin_dir))
+            manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
             # Test complete lifecycle
-            with patch.object(manager, "observer") as mock_observer:
-                mock_observer.schedule = Mock()
-                mock_observer.start = Mock()
-                mock_observer.is_alive.return_value = True
-                mock_observer.stop = Mock()
-                mock_observer.join = Mock()
+            mock_observer = Mock()
+            mock_observer.schedule = Mock()
+            mock_observer.start = Mock()
+            mock_observer.is_alive.return_value = True
+            mock_observer.stop = Mock()
+            mock_observer.join = Mock()
+            with patch.object(type(manager), "observer", new_callable=lambda: property(lambda self: mock_observer)):
                 # Start watching
                 await manager.start_watching()
                 # Verify started
@@ -487,7 +492,7 @@ class TestHotReloadIntegration:
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = str(Path(tmp_dir) / "plugins")
             # Manager creation should not fail even with problematic directory
-            manager = HotReloadManager(plugin_directory=plugin_dir)
+            manager = HotReloadManager.create(plugin_directory=plugin_dir)
             assert manager is not None
             # Properties should be accessible even if not fully initialized
             assert manager.plugin_directory == plugin_dir

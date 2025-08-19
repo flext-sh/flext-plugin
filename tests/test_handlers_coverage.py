@@ -11,6 +11,7 @@ Strategy: Test the 3 real handler classes with comprehensive scenarios:
 
 from __future__ import annotations
 
+import builtins
 from unittest.mock import Mock
 
 import pytest
@@ -464,13 +465,12 @@ class TestFlextPluginEventHandler:
         # Mock getattr to raise exception
         original_getattr = getattr
 
-        def mock_getattr(obj, name, default=None):
+        def mock_getattr(obj: object, name: str, default: object = None) -> object:
             if name == "name":
                 msg = "Attribute access error"
                 raise RuntimeError(msg)
             return original_getattr(obj, name, default)
 
-        import builtins
 
         builtins.getattr = mock_getattr
 
@@ -494,13 +494,12 @@ class TestFlextPluginEventHandler:
         # Mock getattr to raise exception
         original_getattr = getattr
 
-        def mock_getattr(obj, name, default=None):
+        def mock_getattr(obj: object, name: str, default: object = None) -> object:
             if name == "name":
                 msg = "Value error"
                 raise ValueError(msg)
             return original_getattr(obj, name, default)
 
-        import builtins
 
         builtins.getattr = mock_getattr
 
@@ -521,13 +520,12 @@ class TestFlextPluginEventHandler:
         # Mock getattr to raise exception
         original_getattr = getattr
 
-        def mock_getattr(obj, name, default=None):
+        def mock_getattr(obj: object, name: str, default: object = None) -> object:
             if name == "name":
                 msg = "Type error"
                 raise TypeError(msg)
             return original_getattr(obj, name, default)
 
-        import builtins
 
         builtins.getattr = mock_getattr
 

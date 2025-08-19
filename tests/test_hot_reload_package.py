@@ -64,6 +64,7 @@ from flext_plugin import (
 
 class TestPluginState:
     """Comprehensive test suite for PluginState data model and serialization.
+
     Validates the plugin state management system ensuring proper state capture,
     serialization, and restoration capabilities for hot-reload operations.
     Test Categories:
@@ -108,6 +109,7 @@ class TestPluginState:
 
 class TestReloadEvent:
     """Comprehensive test suite for ReloadEvent notification system.
+
     Validates the event-driven notification system for plugin reload operations,
     ensuring proper event creation, status tracking, and error reporting.
     Event System Validation:
@@ -142,6 +144,7 @@ class TestReloadEvent:
 
 class TestPluginWatcher:
     """Comprehensive test suite for PluginWatcher file system monitoring.
+
     Validates the file system monitoring capabilities ensuring robust directory
     watching, change detection, and plugin file tracking for hot-reload triggers.
     File System Monitoring Validation:
@@ -232,6 +235,7 @@ class TestStateManager:
         """Test saving plugin state with mock plugin."""
         # Create a mock plugin that has the required attributes
         mock_plugin = Mock()
+        mock_plugin.name = "test-plugin"  # Plugin name directly on plugin object
         mock_plugin.metadata.name = "test-plugin"
         mock_plugin.metadata.version = "0.9.0"
         mock_plugin.metadata.plugin_type.value = "tap"
@@ -309,6 +313,7 @@ class TestRollbackManager:
 
 class TestHotReloadManager:
     """Comprehensive test suite for HotReloadManager orchestration system.
+
     Validates the complete hot-reload orchestration system that coordinates all
     hot-reload components including file watching, state management, and plugin reloading.
     Orchestration System Validation:
@@ -343,19 +348,24 @@ class TestHotReloadManager:
     @pytest.fixture
     def hot_reload_manager(
         self,
-        mock_plugin_manager: Mock,
         temp_dir: Path,
     ) -> HotReloadManager:
         """Create hot reload manager for testing."""
-        return HotReloadManager.create(
-            plugin_directory=str(temp_dir / "plugins"),
+        plugin_dir = temp_dir / "plugins"
+        plugin_dir.mkdir(exist_ok=True)  # Create the directory
+        manager = HotReloadManager.create(
+            plugin_directory=str(plugin_dir),
             entity_id="hot-reload-manager-test",
         )
+        # Add a mock plugin manager for tests that need it
+        mock_plugin_manager = Mock()
+        mock_plugin_manager.reload_plugin = AsyncMock()
+        object.__setattr__(manager, "_plugin_manager", mock_plugin_manager)
+        return manager
 
     def test_manager_initialization(
         self,
         hot_reload_manager: HotReloadManager,
-        temp_dir: Path,
     ) -> None:
         """Test hot reload manager initialization."""
         assert hot_reload_manager is not None

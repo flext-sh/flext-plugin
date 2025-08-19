@@ -125,10 +125,8 @@ class TestPluginValidationService:
     def test_has_required_abstract_methods(self) -> None:
         """Test that all required abstract methods are defined."""
         expected_methods = {
+            "discover_plugins",
             "validate_plugin",
-            "validate_configuration",
-            "validate_dependencies",
-            "validate_permissions",
         }
         abstract_methods = PluginValidationService.__abstractmethods__
         if expected_methods != abstract_methods:
@@ -143,11 +141,11 @@ class TestPluginValidationService:
         if params != ["self", "plugin"]:
             msg: str = f"Expected {['self', 'plugin']}, got {params}"
             raise AssertionError(msg)
-        # Test validate_configuration signature
-        sig = inspect.signature(PluginValidationService.validate_configuration)
+        # Test discover_plugins signature
+        sig = inspect.signature(PluginValidationService.discover_plugins)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin", "config"]:
-            msg: str = f"Expected {['self', 'plugin', 'config']}, got {params}"
+        if params != ["self", "path"]:
+            msg: str = f"Expected {['self', 'path']}, got {params}"
             raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
@@ -185,13 +183,12 @@ class TestPluginLifecycleService:
     def test_has_required_abstract_methods(self) -> None:
         """Test that all required abstract methods are defined."""
         expected_methods = {
-            "register_plugin",
-            "load_plugin",
-            "initialize_plugin",
-            "activate_plugin",
-            "suspend_plugin",
-            "unload_plugin",
-            "unregister_plugin",
+            "install_plugin",
+            "uninstall_plugin",
+            "enable_plugin",
+            "disable_plugin",
+            "get_plugin_config",
+            "update_plugin_config",
         }
         abstract_methods = PluginLifecycleService.__abstractmethods__
         if expected_methods != abstract_methods:
@@ -200,17 +197,17 @@ class TestPluginLifecycleService:
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
-        # Test register_plugin signature
-        sig = inspect.signature(PluginLifecycleService.register_plugin)
+        # Test install_plugin signature
+        sig = inspect.signature(PluginLifecycleService.install_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin"]:
-            msg: str = f"Expected {['self', 'plugin']}, got {params}"
+        if params != ["self", "plugin_path"]:
+            msg: str = f"Expected {['self', 'plugin_path']}, got {params}"
             raise AssertionError(msg)
-        # Test load_plugin signature
-        sig = inspect.signature(PluginLifecycleService.load_plugin)
+        # Test enable_plugin signature
+        sig = inspect.signature(PluginLifecycleService.enable_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin"]:
-            msg: str = f"Expected {['self', 'plugin']}, got {params}"
+        if params != ["self", "plugin_name"]:
+            msg: str = f"Expected {['self', 'plugin_name']}, got {params}"
             raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:

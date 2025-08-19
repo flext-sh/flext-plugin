@@ -41,6 +41,10 @@ class FlextPluginError(FlextError, FlextErrorMixin):
     """Base exception for all plugin domain errors."""
 
 
+# Legacy alias for backwards compatibility
+PluginError = FlextPluginError
+
+
 class FlextPluginDiscoveryError(FlextPluginError):
     """Plugin discovery errors."""
 

@@ -51,8 +51,21 @@ class PluginDiscovery(FlextEntity):
         """Initialize plugin discovery system."""
         # Generate ID if not provided
         final_entity_id = entity_id or FlextGenerators.generate_entity_id()
-        # Initialize FlextEntity base with ONLY base fields
-        super().__init__(id=final_entity_id)
+        # Initialize FlextEntity base with required fields
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        # Convert types for FlextEntity compatibility
+        from typing import cast
+        from flext_core.root_models import FlextEntityId, FlextVersion, FlextEventList, FlextMetadata, FlextTimestamp
+        
+        super().__init__(
+            id=cast(FlextEntityId, final_entity_id),
+            version=cast(FlextVersion, 1),
+            domain_events=cast(FlextEventList, []),
+            metadata=cast(FlextMetadata, {}),
+            created_at=cast(FlextTimestamp, now),
+            updated_at=cast(FlextTimestamp, now)
+        )
         # Set business fields directly (frozen model workaround)
         object.__setattr__(self, "plugin_directory", plugin_directory)
         object.__setattr__(self, "plugin_directories", plugin_directories or [])
@@ -81,10 +94,11 @@ class PluginDiscovery(FlextEntity):
     async def discover_by_type(self, plugin_type: PluginType) -> dict[str, object]:
         """Discover plugins by type."""
         all_plugins = await self.discover_all()
+        from typing import cast
         return {
             name: plugin
             for name, plugin in all_plugins.items()
-            if isinstance(plugin, dict) and plugin.get("type", "") == plugin_type
+            if isinstance(plugin, dict) and cast("dict[str, object]", plugin).get("type") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:

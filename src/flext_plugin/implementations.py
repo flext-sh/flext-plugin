@@ -307,7 +307,8 @@ class ConcreteTransformPlugin(ConcretePlugin):
             if not isinstance(data, dict):
                 return FlextResult[object].fail("Input data must be a dictionary")
             # Apply transformation based on schema
-            transformed = dict(data)
+            from typing import cast
+            transformed: dict[str, object] = dict(cast("dict[str, object]", data))
             transformed["_transformed_by"] = self._name
             transformed["_transform_version"] = self._version
             return FlextResult[object].ok(transformed)
@@ -457,7 +458,7 @@ class ConcretePluginLoader(FlextPluginLoader):
             registry: Optional plugin registry to use
 
         """
-        self._registry = registry or ConcretePluginRegistry()
+        self._registry = registry or ConcretePluginRegistry()  # type: ignore[abstract]
         self._logger = get_logger("plugin.loader")
 
     def load_plugin(self, plugin_path: str | Path) -> FlextResult[FlextPlugin]:

@@ -125,7 +125,20 @@ class PluginLoader(FlextEntity):
         """Initialize plugin loader."""
         # Generate ID if not provided for backward compatibility
         final_entity_id = entity_id or FlextGenerators.generate_entity_id()
-        super().__init__(id=final_entity_id)
+        # Initialize FlextEntity with all required parameters
+        from datetime import datetime, timezone
+        from typing import cast
+        from flext_core.root_models import FlextEntityId, FlextVersion, FlextEventList, FlextMetadata, FlextTimestamp
+        
+        now = datetime.now(timezone.utc)
+        super().__init__(
+            id=cast(FlextEntityId, final_entity_id),
+            version=cast(FlextVersion, 1),
+            domain_events=cast(FlextEventList, []),
+            metadata=cast(FlextMetadata, {}),
+            created_at=cast(FlextTimestamp, now),
+            updated_at=cast(FlextTimestamp, now)
+        )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)
         self._loaded_plugins: dict[str, object] = {}
@@ -221,8 +234,9 @@ class PluginLoader(FlextEntity):
         """Unload plugin by name."""
         if plugin_name in self.loaded_plugins:
             plugin = self.loaded_plugins[plugin_name]
-            if hasattr(plugin, "cleanup"):
-                await plugin.cleanup()
+            if hasattr(plugin, "cleanup") and callable(getattr(plugin, "cleanup", None)):
+                cleanup_method = getattr(plugin, "cleanup")
+                await cleanup_method()
             del self.loaded_plugins[plugin_name]
 
         if plugin_name in self.plugin_modules:
@@ -256,8 +270,8 @@ class PluginLoader(FlextEntity):
 
         """
         if plugin_name in self._loaded_plugins:
-            return FlextResult[None].ok(self._loaded_plugins[plugin_name])
-        return FlextResult[None].fail(f"Plugin '{plugin_name}' not loaded")
+            return FlextResult[object].ok(self._loaded_plugins[plugin_name])
+        return FlextResult[object].fail(f"Plugin '{plugin_name}' not loaded")
 
     def is_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is loaded.
@@ -278,4 +292,4 @@ class PluginLoader(FlextEntity):
             FlextResult containing dictionary of loaded plugins
 
         """
-        return FlextResult[None].ok(self._loaded_plugins.copy())
+        return FlextResult[dict[str, object]].ok(self._loaded_plugins.copy())

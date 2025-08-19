@@ -13,8 +13,81 @@ from flext_plugin.simple_api import (
     create_flext_plugin_config,
     create_flext_plugin_metadata,
     create_flext_plugin_registry,
+    create_plugin_from_dict,
+    create_plugin_config_from_dict,
 )
-from flext_plugin.typings import PluginExecutionContext, PluginManagerResult
+# from flext_plugin.typings import PluginExecutionContext  # Now using legacy version
+
+# Export core types that examples need
+from flext_plugin.models import PluginStatus, PluginType
+
+# Export legacy classes for test compatibility  
+from flext_plugin.typings_legacy import (
+    PluginError, 
+    PluginExecutionContext,
+    PluginExecutionResult,
+    PluginManagerResult,
+    SimplePluginRegistry,
+    create_plugin_manager,
+)
+
+# Export domain entities for tests
+from flext_plugin.domain.entities import (
+    FlextPlugin,
+    FlextPluginConfig,
+    FlextPluginExecution,
+    FlextPluginMetadata,
+    FlextPluginRegistry,
+)
+
+# Export application services for tests
+from flext_plugin.application.services import (
+    FlextPluginService,
+    FlextPluginDiscoveryService,
+)
+
+# Create service aliases for backward compatibility
+PluginService = FlextPluginService
+PluginDiscoveryService = FlextPluginDiscoveryService
+
+# Export additional components for tests
+from flext_plugin.application.handlers import (
+    FlextPluginHandler,
+    FlextPluginRegistrationHandler,
+    FlextPluginEventHandler,
+)
+
+# Export core discovery components
+from flext_plugin.core.discovery import PluginDiscovery
+
+# Export loader components
+from flext_plugin.loader import PluginLoader
+
+# Export hot reload components
+from flext_plugin.hot_reload import (
+    HotReloadManager,
+    PluginFileHandler,
+    PluginState,
+    PluginWatcher,
+    ReloadEvent,
+    RollbackManager,
+    StateManager,
+    WatchEvent,
+    WatchEventType,
+)
+
+# Export domain port service aliases for domain tests
+from flext_plugin.domain.ports import (
+    PluginExecutionService,
+    PluginHotReloadService,
+    PluginLifecycleService,
+    PluginRegistryService,
+    PluginSecurityService,
+    PluginValidationService,
+)
+
+# Import the port-based PluginDiscoveryService alias separately (for domain tests)
+# from flext_plugin.domain.ports import PluginDiscoveryService as PluginDiscoveryServicePort
 
 
 # Main FlextPlugin aliases with backwards compatibility
@@ -59,13 +132,17 @@ class FlextPluginManager:
         # Mark as initialized
         self._initialized = True
 
-        # Return legacy result format
-        result_data = PluginManagerResult(
+        # Create proper PluginManagerResult
+        result = PluginManagerResult(
             operation="initialize",
-            success=True,
+            success=True
         )
-        result_data.details = {"platform": self._platform}
-        return FlextResult[PluginManagerResult].ok(result_data)
+        result.plugins_affected = []
+        result.execution_time_ms = 0.0
+        result.details = {"manager_type": "FlextPluginManager"}
+        result.errors = []
+
+        return FlextResult[PluginManagerResult].ok(result)
 
     async def cleanup(self) -> None:
         """Legacy cleanup method for backwards compatibility."""
@@ -154,6 +231,12 @@ def create_flext_plugin_platform(
     return FlextPluginPlatform(container)
 
 
+# Simple aliases for backward compatibility
+create_plugin = create_flext_plugin
+create_plugin_config = create_flext_plugin_config
+create_plugin_metadata = create_flext_plugin_metadata
+create_plugin_registry = create_flext_plugin_registry
+
 # Prefixed helper functions
 flext_plugin_create_plugin = create_flext_plugin
 flext_plugin_create_config = create_flext_plugin_config
@@ -161,6 +244,22 @@ flext_plugin_create_metadata = create_flext_plugin_metadata
 flext_plugin_create_registry = create_flext_plugin_registry
 flext_plugin_create_manager = create_flext_plugin_platform
 flext_plugin_create_platform = create_flext_plugin_platform
+
+
+def create_hot_reload_manager(
+    plugin_directory: str = "./plugins",
+    container: FlextContainer | None = None,
+) -> HotReloadManager:
+    """Create hot reload manager instance.
+    
+    Args:
+        plugin_directory: Directory to watch for plugins
+        container: Optional FlextContainer instance
+        
+    Returns:
+        Configured HotReloadManager instance
+    """
+    return HotReloadManager.create(plugin_directory=plugin_directory)
 
 __all__: list[str] = [
     "FlextContainer",
@@ -173,10 +272,58 @@ __all__: list[str] = [
     "create_flext_plugin_metadata",
     "create_flext_plugin_registry",
     "create_flext_plugin_platform",
+    "create_hot_reload_manager",
     "flext_plugin_create_plugin",
     "flext_plugin_create_config",
     "flext_plugin_create_metadata",
     "flext_plugin_create_registry",
     "flext_plugin_create_manager",
     "flext_plugin_create_platform",
+    # Core types for examples
+    "PluginStatus",
+    "PluginType",
+    # Domain entities for tests
+    "FlextPlugin",
+    "FlextPluginConfig",
+    "FlextPluginExecution",
+    "FlextPluginMetadata",
+    "FlextPluginRegistry",
+    # Application services for tests
+    "FlextPluginService",
+    "FlextPluginDiscoveryService",
+    # Service aliases for backward compatibility  
+    "PluginService",
+    "PluginDiscoveryService",
+    # Handlers for tests
+    "FlextPluginHandler",
+    "FlextPluginRegistrationHandler",
+    "FlextPluginEventHandler",
+    # Core discovery components
+    "PluginDiscovery",
+    # Loader components
+    "PluginLoader",
+    # Hot reload components
+    "HotReloadManager",
+    "PluginFileHandler",
+    "PluginState",
+    "PluginWatcher",
+    "ReloadEvent", 
+    "RollbackManager",
+    "StateManager",
+    "WatchEvent",
+    "WatchEventType",
+    # Legacy classes for test compatibility
+    "PluginError",
+    "PluginExecutionContext",
+    "PluginExecutionResult",
+    "PluginManagerResult",
+    "SimplePluginRegistry",
+    "create_plugin_manager",
+    # Domain port service aliases for tests
+    "PluginExecutionService",
+    "PluginHotReloadService",
+    "PluginLifecycleService",
+    "PluginRegistryService",
+    "PluginSecurityService",
+    "PluginValidationService",
 ]

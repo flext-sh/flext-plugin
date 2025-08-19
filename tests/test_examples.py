@@ -4,6 +4,11 @@ import asyncio
 import sys
 from pathlib import Path
 
+# Add examples directory to path
+examples_path = Path(__file__).parent.parent / "examples"
+if str(examples_path) not in sys.path:
+    sys.path.insert(0, str(examples_path))
+
 from docker_integration_example import (
     check_service_availability,
     create_docker_ldap_plugin,
@@ -20,21 +25,27 @@ from flext_plugin import (
 )
 
 
+async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+    """Run a command and return (return_code, stdout, stderr)."""
+    process = await asyncio.create_subprocess_exec(
+        *cmd_list,
+        cwd=cwd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout_bytes, stderr_bytes = await process.communicate()
+    return (
+        process.returncode or 0,
+        stdout_bytes.decode("utf-8"),
+        stderr_bytes.decode("utf-8"),
+    )
+
+
 def test_basic_plugin_example_execution() -> None:
     """Test that basic_plugin_example.py runs successfully without errors."""
     example_path = Path(__file__).parent.parent / "examples" / "basic_plugin_example.py"
 
     # Execute the example script
-    async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
-        process = await asyncio.create_subprocess_exec(
-            *cmd_list,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=cwd,
-        )
-        stdout, stderr = await process.communicate()
-        return process.returncode, stdout.decode(), stderr.decode()
-
     rc, out, err = asyncio.run(
         _run(
             [sys.executable, str(example_path)],

@@ -109,10 +109,10 @@ class TestPluginError:
     def test_plugin_error_creation(self) -> None:
         """Test creating PluginError with message."""
         error = PluginError("Test error message")
-        # Real implementation prefixes with [PROCESSING_ERROR]
-        if str(error) != "[PROCESSING_ERROR] Test error message":
+        # Real implementation prefixes with [FLEXT_PROCESSING_ERROR]
+        if str(error) != "[FLEXT_PROCESSING_ERROR] Test error message":
             raise AssertionError(
-                f"Expected {'[PROCESSING_ERROR] Test error message'}, got {error!s}",
+                f"Expected {'[FLEXT_PROCESSING_ERROR] Test error message'}, got {error!s}",
             )
 
     def test_plugin_error_with_plugin_id(self) -> None:
@@ -120,19 +120,19 @@ class TestPluginError:
         error = PluginError("Test error", plugin_id="test-plugin")
         if error.plugin_id != "test-plugin":
             raise AssertionError(f"Expected {'test-plugin'}, got {error.plugin_id}")
-        # Real implementation prefixes with [PROCESSING_ERROR]
-        assert str(error) == "[PROCESSING_ERROR] Test error"
+        # Real implementation prefixes with [FLEXT_PROCESSING_ERROR]
+        assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
 
     def test_plugin_error_with_error_code(self) -> None:
         """Test PluginError with error_code."""
         error = PluginError("Test error", error_code="TEST_ERROR")
-        # Real implementation ignores error_code parameter and uses PROCESSING_ERROR
-        if error.error_code != "PROCESSING_ERROR":
+        # Real implementation ignores error_code parameter and uses FLEXT_PROCESSING_ERROR
+        if error.error_code != "FLEXT_PROCESSING_ERROR":
             raise AssertionError(
-                f"Expected {'PROCESSING_ERROR'}, got {error.error_code}",
+                f"Expected {'FLEXT_PROCESSING_ERROR'}, got {error.error_code}",
             )
-        # Real implementation always uses PROCESSING_ERROR regardless of parameter
-        assert str(error) == "[PROCESSING_ERROR] Test error"
+        # Real implementation always uses FLEXT_PROCESSING_ERROR regardless of parameter
+        assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
 
     def test_plugin_error_inheritance(self) -> None:
         """Test PluginError is proper Exception subclass."""
