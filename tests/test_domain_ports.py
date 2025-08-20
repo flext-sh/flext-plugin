@@ -111,7 +111,7 @@ class TestPluginDiscoveryService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginDiscoveryService()
+            PluginDiscoveryService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginValidationService:
@@ -151,7 +151,7 @@ class TestPluginValidationService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginValidationService()
+            PluginValidationService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginLifecycleService:
@@ -213,7 +213,7 @@ class TestPluginLifecycleService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginLifecycleService()
+            PluginLifecycleService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginExecutionService:
@@ -271,7 +271,7 @@ class TestPluginExecutionService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginExecutionService()
+            PluginExecutionService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginRegistryService:
@@ -314,7 +314,7 @@ class TestPluginRegistryService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginRegistryService()
+            PluginRegistryService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginHotReloadService:
@@ -357,7 +357,7 @@ class TestPluginHotReloadService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginHotReloadService()
+            PluginHotReloadService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestPluginSecurityService:
@@ -399,7 +399,7 @@ class TestPluginSecurityService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginSecurityService()
+            PluginSecurityService()  # type: ignore[misc]  # Testing abstract class instantiation failure
 
 
 class TestAllPorts:

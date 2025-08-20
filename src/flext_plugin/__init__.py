@@ -21,9 +21,9 @@ from flext_plugin.simple_api import (
 # Export core types that examples need
 from flext_plugin.models import PluginStatus, PluginType
 
-# Export legacy classes for test compatibility  
+# Export legacy classes for test compatibility
 from flext_plugin.typings_legacy import (
-    PluginError, 
+    PluginError,
     PluginExecutionContext,
     PluginExecutionResult,
     PluginManagerResult,
@@ -43,7 +43,6 @@ from flext_plugin.domain.entities import (
 # Export application services for tests
 from flext_plugin.application.services import (
     FlextPluginService,
-    FlextPluginDiscoveryService,
 )
 
 # Create service aliases for backward compatibility
@@ -76,8 +75,18 @@ from flext_plugin.hot_reload import (
     WatchEventType,
 )
 
+# Export simple plugin system components
+from flext_plugin.simple_plugin import (
+    Plugin,
+    PluginRegistry,
+    create_registry,
+    load_plugin,
+)
+
 # Export domain port service aliases for domain tests
 from flext_plugin.domain.ports import (
+    FlextPluginHotReloadPort,
+    FlextPluginRegistryPort,
     PluginExecutionService,
     PluginHotReloadService,
     PluginLifecycleService,
@@ -248,16 +257,17 @@ flext_plugin_create_platform = create_flext_plugin_platform
 
 def create_hot_reload_manager(
     plugin_directory: str = "./plugins",
-    container: FlextContainer | None = None,
+    container: FlextContainer | None = None,  # noqa: ARG001
 ) -> HotReloadManager:
     """Create hot reload manager instance.
-    
+
     Args:
         plugin_directory: Directory to watch for plugins
         container: Optional FlextContainer instance
-        
+
     Returns:
         Configured HotReloadManager instance
+
     """
     return HotReloadManager.create(plugin_directory=plugin_directory)
 
@@ -273,6 +283,14 @@ __all__: list[str] = [
     "create_flext_plugin_registry",
     "create_flext_plugin_platform",
     "create_hot_reload_manager",
+    # Simple API functions
+    "create_plugin_from_dict",
+    "create_plugin_config_from_dict",
+    # Simple aliases
+    "create_plugin",
+    "create_plugin_config",
+    "create_plugin_metadata",
+    "create_plugin_registry",
     "flext_plugin_create_plugin",
     "flext_plugin_create_config",
     "flext_plugin_create_metadata",
@@ -291,7 +309,7 @@ __all__: list[str] = [
     # Application services for tests
     "FlextPluginService",
     "FlextPluginDiscoveryService",
-    # Service aliases for backward compatibility  
+    # Service aliases for backward compatibility
     "PluginService",
     "PluginDiscoveryService",
     # Handlers for tests
@@ -307,11 +325,16 @@ __all__: list[str] = [
     "PluginFileHandler",
     "PluginState",
     "PluginWatcher",
-    "ReloadEvent", 
+    "ReloadEvent",
     "RollbackManager",
     "StateManager",
     "WatchEvent",
     "WatchEventType",
+    # Simple plugin system components
+    "Plugin",
+    "PluginRegistry",
+    "create_registry",
+    "load_plugin",
     # Legacy classes for test compatibility
     "PluginError",
     "PluginExecutionContext",
@@ -320,6 +343,8 @@ __all__: list[str] = [
     "SimplePluginRegistry",
     "create_plugin_manager",
     # Domain port service aliases for tests
+    "FlextPluginHotReloadPort",
+    "FlextPluginRegistryPort",
     "PluginExecutionService",
     "PluginHotReloadService",
     "PluginLifecycleService",

@@ -3,20 +3,21 @@
 import asyncio
 import sys
 from pathlib import Path
+from typing import cast
 
 # Add examples directory to path
 examples_path = Path(__file__).parent.parent / "examples"
 if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
-from docker_integration_example import (
+from docker_integration_example import (  # noqa: E402
     check_service_availability,
     create_docker_ldap_plugin,
     create_docker_postgres_plugin,
     create_docker_redis_plugin,
 )
 
-from flext_plugin import (
+from flext_plugin import (  # noqa: E402
     PluginStatus,
     PluginType,
     create_flext_plugin,
@@ -211,8 +212,10 @@ def test_plugin_configuration_example_functionality() -> None:
 
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
-    assert len(standalone_config.config_data.get("routes", {})) == 2
-    assert "cors" in standalone_config.config_data.get("middleware", [])
+    routes = cast("dict[str, object]", standalone_config.config_data.get("routes", {}))
+    assert len(routes) == 2
+    middleware = cast("list[str]", standalone_config.config_data.get("middleware", []))
+    assert "cors" in middleware
 
     # Test metadata creation
     metadata = create_flext_plugin_metadata(

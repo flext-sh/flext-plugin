@@ -137,6 +137,10 @@ class SimplePluginRegistry:
                 return FlextResult[FlextPluginEntity].fail(
                     "Plugin registration failed: missing name"
                 )
+            if not hasattr(plugin, "metadata"):
+                return FlextResult[FlextPluginEntity].fail(
+                    "Plugin registration failed: missing metadata"
+                )
             plugin_name: str = plugin.name
             self._plugins[plugin_name] = plugin
             return FlextResult[FlextPluginEntity].ok(plugin)
@@ -149,7 +153,7 @@ class SimplePluginRegistry:
         """Unregister plugin by name."""
         if plugin_name in self._plugins:
             del self._plugins[plugin_name]
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(True)  # noqa: FBT003
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
         """Get plugin instance by name."""
@@ -163,7 +167,11 @@ class SimplePluginRegistry:
         """List plugin metadata optionally filtered by type."""
         if plugin_type is None:
             return list(self._plugins.values())
-        return [p for p in self._plugins.values() if hasattr(p, "plugin_type") and p.plugin_type == plugin_type]
+        return [
+            p
+            for p in self._plugins.values()
+            if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
+        ]
 
     async def cleanup_all(self) -> None:
         """Clear all registered plugins."""

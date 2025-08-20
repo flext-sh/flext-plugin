@@ -65,7 +65,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             # Use real plugin service to unregister plugin
             return self._plugin_service.unload_plugin(plugin_name)
         except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[bool].fail(f"Failed to register plugin: {e}")
+            return FlextResult[bool].fail(f"Failed to unregister plugin: {e}")
 
 
 class FlextPluginEventHandler(FlextBaseHandler):
@@ -93,7 +93,7 @@ class FlextPluginEventHandler(FlextBaseHandler):
                 return FlextResult[bool].fail(
                     "Plugin loaded event: plugin missing name"
                 )
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(True)  # noqa: FBT003
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult[bool].fail(f"Failed to handle plugin loaded event: {e}")
 

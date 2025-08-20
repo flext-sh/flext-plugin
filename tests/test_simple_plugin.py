@@ -27,6 +27,7 @@ Architecture Integration:
 from __future__ import annotations
 
 from collections import UserDict
+from typing import override
 from unittest.mock import Mock, patch
 
 import pytest
@@ -71,6 +72,7 @@ class TestPlugin:
 
         # Create a plugin that will fail during activation
         class FailingPlugin(Plugin):
+            @override
             def __setattr__(self, name: str, value: object) -> None:
                 if name == "active" and value is True:
                     msg = "Activation failed"
@@ -81,6 +83,7 @@ class TestPlugin:
         result = failing_plugin.activate()
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin activation failed" in result.error
         assert "Activation failed" in result.error
 
@@ -106,6 +109,7 @@ class TestPlugin:
                 # Skip the automatic self.active = False in parent __init__
                 self.active = True  # Start as active
 
+            @override
             def __setattr__(self, name: str, value: object) -> None:
                 if name == "active" and value is False and hasattr(self, "active"):
                     msg = "Deactivation failed"
@@ -117,6 +121,7 @@ class TestPlugin:
         result = failing_plugin.deactivate()
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin deactivation failed" in result.error
         assert "Deactivation failed" in result.error
 
@@ -196,11 +201,12 @@ class TestPluginRegistry:
 
                 # Create a dict that will raise exception on assignment
                 class FailingDict(UserDict):
+                    @override
                     def __setitem__(self, key: str, value: object) -> None:
                         msg = "Registration failed"
                         raise RuntimeError(msg)
 
-                self.plugins = FailingDict()
+                self.plugins = FailingDict()  # type: ignore[assignment]
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -208,6 +214,7 @@ class TestPluginRegistry:
         result = registry.register(plugin)
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin registration failed" in result.error
         assert "Registration failed" in result.error
 
@@ -249,11 +256,12 @@ class TestPluginRegistry:
 
                 # Create a dict that will raise exception on deletion
                 class FailingDeleteDict(UserDict):
+                    @override
                     def __delitem__(self, key: str) -> None:
                         msg = "Unregistration failed"
                         raise ValueError(msg)
 
-                self.plugins = FailingDeleteDict()
+                self.plugins = FailingDeleteDict()  # type: ignore[assignment]
 
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")
@@ -264,6 +272,7 @@ class TestPluginRegistry:
         result = registry.unregister("test-plugin")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin unregistration failed" in result.error
         assert "Unregistration failed" in result.error
 
@@ -398,6 +407,7 @@ class TestUtilityFunctions:
         result = load_plugin("nonexistent_module")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Module import failed" in result.error
         assert "Module not found" in result.error
 
@@ -416,6 +426,7 @@ class TestUtilityFunctions:
             result = load_plugin("test_module", "Plugin")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin class not found" in result.error
 
     @patch("importlib.import_module")
@@ -431,6 +442,7 @@ class TestUtilityFunctions:
         result = load_plugin("test_module", "Plugin")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin loading failed" in result.error
         assert "Plugin instantiation failed" in result.error
 
@@ -445,6 +457,7 @@ class TestUtilityFunctions:
         result = load_plugin("test_module", "Plugin")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin loading failed" in result.error
         assert "Invalid plugin configuration" in result.error
 
@@ -459,6 +472,7 @@ class TestUtilityFunctions:
         result = load_plugin("test_module", "Plugin")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Plugin loading failed" in result.error
         assert "Type error in plugin" in result.error
 

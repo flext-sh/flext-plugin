@@ -15,7 +15,7 @@ Docker Usage:
 from __future__ import annotations
 
 import sys
-from typing import Any
+from typing import cast
 
 from flext_plugin import (
     PluginType,
@@ -25,7 +25,7 @@ from flext_plugin import (
 )
 
 
-def create_database_plugin_config() -> dict[str, Any]:
+def create_database_plugin_config() -> dict[str, object]:
     """Create configuration for a database plugin."""
     return {
         "database": {
@@ -55,7 +55,7 @@ def create_database_plugin_config() -> dict[str, Any]:
     }
 
 
-def create_ldap_plugin_config() -> dict[str, Any]:
+def create_ldap_plugin_config() -> dict[str, object]:
     """Create configuration for an LDAP plugin."""
     return {
         "ldap": {
@@ -103,8 +103,9 @@ def main() -> None:
 
     print(f"   Database plugin: {db_plugin.name} v{db_plugin.plugin_version}")
     print(f"   Type: {db_config.get('plugin_type', 'N/A')}")
-    print(f"   Database: {db_config['database']['database']}")
-    print(f"   Pool size: {db_config['database']['pool_size']}")
+    database_config = cast("dict[str, object]", db_config["database"])
+    print(f"   Database: {database_config['database']}")
+    print(f"   Pool size: {database_config['pool_size']}")
 
     # 2. Create LDAP plugin with service configuration
     print("\n2. Creating LDAP plugin with service configuration...")
@@ -123,8 +124,9 @@ def main() -> None:
     )
 
     print(f"   LDAP plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
-    print(f"   Server: {ldap_config['ldap']['server']}:{ldap_config['ldap']['port']}")
-    print(f"   Base DN: {ldap_config['ldap']['base_dn']}")
+    ldap_server_config = cast("dict[str, object]", ldap_config["ldap"])
+    print(f"   Server: {ldap_server_config['server']}:{ldap_server_config['port']}")
+    print(f"   Base DN: {ldap_server_config['base_dn']}")
 
     # 3. Create standalone plugin configuration entity
     print("\n3. Creating standalone plugin configuration...")
@@ -145,8 +147,9 @@ def main() -> None:
     )
 
     print(f"   Config for: {standalone_config.plugin_name}")
+    routes_data = standalone_config.config_data.get("routes", {})
     print(
-        f"   Routes configured: {len(standalone_config.config_data.get('routes', {}))}",
+        f"   Routes configured: {len(cast('dict[str, object]', routes_data))}",
     )
     print(f"   Middleware: {standalone_config.config_data.get('middleware', [])}")
 

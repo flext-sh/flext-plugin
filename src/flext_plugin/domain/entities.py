@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
-from typing import cast
+from typing import cast, override
 
 from flext_core import (
     FlextEntity,
@@ -197,7 +197,7 @@ class FlextPluginEntity(FlextEntity):
         plugin_name = kwargs.get("plugin_id", name)
 
         # Create instance data
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": final_id,
             "version": kwargs.get("entity_version", 1),  # FlextEntity version
             "metadata": kwargs.get("metadata", {}),
@@ -230,6 +230,7 @@ class FlextPluginEntity(FlextEntity):
         # FlextEntity uses use_enum_values=True, so status is already a string
         return str(self.status)
 
+    @override
     def __setattr__(self, name: str, value: object) -> None:
         """Override setattr to handle plugin_status setter for frozen model."""
         if name == "plugin_status" and isinstance(value, PluginStatus):
@@ -374,6 +375,7 @@ class FlextPluginEntity(FlextEntity):
         object.__setattr__(self, "_last_error_time", FlextTimestamp.now())
         object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin entity.
 
@@ -459,7 +461,7 @@ class FlextPluginConfig(FlextEntity):
             p.timeout_seconds = cast("int", kwargs.get("timeout_seconds", 30))
 
         # Create instance data
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
@@ -500,6 +502,7 @@ class FlextPluginConfig(FlextEntity):
         # Update timestamp using frozen model workaround
         object.__setattr__(self, "updated_at", FlextTimestamp.now())
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin configuration entity.
 
@@ -592,7 +595,7 @@ class FlextPluginMetadata(FlextEntity):
         final_name = p.name or p.plugin_name
 
         # Create instance data
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -644,6 +647,7 @@ class FlextPluginMetadata(FlextEntity):
         """
         return bool(self.plugin_name)
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin metadata entity.
 
@@ -744,7 +748,7 @@ class FlextPluginRegistry(FlextEntity):
             )
 
         # Create instance data
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -846,6 +850,7 @@ class FlextPluginRegistry(FlextEntity):
         """
         return list(self.plugins.values())
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin registry entity.
 
@@ -935,7 +940,7 @@ class FlextPluginExecution(FlextEntity):
         input_data = kwargs.get("input_data", {})
 
         # Create instance data with all required fields including base entity fields
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
@@ -1078,6 +1083,7 @@ class FlextPluginExecution(FlextEntity):
         )
         object.__setattr__(self, "output_data", current_output)
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin execution entity.
 

@@ -1,475 +1,399 @@
-"""Comprehensive test suite for flext_plugin.core.discovery module.
+"""REAL test suite for flext_plugin.discovery module - NO MOCKS.
 
-This test module validates the complete plugin discovery functionality within the
-FLEXT plugin system, ensuring robust file system scanning, entry point detection,
-plugin validation, and metadata extraction capabilities. Tests cover both successful
-discovery scenarios and error conditions.
+This test module validates the PluginDiscovery functionality with actual file
+system operations, real plugin files, and authentic business logic validation.
+Follows user requirement: "pare de ficar mockando tudo" - stop mocking everything.
 
 Test Coverage:
-    - Plugin discovery initialization and configuration
-    - File system-based plugin scanning with directory management
-    - Entry point-based plugin detection and validation
-    - Plugin metadata extraction and validation
-    - Plugin blacklisting and filtering mechanisms
-    - Manual plugin registration and lifecycle management
-    - Error handling for invalid plugins and missing directories
+    - PluginDiscovery.create() factory method with proper validation
+    - PluginDiscovery.scan() with real plugin directory scanning
+    - PluginDiscovery.discover_plugin_entry_points() entry point detection
+    - PluginDiscovery.validate_business_rules() domain validation
+    - Real file system operations with tmp_path fixtures
+    - Actual plugin file creation and scanning
 
 Testing Architecture:
-    - Comprehensive mock-based testing for file system operations
-    - Async/await pattern testing for discovery operations
-    - Fixture-based test isolation with proper setup/teardown
-    - Edge case validation including empty directories and invalid plugins
+    - REAL file system operations using tmp_path fixtures
+    - Actual plugin file creation and content validation
+    - Authentic business logic testing without mocks
+    - Real error condition testing with invalid directories
 
 Quality Patterns:
-    - Explicit assertion messages for clear test failure diagnosis
-    - Mock-based isolation to prevent file system dependencies
-    - Comprehensive coverage of both success and failure scenarios
-    - Integration testing with realistic plugin directory structures
-    - Performance validation for bulk discovery operations
+    - Direct testing of actual implementation functionality
+    - Real file system operations for authentic validation
+    - Comprehensive coverage of success and failure scenarios
+    - Integration testing with realistic plugin structures
+    - Performance validation for real scanning operations
 
 Integration Points:
     - Built on flext-core foundation with FlextResult patterns
-    - Integrates with plugin lifecycle management system
-    - Coordinates with plugin loader for discovered plugin instantiation
-    - Supports both file system and entry point discovery mechanisms
+    - Real plugin discovery with actual file system scanning
+    - Authentic entry point detection and validation
+    - Real business rules validation and error handling
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import Mock, mock_open, patch
+from typing import cast
 
 import pytest
+from flext_core import FlextResult
 
-from flext_plugin import PluginDiscovery, PluginType
-
-# Constants
-EXPECTED_BULK_SIZE = 2
+from flext_plugin.discovery import PluginDiscovery
 
 
 class TestPluginDiscovery:
-    """Comprehensive test suite for PluginDiscovery core functionality.
+    """REAL test suite for PluginDiscovery - NO MOCKS, ACTUAL FUNCTIONALITY.
 
-    This test class validates all aspects of the plugin discovery system including
-    directory scanning, metadata extraction, plugin validation, and lifecycle
-    management. Tests ensure the discovery system can handle various plugin formats,
-    invalid configurations, and edge cases while maintaining performance standards.
+    This test class validates the actual PluginDiscovery implementation using
+    real file system operations, actual plugin files, and authentic business
+    logic validation. Follows Clean Architecture testing patterns with real
+    infrastructure operations.
 
     Test Categories:
-      - Initialization: Discovery instance creation and configuration
-      - Directory Management: Adding, scanning, and validating plugin directories
-      - Plugin Detection: File system and entry point-based discovery
-      - Metadata Processing: Plugin manifest validation and extraction
-      - Filtering: Blacklist management and type-based filtering
-      - Error Handling: Invalid plugins, missing files, and corrupt metadata
+      - Creation: PluginDiscovery.create() factory method validation
+      - Scanning: Real file system scanning with actual plugin files
+      - Entry Points: Authentic entry point detection and validation
+      - Business Rules: Real domain validation and error handling
+      - File Operations: Actual file creation, scanning, and validation
 
     Architecture Integration:
-      - Clean Architecture: Tests domain logic isolation from infrastructure
-      - Plugin Lifecycle: Validates discovery → loading → activation flow
-      - Performance: Bulk operations and concurrent discovery testing
-      - Security: Plugin validation and sandboxing verification
+      - Clean Architecture: Real infrastructure layer testing
+      - Domain Logic: Authentic business rules validation
+      - File System: Real directory and file operations
+      - Error Handling: Actual exception and validation testing
     """
 
-    @pytest.fixture
-    def discovery(self) -> PluginDiscovery:
-        """Create plugin discovery instance for testing."""
-        return PluginDiscovery(entity_id="test-discovery-001")
+    def test_discovery_creation_with_valid_directory(self) -> None:
+        """Test PluginDiscovery.create() factory method with valid directory."""
+        # Create discovery instance using actual factory method
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/valid/path")
 
-    def test_discovery_initialization(self, discovery: PluginDiscovery) -> None:
-        """Test plugin discovery initialization."""
+        # Validate creation succeeded
         assert discovery is not None
-        assert hasattr(discovery, "plugin_directories")
-        assert isinstance(discovery.plugin_directories, list)
+        assert isinstance(discovery, PluginDiscovery)
+        assert discovery.plugin_directory == "/valid/path"
+        assert hasattr(discovery, "id")
+        assert hasattr(discovery, "version")
 
-    def test_add_plugin_directory(self, discovery: PluginDiscovery) -> None:
-        """Test adding plugin directory."""
-        test_dir = Path("/test/plugins")
-        discovery.add_plugin_directory(test_dir)
+    def test_discovery_creation_with_empty_directory(self) -> None:
+        """Test PluginDiscovery.create() with empty directory path."""
+        # Create discovery with empty directory
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="")
 
-        if test_dir not in discovery.plugin_directories:
-            raise AssertionError(
-                f"Expected {test_dir} in {discovery.plugin_directories}",
-            )
-
-    def test_add_multiple_plugin_directories(self, discovery: PluginDiscovery) -> None:
-        """Test adding multiple plugin directories."""
-        test_dirs = [Path("/test/plugins1"), Path("/test/plugins2")]
-
-        for test_dir in test_dirs:
-            discovery.add_plugin_directory(test_dir)
-
-        for test_dir in test_dirs:
-            if test_dir not in discovery.plugin_directories:
-                raise AssertionError(
-                    f"Expected {test_dir} in {discovery.plugin_directories}",
-                )
-
-    @patch("pathlib.Path.glob")
-    @patch("pathlib.Path.exists")
-    @pytest.mark.asyncio
-    async def test_discover_all_empty(
-        self,
-        mock_exists: Mock,
-        mock_glob: Mock,
-        discovery: PluginDiscovery,
-    ) -> None:
-        """Validate plugin discovery behavior with empty plugin directories.
-
-        Tests the discovery system's handling of valid directories that contain
-        no plugin files, ensuring graceful handling without errors or exceptions.
-
-        Mock Configuration:
-            - mock_exists: Simulates directory existence (True)
-            - mock_glob: Returns empty list simulating no plugin files
-
-        Test Scenario:
-            - Directory exists but contains no plugin files
-            - Discovery system scans empty directories
-            - System returns empty result without errors
-
-        Validates:
-            - Empty directory scanning completes successfully
-            - Returns empty dictionary as expected result
-            - No exceptions raised during empty directory processing
-        """
-        mock_exists.return_value = True
-        mock_glob.return_value = []
-
-        result = await discovery.discover_all()
-
-        if result != {}:
-            raise AssertionError(f"Expected {{}}, got {result}")
-
-    @patch("pathlib.Path.glob")
-    @patch("pathlib.Path.exists")
-    @patch(
-        "builtins.open",
-        new_callable=mock_open,
-        read_data='{"name": "test-plugin", "version": "0.9.0", "type": "tap"}',
-    )
-    @pytest.mark.usefixtures("_mock_file")
-    @pytest.mark.asyncio
-    async def test_discover_plugins_with_metadata(
-        self,
-        mock_exists: Mock,
-        mock_glob: Mock,
-        discovery: PluginDiscovery,
-    ) -> None:
-        """Validate plugin discovery with complete metadata processing.
-
-        Tests the discovery system's ability to process plugins with valid
-        JSON metadata files, ensuring proper metadata extraction and validation.
-
-        Mock Configuration:
-            - mock_file: Simulates JSON metadata file content reading
-            - mock_exists: Controls directory and file existence checks
-            - mock_glob: Returns mock plugin files for discovery
-
-        Test Scenario:
-            - Valid plugin file with accompanying JSON manifest
-            - Metadata contains name, version, and type information
-            - Discovery processes both plugin file and metadata
-
-        Validates:
-            - Plugin discovery processes metadata successfully
-            - Returns dictionary result structure
-            - Handles complex file system operations correctly
-        """
-        # Setup mocks
-        plugin_file = Path("/test/plugins/test_plugin.py")
-        manifest_file = Path("/test/plugins/test_plugin.json")
-
-        mock_exists.return_value = True
-        mock_glob.return_value = [plugin_file]
-
-        # Mock manifest file exists check
-        with patch.object(Path, "exists") as mock_path_exists:
-            mock_path_exists.side_effect = lambda: str(manifest_file).endswith(".json")
-
-            # Add plugin directory first
-            discovery.add_plugin_directory(Path("/test/plugins"))
-
-            result = await discovery.discover_all()
-
-            # Should find the plugin even if it can't be fully loaded
-            assert isinstance(result, dict)
-
-    @patch("pathlib.Path.exists")
-    @pytest.mark.asyncio
-    async def test_discover_all_nonexistent_directory(
-        self,
-        mock_exists: Mock,
-        discovery: PluginDiscovery,
-    ) -> None:
-        """Validate plugin discovery handling of non-existent directories.
-
-        Tests the discovery system's resilience when configured with directories
-        that don't exist, ensuring graceful error handling without exceptions.
-
-        Mock Configuration:
-            - mock_exists: Simulates directory non-existence (False)
-
-        Test Scenario:
-            - Add non-existent directory to discovery configuration
-            - Attempt to discover plugins from invalid path
-            - System handles missing directory gracefully
-
-        Validates:
-            - Non-existent directory doesn't cause discovery failure
-            - Returns empty result dictionary
-            - No exceptions raised for missing directories
-        """
-        mock_exists.return_value = False
-
-        # Add non-existent directory
-        discovery.add_plugin_directory(Path("/nonexistent"))
-
-        result = await discovery.discover_all()
-
-        if result != {}:
-            raise AssertionError(f"Expected {{}}, got {result}")
+        # Should still create instance (validation happens in validate_business_rules)
+        assert discovery is not None
+        assert discovery.plugin_directory == ""
 
     @pytest.mark.asyncio
-    async def test_discover_plugins_empty_result(
-        self,
-        discovery: PluginDiscovery,
-    ) -> None:
-        """Test discovering plugins when no plugins are found."""
-        # Mock the discovery methods to return empty results
-        with (
-            patch.object(discovery, "_discover_entry_points") as mock_entry_points,
-            patch.object(discovery, "_discover_file_system") as mock_file_system,
-        ):
-            # Set up empty discovered plugins
-            discovery._discovered_plugins = {}
+    async def test_scan_empty_directory_real(self, tmp_path: Path) -> None:
+        """Test scanning empty directory with real file system operations.
+        
+        Creates actual empty directory and validates that scan() returns
+        empty list gracefully without errors.
+        """
+        # Create real empty directory
+        empty_dir = tmp_path / "empty_plugins"
+        empty_dir.mkdir()
 
-            result = await discovery.discover_all()
+        # Create discovery instance with real directory
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(empty_dir))
 
-            if result != {}:
-                raise AssertionError(f"Expected {{}}, got {result}")
-            mock_entry_points.assert_called_once()
-            mock_file_system.assert_called_once()
+        # Scan should return empty list
+        result: list[dict[str, object]] = await discovery.scan()
+
+        assert result == []
+        assert isinstance(result, list)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
-    async def test_discover_plugins_by_type(self, discovery: PluginDiscovery) -> None:
-        """Test discovering plugins by type."""
-        plugin_type = PluginType.TAP
-
-        # Mock the underlying discovery methods to return empty results
-        with (
-            patch.object(discovery, "_discover_entry_points") as mock_entry_points,
-            patch.object(discovery, "_discover_file_system") as mock_file_system,
-        ):
-            # Set up empty discovered plugins
-            discovery._discovered_plugins = {}
-
-            result = await discovery.discover_by_type(plugin_type)
-
-            if result != {}:
-                raise AssertionError(f"Expected {{}}, got {result}")
-            mock_entry_points.assert_called_once()
-            mock_file_system.assert_called_once()
-
-    def test_get_discovered_plugin_not_found(self, discovery: PluginDiscovery) -> None:
-        """Test getting discovered plugin that doesn't exist."""
-        result = discovery.get_discovered_plugin("nonexistent")
-
-        assert result is None
-
-    @patch("pathlib.Path.glob")
-    @patch("pathlib.Path.exists")
-    @pytest.mark.asyncio
-    async def test_scan_directory_for_plugins(
-        self,
-        mock_exists: Mock,
-        mock_glob: Mock,
-        discovery: PluginDiscovery,
-    ) -> None:
-        """Test scanning directory for plugin files."""
-        test_dir = Path("/test/plugins")
-        plugin_files = [
-            Path("/test/plugins/tap_example.py"),
-            Path("/test/plugins/target_example.py"),
-        ]
-
-        mock_exists.return_value = True
-        mock_glob.return_value = plugin_files
-
-        # Use the actual method that exists
-        await discovery._scan_directory(test_dir)
-        # Get the result from discovered plugins
-        result = plugin_files
-
-        if len(result) != EXPECTED_BULK_SIZE:
-            raise AssertionError(f"Expected {2}, got {len(result)}")
-        if plugin_files[0] not in result:
-            raise AssertionError(f"Expected {plugin_files[0]} in {result}")
-        assert plugin_files[1] in result
-
-    def test_blacklist_plugin(self, discovery: PluginDiscovery) -> None:
-        """Validate plugin blacklisting functionality and state management.
-
-        Tests the ability to blacklist specific plugins, preventing them from
-        being loaded or activated while maintaining the blacklist state correctly.
-
-        Test Scenario:
-            - Add specific plugin ID to blacklist
-            - Verify plugin is marked as blacklisted
-            - Confirm blacklist state persists correctly
-
-        Validates:
-            - Plugin blacklisting operation succeeds
-            - Blacklist state is properly maintained
-            - Blacklisted plugin is correctly identified
+    async def test_scan_plugins_with_real_files(self, tmp_path: Path) -> None:
+        """Test scanning directory with real plugin files.
+        
+        Creates actual Python plugin files and validates that scan()
+        properly detects and returns plugin information.
         """
-        plugin_id = "test-plugin"
-        discovery.blacklist_plugin(plugin_id)
+        # Create real plugin directory
+        plugin_dir = tmp_path / "test_plugins"
+        plugin_dir.mkdir()
 
-        assert discovery.is_blacklisted(plugin_id)
+        # Create real Python plugin files
+        plugin1_content = '''
+"""Test plugin 1."""
 
-    def test_is_blacklisted_false(self, discovery: PluginDiscovery) -> None:
-        """Test checking if non-blacklisted plugin is blacklisted."""
-        plugin_id = "test-plugin"
+class TestPlugin1:
+    """A real test plugin."""
+    
+    def __init__(self) -> None:
+        self.name = "test-plugin-1"
+        self.version = "1.0.0"
+    
+    def execute(self) -> dict[str, str]:
+        return {"status": "success", "plugin": "test1"}
+'''
 
-        assert not discovery.is_blacklisted(plugin_id)
+        plugin2_content = '''
+"""Test plugin 2."""
 
-    def test_validate_plugin_class_valid(self, discovery: PluginDiscovery) -> None:
-        """Validate plugin class validation for compliant plugin implementations.
+def get_plugin() -> dict[str, str]:
+    return {"name": "test-plugin-2", "version": "2.0.0"}
+'''
 
-        Tests the plugin class validation system with a properly implemented
-        plugin class that meets all required interface and metadata standards.
+        (plugin_dir / "test_plugin1.py").write_text(plugin1_content)
+        (plugin_dir / "test_plugin2.py").write_text(plugin2_content)
 
-        Mock Configuration:
-            - Creates mock plugin class with required attributes
-            - Mocks issubclass to simulate proper inheritance
-            - Provides required methods (initialize, cleanup, health_check, execute)
+        # Create discovery instance
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
 
-        Test Scenario:
-            - Valid plugin class with proper name and metadata
-            - All required methods present and callable
-            - Proper inheritance from base plugin class
+        # Scan for plugins
+        result: list[dict[str, object]] = await discovery.scan()
 
-        Validates:
-            - Valid plugin class passes validation successfully
-            - Returns True for compliant plugin implementation
-            - Validation logic correctly identifies valid plugins
-        """
-        # Create mock plugin class
-        mock_plugin_class = Mock()
-        mock_plugin_class.__name__ = "TestPlugin"
-        mock_plugin_class.METADATA = Mock()
+        # Validate results
+        assert len(result) == 2
+        plugin_names: list[str] = [cast("str", p["name"]) for p in result]
+        assert "test_plugin1" in plugin_names
+        assert "test_plugin2" in plugin_names
 
-        # Mock methods to make issubclass and hasattr work
-        with patch("flext_plugin.core.discovery.issubclass", return_value=True):
-            # Mock required methods
-            for method in ["initialize", "cleanup", "health_check", "execute"]:
-                setattr(mock_plugin_class, method, Mock())
-
-            result = discovery._validate_plugin_class(mock_plugin_class)
-            if not (result):
-                raise AssertionError(f"Expected True, got {result}")
-
-    def test_validate_plugin_class_invalid(self, discovery: PluginDiscovery) -> None:
-        """Validate plugin class validation for non-compliant implementations.
-
-        Tests the plugin class validation system's ability to reject classes
-        that don't meet the required plugin interface or inheritance standards.
-
-        Mock Configuration:
-            - Creates mock class without plugin inheritance
-            - Mocks issubclass to return False for invalid class
-
-        Test Scenario:
-            - Invalid class that doesn't inherit from plugin base
-            - Missing required plugin methods or metadata
-            - Improper class structure for plugin system
-
-        Validates:
-            - Invalid plugin class fails validation correctly
-            - Returns False for non-compliant implementations
-            - Validation prevents invalid plugins from registration
-        """
-        # Create mock class that's not a plugin
-        mock_class = Mock()
-        mock_class.__name__ = "NotAPlugin"
-
-        with patch("flext_plugin.core.discovery.issubclass", return_value=False):
-            result = discovery._validate_plugin_class(mock_class)
-            if result:
-                raise AssertionError(f"Expected False, got {result}")
+        # Validate plugin structure
+        for plugin in result:
+            assert "name" in plugin
+            assert "path" in plugin
+            assert "file_name" in plugin
+            assert "size" in plugin
+            assert "modified" in plugin
+            assert isinstance(plugin["name"], str)
+            assert isinstance(plugin["path"], str)
+            assert isinstance(plugin["size"], int)
+            assert isinstance(plugin["modified"], float)
 
     @pytest.mark.asyncio
-    async def test_discover_by_type(self, discovery: PluginDiscovery) -> None:
-        """Test discovering plugins by type."""
-        plugin_type = PluginType.TAP
-
-        # Mock the discover_all method to return empty results
-        with patch.object(discovery, "discover_all", return_value={}):
-            result = await discovery.discover_by_type(plugin_type)
-            if result != {}:
-                raise AssertionError(f"Expected {{}}, got {result}")
-
-    def test_register_plugin_manually(self, discovery: PluginDiscovery) -> None:
-        """Validate manual plugin registration and retrieval functionality.
-
-        Tests the ability to manually register a plugin class with the discovery
-        system, bypassing automatic file system discovery for direct registration.
-
-        Mock Configuration:
-            - Creates properly structured mock plugin class
-            - Mocks validation to pass for registration testing
-            - Provides realistic plugin metadata structure
-
-        Test Scenario:
-            - Create valid plugin class with required attributes
-            - Register plugin manually with discovery system
-            - Retrieve registered plugin for validation
-
-        Validates:
-            - Manual plugin registration succeeds without errors
-            - Registered plugin is discoverable by name
-            - Plugin metadata is correctly preserved
+    async def test_scan_nonexistent_directory_real(self) -> None:
+        """Test scanning non-existent directory with real file system.
+        
+        Creates discovery instance with non-existent directory path and
+        validates that scan() handles missing directory gracefully.
         """
-        # Create mock plugin class
-        mock_plugin_class = Mock()
-        mock_plugin_class.__name__ = "TestPlugin"
-        mock_plugin_class.METADATA = Mock()
-        mock_plugin_class.METADATA.name = "test-plugin"
+        # Create discovery with non-existent directory
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/absolutely/nonexistent/path")
 
-        # Mock validation to pass
-        with patch.object(discovery, "_validate_plugin_class", return_value=True):
-            # Should not raise an error
-            discovery.register_plugin(mock_plugin_class)
+        # Should return empty list gracefully (no exceptions)
+        result: list[dict[str, object]] = await discovery.scan()
 
-            # Plugin should be discoverable
-            result = discovery.get_discovered_plugin("test-plugin")
-            assert result is not None
-            if result.metadata.name != "test-plugin":
-                raise AssertionError(
-                    f"Expected {'test-plugin'}, got {result.metadata.name}",
-                )
+        assert result == []
+        assert isinstance(result, list)
+        assert len(result) == 0
 
-    def test_plugin_directory_management(self, discovery: PluginDiscovery) -> None:
-        """Test plugin directory management."""
-        test_dir = Path("/test/plugins")
+    @pytest.mark.asyncio
+    async def test_discover_plugin_entry_points_real(self, tmp_path: Path) -> None:
+        """Test discovering plugin entry points with real files.
+        
+        Creates actual plugin files and validates that discover_plugin_entry_points()
+        properly detects and returns entry point information.
+        """
+        # Create plugin directory with real files
+        plugin_dir = tmp_path / "entry_point_plugins"
+        plugin_dir.mkdir()
 
-        # Initially should be empty or have default directories
-        initial_count = len(discovery.plugin_directories)
+        # Create real plugin files
+        (plugin_dir / "entry_plugin1.py").write_text('''
+"""Entry plugin 1."""
 
-        # Add directory
-        discovery.add_plugin_directory(test_dir)
-        if len(discovery.plugin_directories) != initial_count + 1:
-            expected_count = initial_count + 1
-            actual_count = len(discovery.plugin_directories)
-            raise AssertionError(f"Expected {expected_count}, got {actual_count}")
-        if test_dir not in discovery.plugin_directories:
-            raise AssertionError(
-                f"Expected {test_dir} in {discovery.plugin_directories}",
-            )
+class EntryPlugin1:
+    """Entry plugin class."""
+    
+    def execute(self) -> dict[str, str]:
+        return {"status": "ok"}
+''')
 
-        # Adding same directory again should not increase count
-        discovery.add_plugin_directory(test_dir)
-        if len(discovery.plugin_directories) != initial_count + 1:
-            expected_count = initial_count + 1
-            actual_count = len(discovery.plugin_directories)
-            raise AssertionError(f"Expected {expected_count}, got {actual_count}")
+        (plugin_dir / "entry_plugin2.py").write_text('''
+"""Entry plugin 2."""
+
+def plugin_function() -> str:
+    return "entry_plugin2"
+''')
+
+        # Create discovery instance
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+
+        # Discover entry points
+        result: list[dict[str, object]] = await discovery.discover_plugin_entry_points()
+
+        # Validate results
+        assert len(result) == 2
+        entry_names: list[str] = [cast("str", ep["name"]) for ep in result]
+        assert "entry_plugin1" in entry_names
+        assert "entry_plugin2" in entry_names
+
+        # Validate entry point structure
+        for entry_point in result:
+            assert "name" in entry_point
+            assert "module_name" in entry_point
+            assert "plugin_class" in entry_point
+            assert "path" in entry_point
+            assert "type" in entry_point
+            assert entry_point["plugin_class"] == "Plugin"
+            assert entry_point["type"] == "generic"
+
+    def test_business_rules_validation_real(self) -> None:
+        """Test business rules validation with real validation logic.
+        
+        Tests the actual validate_business_rules() method implementation
+        with valid and invalid directory configurations.
+        """
+        # Test with empty plugin directory (should fail)
+        invalid_discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="")
+
+        validation_result: FlextResult[None] = invalid_discovery.validate_business_rules()
+
+        assert not validation_result.success
+        assert validation_result.error is not None
+        assert "Plugin directory cannot be empty" in validation_result.error
+
+        # Test with valid plugin directory (should pass)
+        valid_discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/valid/directory")
+
+        valid_result: FlextResult[None] = valid_discovery.validate_business_rules()
+
+        assert valid_result.success
+        assert valid_result.error is None
+
+    @pytest.mark.asyncio
+    async def test_scan_ignores_special_files(self, tmp_path: Path) -> None:
+        """Test that scan() properly ignores __pycache__ and special files.
+        
+        Creates directory with special Python files and validates that
+        scan() correctly filters them out.
+        """
+        # Create plugin directory
+        plugin_dir = tmp_path / "filtered_plugins"
+        plugin_dir.mkdir()
+
+        # Create valid plugin
+        (plugin_dir / "valid_plugin.py").write_text('''
+"""Valid plugin."""
+
+class ValidPlugin:
+    def execute(self) -> str:
+        return "valid"
+''')
+
+        # Create special files that should be ignored
+        (plugin_dir / "__init__.py").write_text("# Init file")
+        (plugin_dir / "__pycache__").mkdir()
+        (plugin_dir / "__main__.py").write_text("# Main file")
+
+        # Create discovery instance
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+
+        # Scan plugins
+        result: list[dict[str, object]] = await discovery.scan()
+
+        # Should only find the valid plugin (ignores __ files)
+        assert len(result) == 1
+        assert cast("str", result[0]["name"]) == "valid_plugin"
+
+    def test_plugin_discovery_factory_validation(self) -> None:
+        """Test PluginDiscovery.create() factory method with various parameters.
+        
+        Tests the actual factory method implementation with different
+        parameter combinations and validates proper entity creation.
+        """
+        # Test with minimal parameters
+        discovery1: PluginDiscovery = PluginDiscovery.create(plugin_directory="/test/path")
+        assert discovery1.plugin_directory == "/test/path"
+        assert hasattr(discovery1, "id")
+        assert hasattr(discovery1, "version")
+
+        # Test with additional kwargs
+        discovery2: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory="/another/path",
+            version=2,
+            metadata={"env": "test"}
+        )
+        assert discovery2.plugin_directory == "/another/path"
+        # Version and metadata are handled by FlextEntity
+
+    @pytest.mark.asyncio
+    async def test_scan_reports_accurate_file_sizes(self, tmp_path: Path) -> None:
+        """Test that scan() accurately reports file sizes for different plugins.
+        
+        Creates plugins with different content sizes and validates that
+        scan() correctly reports the actual file sizes.
+        """
+        # Create plugin directory
+        plugin_dir = tmp_path / "size_test_plugins"
+        plugin_dir.mkdir()
+
+        # Create plugins with different content sizes
+        small_content = "# Small plugin\nclass Small: pass"
+        large_content = "# Large plugin\n" + "# Comment line\n" * 100 + "class Large: pass"
+
+        (plugin_dir / "small_plugin.py").write_text(small_content)
+        (plugin_dir / "large_plugin.py").write_text(large_content)
+
+        # Create discovery instance
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+
+        # Scan plugins
+        result: list[dict[str, object]] = await discovery.scan()
+
+        # Validate results include accurate size information
+        assert len(result) == 2
+
+        small_plugin: dict[str, object] = next(p for p in result if p["name"] == "small_plugin")
+        large_plugin: dict[str, object] = next(p for p in result if p["name"] == "large_plugin")
+
+        # Validate size accuracy
+        small_size = cast("int", small_plugin["size"])
+        large_size = cast("int", large_plugin["size"])
+        assert large_size > small_size
+        assert isinstance(small_size, int)
+        assert isinstance(large_size, int)
+        assert small_size > 0  # File is not empty
+        assert large_size > 1000  # Large file should be significantly bigger
+
+    @pytest.mark.asyncio
+    async def test_scan_with_modified_timestamps(self, tmp_path: Path) -> None:
+        """Test that scan() correctly reports file modification timestamps.
+        
+        Creates plugin files at different times and validates that
+        scan() correctly captures the modification timestamps.
+        """
+        import time
+
+        # Create plugin directory
+        plugin_dir = tmp_path / "timestamp_plugins"
+        plugin_dir.mkdir()
+
+        # Create first plugin
+        (plugin_dir / "first_plugin.py").write_text("# First plugin\nclass First: pass")
+
+        # Wait a bit to ensure different timestamp
+        time.sleep(0.1)
+
+        # Create second plugin
+        (plugin_dir / "second_plugin.py").write_text("# Second plugin\nclass Second: pass")
+
+        # Create discovery instance
+        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+
+        # Scan plugins
+        result: list[dict[str, object]] = await discovery.scan()
+
+        # Validate timestamp information
+        assert len(result) == 2
+
+        for plugin in result:
+            assert "modified" in plugin
+            assert isinstance(plugin["modified"], float)
+            assert plugin["modified"] > 0  # Should be valid timestamp
+
+        # Get plugins by name
+        first_plugin: dict[str, object] = next(p for p in result if p["name"] == "first_plugin")
+        second_plugin: dict[str, object] = next(p for p in result if p["name"] == "second_plugin")
+
+        # Second plugin should have later timestamp (might be equal if too fast)
+        first_time = cast("float", first_plugin["modified"])
+        second_time = cast("float", second_plugin["modified"])
+        assert second_time >= first_time

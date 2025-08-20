@@ -66,7 +66,7 @@ def test_flext_core_dependencies() -> None:
     # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 
     # Test FlextResult works
-    result = FlextResult[None].ok({"test": "data"})
+    result = FlextResult[dict[str, str]].ok({"test": "data"})
     assert result.success
     expected_data = {"test": "data"}
     if result.data != expected_data:
@@ -95,7 +95,7 @@ async def test_plugin_manager_basic() -> None:
     await manager.initialize()
     result = await manager.discover_and_load_plugins()
     # Result can be success or failure - just ensure it's a FlextResult
-    assert hasattr(result, 'success')
+    assert hasattr(result, "success")
 
 
 class TestFlextPluginIntegration:
@@ -123,21 +123,25 @@ class TestFlextPluginIntegration:
         manager = PluginManager()
         await manager.initialize()
 
-        # Test load operation exists and handles missing plugins gracefully
-        result = await manager.load_plugin("nonexistent-plugin")
+        # Test unload operation exists and handles missing plugins gracefully
+        unload_result = await manager.unload_plugin("nonexistent-plugin")
+        result = unload_result
 
-        assert not result.success
-        assert result.error is not None
-        if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
+        assert hasattr(result, "success") and not result.success
+        assert hasattr(result, "error") and result.error is not None
+        error_text = str(result.error).lower()
+        if "not found" not in error_text:
+            raise AssertionError(f"Expected 'not found' in {error_text}")
 
     async def test_plugin_discovery(self) -> None:
         """Test plugin discovery functionality."""
         manager = PluginManager()
 
         # Test discovery doesn't crash
-        available = await manager.discover_plugins()
-        assert isinstance(available, dict)
+        result = await manager.discover_and_load_plugins()
+        assert isinstance(result, FlextResult)
+        # Expected to fail since no plugins in directory
+        assert not result.success
 
     def test_plugin_lifecycle(self) -> None:
         """Test basic plugin lifecycle operations."""

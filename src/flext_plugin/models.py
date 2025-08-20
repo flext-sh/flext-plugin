@@ -10,8 +10,8 @@ import re
 from datetime import datetime
 from enum import Enum
 
-from pydantic import ConfigDict, Field, field_validator
 from flext_core.models import FlextModel as FlextBaseModel
+from pydantic import ConfigDict, Field, field_validator
 
 from flext_plugin.constants import (
     MAX_PLUGIN_NAME_LENGTH,

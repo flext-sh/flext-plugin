@@ -8,7 +8,6 @@ Strategy: Test ONLY what exists - HotReloadManager and PluginFileHandler.
 
 from __future__ import annotations
 
-import asyncio
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -176,7 +175,7 @@ class TestHotReloadManager:
         mock_observer = Mock()
         mock_observer.schedule = Mock()
         mock_observer.start = Mock()
-        with patch.object(type(manager), "observer", new_callable=lambda: property(lambda self: mock_observer)):
+        with patch.object(type(manager), "observer", new_callable=lambda: property(lambda _: mock_observer)):
             await manager.start_watching()
             # Verify observer was configured and started
             mock_observer.schedule.assert_called_once()
@@ -404,7 +403,7 @@ class TestHotReloadManager:
         mock_plugin2.cleanup = AsyncMock()
         mock_plugin3 = Mock()
         mock_plugin3.cleanup = AsyncMock()
-        
+
         loaded_plugins = {
             "plugin1": mock_plugin1,
             "plugin2": mock_plugin2,
@@ -476,7 +475,7 @@ class TestHotReloadIntegration:
             mock_observer.is_alive.return_value = True
             mock_observer.stop = Mock()
             mock_observer.join = Mock()
-            with patch.object(type(manager), "observer", new_callable=lambda: property(lambda self: mock_observer)):
+            with patch.object(type(manager), "observer", new_callable=lambda: property(lambda _: mock_observer)):
                 # Start watching
                 await manager.start_watching()
                 # Verify started

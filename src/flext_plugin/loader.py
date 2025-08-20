@@ -52,10 +52,26 @@ REFACTORED:
 from __future__ import annotations
 
 import importlib.util
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import ClassVar
+from typing import ClassVar, Protocol, cast, override
 
 from flext_core import FlextEntity, FlextGenerators, FlextResult
+from flext_core.root_models import (
+    FlextEntityId,
+    FlextEventList,
+    FlextMetadata,
+    FlextTimestamp,
+    FlextVersion,
+)
+
+
+class CleanupablePlugin(Protocol):
+    """Protocol for plugins that support cleanup operations."""
+
+    async def cleanup(self) -> None:
+        """Cleanup plugin resources."""
+        ...
 
 
 class PluginLoader(FlextEntity):
@@ -126,18 +142,15 @@ class PluginLoader(FlextEntity):
         # Generate ID if not provided for backward compatibility
         final_entity_id = entity_id or FlextGenerators.generate_entity_id()
         # Initialize FlextEntity with all required parameters
-        from datetime import datetime, timezone
-        from typing import cast
-        from flext_core.root_models import FlextEntityId, FlextVersion, FlextEventList, FlextMetadata, FlextTimestamp
-        
-        now = datetime.now(timezone.utc)
+
+        now = datetime.now(UTC)
         super().__init__(
-            id=cast(FlextEntityId, final_entity_id),
-            version=cast(FlextVersion, 1),
-            domain_events=cast(FlextEventList, []),
-            metadata=cast(FlextMetadata, {}),
-            created_at=cast(FlextTimestamp, now),
-            updated_at=cast(FlextTimestamp, now)
+            id=cast("FlextEntityId", final_entity_id),
+            version=cast("FlextVersion", 1),
+            domain_events=cast("FlextEventList", []),
+            metadata=cast("FlextMetadata", {}),
+            created_at=cast("FlextTimestamp", now),
+            updated_at=cast("FlextTimestamp", now),
         )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)
@@ -148,6 +161,7 @@ class PluginLoader(FlextEntity):
         """Get security enabled status."""
         return getattr(self, "_security_enabled", True)
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
         return FlextResult[None].ok(None)
@@ -234,9 +248,12 @@ class PluginLoader(FlextEntity):
         """Unload plugin by name."""
         if plugin_name in self.loaded_plugins:
             plugin = self.loaded_plugins[plugin_name]
-            if hasattr(plugin, "cleanup") and callable(getattr(plugin, "cleanup", None)):
-                cleanup_method = getattr(plugin, "cleanup")
-                await cleanup_method()
+            # Check if plugin implements CleanupablePlugin protocol
+            if hasattr(plugin, "cleanup") and callable(
+                getattr(plugin, "cleanup", None)
+            ):
+                cleanupable_plugin = cast("CleanupablePlugin", plugin)
+                await cleanupable_plugin.cleanup()
             del self.loaded_plugins[plugin_name]
 
         if plugin_name in self.plugin_modules:

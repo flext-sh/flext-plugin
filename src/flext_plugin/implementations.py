@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
+from typing import cast, override
 
 from flext_core import (
     FlextPlugin,
@@ -69,6 +70,7 @@ class ConcretePlugin(FlextPlugin):
         """Get plugin version."""
         return self._version
 
+    @override
     def initialize(self, context: FlextPluginContext) -> FlextResult[None]:  # noqa: ARG002
         """Initialize plugin with context.
 
@@ -96,6 +98,7 @@ class ConcretePlugin(FlextPlugin):
             self._logger.exception(f"Failed to initialize plugin {self.name}")
             return FlextResult[None].fail(f"Initialization failed: {e!s}")
 
+    @override
     def shutdown(self) -> FlextResult[None]:
         """Shutdown plugin and release resources.
 
@@ -117,6 +120,7 @@ class ConcretePlugin(FlextPlugin):
             self._logger.exception(f"Failed to shutdown plugin {self.name}")
             return FlextResult[None].fail(f"Shutdown failed: {e!s}")
 
+    @override
     def get_info(self) -> dict[str, object]:
         """Get plugin information.
 
@@ -307,7 +311,6 @@ class ConcreteTransformPlugin(ConcretePlugin):
             if not isinstance(data, dict):
                 return FlextResult[object].fail("Input data must be a dictionary")
             # Apply transformation based on schema
-            from typing import cast
             transformed: dict[str, object] = dict(cast("dict[str, object]", data))
             transformed["_transformed_by"] = self._name
             transformed["_transform_version"] = self._version
@@ -363,6 +366,7 @@ class ConcretePluginContext(FlextPluginContext):
         """Get plugin configuration."""
         return self._config
 
+    @override
     def get_service(self, service_name: str) -> FlextResult[object]:
         """Get service by name from container.
 
@@ -422,6 +426,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
         self._logger.info(f"Unregistered plugin {plugin_name}")
         return FlextResult[None].ok(None)
 
+    @override
     def get_plugin(self, plugin_name: str) -> FlextResult[FlextPlugin]:
         """Get plugin by name.
 
@@ -435,6 +440,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
             return FlextResult[FlextPlugin].fail(f"Plugin {plugin_name} not found")
         return FlextResult[FlextPlugin].ok(self._plugins[plugin_name])
 
+    @override
     def list_plugins(self) -> list[str]:
         """List all registered plugin names.
 
@@ -461,6 +467,7 @@ class ConcretePluginLoader(FlextPluginLoader):
         self._registry = registry or ConcretePluginRegistry()  # type: ignore[abstract]
         self._logger = get_logger("plugin.loader")
 
+    @override
     def load_plugin(self, plugin_path: str | Path) -> FlextResult[FlextPlugin]:
         """Load plugin from path.
 

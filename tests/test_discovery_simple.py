@@ -274,8 +274,7 @@ class TestPluginDiscoverySimple:
         # Create mock plugin class
         mock_plugin_class = Mock()
         mock_plugin_class.__name__ = "TestPlugin"
-        mock_plugin_class.METADATA = Mock()
-        mock_plugin_class.METADATA.name = "test-plugin"
+        mock_plugin_class.METADATA = {"name": "test-plugin"}
 
         # Mock validation to pass
         with patch.object(discovery, "_validate_plugin_class", return_value=True):
@@ -339,7 +338,7 @@ class TestPluginDiscoverySimple:
             - No exceptions raised for invalid directory paths
         """
         test_dir = Path("/nonexistent/plugins")
-        discovery.plugin_directories = [test_dir]
+        discovery.plugin_directories = [str(test_dir)]
 
         # Should not raise an error even with non-existent directory
         await discovery._discover_file_system()

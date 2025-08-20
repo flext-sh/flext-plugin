@@ -42,6 +42,7 @@ TPluginSystem = TypeVar("TPluginSystem")  # Plugin system type
 # PLUGIN PROTOCOLS
 # =============================================================================
 
+
 class PluginProtocol(Protocol):
     """Protocol for plugin instances."""
 
@@ -194,7 +195,7 @@ PluginUrl = str
 DirectoryPath = str
 
 # Function type aliases
-PluginFactory = Callable[..., object]
+PluginFactory = Callable[[], object]
 PluginCallback = Callable[[TPlugin], Awaitable[None]]
 PluginErrorCallback = Callable[[Exception], Awaitable[None]]
 FileChangeCallback = Callable[[str], Awaitable[None]]

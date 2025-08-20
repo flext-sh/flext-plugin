@@ -19,9 +19,10 @@ from __future__ import annotations
 
 import socket
 import sys
-from typing import Any
+from typing import cast
 
 from flext_plugin import PluginType, create_flext_plugin
+from flext_plugin.domain.entities import FlextPluginEntity
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -43,9 +44,9 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         return False
 
 
-def create_docker_postgres_plugin() -> tuple[Any, dict[str, Any]]:
+def create_docker_postgres_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
     """Create a PostgreSQL plugin configured for Docker services."""
-    config = {
+    config: dict[str, object] = {
         "database": {
             "host": "localhost",
             "port": 5434,  # Actual Docker container port (flext-postgres-test-1)
@@ -91,9 +92,9 @@ def create_docker_postgres_plugin() -> tuple[Any, dict[str, Any]]:
     return plugin, config
 
 
-def create_docker_redis_plugin() -> tuple[Any, dict[str, Any]]:
+def create_docker_redis_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
     """Create a Redis plugin configured for Docker services."""
-    config = {
+    config: dict[str, object] = {
         "redis": {
             "host": "localhost",
             "port": 6381,  # Actual Docker container port (flext-redis-test-1)
@@ -139,9 +140,9 @@ def create_docker_redis_plugin() -> tuple[Any, dict[str, Any]]:
     return plugin, config
 
 
-def create_docker_ldap_plugin() -> tuple[Any, dict[str, Any]]:
+def create_docker_ldap_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
     """Create an LDAP plugin configured for Docker services."""
-    config = {
+    config: dict[str, object] = {
         "ldap": {
             "server": "localhost",
             "port": 389,
@@ -194,15 +195,15 @@ def create_docker_ldap_plugin() -> tuple[Any, dict[str, Any]]:
     return plugin, config
 
 
-def test_service_connections(*, test_connections: bool) -> dict[str, bool]:
+def test_service_connections(*, test_connections: bool) -> dict[str, bool | None]:
     """Test connectivity to Docker services."""
-    services = {
+    services: dict[str, tuple[str, int]] = {
         "PostgreSQL": ("localhost", 5434),  # Actual Docker container port
         "Redis": ("localhost", 6381),  # Actual Docker container port
         "LDAP": ("localhost", 389),  # LDAP service (disabled - has issues)
     }
 
-    results = {}
+    results: dict[str, bool | None] = {}
 
     print("\n=== Service Connectivity Check ===")
     for service_name, (host, port) in services.items():
@@ -235,10 +236,12 @@ def main() -> None:  # noqa: PLR0912, PLR0915
     postgres_plugin, postgres_config = create_docker_postgres_plugin()
 
     print(f"   Plugin: {postgres_plugin.name} v{postgres_plugin.plugin_version}")
-    print(f"   Database: {postgres_config['database']['database']}")
-    print(f"   Connection pool: {postgres_config['database']['pool_size']} connections")
+    postgres_db_config = cast("dict[str, object]", postgres_config["database"])
+    postgres_monitoring_config = cast("dict[str, object]", postgres_config["monitoring"])
+    print(f"   Database: {postgres_db_config['database']}")
+    print(f"   Connection pool: {postgres_db_config['pool_size']} connections")
     print(
-        f"   Monitoring: {'enabled' if postgres_config['monitoring']['enable_metrics'] else 'disabled'}",
+        f"   Monitoring: {'enabled' if postgres_monitoring_config['enable_metrics'] else 'disabled'}",
     )
 
     # Validate PostgreSQL plugin
@@ -260,11 +263,13 @@ def main() -> None:  # noqa: PLR0912, PLR0915
     redis_plugin, redis_config = create_docker_redis_plugin()
 
     print(f"   Plugin: {redis_plugin.name} v{redis_plugin.plugin_version}")
-    print(f"   Cache TTL: {redis_config['cache']['default_ttl']} seconds")
+    redis_cache_config = cast("dict[str, object]", redis_config["cache"])
+    redis_pool_config = cast("dict[str, object]", redis_config["connection_pool"])
+    print(f"   Cache TTL: {redis_cache_config['default_ttl']} seconds")
     print(
-        f"   Connection pool: {redis_config['connection_pool']['max_connections']} connections",
+        f"   Connection pool: {redis_pool_config['max_connections']} connections",
     )
-    print(f"   Key prefix: {redis_config['cache']['key_prefix']}")
+    print(f"   Key prefix: {redis_cache_config['key_prefix']}")
 
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_business_rules()
@@ -285,12 +290,14 @@ def main() -> None:  # noqa: PLR0912, PLR0915
     ldap_plugin, ldap_config = create_docker_ldap_plugin()
 
     print(f"   Plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
+    ldap_server_config = cast("dict[str, object]", ldap_config["ldap"])
+    ldap_pool_config = cast("dict[str, object]", ldap_config["connection_pool"])
     print(
-        f"   LDAP server: {ldap_config['ldap']['server']}:{ldap_config['ldap']['port']}",
+        f"   LDAP server: {ldap_server_config['server']}:{ldap_server_config['port']}",
     )
-    print(f"   Base DN: {ldap_config['ldap']['base_dn']}")
+    print(f"   Base DN: {ldap_server_config['base_dn']}")
     print(
-        f"   Connection pool: {ldap_config['connection_pool']['pool_size']} connections",
+        f"   Connection pool: {ldap_pool_config['pool_size']} connections",
     )
 
     # Validate LDAP plugin

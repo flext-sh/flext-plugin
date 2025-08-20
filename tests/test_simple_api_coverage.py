@@ -18,6 +18,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
+from flext_core.root_models import FlextTimestamp
 
 from flext_plugin import (
     FlextPlugin,
@@ -49,11 +50,11 @@ class TestCreateFlextPlugin:
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
         assert plugin.id is not None
-        assert len(plugin.id) > 0
+        assert str(plugin.id)  # FlextEntityId should be convertible to string
 
     def test_create_plugin_with_config(self) -> None:
         """Test plugin creation with configuration dictionary."""
-        config = {
+        config: dict[str, object] = {
             "description": "Test plugin description",
             "author": "Test Author",
             "dependencies": ["dep1", "dep2"],
@@ -98,7 +99,10 @@ class TestCreateFlextPlugin:
         # Verify timestamp was added
         assert hasattr(plugin, "created_at")
         assert plugin.created_at is not None
-        assert before_creation <= plugin.created_at <= after_creation
+        # Convert datetime to FlextTimestamp for proper comparison
+        before_ts = FlextTimestamp(before_creation)
+        after_ts = FlextTimestamp(after_creation)
+        assert before_ts <= plugin.created_at <= after_ts
 
     def test_create_plugin_generates_unique_ids(self) -> None:
         """Test that multiple plugin creations generate unique IDs."""
@@ -106,13 +110,13 @@ class TestCreateFlextPlugin:
         plugin2 = create_flext_plugin(name="plugin2", version="1.0.0")
 
         assert plugin1.id != plugin2.id
-        # Verify they're valid UUIDs
-        uuid.UUID(plugin1.id)
-        uuid.UUID(plugin2.id)
+        # Verify they're valid UUIDs by converting to string first
+        uuid.UUID(str(plugin1.id))
+        uuid.UUID(str(plugin2.id))
 
     def test_create_plugin_with_complex_config(self) -> None:
         """Test plugin creation with complex nested configuration."""
-        config = {
+        config: dict[str, object] = {
             "description": "Complex test plugin",
             "author": "FLEXT Team",
             "dependencies": ["flext-core", "flext-db"],
@@ -159,7 +163,7 @@ class TestCreateFlextPluginConfig:
 
     def test_create_config_with_data(self) -> None:
         """Test config creation with configuration data."""
-        config_data = {
+        config_data: dict[str, object] = {
             "setting1": "value1",
             "setting2": 42,
             "setting3": True,
@@ -189,9 +193,9 @@ class TestCreateFlextPluginConfig:
         config2 = create_flext_plugin_config(plugin_name="plugin2")
 
         assert config1.id != config2.id
-        # Verify they're valid UUIDs
-        uuid.UUID(config1.id)
-        uuid.UUID(config2.id)
+        # Verify they're valid UUIDs by converting to string first
+        uuid.UUID(str(config1.id))
+        uuid.UUID(str(config2.id))
 
     def test_create_config_timestamps(self) -> None:
         """Test that config creation sets proper timestamps."""
@@ -201,8 +205,11 @@ class TestCreateFlextPluginConfig:
 
         after_creation = datetime.now(UTC)
 
-        assert before_creation <= config.created_at <= after_creation
-        assert before_creation <= config.updated_at <= after_creation
+        # Convert datetime to FlextTimestamp for proper comparison
+        before_ts = FlextTimestamp(before_creation)
+        after_ts = FlextTimestamp(after_creation)
+        assert before_ts <= config.created_at <= after_ts
+        assert before_ts <= config.updated_at <= after_ts
 
 
 class TestCreateFlextPluginMetadata:
@@ -219,7 +226,7 @@ class TestCreateFlextPluginMetadata:
 
     def test_create_metadata_with_dict(self) -> None:
         """Test metadata creation with metadata dictionary."""
-        metadata_dict = {
+        metadata_dict: dict[str, object] = {
             "version": "1.0.0",
             "description": "Test plugin",
             "author": "Test Author",
@@ -278,7 +285,10 @@ class TestCreateFlextPluginMetadata:
         # Verify timestamp was added to metadata dict
         assert hasattr(metadata, "created_at")
         assert metadata.created_at is not None
-        assert before_creation <= metadata.created_at <= after_creation
+        # Convert datetime to FlextTimestamp for proper comparison
+        before_ts = FlextTimestamp(before_creation)
+        after_ts = FlextTimestamp(after_creation)
+        assert before_ts <= metadata.created_at <= after_ts
 
 
 class TestCreateFlextPluginRegistry:
@@ -321,9 +331,9 @@ class TestCreateFlextPluginRegistry:
         registry2 = create_flext_plugin_registry(name="registry2")
 
         assert registry1.id != registry2.id
-        # Verify they're valid UUIDs
-        uuid.UUID(registry1.id)
-        uuid.UUID(registry2.id)
+        # Verify they're valid UUIDs by converting to string first
+        uuid.UUID(str(registry1.id))
+        uuid.UUID(str(registry2.id))
 
 
 class TestCreatePluginFromDict:
@@ -331,7 +341,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_minimal(self) -> None:
         """Test plugin creation from dictionary with minimal fields."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -365,7 +375,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_missing_name_fails(self) -> None:
         """Test plugin creation fails when name is missing."""
-        plugin_data = {"version": "1.0.0"}
+        plugin_data: dict[str, object] = {"version": "1.0.0"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -374,7 +384,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_empty_name_fails(self) -> None:
         """Test plugin creation fails when name is empty."""
-        plugin_data = {"name": "", "version": "1.0.0"}
+        plugin_data: dict[str, object] = {"name": "", "version": "1.0.0"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -383,7 +393,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_missing_version_fails(self) -> None:
         """Test plugin creation fails when version is missing."""
-        plugin_data = {"name": "test-plugin"}
+        plugin_data: dict[str, object] = {"name": "test-plugin"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -392,7 +402,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_empty_version_fails(self) -> None:
         """Test plugin creation fails when version is empty."""
-        plugin_data = {"name": "test-plugin", "version": ""}
+        plugin_data: dict[str, object] = {"name": "test-plugin", "version": ""}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -401,7 +411,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_valid_status(self) -> None:
         """Test plugin creation with valid status string."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
             "status": "active",
@@ -414,7 +424,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_invalid_status_defaults_to_inactive(self) -> None:
         """Test plugin creation with invalid status defaults to inactive."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
             "status": "invalid-status",
@@ -428,7 +438,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_no_status_defaults_to_inactive(self) -> None:
         """Test plugin creation without status defaults to inactive."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -457,7 +467,7 @@ class TestCreatePluginFromDict:
         """Test plugin creation handles RuntimeError and re-raises as ValueError."""
         # This would require mocking create_flext_plugin to raise RuntimeError
         # For now, we'll test the general exception handling structure
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -468,7 +478,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_handles_type_error(self) -> None:
         """Test plugin creation error handling for TypeError."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -484,7 +494,7 @@ class TestCreatePluginConfigFromDict:
 
     def test_create_config_from_dict_success(self) -> None:
         """Test successful config creation from dictionary."""
-        config_dict = {
+        config_dict: dict[str, object] = {
             "setting1": "value1",
             "setting2": 42,
             "setting3": True,
@@ -511,7 +521,7 @@ class TestCreatePluginConfigFromDict:
         """Test config creation fails with None plugin name."""
         with pytest.raises(ValueError) as exc_info:
             create_plugin_config_from_dict(
-                plugin_name=None,
+                plugin_name=None,  # type: ignore[arg-type]  # Testing error condition
                 config_dict={"key": "value"},
             )
 
@@ -582,7 +592,7 @@ class TestEdgeCasesAndIntegration:
 
         # All should be valid UUIDs
         for entity_id in ids:
-            uuid.UUID(entity_id)
+            uuid.UUID(str(entity_id))
 
     def test_all_functions_set_timestamps(self) -> None:
         """Test all factory functions set proper timestamps."""
@@ -595,12 +605,14 @@ class TestEdgeCasesAndIntegration:
 
         after = datetime.now(UTC)
 
-        # All should have proper timestamps
-        assert before <= plugin.created_at <= after
-        assert before <= config.created_at <= after
-        assert before <= config.updated_at <= after
-        assert before <= metadata.created_at <= after
-        assert before <= registry.created_at <= after
+        # All should have proper timestamps - convert datetime to FlextTimestamp for comparison
+        before_ts = FlextTimestamp(before)
+        after_ts = FlextTimestamp(after)
+        assert before_ts <= plugin.created_at <= after_ts
+        assert before_ts <= config.created_at <= after_ts
+        assert before_ts <= config.updated_at <= after_ts
+        assert before_ts <= metadata.created_at <= after_ts
+        assert before_ts <= registry.created_at <= after_ts
 
     def test_plugin_creation_with_all_factory_components(self) -> None:
         """Test creating a complete plugin with all factory functions."""

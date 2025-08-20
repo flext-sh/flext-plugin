@@ -158,12 +158,14 @@ class FlextPluginService(FlextDomainService[object]):
         # Return a mock implementation if none available
         # Create a simple adapter that implements the interface
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
+            @override
             def discover_plugins(
                 self,
                 path: str,  # noqa: ARG002
             ) -> FlextResult[list[FlextPluginEntity]]:
                 return FlextResult[list[FlextPluginEntity]].ok([])
 
+            @override
             def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
@@ -186,14 +188,17 @@ class FlextPluginService(FlextDomainService[object]):
         # Return a mock implementation if none available
         # Create a simple adapter that implements the interface
         class MockLoaderPort(FlextPluginLoaderPort):
+            @override
             def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
+            @override
             def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
+            @override
             def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 loaded = False
                 return FlextResult[bool].ok(loaded)
@@ -216,30 +221,36 @@ class FlextPluginService(FlextDomainService[object]):
         # Return a mock implementation if none available
         # Create a simple adapter that implements the interface
         class MockManagerPort(FlextPluginManagerPort):
+            @override
             def install_plugin(
                 self,
                 plugin_path: str,  # noqa: ARG002
             ) -> FlextResult[FlextPluginEntity]:
                 return FlextResult[FlextPluginEntity].fail("Mock implementation")
 
+            @override
             def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
+            @override
             def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
+            @override
             def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
 
+            @override
             def get_plugin_config(
                 self,
                 plugin_name: str,  # noqa: ARG002
             ) -> FlextResult[FlextPluginConfig]:
                 return FlextResult[FlextPluginConfig].fail("Mock implementation")
 
+            @override
             def update_plugin_config(
                 self,
                 plugin_name: str,  # noqa: ARG002
@@ -479,11 +490,13 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
         # Return a mock implementation if none available
         # Create a simple adapter that implements the interface
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
+            @override
             def discover_plugins(
                 self, path: str  # noqa: ARG002
             ) -> FlextResult[list[FlextPluginEntity]]:
                 return FlextResult[list[FlextPluginEntity]].ok([])
 
+            @override
             def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:  # noqa: ARG002
                 success = True
                 return FlextResult[bool].ok(success)
@@ -517,6 +530,7 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
 
         Args:
             plugin: Plugin to validate (can be None)
+
         Returns:
             FlextResult indicating if plugin is valid
 

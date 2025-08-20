@@ -40,7 +40,7 @@ Integration:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import cast
+from typing import cast, override
 
 from flext_core import FlextEntity, FlextGenerators, FlextResult
 from pydantic import ConfigDict
@@ -100,7 +100,7 @@ class PluginDiscovery(FlextEntity):
         metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
 
         # Create instance using Pydantic model_validate
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": entity_id,
             "version": version,
             "metadata": metadata,
@@ -111,6 +111,7 @@ class PluginDiscovery(FlextEntity):
 
     # Removed __init__ - use create() class method instead
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery."""
         if not self.plugin_directory:
@@ -158,7 +159,7 @@ class PluginDiscovery(FlextEntity):
         entry_points: list[dict[str, object]] = []
 
         for plugin in plugins:
-            entry_point = {
+            entry_point: dict[str, object] = {
                 "name": plugin["name"],
                 "module_name": plugin["name"],
                 "plugin_class": "Plugin",  # Default class name

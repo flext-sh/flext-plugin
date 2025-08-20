@@ -188,7 +188,7 @@ class SimplePluginRegistry:
         """Unregister plugin by name."""
         if plugin_name in self._plugins:
             del self._plugins[plugin_name]
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(True)  # noqa: FBT003
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
         """Get plugin instance by name."""
@@ -198,11 +198,15 @@ class SimplePluginRegistry:
         """Return number of registered plugins."""
         return len(self._plugins)
 
-    def list_plugins(self, plugin_type: PluginType | None = None) -> list[object]:
+    def list_plugins(self, plugin_type: object | None = None) -> list[object]:
         """List plugin metadata optionally filtered by type."""
         if plugin_type is None:
             return list(self._plugins.values())
-        return [p for p in self._plugins.values() if hasattr(p, "plugin_type") and p.plugin_type == plugin_type]
+        return [
+            p
+            for p in self._plugins.values()
+            if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
+        ]
 
     async def cleanup_all(self) -> None:
         """Clear all registered plugins."""

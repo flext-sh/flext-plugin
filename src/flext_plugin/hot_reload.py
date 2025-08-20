@@ -16,7 +16,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, cast
+from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
     FlextEntity,
@@ -31,6 +31,18 @@ from watchdog.observers.api import BaseObserver
 
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
+
+
+class StatefulPlugin(Protocol):
+    """Protocol for plugins that support state management."""
+
+    async def get_state(self) -> dict[str, object]:
+        """Get plugin state as dictionary."""
+        ...
+
+    async def cleanup(self) -> None:
+        """Cleanup plugin resources."""
+        ...
 
 
 class WatchEventType(Enum):
@@ -177,12 +189,18 @@ class StateManager:
         plugin_version = getattr(plugin, "version", "1.0.0")
         # Get plugin state if available
         state_data: dict[str, object] = {}
-        if hasattr(plugin, "get_state"):
-            get_state_method = getattr(plugin, "get_state")
-            state_data = await get_state_method()
+
+        # Check if plugin implements StatefulPlugin protocol
+        if hasattr(plugin, "get_state") and callable(getattr(plugin, "get_state", None)):
+            stateful_plugin = cast("StatefulPlugin", plugin)
+            try:
+                # Plugin state returned as dict from protocol method
+                state_data = await stateful_plugin.get_state()
+            except Exception:
+                state_data = {}
         else:
             state_data = {}
-        
+
         return PluginState(
             plugin_id=plugin_id,
             plugin_version=plugin_version,
@@ -286,6 +304,7 @@ class PluginFileHandler(FileSystemEventHandler):
         super().__init__()
         self.reload_callback = reload_callback
 
+    @override
     def on_modified(self, event: FileSystemEvent) -> None:
         """Handle file modification events.
 
@@ -317,7 +336,7 @@ class HotReloadManager(FlextEntity):
         version = cast("int", kwargs.get("version", 1))
         metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
         # Create instance using Pydantic model_validate to bypass __init__
-        instance_data = {
+        instance_data: dict[str, object] = {
             "id": entity_id,
             "version": version,
             "metadata": metadata,
@@ -352,12 +371,14 @@ class HotReloadManager(FlextEntity):
         """Get plugin manager instance."""
         return getattr(self, "_plugin_manager", None)
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
         if not self.plugin_directory:
             return FlextResult[None].fail("Plugin directory cannot be empty")
         return FlextResult[None].ok(None)
 
+    @override
     def model_post_init(self, __context: dict[str, object] | None, /) -> None:
         """Initialize model after creation.
 

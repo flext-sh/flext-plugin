@@ -151,6 +151,12 @@ def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plu
         plugin_class = getattr(module, class_name)
         plugin = plugin_class()
         return FlextResult[Plugin].ok(plugin)
+    except ImportError as e:
+        return FlextResult[Plugin].fail(f"Module import failed: {e}")
+    except AttributeError as e:
+        return FlextResult[Plugin].fail(f"Plugin class not found: {e}")
+    except (RuntimeError, ValueError, TypeError) as e:
+        return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
     except Exception as e:
         return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
 

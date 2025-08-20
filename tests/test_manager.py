@@ -54,6 +54,7 @@ from flext_plugin import (
     SimplePluginRegistry,
     create_plugin_manager,
 )
+from flext_plugin.domain.entities import FlextPluginEntity
 
 
 class TestSimplePluginRegistry:
@@ -98,7 +99,7 @@ class TestSimplePluginRegistry:
         # Plugin without name should fail (legacy implementation check)
         invalid_plugin = Mock()
         # Don't set name attribute to trigger failure
-        if hasattr(invalid_plugin, 'name'):
+        if hasattr(invalid_plugin, "name"):
             del invalid_plugin.name
 
         result = await registry.register_plugin(invalid_plugin)
@@ -158,23 +159,27 @@ class TestSimplePluginRegistry:
         self,
         registry: SimplePluginRegistry,
     ) -> None:
-        """Test listing plugins with type filter."""
-        # Create mock plugins with different types
-        tap_plugin = Mock()
-        tap_plugin.name = "tap-plugin"
-        tap_plugin.plugin_type = PluginType.TAP  # Legacy implementation looks for plugin_type directly
-        tap_plugin.metadata = Mock()
-        tap_plugin.metadata.name = "tap-plugin"
-        tap_plugin.metadata.plugin_type = PluginType.TAP
+        """Test listing plugins with type filter using REAL plugin entities."""
+        # Create real plugin entities with different types
+        tap_plugin = FlextPluginEntity.create(
+            name="tap-plugin",
+            plugin_version="1.0.0",
+            config={
+                "plugin_type": PluginType.TAP,
+                "description": "Real tap plugin for testing",
+            }
+        )
 
-        target_plugin = Mock()
-        target_plugin.name = "target-plugin"
-        target_plugin.plugin_type = PluginType.TARGET  # Legacy implementation looks for plugin_type directly
-        target_plugin.metadata = Mock()
-        target_plugin.metadata.name = "target-plugin"
-        target_plugin.metadata.plugin_type = PluginType.TARGET
+        target_plugin = FlextPluginEntity.create(
+            name="target-plugin",
+            plugin_version="1.0.0",
+            config={
+                "plugin_type": PluginType.TARGET,
+                "description": "Real target plugin for testing",
+            }
+        )
 
-        # Register plugins
+        # Register plugins using real registry methods
         registry._plugins["tap-plugin"] = tap_plugin
         registry._plugins["target-plugin"] = target_plugin
 
@@ -186,7 +191,10 @@ class TestSimplePluginRegistry:
         tap_plugins = registry.list_plugins(PluginType.TAP)
         if len(tap_plugins) != 1:
             raise AssertionError(f"Expected {1}, got {len(tap_plugins)}")
-        assert tap_plugins[0].name == "tap-plugin"
+        # Cast to FlextPluginEntity since we know it's a real entity
+        from typing import cast
+        tap_plugin_result = cast("FlextPluginEntity", tap_plugins[0])
+        assert tap_plugin_result.name == "tap-plugin"
 
     @pytest.mark.asyncio
     async def test_cleanup_all(
@@ -462,6 +470,7 @@ class TestFlextPluginManager:
 
         # Plugin not found should return failure (not idempotent in current implementation)
         assert result.is_failure
+        assert result.error is not None
         assert "not found" in result.error
 
     @pytest.mark.asyncio
