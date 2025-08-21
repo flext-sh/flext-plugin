@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from flext_core.models import FlextModel as FlextBaseModel
 from pydantic import ConfigDict, Field, field_validator
@@ -21,7 +21,7 @@ from flext_plugin.constants import (
 from flext_plugin.type_definitions import PluginConfigData
 
 
-class PluginStatus(str, Enum):
+class PluginStatus(StrEnum):
     """Plugin lifecycle and health states."""
 
     UNKNOWN = "unknown"
@@ -36,7 +36,7 @@ class PluginStatus(str, Enum):
     UNHEALTHY = "unhealthy"
 
 
-class PluginType(str, Enum):
+class PluginType(StrEnum):
     """Supported plugin categories for the platform."""
 
     # Singer ETL Types
@@ -84,47 +84,31 @@ class FlextPluginConfigModel(FlextBaseModel):
         min_length=MIN_PLUGIN_NAME_LENGTH,
         max_length=MAX_PLUGIN_NAME_LENGTH,
         pattern=VALID_PLUGIN_NAME_PATTERN,
-        description="Plugin name following naming conventions"
+        description="Plugin name following naming conventions",
     )
     version: str = Field(
-        default="1.0.0",
-        description="Plugin version in semantic versioning format"
+        default="1.0.0", description="Plugin version in semantic versioning format"
     )
-    description: str = Field(
-        default="",
-        description="Plugin description"
-    )
-    author: str = Field(
-        default="",
-        description="Plugin author"
-    )
+    description: str = Field(default="", description="Plugin description")
+    author: str = Field(default="", description="Plugin author")
     plugin_type: PluginType = Field(
-        default=PluginType.UTILITY,
-        description="Plugin type category"
+        default=PluginType.UTILITY, description="Plugin type category"
     )
     status: PluginStatus = Field(
-        default=PluginStatus.INACTIVE,
-        description="Current plugin status"
+        default=PluginStatus.INACTIVE, description="Current plugin status"
     )
-    enabled: bool = Field(
-        default=True,
-        description="Whether the plugin is enabled"
-    )
+    enabled: bool = Field(default=True, description="Whether the plugin is enabled")
     auto_start: bool = Field(
-        default=False,
-        description="Whether to automatically start the plugin"
+        default=False, description="Whether to automatically start the plugin"
     )
     dependencies: list[str] = Field(
-        default_factory=list,
-        description="List of plugin dependencies"
+        default_factory=list, description="List of plugin dependencies"
     )
     tags: list[str] = Field(
-        default_factory=list,
-        description="Plugin tags for categorization"
+        default_factory=list, description="Plugin tags for categorization"
     )
     config: dict[str, PluginConfigData] = Field(
-        default_factory=dict,
-        description="Plugin-specific configuration"
+        default_factory=dict, description="Plugin-specific configuration"
     )
 
     @field_validator("name")
@@ -145,49 +129,28 @@ class FlextPluginMetadataModel(FlextBaseModel):
         validate_assignment=True,
     )
 
-    plugin_id: str = Field(
-        ...,
-        description="Unique plugin identifier"
-    )
+    plugin_id: str = Field(..., description="Unique plugin identifier")
     created_at: datetime = Field(
-        default_factory=datetime.now,
-        description="Plugin creation timestamp"
+        default_factory=datetime.now, description="Plugin creation timestamp"
     )
     updated_at: datetime | None = Field(
-        default=None,
-        description="Last update timestamp"
+        default=None, description="Last update timestamp"
     )
-    homepage: str | None = Field(
-        default=None,
-        description="Plugin homepage URL"
-    )
-    repository: str | None = Field(
-        default=None,
-        description="Plugin repository URL"
-    )
+    homepage: str | None = Field(default=None, description="Plugin homepage URL")
+    repository: str | None = Field(default=None, description="Plugin repository URL")
     documentation: str | None = Field(
-        default=None,
-        description="Plugin documentation URL"
+        default=None, description="Plugin documentation URL"
     )
-    license: str | None = Field(
-        default=None,
-        description="Plugin license"
-    )
-    keywords: list[str] = Field(
-        default_factory=list,
-        description="Plugin keywords"
-    )
+    license: str | None = Field(default=None, description="Plugin license")
+    keywords: list[str] = Field(default_factory=list, description="Plugin keywords")
     maintainers: list[str] = Field(
-        default_factory=list,
-        description="Plugin maintainers"
+        default_factory=list, description="Plugin maintainers"
     )
     platform_version: str | None = Field(
-        default=None,
-        description="Required platform version"
+        default=None, description="Required platform version"
     )
     python_version: str | None = Field(
-        default=None,
-        description="Required Python version"
+        default=None, description="Required Python version"
     )
 
 
@@ -199,17 +162,10 @@ class FlextPluginModel(FlextBaseModel):
         validate_assignment=True,
     )
 
-    config: FlextPluginConfigModel = Field(
-        ...,
-        description="Plugin configuration"
-    )
-    metadata: FlextPluginMetadataModel = Field(
-        ...,
-        description="Plugin metadata"
-    )
+    config: FlextPluginConfigModel = Field(..., description="Plugin configuration")
+    metadata: FlextPluginMetadataModel = Field(..., description="Plugin metadata")
     runtime_data: dict[str, PluginConfigData] = Field(
-        default_factory=dict,
-        description="Runtime-specific data"
+        default_factory=dict, description="Runtime-specific data"
     )
 
     @property
@@ -241,29 +197,19 @@ class PluginExecutionContextModel(FlextBaseModel):
         validate_assignment=True,
     )
 
-    plugin_id: str = Field(
-        ...,
-        description="Plugin identifier"
-    )
-    execution_id: str = Field(
-        ...,
-        description="Unique execution identifier"
-    )
+    plugin_id: str = Field(..., description="Plugin identifier")
+    execution_id: str = Field(..., description="Unique execution identifier")
     input_data: dict[str, PluginConfigData] = Field(
-        default_factory=dict,
-        description="Input data for execution"
+        default_factory=dict, description="Input data for execution"
     )
     context: dict[str, PluginConfigData] = Field(
-        default_factory=dict,
-        description="Execution context data"
+        default_factory=dict, description="Execution context data"
     )
     timeout_seconds: int | None = Field(
-        default=None,
-        description="Execution timeout in seconds"
+        default=None, description="Execution timeout in seconds"
     )
     started_at: datetime = Field(
-        default_factory=datetime.now,
-        description="Execution start timestamp"
+        default_factory=datetime.now, description="Execution start timestamp"
     )
 
 
@@ -275,33 +221,14 @@ class PluginExecutionResultModel(FlextBaseModel):
         validate_assignment=True,
     )
 
-    success: bool = Field(
-        default=False,
-        description="Whether execution succeeded"
-    )
-    data: PluginConfigData = Field(
-        default=None,
-        description="Execution output data"
-    )
-    error: str = Field(
-        default="",
-        description="Error message if execution failed"
-    )
-    plugin_name: str = Field(
-        default="",
-        description="Name of the executed plugin"
-    )
-    execution_time: float = Field(
-        default=0.0,
-        description="Execution time in seconds"
-    )
-    execution_id: str = Field(
-        default="",
-        description="Unique execution identifier"
-    )
+    success: bool = Field(default=False, description="Whether execution succeeded")
+    data: PluginConfigData = Field(default=None, description="Execution output data")
+    error: str = Field(default="", description="Error message if execution failed")
+    plugin_name: str = Field(default="", description="Name of the executed plugin")
+    execution_time: float = Field(default=0.0, description="Execution time in seconds")
+    execution_id: str = Field(default="", description="Unique execution identifier")
     completed_at: datetime = Field(
-        default_factory=datetime.now,
-        description="Execution completion timestamp"
+        default_factory=datetime.now, description="Execution completion timestamp"
     )
 
     @property
@@ -322,33 +249,22 @@ class PluginManagerResultModel(FlextBaseModel):
         validate_assignment=True,
     )
 
-    operation: str = Field(
-        ...,
-        description="Operation name"
-    )
-    success: bool = Field(
-        default=False,
-        description="Whether operation succeeded"
-    )
+    operation: str = Field(..., description="Operation name")
+    success: bool = Field(default=False, description="Whether operation succeeded")
     plugins_affected: list[str] = Field(
-        default_factory=list,
-        description="List of affected plugin names"
+        default_factory=list, description="List of affected plugin names"
     )
     execution_time_ms: float = Field(
-        default=0.0,
-        description="Operation execution time in milliseconds"
+        default=0.0, description="Operation execution time in milliseconds"
     )
     details: dict[str, PluginConfigData] = Field(
-        default_factory=dict,
-        description="Additional operation details"
+        default_factory=dict, description="Additional operation details"
     )
     errors: list[str] = Field(
-        default_factory=list,
-        description="List of error messages"
+        default_factory=list, description="List of error messages"
     )
     completed_at: datetime = Field(
-        default_factory=datetime.now,
-        description="Operation completion timestamp"
+        default_factory=datetime.now, description="Operation completion timestamp"
     )
 
 

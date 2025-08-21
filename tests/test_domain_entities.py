@@ -39,7 +39,7 @@ from datetime import UTC, datetime
 from typing import cast
 
 import pytest
-from flext_core.root_models import FlextEntityId, FlextMetadata
+from flext_core import FlextEntityId, FlextMetadata
 from pydantic import ValidationError
 
 from flext_plugin import (
@@ -92,10 +92,13 @@ class TestFlextPlugin:
             entry_point="test.entry:main",  # Required field
             plugin_type=PluginType.TAP.value,  # Convert enum to value
             description="Test plugin",
-            metadata=cast("FlextMetadata", {
-                "author": "Test Author",
-                "license": "MIT",
-            }),
+            metadata=cast(
+                "FlextMetadata",
+                {
+                    "author": "Test Author",
+                    "license": "MIT",
+                },
+            ),
         )
 
     def test_plugin_instance_creation(self) -> None:

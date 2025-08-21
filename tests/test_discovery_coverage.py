@@ -202,7 +202,9 @@ class TestPluginDiscovery:
         plugin_file = plugin_dir / "size_test_plugin.py"
         plugin_file.write_text(plugin_content)
 
-        manifest_content = '{"name": "size_test_plugin", "type": "test", "version": "1.0.0"}'
+        manifest_content = (
+            '{"name": "size_test_plugin", "type": "test", "version": "1.0.0"}'
+        )
         manifest_file = plugin_dir / "size_test_plugin.json"
         manifest_file.write_text(manifest_content)
 
@@ -302,7 +304,9 @@ class TestPluginDiscovery:
         assert "integration_test" in plugins
         assert "integration_test" in discovered_again
         plugin_data = cast("dict[str, object]", plugins["integration_test"])
-        discovered_data = cast("dict[str, object]", discovered_again["integration_test"])
+        discovered_data = cast(
+            "dict[str, object]", discovered_again["integration_test"]
+        )
         assert plugin_data["name"] == discovered_data["name"]
         assert plugin_data["type"] == discovered_data["type"]
 
@@ -354,7 +358,10 @@ class TestPluginDiscovery:
                 "transform_utils.py",
                 "# Transform utilities\ndef transform_data():\n    pass\n",
             ),
-            ("transform_utils.json", '{"name": "transform_utils", "type": "transform"}'),
+            (
+                "transform_utils.json",
+                '{"name": "transform_utils", "type": "transform"}',
+            ),
             ("__init__.py", "# Package init\n"),
             ("__pycache__.py", "# Cache file\n"),
             ("config.json", '{"version": "1.0"}'),

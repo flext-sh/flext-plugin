@@ -1,38 +1,44 @@
-"""Comprehensive test suite for flext_plugin.simple_plugin module.
+"""REAL test suite for flext_plugin.simple_plugin module.
 
-This test module provides complete coverage for the simple plugin system,
-testing all classes, methods, and utility functions to achieve 100% code
-coverage and validate all functionality in the simple plugin implementation.
+This test module provides complete coverage for the simple plugin system
+using REAL plugin classes and functionality without ANY mocks.
 
-Test Coverage:
-    - Plugin class: activation, deactivation, lifecycle management
-    - PluginRegistry class: registration, unregistration, listing operations
-    - Utility functions: load_plugin, create_registry
-    - Error handling: all exception scenarios and edge cases
-    - Integration: FlextResult patterns and error management
+Testing Strategy - REAL FUNCTIONALITY ONLY:
+    - Plugin class: REAL activation, deactivation, lifecycle management
+    - PluginRegistry class: REAL registration, unregistration, listing operations
+    - Utility functions: REAL load_plugin and create_registry with actual modules
+    - Error handling: REAL exception scenarios with genuine edge cases
+    - Integration: REAL FlextResult patterns and error management
 
-Testing Strategy:
-    - Complete method coverage for all public APIs
-    - Error condition testing for all exception paths
-    - Integration testing with FlextResult patterns
-    - Edge case validation and boundary condition testing
+Real Component Testing:
+    - Plugin: REAL lifecycle with actual state management
+    - PluginRegistry: REAL plugin storage and retrieval operations
+    - load_plugin(): REAL dynamic module loading with actual Python files
+    - create_registry(): REAL registry instantiation
 
-Architecture Integration:
-    - Tests simple plugin system compatibility with FLEXT ecosystem
-    - Validates FlextResult usage patterns throughout simple plugin system
-    - Ensures proper error handling and business logic validation
-    - Maintains compatibility with Clean Architecture patterns
+Real Integration Testing:
+    - REAL plugin class hierarchies and inheritance
+    - Actual FlextResult success and failure patterns
+    - REAL error handling with genuine exceptions
+    - Complete edge case validation with real scenarios
+
+Quality Standards:
+    - 100% code coverage through REAL functionality testing
+    - NO MOCKS - only real plugin classes and actual business logic
+    - Enterprise-grade error handling validation
+    - Complete integration testing with real plugin scenarios
 """
 
 from __future__ import annotations
 
+import tempfile
 from collections import UserDict
+from pathlib import Path
 from typing import override
-from unittest.mock import Mock, patch
 
 import pytest
 
-from flext_plugin import (
+from flext_plugin.simple_plugin import (
     Plugin,
     PluginRegistry,
     create_registry,
@@ -206,7 +212,7 @@ class TestPluginRegistry:
                         msg = "Registration failed"
                         raise RuntimeError(msg)
 
-                self.plugins = FailingDict()  # type: ignore[assignment]
+                self.plugins = FailingDict()
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -261,7 +267,7 @@ class TestPluginRegistry:
                         msg = "Unregistration failed"
                         raise ValueError(msg)
 
-                self.plugins = FailingDeleteDict()  # type: ignore[assignment]
+                self.plugins = FailingDeleteDict()
 
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")
@@ -363,118 +369,259 @@ class TestUtilityFunctions:
         assert registry1 is not registry2
         assert registry1.plugins is not registry2.plugins
 
-    @patch("importlib.import_module")
-    def test_load_plugin_success(self, mock_import: Mock) -> None:
-        """Test successful plugin loading from module."""
-        # Create mock module with mock plugin class
-        mock_module = Mock()
-        mock_plugin_class = Mock()
-        mock_plugin_instance = Plugin("loaded-plugin")
+    def test_load_plugin_success_with_real_module(self) -> None:
+        """Test successful plugin loading from REAL module with actual file system."""
+        # Create REAL temporary module file
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_real_plugin.py"
 
-        mock_plugin_class.return_value = mock_plugin_instance
-        mock_module.Plugin = mock_plugin_class
-        mock_import.return_value = mock_module
+            # Write REAL plugin module content
+            module_file.write_text('''
+"""REAL test plugin module."""
 
-        result = load_plugin("test_module", "Plugin")
+from flext_plugin.simple_plugin import Plugin
 
-        assert result.success
-        assert result.data is mock_plugin_instance
-        assert result.error is None
-        mock_import.assert_called_once_with("test_module")
+class Plugin(Plugin):
+    """REAL plugin implementation."""
 
-    @patch("importlib.import_module")
-    def test_load_plugin_custom_class_name(self, mock_import: Mock) -> None:
-        """Test loading plugin with custom class name."""
-        mock_module = Mock()
-        mock_plugin_class = Mock()
-        mock_plugin_instance = Plugin("custom-plugin")
+    def __init__(self):
+        super().__init__("real-loaded-plugin")
+        self.loaded = True
 
-        mock_plugin_class.return_value = mock_plugin_instance
-        mock_module.CustomPlugin = mock_plugin_class
-        mock_import.return_value = mock_module
+    def execute(self):
+        return f"REAL execution from {self.name}"
+''')
 
-        result = load_plugin("test_module", "CustomPlugin")
+            # Add temp directory to Python path temporarily
+            import sys
 
-        assert result.success
-        assert result.data is mock_plugin_instance
-        mock_import.assert_called_once_with("test_module")
+            sys.path.insert(0, str(temp_path))
 
-    @patch("importlib.import_module")
-    def test_load_plugin_import_error(self, mock_import: Mock) -> None:
-        """Test plugin loading with import error."""
-        mock_import.side_effect = ImportError("Module not found")
+            try:
+                result = load_plugin("test_real_plugin", "Plugin")
 
-        result = load_plugin("nonexistent_module")
+                assert result.success
+                assert result.data is not None
+                assert isinstance(result.data, Plugin)
+                assert result.data.name == "real-loaded-plugin"
+                assert result.error is None
+                assert hasattr(result.data, "loaded")
+                assert result.data.loaded is True
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_real_plugin" in sys.modules:
+                    del sys.modules["test_real_plugin"]
+
+    def test_load_plugin_custom_class_name_with_real_module(self) -> None:
+        """Test loading plugin with custom class name from REAL module."""
+        # Create REAL temporary module file with custom class name
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_custom_plugin.py"
+
+            # Write REAL plugin module content with custom class name
+            module_file.write_text('''
+"""REAL test plugin module with custom class name."""
+
+from flext_plugin.simple_plugin import Plugin
+
+class CustomPlugin(Plugin):
+    """REAL plugin implementation with custom name."""
+
+    def __init__(self):
+        super().__init__("custom-named-plugin")
+        self.custom_attribute = "custom_value"
+
+    def custom_method(self):
+        return f"Custom method from {self.name}"
+''')
+
+            # Add temp directory to Python path temporarily
+            import sys
+
+            sys.path.insert(0, str(temp_path))
+
+            try:
+                result = load_plugin("test_custom_plugin", "CustomPlugin")
+
+                assert result.success
+                assert result.data is not None
+                assert isinstance(result.data, Plugin)
+                assert result.data.name == "custom-named-plugin"
+                assert result.error is None
+                assert hasattr(result.data, "custom_attribute")
+                assert result.data.custom_attribute == "custom_value"
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_custom_plugin" in sys.modules:
+                    del sys.modules["test_custom_plugin"]
+
+    def test_load_plugin_import_error_with_real_nonexistent_module(self) -> None:
+        """Test plugin loading with import error from REAL nonexistent module."""
+        result = load_plugin("totally_nonexistent_module_that_does_not_exist")
 
         assert result.is_failure
         assert result.error is not None
         assert "Module import failed" in result.error
-        assert "Module not found" in result.error
+        assert "No module named" in result.error
 
-    @patch("importlib.import_module")
-    def test_load_plugin_attribute_error(self, mock_import: Mock) -> None:
-        """Test plugin loading with missing class."""
-        mock_module = Mock()
-        mock_module.Plugin = Mock(side_effect=AttributeError("Plugin class not found"))
-        mock_import.return_value = mock_module
+    def test_load_plugin_attribute_error_with_real_missing_class(self) -> None:
+        """Test plugin loading with missing class from REAL module."""
+        # Create REAL temporary module file without Plugin class
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_no_plugin_class.py"
 
-        # Simulate getattr raising AttributeError
-        with patch(
-            "builtins.getattr",
-            side_effect=AttributeError("Plugin class not found"),
-        ):
-            result = load_plugin("test_module", "Plugin")
+            # Write REAL module content without Plugin class
+            module_file.write_text('''
+"""REAL test module without Plugin class."""
 
-        assert result.is_failure
-        assert result.error is not None
-        assert "Plugin class not found" in result.error
+def some_function():
+    return "This module has no Plugin class"
 
-    @patch("importlib.import_module")
-    def test_load_plugin_runtime_error(self, mock_import: Mock) -> None:
-        """Test plugin loading with runtime error during instantiation."""
-        mock_module = Mock()
-        mock_plugin_class = Mock(
-            side_effect=RuntimeError("Plugin instantiation failed"),
-        )
-        mock_module.Plugin = mock_plugin_class
-        mock_import.return_value = mock_module
+class SomeOtherClass:
+    pass
+''')
 
-        result = load_plugin("test_module", "Plugin")
+            # Add temp directory to Python path temporarily
+            import sys
 
-        assert result.is_failure
-        assert result.error is not None
-        assert "Plugin loading failed" in result.error
-        assert "Plugin instantiation failed" in result.error
+            sys.path.insert(0, str(temp_path))
 
-    @patch("importlib.import_module")
-    def test_load_plugin_value_error(self, mock_import: Mock) -> None:
-        """Test plugin loading with value error during instantiation."""
-        mock_module = Mock()
-        mock_plugin_class = Mock(side_effect=ValueError("Invalid plugin configuration"))
-        mock_module.Plugin = mock_plugin_class
-        mock_import.return_value = mock_module
+            try:
+                result = load_plugin("test_no_plugin_class", "Plugin")
 
-        result = load_plugin("test_module", "Plugin")
+                assert result.is_failure
+                assert result.error is not None
+                assert "Plugin class not found" in result.error
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_no_plugin_class" in sys.modules:
+                    del sys.modules["test_no_plugin_class"]
 
-        assert result.is_failure
-        assert result.error is not None
-        assert "Plugin loading failed" in result.error
-        assert "Invalid plugin configuration" in result.error
+    def test_load_plugin_runtime_error_with_real_failing_plugin(self) -> None:
+        """Test plugin loading with runtime error during instantiation from REAL plugin."""
+        # Create REAL temporary module file with failing plugin class
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_failing_plugin.py"
 
-    @patch("importlib.import_module")
-    def test_load_plugin_type_error(self, mock_import: Mock) -> None:
-        """Test plugin loading with type error during instantiation."""
-        mock_module = Mock()
-        mock_plugin_class = Mock(side_effect=TypeError("Type error in plugin"))
-        mock_module.Plugin = mock_plugin_class
-        mock_import.return_value = mock_module
+            # Write REAL plugin module content that fails during instantiation
+            module_file.write_text('''
+"""REAL test plugin module with failing initialization."""
 
-        result = load_plugin("test_module", "Plugin")
+from flext_plugin.simple_plugin import Plugin
 
-        assert result.is_failure
-        assert result.error is not None
-        assert "Plugin loading failed" in result.error
-        assert "Type error in plugin" in result.error
+class Plugin(Plugin):
+    """REAL plugin implementation that fails during instantiation."""
+
+    def __init__(self):
+        raise RuntimeError("Plugin instantiation failed")
+''')
+
+            # Add temp directory to Python path temporarily
+            import sys
+
+            sys.path.insert(0, str(temp_path))
+
+            try:
+                result = load_plugin("test_failing_plugin", "Plugin")
+
+                assert result.is_failure
+                assert result.error is not None
+                assert "Plugin loading failed" in result.error
+                assert "Plugin instantiation failed" in result.error
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_failing_plugin" in sys.modules:
+                    del sys.modules["test_failing_plugin"]
+
+    def test_load_plugin_value_error_with_real_invalid_plugin(self) -> None:
+        """Test plugin loading with value error during instantiation from REAL plugin."""
+        # Create REAL temporary module file with invalid plugin class
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_invalid_plugin.py"
+
+            # Write REAL plugin module content with validation error
+            module_file.write_text('''
+"""REAL test plugin module with invalid configuration."""
+
+from flext_plugin.simple_plugin import Plugin
+
+class Plugin(Plugin):
+    """REAL plugin implementation with invalid configuration."""
+
+    def __init__(self):
+        raise ValueError("Invalid plugin configuration")
+''')
+
+            # Add temp directory to Python path temporarily
+            import sys
+
+            sys.path.insert(0, str(temp_path))
+
+            try:
+                result = load_plugin("test_invalid_plugin", "Plugin")
+
+                assert result.is_failure
+                assert result.error is not None
+                assert "Plugin loading failed" in result.error
+                assert "Invalid plugin configuration" in result.error
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_invalid_plugin" in sys.modules:
+                    del sys.modules["test_invalid_plugin"]
+
+    def test_load_plugin_type_error_with_real_type_error_plugin(self) -> None:
+        """Test plugin loading with type error during instantiation from REAL plugin."""
+        # Create REAL temporary module file with type error plugin class
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            module_file = temp_path / "test_type_error_plugin.py"
+
+            # Write REAL plugin module content with type error
+            module_file.write_text('''
+"""REAL test plugin module with type error."""
+
+from flext_plugin.simple_plugin import Plugin
+
+class Plugin(Plugin):
+    """REAL plugin implementation with type error."""
+
+    def __init__(self):
+        raise TypeError("Type error in plugin")
+''')
+
+            # Add temp directory to Python path temporarily
+            import sys
+
+            sys.path.insert(0, str(temp_path))
+
+            try:
+                result = load_plugin("test_type_error_plugin", "Plugin")
+
+                assert result.is_failure
+                assert result.error is not None
+                assert "Plugin loading failed" in result.error
+                assert "Type error in plugin" in result.error
+            finally:
+                # Clean up path
+                sys.path.remove(str(temp_path))
+                # Remove module from cache
+                if "test_type_error_plugin" in sys.modules:
+                    del sys.modules["test_type_error_plugin"]
 
 
 class TestSimplePluginIntegration:

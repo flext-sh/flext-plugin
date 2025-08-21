@@ -45,9 +45,25 @@ from flext_plugin.application.services import (
     FlextPluginService,
 )
 
+# Import domain ports for test aliases (must come after legacy imports)
+from flext_plugin.domain.ports import (
+    FlextPluginDiscoveryPort,
+    FlextPluginLoaderPort,
+    FlextPluginManagerPort,
+    FlextPluginRegistryPort,
+    FlextPluginHotReloadPort,
+    PluginDiscoveryService,
+    PluginExecutionService,
+    PluginLifecycleService,
+    PluginRegistryService,
+    PluginHotReloadService,
+    PluginSecurityService,
+    PluginValidationService,
+)
+
 # Create service aliases for backward compatibility
 PluginService = FlextPluginService
-PluginDiscoveryService = FlextPluginDiscoveryService
+# PluginDiscoveryService comes from ports.py and should remain abstract
 
 # Export additional components for tests
 from flext_plugin.application.handlers import (
@@ -84,16 +100,6 @@ from flext_plugin.simple_plugin import (
 )
 
 # Export domain port service aliases for domain tests
-from flext_plugin.domain.ports import (
-    FlextPluginHotReloadPort,
-    FlextPluginRegistryPort,
-    PluginExecutionService,
-    PluginHotReloadService,
-    PluginLifecycleService,
-    PluginRegistryService,
-    PluginSecurityService,
-    PluginValidationService,
-)
 
 # Import the port-based PluginDiscoveryService alias separately (for domain tests)
 # from flext_plugin.domain.ports import PluginDiscoveryService as PluginDiscoveryServicePort
@@ -142,10 +148,7 @@ class FlextPluginManager:
         self._initialized = True
 
         # Create proper PluginManagerResult
-        result = PluginManagerResult(
-            operation="initialize",
-            success=True
-        )
+        result = PluginManagerResult(operation="initialize", success=True)
         result.plugins_affected = []
         result.execution_time_ms = 0.0
         result.details = {"manager_type": "FlextPluginManager"}
@@ -270,6 +273,7 @@ def create_hot_reload_manager(
 
     """
     return HotReloadManager.create(plugin_directory=plugin_directory)
+
 
 __all__: list[str] = [
     "FlextContainer",

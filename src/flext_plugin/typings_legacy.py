@@ -167,10 +167,24 @@ class SimplePluginRegistry:
         """List plugin metadata optionally filtered by type."""
         if plugin_type is None:
             return list(self._plugins.values())
+        # Handle both direct comparison and string comparison for FlextPluginEntity
         return [
             p
             for p in self._plugins.values()
-            if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
+            if (
+                hasattr(p, "plugin_type")
+                and (
+                    p.plugin_type == plugin_type
+                    or (
+                        hasattr(p.plugin_type, "value")
+                        and p.plugin_type.value == plugin_type
+                    )
+                    or (
+                        hasattr(plugin_type, "value")
+                        and p.plugin_type == plugin_type.value
+                    )
+                )
+            )
         ]
 
     async def cleanup_all(self) -> None:

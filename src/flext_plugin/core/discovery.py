@@ -70,7 +70,7 @@ class PluginDiscovery(FlextEntity):
             domain_events=cast("FlextEventList", []),
             metadata=cast("FlextMetadata", {}),
             created_at=cast("FlextTimestamp", now),
-            updated_at=cast("FlextTimestamp", now)
+            updated_at=cast("FlextTimestamp", now),
         )
         # Set business fields directly (frozen model workaround)
         object.__setattr__(self, "plugin_directory", plugin_directory)
@@ -104,7 +104,8 @@ class PluginDiscovery(FlextEntity):
         return {
             name: plugin
             for name, plugin in all_plugins.items()
-            if isinstance(plugin, dict) and cast("dict[str, object]", plugin).get("type") == plugin_type
+            if isinstance(plugin, dict)
+            and cast("dict[str, object]", plugin).get("type") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:

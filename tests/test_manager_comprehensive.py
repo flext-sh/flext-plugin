@@ -45,7 +45,7 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 
 # 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
 from flext_plugin import (
@@ -144,6 +144,7 @@ class TestSimplePluginRegistryComprehensive:
         registry: SimplePluginRegistry,
     ) -> None:
         """Test failed plugin registration without metadata."""
+
         # Create a minimal object that lacks the required 'metadata' attribute
         class InvalidPlugin:
             def __init__(self) -> None:
@@ -152,7 +153,7 @@ class TestSimplePluginRegistryComprehensive:
 
         invalid_plugin = InvalidPlugin()
 
-        result = await registry.register_plugin(invalid_plugin)  # type: ignore[arg-type]
+        result = await registry.register_plugin(invalid_plugin)
 
         assert not result.success
         assert result.error is not None
@@ -182,7 +183,7 @@ class TestSimplePluginRegistryComprehensive:
                 # Intentionally missing name attribute
 
         invalid_plugin = PluginWithoutName()
-        result = await registry.register_plugin(invalid_plugin)  # type: ignore[arg-type]  # type: ignore[arg-type]
+        result = await registry.register_plugin(invalid_plugin)
 
         assert not result.success
         assert result.error is not None
@@ -343,7 +344,9 @@ class TestPluginConfigurationComprehensive:
 
     def test_configuration_defaults(self) -> None:
         """Test default configuration values."""
-        config = PluginConfiguration(id=cast("FlextEntityId", "test-plugin-id"), plugin_name="test-plugin")
+        config = PluginConfiguration(
+            id=cast("FlextEntityId", "test-plugin-id"), plugin_name="test-plugin"
+        )
 
         if config.plugin_name != "test-plugin":
             raise AssertionError(f"Expected 'test-plugin', got {config.plugin_name}")
@@ -619,7 +622,9 @@ class TestPluginManagerComprehensive:
         await manager.initialize()
 
         # Create config with required fields (id and plugin_name are required)
-        config = PluginConfiguration(id=cast("FlextEntityId", "non-existent-id"), plugin_name="non-existent")
+        config = PluginConfiguration(
+            id=cast("FlextEntityId", "non-existent-id"), plugin_name="non-existent"
+        )
         result = await manager.configure_plugin("non-existent", config)
 
         assert not result.success

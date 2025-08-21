@@ -464,7 +464,7 @@ class ConcretePluginLoader(FlextPluginLoader):
             registry: Optional plugin registry to use
 
         """
-        self._registry = registry or ConcretePluginRegistry()  # type: ignore[abstract]
+        self._registry = registry or ConcretePluginRegistry()
         self._logger = get_logger("plugin.loader")
 
     @override

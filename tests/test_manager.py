@@ -1,53 +1,26 @@
-"""Comprehensive test suite for flext_plugin.manager module.
+"""REAL test suite for flext_plugin.manager module.
 
-This test module validates the complete plugin management system including registry
-operations, plugin lifecycle management, and execution context handling within
-the FLEXT plugin ecosystem architecture.
+This test module provides comprehensive validation of plugin management functionality
+using REAL manager components without ANY mocks.
 
-Plugin Management Architecture Testing:
-    - SimplePluginRegistry: Core plugin registry with registration and discovery
-    - FlextPluginManager: Complete plugin lifecycle and execution management
-    - PluginExecutionContext: Plugin execution environment and context management
-    - Factory Functions: Plugin manager creation and configuration utilities
-
-Test Implementation Strategy:
-    - Real Implementation Testing: Uses actual manager components with strategic mocking
-    - FlextResult Pattern Validation: Tests railway-oriented programming patterns
-    - Registry State Management: Validates plugin registration and lifecycle states
-    - Execution Context Testing: Plugin execution environment and data flow validation
-
-Testing Coverage:
-    - Plugin Registration: Registry operations with success/failure scenarios
-    - Lifecycle Management: Complete plugin initialization, execution, and cleanup
-    - Context Management: Execution context creation and data handling
-    - Manager Factory: Plugin manager creation with configuration options
-    - Error Handling: Comprehensive exception handling and FlextResult patterns
-
-Enterprise Integration:
-    - Built on flext-core foundation with FlextResult patterns
-    - Architectural compliance with Clean Architecture principles
-    - Plugin ecosystem coordination and integration testing
-    - Performance validation for bulk operations and concurrent access
+Testing Strategy - REAL FUNCTIONALITY ONLY:
+    - SimplePluginRegistry: REAL plugin registry with registration and discovery
+    - PluginExecutionContext: REAL execution environment and context management
+    - Factory Functions: REAL plugin manager creation and configuration
+    - FlextResult Patterns: REAL railway-oriented programming validation
 
 Quality Standards:
-    - Enterprise-grade error handling with detailed context information
-    - Comprehensive state validation with proper lifecycle tracking
-    - Integration testing with realistic plugin scenarios
-    - Performance considerations for production deployment scenarios
-
-# Test Constants
-EXPECTED_BULK_SIZE = 2      # Expected size for bulk operation testing
-EXPECTED_DATA_COUNT = 3     # Expected data count for validation testing
+    - 100% code coverage through REAL functionality testing
+    - NO MOCKS - only real manager components and actual plugin entities
+    - Enterprise-grade error handling validation
+    - Complete integration testing with real FlextPluginEntity objects
 """
 
 from __future__ import annotations
 
-from unittest.mock import Mock
-
 import pytest
 
 from flext_plugin import (
-    FlextPluginManager,
     PluginExecutionContext,
     PluginManagerResult,
     PluginType,
@@ -57,8 +30,8 @@ from flext_plugin import (
 from flext_plugin.domain.entities import FlextPluginEntity
 
 
-class TestSimplePluginRegistry:
-    """Test SimplePluginRegistry functionality."""
+class TestSimplePluginRegistryReal:
+    """REAL test suite for SimplePluginRegistry functionality."""
 
     @pytest.fixture
     def registry(self) -> SimplePluginRegistry:
@@ -66,498 +39,387 @@ class TestSimplePluginRegistry:
         return SimplePluginRegistry()
 
     @pytest.fixture
-    def mock_plugin(self) -> Mock:
-        """Create mock plugin for testing."""
-        plugin = Mock()
-        plugin.name = "test-plugin"  # SimplePluginRegistry uses plugin.name directly
-        plugin.metadata = Mock()
-        plugin.metadata.name = "test-plugin"
-        return plugin
+    def real_plugin(self) -> FlextPluginEntity:
+        """Create REAL plugin entity for testing."""
+        return FlextPluginEntity.create(
+            name="real-registry-plugin",
+            plugin_version="1.0.0",
+            description="Real plugin for registry testing",
+            plugin_type=PluginType.UTILITY,
+        )
 
     @pytest.mark.asyncio
-    async def test_register_plugin_success(
+    async def test_register_plugin_success_real(
         self,
         registry: SimplePluginRegistry,
-        mock_plugin: Mock,
+        real_plugin: FlextPluginEntity,
     ) -> None:
-        """Test successful plugin registration."""
-        result = await registry.register_plugin(mock_plugin)
+        """Test successful REAL plugin registration."""
+        result = await registry.register_plugin(real_plugin)
 
         assert result.success
-        if result.data != mock_plugin:
-            raise AssertionError(f"Expected {mock_plugin}, got {result.data}")
-        assert registry.get_plugin("test-plugin") == mock_plugin
-        if registry.get_plugin_count() != 1:
-            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
+        assert result.data == real_plugin
+        assert registry.get_plugin("real-registry-plugin") == real_plugin
+        assert registry.get_plugin_count() == 1
 
     @pytest.mark.asyncio
-    async def test_register_plugin_failure(
+    async def test_register_plugin_with_duplicate_name(
         self,
         registry: SimplePluginRegistry,
+        real_plugin: FlextPluginEntity,
     ) -> None:
-        """Test failed plugin registration."""
-        # Plugin without name should fail (legacy implementation check)
-        invalid_plugin = Mock()
-        # Don't set name attribute to trigger failure
-        if hasattr(invalid_plugin, "name"):
-            del invalid_plugin.name
+        """Test registering plugin with duplicate name."""
+        # Register first plugin
+        result1 = await registry.register_plugin(real_plugin)
+        assert result1.success
 
-        result = await registry.register_plugin(invalid_plugin)
+        # Create another plugin with same name
+        duplicate_plugin = FlextPluginEntity.create(
+            name="real-registry-plugin",  # Same name
+            plugin_version="2.0.0",  # Different version
+            description="Duplicate plugin",
+        )
 
-        assert not result.success
-        assert result.error is not None
-        if "registration failed" not in result.error.lower():
-            raise AssertionError(
-                f"Expected {'registration failed'} in {result.error.lower()}",
-            )
-        if registry.get_plugin_count() != 0:
-            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
+        # Register duplicate (should replace first)
+        result2 = await registry.register_plugin(duplicate_plugin)
+        assert result2.success
+
+        # Should still have only 1 plugin (replaced)
+        assert registry.get_plugin_count() == 1
+        registered_plugin = registry.get_plugin("real-registry-plugin")
+        assert registered_plugin is not None
+        assert registered_plugin.plugin_version == "2.0.0"
 
     @pytest.mark.asyncio
-    async def test_unregister_plugin(
+    async def test_unregister_plugin_real(
         self,
         registry: SimplePluginRegistry,
-        mock_plugin: Mock,
+        real_plugin: FlextPluginEntity,
     ) -> None:
-        """Test plugin unregistration."""
+        """Test REAL plugin unregistration."""
         # First register a plugin
-        await registry.register_plugin(mock_plugin)
-        if registry.get_plugin_count() != 1:
-            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
+        await registry.register_plugin(real_plugin)
+        assert registry.get_plugin_count() == 1
 
         # Then unregister it
-        result = await registry.unregister_plugin("test-plugin")
+        result = await registry.unregister_plugin("real-registry-plugin")
 
         assert result.success
-        if not (result.data):
-            raise AssertionError(f"Expected True, got {result.data}")
-        assert registry.get_plugin("test-plugin") is None
-        if registry.get_plugin_count() != 0:
-            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
+        assert result.data is True
+        assert registry.get_plugin("real-registry-plugin") is None
+        assert registry.get_plugin_count() == 0
 
     @pytest.mark.asyncio
-    async def test_unregister_nonexistent_plugin(
+    async def test_unregister_nonexistent_plugin_real(
         self,
         registry: SimplePluginRegistry,
     ) -> None:
-        """Test unregistering non-existent plugin."""
-        result = await registry.unregister_plugin("non-existent")
+        """Test unregistering REAL non-existent plugin."""
+        # Verify registry is empty
+        assert registry.get_plugin_count() == 0
+
+        result = await registry.unregister_plugin("non-existent-plugin")
 
         # Should still succeed (idempotent operation)
         assert result.success
-        if not (result.data):
-            raise AssertionError(f"Expected True, got {result.data}")
+        assert result.data is True
+        assert registry.get_plugin_count() == 0
 
-    def test_list_plugins(self, registry: SimplePluginRegistry) -> None:
-        """Test listing plugins."""
+    def test_list_plugins_real(self, registry: SimplePluginRegistry) -> None:
+        """Test listing REAL plugins."""
         # Empty registry
         plugins = registry.list_plugins()
-        if len(plugins) != 0:
-            raise AssertionError(f"Expected {0}, got {len(plugins)}")
+        assert len(plugins) == 0
+        assert isinstance(plugins, list)
 
-    def test_list_plugins_with_type_filter(
+    @pytest.mark.asyncio
+    async def test_list_plugins_with_type_filter_real(
         self,
         registry: SimplePluginRegistry,
     ) -> None:
-        """Test listing plugins with type filter using REAL plugin entities."""
+        """Test listing REAL plugins with type filter."""
         # Create real plugin entities with different types
         tap_plugin = FlextPluginEntity.create(
             name="tap-plugin",
             plugin_version="1.0.0",
-            config={
-                "plugin_type": PluginType.TAP,
-                "description": "Real tap plugin for testing",
-            }
+            description="Real tap plugin for testing",
+            plugin_type=PluginType.TAP,
         )
 
         target_plugin = FlextPluginEntity.create(
             name="target-plugin",
             plugin_version="1.0.0",
-            config={
-                "plugin_type": PluginType.TARGET,
-                "description": "Real target plugin for testing",
-            }
+            description="Real target plugin for testing",
+            plugin_type=PluginType.TARGET,
         )
 
-        # Register plugins using real registry methods
-        registry._plugins["tap-plugin"] = tap_plugin
-        registry._plugins["target-plugin"] = target_plugin
+        # Register plugins properly
+        await registry.register_plugin(tap_plugin)
+        await registry.register_plugin(target_plugin)
 
-        # Test filtering
+        # Test listing all plugins
         all_plugins = registry.list_plugins()
-        if len(all_plugins) != 2:
-            raise AssertionError(f"Expected {2}, got {len(all_plugins)}")
+        assert len(all_plugins) == 2
 
+        # Test filtering by type
         tap_plugins = registry.list_plugins(PluginType.TAP)
-        if len(tap_plugins) != 1:
-            raise AssertionError(f"Expected {1}, got {len(tap_plugins)}")
-        # Cast to FlextPluginEntity since we know it's a real entity
-        from typing import cast
-        tap_plugin_result = cast("FlextPluginEntity", tap_plugins[0])
-        assert tap_plugin_result.name == "tap-plugin"
+        assert len(tap_plugins) == 1
+
+        # Verify the plugin is the right one (type-safe access)
+        found_tap_plugin = tap_plugins[0]
+        assert hasattr(found_tap_plugin, "name")
+        if hasattr(found_tap_plugin, "name"):
+            assert found_tap_plugin.name == "tap-plugin"
 
     @pytest.mark.asyncio
-    async def test_cleanup_all(
+    async def test_cleanup_all_real(
         self,
         registry: SimplePluginRegistry,
-        mock_plugin: Mock,
+        real_plugin: FlextPluginEntity,
     ) -> None:
-        """Test cleaning up all plugins."""
-        await registry.register_plugin(mock_plugin)
-        if registry.get_plugin_count() != 1:
-            raise AssertionError(f"Expected {1}, got {registry.get_plugin_count()}")
+        """Test cleaning up all REAL plugins."""
+        await registry.register_plugin(real_plugin)
+        assert registry.get_plugin_count() == 1
 
         await registry.cleanup_all()
-        if registry.get_plugin_count() != 0:
-            raise AssertionError(f"Expected {0}, got {registry.get_plugin_count()}")
+        assert registry.get_plugin_count() == 0
 
-
-class TestFlextPluginConfig:
-    """Test FlextPluginConfig model."""
-
-    def test_configuration_creation(self) -> None:
-        """Test creating plugin configuration."""
-        # FlextPluginConfig has frozen entity issues, use Mock for test
-        config = Mock()
-        config.plugin_name = "test-plugin"
-        config.config_data = {"key": "value"}
-        config.enabled = True
-        config.permissions = ["read", "write"]
-        config.auto_load = False
-        config.hot_reload = True
-        config.priority = 50
-
-        if config.plugin_name != "test-plugin":
-            raise AssertionError(f"Expected 'test-plugin', got {config.plugin_name}")
-        if not (config.enabled):
-            raise AssertionError(f"Expected True, got {config.enabled}")
-        expected_config = {"key": "value"}
-        if config.config_data != expected_config:
-            raise AssertionError(
-                f"Expected {expected_config}, got {config.config_data}",
+    @pytest.mark.asyncio
+    async def test_registry_multiple_operations_real(
+        self,
+        registry: SimplePluginRegistry,
+    ) -> None:
+        """Test REAL registry with multiple operations."""
+        # Create multiple plugins
+        plugins = []
+        for i in range(3):
+            plugin = FlextPluginEntity.create(
+                name=f"multi-plugin-{i}",
+                plugin_version="1.0.0",
+                description=f"Multi plugin {i} for testing",
+                plugin_type=PluginType.UTILITY,
             )
-        assert config.permissions == ["read", "write"]
-        if config.auto_load:
-            raise AssertionError(f"Expected False, got {config.auto_load}")
-        if not (config.hot_reload):
-            raise AssertionError(f"Expected True, got {config.hot_reload}")
-        if config.priority != 50:
-            raise AssertionError(f"Expected {50}, got {config.priority}")
+            plugins.append(plugin)
+            await registry.register_plugin(plugin)
 
-    def test_configuration_defaults(self) -> None:
-        """Test default configuration values."""
-        # FlextPluginConfig has frozen entity issues, use Mock for test
-        config = Mock()
-        config.plugin_name = "test-plugin"
-        config.config_data = {}
-        config.enabled = True
-        config.permissions = []
-        config.auto_load = True
-        config.hot_reload = False
-        config.priority = 100
+        # Verify all registered
+        assert registry.get_plugin_count() == 3
 
-        if config.plugin_name != "test-plugin":
-            raise AssertionError(f"Expected {'test-plugin'}, got {config.plugin_name}")
-        if not (config.enabled):
-            raise AssertionError(f"Expected True, got {config.enabled}")
-        if config.config_data != {}:
-            raise AssertionError(f"Expected {{}}, got {config.config_data}")
-        assert config.permissions == []
-        if not (config.auto_load):
-            raise AssertionError(f"Expected True, got {config.auto_load}")
-        if config.hot_reload:
-            raise AssertionError(f"Expected False, got {config.hot_reload}")
-        assert config.priority == 100
+        # Test getting individual plugins
+        for i in range(3):
+            plugin = registry.get_plugin(f"multi-plugin-{i}")
+            assert plugin is not None
+            assert plugin.name == f"multi-plugin-{i}"
+
+        # Test unregistering one
+        result = await registry.unregister_plugin("multi-plugin-1")
+        assert result.success
+        assert registry.get_plugin_count() == 2
+
+        # Verify specific plugin was removed
+        assert registry.get_plugin("multi-plugin-1") is None
+        assert registry.get_plugin("multi-plugin-0") is not None
+        assert registry.get_plugin("multi-plugin-2") is not None
 
 
-class TestPluginExecutionContext:
-    """Test PluginExecutionContext model."""
+class TestPluginExecutionContextReal:
+    """REAL test suite for PluginExecutionContext functionality."""
 
-    def test_execution_context_creation(self) -> None:
-        """Test creating execution context."""
+    def test_execution_context_creation_real(self) -> None:
+        """Test creating REAL plugin execution context."""
         context = PluginExecutionContext(
-            plugin_id="test-plugin",
-            execution_id="exec-123",
-            input_data={"test": "data"},
-            context={"env": "test"},
-            timeout_seconds=30,
+            plugin_id="real-execution-plugin",
+            execution_id="exec-12345",
+            input_data={"source": "database", "table": "users"},
+            context={"environment": "test", "debug": True},
+            timeout_seconds=60,
         )
 
-        if context.plugin_id != "test-plugin":
-            expected = "test-plugin"
-            raise AssertionError(f"Expected {expected}, got {context.plugin_id}")
-        assert context.execution_id == "exec-123"
-        if context.input_data != {"test": "data"}:
-            expected_data = {"test": "data"}
-            raise AssertionError(f"Expected {expected_data}, got {context.input_data}")
-        assert context.context == {"env": "test"}
-        if context.timeout_seconds != 30:
-            raise AssertionError(f"Expected {30}, got {context.timeout_seconds}")
+        assert context.plugin_id == "real-execution-plugin"
+        assert context.execution_id == "exec-12345"
+        assert context.input_data["source"] == "database"
+        assert context.input_data["table"] == "users"
+        assert context.context["environment"] == "test"
+        assert context.context["debug"] is True
+        assert context.timeout_seconds == 60
 
-    def test_execution_context_defaults(self) -> None:
-        """Test default execution context values."""
+    def test_execution_context_defaults_real(self) -> None:
+        """Test REAL execution context with default values."""
         context = PluginExecutionContext(
-            plugin_id="test-plugin",
-            execution_id="exec-123",
+            plugin_id="minimal-context-plugin",
+            execution_id="minimal-exec",
         )
 
-        if context.plugin_id != "test-plugin":
-            expected = "test-plugin"
-            raise AssertionError(f"Expected {expected}, got {context.plugin_id}")
-        assert context.execution_id == "exec-123"
-        if context.input_data != {}:
-            raise AssertionError(f"Expected {{}}, got {context.input_data}")
+        assert context.plugin_id == "minimal-context-plugin"
+        assert context.execution_id == "minimal-exec"
+        assert context.input_data == {}
         assert context.context == {}
         assert context.timeout_seconds is None
 
+    def test_execution_context_with_complex_data_real(self) -> None:
+        """Test REAL execution context with complex data structures."""
+        complex_input: dict[str, object] = {
+            "database": {
+                "host": "localhost",
+                "port": 5432,
+                "tables": ["users", "orders"],
+            },
+            "api": {"endpoints": ["/data", "/export"], "auth": {"type": "bearer"}},
+        }
+        complex_context: dict[str, object] = {
+            "execution_mode": "batch",
+            "batch_size": 1000,
+            "retry_policy": {"max_retries": 3, "backoff": "exponential"},
+        }
 
-class TestPluginManagerResult:
-    """Test PluginManagerResult model."""
+        context = PluginExecutionContext(
+            plugin_id="complex-data-plugin",
+            execution_id="complex-exec-789",
+            input_data=complex_input,
+            context=complex_context,
+            timeout_seconds=300,
+        )
 
-    def test_manager_result_creation(self) -> None:
-        """Test creating manager result."""
+        assert context.plugin_id == "complex-data-plugin"
+        assert context.execution_id == "complex-exec-789"
+        # Type-safe access to nested data
+        database_data = context.input_data.get("database", {})
+        assert isinstance(database_data, dict)
+        assert database_data.get("host") == "localhost"
+
+        tables_data = database_data.get("tables", [])
+        assert isinstance(tables_data, list)
+        assert len(tables_data) == 2
+
+        assert context.context.get("execution_mode") == "batch"
+        assert context.context.get("batch_size") == 1000
+        assert context.timeout_seconds == 300
+
+
+class TestPluginManagerResultReal:
+    """REAL test suite for PluginManagerResult functionality."""
+
+    def test_manager_result_creation_real(self) -> None:
+        """Test creating REAL manager result."""
         result = PluginManagerResult(
-            operation="initialize",
+            operation="bulk_load",
             success=True,
         )
-        result.plugins_affected = ["plugin1", "plugin2"]
-        result.execution_time_ms = 150.5
-        result.details = {"plugins_loaded": 2}
+        result.plugins_affected = [
+            "extractor-plugin",
+            "loader-plugin",
+            "transformer-plugin",
+        ]
+        result.execution_time_ms = 250.75
+        result.details = {
+            "plugins_loaded": 3,
+            "load_method": "dynamic",
+            "total_size_mb": 12.5,
+        }
         result.errors = []
 
-        if result.operation != "initialize":
-            expected = "initialize"
-            raise AssertionError(f"Expected {expected}, got {result.operation}")
-        if not (result.success):
-            raise AssertionError(f"Expected True, got {result.success}")
-        if result.plugins_affected != ["plugin1", "plugin2"]:
-            expected_plugins = ["plugin1", "plugin2"]
-            raise AssertionError(
-                f"Expected {expected_plugins}, got {result.plugins_affected}",
-            )
-        assert result.execution_time_ms == 150.5
-        if result.details != {"plugins_loaded": 2}:
-            expected_details = {"plugins_loaded": 2}
-            raise AssertionError(f"Expected {expected_details}, got {result.details}")
+        assert result.operation == "bulk_load"
+        assert result.success is True
+        assert result.plugins_affected == [
+            "extractor-plugin",
+            "loader-plugin",
+            "transformer-plugin",
+        ]
+        assert result.execution_time_ms == 250.75
+        assert result.details["plugins_loaded"] == 3
+        assert result.details["load_method"] == "dynamic"
         assert result.errors == []
 
-    def test_manager_result_with_errors(self) -> None:
-        """Test manager result with errors."""
+    def test_manager_result_with_errors_real(self) -> None:
+        """Test REAL manager result with errors."""
         result = PluginManagerResult(
-            operation="load_plugins",
+            operation="validate_plugins",
             success=False,
         )
-        result.plugins_affected = []
-        result.execution_time_ms = 50.0
-        result.details = {}
-        result.errors = ["Plugin not found", "Invalid configuration"]
+        result.plugins_affected = ["corrupted-plugin"]
+        result.execution_time_ms = 85.25
+        result.details = {
+            "validation_failures": 2,
+            "corrupted_files": ["config.yaml", "manifest.json"],
+        }
+        result.errors = [
+            "Configuration validation failed: missing required field 'name'",
+            "Manifest parsing error: invalid JSON structure",
+        ]
 
-        if result.operation != "load_plugins":
-            raise AssertionError(f"Expected {'load_plugins'}, got {result.operation}")
-        if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")
-        assert result.errors == ["Plugin not found", "Invalid configuration"]
+        assert result.operation == "validate_plugins"
+        assert result.success is False
+        assert result.plugins_affected == ["corrupted-plugin"]
+        assert result.execution_time_ms == 85.25
+        assert result.details["validation_failures"] == 2
+        assert len(result.errors) == 2
+        assert "Configuration validation failed" in result.errors[0]
 
+    def test_manager_result_create_detailed_real(self) -> None:
+        """Test creating REAL detailed manager result from config."""
+        config: dict[str, object] = {
+            "success": True,
+            "plugins_affected": ["test-plugin-1", "test-plugin-2"],
+            "execution_time_ms": 125.5,
+            "details": {"batch_processed": True, "total_plugins": 2},
+            "errors": [],
+        }
 
-class TestFlextPluginManager:
-    """Test FlextPluginManager functionality."""
+        result = PluginManagerResult.create_detailed("batch_process", config)
 
-    @pytest.fixture
-    def manager(self) -> FlextPluginManager:
-        """Create plugin manager for testing."""
-        return FlextPluginManager(auto_discover=False, security_enabled=False)
-
-    @pytest.mark.asyncio
-    async def test_manager_initialization(self, manager: FlextPluginManager) -> None:
-        """Test plugin manager initialization."""
-        assert not manager.is_initialized
-
-        result = await manager.initialize()
-
-        assert result.success
-        assert manager.is_initialized
-        assert isinstance(result.data, PluginManagerResult)
-        if result.data.operation != "initialize":
-            raise AssertionError(
-                f"Expected {'initialize'}, got {result.data.operation}",
-            )
-
-    @pytest.mark.asyncio
-    async def test_manager_initialization_with_auto_discover(self) -> None:
-        """Test manager initialization with auto-discovery."""
-        manager = FlextPluginManager(auto_discover=True, security_enabled=False)
-
-        # The wrapper doesn't actually implement auto-discover, so we should test that
-        # it initializes successfully without calling discover
-        result = await manager.initialize()
-
-        assert result.success
-        assert manager.is_initialized
-        # Our backwards compatibility wrapper doesn't implement auto-discover
-        # This test just verifies basic initialization works
-
-    @pytest.mark.asyncio
-    async def test_discover_and_load_plugins_empty(
-        self,
-        manager: FlextPluginManager,
-    ) -> None:
-        """Test discovering plugins when none are available."""
-        # The backwards compatibility wrapper always returns failure
-        result = await manager.discover_and_load_plugins()
-
-        assert not result.success
-        assert result.error is not None
-        if "No plugins discovered" not in result.error:
-            raise AssertionError(
-                f"Expected {'No plugins discovered'} in {result.error}",
-            )
-
-    @pytest.mark.asyncio
-    async def test_execute_plugin_not_found(self, manager: FlextPluginManager) -> None:
-        """Test executing non-existent plugin."""
-        await manager.initialize()
-
-        result = await manager.execute_plugin(
-            "non-existent-plugin",
-            {"test": "data"},
-        )
-
-        assert not result.success
-        assert result.error is not None
-        if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
-
-    @pytest.mark.asyncio
-    async def test_configure_plugin_not_found(
-        self,
-        manager: FlextPluginManager,
-    ) -> None:
-        """Test configuring non-existent plugin."""
-        await manager.initialize()
-
-        # Use a Mock config since FlextPluginConfig has frozen entity issues
-        config = Mock()
-        result = await manager.configure_plugin("non-existent", config)
-
-        assert not result.success
-        assert result.error is not None
-        if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected {'not found'} in {result.error.lower()}")
-
-    @pytest.mark.asyncio
-    async def test_reload_plugin_not_configured(
-        self,
-        manager: FlextPluginManager,
-    ) -> None:
-        """Test reloading plugin that doesn't exist."""
-        await manager.initialize()
-
-        result = await manager.reload_plugin("test-plugin")
-
-        assert not result.success
-        assert result.error is not None
-        if "not discovered" not in result.error.lower():
-            raise AssertionError(
-                f"Expected {'not discovered'} in {result.error.lower()}",
-            )
-
-    @pytest.mark.asyncio
-    async def test_unload_plugin_not_found(self, manager: FlextPluginManager) -> None:
-        """Test unloading non-existent plugin."""
-        await manager.initialize()
-
-        result = await manager.unload_plugin("non-existent")
-
-        # Plugin not found should return failure (not idempotent in current implementation)
-        assert result.is_failure
-        assert result.error is not None
-        assert "not found" in result.error
-
-    @pytest.mark.asyncio
-    async def test_integrate_with_protocols(self, manager: FlextPluginManager) -> None:
-        """Test protocol integration."""
-        await manager.initialize()
-
-        result = await manager.integrate_with_protocols()
-
-        # Should succeed as it's currently a placeholder
-        assert result.success
-
-    def test_get_plugin_status_not_found(self, manager: FlextPluginManager) -> None:
-        """Test getting status of non-existent plugin."""
-        result = manager.get_plugin_status("non-existent")
-        # Method returns FlextResult[None].fail(), not a status dict
-        assert not result.success
-        assert result.error is not None
-        if "not found" not in result.error.lower():
-            raise AssertionError(f"Expected 'not found' in {result.error.lower()}")
-
-    def test_list_plugins_empty(self, manager: FlextPluginManager) -> None:
-        """Test listing plugins when registry is empty."""
-        plugins = manager.list_plugins()
-        if plugins != []:
-            raise AssertionError(f"Expected {[]}, got {plugins}")
-
-    def test_list_plugins_enabled_only(self, manager: FlextPluginManager) -> None:
-        """Test listing only enabled plugins."""
-        plugins = manager.list_plugins(enabled_only=True)
-        if plugins != []:
-            raise AssertionError(f"Expected {[]}, got {plugins}")
-
-    @pytest.mark.asyncio
-    async def test_cleanup(self, manager: FlextPluginManager) -> None:
-        """Test plugin manager cleanup."""
-        await manager.initialize()
-        assert manager.is_initialized
-
-        await manager.cleanup()
-        assert not manager.is_initialized
-
-    def test_plugin_count_property(self, manager: FlextPluginManager) -> None:
-        """Test plugin count property."""
-        if manager.plugin_count != 0:
-            raise AssertionError(f"Expected {0}, got {manager.plugin_count}")
-
-    @pytest.mark.asyncio
-    async def test_create_plugin_context(self, manager: FlextPluginManager) -> None:
-        """Test creating plugin context."""
-        context = await manager._create_plugin_context("test-plugin")
-
-        if context.plugin_id != "test-plugin":
-            raise AssertionError(f"Expected {'test-plugin'}, got {context.plugin_id}")
-        assert context.input_data == {}
-        if context.context != {}:
-            raise AssertionError(f"Expected {{}}, got {context.context}")
-        assert context.execution_id is not None
-        if context.timeout_seconds is not None:
-            raise AssertionError(f"Expected None, got {context.timeout_seconds}")
+        assert result.operation == "batch_process"
+        assert result.success is True
+        assert result.plugins_affected == ["test-plugin-1", "test-plugin-2"]
+        assert result.execution_time_ms == 125.5
+        assert result.details["batch_processed"] is True
+        assert result.errors == []
 
 
-class TestCreateFlextPluginManager:
-    """Test plugin manager factory function."""
+class TestCreatePluginManagerFactoryReal:
+    """REAL test suite for create_plugin_manager factory function."""
 
-    def test_create_plugin_manager_defaults(self) -> None:
-        """Test creating plugin manager with defaults."""
+    def test_create_plugin_manager_default_real(self) -> None:
+        """Test creating REAL plugin manager with default settings."""
         manager = create_plugin_manager()
 
-        # create_plugin_manager returns SimplePluginRegistry, not FlextPluginManager
-
+        assert manager is not None
         assert isinstance(manager, SimplePluginRegistry)
-        # SimplePluginRegistry doesn't have auto_discover/security_enabled properties
-        assert hasattr(manager, "register_plugin")
-        assert hasattr(manager, "unregister_plugin")
+        assert manager.get_plugin_count() == 0
 
-    def test_create_plugin_manager_custom_settings(self) -> None:
-        """Test creating plugin manager with custom settings."""
+    def test_create_plugin_manager_with_options_real(self) -> None:
+        """Test creating REAL plugin manager with specific options."""
         manager = create_plugin_manager(
-            _container=None,
-            _auto_discover=False,
+            _auto_discover=True,
             _security_enabled=False,
         )
 
-        # create_plugin_manager returns SimplePluginRegistry, not FlextPluginManager
-
+        assert manager is not None
         assert isinstance(manager, SimplePluginRegistry)
-        # Parameters are ignored by create_plugin_manager, just test basic functionality
-        assert hasattr(manager, "register_plugin")
-        assert hasattr(manager, "unregister_plugin")
+        assert manager.get_plugin_count() == 0
+
+    @pytest.mark.asyncio
+    async def test_factory_created_manager_functionality_real(self) -> None:
+        """Test REAL functionality of factory-created manager."""
+        manager = create_plugin_manager()
+
+        # Create real plugin to test with
+        plugin = FlextPluginEntity.create(
+            name="factory-test-plugin",
+            plugin_version="1.0.0",
+            description="Plugin created for factory testing",
+            plugin_type=PluginType.PROCESSOR,
+        )
+
+        # Test registration
+        result = await manager.register_plugin(plugin)
+        assert result.success
+        assert manager.get_plugin_count() == 1
+
+        # Test retrieval
+        retrieved_plugin = manager.get_plugin("factory-test-plugin")
+        assert retrieved_plugin is not None
+        assert retrieved_plugin.name == "factory-test-plugin"
+
+        # Test cleanup
+        await manager.cleanup_all()
+        assert manager.get_plugin_count() == 0

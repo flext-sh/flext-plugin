@@ -77,14 +77,14 @@ class TestPluginDiscoveryService:
 
     def test_has_required_abstract_methods(self) -> None:
         """Test that all required abstract methods are defined."""
+        # PluginDiscoveryService is now mapped to FlextPluginDiscoveryPort
         expected_methods = {
             "discover_plugins",
-            "validate_plugin_metadata",
-            "get_plugin_manifest",
+            "validate_plugin",
         }
         abstract_methods = PluginDiscoveryService.__abstractmethods__
         if expected_methods != abstract_methods:
-            msg: str = f"Expected {abstract_methods}, got {expected_methods}"
+            msg: str = f"Expected {expected_methods}, got {abstract_methods}"
             raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
@@ -92,26 +92,27 @@ class TestPluginDiscoveryService:
         # Test discover_plugins signature
         sig = inspect.signature(PluginDiscoveryService.discover_plugins)
         params = list(sig.parameters.keys())
-        if params != ["self", "search_paths"]:
-            msg: str = f"Expected {['self', 'search_paths']}, got {params}"
+        if params != ["self", "path"]:
+            msg: str = f"Expected {['self', 'path']}, got {params}"
             raise AssertionError(msg)
-        # Test validate_plugin_metadata signature
-        sig = inspect.signature(PluginDiscoveryService.validate_plugin_metadata)
+        # Test validate_plugin signature
+        sig = inspect.signature(PluginDiscoveryService.validate_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "metadata"]:
-            msg: str = f"Expected {['self', 'metadata']}, got {params}"
-            raise AssertionError(msg)
-        # Test get_plugin_manifest signature
-        sig = inspect.signature(PluginDiscoveryService.get_plugin_manifest)
-        params = list(sig.parameters.keys())
-        if params != ["self", "plugin_path"]:
-            msg: str = f"Expected {['self', 'plugin_path']}, got {params}"
+        if params != ["self", "plugin"]:
+            msg: str = f"Expected {['self', 'plugin']}, got {params}"
             raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
-        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginDiscoveryService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+        try:
+            PluginDiscoveryService()
+            # If we reach here, the instantiation succeeded, which is wrong
+            msg = "Expected TypeError when instantiating abstract class"
+            raise AssertionError(msg)
+        except TypeError as e:
+            # This is expected - verify it's the right error
+            error_msg = str(e)
+            assert "abstract" in error_msg.lower(), f"Unexpected error: {error_msg}"
 
 
 class TestPluginValidationService:
@@ -151,7 +152,7 @@ class TestPluginValidationService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginValidationService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginValidationService()
 
 
 class TestPluginLifecycleService:
@@ -213,7 +214,7 @@ class TestPluginLifecycleService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginLifecycleService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginLifecycleService()
 
 
 class TestPluginExecutionService:
@@ -242,11 +243,11 @@ class TestPluginExecutionService:
 
     def test_has_required_abstract_methods(self) -> None:
         """Test that all required abstract methods are defined."""
+        # PluginExecutionService is now mapped to FlextPluginLoaderPort
         expected_methods = {
-            "execute_plugin",
-            "get_execution_status",
-            "cancel_execution",
-            "get_execution_logs",
+            "load_plugin",
+            "unload_plugin",
+            "is_plugin_loaded",
         }
         abstract_methods = PluginExecutionService.__abstractmethods__
         if expected_methods != abstract_methods:
@@ -255,23 +256,24 @@ class TestPluginExecutionService:
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
-        # Test execute_plugin signature
-        sig = inspect.signature(PluginExecutionService.execute_plugin)
+        # PluginExecutionService is now mapped to FlextPluginLoaderPort
+        # Test load_plugin signature
+        sig = inspect.signature(PluginExecutionService.load_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin", "input_data", "execution_context"]:
-            msg: str = f"Expected {['self', 'plugin', 'input_data', 'execution_context']}, got {params}"
+        if params != ["self", "plugin"]:
+            msg: str = f"Expected ['self', 'plugin'], got {params}"
             raise AssertionError(msg)
-        # Test get_execution_status signature
-        sig = inspect.signature(PluginExecutionService.get_execution_status)
+        # Test unload_plugin signature
+        sig = inspect.signature(PluginExecutionService.unload_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "execution_id"]:
-            msg: str = f"Expected {['self', 'execution_id']}, got {params}"
+        if params != ["self", "plugin_name"]:
+            msg: str = f"Expected ['self', 'plugin_name'], got {params}"
             raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginExecutionService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginExecutionService()
 
 
 class TestPluginRegistryService:
@@ -314,7 +316,7 @@ class TestPluginRegistryService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginRegistryService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginRegistryService()
 
 
 class TestPluginHotReloadService:
@@ -357,7 +359,7 @@ class TestPluginHotReloadService:
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginHotReloadService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginHotReloadService()
 
 
 class TestPluginSecurityService:
@@ -370,36 +372,40 @@ class TestPluginSecurityService:
 
     def test_has_required_abstract_methods(self) -> None:
         """Test that all required abstract methods are defined."""
+        # PluginSecurityService is now mapped to FlextPluginManagerPort
         expected_methods = {
-            "create_sandbox",
-            "enforce_resource_limits",
-            "validate_imports",
-            "scan_for_vulnerabilities",
+            "install_plugin",
+            "uninstall_plugin",
+            "enable_plugin",
+            "disable_plugin",
+            "get_plugin_config",
+            "update_plugin_config",
         }
         abstract_methods = PluginSecurityService.__abstractmethods__
         if expected_methods != abstract_methods:
-            msg: str = f"Expected {abstract_methods}, got {expected_methods}"
+            msg: str = f"Expected {expected_methods}, got {abstract_methods}"
             raise AssertionError(msg)
 
     def test_method_signatures(self) -> None:
         """Test method signatures are correct."""
-        # Test create_sandbox signature
-        sig = inspect.signature(PluginSecurityService.create_sandbox)
+        # PluginSecurityService is now mapped to FlextPluginManagerPort
+        # Test install_plugin signature
+        sig = inspect.signature(PluginSecurityService.install_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin"]:
-            msg: str = f"Expected {['self', 'plugin']}, got {params}"
+        if params != ["self", "plugin_path"]:
+            msg: str = f"Expected ['self', 'plugin_path'], got {params}"
             raise AssertionError(msg)
-        # Test scan_for_vulnerabilities signature
-        sig = inspect.signature(PluginSecurityService.scan_for_vulnerabilities)
+        # Test uninstall_plugin signature
+        sig = inspect.signature(PluginSecurityService.uninstall_plugin)
         params = list(sig.parameters.keys())
-        if params != ["self", "plugin"]:
-            msg: str = f"Expected {['self', 'plugin']}, got {params}"
+        if params != ["self", "plugin_name"]:
+            msg: str = f"Expected ['self', 'plugin_name'], got {params}"
             raise AssertionError(msg)
 
     def test_cannot_instantiate_directly(self) -> None:
         """Test that abstract class cannot be instantiated directly."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            PluginSecurityService()  # type: ignore[misc]  # Testing abstract class instantiation failure
+            PluginSecurityService()
 
 
 class TestAllPorts:

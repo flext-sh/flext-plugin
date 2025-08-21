@@ -191,7 +191,9 @@ class StateManager:
         state_data: dict[str, object] = {}
 
         # Check if plugin implements StatefulPlugin protocol
-        if hasattr(plugin, "get_state") and callable(getattr(plugin, "get_state", None)):
+        if hasattr(plugin, "get_state") and callable(
+            getattr(plugin, "get_state", None)
+        ):
             stateful_plugin = cast("StatefulPlugin", plugin)
             try:
                 # Plugin state returned as dict from protocol method
@@ -507,35 +509,35 @@ class HotReloadManager(FlextEntity):
     @property
     def state_manager(self) -> StateManager:
         """Get state manager instance."""
-        if not hasattr(self, "_state_manager"):
+        if not hasattr(self, "_state_manager") or self._state_manager is None:
             state_dir = getattr(self, "state_backup_dir", None) or Path(
                 "./state_backup",
             )
             object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return cast("StateManager", self._state_manager)  # type: ignore[attr-defined]
+        return cast("StateManager", self._state_manager)
 
     @property
     def rollback_manager(self) -> RollbackManager:
         """Get rollback manager instance."""
-        if not hasattr(self, "_rollback_manager"):
+        if not hasattr(self, "_rollback_manager") or self._rollback_manager is None:
             object.__setattr__(
                 self,
                 "_rollback_manager",
                 RollbackManager(self.state_manager),
             )
-        return cast("RollbackManager", self._rollback_manager)  # type: ignore[attr-defined]
+        return cast("RollbackManager", self._rollback_manager)
 
     @property
     def watcher(self) -> PluginWatcher:
         """Get plugin watcher instance."""
-        if not hasattr(self, "_watcher"):
+        if not hasattr(self, "_watcher") or self._watcher is None:
             watch_dirs = getattr(
                 self,
                 "watch_directories",
                 [Path(self.plugin_directory)],
             )
             object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return cast("PluginWatcher", self._watcher)  # type: ignore[attr-defined]
+        return cast("PluginWatcher", self._watcher)
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.

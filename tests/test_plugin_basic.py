@@ -127,8 +127,10 @@ class TestFlextPluginIntegration:
         unload_result = await manager.unload_plugin("nonexistent-plugin")
         result = unload_result
 
-        assert hasattr(result, "success") and not result.success
-        assert hasattr(result, "error") and result.error is not None
+        assert hasattr(result, "success")
+        assert not result.success
+        assert hasattr(result, "error")
+        assert result.error is not None
         error_text = str(result.error).lower()
         if "not found" not in error_text:
             raise AssertionError(f"Expected 'not found' in {error_text}")

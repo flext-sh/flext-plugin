@@ -185,7 +185,9 @@ class FlextPluginRegistryPort(ABC):
         """
 
     @abstractmethod
-    def search_plugins(self, registry: str, query: str) -> FlextResult[list[dict[str, object]]]:
+    def search_plugins(
+        self, registry: str, query: str
+    ) -> FlextResult[list[dict[str, object]]]:
         """Search for plugins in a specific registry.
 
         Args:

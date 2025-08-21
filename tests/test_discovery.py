@@ -68,7 +68,9 @@ class TestPluginDiscovery:
     def test_discovery_creation_with_valid_directory(self) -> None:
         """Test PluginDiscovery.create() factory method with valid directory."""
         # Create discovery instance using actual factory method
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/valid/path")
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory="/valid/path"
+        )
 
         # Validate creation succeeded
         assert discovery is not None
@@ -89,7 +91,7 @@ class TestPluginDiscovery:
     @pytest.mark.asyncio
     async def test_scan_empty_directory_real(self, tmp_path: Path) -> None:
         """Test scanning empty directory with real file system operations.
-        
+
         Creates actual empty directory and validates that scan() returns
         empty list gracefully without errors.
         """
@@ -98,7 +100,9 @@ class TestPluginDiscovery:
         empty_dir.mkdir()
 
         # Create discovery instance with real directory
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(empty_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(empty_dir)
+        )
 
         # Scan should return empty list
         result: list[dict[str, object]] = await discovery.scan()
@@ -110,7 +114,7 @@ class TestPluginDiscovery:
     @pytest.mark.asyncio
     async def test_scan_plugins_with_real_files(self, tmp_path: Path) -> None:
         """Test scanning directory with real plugin files.
-        
+
         Creates actual Python plugin files and validates that scan()
         properly detects and returns plugin information.
         """
@@ -124,11 +128,11 @@ class TestPluginDiscovery:
 
 class TestPlugin1:
     """A real test plugin."""
-    
+
     def __init__(self) -> None:
         self.name = "test-plugin-1"
         self.version = "1.0.0"
-    
+
     def execute(self) -> dict[str, str]:
         return {"status": "success", "plugin": "test1"}
 '''
@@ -144,7 +148,9 @@ def get_plugin() -> dict[str, str]:
         (plugin_dir / "test_plugin2.py").write_text(plugin2_content)
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(plugin_dir)
+        )
 
         # Scan for plugins
         result: list[dict[str, object]] = await discovery.scan()
@@ -170,12 +176,14 @@ def get_plugin() -> dict[str, str]:
     @pytest.mark.asyncio
     async def test_scan_nonexistent_directory_real(self) -> None:
         """Test scanning non-existent directory with real file system.
-        
+
         Creates discovery instance with non-existent directory path and
         validates that scan() handles missing directory gracefully.
         """
         # Create discovery with non-existent directory
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/absolutely/nonexistent/path")
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory="/absolutely/nonexistent/path"
+        )
 
         # Should return empty list gracefully (no exceptions)
         result: list[dict[str, object]] = await discovery.scan()
@@ -187,7 +195,7 @@ def get_plugin() -> dict[str, str]:
     @pytest.mark.asyncio
     async def test_discover_plugin_entry_points_real(self, tmp_path: Path) -> None:
         """Test discovering plugin entry points with real files.
-        
+
         Creates actual plugin files and validates that discover_plugin_entry_points()
         properly detects and returns entry point information.
         """
@@ -201,7 +209,7 @@ def get_plugin() -> dict[str, str]:
 
 class EntryPlugin1:
     """Entry plugin class."""
-    
+
     def execute(self) -> dict[str, str]:
         return {"status": "ok"}
 ''')
@@ -214,7 +222,9 @@ def plugin_function() -> str:
 ''')
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(plugin_dir)
+        )
 
         # Discover entry points
         result: list[dict[str, object]] = await discovery.discover_plugin_entry_points()
@@ -237,21 +247,25 @@ def plugin_function() -> str:
 
     def test_business_rules_validation_real(self) -> None:
         """Test business rules validation with real validation logic.
-        
+
         Tests the actual validate_business_rules() method implementation
         with valid and invalid directory configurations.
         """
         # Test with empty plugin directory (should fail)
         invalid_discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="")
 
-        validation_result: FlextResult[None] = invalid_discovery.validate_business_rules()
+        validation_result: FlextResult[None] = (
+            invalid_discovery.validate_business_rules()
+        )
 
         assert not validation_result.success
         assert validation_result.error is not None
         assert "Plugin directory cannot be empty" in validation_result.error
 
         # Test with valid plugin directory (should pass)
-        valid_discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory="/valid/directory")
+        valid_discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory="/valid/directory"
+        )
 
         valid_result: FlextResult[None] = valid_discovery.validate_business_rules()
 
@@ -261,7 +275,7 @@ def plugin_function() -> str:
     @pytest.mark.asyncio
     async def test_scan_ignores_special_files(self, tmp_path: Path) -> None:
         """Test that scan() properly ignores __pycache__ and special files.
-        
+
         Creates directory with special Python files and validates that
         scan() correctly filters them out.
         """
@@ -284,7 +298,9 @@ class ValidPlugin:
         (plugin_dir / "__main__.py").write_text("# Main file")
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(plugin_dir)
+        )
 
         # Scan plugins
         result: list[dict[str, object]] = await discovery.scan()
@@ -295,21 +311,21 @@ class ValidPlugin:
 
     def test_plugin_discovery_factory_validation(self) -> None:
         """Test PluginDiscovery.create() factory method with various parameters.
-        
+
         Tests the actual factory method implementation with different
         parameter combinations and validates proper entity creation.
         """
         # Test with minimal parameters
-        discovery1: PluginDiscovery = PluginDiscovery.create(plugin_directory="/test/path")
+        discovery1: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory="/test/path"
+        )
         assert discovery1.plugin_directory == "/test/path"
         assert hasattr(discovery1, "id")
         assert hasattr(discovery1, "version")
 
         # Test with additional kwargs
         discovery2: PluginDiscovery = PluginDiscovery.create(
-            plugin_directory="/another/path",
-            version=2,
-            metadata={"env": "test"}
+            plugin_directory="/another/path", version=2, metadata={"env": "test"}
         )
         assert discovery2.plugin_directory == "/another/path"
         # Version and metadata are handled by FlextEntity
@@ -317,7 +333,7 @@ class ValidPlugin:
     @pytest.mark.asyncio
     async def test_scan_reports_accurate_file_sizes(self, tmp_path: Path) -> None:
         """Test that scan() accurately reports file sizes for different plugins.
-        
+
         Creates plugins with different content sizes and validates that
         scan() correctly reports the actual file sizes.
         """
@@ -327,13 +343,17 @@ class ValidPlugin:
 
         # Create plugins with different content sizes
         small_content = "# Small plugin\nclass Small: pass"
-        large_content = "# Large plugin\n" + "# Comment line\n" * 100 + "class Large: pass"
+        large_content = (
+            "# Large plugin\n" + "# Comment line\n" * 100 + "class Large: pass"
+        )
 
         (plugin_dir / "small_plugin.py").write_text(small_content)
         (plugin_dir / "large_plugin.py").write_text(large_content)
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(plugin_dir)
+        )
 
         # Scan plugins
         result: list[dict[str, object]] = await discovery.scan()
@@ -341,8 +361,12 @@ class ValidPlugin:
         # Validate results include accurate size information
         assert len(result) == 2
 
-        small_plugin: dict[str, object] = next(p for p in result if p["name"] == "small_plugin")
-        large_plugin: dict[str, object] = next(p for p in result if p["name"] == "large_plugin")
+        small_plugin: dict[str, object] = next(
+            p for p in result if p["name"] == "small_plugin"
+        )
+        large_plugin: dict[str, object] = next(
+            p for p in result if p["name"] == "large_plugin"
+        )
 
         # Validate size accuracy
         small_size = cast("int", small_plugin["size"])
@@ -356,7 +380,7 @@ class ValidPlugin:
     @pytest.mark.asyncio
     async def test_scan_with_modified_timestamps(self, tmp_path: Path) -> None:
         """Test that scan() correctly reports file modification timestamps.
-        
+
         Creates plugin files at different times and validates that
         scan() correctly captures the modification timestamps.
         """
@@ -373,10 +397,14 @@ class ValidPlugin:
         time.sleep(0.1)
 
         # Create second plugin
-        (plugin_dir / "second_plugin.py").write_text("# Second plugin\nclass Second: pass")
+        (plugin_dir / "second_plugin.py").write_text(
+            "# Second plugin\nclass Second: pass"
+        )
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery.create(plugin_directory=str(plugin_dir))
+        discovery: PluginDiscovery = PluginDiscovery.create(
+            plugin_directory=str(plugin_dir)
+        )
 
         # Scan plugins
         result: list[dict[str, object]] = await discovery.scan()
@@ -390,8 +418,12 @@ class ValidPlugin:
             assert plugin["modified"] > 0  # Should be valid timestamp
 
         # Get plugins by name
-        first_plugin: dict[str, object] = next(p for p in result if p["name"] == "first_plugin")
-        second_plugin: dict[str, object] = next(p for p in result if p["name"] == "second_plugin")
+        first_plugin: dict[str, object] = next(
+            p for p in result if p["name"] == "first_plugin"
+        )
+        second_plugin: dict[str, object] = next(
+            p for p in result if p["name"] == "second_plugin"
+        )
 
         # Second plugin should have later timestamp (might be equal if too fast)
         first_time = cast("float", first_plugin["modified"])

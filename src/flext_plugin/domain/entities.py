@@ -203,10 +203,12 @@ class FlextPluginEntity(FlextEntity):
             "metadata": kwargs.get("metadata", {}),
             "name": plugin_name,
             "plugin_version": plugin_version,
-            "description": config.get("description", ""),
-            "author": config.get("author", ""),
-            "status": config.get("status", PluginStatus.INACTIVE),
-            "plugin_type": config.get("plugin_type", PluginType.UTILITY),
+            "description": config.get("description", kwargs.get("description", "")),
+            "author": config.get("author", kwargs.get("author", "")),
+            "status": config.get("status", kwargs.get("status", PluginStatus.INACTIVE)),
+            "plugin_type": config.get(
+                "plugin_type", kwargs.get("plugin_type", PluginType.UTILITY)
+            ),
         }
 
         return cls.model_validate(instance_data)

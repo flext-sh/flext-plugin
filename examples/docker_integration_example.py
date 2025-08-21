@@ -237,7 +237,9 @@ def main() -> None:  # noqa: PLR0912, PLR0915
 
     print(f"   Plugin: {postgres_plugin.name} v{postgres_plugin.plugin_version}")
     postgres_db_config = cast("dict[str, object]", postgres_config["database"])
-    postgres_monitoring_config = cast("dict[str, object]", postgres_config["monitoring"])
+    postgres_monitoring_config = cast(
+        "dict[str, object]", postgres_config["monitoring"]
+    )
     print(f"   Database: {postgres_db_config['database']}")
     print(f"   Connection pool: {postgres_db_config['pool_size']} connections")
     print(

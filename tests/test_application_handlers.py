@@ -128,10 +128,7 @@ class TestFlextPluginRegistrationHandler:
         handler = FlextPluginRegistrationHandler()
 
         # Create real plugin entity
-        plugin = FlextPluginEntity.create(
-            name="test-plugin",
-            plugin_version="1.0.0"
-        )
+        plugin = FlextPluginEntity.create(name="test-plugin", plugin_version="1.0.0")
 
         # Should fail because no service is configured
         result: FlextResult[bool] = handler.handle_register_plugin(plugin)
@@ -146,9 +143,10 @@ class TestFlextPluginRegistrationHandler:
         try:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail Pydantic validation
-                plugin_version="1.0.0"
+                plugin_version="1.0.0",
             )
-            assert False, "Should have failed validation"
+            msg = "Should have failed validation"
+            raise AssertionError(msg)
         except Exception as e:
             # Pydantic validation should prevent empty name
             assert "String should have at least 1 character" in str(e)
@@ -159,9 +157,10 @@ class TestFlextPluginRegistrationHandler:
         try:
             FlextPluginEntity.create(
                 name="test-plugin",
-                plugin_version=""  # Empty version should fail Pydantic validation
+                plugin_version="",  # Empty version should fail Pydantic validation
             )
-            assert False, "Should have failed validation"
+            msg = "Should have failed validation"
+            raise AssertionError(msg)
         except Exception as e:
             # Pydantic validation should prevent empty version
             assert "String should have at least 1 character" in str(e)
@@ -173,8 +172,7 @@ class TestFlextPluginRegistrationHandler:
 
         # Create valid plugin entity
         plugin = FlextPluginEntity.create(
-            name="valid-test-plugin",
-            plugin_version="1.0.0"
+            name="valid-test-plugin", plugin_version="1.0.0"
         )
 
         # Should attempt real registration through the loader
@@ -241,8 +239,7 @@ class TestFlextPluginEventHandler:
 
         # Create real plugin entity
         plugin = FlextPluginEntity.create(
-            name="loaded-test-plugin",
-            plugin_version="1.0.0"
+            name="loaded-test-plugin", plugin_version="1.0.0"
         )
 
         result: FlextResult[bool] = handler.handle_plugin_loaded(plugin)
@@ -256,9 +253,10 @@ class TestFlextPluginEventHandler:
         try:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail Pydantic validation
-                plugin_version="1.0.0"
+                plugin_version="1.0.0",
             )
-            assert False, "Should have failed validation"
+            msg = "Should have failed validation"
+            raise AssertionError(msg)
         except Exception as e:
             # Pydantic validation should prevent empty name
             assert "String should have at least 1 character" in str(e)
@@ -300,24 +298,25 @@ class TestHandlerIntegration:
 
 class LifecyclePlugin:
     """A real test plugin for lifecycle testing."""
-    
+
     def __init__(self) -> None:
         self.name = "lifecycle-plugin"
         self.version = "1.0.0"
-    
+
     def execute(self) -> dict[str, str]:
         return {"status": "success", "message": "Plugin executed successfully"}
 ''')
 
         # Create real plugin loader adapter and handlers
         plugin_loader = TestPluginLoaderAdapter()
-        registration_handler = FlextPluginRegistrationHandler(plugin_service=plugin_loader)
+        registration_handler = FlextPluginRegistrationHandler(
+            plugin_service=plugin_loader
+        )
         event_handler = FlextPluginEventHandler()
 
         # Create real plugin entity
         plugin = FlextPluginEntity.create(
-            name="lifecycle-plugin",
-            plugin_version="1.0.0"
+            name="lifecycle-plugin", plugin_version="1.0.0"
         )
 
         # Test registration
@@ -330,7 +329,9 @@ class LifecyclePlugin:
         assert loaded_result.data is True
 
         # Test unregistration
-        unregistration_result = registration_handler.handle_unregister_plugin("lifecycle-plugin")
+        unregistration_result = registration_handler.handle_unregister_plugin(
+            "lifecycle-plugin"
+        )
         assert isinstance(unregistration_result, FlextResult)
 
         # Test plugin unloaded event
@@ -344,8 +345,7 @@ class LifecyclePlugin:
 
         # Test normal case
         plugin = FlextPluginEntity.create(
-            name="error-test-plugin",
-            plugin_version="1.0.0"
+            name="error-test-plugin", plugin_version="1.0.0"
         )
 
         # Normal case should work
@@ -357,9 +357,10 @@ class LifecyclePlugin:
         try:
             FlextPluginEntity.create(
                 name="",  # This should fail Pydantic validation
-                plugin_version="1.0.0"
+                plugin_version="1.0.0",
             )
-            assert False, "Should have failed validation"
+            msg = "Should have failed validation"
+            raise AssertionError(msg)
         except Exception as e:
             # Pydantic validation should prevent empty name
             assert "String should have at least 1 character" in str(e)
@@ -367,8 +368,7 @@ class LifecyclePlugin:
         # Test valid entity but check if handler validates properly
         # Create plugin with valid name then test handler logic
         valid_plugin = FlextPluginEntity.create(
-            name="valid-plugin",
-            plugin_version="1.0.0"
+            name="valid-plugin", plugin_version="1.0.0"
         )
 
         # Handler should accept valid plugin

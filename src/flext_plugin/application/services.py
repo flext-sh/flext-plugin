@@ -492,7 +492,8 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
         class MockDiscoveryPort(FlextPluginDiscoveryPort):
             @override
             def discover_plugins(
-                self, path: str  # noqa: ARG002
+                self,
+                path: str,  # noqa: ARG002
             ) -> FlextResult[list[FlextPluginEntity]]:
                 return FlextResult[list[FlextPluginEntity]].ok([])
 
@@ -525,7 +526,9 @@ class FlextPluginDiscoveryService(FlextDomainService[object]):
                 f"Failed to scan directory: {e}"
             )
 
-    def validate_plugin_integrity(self, plugin: FlextPluginEntity | None) -> FlextResult[bool]:
+    def validate_plugin_integrity(
+        self, plugin: FlextPluginEntity | None
+    ) -> FlextResult[bool]:
         """Validate plugin integrity.
 
         Args:
