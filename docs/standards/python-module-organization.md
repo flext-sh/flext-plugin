@@ -835,10 +835,10 @@ class FlextPluginRegistry(FlextAggregateRoot):
 
 ```python
 from flext_plugin.domain.value_objects import FlextPluginMetadata, FlextPluginConfig
-from flext_core import FlextValueObject
+from flext_core import FlextValue
 from typing import List, Dict, Any, Optional
 
-class FlextPluginMetadata(FlextValueObject):
+class FlextPluginMetadata(FlextValue):
     """
     Immutable plugin metadata value object.
 
@@ -881,7 +881,7 @@ class FlextPluginMetadata(FlextValueObject):
         """Validate URL format."""
         return url.startswith(("http://", "https://"))
 
-class FlextPluginConfig(FlextValueObject):
+class FlextPluginConfig(FlextValue):
     """
     Immutable plugin configuration value object.
 
