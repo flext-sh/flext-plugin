@@ -56,7 +56,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
         super().__init__(
             name="basic-data-processor",
-            version="1.0.0",
+            version="0.9.0",
             config=final_config,
             **kwargs
         )
@@ -471,7 +471,7 @@ class TestBasicDataProcessorPlugin:
     def test_plugin_creation(self, plugin):
         """Test plugin creation and basic properties."""
         assert plugin.name == "basic-data-processor"
-        assert plugin.plugin_version == "1.0.0"
+        assert plugin.plugin_version == "0.9.0"
         assert plugin.status == PluginStatus.INACTIVE
         assert plugin.is_valid()
 
@@ -747,7 +747,7 @@ if __name__ == "__main__":
 {
   "plugin": {
     "name": "basic-data-processor",
-    "version": "1.0.0",
+    "version": "0.9.0",
     "type": "processor",
     "description": "Basic data processing plugin for demonstration",
     "author": "FLEXT Team",

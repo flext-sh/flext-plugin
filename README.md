@@ -103,7 +103,7 @@ platform = FlextPluginPlatform()
 # Create a plugin
 plugin = create_flext_plugin(
     name="my-data-extractor",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.TAP
 )
 

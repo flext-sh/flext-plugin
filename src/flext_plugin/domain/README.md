@@ -17,7 +17,7 @@ from flext_plugin.domain.entities import FlextPlugin
 ddddddd
 plugin = FlextPlugin(
     name="data-processor",
-    version="1.0.0",
+    version="0.9.0",
     config={
         "description": "Advanced data processing plugin",
         "author": "FLEXT Team"
@@ -185,8 +185,8 @@ class FlextPlugin(FlextEntity):
 Entities have unique identity and proper equality semantics:
 
 ```python
-plugin1 = FlextPlugin(name="test", version="1.0.0")
-plugin2 = FlextPlugin(name="test", version="1.0.0")
+plugin1 = FlextPlugin(name="test", version="0.9.0")
+plugin2 = FlextPlugin(name="test", version="0.9.0")
 
 # Entity identity is based on ID, not values
 assert plugin1.id != plugin2.id
@@ -327,7 +327,7 @@ from flext_plugin.domain.entities import FlextPlugin
 class TestFlextPlugin:
     def test_plugin_activation_success(self):
         """Test successful plugin activation."""
-        plugin = FlextPlugin(name="test", version="1.0.0")
+        plugin = FlextPlugin(name="test", version="0.9.0")
 
         result = plugin.activate()
 
@@ -337,7 +337,7 @@ class TestFlextPlugin:
 
     def test_plugin_activation_already_active(self):
         """Test activation of already active plugin."""
-        plugin = FlextPlugin(name="test", version="1.0.0")
+        plugin = FlextPlugin(name="test", version="0.9.0")
         plugin.status = PluginStatus.ACTIVE
 
         result = plugin.activate()
@@ -353,7 +353,7 @@ class TestFlextPluginRegistry:
     async def test_plugin_registration_success(self):
         """Test successful plugin registration."""
         registry = FlextPluginRegistry()
-        plugin = FlextPlugin(name="test", version="1.0.0")
+        plugin = FlextPlugin(name="test", version="0.9.0")
 
         result = await registry.register_plugin(plugin)
 
@@ -364,8 +364,8 @@ class TestFlextPluginRegistry:
     async def test_duplicate_plugin_registration(self):
         """Test duplicate plugin registration fails."""
         registry = FlextPluginRegistry()
-        plugin1 = FlextPlugin(name="test", version="1.0.0")
-        plugin2 = FlextPlugin(name="test", version="2.0.0")
+        plugin1 = FlextPlugin(name="test", version="0.9.0")
+        plugin2 = FlextPlugin(name="test", version="0.9.0")
 
         await registry.register_plugin(plugin1)
         result = await registry.register_plugin(plugin2)

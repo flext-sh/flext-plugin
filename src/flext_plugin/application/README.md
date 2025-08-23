@@ -22,7 +22,7 @@ service = FlextPluginService(registry)
 # Plugin lifecycle operations
 result = await service.create_plugin({
     "name": "data-processor",
-    "version": "1.0.0",
+    "version": "0.9.0",
     "description": "Data processing plugin"
 })
 
@@ -87,7 +87,7 @@ handler = FlextPluginHandler(plugin_service)
 create_command = {
     "operation": "create_plugin",
     "name": "api-gateway",
-    "version": "2.0.0",
+    "version": "0.9.0",
     "config": {"port": 8080}
 }
 
@@ -448,7 +448,7 @@ class TestFlextPluginService:
         """Test successful plugin creation."""
         config = {
             "name": "test-plugin",
-            "version": "1.0.0",
+            "version": "0.9.0",
             "description": "Test plugin"
         }
 
@@ -493,12 +493,12 @@ class TestFlextPluginHandler:
         """Test create plugin command handling."""
         command = {
             "name": "test-plugin",
-            "version": "1.0.0",
+            "version": "0.9.0",
             "config": {}
         }
 
         mock_service.create_plugin.return_value = FlextResult[None].ok(
-            FlextPlugin(name="test-plugin", version="1.0.0")
+            FlextPlugin(name="test-plugin", version="0.9.0")
         )
 
         result = await handler.handle_create_plugin_command(command)

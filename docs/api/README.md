@@ -44,7 +44,7 @@ from flext_plugin import (
 # Create plugin with factory function
 plugin = create_flext_plugin(
     name="my-plugin",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.SERVICE
 )
 ```
@@ -652,7 +652,7 @@ from flext_plugin.core.types import PluginType
 platform = create_flext_plugin_platform()
 plugin = create_flext_plugin(
     name="example-plugin",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.SERVICE
 )
 

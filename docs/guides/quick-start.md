@@ -47,7 +47,7 @@ from flext_plugin.core.types import PluginType
 # Create a simple utility plugin
 hello_plugin = create_flext_plugin(
     name="hello-world",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.UTILITY,
     config={
         "description": "My first FLEXT plugin",
@@ -92,7 +92,7 @@ async def main():
     # Create plugin
     plugin = create_flext_plugin(
         name="hello-world",
-        version="1.0.0",
+        version="0.9.0",
         plugin_type=PluginType.UTILITY
     )
 
@@ -160,7 +160,7 @@ class GreetingPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="greeting-generator",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Generates personalized greetings",
@@ -328,7 +328,7 @@ class TestGreetingPlugin:
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "greeting-generator"
-        assert plugin.plugin_version == "1.0.0"
+        assert plugin.plugin_version == "0.9.0"
         assert plugin.is_valid()
 
     async def test_plugin_initialization(self, plugin):

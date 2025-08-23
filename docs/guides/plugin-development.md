@@ -59,7 +59,7 @@ from flext_plugin.core.types import PluginType, PluginStatus
 # Create basic plugin
 plugin = create_flext_plugin(
     name="hello-world",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.UTILITY,
     config={
         "description": "Simple hello world plugin",
@@ -127,7 +127,7 @@ class DataProcessorPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="data-processor",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "description": "Advanced data processing plugin",
                 "author": "FLEXT Team",
@@ -214,7 +214,7 @@ class ConfigurablePlugin(FlextPlugin):
 
         super().__init__(
             name="configurable-plugin",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "description": "Plugin with structured configuration",
                 "settings": self.settings.dict()
@@ -252,7 +252,7 @@ class CustomTapPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="tap-custom-api",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "plugin_type": PluginType.TAP,
                 "description": "Extract data from custom API",
@@ -331,7 +331,7 @@ class CustomTargetPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="target-custom-db",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "plugin_type": PluginType.TARGET,
                 "description": "Load data to custom database",
@@ -391,7 +391,7 @@ class APIServicePlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="api-service",
-            version="1.0.0",
+            version="0.9.0",
             config={
                 "plugin_type": PluginType.SERVICE,
                 "description": "REST API service plugin",
@@ -574,14 +574,14 @@ class TestCustomPlugin:
         """Create test plugin instance."""
         return create_flext_plugin(
             name="test-plugin",
-            version="1.0.0",
+            version="0.9.0",
             plugin_type=PluginType.UTILITY
         )
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
+        assert plugin.plugin_version == "0.9.0"
         assert plugin.status == PluginStatus.INACTIVE
 
     async def test_plugin_activation(self, plugin):
@@ -623,7 +623,7 @@ class TestPluginIntegration:
         """Test plugin registration flow."""
         plugin = create_flext_plugin(
             name="integration-test-plugin",
-            version="1.0.0"
+            version="0.9.0"
         )
 
         # Register plugin
@@ -639,7 +639,7 @@ class TestPluginIntegration:
         """Test complete plugin lifecycle."""
         plugin = create_flext_plugin(
             name="lifecycle-test-plugin",
-            version="1.0.0"
+            version="0.9.0"
         )
 
         # Register -> Activate -> Execute -> Deactivate

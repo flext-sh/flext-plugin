@@ -266,7 +266,7 @@ async def deploy_plugin():
     platform = create_flext_plugin_platform()
     plugin = create_flext_plugin(
         name="data-processor",
-        version="1.0.0",
+        version="0.9.0",
         plugin_type=PluginType.PROCESSOR
     )
     return await platform.register_plugin(plugin)
@@ -282,7 +282,7 @@ from flext_plugin.core.types import PluginStatus, PluginType
 
 # More explicit but verbose
 service = FlextPluginService(registry)
-plugin = FlextPlugin(name="custom", version="1.0.0")
+plugin = FlextPlugin(name="custom", version="0.9.0")
 ```
 
 #### **3. Factory Function Pattern**
@@ -751,7 +751,7 @@ class FlextPluginRegistry(FlextAggregateRoot):
     plugins: Dict[str, FlextPlugin] = field(default_factory=dict)
     discovery_paths: List[str] = field(default_factory=list)
     last_discovery: Optional[datetime] = None
-    registry_version: str = "1.0.0"
+    registry_version: str = "0.9.0"
 
     # Registry-level business rules
     MAX_PLUGINS_PER_TYPE = 100
@@ -890,7 +890,7 @@ class FlextPluginConfig(FlextValue):
     """
 
     config_data: Dict[str, Any]
-    schema_version: str = "1.0.0"
+    schema_version: str = "0.9.0"
     environment: str = "production"
 
     def __post_init__(self):
@@ -1461,7 +1461,7 @@ def create_oracle_wms_plugin(config: Dict[str, Any]) -> FlextResult[FlextPlugin]
     """Create Oracle WMS plugin following ecosystem standards."""
     return FlextResult[None].ok(create_flext_plugin(
         name="oracle-wms-connector",
-        version="1.0.0",
+        version="0.9.0",
         plugin_type=PluginType.DATABASE,
         config={
             **config,
@@ -1475,7 +1475,7 @@ def create_oracle_tap_plugin(tap_config: Dict[str, Any]) -> FlextResult[FlextPlu
     """Create Oracle Singer tap plugin."""
     return FlextResult[None].ok(create_flext_plugin(
         name=f"tap-oracle-{tap_config.get('schema', 'default')}",
-        version="1.0.0",
+        version="0.9.0",
         plugin_type=PluginType.TAP,
         config={
             **tap_config,
@@ -1554,7 +1554,7 @@ class EcosystemPluginManager:
 
 ---
 
-**Last Updated**: August 3, 2025  
-**Target Audience**: FLEXT Plugin developers and ecosystem contributors  
-**Scope**: Python module organization for plugin system development  
-**Version**: 0.9.0 → 1.0.0 development guidelines for plugin architecture
+**Last Updated**: August 3, 2025
+**Target Audience**: FLEXT Plugin developers and ecosystem contributors
+**Scope**: Python module organization for plugin system development
+**Version**: 0.9.0 → 0.9.0 development guidelines for plugin architecture

@@ -277,7 +277,7 @@ from flext_plugin.core.types import PluginStatus, PluginType
 # Using entity directly
 plugin = FlextPlugin(
     name="my-plugin",
-    version="1.0.0",
+    version="0.9.0",
     config={
         "description": "My custom plugin",
         "author": "Developer",
@@ -288,7 +288,7 @@ plugin = FlextPlugin(
 # Using factory function
 plugin = create_flext_plugin(
     name="my-plugin",
-    version="1.0.0",
+    version="0.9.0",
     plugin_type=PluginType.EXTRACTOR
 )
 ```
@@ -406,7 +406,7 @@ flext-plugin platform --status                     # Platform status
 
 ### 🚨 GAP 4: Documentation and Examples
 
-**Status**: LOW PRIORITY - Foundation exists but needs practical examples  
+**Status**: LOW PRIORITY - Foundation exists but needs practical examples
 **Issue**:
 
 - Strong architectural foundation but missing practical examples
@@ -423,7 +423,7 @@ flext-plugin platform --status                     # Platform status
 ## Next Steps for Development
 
 1. **Immediate**: Complete hot reload system integration and improve test coverage
-2. **Short-term**: Enhance Singer/Meltano plugin support for data pipeline integration  
+2. **Short-term**: Enhance Singer/Meltano plugin support for data pipeline integration
 3. **Medium-term**: Improve platform method implementations (install, uninstall, etc.)
 4. **Long-term**: Expand examples and documentation for broader ecosystem adoption
 

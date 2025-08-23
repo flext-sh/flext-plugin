@@ -72,7 +72,7 @@ class MyPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="my-plugin",
-            version="1.0.0",
+            version="0.9.0",
             config={"plugin_type": PluginType.UTILITY},
             **kwargs
         )
