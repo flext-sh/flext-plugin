@@ -177,7 +177,7 @@ class FlextPlugin(FlextEntity):
             "plugin_id": str(self.id),
             "timestamp": datetime.utcnow().isoformat()
         })
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 ```
 
 #### Identity and Equality
@@ -273,7 +273,7 @@ class PluginRegistryRules:
         if name.lower() in PluginRegistryRules.RESERVED_NAMES:
             return FlextResult[None].fail(f"Plugin name '{name}' is reserved")
 
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 ```
 
 ## Event Sourcing Integration

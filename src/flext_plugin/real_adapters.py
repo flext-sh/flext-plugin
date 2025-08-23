@@ -118,7 +118,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
                 return FlextResult[bool].ok(False)
 
             # Additional validation can be added here
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Validation failed: {e}")
@@ -151,7 +151,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             if plugin_instance is None:
                 return FlextResult[bool].fail("Plugin loading returned None")
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Loading failed: {e}")
@@ -179,7 +179,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
                 # No loop, create new one
                 asyncio.run(self.loader.unload_plugin(plugin_name))
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Unloading failed: {e}")
@@ -269,7 +269,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 except RuntimeError:
                     asyncio.run(self.loader.unload_plugin(plugin_name))
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Uninstall failed: {e}")
@@ -286,7 +286,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             if plugin_name not in loaded_plugins:
                 return FlextResult[bool].fail(f"Plugin not loaded: {plugin_name}")
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Enable failed: {e}")
@@ -303,7 +303,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             if plugin_name not in loaded_plugins:
                 return FlextResult[bool].fail(f"Plugin not loaded: {plugin_name}")
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Disable failed: {e}")
@@ -338,7 +338,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 return FlextResult[bool].fail("Invalid plugin configuration")
 
             # Real config update - for now just validate
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             return FlextResult[bool].fail(f"Config update failed: {e}")

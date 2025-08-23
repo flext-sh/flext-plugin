@@ -62,7 +62,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         try:
             # For testing, we simulate the loading by storing the plugin
             self._loaded_plugins[plugin.name] = plugin
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
         except Exception as e:
             return FlextResult[bool].fail(f"Failed to load plugin {plugin.name}: {e}")
 
@@ -72,7 +72,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         try:
             if plugin_name in self._loaded_plugins:
                 del self._loaded_plugins[plugin_name]
-                return FlextResult[bool].ok(True)
+                return FlextResult[bool].ok(data=True)
             return FlextResult[bool].fail(f"Plugin {plugin_name} not loaded")
         except Exception as e:
             return FlextResult[bool].fail(f"Failed to unload plugin {plugin_name}: {e}")

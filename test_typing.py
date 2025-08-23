@@ -27,7 +27,7 @@ def test_int_function() -> FlextResult[int]:
 
 def test_bool_function() -> FlextResult[bool]:
     """Test function returning FlextResult[bool]."""
-    return FlextResult[bool].ok(True)
+    return FlextResult[bool].ok(data=True)
 
 
 # Test calls

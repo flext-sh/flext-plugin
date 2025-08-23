@@ -211,7 +211,7 @@ class ExamplePlugin(FlextPlugin):
         try:
             # Setup plugin resources
             await self._setup_resources()
-            return FlextResult[None].ok(True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
@@ -233,7 +233,7 @@ class ExamplePlugin(FlextPlugin):
         """Cleanup plugin resources."""
         try:
             await self._cleanup_resources()
-            return FlextResult[None].ok(True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
             return FlextResult[None].fail(f"Cleanup failed: {e}")
 
@@ -383,7 +383,7 @@ async def cleanup(self) -> FlextResult[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
     except Exception as e:
         return FlextResult[None].fail(f"Cleanup failed: {e}")
 ```

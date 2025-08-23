@@ -79,7 +79,7 @@ class MyPlugin(FlextPlugin):
 
     async def initialize(self) -> FlextResult[bool]:
         # Setup plugin resources
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 
     async def execute(self, data) -> FlextResult:
         # Core plugin logic
@@ -87,7 +87,7 @@ class MyPlugin(FlextPlugin):
 
     async def cleanup(self) -> FlextResult[bool]:
         # Cleanup resources
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 ```
 
 ### Development Workflow

@@ -142,7 +142,7 @@ class DataProcessorPlugin(FlextPlugin):
         try:
             # Setup processing resources
             self._processing_config = await self._load_config()
-            return FlextResult[None].ok(True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
@@ -165,7 +165,7 @@ class DataProcessorPlugin(FlextPlugin):
         try:
             # Release resources
             await self._cleanup_resources()
-            return FlextResult[None].ok(True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
             return FlextResult[None].fail(f"Cleanup failed: {e}")
 
@@ -412,7 +412,7 @@ class APIServicePlugin(FlextPlugin):
 
             # Add routes
             await self._setup_routes()
-            return FlextResult[None].ok(True)
+            return FlextResult[None].ok(data=True)
 
         except Exception as e:
             return FlextResult[None].fail(f"Service initialization failed: {e}")

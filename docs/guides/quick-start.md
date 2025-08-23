@@ -173,7 +173,7 @@ class GreetingPlugin(FlextPlugin):
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 
     async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Generate greeting based on input data."""
@@ -213,7 +213,7 @@ class GreetingPlugin(FlextPlugin):
     async def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 
 # Usage example
 async def demo_custom_plugin():
