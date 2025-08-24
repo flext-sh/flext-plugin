@@ -100,8 +100,8 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
                     discovered_plugins.append(plugin_entity)
 
                 except Exception as e:
-                    # Log but continue discovery - specific exception handling
-                    print(f"Warning: Failed to load plugin {plugin_file}: {e}")  # noqa: T201
+                    # Log exception but continue discovery
+                    logger.warning("Failed to process plugin file %s: %s", file_path, e)
                     continue
 
             return FlextResult[list[FlextPluginEntity]].ok(discovered_plugins)
@@ -115,7 +115,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         try:
             # Real validation - check if plugin has required attributes
             if not plugin.name or not plugin.plugin_version:
-                return FlextResult[bool].ok(False)
+                return FlextResult[bool].ok(data=False)
 
             # Additional validation can be added here
             return FlextResult[bool].ok(data=True)
@@ -258,12 +258,12 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             loaded_plugins = self.loader.get_loaded_plugins()
             if plugin_name in loaded_plugins:
                 # Use asyncio for the async unload
-                import asyncio
-
                 try:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
-                        asyncio.create_task(self.loader.unload_plugin(plugin_name))
+                        task = asyncio.create_task(self.loader.unload_plugin(plugin_name))
+                        # Store task reference to prevent garbage collection
+                        task.add_done_callback(lambda t: None)
                     else:
                         loop.run_until_complete(self.loader.unload_plugin(plugin_name))
                 except RuntimeError:

@@ -56,12 +56,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
-from flext_core import FlextEntity, FlextGenerators, FlextResult
-from flext_core.root_models import (
+from flext_core import (
+    FlextEntity,
     FlextEntityId,
     FlextEventList,
     FlextMetadata,
+    FlextResult,
     FlextTimestamp,
+    FlextUtilities,
     FlextVersion,
 )
 
@@ -140,7 +142,7 @@ class PluginLoader(FlextEntity):
     ) -> None:
         """Initialize plugin loader."""
         # Generate ID if not provided for backward compatibility
-        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
+        final_entity_id = entity_id or FlextUtilities.generate_entity_id()
         # Initialize FlextEntity with all required parameters
 
         now = datetime.now(UTC)

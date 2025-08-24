@@ -13,13 +13,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast, override
 
-from flext_core import FlextEntity, FlextGenerators, FlextResult, get_logger
-from flext_core.root_models import (
+from flext_core import (
+    FlextEntity,
     FlextEntityId,
     FlextEventList,
     FlextMetadata,
+    FlextResult,
     FlextTimestamp,
+    FlextUtilities,
     FlextVersion,
+    get_logger,
 )
 from pydantic import Field
 
@@ -59,7 +62,7 @@ class PluginDiscovery(FlextEntity):
     ) -> None:
         """Initialize plugin discovery system."""
         # Generate ID if not provided
-        final_entity_id = entity_id or FlextGenerators.generate_entity_id()
+        final_entity_id = entity_id or FlextUtilities.generate_entity_id()
         # Initialize FlextEntity base with required fields
         now = datetime.now(UTC)
         # Convert types for FlextEntity compatibility

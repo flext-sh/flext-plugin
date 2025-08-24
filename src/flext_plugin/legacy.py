@@ -235,21 +235,7 @@ def setup_plugins(
     return create_flext_plugin_registry(name=name, plugins=plugins)
 
 
-__all__: list[str] = [  # noqa: RUF022
-    # Legacy exception aliases
-    "plugin_compatibility_error",
-    "plugin_configuration_error",
-    "plugin_discovery_error",
-    "plugin_error",
-    "plugin_execution_error",
-    "plugin_hot_reload_error",
-    "plugin_lifecycle_error",
-    "plugin_loading_error",
-    "plugin_metadata_error",
-    "plugin_platform_error",
-    "plugin_registry_error",
-    "plugin_security_error",
-    "plugin_validation_error",
+__all__: list[str] = [
     # Legacy factory aliases
     "create_plugin",
     "create_plugin_config",
@@ -257,15 +243,29 @@ __all__: list[str] = [  # noqa: RUF022
     "create_plugin_registry",
     # Legacy platform aliases
     "flext_plugin_manager",
-    "simple_plugin_manager",
-    # Legacy service aliases
-    "plugin",
-    "plugin_config",
-    "plugin_discovery",
-    "plugin_manager",
-    "plugin_registry",
-    "plugin_service",
     # Legacy system aliases
     "init_plugin_system",
+    # Legacy service aliases
+    "plugin",
+    # Legacy exception aliases
+    "plugin_compatibility_error",
+    "plugin_config",
+    "plugin_configuration_error",
+    "plugin_discovery",
+    "plugin_discovery_error",
+    "plugin_error",
+    "plugin_execution_error",
+    "plugin_hot_reload_error",
+    "plugin_lifecycle_error",
+    "plugin_loading_error",
+    "plugin_manager",
+    "plugin_metadata_error",
+    "plugin_platform_error",
+    "plugin_registry",
+    "plugin_registry_error",
+    "plugin_security_error",
+    "plugin_service",
+    "plugin_validation_error",
     "setup_plugins",
+    "simple_plugin_manager",
 ]

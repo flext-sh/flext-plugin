@@ -205,26 +205,18 @@ def test_service_connections(*, test_connections: bool) -> dict[str, bool | None
 
     results: dict[str, bool | None] = {}
 
-    print("\n=== Service Connectivity Check ===")
     for service_name, (host, port) in services.items():
         if test_connections:
             available = check_service_availability(host, port)
             results[service_name] = available
-            status = "✅ Available" if available else "❌ Unavailable"
-            print(f"   {service_name:12} ({host}:{port:4d}): {status}")
         else:
             results[service_name] = None
-            print(
-                f"   {service_name:12} ({host}:{port:4d}): ⏭️  Skipped (use --test-connections to test)",
-            )
 
     return results
 
 
-def main() -> None:  # noqa: PLR0912, PLR0915
+def main() -> None:
     """Demonstrate Docker-integrated plugin configuration."""
-    print("=== FLEXT Plugin Docker Integration Example ===")
-
     # Check command line arguments
     test_connections = len(sys.argv) > 1 and "--test-connections" in sys.argv
 
@@ -232,123 +224,59 @@ def main() -> None:  # noqa: PLR0912, PLR0915
     connectivity_results = test_service_connections(test_connections=test_connections)
 
     # 1. Create PostgreSQL plugin
-    print("\n1. Creating Docker PostgreSQL plugin...")
     postgres_plugin, postgres_config = create_docker_postgres_plugin()
 
-    print(f"   Plugin: {postgres_plugin.name} v{postgres_plugin.plugin_version}")
-    postgres_db_config = cast("dict[str, object]", postgres_config["database"])
-    postgres_monitoring_config = cast(
-        "dict[str, object]", postgres_config["monitoring"]
-    )
-    print(f"   Database: {postgres_db_config['database']}")
-    print(f"   Connection pool: {postgres_db_config['pool_size']} connections")
-    print(
-        f"   Monitoring: {'enabled' if postgres_monitoring_config['enable_metrics'] else 'disabled'}",
-    )
+    cast("dict[str, object]", postgres_config["database"])
+    cast("dict[str, object]", postgres_config["monitoring"])
 
     # Validate PostgreSQL plugin
     postgres_validation = postgres_plugin.validate_business_rules()
     if postgres_validation.success:
-        print("   ✅ PostgreSQL plugin validation passed")
-
         # Test activation
         postgres_activation = postgres_plugin.activate()
         if postgres_activation:
-            print("   ✅ PostgreSQL plugin activated successfully")
-        else:
-            print("   ❌ PostgreSQL plugin activation failed")
-    else:
-        print(f"   ❌ PostgreSQL plugin validation failed: {postgres_validation.error}")
+            pass
 
     # 2. Create Redis plugin
-    print("\n2. Creating Docker Redis plugin...")
     redis_plugin, redis_config = create_docker_redis_plugin()
 
-    print(f"   Plugin: {redis_plugin.name} v{redis_plugin.plugin_version}")
-    redis_cache_config = cast("dict[str, object]", redis_config["cache"])
-    redis_pool_config = cast("dict[str, object]", redis_config["connection_pool"])
-    print(f"   Cache TTL: {redis_cache_config['default_ttl']} seconds")
-    print(
-        f"   Connection pool: {redis_pool_config['max_connections']} connections",
-    )
-    print(f"   Key prefix: {redis_cache_config['key_prefix']}")
+    cast("dict[str, object]", redis_config["cache"])
+    cast("dict[str, object]", redis_config["connection_pool"])
 
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_business_rules()
     if redis_validation.success:
-        print("   ✅ Redis plugin validation passed")
-
         # Test activation
         redis_activation = redis_plugin.activate()
         if redis_activation:
-            print("   ✅ Redis plugin activated successfully")
-        else:
-            print("   ❌ Redis plugin activation failed")
-    else:
-        print(f"   ❌ Redis plugin validation failed: {redis_validation.error}")
+            pass
 
     # 3. Create LDAP plugin
-    print("\n3. Creating Docker LDAP plugin...")
     ldap_plugin, ldap_config = create_docker_ldap_plugin()
 
-    print(f"   Plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
-    ldap_server_config = cast("dict[str, object]", ldap_config["ldap"])
-    ldap_pool_config = cast("dict[str, object]", ldap_config["connection_pool"])
-    print(
-        f"   LDAP server: {ldap_server_config['server']}:{ldap_server_config['port']}",
-    )
-    print(f"   Base DN: {ldap_server_config['base_dn']}")
-    print(
-        f"   Connection pool: {ldap_pool_config['pool_size']} connections",
-    )
+    cast("dict[str, object]", ldap_config["ldap"])
+    cast("dict[str, object]", ldap_config["connection_pool"])
 
     # Validate LDAP plugin
     ldap_validation = ldap_plugin.validate_business_rules()
     if ldap_validation.success:
-        print("   ✅ LDAP plugin validation passed")
-
         # Test activation
         ldap_activation = ldap_plugin.activate()
         if ldap_activation:
-            print("   ✅ LDAP plugin activated successfully")
-        else:
-            print("   ❌ LDAP plugin activation failed")
-    else:
-        print(f"   ❌ LDAP plugin validation failed: {ldap_validation.error}")
+            pass
 
     # 4. Summary
-    print("\n=== Integration Summary ===")
     plugins = [
         ("PostgreSQL", postgres_plugin, connectivity_results.get("PostgreSQL")),
         ("Redis", redis_plugin, connectivity_results.get("Redis")),
         ("LDAP", ldap_plugin, connectivity_results.get("LDAP")),
     ]
 
-    for service_name, plugin, connectivity in plugins:
-        status = plugin.status
-        conn_status = ""
+    for _service_name, _plugin, connectivity in plugins:
         if connectivity is not None:
-            conn_status = f" | {'Connected' if connectivity else 'Connection Failed'}"
-        print(f"   {service_name:12}: {plugin.name} ({status}){conn_status}")
+            pass
 
     # Show Docker commands
-    print("\n=== Docker Commands ===")
-    print("   Start services:")
-    print("     cd /home/marlonsc/flext/docker")
-    print("     docker-compose up -d postgres redis openldap")
-    print()
-    print("   Check service status:")
-    print("     docker-compose ps")
-    print()
-    print("   View logs:")
-    print("     docker-compose logs postgres")
-    print("     docker-compose logs redis")
-    print("     docker-compose logs openldap")
-    print()
-    print("   Stop services:")
-    print("     docker-compose down")
-
-    print("\n=== Docker Integration example completed successfully ===")
 
 
 if __name__ == "__main__":

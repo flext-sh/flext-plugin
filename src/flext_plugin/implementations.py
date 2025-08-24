@@ -71,7 +71,7 @@ class ConcretePlugin(FlextPlugin):
         return self._version
 
     @override
-    def initialize(self, context: FlextPluginContext) -> FlextResult[None]:  # noqa: ARG002
+    def initialize(self, context: FlextPluginContext) -> FlextResult[None]:
         """Initialize plugin with context.
 
         Args:

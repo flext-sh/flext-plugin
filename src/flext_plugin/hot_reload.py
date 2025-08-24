@@ -20,9 +20,9 @@ from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
     FlextEntity,
-    FlextGenerators,
     FlextProcessingError,
     FlextResult,
+    FlextUtilities,
     get_logger,
 )
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
@@ -334,7 +334,7 @@ class HotReloadManager(FlextEntity):
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
-        entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+        entity_id = str(kwargs.get("id", FlextUtilities.generate_entity_id()))
         version = cast("int", kwargs.get("version", 1))
         metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
         # Create instance using Pydantic model_validate to bypass __init__

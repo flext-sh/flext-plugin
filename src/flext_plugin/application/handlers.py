@@ -7,8 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult
-from flext_core.handlers import FlextBaseHandler
+from flext_core import FlextBaseHandler, FlextResult
 
 from flext_plugin.domain.entities import FlextPluginEntity
 from flext_plugin.domain.ports import FlextPluginLoaderPort
@@ -93,7 +92,7 @@ class FlextPluginEventHandler(FlextBaseHandler):
                 return FlextResult[bool].fail(
                     "Plugin loaded event: plugin missing name"
                 )
-            return FlextResult[bool].ok(data=True)  # noqa: FBT003
+            return FlextResult[bool].ok(data=True)
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult[bool].fail(f"Failed to handle plugin loaded event: {e}")
 

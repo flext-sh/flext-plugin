@@ -16,9 +16,9 @@ from typing import cast, override
 
 from flext_core import (
     FlextEntity,
-    FlextGenerators,
     FlextResult,
     FlextTimestamp,
+    FlextUtilities,
     get_logger,
 )
 from pydantic import Field, field_validator
@@ -188,7 +188,7 @@ class FlextPluginEntity(FlextEntity):
 
         """
         # Generate ID if not provided
-        final_id = entity_id or FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextUtilities.generate_entity_id()
 
         # Extract config values
         config = config or {}
@@ -443,7 +443,7 @@ class FlextPluginConfig(FlextEntity):
         **kwargs: object,
     ) -> FlextPluginConfig:
         """Create plugin configuration entity with proper validation."""
-        final_id = entity_id or FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextUtilities.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -569,7 +569,7 @@ class FlextPluginMetadata(FlextEntity):
         **kwargs: object,
     ) -> FlextPluginMetadata:
         """Create plugin metadata entity with proper validation."""
-        final_id = entity_id or FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextUtilities.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -720,7 +720,7 @@ class FlextPluginRegistry(FlextEntity):
         **kwargs: object,
     ) -> FlextPluginRegistry:
         """Create plugin registry entity with proper validation."""
-        final_id = entity_id or FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextUtilities.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -930,7 +930,7 @@ class FlextPluginExecution(FlextEntity):
 
         """
         # Generate ID if not provided
-        final_id = entity_id or FlextGenerators.generate_entity_id()
+        final_id = entity_id or FlextUtilities.generate_entity_id()
 
         # Extract from execution_config dict
         execution_config = execution_config or {}

@@ -14,7 +14,6 @@ from collections.abc import Mapping
 from enum import Enum
 
 from flext_core import FlextError
-from flext_core.exceptions import FlextErrorMixin
 
 
 class FlextPluginErrorCodes(Enum):
@@ -36,8 +35,8 @@ class FlextPluginErrorCodes(Enum):
     PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
 
-# Base plugin exception hierarchy using FlextErrorMixin pattern
-class FlextPluginError(FlextError, FlextErrorMixin):
+# Base plugin exception hierarchy using FlextError pattern
+class FlextPluginError(FlextError):
     """Base exception for all plugin domain errors."""
 
 

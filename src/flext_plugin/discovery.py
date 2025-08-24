@@ -42,7 +42,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import cast, override
 
-from flext_core import FlextEntity, FlextGenerators, FlextResult
+from flext_core import FlextEntity, FlextResult, FlextUtilities
 from pydantic import ConfigDict
 
 
@@ -95,7 +95,7 @@ class PluginDiscovery(FlextEntity):
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> PluginDiscovery:
         """Create plugin discovery instance with proper validation."""
-        entity_id = str(kwargs.get("id", FlextGenerators.generate_entity_id()))
+        entity_id = str(kwargs.get("id", FlextUtilities.generate_entity_id()))
         version = cast("int", kwargs.get("version", 1))
         metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
 

@@ -83,10 +83,7 @@ def create_ldap_plugin_config() -> dict[str, object]:
 
 def main() -> None:
     """Demonstrate plugin configuration patterns."""
-    print("=== FLEXT Plugin Configuration Example ===")
-
     # 1. Create a database plugin with complex configuration
-    print("\n1. Creating database plugin with configuration...")
     db_config = create_database_plugin_config()
 
     db_plugin = create_flext_plugin(
@@ -101,14 +98,9 @@ def main() -> None:
         },
     )
 
-    print(f"   Database plugin: {db_plugin.name} v{db_plugin.plugin_version}")
-    print(f"   Type: {db_config.get('plugin_type', 'N/A')}")
-    database_config = cast("dict[str, object]", db_config["database"])
-    print(f"   Database: {database_config['database']}")
-    print(f"   Pool size: {database_config['pool_size']}")
+    cast("dict[str, object]", db_config["database"])
 
     # 2. Create LDAP plugin with service configuration
-    print("\n2. Creating LDAP plugin with service configuration...")
     ldap_config = create_ldap_plugin_config()
 
     ldap_plugin = create_flext_plugin(
@@ -123,13 +115,9 @@ def main() -> None:
         },
     )
 
-    print(f"   LDAP plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
-    ldap_server_config = cast("dict[str, object]", ldap_config["ldap"])
-    print(f"   Server: {ldap_server_config['server']}:{ldap_server_config['port']}")
-    print(f"   Base DN: {ldap_server_config['base_dn']}")
+    cast("dict[str, object]", ldap_config["ldap"])
 
     # 3. Create standalone plugin configuration entity
-    print("\n3. Creating standalone plugin configuration...")
     standalone_config = create_flext_plugin_config(
         plugin_name="api-gateway",
         config_data={
@@ -146,16 +134,10 @@ def main() -> None:
         },
     )
 
-    print(f"   Config for: {standalone_config.plugin_name}")
-    routes_data = standalone_config.config_data.get("routes", {})
-    print(
-        f"   Routes configured: {len(cast('dict[str, object]', routes_data))}",
-    )
-    print(f"   Middleware: {standalone_config.config_data.get('middleware', [])}")
+    standalone_config.config_data.get("routes", {})
 
     # 4. Create plugin metadata
-    print("\n4. Creating plugin metadata...")
-    metadata = create_flext_plugin_metadata(
+    create_flext_plugin_metadata(
         plugin_name="data-processor",
         metadata={
             "tags": ["etl", "transform", "batch"],
@@ -175,23 +157,13 @@ def main() -> None:
         },
     )
 
-    print(f"   Metadata for: {metadata.plugin_name}")
-    print(f"   Tags: {metadata.tags}")
-    print(f"   Categories: {metadata.categories}")
-    print(f"   License: {metadata.license_info}")
-
     # 5. Demonstrate configuration validation
-    print("\n5. Configuration validation...")
 
     plugins_to_validate = [db_plugin, ldap_plugin]
     for plugin in plugins_to_validate:
         validation_result = plugin.validate_business_rules()
         if validation_result.success:
-            print(f"   ✅ {plugin.name}: Configuration valid")
-        else:
-            print(f"   ❌ {plugin.name}: {validation_result.error}")
-
-    print("\n=== Configuration example completed successfully ===")
+            pass
 
 
 def test_database_connection() -> bool:
@@ -210,9 +182,5 @@ if __name__ == "__main__":
     main()
 
     # Optional: Test database connection if --with-db flag provided
-    if len(sys.argv) > 1 and "--with-db" in sys.argv:
-        print("\n=== Testing Database Connection ===")
-        if test_database_connection():
-            print("✅ Database configuration structure valid")
-        else:
-            print("❌ Database configuration validation failed")
+    if len(sys.argv) > 1 and "--with-db" in sys.argv and test_database_connection():
+        pass

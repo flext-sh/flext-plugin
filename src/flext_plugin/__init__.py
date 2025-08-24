@@ -260,13 +260,13 @@ flext_plugin_create_platform = create_flext_plugin_platform
 
 def create_hot_reload_manager(
     plugin_directory: str = "./plugins",
-    container: FlextContainer | None = None,  # noqa: ARG001
+    _container: FlextContainer | None = None,
 ) -> HotReloadManager:
     """Create hot reload manager instance.
 
     Args:
         plugin_directory: Directory to watch for plugins
-        container: Optional FlextContainer instance
+        _container: Unused parameter for compatibility
 
     Returns:
         Configured HotReloadManager instance

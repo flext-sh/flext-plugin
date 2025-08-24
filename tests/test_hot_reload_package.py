@@ -559,7 +559,7 @@ class ChangeTestPlugin:
         )
 
         # Handle the plugin change event (accessing protected method for testing)
-        await hot_reload_manager._handle_plugin_change(watch_event)  # noqa: SLF001
+        await hot_reload_manager._handle_plugin_change(watch_event)
 
         # Test passes if no exception is raised
 
