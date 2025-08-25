@@ -250,7 +250,7 @@ markers = [
 filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 
 [tool.ruff]
-extend = "../.config/tools/.ruff-shared.toml"
+extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_plugin"]
 
 [tool.vulture]

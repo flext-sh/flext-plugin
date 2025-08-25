@@ -1,23 +1,26 @@
 """Test suite for examples to ensure they work correctly and maintain 100% functionality."""
 
+from __future__ import annotations
+
 import asyncio
 import sys
 from pathlib import Path
 from typing import cast
 
-# Add examples directory to path
+# Add examples directory to path BEFORE imports
 examples_path = Path(__file__).parent.parent / "examples"
 if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
-from docker_integration_example import (
+# Now import after path setup
+from docker_integration_example import (  # noqa: E402
     check_service_availability,
     create_docker_ldap_plugin,
     create_docker_postgres_plugin,
     create_docker_redis_plugin,
 )
 
-from flext_plugin import (
+from flext_plugin import (  # noqa: E402
     PluginStatus,
     PluginType,
     create_flext_plugin,

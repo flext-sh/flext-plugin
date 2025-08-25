@@ -34,11 +34,12 @@ import json
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
 from flext_plugin.core.discovery import PluginDiscovery
-from flext_plugin.core.types import PluginType
+from flext_plugin.models import PluginType
 
 
 class TestPluginDiscoveryReal:
@@ -209,7 +210,7 @@ class TestPluginDiscoveryReal:
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
-            METADATA = {"name": "valid-plugin", "version": "1.0.0"}
+            METADATA: ClassVar[dict[str, str]] = {"name": "valid-plugin", "version": "1.0.0"}
 
             def initialize(self) -> None:
                 pass
@@ -584,7 +585,7 @@ class ExtraPlugin:
 
         # Register manual plugin
         class ManualPlugin:
-            METADATA = {"name": "manual-plugin", "version": "3.0.0"}
+            METADATA: ClassVar[dict[str, str]] = {"name": "manual-plugin", "version": "3.0.0"}
 
             def initialize(self) -> None:
                 pass
@@ -595,7 +596,7 @@ class ExtraPlugin:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self):
+            def execute(self) -> dict[str, str]:
                 return {"source": "manual"}
 
         discovery.register_plugin(ManualPlugin)

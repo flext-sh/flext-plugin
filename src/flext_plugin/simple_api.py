@@ -23,7 +23,7 @@ Factory Patterns:
     - Type validation and conversion for data integrity
 
 Example:
-    >>> from flext_plugin.simple_api import create_flext_plugin
+    >>> from simple_api import create_flext_plugin
     >>>
     >>> # Create plugin with minimal configuration
     >>> plugin = create_flext_plugin(
@@ -52,13 +52,13 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from flext_plugin.core.types import PluginStatus
-from flext_plugin.domain.entities import (
+from .entities import (
     FlextPlugin,
     FlextPluginConfig,
     FlextPluginMetadata,
     FlextPluginRegistry,
 )
+from .flext_plugin_models import PluginStatus
 
 
 def create_flext_plugin(
@@ -269,7 +269,7 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
         # Handle status conversion
         status_str = plugin_data.get("status", "inactive")
         try:
-            status = PluginStatus(status_str)
+            status = PluginStatus(str(status_str))
         except ValueError:
             status = PluginStatus.INACTIVE
 

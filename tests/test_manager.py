@@ -27,7 +27,7 @@ from flext_plugin import (
     SimplePluginRegistry,
     create_plugin_manager,
 )
-from flext_plugin.domain.entities import FlextPluginEntity
+from flext_plugin.entities import FlextPluginEntity
 
 
 class TestSimplePluginRegistryReal:

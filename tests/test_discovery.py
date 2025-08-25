@@ -34,6 +34,7 @@ Integration Points:
 
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 from typing import cast
 
@@ -384,8 +385,6 @@ class ValidPlugin:
         Creates plugin files at different times and validates that
         scan() correctly captures the modification timestamps.
         """
-        import time
-
         # Create plugin directory
         plugin_dir = tmp_path / "timestamp_plugins"
         plugin_dir.mkdir()
@@ -394,7 +393,7 @@ class ValidPlugin:
         (plugin_dir / "first_plugin.py").write_text("# First plugin\nclass First: pass")
 
         # Wait a bit to ensure different timestamp
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
 
         # Create second plugin
         (plugin_dir / "second_plugin.py").write_text(

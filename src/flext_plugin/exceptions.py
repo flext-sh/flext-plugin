@@ -1,8 +1,8 @@
-"""Plugin Exception Hierarchy - Modern Pydantic v2 Patterns.
+"""FLEXT Plugin Exceptions - Single CONSOLIDATED Class Following FLEXT Patterns.
 
-This module provides plugin-specific exceptions using modern patterns from flext-core.
-All exceptions follow the FlextErrorMixin pattern with keyword-only arguments and
-modern Python 3.13 type aliases for comprehensive error handling in plugin operations.
+This module implements the CONSOLIDATED exception pattern with a single FlextPluginExceptions
+class containing ALL plugin exception definitions as nested classes. Maintains backward
+compatibility through property re-exports and follows FLEXT architectural standards.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -10,299 +10,141 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from enum import Enum
 
 from flext_core import FlextError
 
 
-class FlextPluginErrorCodes(Enum):
-    """Error codes for plugin domain operations."""
+class FlextPluginExceptions(FlextError):
+    """Single CONSOLIDATED class containing ALL plugin exceptions.
 
-    PLUGIN_ERROR = "PLUGIN_ERROR"
-    PLUGIN_DISCOVERY_ERROR = "PLUGIN_DISCOVERY_ERROR"
-    PLUGIN_LOADING_ERROR = "PLUGIN_LOADING_ERROR"
-    PLUGIN_EXECUTION_ERROR = "PLUGIN_EXECUTION_ERROR"
-    PLUGIN_CONFIGURATION_ERROR = "PLUGIN_CONFIGURATION_ERROR"
-    PLUGIN_VALIDATION_ERROR = "PLUGIN_VALIDATION_ERROR"
-    PLUGIN_LIFECYCLE_ERROR = "PLUGIN_LIFECYCLE_ERROR"
-    PLUGIN_DEPENDENCY_ERROR = "PLUGIN_DEPENDENCY_ERROR"
-    PLUGIN_REGISTRY_ERROR = "PLUGIN_REGISTRY_ERROR"
-    PLUGIN_HOT_RELOAD_ERROR = "PLUGIN_HOT_RELOAD_ERROR"
-    PLUGIN_SECURITY_ERROR = "PLUGIN_SECURITY_ERROR"
-    PLUGIN_COMPATIBILITY_ERROR = "PLUGIN_COMPATIBILITY_ERROR"
-    PLUGIN_METADATA_ERROR = "PLUGIN_METADATA_ERROR"
-    PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
+    Consolidates ALL exception definitions into one class following FLEXT patterns.
+    Individual exceptions available as nested classes for organization while maintaining
+    backward compatibility through property access.
+
+    This approach follows FLEXT architectural standards for single consolidated classes
+    per module while preserving existing API surface for seamless migration.
+    """
+
+    class ErrorCodes(Enum):
+        """Error codes for plugin domain operations."""
+
+        PLUGIN_ERROR = "PLUGIN_ERROR"
+        PLUGIN_DISCOVERY_ERROR = "PLUGIN_DISCOVERY_ERROR"
+        PLUGIN_LOADING_ERROR = "PLUGIN_LOADING_ERROR"
+        PLUGIN_EXECUTION_ERROR = "PLUGIN_EXECUTION_ERROR"
+        PLUGIN_CONFIGURATION_ERROR = "PLUGIN_CONFIGURATION_ERROR"
+        PLUGIN_VALIDATION_ERROR = "PLUGIN_VALIDATION_ERROR"
+        PLUGIN_LIFECYCLE_ERROR = "PLUGIN_LIFECYCLE_ERROR"
+        PLUGIN_DEPENDENCY_ERROR = "PLUGIN_DEPENDENCY_ERROR"
+        PLUGIN_REGISTRY_ERROR = "PLUGIN_REGISTRY_ERROR"
+        PLUGIN_HOT_RELOAD_ERROR = "PLUGIN_HOT_RELOAD_ERROR"
+        PLUGIN_SECURITY_ERROR = "PLUGIN_SECURITY_ERROR"
+        PLUGIN_COMPATIBILITY_ERROR = "PLUGIN_COMPATIBILITY_ERROR"
+        PLUGIN_METADATA_ERROR = "PLUGIN_METADATA_ERROR"
+        PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
+
+    # Base plugin exception classes as nested classes
+    class BaseError(FlextError):
+        """Base exception for all plugin domain errors."""
+
+    class DiscoveryError(FlextError):
+        """Plugin discovery errors."""
+
+    class LoadingError(FlextError):
+        """Plugin loading errors."""
+
+    class ExecutionError(FlextError):
+        """Plugin execution errors."""
+
+    class ConfigurationError(FlextError):
+        """Plugin configuration errors."""
+
+    class ValidationError(FlextError):
+        """Plugin validation errors."""
+
+    class LifecycleError(FlextError):
+        """Plugin lifecycle management errors."""
+
+    class DependencyError(FlextError):
+        """Plugin dependency resolution errors."""
+
+    class RegistryError(FlextError):
+        """Plugin registry operation errors."""
+
+    class HotReloadError(FlextError):
+        """Plugin hot reload errors."""
+
+    class SecurityError(FlextError):
+        """Plugin security validation errors."""
+
+    class CompatibilityError(FlextError):
+        """Plugin compatibility errors."""
+
+    class MetadataError(FlextError):
+        """Plugin metadata validation errors."""
+
+    class PlatformError(FlextError):
+        """Plugin platform integration errors."""
+
+    # Domain-specific operation exceptions
+    class DiscoveryOperationError(DiscoveryError):
+        """Plugin discovery operation specific errors."""
+
+    class LoadOperationError(LoadingError):
+        """Plugin load operation specific errors."""
+
+    class ExecutionOperationError(ExecutionError):
+        """Plugin execution operation specific errors."""
+
+    class ConfigurationOperationError(ConfigurationError):
+        """Plugin configuration operation specific errors."""
+
+    class LifecycleOperationError(LifecycleError):
+        """Plugin lifecycle operation specific errors."""
+
+    class HotReloadOperationError(HotReloadError):
+        """Plugin hot reload operation specific errors."""
 
 
-# Base plugin exception hierarchy using FlextError pattern
-class FlextPluginError(FlextError):
-    """Base exception for all plugin domain errors."""
+# Export consolidated class and individual exceptions for backward compatibility
+FlextPluginErrorCodes = FlextPluginExceptions.ErrorCodes
+FlextPluginError = FlextPluginExceptions.BaseError
+FlextPluginDiscoveryError = FlextPluginExceptions.DiscoveryError
+FlextPluginLoadingError = FlextPluginExceptions.LoadingError
+FlextPluginExecutionError = FlextPluginExceptions.ExecutionError
+FlextPluginConfigurationError = FlextPluginExceptions.ConfigurationError
+FlextPluginValidationError = FlextPluginExceptions.ValidationError
+FlextPluginLifecycleError = FlextPluginExceptions.LifecycleError
+FlextPluginDependencyError = FlextPluginExceptions.DependencyError
+FlextPluginRegistryError = FlextPluginExceptions.RegistryError
+FlextPluginHotReloadError = FlextPluginExceptions.HotReloadError
+FlextPluginSecurityError = FlextPluginExceptions.SecurityError
+FlextPluginCompatibilityError = FlextPluginExceptions.CompatibilityError
+FlextPluginMetadataError = FlextPluginExceptions.MetadataError
+FlextPluginPlatformError = FlextPluginExceptions.PlatformError
+FlextPluginDiscoveryOperationError = FlextPluginExceptions.DiscoveryOperationError
+FlextPluginLoadOperationError = FlextPluginExceptions.LoadOperationError
+FlextPluginExecutionOperationError = FlextPluginExceptions.ExecutionOperationError
+FlextPluginConfigurationOperationError = FlextPluginExceptions.ConfigurationOperationError
+FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
+FlextPluginHotReloadOperationError = FlextPluginExceptions.HotReloadOperationError
 
-
-# Legacy alias for backwards compatibility
+# Legacy alias
 PluginError = FlextPluginError
 
-
-class FlextPluginDiscoveryError(FlextPluginError):
-    """Plugin discovery errors."""
-
-
-class FlextPluginLoadingError(FlextPluginError):
-    """Plugin loading errors."""
-
-
-class FlextPluginExecutionError(FlextPluginError):
-    """Plugin execution errors."""
-
-
-class FlextPluginConfigurationError(FlextPluginError):
-    """Plugin configuration errors."""
-
-
-class FlextPluginValidationError(FlextPluginError):
-    """Plugin validation errors."""
-
-
-class FlextPluginLifecycleError(FlextPluginError):
-    """Plugin lifecycle management errors."""
-
-
-class FlextPluginDependencyError(FlextPluginError):
-    """Plugin dependency resolution errors."""
-
-
-class FlextPluginRegistryError(FlextPluginError):
-    """Plugin registry operation errors."""
-
-
-class FlextPluginHotReloadError(FlextPluginError):
-    """Plugin hot reload errors."""
-
-
-class FlextPluginSecurityError(FlextPluginError):
-    """Plugin security validation errors."""
-
-
-class FlextPluginCompatibilityError(FlextPluginError):
-    """Plugin compatibility errors."""
-
-
-class FlextPluginMetadataError(FlextPluginError):
-    """Plugin metadata validation errors."""
-
-
-class FlextPluginPlatformError(FlextPluginError):
-    """Plugin platform integration errors."""
-
-
-# Domain-specific exceptions for plugin business logic
-# Using modern FlextErrorMixin pattern with context support
-
-
-class FlextPluginDiscoveryOperationError(FlextPluginDiscoveryError):
-    """Plugin discovery operation errors with discovery context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        discovery_path: str | None = None,
-        plugin_pattern: str | None = None,
-        discovered_count: int | None = None,
-        code: FlextPluginErrorCodes
-        | None = FlextPluginErrorCodes.PLUGIN_DISCOVERY_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin discovery context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if discovery_path is not None:
-            context_dict["discovery_path"] = discovery_path
-        if plugin_pattern is not None:
-            context_dict["plugin_pattern"] = plugin_pattern
-        if discovered_count is not None:
-            context_dict["discovered_count"] = discovered_count
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-class FlextPluginLoadOperationError(FlextPluginLoadingError):
-    """Plugin loading operation errors with loading context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        plugin_name: str | None = None,
-        plugin_path: str | None = None,
-        load_stage: str | None = None,
-        code: FlextPluginErrorCodes | None = FlextPluginErrorCodes.PLUGIN_LOADING_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin loading context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if plugin_name is not None:
-            context_dict["plugin_name"] = plugin_name
-        if plugin_path is not None:
-            context_dict["plugin_path"] = plugin_path
-        if load_stage is not None:
-            context_dict["load_stage"] = load_stage
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-class FlextPluginExecutionOperationError(FlextPluginExecutionError):
-    """Plugin execution operation errors with execution context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        plugin_name: str | None = None,
-        execution_id: str | None = None,
-        execution_stage: str | None = None,
-        timeout_seconds: int | None = None,
-        code: FlextPluginErrorCodes
-        | None = FlextPluginErrorCodes.PLUGIN_EXECUTION_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin execution context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if plugin_name is not None:
-            context_dict["plugin_name"] = plugin_name
-        if execution_id is not None:
-            context_dict["execution_id"] = execution_id
-        if execution_stage is not None:
-            context_dict["execution_stage"] = execution_stage
-        if timeout_seconds is not None:
-            context_dict["timeout_seconds"] = timeout_seconds
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-class FlextPluginConfigurationOperationError(FlextPluginConfigurationError):
-    """Plugin configuration operation errors with configuration context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        plugin_name: str | None = None,
-        config_key: str | None = None,
-        config_value: object | None = None,
-        validation_rule: str | None = None,
-        code: FlextPluginErrorCodes
-        | None = FlextPluginErrorCodes.PLUGIN_CONFIGURATION_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin configuration context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if plugin_name is not None:
-            context_dict["plugin_name"] = plugin_name
-        if config_key is not None:
-            context_dict["config_key"] = config_key
-        if config_value is not None:
-            context_dict["config_value"] = config_value
-        if validation_rule is not None:
-            context_dict["validation_rule"] = validation_rule
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-class FlextPluginLifecycleOperationError(FlextPluginLifecycleError):
-    """Plugin lifecycle operation errors with lifecycle context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        plugin_name: str | None = None,
-        current_status: str | None = None,
-        target_status: str | None = None,
-        lifecycle_operation: str | None = None,
-        code: FlextPluginErrorCodes
-        | None = FlextPluginErrorCodes.PLUGIN_LIFECYCLE_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin lifecycle context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if plugin_name is not None:
-            context_dict["plugin_name"] = plugin_name
-        if current_status is not None:
-            context_dict["current_status"] = current_status
-        if target_status is not None:
-            context_dict["target_status"] = target_status
-        if lifecycle_operation is not None:
-            context_dict["lifecycle_operation"] = lifecycle_operation
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-class FlextPluginHotReloadOperationError(FlextPluginHotReloadError):
-    """Plugin hot reload operation errors with reload context."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        plugin_name: str | None = None,
-        file_path: str | None = None,
-        reload_trigger: str | None = None,
-        reload_stage: str | None = None,
-        code: FlextPluginErrorCodes
-        | None = FlextPluginErrorCodes.PLUGIN_HOT_RELOAD_ERROR,
-        context: Mapping[str, object] | None = None,
-    ) -> None:
-        """Initialize with plugin hot reload context."""
-        context_dict: dict[str, object] = dict(context) if context else {}
-        if plugin_name is not None:
-            context_dict["plugin_name"] = plugin_name
-        if file_path is not None:
-            context_dict["file_path"] = file_path
-        if reload_trigger is not None:
-            context_dict["reload_trigger"] = reload_trigger
-        if reload_stage is not None:
-            context_dict["reload_stage"] = reload_stage
-
-        # Initialize base exception with message
-        super().__init__(message)
-        # Set additional attributes from FlextErrorMixin
-        self.code = str(code) if code is not None else "PLUGIN_ERROR"
-        self.context = context_dict
-
-
-__all__: list[str] = [
-    # Base exceptions (alphabetical)
+__all__ = [
+    # Legacy backward compatibility exports
     "FlextPluginCompatibilityError",
     "FlextPluginConfigurationError",
-    # Domain-specific operation exceptions
     "FlextPluginConfigurationOperationError",
     "FlextPluginDependencyError",
     "FlextPluginDiscoveryError",
     "FlextPluginDiscoveryOperationError",
     "FlextPluginError",
-    # Error codes enum
     "FlextPluginErrorCodes",
+    # CONSOLIDATED class (FLEXT pattern)
+    "FlextPluginExceptions",
     "FlextPluginExecutionError",
     "FlextPluginExecutionOperationError",
     "FlextPluginHotReloadError",
@@ -316,4 +158,6 @@ __all__: list[str] = [
     "FlextPluginRegistryError",
     "FlextPluginSecurityError",
     "FlextPluginValidationError",
+    # Legacy compatibility
+    "PluginError",
 ]

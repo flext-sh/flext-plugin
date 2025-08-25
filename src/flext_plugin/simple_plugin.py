@@ -21,7 +21,7 @@ Use Cases:
     - Integration with legacy plugin systems
 
 Example:
-    >>> from flext_plugin.simple_plugin import Plugin
+    >>> from simple_plugin import Plugin
     >>>
     >>> class MyPlugin(Plugin):
     ...     def execute(self):

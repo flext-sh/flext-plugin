@@ -36,16 +36,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import override
 
+import pytest
 from flext_core import FlextResult
 
-from flext_plugin.application.handlers import (
+from flext_plugin.entities import FlextPluginEntity
+from flext_plugin.handlers import (
     FlextPluginEventHandler,
     FlextPluginHandler,
     FlextPluginRegistrationHandler,
 )
-from flext_plugin.domain.entities import FlextPluginEntity
-from flext_plugin.domain.ports import FlextPluginLoaderPort
 from flext_plugin.loader import PluginLoader
+from flext_plugin.ports import FlextPluginLoaderPort
 
 
 class TestPluginLoaderAdapter(FlextPluginLoaderPort):
@@ -140,30 +141,30 @@ class TestFlextPluginRegistrationHandler:
     def test_register_plugin_missing_name(self) -> None:
         """Test plugin registration with missing name (should fail at Pydantic level)."""
         # Test that Pydantic validation prevents creating plugin with empty name
-        try:
+        def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail Pydantic validation
                 plugin_version="1.0.0",
             )
-            msg = "Should have failed validation"
-            raise AssertionError(msg)
-        except Exception as e:
-            # Pydantic validation should prevent empty name
-            assert "String should have at least 1 character" in str(e)
+
+        with pytest.raises(Exception) as exc_info:
+            _should_fail_validation()
+        # Pydantic validation should prevent empty name
+        assert "String should have at least 1 character" in str(exc_info.value)
 
     def test_register_plugin_missing_version(self) -> None:
         """Test plugin registration with missing version (should fail at Pydantic level)."""
         # Test that Pydantic validation prevents creating plugin with empty version
-        try:
+        def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="test-plugin",
                 plugin_version="",  # Empty version should fail Pydantic validation
             )
-            msg = "Should have failed validation"
-            raise AssertionError(msg)
-        except Exception as e:
-            # Pydantic validation should prevent empty version
-            assert "String should have at least 1 character" in str(e)
+
+        with pytest.raises(Exception) as exc_info:
+            _should_fail_validation()
+        # Pydantic validation should prevent empty version
+        assert "String should have at least 1 character" in str(exc_info.value)
 
     def test_register_valid_plugin_with_real_service(self) -> None:
         """Test plugin registration with valid plugin and real service."""
@@ -250,16 +251,16 @@ class TestFlextPluginEventHandler:
     def test_handle_plugin_loaded_event_plugin_without_name(self) -> None:
         """Test handling plugin loaded event with plugin missing name (Pydantic validation)."""
         # Test that Pydantic validation prevents creating plugin with empty name
-        try:
+        def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail Pydantic validation
                 plugin_version="1.0.0",
             )
-            msg = "Should have failed validation"
-            raise AssertionError(msg)
-        except Exception as e:
-            # Pydantic validation should prevent empty name
-            assert "String should have at least 1 character" in str(e)
+
+        with pytest.raises(Exception) as exc_info:
+            _should_fail_validation()
+        # Pydantic validation should prevent empty name
+        assert "String should have at least 1 character" in str(exc_info.value)
 
     def test_handle_plugin_unloaded_event_valid_name(self) -> None:
         """Test handling plugin unloaded event with valid plugin name."""
@@ -354,16 +355,16 @@ class LifecyclePlugin:
 
         # Test entity creation validation at Pydantic level
         # Empty name should fail at entity creation, not handler level
-        try:
+        def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="",  # This should fail Pydantic validation
                 plugin_version="1.0.0",
             )
-            msg = "Should have failed validation"
-            raise AssertionError(msg)
-        except Exception as e:
-            # Pydantic validation should prevent empty name
-            assert "String should have at least 1 character" in str(e)
+
+        with pytest.raises(Exception) as exc_info:
+            _should_fail_validation()
+        # Pydantic validation should prevent empty name
+        assert "String should have at least 1 character" in str(exc_info.value)
 
         # Test valid entity but check if handler validates properly
         # Create plugin with valid name then test handler logic

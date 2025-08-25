@@ -7,9 +7,9 @@ for consistent typing across the plugin ecosystem.
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Protocol, TypeVar
+from typing import TypeVar
 
-from flext_core import FlextResult
+from flext_core import FlextProtocols, FlextResult
 
 # =============================================================================
 # PLUGIN SYSTEM TYPE VARIABLES
@@ -43,126 +43,32 @@ TPluginSystem = TypeVar("TPluginSystem")  # Plugin system type
 # =============================================================================
 
 
-class PluginProtocol(Protocol):
-    """Protocol for plugin instances."""
-
-    @property
-    def name(self) -> str:
-        """Plugin name."""
-        ...
-
-    @property
-    def version(self) -> str:
-        """Plugin version."""
-        ...
-
-    async def initialize(self) -> FlextResult[bool]:
-        """Initialize the plugin."""
-        ...
-
-    async def cleanup(self) -> FlextResult[bool]:
-        """Cleanup plugin resources."""
-        ...
+# Use flext-core plugin protocol instead of local definition
+PluginProtocol = FlextProtocols.Plugin
 
 
-class PluginExecutorProtocol(Protocol):
-    """Protocol for plugin execution."""
-
-    async def execute(
-        self,
-        plugin_name: str,
-        data: dict[str, PluginConfigData],
-        context: dict[str, PluginConfigData] | None = None,
-    ) -> FlextResult[PluginConfigData]:
-        """Execute a plugin with data."""
-        ...
+# Plugin execution uses Application Handler pattern
+PluginExecutorProtocol = FlextProtocols.Application.Handler
 
 
-class PluginDiscoveryProtocol(Protocol):
-    """Protocol for plugin discovery."""
-
-    async def discover_plugins(
-        self,
-        path: str,
-        *,
-        recursive: bool = True,
-    ) -> FlextResult[list[str]]:
-        """Discover plugins in a path."""
-        ...
+# Plugin discovery uses Domain Service pattern
+PluginDiscoveryProtocol = FlextProtocols.Domain.Service
 
 
-class PluginLoaderProtocol(Protocol):
-    """Protocol for plugin loading."""
-
-    async def load_plugin(
-        self,
-        plugin_path: str,
-    ) -> FlextResult[object]:
-        """Load a plugin from path."""
-        ...
-
-    async def unload_plugin(
-        self,
-        plugin_name: str,
-    ) -> FlextResult[bool]:
-        """Unload a plugin by name."""
-        ...
+# Plugin loading uses Service pattern
+PluginLoaderProtocol = FlextProtocols.Service
 
 
-class PluginRegistryProtocol(Protocol):
-    """Protocol for plugin registry."""
-
-    async def register_plugin(
-        self,
-        plugin: object,
-    ) -> FlextResult[bool]:
-        """Register a plugin."""
-        ...
-
-    async def unregister_plugin(
-        self,
-        plugin_name: str,
-    ) -> FlextResult[bool]:
-        """Unregister a plugin."""
-        ...
-
-    def get_plugin(
-        self,
-        plugin_name: str,
-    ) -> object | None:
-        """Get a plugin by name."""
-        ...
-
-    def list_plugins(self) -> list[object]:
-        """List all registered plugins."""
-        ...
+# Plugin registry uses Repository pattern
+PluginRegistryProtocol = FlextProtocols.Repository
 
 
-class PluginValidatorProtocol(Protocol):
-    """Protocol for plugin validation."""
-
-    async def validate_plugin(
-        self,
-        plugin: object,
-    ) -> FlextResult[bool]:
-        """Validate a plugin."""
-        ...
+# Plugin validation uses Validator pattern
+PluginValidatorProtocol = FlextProtocols.Validator
 
 
-class HotReloadProtocol(Protocol):
-    """Protocol for hot reload functionality."""
-
-    async def start_watching(
-        self,
-        path: str,
-        callback: Callable[[str], Awaitable[None]],
-    ) -> FlextResult[bool]:
-        """Start watching for changes."""
-        ...
-
-    async def stop_watching(self) -> FlextResult[bool]:
-        """Stop watching for changes."""
-        ...
+# Hot reload uses Infrastructure Service pattern
+HotReloadProtocol = FlextProtocols.Service
 
 
 # =============================================================================

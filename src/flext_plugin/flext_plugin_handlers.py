@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from flext_core import FlextBaseHandler, FlextResult
 
-from flext_plugin.domain.entities import FlextPluginEntity
-from flext_plugin.domain.ports import FlextPluginLoaderPort
+from .entities import FlextPluginEntity
+from .ports import FlextPluginLoaderPort
 
 
 class FlextPluginHandler(FlextBaseHandler):

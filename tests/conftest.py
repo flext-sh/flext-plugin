@@ -31,8 +31,8 @@ from pathlib import Path
 import pytest
 from flext_core import FlextContainer
 
-from flext_plugin.core.types import PluginType
-from flext_plugin.domain.entities import FlextPluginEntity
+from flext_plugin.entities import FlextPluginEntity
+from flext_plugin.models import PluginType
 from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
@@ -57,7 +57,7 @@ def set_test_environment() -> Generator[None]:
 def real_plugin_config() -> dict[str, object]:
     """REAL plugin configuration for testing."""
     return {
-        "plugin_directory": "/tmp/test_plugins",
+        "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
         "auto_discover": True,
         "hot_reload": True,
         "security_enabled": False,

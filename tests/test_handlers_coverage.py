@@ -38,7 +38,7 @@ from flext_plugin import (
     FlextPluginRegistrationHandler,
     create_flext_plugin,
 )
-from flext_plugin.application.services import FlextPluginService
+from flext_plugin.services import FlextPluginService
 
 
 class TestFlextPluginHandler:

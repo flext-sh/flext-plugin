@@ -32,13 +32,14 @@ from flext_plugin import (
     PluginType,
 )
 from flext_plugin.core.discovery import PluginDiscovery
-from flext_plugin.domain.entities import FlextPluginConfig, FlextPluginEntity
+from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.loader import PluginLoader
 from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
+from flext_plugin.services import PluginDiscoveryService, PluginService
 
 
 @pytest.fixture
@@ -585,7 +586,7 @@ class TestFlextPluginServiceReal:
     def test_load_plugin_with_real_plugin_entity(
         self,
         service: FlextPluginService,
-        temp_plugin_dir: Path,
+        temp_plugin_dir: Path,  # noqa: ARG002
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
         # Create REAL plugin entity that corresponds to actual file
@@ -867,7 +868,6 @@ class TestFlextPluginDiscoveryServiceReal:
         assert result.data == []
 
         # Test actual port functionality
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             result = port.discover_plugins(temp_dir)
@@ -1279,7 +1279,6 @@ class TestServiceErrorHandling:
         discovery_service = FlextPluginDiscoveryService(container=container)
 
         # Operations should still work with fallback implementations
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             result = discovery_service.scan_directory(temp_dir)
@@ -1300,7 +1299,6 @@ class TestServiceErrorHandling:
         port6 = service.manager_port
 
         # All should be fallback implementations that work with REAL data
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             assert port1.discover_plugins(temp_dir).success
@@ -1321,7 +1319,6 @@ class TestServiceErrorHandling:
         port2 = service.discovery_port
 
         # Both should be fallback implementations that work with REAL directories
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             assert port1.discover_plugins(temp_dir).success
@@ -1394,14 +1391,12 @@ class TestBackwardsCompatibilityAliasesReal:
     def test_plugin_service_alias_exists_real(self) -> None:
         """Test PluginService alias exists and works with REAL functionality."""
         # Import from application.services module
-        from flext_plugin.application.services import PluginService
 
         service = PluginService()
         assert service is not None
         assert isinstance(service, FlextPluginService)
 
         # Test REAL functionality through alias
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             result = service.discover_plugins(temp_dir)
@@ -1411,14 +1406,12 @@ class TestBackwardsCompatibilityAliasesReal:
     def test_plugin_discovery_service_alias_exists_real(self) -> None:
         """Test PluginDiscoveryService alias exists and works with REAL functionality."""
         # Import from application.services module
-        from flext_plugin.application.services import PluginDiscoveryService
 
         service = PluginDiscoveryService()
         assert service is not None
         assert isinstance(service, FlextPluginDiscoveryService)
 
         # Test REAL functionality through alias
-        import tempfile
 
         with tempfile.TemporaryDirectory() as temp_dir:
             result = service.scan_directory(temp_dir)

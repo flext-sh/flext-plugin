@@ -11,7 +11,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from flext_plugin.constants import (
+from .flext_plugin_constants import (
     DEFAULT_PLUGIN_TIMEOUT_SECONDS,
     MAX_PLUGIN_NAME_LENGTH,
     MIN_PLUGIN_NAME_LENGTH,
@@ -19,7 +19,7 @@ from flext_plugin.constants import (
 )
 
 # Import types
-from flext_plugin.type_definitions import PluginConfigData
+from .type_definitions import PluginConfigData
 
 # Plugin Name Fields
 PluginNameField = Annotated[

@@ -31,6 +31,7 @@ Quality Standards:
 
 from __future__ import annotations
 
+import sys
 import tempfile
 from collections import UserDict
 from pathlib import Path
@@ -394,7 +395,6 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 
@@ -440,7 +440,6 @@ class CustomPlugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 
@@ -489,7 +488,6 @@ class SomeOtherClass:
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 
@@ -527,7 +525,6 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 
@@ -566,7 +563,6 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 
@@ -605,7 +601,6 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
-            import sys
 
             sys.path.insert(0, str(temp_path))
 

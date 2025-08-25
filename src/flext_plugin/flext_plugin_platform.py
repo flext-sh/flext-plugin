@@ -28,7 +28,7 @@ Platform Responsibilities:
     - Integration point for external systems
 
 Example:
-    >>> from flext_plugin.platform import FlextPluginPlatform
+    >>> from flext_plugin_platform import FlextPluginPlatform
     >>>
     >>> # Initialize platform with dependency injection
     >>> platform = FlextPluginPlatform()
@@ -57,11 +57,11 @@ from __future__ import annotations
 
 from flext_core import FlextContainer, FlextResult
 
-from flext_plugin.application.services import (
+from .entities import FlextPluginConfig, FlextPluginEntity
+from .flext_plugin_services import (
     FlextPluginDiscoveryService,
     FlextPluginService,
 )
-from flext_plugin.domain.entities import FlextPluginConfig, FlextPluginEntity
 
 
 class FlextPluginPlatform:

@@ -19,17 +19,20 @@ import tempfile
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextResult
+from flext_core import FlextResult, get_logger
 
-from flext_plugin.core.discovery import PluginDiscovery
-from flext_plugin.core.types import PluginType
-from flext_plugin.domain.entities import FlextPluginConfig, FlextPluginEntity
-from flext_plugin.domain.ports import (
+from .discovery import PluginDiscovery
+from .entities import FlextPluginConfig, FlextPluginEntity
+from .flext_plugin_models import PluginType
+from .loader import PluginLoader
+from .ports import (
     FlextPluginDiscoveryPort,
     FlextPluginLoaderPort,
     FlextPluginManagerPort,
 )
-from flext_plugin.loader import PluginLoader
+
+# Initialize logger
+logger = get_logger(__name__)
 
 
 class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
@@ -101,7 +104,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
 
                 except Exception as e:
                     # Log exception but continue discovery
-                    logger.warning("Failed to process plugin file %s: %s", file_path, e)
+                    logger.warning("Failed to process plugin file %s: %s", plugin_file, e)
                     continue
 
             return FlextResult[list[FlextPluginEntity]].ok(discovered_plugins)
@@ -263,7 +266,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                     if loop.is_running():
                         task = asyncio.create_task(self.loader.unload_plugin(plugin_name))
                         # Store task reference to prevent garbage collection
-                        task.add_done_callback(lambda t: None)
+                        task.add_done_callback(lambda _: None)
                     else:
                         loop.run_until_complete(self.loader.unload_plugin(plugin_name))
                 except RuntimeError:

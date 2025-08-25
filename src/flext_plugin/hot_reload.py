@@ -29,8 +29,8 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
-from flext_plugin.discovery import PluginDiscovery
-from flext_plugin.loader import PluginLoader
+from .discovery import PluginDiscovery
+from .loader import PluginLoader
 
 
 class StatefulPlugin(Protocol):
@@ -331,6 +331,11 @@ class HotReloadManager(FlextEntity):
     plugin_directory: str
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
+    # Dynamic attributes for lazy initialization
+    _state_manager: StateManager | None = None
+    _rollback_manager: RollbackManager | None = None
+    _watcher: PluginWatcher | None = None
+
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
@@ -509,35 +514,31 @@ class HotReloadManager(FlextEntity):
     @property
     def state_manager(self) -> StateManager:
         """Get state manager instance."""
-        if not hasattr(self, "_state_manager") or self._state_manager is None:
+        if self._state_manager is None:
             state_dir = getattr(self, "state_backup_dir", None) or Path(
                 "./state_backup",
             )
-            object.__setattr__(self, "_state_manager", StateManager(state_dir))
-        return cast("StateManager", self._state_manager)
+            self._state_manager = StateManager(state_dir)
+        return self._state_manager
 
     @property
     def rollback_manager(self) -> RollbackManager:
         """Get rollback manager instance."""
-        if not hasattr(self, "_rollback_manager") or self._rollback_manager is None:
-            object.__setattr__(
-                self,
-                "_rollback_manager",
-                RollbackManager(self.state_manager),
-            )
-        return cast("RollbackManager", self._rollback_manager)
+        if self._rollback_manager is None:
+            self._rollback_manager = RollbackManager(self.state_manager)
+        return self._rollback_manager
 
     @property
     def watcher(self) -> PluginWatcher:
         """Get plugin watcher instance."""
-        if not hasattr(self, "_watcher") or self._watcher is None:
+        if self._watcher is None:
             watch_dirs = getattr(
                 self,
                 "watch_directories",
                 [Path(self.plugin_directory)],
             )
-            object.__setattr__(self, "_watcher", PluginWatcher(watch_dirs))
-        return cast("PluginWatcher", self._watcher)
+            self._watcher = PluginWatcher(watch_dirs)
+        return self._watcher
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.

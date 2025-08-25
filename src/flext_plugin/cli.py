@@ -35,10 +35,10 @@ import sys
 from pathlib import Path
 
 import click
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextContainer, FlextLogger, FlextResult
 
-from flext_plugin import create_flext_plugin_platform
-from flext_plugin.core.types import PluginType
+from .flext_plugin_models import PluginType
+from .flext_plugin_platform import FlextPluginPlatform
 
 # Initialize logger
 logger = FlextLogger(__name__)
@@ -50,7 +50,8 @@ class PluginCLI:
     def __init__(self) -> None:
         """Initialize CLI with plugin platform."""
         try:
-            self.platform = create_flext_plugin_platform()
+            container = FlextContainer()
+            self.platform = FlextPluginPlatform(container)
         except Exception as e:
             logger.exception("Failed to initialize plugin platform", error=str(e))
             sys.exit(1)

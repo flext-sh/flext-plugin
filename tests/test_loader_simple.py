@@ -18,7 +18,9 @@ Quality Standards:
 
 from __future__ import annotations
 
-from flext_plugin.domain.entities import FlextPluginEntity
+import pytest
+
+from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.loader import PluginLoader
 from flext_plugin.typings import PluginStatus, PluginType
 
@@ -83,16 +85,15 @@ class TestFlextPluginEntityReal:
 
     def test_plugin_entity_name_validation_fails_with_empty_name(self) -> None:
         """Test that REAL validation fails with empty name."""
-        try:
+        def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail validation
                 plugin_version="1.0.0",
             )
-            # If we get here, validation didn't work
-            msg = "Expected validation to fail with empty name"
-            raise AssertionError(msg)
-        except ValueError as e:
-            assert "name" in str(e).lower()
+
+        with pytest.raises(ValueError) as exc_info:
+            _should_fail_validation()
+        assert "name" in str(exc_info.value).lower()
 
     def test_plugin_entity_with_plugin_types(self) -> None:
         """Test REAL plugin entity with different plugin types."""

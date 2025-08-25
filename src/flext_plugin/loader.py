@@ -29,7 +29,7 @@ Architecture:
     broader FLEXT infrastructure ecosystem.
 
 Example:
-    >>> from flext_plugin.loader import PluginLoader
+    >>> from loader import PluginLoader
     >>> from pathlib import Path
     >>>
     >>> loader = PluginLoader(security_enabled=True)

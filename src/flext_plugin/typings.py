@@ -9,7 +9,7 @@ from __future__ import annotations
 # Re-export core FlextResult for convenience
 from flext_core import FlextResult
 
-from flext_plugin.models import (
+from .flext_plugin_models import (
     FlextPluginConfigModel,
     FlextPluginMetadataModel,
     FlextPluginModel,
@@ -21,7 +21,7 @@ from flext_plugin.models import (
 )
 
 # Import specific types from the centralized modules
-from flext_plugin.type_definitions import (
+from .type_definitions import (
     DirectoryPath,
     # Context Types
     ExecutionContextDict,

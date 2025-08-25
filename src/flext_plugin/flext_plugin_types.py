@@ -6,10 +6,10 @@ downstream imports following flext-core patterns.
 
 from __future__ import annotations
 
-from flext_plugin.exceptions import PluginError
+from .exceptions import PluginError
 
 # Import core types and exceptions from centralized modules
-from flext_plugin.models import (
+from .flext_plugin_models import (
     FlextPluginConfigModel,
     FlextPluginMetadataModel,
     FlextPluginModel,
@@ -19,7 +19,7 @@ from flext_plugin.models import (
     PluginStatus,
     PluginType,
 )
-from flext_plugin.type_definitions import (
+from .type_definitions import (
     PluginBoolResult,
     PluginDiscoveryProtocol,
     PluginExecutorProtocol,
@@ -34,7 +34,7 @@ from flext_plugin.type_definitions import (
 )
 
 # Legacy compatibility classes will be in a separate compatibility module
-from flext_plugin.typings_legacy import (
+from .typings_legacy import (
     PluginExecutionContext,
     PluginExecutionResult,
     PluginManagerResult,

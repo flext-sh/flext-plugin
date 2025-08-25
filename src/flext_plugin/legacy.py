@@ -15,17 +15,13 @@ from __future__ import annotations
 
 import warnings
 
-from flext_plugin.application.services import (
-    FlextPluginDiscoveryService,
-    FlextPluginService,
-)
-from flext_plugin.domain.entities import (
+from .entities import (
     FlextPluginConfig,
     FlextPluginEntity,
     FlextPluginMetadata,
     FlextPluginRegistry,
 )
-from flext_plugin.exceptions import (
+from .exceptions import (
     FlextPluginCompatibilityError,
     FlextPluginConfigurationError,
     FlextPluginDiscoveryError,
@@ -40,8 +36,12 @@ from flext_plugin.exceptions import (
     FlextPluginSecurityError,
     FlextPluginValidationError,
 )
-from flext_plugin.platform import FlextPluginPlatform
-from flext_plugin.simple_api import (
+from .flext_plugin_platform import FlextPluginPlatform
+from .flext_plugin_services import (
+    FlextPluginDiscoveryService,
+    FlextPluginService,
+)
+from .simple_api import (
     create_flext_plugin,
     create_flext_plugin_config,
     create_flext_plugin_metadata,

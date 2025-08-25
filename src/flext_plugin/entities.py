@@ -23,10 +23,10 @@ from flext_core import (
 )
 from pydantic import Field, field_validator
 
-from flext_plugin.typings import (
-    PluginStatus,
-    PluginType,
-)
+from . import typings as plugin_typings
+
+PluginStatus = plugin_typings.PluginStatus
+PluginType = plugin_typings.PluginType
 
 
 class FlextPluginConfigParams:

@@ -58,7 +58,7 @@ from flext_plugin import (
     create_flext_plugin,
     create_plugin_manager,
 )
-from flext_plugin.domain.entities import FlextPlugin
+from flext_plugin.entities import FlextPlugin
 
 
 class TestSimplePluginRegistryComprehensive:
