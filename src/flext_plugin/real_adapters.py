@@ -104,7 +104,9 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
 
                 except Exception as e:
                     # Log exception but continue discovery
-                    logger.warning("Failed to process plugin file %s: %s", plugin_file, e)
+                    logger.warning(
+                        "Failed to process plugin file %s: %s", plugin_file, e
+                    )
                     continue
 
             return FlextResult[list[FlextPluginEntity]].ok(discovered_plugins)
@@ -264,7 +266,9 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 try:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
-                        task = asyncio.create_task(self.loader.unload_plugin(plugin_name))
+                        task = asyncio.create_task(
+                            self.loader.unload_plugin(plugin_name)
+                        )
                         # Store task reference to prevent garbage collection
                         task.add_done_callback(lambda _: None)
                     else:

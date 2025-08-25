@@ -293,3 +293,15 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
 PluginDiscoveryPort = FlextPluginDiscoveryPort
 PluginLoaderPort = FlextPluginLoaderPort
 PluginManagerPort = FlextPluginManagerPort
+
+__all__ = [
+    "FlextPluginDiscoveryPort",
+    "FlextPluginHotReloadPort",
+    "FlextPluginLoaderPort",
+    "FlextPluginManagerPort",
+    "FlextPluginRegistryPort",
+    # Legacy aliases
+    "PluginDiscoveryPort",
+    "PluginLoaderPort",
+    "PluginManagerPort",
+]

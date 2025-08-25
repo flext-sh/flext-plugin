@@ -19,6 +19,12 @@ from .flext_plugin_models import (
     PluginStatus,
     PluginType,
 )
+
+# Legacy compatibility classes from services module
+from .flext_plugin_services import (
+    SimplePluginRegistry,
+    create_plugin_manager,
+)
 from .type_definitions import (
     PluginBoolResult,
     PluginDiscoveryProtocol,
@@ -33,14 +39,9 @@ from .type_definitions import (
     TPluginResult,
 )
 
-# Legacy compatibility classes will be in a separate compatibility module
-from .typings_legacy import (
-    PluginExecutionContext,
-    PluginExecutionResult,
-    PluginManagerResult,
-    SimplePluginRegistry,
-    create_plugin_manager,
-)
+# Legacy classes for compatibility - using aliases
+PluginExecutionContext = dict[str, object]  # Type alias for execution context
+PluginManagerResult = object  # Type alias for manager result
 
 __all__: list[str] = [
     "FlextPluginConfigModel",
@@ -53,7 +54,6 @@ __all__: list[str] = [
     # Legacy compatibility (for now)
     "PluginExecutionContext",
     "PluginExecutionContextModel",
-    "PluginExecutionResult",
     "PluginExecutionResultModel",
     "PluginExecutorProtocol",
     "PluginLoaderProtocol",
@@ -73,5 +73,6 @@ __all__: list[str] = [
     "TPlugin",
     "TPluginConfig",
     "TPluginResult",
+    # Factory functions
     "create_plugin_manager",
 ]

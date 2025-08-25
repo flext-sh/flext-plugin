@@ -1,0 +1,25 @@
+"""Version management for FLEXT Plugin System."""
+
+from importlib.metadata import version as _pkg_version
+
+__version__: str = _pkg_version("flext-plugin")
+
+# Version metadata for programmatic access
+VERSION_MAJOR: int = 0
+VERSION_MINOR: int = 9
+VERSION_PATCH: int = 0
+
+# Release information
+RELEASE_NAME: str = "Plugin Foundation"
+RELEASE_DATE: str = "2025-08-25"
+BUILD_TYPE: str = "stable"
+
+__all__: list[str] = [
+    "BUILD_TYPE",
+    "RELEASE_DATE",
+    "RELEASE_NAME",
+    "VERSION_MAJOR",
+    "VERSION_MINOR",
+    "VERSION_PATCH",
+    "__version__",
+]

@@ -71,9 +71,32 @@ from .type_definitions import (
     TPluginResult,
 )
 
+
+# PluginExecutionResult - Legacy compatible class for tests (avoiding circular imports)
+class PluginExecutionResult:
+    """Legacy execution result class for compatibility."""
+
+    def __init__(
+        self,
+        execution_id: str,
+        *,
+        success: bool,
+        duration_ms: int,
+        output_data: dict[str, object] | None = None,
+        error_message: str = "",
+        **kwargs: object
+    ) -> None:
+        self.execution_id = execution_id
+        self.success = success
+        self.duration_ms = duration_ms
+        self.output_data = output_data if output_data is not None else None
+        self.error_message = error_message
+        # Store additional kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
 # Legacy compatibility exports (transitional)
 PluginExecutionContext = ExecutionContextDict
-PluginExecutionResult = PluginDataResult
 PluginManagerResult = PluginStringResult
 FlextPluginResult = PluginResult
 

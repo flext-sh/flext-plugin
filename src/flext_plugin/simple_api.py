@@ -322,3 +322,17 @@ create_plugin = create_flext_plugin
 create_plugin_config = create_flext_plugin_config
 create_plugin_metadata = create_flext_plugin_metadata
 create_plugin_registry = create_flext_plugin_registry
+
+__all__ = [
+    "create_flext_plugin",
+    "create_flext_plugin_config",
+    "create_flext_plugin_metadata",
+    "create_flext_plugin_registry",
+    # Legacy aliases
+    "create_plugin",
+    "create_plugin_config",
+    "create_plugin_config_from_dict",
+    "create_plugin_from_dict",
+    "create_plugin_metadata",
+    "create_plugin_registry",
+]

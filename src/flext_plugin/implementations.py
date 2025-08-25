@@ -26,6 +26,7 @@ try:
 except ImportError:
     # These may not exist in flext-core yet - using Any for type checking
     from typing import Any
+
     FlextPlugin = Any  # type: ignore[misc,assignment]
     FlextPluginContext = Any  # type: ignore[misc,assignment]
     FlextPluginLoader = Any
@@ -528,3 +529,14 @@ class ConcretePluginLoader(FlextPluginLoader):  # type: ignore[misc,no-any-unimp
         except Exception as e:
             self._logger.exception(f"Plugin discovery failed in {search_path}")
             return FlextResult[list[str]].fail(f"Discovery failed: {e!s}")
+
+
+__all__ = [
+    "ConcreteDataPlugin",
+    "ConcreteExecutablePlugin",
+    "ConcretePlugin",
+    "ConcretePluginContext",
+    "ConcretePluginLoader",
+    "ConcretePluginRegistry",
+    "ConcreteTransformPlugin",
+]

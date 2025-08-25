@@ -164,3 +164,11 @@ def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plu
 def create_registry() -> PluginRegistry:
     """Create a new plugin registry."""
     return PluginRegistry()
+
+
+__all__ = [
+    "Plugin",
+    "PluginRegistry",
+    "create_registry",
+    "load_plugin",
+]

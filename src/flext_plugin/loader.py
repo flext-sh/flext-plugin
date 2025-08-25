@@ -312,3 +312,9 @@ class PluginLoader(FlextEntity):
 
         """
         return FlextResult[dict[str, object]].ok(self._loaded_plugins.copy())
+
+
+__all__ = [
+    "CleanupablePlugin",
+    "PluginLoader",
+]

@@ -68,9 +68,8 @@ class FlextPluginServices(FlextDomainService[object]):
             object.__setattr__(self, "_manager_port", None)
 
         @override
-        def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
-            _ = args, kwargs  # Mark as intentionally unused
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute"
             )
@@ -166,10 +165,14 @@ class FlextPluginServices(FlextDomainService[object]):
             """Install a plugin from the given path."""
             try:
                 if not plugin_path:
-                    return FlextResult[FlextPluginEntity].fail("Plugin path is required")
+                    return FlextResult[FlextPluginEntity].fail(
+                        "Plugin path is required"
+                    )
                 return self.manager_port.install_plugin(plugin_path)
             except (RuntimeError, ValueError, TypeError) as e:
-                return FlextResult[FlextPluginEntity].fail(f"Failed to install plugin: {e}")
+                return FlextResult[FlextPluginEntity].fail(
+                    f"Failed to install plugin: {e}"
+                )
 
         def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Uninstall a plugin."""
@@ -202,7 +205,9 @@ class FlextPluginServices(FlextDomainService[object]):
             """Get configuration for a plugin."""
             try:
                 if not plugin_name:
-                    return FlextResult[FlextPluginConfig].fail("Plugin name is required")
+                    return FlextResult[FlextPluginConfig].fail(
+                        "Plugin name is required"
+                    )
                 return self.manager_port.get_plugin_config(plugin_name)
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[FlextPluginConfig].fail(
@@ -252,9 +257,8 @@ class FlextPluginServices(FlextDomainService[object]):
             object.__setattr__(self, "_discovery_port", None)
 
         @override
-        def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
-            _ = args, kwargs  # Mark as intentionally unused
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute"
             )
@@ -321,9 +325,8 @@ class FlextPluginServices(FlextDomainService[object]):
             object.__setattr__(self, "_plugins", {})
 
         @override
-        def execute(self, *args: object, **kwargs: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
-            _ = args, kwargs  # Mark as intentionally unused
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute"
             )

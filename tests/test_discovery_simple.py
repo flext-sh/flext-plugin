@@ -210,7 +210,10 @@ class TestPluginDiscoveryReal:
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
-            METADATA: ClassVar[dict[str, str]] = {"name": "valid-plugin", "version": "1.0.0"}
+            METADATA: ClassVar[dict[str, str]] = {
+                "name": "valid-plugin",
+                "version": "1.0.0",
+            }
 
             def initialize(self) -> None:
                 pass
@@ -585,7 +588,10 @@ class ExtraPlugin:
 
         # Register manual plugin
         class ManualPlugin:
-            METADATA: ClassVar[dict[str, str]] = {"name": "manual-plugin", "version": "3.0.0"}
+            METADATA: ClassVar[dict[str, str]] = {
+                "name": "manual-plugin",
+                "version": "3.0.0",
+            }
 
             def initialize(self) -> None:
                 pass

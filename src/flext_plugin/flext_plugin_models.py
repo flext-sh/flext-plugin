@@ -105,10 +105,12 @@ class FlextPluginModels(FlextBaseModel):
         description: str = Field(default="", description="Plugin description")
         author: str = Field(default="", description="Plugin author")
         plugin_type: FlextPluginModels.Type = Field(
-            default_factory=lambda: FlextPluginModels.Type.UTILITY, description="Plugin type category"
+            default_factory=lambda: FlextPluginModels.Type.UTILITY,
+            description="Plugin type category",
         )
         status: FlextPluginModels.Status = Field(
-            default_factory=lambda: FlextPluginModels.Status.INACTIVE, description="Current plugin status"
+            default_factory=lambda: FlextPluginModels.Status.INACTIVE,
+            description="Current plugin status",
         )
         enabled: bool = Field(default=True, description="Whether the plugin is enabled")
         auto_start: bool = Field(
@@ -149,7 +151,9 @@ class FlextPluginModels(FlextBaseModel):
             default=None, description="Last update timestamp"
         )
         homepage: str | None = Field(default=None, description="Plugin homepage URL")
-        repository: str | None = Field(default=None, description="Plugin repository URL")
+        repository: str | None = Field(
+            default=None, description="Plugin repository URL"
+        )
         documentation: str | None = Field(
             default=None, description="Plugin documentation URL"
         )
@@ -173,8 +177,12 @@ class FlextPluginModels(FlextBaseModel):
             validate_assignment=True,
         )
 
-        config: FlextPluginModels.ConfigModel = Field(..., description="Plugin configuration")
-        metadata: FlextPluginModels.MetadataModel = Field(..., description="Plugin metadata")
+        config: FlextPluginModels.ConfigModel = Field(
+            ..., description="Plugin configuration"
+        )
+        metadata: FlextPluginModels.MetadataModel = Field(
+            ..., description="Plugin metadata"
+        )
         runtime_data: dict[str, PluginConfigData] = Field(
             default_factory=dict, description="Runtime-specific data"
         )
@@ -231,10 +239,14 @@ class FlextPluginModels(FlextBaseModel):
         )
 
         success: bool = Field(default=False, description="Whether execution succeeded")
-        data: PluginConfigData = Field(default=None, description="Execution output data")
+        data: PluginConfigData = Field(
+            default=None, description="Execution output data"
+        )
         error: str = Field(default="", description="Error message if execution failed")
         plugin_name: str = Field(default="", description="Name of the executed plugin")
-        execution_time: float = Field(default=0.0, description="Execution time in seconds")
+        execution_time: float = Field(
+            default=0.0, description="Execution time in seconds"
+        )
         execution_id: str = Field(default="", description="Unique execution identifier")
         completed_at: datetime = Field(
             default_factory=datetime.now, description="Execution completion timestamp"

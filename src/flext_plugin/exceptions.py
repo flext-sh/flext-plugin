@@ -15,7 +15,7 @@ from enum import Enum
 from flext_core import FlextError
 
 
-class FlextPluginExceptions(FlextError):
+class FlextPluginExceptions(FlextError):  # noqa: N818 # CONSOLIDATED class pattern
     """Single CONSOLIDATED class containing ALL plugin exceptions.
 
     Consolidates ALL exception definitions into one class following FLEXT patterns.
@@ -30,6 +30,7 @@ class FlextPluginExceptions(FlextError):
         """Error codes for plugin domain operations."""
 
         PLUGIN_ERROR = "PLUGIN_ERROR"
+        FLEXT_PROCESSING_ERROR = "FLEXT_PROCESSING_ERROR"  # Legacy compatibility
         PLUGIN_DISCOVERY_ERROR = "PLUGIN_DISCOVERY_ERROR"
         PLUGIN_LOADING_ERROR = "PLUGIN_LOADING_ERROR"
         PLUGIN_EXECUTION_ERROR = "PLUGIN_EXECUTION_ERROR"
@@ -47,6 +48,14 @@ class FlextPluginExceptions(FlextError):
     # Base plugin exception classes as nested classes
     class BaseError(FlextError):
         """Base exception for all plugin domain errors."""
+
+        def __init__(
+            self, message: str, plugin_id: str | None = None, **kwargs: object
+        ) -> None:
+            # Remove error_code from kwargs if present and always use FLEXT_PROCESSING_ERROR
+            kwargs.pop("error_code", None)
+            super().__init__(message, error_code="FLEXT_PROCESSING_ERROR", **kwargs)
+            self.plugin_id = plugin_id
 
     class DiscoveryError(FlextError):
         """Plugin discovery errors."""
@@ -126,7 +135,9 @@ FlextPluginPlatformError = FlextPluginExceptions.PlatformError
 FlextPluginDiscoveryOperationError = FlextPluginExceptions.DiscoveryOperationError
 FlextPluginLoadOperationError = FlextPluginExceptions.LoadOperationError
 FlextPluginExecutionOperationError = FlextPluginExceptions.ExecutionOperationError
-FlextPluginConfigurationOperationError = FlextPluginExceptions.ConfigurationOperationError
+FlextPluginConfigurationOperationError = (
+    FlextPluginExceptions.ConfigurationOperationError
+)
 FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
 FlextPluginHotReloadOperationError = FlextPluginExceptions.HotReloadOperationError
 

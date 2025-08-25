@@ -1111,3 +1111,25 @@ PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
 PluginInstance = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
 PluginExecution = FlextPluginExecution
+
+__all__ = [
+    "FlextPlugin",  # Use FlextPluginEntity
+    "FlextPluginConfig",
+    # Parameter classes
+    "FlextPluginConfigParams",
+    # Main entity classes
+    "FlextPluginEntity",
+    "FlextPluginExecution",
+    "FlextPluginMetadata",
+    "FlextPluginMetadataParams",
+    "FlextPluginRegistry",
+    "FlextPluginRegistryParams",
+    # Legacy aliases (transitional - use actual classes instead)
+    "Plugin",  # Use FlextPluginEntity
+    "PluginConfig",
+    "PluginConfiguration",
+    "PluginExecution",
+    "PluginInstance",  # Use FlextPluginEntity
+    "PluginMetadata",
+    "PluginRegistry",
+]

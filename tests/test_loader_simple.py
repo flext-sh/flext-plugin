@@ -85,6 +85,7 @@ class TestFlextPluginEntityReal:
 
     def test_plugin_entity_name_validation_fails_with_empty_name(self) -> None:
         """Test that REAL validation fails with empty name."""
+
         def _should_fail_validation() -> None:
             FlextPluginEntity.create(
                 name="",  # Empty name should fail validation

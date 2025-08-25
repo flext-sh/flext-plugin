@@ -326,3 +326,8 @@ class FlextPluginPlatform:
 
 # Backwards compatibility alias
 PluginPlatform = FlextPluginPlatform
+
+__all__ = [
+    "FlextPluginPlatform",
+    "PluginPlatform",  # Legacy alias
+]

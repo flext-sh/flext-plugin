@@ -393,5 +393,20 @@ def main() -> None:
         sys.exit(1)
 
 
+__all__ = [
+    "PluginCLI",
+    "cli",
+    "create",
+    "handle_result",
+    "install",
+    "list_plugins",
+    "main",
+    "platform",
+    "uninstall",
+    "validate",
+    "watch",
+]
+
+
 if __name__ == "__main__":
     main()

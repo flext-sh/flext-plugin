@@ -121,3 +121,10 @@ class FlextPluginEventHandler(FlextBaseHandler):
             return FlextResult[None].fail(
                 f"Failed to handle plugin unloaded event: {e}"
             )
+
+
+__all__ = [
+    "FlextPluginEventHandler",
+    "FlextPluginHandler",
+    "FlextPluginRegistrationHandler",
+]

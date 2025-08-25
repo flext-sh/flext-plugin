@@ -140,6 +140,7 @@ class TestFlextPluginRegistrationHandler:
 
     def test_register_plugin_missing_name(self) -> None:
         """Test plugin registration with missing name (should fail at Pydantic level)."""
+
         # Test that Pydantic validation prevents creating plugin with empty name
         def _should_fail_validation() -> None:
             FlextPluginEntity.create(
@@ -154,6 +155,7 @@ class TestFlextPluginRegistrationHandler:
 
     def test_register_plugin_missing_version(self) -> None:
         """Test plugin registration with missing version (should fail at Pydantic level)."""
+
         # Test that Pydantic validation prevents creating plugin with empty version
         def _should_fail_validation() -> None:
             FlextPluginEntity.create(
@@ -250,6 +252,7 @@ class TestFlextPluginEventHandler:
 
     def test_handle_plugin_loaded_event_plugin_without_name(self) -> None:
         """Test handling plugin loaded event with plugin missing name (Pydantic validation)."""
+
         # Test that Pydantic validation prevents creating plugin with empty name
         def _should_fail_validation() -> None:
             FlextPluginEntity.create(

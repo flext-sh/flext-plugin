@@ -592,3 +592,18 @@ async def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
     manager = HotReloadManager.create(plugin_directory=plugin_directory)
     await manager.start_watching()
     return manager
+
+
+__all__ = [
+    "HotReloadManager",
+    "PluginFileHandler",
+    "PluginState",
+    "PluginWatcher",
+    "ReloadEvent",
+    "RollbackManager",
+    "StateManager",
+    "StatefulPlugin",
+    "WatchEvent",
+    "WatchEventType",
+    "create_hot_reload_manager",
+]
