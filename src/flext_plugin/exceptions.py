@@ -15,7 +15,7 @@ from enum import Enum
 from flext_core import FlextExceptions
 
 
-class FlextPluginExceptions(FlextExceptions.Error):  # noqa: N818 # CONSOLIDATED class pattern
+class FlextPluginExceptions(FlextExceptions):  # noqa: N818 # CONSOLIDATED class pattern
     """Single CONSOLIDATED class containing ALL plugin exceptions.
 
     Consolidates ALL exception definitions into one class following FLEXT patterns.
@@ -46,7 +46,7 @@ class FlextPluginExceptions(FlextExceptions.Error):  # noqa: N818 # CONSOLIDATED
         PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
     # Base plugin exception classes as nested classes
-    class BaseError(FlextExceptions.Error):
+    class BaseError(FlextExceptions):
         """Base exception for all plugin domain errors."""
 
         def __init__(
@@ -57,43 +57,43 @@ class FlextPluginExceptions(FlextExceptions.Error):  # noqa: N818 # CONSOLIDATED
             super().__init__(message, error_code="FLEXT_PROCESSING_ERROR", **kwargs)
             self.plugin_id = plugin_id
 
-    class DiscoveryError(FlextExceptions.Error):
+    class DiscoveryError(FlextExceptions):
         """Plugin discovery errors."""
 
-    class LoadingError(FlextExceptions.Error):
+    class LoadingError(FlextExceptions):
         """Plugin loading errors."""
 
-    class ExecutionError(FlextExceptions.Error):
+    class ExecutionError(FlextExceptions):
         """Plugin execution errors."""
 
-    class ConfigurationError(FlextExceptions.Error):
+    class ConfigurationError(FlextExceptions):
         """Plugin configuration errors."""
 
-    class ValidationError(FlextExceptions.Error):
+    class ValidationError(FlextExceptions):
         """Plugin validation errors."""
 
-    class LifecycleError(FlextExceptions.Error):
+    class LifecycleError(FlextExceptions):
         """Plugin lifecycle management errors."""
 
-    class DependencyError(FlextExceptions.Error):
+    class DependencyError(FlextExceptions):
         """Plugin dependency resolution errors."""
 
-    class RegistryError(FlextExceptions.Error):
+    class RegistryError(FlextExceptions):
         """Plugin registry operation errors."""
 
-    class HotReloadError(FlextExceptions.Error):
+    class HotReloadError(FlextExceptions):
         """Plugin hot reload errors."""
 
-    class SecurityError(FlextExceptions.Error):
+    class SecurityError(FlextExceptions):
         """Plugin security validation errors."""
 
-    class CompatibilityError(FlextExceptions.Error):
+    class CompatibilityError(FlextExceptions):
         """Plugin compatibility errors."""
 
-    class MetadataError(FlextExceptions.Error):
+    class MetadataError(FlextExceptions):
         """Plugin metadata validation errors."""
 
-    class PlatformError(FlextExceptions.Error):
+    class PlatformError(FlextExceptions):
         """Plugin platform integration errors."""
 
     # Domain-specific operation exceptions

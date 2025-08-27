@@ -150,9 +150,9 @@ class PluginWorkflow:
 
 ```python
 from flext_plugin.config.settings import PluginSystemSettings
-from flext_core.config import FlextSettings
+from flext_core.config import FlextConfig
 
-class PluginSystemSettings(FlextSettings):
+class PluginSystemSettings(FlextConfig):
     """Plugin system configuration with environment support"""
     discovery_paths: List[str] = ["./plugins", "~/.flext/plugins"]
     hot_reload_enabled: bool = True
@@ -1494,9 +1494,9 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 ```python
 # ✅ Extend plugin configuration patterns consistently
 from flext_plugin.config.settings import PluginSystemSettings
-from flext_core.config import FlextSettings
+from flext_core.config import FlextConfig
 
-class OraclePluginSettings(FlextSettings):
+class OraclePluginSettings(FlextConfig):
     """Oracle plugin configuration extending FLEXT patterns."""
     connection_string: str
     schema: str = "HR"
