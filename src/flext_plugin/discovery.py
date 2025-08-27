@@ -8,7 +8,6 @@ for plugin management operations throughout the FLEXT ecosystem.
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast, override
@@ -61,9 +60,9 @@ class PluginDiscovery(FlextEntity):
         **_kwargs: object,
     ) -> None:
         """Initialize plugin discovery system."""
-        # Generate ID if not provided
+        # Generate ID if not provided using FlextUtilities
         final_entity_id = entity_id or FlextUtilities.generate_entity_id()
-        # Initialize FlextEntity base with required fields
+        # Initialize FlextEntity base with required fields - use datetime for FlextEntity compatibility
         now = datetime.now(UTC)
         # Convert types for FlextEntity compatibility
 
@@ -83,15 +82,16 @@ class PluginDiscovery(FlextEntity):
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate domain rules for plugin discovery."""
-        if not self.plugin_directory:
+        """Validate domain rules for plugin discovery using FlextUtilities."""
+        # Use FlextUtilities for validation - maintain original error message for test compatibility
+        if not FlextUtilities.is_non_empty_string(self.plugin_directory):
             return FlextResult[None].fail("Plugin directory is required")
         return FlextResult[None].ok(None)
 
     def add_plugin_directory(self, directory: Path) -> None:
-        """Add a plugin directory to scan."""
-        directory_str = str(directory)
-        if directory_str not in self.plugin_directories:
+        """Add a plugin directory to scan using FlextUtilities validation."""
+        directory_str = FlextUtilities.safe_str(str(directory))
+        if FlextUtilities.is_non_empty_string(directory_str) and directory_str not in self.plugin_directories:
             # Modify the list in place (mutable object)
             self.plugin_directories.append(directory_str)
 
@@ -140,6 +140,12 @@ class PluginDiscovery(FlextEntity):
 
     async def _discover_file_system(self) -> None:
         """Discover plugins from file system."""
+        # Always scan the primary plugin directory first
+        if self.plugin_directory:
+            primary_directory = Path(self.plugin_directory)
+            await self._scan_directory(primary_directory)
+
+        # Then scan additional directories
         for directory_str in self.plugin_directories:
             directory = Path(directory_str)
             await self._scan_directory(directory)
@@ -151,33 +157,67 @@ class PluginDiscovery(FlextEntity):
         for py_file in directory.glob("*.py"):
             if py_file.name.startswith("__"):
                 continue
+
+            plugin_name = py_file.stem
+
             # Look for manifest file
             manifest_file = py_file.with_suffix(".json")
             if manifest_file.exists():
                 try:
-                    with manifest_file.open() as f:
-                        metadata = json.load(f)
-                        self.discovered_plugins[metadata.get("name", py_file.stem)] = (
-                            metadata
+                    # Use FlextUtilities for safe JSON parsing
+                    manifest_content = manifest_file.read_text(encoding="utf-8")
+                    json_result = FlextUtilities.parse_json_safe(manifest_content)
+                    if json_result.success:
+                        metadata = json_result.data
+                        plugin_name_key = FlextUtilities.safe_str(str(metadata.get("name", plugin_name)))
+                        self.discovered_plugins[plugin_name_key] = metadata
+                    else:
+                        # Log manifest parsing error using FlextUtilities
+                        logger = get_logger(__name__)
+                        logger.warning(
+                            f"Failed to parse plugin manifest {manifest_file}: {json_result.error}",
                         )
-                except (json.JSONDecodeError, OSError) as e:
-                    # Log manifest parsing error but continue discovery process
+                except OSError as e:
+                    # Log file reading error but continue discovery process
                     logger = get_logger(__name__)
                     logger.warning(
-                        f"Failed to parse plugin manifest {manifest_file}: {e}",
+                        f"Failed to read plugin manifest {manifest_file}: {e}",
                     )
+            else:
+                # Create basic plugin metadata from file system information using FlextUtilities
+                file_stat = py_file.stat()
+                plugin_info = {
+                    "name": FlextUtilities.safe_str(plugin_name),
+                    "path": FlextUtilities.safe_str(str(py_file)),
+                    "file_name": FlextUtilities.safe_str(py_file.name),
+                    "size": FlextUtilities.safe_int(file_stat.st_size, 0),
+                    "modified": FlextUtilities.safe_float(file_stat.st_mtime, 0.0),
+                    "module_name": FlextUtilities.safe_str(plugin_name),
+                    "plugin_class": "Plugin",  # Generic class name
+                    "type": "generic",  # Generic type
+                    "discovered_at": FlextUtilities.generate_timestamp(),  # Add discovery timestamp
+                    "discovery_id": FlextUtilities.generate_id(),  # Add unique discovery ID
+                }
+                safe_plugin_name = FlextUtilities.safe_str(plugin_name)
+                if FlextUtilities.is_non_empty_string(safe_plugin_name):
+                    self.discovered_plugins[safe_plugin_name] = plugin_info
 
     def _validate_plugin_class(self, plugin_class: type) -> bool:
-        """Validate if a class is a valid plugin."""
+        """Validate if a class is a valid plugin using FlextUtilities."""
         try:
-            # Mock validation - check if it has required attributes
+            # Check if it has required attributes using FlextUtilities
             required_methods = ["initialize", "cleanup", "health_check", "execute"]
-            return all(hasattr(plugin_class, method) for method in required_methods)
+            for method_name in required_methods:
+                if not FlextUtilities.has_method(plugin_class, method_name):
+                    return False
+
+            return True
         except (RuntimeError, ValueError, TypeError) as e:
-            # Log critical validation error and raise proper exception instead of returning fake data
+            # Log critical validation error using FlextUtilities and proper error handling
             logger = get_logger(__name__)
-            logger.exception(f"Plugin class validation failed for {plugin_class}")
-            msg = f"Plugin validation failed: {plugin_class}"
+            plugin_name = FlextUtilities.safe_str(getattr(plugin_class, "__name__", "Unknown"))
+            logger.exception(f"Plugin class validation failed for {plugin_name}")
+            msg = f"Plugin validation failed: {plugin_name}"
             raise RuntimeError(msg) from e
 
 

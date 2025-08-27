@@ -73,7 +73,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/directory"
 
         event = DirectoryEvent()
-        handler.on_modified(event)
+        handler.on_modified(event)  # type: ignore[arg-type]
 
         # Callback should not be called for directories
         assert len(reload_events) == 0
@@ -94,7 +94,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/file.txt"
 
         event = NonPythonFileEvent()
-        handler.on_modified(event)
+        handler.on_modified(event)  # type: ignore[arg-type]
 
         # Callback should not be called for non-Python files
         assert len(reload_events) == 0
@@ -115,7 +115,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/plugin.py"
 
         event = PythonFileEvent()
-        handler.on_modified(event)
+        handler.on_modified(event)  # type: ignore[arg-type]
 
         # Callback should be called with Path object
         assert len(reload_events) == 1
@@ -138,7 +138,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/__init__.py"
 
         event = DunderFileEvent()
-        handler.on_modified(event)
+        handler.on_modified(event)  # type: ignore[arg-type]
 
         # Callback should not be called for dunder files
         assert len(reload_events) == 0
@@ -159,7 +159,7 @@ class TestPluginFileHandler:
                 self.src_path = b"/test/plugin.py"
 
         event = BytesPathEvent()
-        handler.on_modified(event)
+        handler.on_modified(event)  # type: ignore[arg-type]
 
         # Callback should be called with properly decoded path
         assert len(reload_events) == 1
@@ -370,7 +370,7 @@ class LoadTestPlugin:
 
         # Add plugin to loaded plugins
         real_plugin = RealPluginWithCleanup()
-        manager._loaded_plugins["real_plugin"] = real_plugin
+        manager._loaded_plugins["real_plugin"] = real_plugin  # type: ignore[attr-defined]
 
         await manager._unload_plugin("real_plugin")
 
@@ -391,7 +391,7 @@ class LoadTestPlugin:
 
         # Add plugin to loaded plugins
         simple_plugin = RealPluginWithoutCleanup()
-        manager._loaded_plugins["simple_plugin"] = simple_plugin
+        manager._loaded_plugins["simple_plugin"] = simple_plugin  # type: ignore[attr-defined]
 
         await manager._unload_plugin("simple_plugin")
 
@@ -446,9 +446,9 @@ class LoadTestPlugin:
         plugin2 = RealCleanupPlugin("plugin2")
         plugin3 = RealCleanupPlugin("plugin3")
 
-        manager._loaded_plugins["plugin1"] = plugin1
-        manager._loaded_plugins["plugin2"] = plugin2
-        manager._loaded_plugins["plugin3"] = plugin3
+        manager._loaded_plugins["plugin1"] = plugin1  # type: ignore[attr-defined]
+        manager._loaded_plugins["plugin2"] = plugin2  # type: ignore[attr-defined]
+        manager._loaded_plugins["plugin3"] = plugin3  # type: ignore[attr-defined]
 
         await manager.reload_all_plugins()
 
@@ -476,12 +476,16 @@ class TestHotReloadConvenienceFunction:
     async def test_create_hot_reload_manager_with_real_directory(self) -> None:
         """Test create_hot_reload_manager convenience function with REAL directory."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            plugin_dir = str(Path(tmp_dir) / "plugins")
-            manager = create_hot_reload_manager(plugin_dir)
+            plugin_dir = Path(tmp_dir) / "plugins"
+            plugin_dir.mkdir()  # Create the directory first
+            manager = await create_hot_reload_manager(str(plugin_dir))
 
             assert manager is not None
             assert isinstance(manager, HotReloadManager)
-            assert manager.plugin_directory == plugin_dir
+            assert manager.plugin_directory == str(plugin_dir)
+
+            # Clean up properly
+            await manager.stop_watching()
 
 
 class TestHotReloadIntegration:
@@ -505,7 +509,7 @@ class TestHotReloadIntegration:
 
             event = RealFileEvent()
             # Handler should call manager callback without errors
-            handler.on_modified(event)
+            handler.on_modified(event)  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_manager_lifecycle_with_real_files(self) -> None:

@@ -15,6 +15,9 @@ from flext_plugin import PluginStatus, create_flext_plugin
 
 def main() -> None:
     """Demonstrate basic plugin creation and usage."""
+    print("FLEXT Plugin Basic Example")
+    print("=" * 40)
+
     # Create a basic plugin
     plugin = create_flext_plugin(
         name="example-plugin",
@@ -27,17 +30,21 @@ def main() -> None:
     )
 
     # Demonstrate plugin properties
+    print(f"Plugin created: {plugin.name}")
+    print(f"Version: {plugin.plugin_version}")
 
     # Demonstrate domain validation
     validation_result = plugin.validate_business_rules()
     if validation_result.success:
-        pass
+        print("Plugin validation passed")
 
     # Demonstrate status transitions
     if plugin.status == PluginStatus.INACTIVE:
         activate_result = plugin.activate()
         if activate_result:
-            pass
+            print("Plugin activation successful")
+
+    print("Example completed successfully")
 
 
 if __name__ == "__main__":

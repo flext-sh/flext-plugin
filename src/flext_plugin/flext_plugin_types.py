@@ -6,6 +6,9 @@ downstream imports following flext-core patterns.
 
 from __future__ import annotations
 
+# Legacy classes for compatibility - using aliases
+from flext_core import FlextResult
+
 from .exceptions import PluginError
 
 # Import core types and exceptions from centralized modules
@@ -39,9 +42,8 @@ from .type_definitions import (
     TPluginResult,
 )
 
-# Legacy classes for compatibility - using aliases
 PluginExecutionContext = dict[str, object]  # Type alias for execution context
-PluginManagerResult = object  # Type alias for manager result
+PluginManagerResult = FlextResult[str]  # Type alias for manager result
 
 __all__: list[str] = [
     "FlextPluginConfigModel",

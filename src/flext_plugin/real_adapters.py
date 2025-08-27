@@ -46,6 +46,28 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
             plugin_directory=plugin_directory,
             plugin_directories=[plugin_directory],
         )
+        self._started = False
+
+    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:  # noqa: ARG002
+        """Callable interface for service invocation."""
+        return FlextResult[None].ok(None)
+
+    def start(self) -> FlextResult[None]:
+        """Start the discovery service."""
+        self._started = True
+        return FlextResult[None].ok(None)
+
+    def stop(self) -> FlextResult[None]:
+        """Stop the discovery service."""
+        self._started = False
+        return FlextResult[None].ok(None)
+
+    def health_check(self) -> FlextResult[dict[str, object]]:
+        """Perform health check."""
+        return FlextResult[dict[str, object]].ok({
+            "status": "healthy" if self._started else "stopped",
+            "plugin_directory": self.discovery.plugin_directory,
+        })
 
     @override
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
@@ -138,6 +160,28 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             plugin_directory = tempfile.mkdtemp(prefix="plugins_")
         self.loader = PluginLoader(security_enabled=False)
         self.plugin_directory = plugin_directory
+        self._started = False
+
+    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:  # noqa: ARG002
+        """Callable interface for service invocation."""
+        return FlextResult[None].ok(None)
+
+    def start(self) -> FlextResult[None]:
+        """Start the loader service."""
+        self._started = True
+        return FlextResult[None].ok(None)
+
+    def stop(self) -> FlextResult[None]:
+        """Stop the loader service."""
+        self._started = False
+        return FlextResult[None].ok(None)
+
+    def health_check(self) -> FlextResult[dict[str, object]]:
+        """Perform health check."""
+        return FlextResult[dict[str, object]].ok({
+            "status": "healthy" if self._started else "stopped",
+            "plugin_directory": self.plugin_directory,
+        })
 
     @override
     def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
@@ -219,6 +263,28 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             plugin_directory=self.plugin_directory,
             plugin_directories=[self.plugin_directory],
         )
+        self._started = False
+
+    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:  # noqa: ARG002
+        """Callable interface for service invocation."""
+        return FlextResult[None].ok(None)
+
+    def start(self) -> FlextResult[None]:
+        """Start the manager service."""
+        self._started = True
+        return FlextResult[None].ok(None)
+
+    def stop(self) -> FlextResult[None]:
+        """Stop the manager service."""
+        self._started = False
+        return FlextResult[None].ok(None)
+
+    def health_check(self) -> FlextResult[dict[str, object]]:
+        """Perform health check."""
+        return FlextResult[dict[str, object]].ok({
+            "status": "healthy" if self._started else "stopped",
+            "plugin_directory": self.plugin_directory,
+        })
 
     @override
     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:

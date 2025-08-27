@@ -95,6 +95,7 @@ class PluginExecutionResult:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+
 # Legacy compatibility exports (transitional)
 PluginExecutionContext = ExecutionContextDict
 PluginManagerResult = PluginStringResult

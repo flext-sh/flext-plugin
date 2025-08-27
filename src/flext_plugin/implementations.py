@@ -9,34 +9,45 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import cast, override
+from typing import Protocol, cast
 
 from flext_core import (
     FlextResult,
     get_logger,
 )
-
-try:
-    from flext_core import (  # type: ignore[attr-defined]
-        FlextPlugin,
-        FlextPluginContext,
-        FlextPluginLoader,
-        FlextPluginRegistry,
-    )
-except ImportError:
-    # These may not exist in flext-core yet - using Any for type checking
-    from typing import Any
-
-    FlextPlugin = Any  # type: ignore[misc,assignment]
-    FlextPluginContext = Any  # type: ignore[misc,assignment]
-    FlextPluginLoader = Any
-    FlextPluginRegistry = Any
+from flext_core.protocols import FlextProtocols
 from structlog.stdlib import BoundLogger
 
 from .entities import FlextPluginEntity
 
 
-class ConcretePlugin(FlextPlugin):  # type: ignore[misc]
+# Define minimal protocols for types that don't exist in flext-core yet
+class FlextPluginLoaderProtocol(Protocol):
+    """Protocol for plugin loader interface."""
+
+    def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
+        """Load plugin from path."""
+        ...
+
+
+class FlextPluginRegistryProtocol(Protocol):
+    """Protocol for plugin registry interface."""
+
+    def register(self, plugin: object) -> FlextResult[None]:
+        """Register a plugin."""
+        ...
+
+    def get_plugin(self, plugin_name: str) -> FlextResult[object]:
+        """Get plugin by name."""
+        ...
+
+
+# Type aliases for cleaner code
+FlextPluginLoader = FlextPluginLoaderProtocol
+FlextPluginRegistry = FlextPluginRegistryProtocol
+
+
+class ConcretePlugin:
     """Concrete implementation of the FlextPlugin interface.
 
     This class implements the abstract FlextPlugin interface from flext-core,
@@ -71,6 +82,7 @@ class ConcretePlugin(FlextPlugin):  # type: ignore[misc]
         self._entity = entity
         self._logger = get_logger(f"plugin.{name}")
         self._initialized = False
+        self._config: dict[str, object] = {}
 
     @property
     def name(self) -> str:
@@ -82,8 +94,21 @@ class ConcretePlugin(FlextPlugin):  # type: ignore[misc]
         """Get plugin version."""
         return self._version
 
-    @override
-    def initialize(self, context: FlextPluginContext) -> FlextResult[None]:
+    def configure(self, config: dict[str, object]) -> FlextResult[None]:
+        """Configure component with provided settings."""
+        try:
+            # Store configuration
+            self._config = config
+            return FlextResult[None].ok(None)
+        except Exception as e:
+            self._logger.exception(f"Failed to configure plugin {self.name}")
+            return FlextResult[None].fail(f"Configuration failed: {e!s}")
+
+    def get_config(self) -> dict[str, object]:
+        """Get current configuration."""
+        return getattr(self, "_config", {})
+
+    def initialize(self, context: FlextProtocols.Extensions.PluginContext) -> FlextResult[None]:  # noqa: ARG002
         """Initialize plugin with context.
 
         Args:
@@ -110,7 +135,6 @@ class ConcretePlugin(FlextPlugin):  # type: ignore[misc]
             self._logger.exception(f"Failed to initialize plugin {self.name}")
             return FlextResult[None].fail(f"Initialization failed: {e!s}")
 
-    @override
     def shutdown(self) -> FlextResult[None]:
         """Shutdown plugin and release resources.
 
@@ -132,7 +156,6 @@ class ConcretePlugin(FlextPlugin):  # type: ignore[misc]
             self._logger.exception(f"Failed to shutdown plugin {self.name}")
             return FlextResult[None].fail(f"Shutdown failed: {e!s}")
 
-    @override
     def get_info(self) -> dict[str, object]:
         """Get plugin information.
 
@@ -343,7 +366,7 @@ class ConcreteTransformPlugin(ConcretePlugin):
         return FlextResult[Mapping[str, object]].ok(self._schema)
 
 
-class ConcretePluginContext(FlextPluginContext):  # type: ignore[misc]
+class ConcretePluginContext:
     """Concrete implementation of plugin runtime context.
 
     Provides plugins with access to system services, configuration,
@@ -373,12 +396,14 @@ class ConcretePluginContext(FlextPluginContext):  # type: ignore[misc]
         """Get logger for plugin."""
         return self._logger
 
-    @property
-    def config(self) -> Mapping[str, object]:
-        """Get plugin configuration."""
-        return self._config
+    def get_config(self) -> dict[str, object]:
+        """Get configuration for plugin."""
+        return dict(self._config)
 
-    @override
+    def get_logger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
+        """Get logger instance for plugin."""
+        return self._logger  # type: ignore[return-value]
+
     def get_service(self, service_name: str) -> FlextResult[object]:
         """Get service by name from container.
 
@@ -393,7 +418,7 @@ class ConcretePluginContext(FlextPluginContext):  # type: ignore[misc]
         return FlextResult[object].ok(self._services[service_name])
 
 
-class ConcretePluginRegistry(FlextPluginRegistry):  # type: ignore[misc,no-any-unimported]
+class ConcretePluginRegistry(FlextPluginRegistry):
     """Concrete implementation of plugin registry.
 
     Manages plugin registration, discovery, and lifecycle.
@@ -401,10 +426,10 @@ class ConcretePluginRegistry(FlextPluginRegistry):  # type: ignore[misc,no-any-u
 
     def __init__(self) -> None:
         """Initialize plugin registry."""
-        self._plugins: dict[str, FlextPlugin] = {}
+        self._plugins: dict[str, object] = {}
         self._logger = get_logger("plugin.registry")
 
-    def register(self, plugin: FlextPlugin) -> FlextResult[None]:
+    def register(self, plugin: object) -> FlextResult[None]:
         """Register a plugin.
 
         Args:
@@ -438,8 +463,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):  # type: ignore[misc,no-any-u
         self._logger.info(f"Unregistered plugin {plugin_name}")
         return FlextResult[None].ok(None)
 
-    @override
-    def get_plugin(self, plugin_name: str) -> FlextResult[FlextPlugin]:
+    def get_plugin(self, plugin_name: str) -> FlextResult[object]:
         """Get plugin by name.
 
         Args:
@@ -449,10 +473,9 @@ class ConcretePluginRegistry(FlextPluginRegistry):  # type: ignore[misc,no-any-u
 
         """
         if plugin_name not in self._plugins:
-            return FlextResult[FlextPlugin].fail(f"Plugin {plugin_name} not found")
-        return FlextResult[FlextPlugin].ok(self._plugins[plugin_name])
+            return FlextResult[object].fail(f"Plugin {plugin_name} not found")
+        return FlextResult[object].ok(self._plugins[plugin_name])
 
-    @override
     def list_plugins(self) -> list[str]:
         """List all registered plugin names.
 
@@ -463,13 +486,13 @@ class ConcretePluginRegistry(FlextPluginRegistry):  # type: ignore[misc,no-any-u
         return list(self._plugins.keys())
 
 
-class ConcretePluginLoader(FlextPluginLoader):  # type: ignore[misc,no-any-unimported]
+class ConcretePluginLoader(FlextPluginLoader):
     """Concrete implementation of plugin loader.
 
     Handles dynamic plugin loading and discovery.
     """
 
-    def __init__(self, registry: FlextPluginRegistry | None = None) -> None:  # type: ignore[no-any-unimported]
+    def __init__(self, registry: FlextPluginRegistry | None = None) -> None:
         """Initialize plugin loader.
 
         Args:
@@ -479,8 +502,7 @@ class ConcretePluginLoader(FlextPluginLoader):  # type: ignore[misc,no-any-unimp
         self._registry = registry or ConcretePluginRegistry()
         self._logger = get_logger("plugin.loader")
 
-    @override
-    def load_plugin(self, plugin_path: str | Path) -> FlextResult[FlextPlugin]:
+    def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
         """Load plugin from path.
 
         Args:
@@ -498,15 +520,15 @@ class ConcretePluginLoader(FlextPluginLoader):  # type: ignore[misc,no-any-unimp
                 version="1.0.0",
             )
             # Register loaded plugin
-            reg_result = self._registry.register_plugin(plugin)
+            reg_result = self._registry.register(plugin)
             if not reg_result.success:
-                return FlextResult[FlextPlugin].fail(
+                return FlextResult[object].fail(
                     f"Failed to register loaded plugin: {reg_result.error}",
                 )
-            return FlextResult[FlextPlugin].ok(plugin)
+            return FlextResult[object].ok(plugin)
         except Exception as e:
             self._logger.exception(f"Failed to load plugin from {plugin_path}")
-            return FlextResult[FlextPlugin].fail(f"Load failed: {e!s}")
+            return FlextResult[object].fail(f"Load failed: {e!s}")
 
     def discover_plugins(self, search_path: str) -> FlextResult[list[str]]:
         """Discover available plugins in path.

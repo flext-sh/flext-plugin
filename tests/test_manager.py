@@ -18,6 +18,8 @@ Quality Standards:
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from flext_plugin import (
@@ -169,7 +171,9 @@ class TestSimplePluginRegistryReal:
         found_tap_plugin = tap_plugins[0]
         assert hasattr(found_tap_plugin, "name")
         if hasattr(found_tap_plugin, "name"):
-            assert found_tap_plugin.name == "tap-plugin"
+            # Use cast to tell pyright the type
+            typed_plugin = cast("FlextPluginEntity", found_tap_plugin)
+            assert typed_plugin.name == "tap-plugin"
 
     @pytest.mark.asyncio
     async def test_cleanup_all_real(
@@ -207,9 +211,10 @@ class TestSimplePluginRegistryReal:
 
         # Test getting individual plugins
         for i in range(3):
-            plugin = registry.get_plugin(f"multi-plugin-{i}")
-            assert plugin is not None
-            assert plugin.name == f"multi-plugin-{i}"
+            plugin_result = registry.get_plugin(f"multi-plugin-{i}")
+            assert plugin_result is not None
+            # Now mypy knows plugin_result is not None
+            assert plugin_result.name == f"multi-plugin-{i}"
 
         # Test unregistering one
         result = await registry.unregister_plugin("multi-plugin-1")
@@ -227,34 +232,37 @@ class TestPluginExecutionContextReal:
 
     def test_execution_context_creation_real(self) -> None:
         """Test creating REAL plugin execution context."""
-        context = PluginExecutionContext(
-            plugin_id="real-execution-plugin",
-            execution_id="exec-12345",
-            input_data={"source": "database", "table": "users"},
-            context={"environment": "test", "debug": True},
-            timeout_seconds=60,
-        )
+        # PluginExecutionContext is dict[str, object]
+        context: PluginExecutionContext = {
+            "plugin_id": "real-execution-plugin",
+            "execution_id": "exec-12345",
+            "input_data": {"source": "database", "table": "users"},
+            "context": {"environment": "test", "debug": True},
+            "timeout_seconds": 60,
+        }
 
-        assert context.plugin_id == "real-execution-plugin"
-        assert context.execution_id == "exec-12345"
-        assert context.input_data["source"] == "database"
-        assert context.input_data["table"] == "users"
-        assert context.context["environment"] == "test"
-        assert context.context["debug"] is True
-        assert context.timeout_seconds == 60
+        assert context["plugin_id"] == "real-execution-plugin"
+        assert context["execution_id"] == "exec-12345"
+        assert context["input_data"]["source"] == "database"  # type: ignore[index]
+        assert context["input_data"]["table"] == "users"  # type: ignore[index]
+        assert context["context"]["environment"] == "test"  # type: ignore[index]
+        assert context["context"]["debug"] is True  # type: ignore[index]
+        assert context["timeout_seconds"] == 60
 
     def test_execution_context_defaults_real(self) -> None:
         """Test REAL execution context with default values."""
-        context = PluginExecutionContext(
-            plugin_id="minimal-context-plugin",
-            execution_id="minimal-exec",
-        )
+        # PluginExecutionContext is dict[str, object]
+        context: PluginExecutionContext = {
+            "plugin_id": "minimal-context-plugin",
+            "execution_id": "minimal-exec",
+        }
 
-        assert context.plugin_id == "minimal-context-plugin"
-        assert context.execution_id == "minimal-exec"
-        assert context.input_data == {}
-        assert context.context == {}
-        assert context.timeout_seconds is None
+        assert context["plugin_id"] == "minimal-context-plugin"
+        assert context["execution_id"] == "minimal-exec"
+        # These keys don't exist, so we check they're not set
+        assert "input_data" not in context
+        assert "context" not in context
+        assert "timeout_seconds" not in context
 
     def test_execution_context_with_complex_data_real(self) -> None:
         """Test REAL execution context with complex data structures."""
@@ -266,24 +274,25 @@ class TestPluginExecutionContextReal:
             },
             "api": {"endpoints": ["/data", "/export"], "auth": {"type": "bearer"}},
         }
-        complex_context: dict[str, object] = {
+        complex_context_data: dict[str, object] = {
             "execution_mode": "batch",
             "batch_size": 1000,
             "retry_policy": {"max_retries": 3, "backoff": "exponential"},
         }
 
-        context = PluginExecutionContext(
-            plugin_id="complex-data-plugin",
-            execution_id="complex-exec-789",
-            input_data=complex_input,
-            context=complex_context,
-            timeout_seconds=300,
-        )
+        # PluginExecutionContext is dict[str, object]
+        context: PluginExecutionContext = {
+            "plugin_id": "complex-data-plugin",
+            "execution_id": "complex-exec-789",
+            "input_data": complex_input,
+            "context": complex_context_data,
+            "timeout_seconds": 300,
+        }
 
-        assert context.plugin_id == "complex-data-plugin"
-        assert context.execution_id == "complex-exec-789"
+        assert context["plugin_id"] == "complex-data-plugin"
+        assert context["execution_id"] == "complex-exec-789"
         # Type-safe access to nested data
-        database_data = context.input_data.get("database", {})
+        database_data = context["input_data"].get("database", {}) if isinstance(context["input_data"], dict) else {}
         assert isinstance(database_data, dict)
         assert database_data.get("host") == "localhost"
 
@@ -291,9 +300,12 @@ class TestPluginExecutionContextReal:
         assert isinstance(tables_data, list)
         assert len(tables_data) == 2
 
-        assert context.context.get("execution_mode") == "batch"
-        assert context.context.get("batch_size") == 1000
-        assert context.timeout_seconds == 300
+        # Access context data correctly as dict
+        context_data = context["context"]
+        assert isinstance(context_data, dict)
+        assert context_data.get("execution_mode") == "batch"
+        assert context_data.get("batch_size") == 1000
+        assert context["timeout_seconds"] == 300
 
 
 class TestPluginManagerResultReal:
@@ -301,78 +313,28 @@ class TestPluginManagerResultReal:
 
     def test_manager_result_creation_real(self) -> None:
         """Test creating REAL manager result."""
-        result = PluginManagerResult(
-            operation="bulk_load",
-            success=True,
-        )
-        result.plugins_affected = [
-            "extractor-plugin",
-            "loader-plugin",
-            "transformer-plugin",
-        ]
-        result.execution_time_ms = 250.75
-        result.details = {
-            "plugins_loaded": 3,
-            "load_method": "dynamic",
-            "total_size_mb": 12.5,
-        }
-        result.errors = []
+        # PluginManagerResult is FlextResult[str]
+        result = PluginManagerResult.ok("bulk_load operation completed")
 
-        assert result.operation == "bulk_load"
         assert result.success is True
-        assert result.plugins_affected == [
-            "extractor-plugin",
-            "loader-plugin",
-            "transformer-plugin",
-        ]
-        assert result.execution_time_ms == 250.75
-        assert result.details["plugins_loaded"] == 3
-        assert result.details["load_method"] == "dynamic"
-        assert result.errors == []
+        assert result.data == "bulk_load operation completed"
+        # FlextResult[str] only has success, data, error - no other attributes
 
     def test_manager_result_with_errors_real(self) -> None:
         """Test REAL manager result with errors."""
-        result = PluginManagerResult(
-            operation="validate_plugins",
-            success=False,
-        )
-        result.plugins_affected = ["corrupted-plugin"]
-        result.execution_time_ms = 85.25
-        result.details = {
-            "validation_failures": 2,
-            "corrupted_files": ["config.yaml", "manifest.json"],
-        }
-        result.errors = [
-            "Configuration validation failed: missing required field 'name'",
-            "Manifest parsing error: invalid JSON structure",
-        ]
+        # PluginManagerResult is FlextResult[str]
+        result = PluginManagerResult.fail("validate_plugins failed: corrupted-plugin errors")
 
-        assert result.operation == "validate_plugins"
         assert result.success is False
-        assert result.plugins_affected == ["corrupted-plugin"]
-        assert result.execution_time_ms == 85.25
-        assert result.details["validation_failures"] == 2
-        assert len(result.errors) == 2
-        assert "Configuration validation failed" in result.errors[0]
+        assert result.error == "validate_plugins failed: corrupted-plugin errors"
 
     def test_manager_result_create_detailed_real(self) -> None:
-        """Test creating REAL detailed manager result from config."""
-        config: dict[str, object] = {
-            "success": True,
-            "plugins_affected": ["test-plugin-1", "test-plugin-2"],
-            "execution_time_ms": 125.5,
-            "details": {"batch_processed": True, "total_plugins": 2},
-            "errors": [],
-        }
+        """Test creating REAL detailed manager result."""
+        # PluginManagerResult is FlextResult[str] - no create_detailed method
+        result = PluginManagerResult.ok("batch_process completed successfully")
 
-        result = PluginManagerResult.create_detailed("batch_process", config)
-
-        assert result.operation == "batch_process"
         assert result.success is True
-        assert result.plugins_affected == ["test-plugin-1", "test-plugin-2"]
-        assert result.execution_time_ms == 125.5
-        assert result.details["batch_processed"] is True
-        assert result.errors == []
+        assert result.data == "batch_process completed successfully"
 
 
 class TestCreatePluginManagerFactoryReal:

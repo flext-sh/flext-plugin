@@ -91,6 +91,23 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         """Get a loaded plugin by name (helper for testing)."""
         return self._loaded_plugins.get(plugin_name)
 
+    # Service protocol methods required by Port
+    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:  # noqa: ARG002
+        """Callable interface for service invocation."""
+        return FlextResult[None].ok(None)
+
+    def start(self) -> FlextResult[None]:
+        """Start the loader service."""
+        return FlextResult[None].ok(None)
+
+    def stop(self) -> FlextResult[None]:
+        """Stop the loader service."""
+        return FlextResult[None].ok(None)
+
+    def health_check(self) -> FlextResult[dict[str, object]]:
+        """Check service health."""
+        return FlextResult[dict[str, object]].ok({"status": "healthy"})
+
 
 class TestFlextPluginHandler:
     """REAL test suite for FlextPluginHandler base class functionality."""

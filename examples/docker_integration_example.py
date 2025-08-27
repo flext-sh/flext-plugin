@@ -22,7 +22,7 @@ import sys
 from typing import cast
 
 from flext_plugin import PluginType, create_flext_plugin
-from flext_plugin.domain.entities import FlextPluginEntity
+from flext_plugin.entities import FlextPluginEntity
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -217,6 +217,9 @@ def test_service_connections(*, test_connections: bool) -> dict[str, bool | None
 
 def main() -> None:
     """Demonstrate Docker-integrated plugin configuration."""
+    print("FLEXT Plugin Docker Integration Example")
+    print("=" * 50)
+
     # Check command line arguments
     test_connections = len(sys.argv) > 1 and "--test-connections" in sys.argv
 
@@ -224,6 +227,7 @@ def main() -> None:
     connectivity_results = test_service_connections(test_connections=test_connections)
 
     # 1. Create PostgreSQL plugin
+    print("\nCreating Docker PostgreSQL plugin")
     postgres_plugin, postgres_config = create_docker_postgres_plugin()
 
     cast("dict[str, object]", postgres_config["database"])
@@ -232,12 +236,14 @@ def main() -> None:
     # Validate PostgreSQL plugin
     postgres_validation = postgres_plugin.validate_business_rules()
     if postgres_validation.success:
+        print("PostgreSQL plugin validation passed")
         # Test activation
         postgres_activation = postgres_plugin.activate()
         if postgres_activation:
             pass
 
     # 2. Create Redis plugin
+    print("Creating Docker Redis plugin")
     redis_plugin, redis_config = create_docker_redis_plugin()
 
     cast("dict[str, object]", redis_config["cache"])
@@ -246,12 +252,14 @@ def main() -> None:
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_business_rules()
     if redis_validation.success:
+        print("Redis plugin validation passed")
         # Test activation
         redis_activation = redis_plugin.activate()
         if redis_activation:
             pass
 
     # 3. Create LDAP plugin
+    print("Creating Docker LDAP plugin")
     ldap_plugin, ldap_config = create_docker_ldap_plugin()
 
     cast("dict[str, object]", ldap_config["ldap"])
@@ -260,6 +268,7 @@ def main() -> None:
     # Validate LDAP plugin
     ldap_validation = ldap_plugin.validate_business_rules()
     if ldap_validation.success:
+        print("LDAP plugin validation passed")
         # Test activation
         ldap_activation = ldap_plugin.activate()
         if ldap_activation:
@@ -272,11 +281,13 @@ def main() -> None:
         ("LDAP", ldap_plugin, connectivity_results.get("LDAP")),
     ]
 
-    for _service_name, _plugin, connectivity in plugins:
-        if connectivity is not None:
-            pass
+    if test_connections:
+        print("\nService Connectivity Check:")
+        for service_name, _plugin, connectivity in plugins:
+            status = "Available" if connectivity else "Unavailable"
+            print(f"  {service_name}: {status}")
 
-    # Show Docker commands
+    print("\nDocker Integration example completed successfully")
 
 
 if __name__ == "__main__":

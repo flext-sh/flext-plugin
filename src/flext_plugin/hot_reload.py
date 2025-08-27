@@ -331,11 +331,6 @@ class HotReloadManager(FlextEntity):
     plugin_directory: str
     model_config: ClassVar = {"arbitrary_types_allowed": True}
 
-    # Dynamic attributes for lazy initialization
-    _state_manager: StateManager | None = None
-    _rollback_manager: RollbackManager | None = None
-    _watcher: PluginWatcher | None = None
-
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
@@ -377,6 +372,27 @@ class HotReloadManager(FlextEntity):
     def plugin_manager(self) -> object | None:
         """Get plugin manager instance."""
         return getattr(self, "_plugin_manager", None)
+
+    @property
+    def state_manager(self) -> StateManager:
+        """Get state manager instance, creating it if needed."""
+        # Simple approach: just create and return without caching on frozen model
+        state_dir = Path(self.plugin_directory) / ".flext_state"
+        return StateManager(state_directory=state_dir)
+
+    @property
+    def rollback_manager(self) -> RollbackManager:
+        """Get rollback manager instance, creating it if needed."""
+        # Simple approach: just create and return without caching on frozen model
+        state_mgr = self.state_manager  # This will create state manager if needed
+        return RollbackManager(state_manager=state_mgr)
+
+    @property
+    def watcher(self) -> PluginWatcher:
+        """Get plugin watcher instance, creating it if needed."""
+        # Simple approach: just create and return without caching on frozen model
+        watch_dirs = [Path(self.plugin_directory)]
+        return PluginWatcher(watch_directories=watch_dirs)
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
@@ -510,35 +526,6 @@ class HotReloadManager(FlextEntity):
             await self._unload_plugin(plugin_name)
         # Reload all
         await self._initial_plugin_load()
-
-    @property
-    def state_manager(self) -> StateManager:
-        """Get state manager instance."""
-        if self._state_manager is None:
-            state_dir = getattr(self, "state_backup_dir", None) or Path(
-                "./state_backup",
-            )
-            self._state_manager = StateManager(state_dir)
-        return self._state_manager
-
-    @property
-    def rollback_manager(self) -> RollbackManager:
-        """Get rollback manager instance."""
-        if self._rollback_manager is None:
-            self._rollback_manager = RollbackManager(self.state_manager)
-        return self._rollback_manager
-
-    @property
-    def watcher(self) -> PluginWatcher:
-        """Get plugin watcher instance."""
-        if self._watcher is None:
-            watch_dirs = getattr(
-                self,
-                "watch_directories",
-                [Path(self.plugin_directory)],
-            )
-            self._watcher = PluginWatcher(watch_dirs)
-        return self._watcher
 
     async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID and return a reload event.

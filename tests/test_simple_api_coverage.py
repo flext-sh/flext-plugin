@@ -521,7 +521,7 @@ class TestCreatePluginConfigFromDict:
         """Test config creation fails with None plugin name."""
         with pytest.raises(ValueError) as exc_info:
             create_plugin_config_from_dict(
-                plugin_name=None,
+                plugin_name=None,  # type: ignore[arg-type]
                 config_dict={"key": "value"},
             )
 

@@ -143,7 +143,7 @@ class TestPlugin:
         assert plugin.active
 
         # Deactivate
-        deactivate_result = plugin.deactivate()
+        deactivate_result = plugin.deactivate()  # type: ignore[unreachable]
         assert deactivate_result.success
         assert not plugin.active
 
@@ -207,13 +207,13 @@ class TestPluginRegistry:
                 super().__init__()
 
                 # Create a dict that will raise exception on assignment
-                class FailingDict(UserDict):
+                class FailingDict(UserDict[str, Plugin]):
                     @override
-                    def __setitem__(self, key: str, value: object) -> None:
+                    def __setitem__(self, key: str, value: Plugin) -> None:
                         msg = "Registration failed"
                         raise RuntimeError(msg)
 
-                self.plugins = FailingDict()
+                self.plugins = FailingDict()  # type: ignore[assignment]
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -262,13 +262,13 @@ class TestPluginRegistry:
                 super().__init__()
 
                 # Create a dict that will raise exception on deletion
-                class FailingDeleteDict(UserDict):
+                class FailingDeleteDict(UserDict[str, Plugin]):
                     @override
                     def __delitem__(self, key: str) -> None:
                         msg = "Unregistration failed"
                         raise ValueError(msg)
 
-                self.plugins = FailingDeleteDict()
+                self.plugins = FailingDeleteDict()  # type: ignore[assignment]
 
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")
@@ -290,6 +290,7 @@ class TestPluginRegistry:
         retrieved_plugin = registry.get(plugin.name)
 
         assert retrieved_plugin is plugin
+        assert retrieved_plugin is not None  # For pyright
         assert retrieved_plugin.name == plugin.name
 
     def test_get_plugin_not_found(self, registry: PluginRegistry) -> None:
@@ -407,7 +408,7 @@ class Plugin(Plugin):
                 assert result.data.name == "real-loaded-plugin"
                 assert result.error is None
                 assert hasattr(result.data, "loaded")
-                assert result.data.loaded is True
+                assert result.data.loaded is True  # type: ignore[attr-defined]
             finally:
                 # Clean up path
                 sys.path.remove(str(temp_path))
@@ -452,7 +453,7 @@ class CustomPlugin(Plugin):
                 assert result.data.name == "custom-named-plugin"
                 assert result.error is None
                 assert hasattr(result.data, "custom_attribute")
-                assert result.data.custom_attribute == "custom_value"
+                assert result.data.custom_attribute == "custom_value"  # type: ignore[attr-defined]
             finally:
                 # Clean up path
                 sys.path.remove(str(temp_path))
@@ -644,6 +645,7 @@ class TestSimplePluginIntegration:
         # Verify plugin in registry
         retrieved_plugin = registry.get("workflow-plugin")
         assert retrieved_plugin is plugin
+        assert retrieved_plugin is not None  # For pyright
         assert retrieved_plugin.active
 
         # List plugins
@@ -656,7 +658,7 @@ class TestSimplePluginIntegration:
         assert not plugin.active
 
         # Unregister plugin
-        unregister_result = registry.unregister("workflow-plugin")
+        unregister_result = registry.unregister("workflow-plugin")  # type: ignore[unreachable]
         assert unregister_result.success
         assert len(registry.list_plugins()) == 0
 
