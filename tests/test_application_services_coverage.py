@@ -599,7 +599,7 @@ class TestFlextPluginServiceReal:
     def test_load_plugin_with_real_plugin_entity(
         self,
         service: FlextPluginService,
-        temp_plugin_dir: Path,  # noqa: ARG002
+        temp_plugin_dir: Path,
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
         # Create REAL plugin entity that corresponds to actual file
@@ -1232,15 +1232,23 @@ class TestServicesIntegrationReal:
         )
 
         # Check for expected infrastructure failures - these are acceptable
-        if not plugin_discovery_result.success and ("not configured" in str(plugin_discovery_result.error)):
+        if not plugin_discovery_result.success and (
+            "not configured" in str(plugin_discovery_result.error)
+        ):
             # This is expected - plugin service needs properly configured container
-            pytest.skip(f"Infrastructure not configured: {plugin_discovery_result.error}")
+            pytest.skip(
+                f"Infrastructure not configured: {plugin_discovery_result.error}"
+            )
             return
 
         # Check for expected infrastructure failures - these are acceptable
-        if not service_discovery_result.success and ("not configured" in str(service_discovery_result.error)):
+        if not service_discovery_result.success and (
+            "not configured" in str(service_discovery_result.error)
+        ):
             # This is expected - discovery service needs properly configured container
-            pytest.skip(f"Infrastructure not configured: {service_discovery_result.error}")
+            pytest.skip(
+                f"Infrastructure not configured: {service_discovery_result.error}"
+            )
             return
 
         assert plugin_discovery_result.success

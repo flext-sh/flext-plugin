@@ -49,8 +49,8 @@ class TestFlextPluginHandler:
 
     def test_handler_initialization_with_real_service(self) -> None:
         """Test handler initialization with REAL plugin service."""
-        service = FlextPluginService()  # type: ignore[arg-type]
-        handler = FlextPluginHandler(plugin_service=service)  # type: ignore[arg-type]
+        service = FlextPluginService()
+        handler = FlextPluginHandler(plugin_service=service)
 
         assert handler is not None
         assert handler._plugin_service is service
@@ -79,8 +79,8 @@ class TestFlextPluginRegistrationHandler:
     @pytest.fixture
     def handler_with_real_service(self) -> FlextPluginRegistrationHandler:
         """Create handler with REAL plugin service."""
-        service = FlextPluginService()  # type: ignore[arg-type]
-        return FlextPluginRegistrationHandler(plugin_service=service)  # type: ignore[arg-type]
+        service = FlextPluginService()
+        return FlextPluginRegistrationHandler(plugin_service=service)
 
     @pytest.fixture
     def handler_without_service(self) -> FlextPluginRegistrationHandler:
@@ -133,7 +133,7 @@ class TestFlextPluginRegistrationHandler:
 
         plugin_with_empty_name = PluginWithEmptyName()
         result = handler_with_real_service.handle_register_plugin(
-            plugin_with_empty_name  # type: ignore[arg-type]
+            plugin_with_empty_name
         )
 
         assert not result.success
@@ -155,7 +155,7 @@ class TestFlextPluginRegistrationHandler:
 
         plugin_with_empty_version = PluginWithEmptyVersion()
         result = handler_with_real_service.handle_register_plugin(
-            plugin_with_empty_version  # type: ignore[arg-type]
+            plugin_with_empty_version
         )
 
         assert not result.success
@@ -200,7 +200,7 @@ class TestFlextPluginRegistrationHandler:
                 )
 
         problematic_plugin = ProblematicPlugin()
-        result = handler_with_real_service.handle_register_plugin(problematic_plugin)  # type: ignore[arg-type]
+        result = handler_with_real_service.handle_register_plugin(problematic_plugin)
 
         # Should handle gracefully - REAL service will catch exception and return failure
         assert not result.success  # REAL service handles validation errors
@@ -249,7 +249,7 @@ class TestFlextPluginRegistrationHandler:
         handler_with_real_service: FlextPluginRegistrationHandler,
     ) -> None:
         """Test plugin unregistration fails with None name."""
-        result = handler_with_real_service.handle_unregister_plugin(None)  # type: ignore[arg-type]
+        result = handler_with_real_service.handle_unregister_plugin(None)
 
         assert not result.success
         assert result.error is not None
@@ -304,7 +304,7 @@ class TestFlextPluginEventHandler:
                 self.plugin_version = "1.0.0"
 
         plugin_without_name = PluginWithoutName()
-        result = event_handler.handle_plugin_loaded(plugin_without_name)  # type: ignore[arg-type]
+        result = event_handler.handle_plugin_loaded(plugin_without_name)
 
         assert not result.success
         assert result.error is not None
@@ -323,7 +323,7 @@ class TestFlextPluginEventHandler:
                 self.plugin_version = "1.0.0"
 
         plugin_with_empty_name = PluginWithEmptyName()
-        result = event_handler.handle_plugin_loaded(plugin_with_empty_name)  # type: ignore[arg-type]
+        result = event_handler.handle_plugin_loaded(plugin_with_empty_name)
 
         assert not result.success
         assert result.error is not None
@@ -343,7 +343,7 @@ class TestFlextPluginEventHandler:
                 raise RuntimeError(error_msg)
 
         exception_plugin = ExceptionPlugin()
-        result = event_handler.handle_plugin_loaded(exception_plugin)  # type: ignore[arg-type]
+        result = event_handler.handle_plugin_loaded(exception_plugin)
 
         assert not result.success
         assert result.error is not None
@@ -388,7 +388,7 @@ class TestFlextPluginEventHandler:
         event_handler: FlextPluginEventHandler,
     ) -> None:
         """Test plugin unloaded event fails with None name."""
-        result = event_handler.handle_plugin_unloaded(None)  # type: ignore[arg-type]
+        result = event_handler.handle_plugin_unloaded(None)
 
         assert not result.success
         assert result.error is not None
@@ -407,7 +407,7 @@ class TestFlextPluginEventHandler:
                 raise ValueError(error_msg)
 
         problematic_name = ProblematicName()
-        result = event_handler.handle_plugin_unloaded(problematic_name)  # type: ignore[arg-type]
+        result = event_handler.handle_plugin_unloaded(problematic_name)
 
         assert not result.success
         assert result.error is not None
@@ -423,8 +423,8 @@ class TestHandlerIntegration:
     def test_complete_registration_workflow(self) -> None:
         """Test complete plugin registration workflow using REAL handlers."""
         # Create REAL service and handlers
-        service = FlextPluginService()  # type: ignore[arg-type]
-        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)  # type: ignore[arg-type]
+        service = FlextPluginService()
+        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)
         event_handler = FlextPluginEventHandler()
 
         # Create REAL plugin
@@ -441,7 +441,9 @@ class TestHandlerIntegration:
         register_result = registration_handler.handle_register_plugin(plugin)
 
         # Check for expected infrastructure failures - these are acceptable
-        if not register_result.success and ("not configured" in str(register_result.error)):
+        if not register_result.success and (
+            "not configured" in str(register_result.error)
+        ):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {register_result.error}")
             return
@@ -474,7 +476,7 @@ class TestHandlerIntegration:
         assert not register_result.success
 
         # Test event failure with REAL handler
-        loaded_result = event_handler.handle_plugin_loaded(None)  # type: ignore[arg-type]
+        loaded_result = event_handler.handle_plugin_loaded(None)
         assert not loaded_result.success
 
         # Test unload event failure with REAL handler
@@ -484,8 +486,8 @@ class TestHandlerIntegration:
     def test_multiple_plugin_handling(self) -> None:
         """Test handling multiple plugins with REAL handlers."""
         # Create REAL service and handlers
-        service = FlextPluginService()  # type: ignore[arg-type]
-        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)  # type: ignore[arg-type]
+        service = FlextPluginService()
+        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)
         event_handler = FlextPluginEventHandler()
 
         # Create multiple REAL plugins
@@ -523,8 +525,8 @@ class TestHandlerIntegration:
 
     def test_real_business_logic_validation(self) -> None:
         """Test REAL business logic validation scenarios."""
-        service = FlextPluginService()  # type: ignore[arg-type]
-        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)  # type: ignore[arg-type]
+        service = FlextPluginService()
+        registration_handler = FlextPluginRegistrationHandler(plugin_service=service)
 
         # Test with REAL plugins having different validation scenarios
 
@@ -566,8 +568,8 @@ class TestHandlerIntegration:
     def test_real_service_integration(self) -> None:
         """Test REAL service integration with handlers."""
         # Test with REAL FlextPluginService
-        real_service = FlextPluginService()  # type: ignore[arg-type]
-        handler = FlextPluginRegistrationHandler(plugin_service=real_service)  # type: ignore[arg-type]
+        real_service = FlextPluginService()
+        handler = FlextPluginRegistrationHandler(plugin_service=real_service)
 
         # Create REAL plugin
         plugin = create_flext_plugin(
@@ -582,7 +584,9 @@ class TestHandlerIntegration:
         # Test REAL service method calls
         register_result = handler.handle_register_plugin(plugin)
         # For coverage tests, we accept infrastructure-related failures
-        if not register_result.success and ("not configured" in str(register_result.error)):
+        if not register_result.success and (
+            "not configured" in str(register_result.error)
+        ):
             # This is expected - plugin service needs properly configured container
             # The test still covers the code paths we wanted to test
             return

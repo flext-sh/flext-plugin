@@ -13,14 +13,14 @@ if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
 # Now import after path setup
-from docker_integration_example import (  # type: ignore[import-not-found]  # noqa: E402
+from docker_integration_example import (  # type: ignore[import-not-found]
     check_service_availability,
     create_docker_ldap_plugin,
     create_docker_postgres_plugin,
     create_docker_redis_plugin,
 )
 
-from flext_plugin import (  # noqa: E402
+from flext_plugin import (
     PluginStatus,
     PluginType,
     create_flext_plugin,

@@ -119,7 +119,8 @@ Create a custom plugin class for complex functionality:
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Any, Dict
+from typing import Dict
+
 
 class DataProcessorPlugin(FlextPlugin):
     """Custom data processing plugin."""
@@ -146,7 +147,7 @@ class DataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Execute plugin processing logic."""
         try:
             # Validate plugin is active
@@ -169,7 +170,7 @@ class DataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Cleanup failed: {e}")
 
-    async def _load_config(self) -> Dict[str, Any]:
+    async def _load_config(self) -> Dict[str, object]:
         """Load plugin-specific configuration."""
         return {
             "batch_size": 1000,
@@ -177,7 +178,7 @@ class DataProcessorPlugin(FlextPlugin):
             "retry_count": 3
         }
 
-    async def _process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
         """Core data processing logic."""
         # Implement your processing logic here
         return {
@@ -222,7 +223,7 @@ class ConfigurablePlugin(FlextPlugin):
             **kwargs
         )
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Execute with configuration-aware processing."""
         try:
             # Use type-safe configuration
@@ -299,7 +300,7 @@ class CustomTapPlugin(FlextPlugin):
 
         return CustomTap()
 
-    async def execute_tap(self, config: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute_tap(self, config: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Execute Singer tap with configuration."""
         try:
             tap = await self.create_tap()
@@ -340,7 +341,7 @@ class CustomTargetPlugin(FlextPlugin):
             **kwargs
         )
 
-    async def create_target(self) -> Any:
+    async def create_target(self) -> object:
         """Create Singer target instance."""
         from singer_sdk import Target
         from singer_sdk.sinks import SQLSink
@@ -352,7 +353,7 @@ class CustomTargetPlugin(FlextPlugin):
                 self.target = target
                 super().__init__(target, stream_name, schema, key_properties)
 
-            def process_record(self, record: Dict[str, Any], context: Dict[str, Any]):
+            def process_record(self, record: Dict[str, object], context: Dict[str, object]):
                 """Process individual record."""
                 # Implement custom loading logic
                 self._insert_record(record)
@@ -433,14 +434,14 @@ class APIServicePlugin(FlextPlugin):
             return await self._get_plugin_data()
 
         @self.app.post("/process")
-        async def process_data(data: Dict[str, Any]):
+        async def process_data(data: Dict[str, object]):
             result = await self.execute(data)
             if result.success():
                 return result.data
             else:
                 raise HTTPException(status_code=500, detail=result.error)
 
-    async def _get_plugin_data(self) -> Dict[str, Any]:
+    async def _get_plugin_data(self) -> Dict[str, object]:
         """Get plugin-specific data."""
         return {
             "plugin_info": {
@@ -452,7 +453,7 @@ class APIServicePlugin(FlextPlugin):
             "metrics": await self._get_metrics()
         }
 
-    async def _get_metrics(self) -> Dict[str, Any]:
+    async def _get_metrics(self) -> Dict[str, object]:
         """Get plugin metrics."""
         return {
             "requests_processed": 0,
@@ -697,7 +698,7 @@ from flext_plugin.core.types import PluginError
 class SecurePlugin(FlextPlugin):
     """Plugin with security best practices."""
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult:
+    async def execute(self, data: Dict[str, object]) -> FlextResult:
         """Secure execution with validation."""
         try:
             # Input validation
@@ -716,7 +717,7 @@ class SecurePlugin(FlextPlugin):
             # Don't expose internal details
             return FlextResult[None].fail("Execution failed")
 
-    async def _validate_input(self, data: Dict[str, Any]) -> FlextResult:
+    async def _validate_input(self, data: Dict[str, object]) -> FlextResult:
         """Validate and sanitize input data."""
         # Implement input validation logic
         pass
@@ -726,7 +727,7 @@ class SecurePlugin(FlextPlugin):
         # Implement permission checking
         return True
 
-    async def _safe_execute(self, data: Dict[str, Any]) -> FlextResult:
+    async def _safe_execute(self, data: Dict[str, object]) -> FlextResult:
         """Execute with safety measures."""
         # Implement safe execution logic
         pass

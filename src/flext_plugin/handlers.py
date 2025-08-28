@@ -12,7 +12,7 @@ from __future__ import annotations
 import warnings
 
 # Backward compatibility facade - import all from consolidated handlers
-from .flext_plugin_handlers import *  # noqa: F403
+from .flext_plugin_handlers import *
 
 # Deprecation warning for legacy usage
 warnings.warn(

@@ -189,7 +189,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Dict, Any
+from typing import Dict, object
 
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
@@ -215,7 +215,7 @@ class ExamplePlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
@@ -241,7 +241,7 @@ class ExamplePlugin(FlextPlugin):
         """Setup plugin-specific resources."""
         pass
 
-    async def _process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
 
@@ -393,13 +393,13 @@ async def cleanup(self) -> FlextResult[bool]:
 All examples use proper type hints:
 
 ```python
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, object
 from flext_core import FlextResult
 
 async def process_data(
     self,
-    data: Dict[str, Any]
-) -> FlextResult[Dict[str, Any]]:
+    data: Dict[str, object]
+) -> FlextResult[Dict[str, object]]:
     """Type-safe data processing."""
     pass
 ```

@@ -705,15 +705,15 @@ except PluginError as e:
 ### Type Aliases
 
 ```python
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Union, object
 
 # Common type aliases used throughout the API
 PluginId = str
 PluginName = str
 PluginVersion = str
-PluginConfig = Dict[str, Any]
-PluginData = Dict[str, Any]
-PluginMetadata = Dict[str, Any]
+PluginConfig = Dict[str, object]
+PluginData = Dict[str, object]
+PluginMetadata = Dict[str, object]
 PluginList = List[FlextPlugin]
 ExecutionResult = FlextResult[PluginExecutionResult]
 ```

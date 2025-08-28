@@ -73,7 +73,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/directory"
 
         event = DirectoryEvent()
-        handler.on_modified(event)  # type: ignore[arg-type]
+        handler.on_modified(event)
 
         # Callback should not be called for directories
         assert len(reload_events) == 0
@@ -94,7 +94,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/file.txt"
 
         event = NonPythonFileEvent()
-        handler.on_modified(event)  # type: ignore[arg-type]
+        handler.on_modified(event)
 
         # Callback should not be called for non-Python files
         assert len(reload_events) == 0
@@ -115,7 +115,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/plugin.py"
 
         event = PythonFileEvent()
-        handler.on_modified(event)  # type: ignore[arg-type]
+        handler.on_modified(event)
 
         # Callback should be called with Path object
         assert len(reload_events) == 1
@@ -138,7 +138,7 @@ class TestPluginFileHandler:
                 self.src_path = "/test/__init__.py"
 
         event = DunderFileEvent()
-        handler.on_modified(event)  # type: ignore[arg-type]
+        handler.on_modified(event)
 
         # Callback should not be called for dunder files
         assert len(reload_events) == 0
@@ -159,7 +159,7 @@ class TestPluginFileHandler:
                 self.src_path = b"/test/plugin.py"
 
         event = BytesPathEvent()
-        handler.on_modified(event)  # type: ignore[arg-type]
+        handler.on_modified(event)
 
         # Callback should be called with properly decoded path
         assert len(reload_events) == 1
@@ -509,7 +509,7 @@ class TestHotReloadIntegration:
 
             event = RealFileEvent()
             # Handler should call manager callback without errors
-            handler.on_modified(event)  # type: ignore[arg-type]
+            handler.on_modified(event)
 
     @pytest.mark.asyncio
     async def test_manager_lifecycle_with_real_files(self) -> None:

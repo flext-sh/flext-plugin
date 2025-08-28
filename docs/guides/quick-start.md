@@ -152,7 +152,7 @@ import asyncio
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Dict, Any
+from typing import Dict, object
 
 class GreetingPlugin(FlextPlugin):
     """Custom plugin that generates personalized greetings."""
@@ -175,7 +175,7 @@ class GreetingPlugin(FlextPlugin):
         # Setup any resources here
         return FlextResult[None].ok(data=True)
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active

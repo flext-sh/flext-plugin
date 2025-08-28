@@ -12,7 +12,7 @@ from __future__ import annotations
 import warnings
 
 # Backward compatibility facade - import all from main discovery module
-from flext_plugin.discovery import *  # noqa: F403
+from flext_plugin.discovery import *
 
 # Deprecation warning for legacy usage
 warnings.warn(

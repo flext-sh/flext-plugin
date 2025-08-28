@@ -92,7 +92,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         return self._loaded_plugins.get(plugin_name)
 
     # Service protocol methods required by Port
-    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:  # noqa: ARG002
+    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 

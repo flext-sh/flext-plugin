@@ -227,7 +227,7 @@ The plugin management system operates as a distinct bounded context within the F
 class CreatePluginCommand:
     name: str
     version: str
-    config: dict[str, Any]
+    config: dict[str, object]
 
 class ActivatePluginCommand:
     plugin_id: str

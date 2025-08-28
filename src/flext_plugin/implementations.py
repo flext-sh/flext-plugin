@@ -108,7 +108,9 @@ class ConcretePlugin:
         """Get current configuration."""
         return getattr(self, "_config", {})
 
-    def initialize(self, context: FlextProtocols.Extensions.PluginContext) -> FlextResult[None]:  # noqa: ARG002
+    def initialize(
+        self, context: FlextProtocols.Extensions.PluginContext
+    ) -> FlextResult[None]:
         """Initialize plugin with context.
 
         Args:

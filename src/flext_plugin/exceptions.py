@@ -15,7 +15,7 @@ from enum import Enum
 from flext_core import FlextExceptions
 
 
-class FlextPluginExceptions(FlextExceptions):  # noqa: N818 # CONSOLIDATED class pattern
+class FlextPluginExceptions(FlextExceptions):
     """Single CONSOLIDATED class containing ALL plugin exceptions.
 
     Consolidates ALL exception definitions into one class following FLEXT patterns.

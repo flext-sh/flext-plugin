@@ -22,7 +22,8 @@ The basic plugin example shows:
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
+
 import asyncio
 import json
 import logging
@@ -38,7 +39,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, **kwargs):
+    def __init__(self, config: Optional[Dict[str, object]] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -101,7 +102,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return FlextResult[None].fail(error_msg)
 
-    async def execute(self, data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """
         Execute plugin processing logic on input data.
 
@@ -109,7 +110,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            FlextResult[Dict[str, Any]]: Processing results or error
+            FlextResult[Dict[str, object]]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -201,7 +202,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
-    async def _validate_input_data(self, data: Dict[str, Any]) -> FlextResult[bool]:
+    async def _validate_input_data(self, data: Dict[str, object]) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -215,7 +216,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Input validation failed: {e}")
 
-    async def _process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -277,14 +278,14 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             logger.warning(f"Failed to save statistics: {e}")
 
-    def _get_config_value(self, key: str, default: Any = None) -> Any:
+    def _get_config_value(self, key: str, default: object = None) -> object:
         """Get configuration value with fallback."""
         # Access configuration from the config dict passed during initialization
         return getattr(self, '_config', {}).get(key, default)
 
     # Public utility methods
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> Dict[str, object]:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 
