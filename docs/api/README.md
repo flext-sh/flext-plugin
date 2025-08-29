@@ -163,9 +163,9 @@ The core plugin entity with lifecycle management.
 
 ```python
 from flext_plugin.domain.entities import FlextPlugin
-from flext_core import FlextEntity, FlextEntityId
+from flext_core import FlextModels.Entity, FlextModels.EntityId
 
-class FlextPlugin(FlextEntity):
+class FlextPlugin(FlextModels.Entity):
     """Plugin entity representing a plugin in the system."""
 
     # Core attributes
@@ -177,7 +177,7 @@ class FlextPlugin(FlextEntity):
 
     def __init__(
         self,
-        entity_id: FlextEntityId | None = None,
+        entity_id: FlextModels.EntityId | None = None,
         *,
         name: str = "",
         version: str = "",
@@ -217,7 +217,7 @@ Configuration management for plugins.
 ```python
 from flext_plugin.domain.entities import FlextPluginConfig
 
-class FlextPluginConfig(FlextEntity):
+class FlextPluginConfig(FlextModels.Entity):
     """Plugin configuration entity with update tracking."""
 
     plugin_id: str
@@ -250,7 +250,7 @@ Additional plugin information and metadata.
 ```python
 from flext_plugin.domain.entities import FlextPluginMetadata
 
-class FlextPluginMetadata(FlextEntity):
+class FlextPluginMetadata(FlextModels.Entity):
     """Plugin metadata entity with tags and additional information."""
 
     plugin_id: str
@@ -282,7 +282,7 @@ Plugin collection management with discovery and lifecycle operations.
 ```python
 from flext_plugin.domain.entities import FlextPluginRegistry
 
-class FlextPluginRegistry(FlextEntity):
+class FlextPluginRegistry(FlextModels.Entity):
     """Plugin registry aggregate managing collection of plugins."""
 
     plugins: dict[str, FlextPlugin]

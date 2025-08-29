@@ -621,11 +621,11 @@ class AdvancedPluginDiscovery:
 ```python
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 from typing import List, Dict, object
 from datetime import datetime
 
-class FlextPlugin(FlextEntity):
+class FlextPlugin(FlextModels.Entity):
     """
     Rich plugin entity with comprehensive business logic.
 
@@ -835,11 +835,11 @@ class FlextPluginRegistry(FlextAggregates):
 
 ```python
 from flext_plugin.domain.value_objects import FlextPluginMetadata, FlextPluginConfig
-from flext_core import FlextValue
+from flext_core import FlextModels.Value
 from typing import List, Dict, Optional
 
 
-class FlextPluginMetadata(FlextValue):
+class FlextPluginMetadata(FlextModels.Value):
     """
     Immutable plugin metadata value object.
 
@@ -882,7 +882,7 @@ class FlextPluginMetadata(FlextValue):
         """Validate URL format."""
         return url.startswith(("http://", "https://"))
 
-class FlextPluginConfig(FlextValue):
+class FlextPluginConfig(FlextModels.Value):
     """
     Immutable plugin configuration value object.
 

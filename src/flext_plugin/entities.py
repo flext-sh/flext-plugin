@@ -15,11 +15,11 @@ from datetime import datetime
 from typing import cast, override
 
 from flext_core import (
-    FlextEntity,
+    FlextModels.Entity,
     FlextResult,
-    FlextTimestamp,
+    FlextModels.Timestamp,
     FlextUtilities,
-    get_logger,
+    FlextLogger,
 )
 from pydantic import Field, field_validator
 
@@ -34,8 +34,8 @@ class FlextPluginConfigParams:
 
     plugin_name: str = ""
     config_data: dict[str, object] | None = None
-    created_at: FlextTimestamp | None = None
-    updated_at: FlextTimestamp | None = None
+    created_at: FlextModels.Timestamp | None = None
+    updated_at: FlextModels.Timestamp | None = None
     enabled: bool = True
     settings: dict[str, object] | None = None
     dependencies: list[str] | None = None
@@ -65,19 +65,19 @@ class FlextPluginRegistryParams:
 
     name: str = ""
     plugins: dict[str, FlextPluginEntity] | None = None
-    created_at: FlextTimestamp | None = None
+    created_at: FlextModels.Timestamp | None = None
     registry_url: str = ""
     is_enabled: bool = True
     plugin_count: int = 0
     sync_error_count: int = 0
-    last_sync: FlextTimestamp | None = None
+    last_sync: FlextModels.Timestamp | None = None
     requires_authentication: bool = False
     api_key: str = ""
     verify_signatures: bool = False
     trusted_publishers: list[str] | None = None
 
 
-class FlextPluginEntity(FlextEntity):
+class FlextPluginEntity(FlextModels.Entity):
     """Rich plugin domain entity with comprehensive business logic and lifecycle management.
 
     Core domain entity representing a plugin within the FLEXT ecosystem.
@@ -159,8 +159,8 @@ class FlextPluginEntity(FlextEntity):
         default=PluginType.UTILITY,
         description="Plugin category and type for classification",
     )
-    created_at: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    created_at: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Plugin creation timestamp",
     )
 
@@ -199,7 +199,7 @@ class FlextPluginEntity(FlextEntity):
         # Create instance data
         instance_data: dict[str, object] = {
             "id": final_id,
-            "version": kwargs.get("entity_version", 1),  # FlextEntity version
+            "version": kwargs.get("entity_version", 1),  # FlextModels.Entity version
             "metadata": kwargs.get("metadata", {}),
             "name": plugin_name,
             "plugin_version": plugin_version,
@@ -229,7 +229,7 @@ class FlextPluginEntity(FlextEntity):
     @property
     def plugin_status(self) -> str:
         """Get plugin status (convenience) - returns value string."""
-        # FlextEntity uses use_enum_values=True, so status is already a string
+        # FlextModels.Entity uses use_enum_values=True, so status is already a string
         return str(self.status)
 
     @override
@@ -355,7 +355,7 @@ class FlextPluginEntity(FlextEntity):
         # Set new values using object.__setattr__ for frozen model
         object.__setattr__(self, "_execution_count", new_count)
         object.__setattr__(self, "_average_execution_time_ms", new_avg)
-        object.__setattr__(self, "_last_execution", FlextTimestamp.now())
+        object.__setattr__(self, "_last_execution", FlextModels.Timestamp.now())
 
         # Update status based on success
         if not success:
@@ -374,7 +374,7 @@ class FlextPluginEntity(FlextEntity):
         # Set new values using object.__setattr__ for frozen model
         object.__setattr__(self, "_error_count", current_error_count + 1)
         object.__setattr__(self, "_last_error", error_message)
-        object.__setattr__(self, "_last_error_time", FlextTimestamp.now())
+        object.__setattr__(self, "_last_error_time", FlextModels.Timestamp.now())
         object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
 
     @override
@@ -394,7 +394,7 @@ class FlextPluginEntity(FlextEntity):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginConfig(FlextEntity):
+class FlextPluginConfig(FlextModels.Entity):
     """Plugin configuration entity with validation and business rules."""
 
     # Pydantic fields
@@ -406,12 +406,12 @@ class FlextPluginConfig(FlextEntity):
         default_factory=dict,
         description="Configuration data",
     )
-    created_at: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    created_at: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Configuration creation timestamp",
     )
-    updated_at: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    updated_at: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Last update timestamp",
     )
 
@@ -452,8 +452,8 @@ class FlextPluginConfig(FlextEntity):
             p = FlextPluginConfigParams()
             p.plugin_name = plugin_name
             p.config_data = cast("dict[str, object] | None", kwargs.get("config_data"))
-            p.created_at = cast("FlextTimestamp | None", kwargs.get("created_at"))
-            p.updated_at = cast("FlextTimestamp | None", kwargs.get("updated_at"))
+            p.created_at = cast("FlextModels.Timestamp | None", kwargs.get("created_at"))
+            p.updated_at = cast("FlextModels.Timestamp | None", kwargs.get("updated_at"))
             p.enabled = cast("bool", kwargs.get("enabled", True))
             p.settings = cast("dict[str, object] | None", kwargs.get("settings"))
             p.dependencies = cast("list[str] | None", kwargs.get("dependencies"))
@@ -469,7 +469,7 @@ class FlextPluginConfig(FlextEntity):
             "metadata": kwargs.get("metadata", {}),
             "plugin_name": p.plugin_name,
             "config_data": p.config_data or {},
-            "updated_at": p.updated_at or FlextTimestamp.now(),
+            "updated_at": p.updated_at or FlextModels.Timestamp.now(),
             "enabled": p.enabled,
             "settings": p.settings or {},
             "dependencies": p.dependencies or [],
@@ -502,7 +502,7 @@ class FlextPluginConfig(FlextEntity):
         # Update mutable dict in place
         self.config_data.update(new_config)
         # Update timestamp using frozen model workaround
-        object.__setattr__(self, "updated_at", FlextTimestamp.now())
+        object.__setattr__(self, "updated_at", FlextModels.Timestamp.now())
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
@@ -517,7 +517,7 @@ class FlextPluginConfig(FlextEntity):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginMetadata(FlextEntity):
+class FlextPluginMetadata(FlextModels.Entity):
     """Plugin metadata entity containing additional plugin information."""
 
     # Pydantic fields for the entity
@@ -553,8 +553,8 @@ class FlextPluginMetadata(FlextEntity):
         default=None,
         description="Plugin repository (alias)",
     )
-    created_at: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    created_at: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Metadata creation timestamp",
     )
 
@@ -670,7 +670,7 @@ class FlextPluginMetadata(FlextEntity):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginRegistry(FlextEntity):
+class FlextPluginRegistry(FlextModels.Entity):
     """Plugin registry entity managing registered plugins."""
 
     # Pydantic fields
@@ -679,8 +679,8 @@ class FlextPluginRegistry(FlextEntity):
         default_factory=dict,
         description="Dictionary of registered plugins",
     )
-    created_at: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    created_at: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Registry creation timestamp",
     )
 
@@ -689,7 +689,7 @@ class FlextPluginRegistry(FlextEntity):
     is_enabled: bool = Field(default=True, description="Whether registry is enabled")
     plugin_count: int = Field(default=0, description="Number of plugins in registry")
     sync_error_count: int = Field(default=0, description="Number of sync errors")
-    last_sync: FlextTimestamp | None = Field(
+    last_sync: FlextModels.Timestamp | None = Field(
         default=None, description="Last sync timestamp"
     )
 
@@ -732,12 +732,12 @@ class FlextPluginRegistry(FlextEntity):
                 "dict[str, FlextPluginEntity] | None",
                 kwargs.get("plugins"),
             )
-            p.created_at = cast("FlextTimestamp | None", kwargs.get("created_at"))
+            p.created_at = cast("FlextModels.Timestamp | None", kwargs.get("created_at"))
             p.registry_url = cast("str", kwargs.get("registry_url", ""))
             p.is_enabled = cast("bool", kwargs.get("is_enabled", True))
             p.plugin_count = cast("int", kwargs.get("plugin_count", 0))
             p.sync_error_count = cast("int", kwargs.get("sync_error_count", 0))
-            p.last_sync = cast("FlextTimestamp | None", kwargs.get("last_sync"))
+            p.last_sync = cast("FlextModels.Timestamp | None", kwargs.get("last_sync"))
             p.requires_authentication = cast(
                 "bool",
                 kwargs.get("requires_authentication", False),
@@ -784,7 +784,7 @@ class FlextPluginRegistry(FlextEntity):
             plugin_count: Number of plugins synced (only updated on success)
 
         """
-        object.__setattr__(self, "last_sync", FlextTimestamp.now())
+        object.__setattr__(self, "last_sync", FlextModels.Timestamp.now())
 
         if success and plugin_count is not None:
             object.__setattr__(self, "plugin_count", plugin_count)
@@ -868,7 +868,7 @@ class FlextPluginRegistry(FlextEntity):
 
 
 # Additional domain entities
-class FlextPluginExecution(FlextEntity):
+class FlextPluginExecution(FlextModels.Entity):
     """Plugin execution entity for tracking plugin executions."""
 
     # Pydantic fields
@@ -884,8 +884,8 @@ class FlextPluginExecution(FlextEntity):
         default="",
         description="Execution identifier",
     )
-    start_time: FlextTimestamp = Field(
-        default_factory=FlextTimestamp.now,
+    start_time: FlextModels.Timestamp = Field(
+        default_factory=FlextModels.Timestamp.now,
         description="Execution start time",
     )
     end_time: datetime | None = Field(
@@ -949,7 +949,7 @@ class FlextPluginExecution(FlextEntity):
             "plugin_name": plugin_name,
             "plugin_id": kwargs.get("plugin_id", plugin_name),
             "execution_id": execution_id,
-            "start_time": execution_config.get("start_time", FlextTimestamp.now()),
+            "start_time": execution_config.get("start_time", FlextModels.Timestamp.now()),
             "end_time": execution_config.get("end_time"),
             "status": execution_config.get("status", "pending"),
             "result": execution_config.get("result"),
@@ -990,7 +990,7 @@ class FlextPluginExecution(FlextEntity):
                 return float(memory_value)
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
-                logger = get_logger(__name__)
+                logger = FlextLogger(__name__)
                 logger.exception(
                     f"Invalid memory value '{memory_value}' for plugin execution",
                 )
@@ -1014,7 +1014,7 @@ class FlextPluginExecution(FlextEntity):
                 return float(cpu_value)
             except ValueError as e:
                 # Log critical error and raise proper exception instead of returning fake data
-                logger = get_logger(__name__)
+                logger = FlextLogger(__name__)
                 logger.exception(
                     f"Invalid CPU time value '{cpu_value}' for plugin execution",
                 )
@@ -1036,7 +1036,7 @@ class FlextPluginExecution(FlextEntity):
     def mark_started(self) -> None:
         """Mark execution as started."""
         object.__setattr__(self, "status", "running")
-        object.__setattr__(self, "start_time", FlextTimestamp.now())
+        object.__setattr__(self, "start_time", FlextModels.Timestamp.now())
 
     def mark_completed(
         self,
@@ -1051,7 +1051,7 @@ class FlextPluginExecution(FlextEntity):
             error_message: Error message if execution failed
 
         """
-        object.__setattr__(self, "end_time", FlextTimestamp.now())
+        object.__setattr__(self, "end_time", FlextModels.Timestamp.now())
         if success:
             object.__setattr__(self, "status", "completed")
         else:
@@ -1079,7 +1079,7 @@ class FlextPluginExecution(FlextEntity):
                 "resource_usage": {
                     "memory_mb": memory_mb,
                     "cpu_time_ms": cpu_time_ms,
-                    "timestamp": str(FlextTimestamp.now()),
+                    "timestamp": str(FlextModels.Timestamp.now()),
                 },
             },
         )

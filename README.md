@@ -75,7 +75,7 @@ FLEXT Plugin provides plugin management infrastructure for distributed services:
 ### **FLEXT Core Integration**
 
 - **FlextResult Pattern**: Railway-oriented programming for error handling
-- **FlextEntity**: Domain entities with validation and business rules
+- **FlextModels.Entity**: Domain entities with validation and business rules
 - **Dependency Injection**: Global container integration (via flext-core)
 
 ## Installation & Usage

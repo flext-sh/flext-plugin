@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from .discovery import PluginDiscovery
 from .entities import FlextPluginConfig, FlextPluginEntity
@@ -32,7 +32,7 @@ from .ports import (
 )
 
 # Initialize logger
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):

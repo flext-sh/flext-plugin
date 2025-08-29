@@ -19,11 +19,11 @@ from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
-    FlextEntity,
+    FlextModels.Entity,
     FlextProcessingError,
     FlextResult,
     FlextUtilities,
-    get_logger,
+    FlextLogger,
 )
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -325,7 +325,7 @@ class PluginFileHandler(FileSystemEventHandler):
             self.reload_callback(path)
 
 
-class HotReloadManager(FlextEntity):
+class HotReloadManager(FlextModels.Entity):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
@@ -454,7 +454,7 @@ class HotReloadManager(FlextEntity):
                         await self._load_plugin(py_file)
         except (OSError, RuntimeError, ValueError, KeyError) as e:
             # Log plugin discovery error and continue
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning(f"Plugin discovery failed during hot reload: {e}")
             # Continue hot reload process despite discovery failure
 
@@ -477,7 +477,7 @@ class HotReloadManager(FlextEntity):
             await self._load_plugin(file_path)
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin reload error and continue hot-reload process
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning(f"Plugin reload failed for {file_path}: {e}")
 
     async def _load_plugin(self, file_path: Path) -> None:
@@ -491,7 +491,7 @@ class HotReloadManager(FlextEntity):
                 loaded_plugins[plugin_name] = plugin_instance
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin loading error and continue hot-reload process
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning(f"Plugin loading failed for {file_path}: {e}")
 
     async def _unload_plugin(self, plugin_name: str) -> None:
@@ -506,7 +506,7 @@ class HotReloadManager(FlextEntity):
                 del loaded_plugins[plugin_name]
         except (RuntimeError, ValueError, AttributeError, KeyError) as e:
             # Log plugin unload error and continue hot-reload process
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
 
     def get_loaded_plugins(self) -> dict[str, object]:

@@ -17,7 +17,7 @@ NO MOCKS: All tests use actual implementations from:
 - FlextPluginEntity instances
 
 Architecture: Clean Architecture with real infrastructure layer
-Patterns: FlextResult, FlextContainer, FlextEntity
+Patterns: FlextResult, FlextContainer, FlextModels.Entity
 Quality: 100% PyRight, MyPy, Ruff compliance
 """
 

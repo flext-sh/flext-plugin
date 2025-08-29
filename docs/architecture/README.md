@@ -124,7 +124,7 @@ Contains business logic specific to plugin management domain.
 **Key Entities:**
 
 ```python
-class FlextPlugin(FlextEntity):
+class FlextPlugin(FlextModels.Entity):
     """Rich plugin entity with behavior and lifecycle management."""
     name: str
     plugin_version: str
@@ -136,7 +136,7 @@ class FlextPlugin(FlextEntity):
     def deactivate(self) -> bool:
         """Deactivate plugin with cleanup."""
 
-class FlextPluginRegistry(FlextEntity):
+class FlextPluginRegistry(FlextModels.Entity):
     """Aggregate managing collection of plugins."""
     plugins: dict[str, FlextPlugin]
 

@@ -23,7 +23,7 @@ Security Considerations:
     - Resource cleanup and memory management
 
 Architecture:
-    Built as a FlextEntity following domain-driven design patterns,
+    Built as a FlextModels.Entity following domain-driven design patterns,
     the loader maintains state and provides lifecycle management
     for plugin loading operations while integrating with the
     broader FLEXT infrastructure ecosystem.
@@ -57,14 +57,14 @@ from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
-    FlextEntity,
-    FlextEntityId,
+    FlextModels.Entity,
+    FlextModels.EntityId,
     FlextEventList,
-    FlextMetadata,
+    FlextModels.Metadata,
     FlextResult,
-    FlextTimestamp,
+    FlextModels.Timestamp,
     FlextUtilities,
-    FlextVersion,
+    FlextModels.Version,
 )
 
 
@@ -76,7 +76,7 @@ class CleanupablePlugin(Protocol):
         ...
 
 
-class PluginLoader(FlextEntity):
+class PluginLoader(FlextModels.Entity):
     """Dynamic plugin loading system with security validation and hot-reload.
 
     Infrastructure component implementing dynamic Python module loading for the
@@ -98,7 +98,7 @@ class PluginLoader(FlextEntity):
       - Comprehensive error handling and validation
 
     Architecture Integration:
-      - Extends FlextEntity for domain-driven design compliance
+      - Extends FlextModels.Entity for domain-driven design compliance
       - Implements infrastructure layer patterns for Clean Architecture
       - Provides concrete implementation for plugin loading ports
       - Maintains state through entity lifecycle management
@@ -143,16 +143,16 @@ class PluginLoader(FlextEntity):
         """Initialize plugin loader."""
         # Generate ID if not provided for backward compatibility
         final_entity_id = entity_id or FlextUtilities.generate_entity_id()
-        # Initialize FlextEntity with all required parameters
+        # Initialize FlextModels.Entity with all required parameters
 
         now = datetime.now(UTC)
         super().__init__(
-            id=cast("FlextEntityId", final_entity_id),
-            version=cast("FlextVersion", 1),
+            id=cast("FlextModels.EntityId", final_entity_id),
+            version=cast("FlextModels.Version", 1),
             domain_events=cast("FlextEventList", []),
-            metadata=cast("FlextMetadata", {}),
-            created_at=cast("FlextTimestamp", now),
-            updated_at=cast("FlextTimestamp", now),
+            metadata=cast("FlextModels.Metadata", {}),
+            created_at=cast("FlextModels.Timestamp", now),
+            updated_at=cast("FlextModels.Timestamp", now),
         )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)

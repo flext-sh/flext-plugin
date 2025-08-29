@@ -18,7 +18,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextTimestamp
+from flext_core import FlextModels.Timestamp
 
 from flext_plugin import (
     FlextPlugin,
@@ -50,7 +50,7 @@ class TestCreateFlextPlugin:
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
         assert plugin.id is not None
-        assert str(plugin.id)  # FlextEntityId should be convertible to string
+        assert str(plugin.id)  # FlextModels.EntityId should be convertible to string
 
     def test_create_plugin_with_config(self) -> None:
         """Test plugin creation with configuration dictionary."""
@@ -99,9 +99,9 @@ class TestCreateFlextPlugin:
         # Verify timestamp was added
         assert hasattr(plugin, "created_at")
         assert plugin.created_at is not None
-        # Convert datetime to FlextTimestamp for proper comparison
-        before_ts = FlextTimestamp(before_creation)
-        after_ts = FlextTimestamp(after_creation)
+        # Convert datetime to FlextModels.Timestamp for proper comparison
+        before_ts = FlextModels.Timestamp(before_creation)
+        after_ts = FlextModels.Timestamp(after_creation)
         assert before_ts <= plugin.created_at <= after_ts
 
     def test_create_plugin_generates_unique_ids(self) -> None:
@@ -205,9 +205,9 @@ class TestCreateFlextPluginConfig:
 
         after_creation = datetime.now(UTC)
 
-        # Convert datetime to FlextTimestamp for proper comparison
-        before_ts = FlextTimestamp(before_creation)
-        after_ts = FlextTimestamp(after_creation)
+        # Convert datetime to FlextModels.Timestamp for proper comparison
+        before_ts = FlextModels.Timestamp(before_creation)
+        after_ts = FlextModels.Timestamp(after_creation)
         assert before_ts <= config.created_at <= after_ts
         assert before_ts <= config.updated_at <= after_ts
 
@@ -285,9 +285,9 @@ class TestCreateFlextPluginMetadata:
         # Verify timestamp was added to metadata dict
         assert hasattr(metadata, "created_at")
         assert metadata.created_at is not None
-        # Convert datetime to FlextTimestamp for proper comparison
-        before_ts = FlextTimestamp(before_creation)
-        after_ts = FlextTimestamp(after_creation)
+        # Convert datetime to FlextModels.Timestamp for proper comparison
+        before_ts = FlextModels.Timestamp(before_creation)
+        after_ts = FlextModels.Timestamp(after_creation)
         assert before_ts <= metadata.created_at <= after_ts
 
 
@@ -605,9 +605,9 @@ class TestEdgeCasesAndIntegration:
 
         after = datetime.now(UTC)
 
-        # All should have proper timestamps - convert datetime to FlextTimestamp for comparison
-        before_ts = FlextTimestamp(before)
-        after_ts = FlextTimestamp(after)
+        # All should have proper timestamps - convert datetime to FlextModels.Timestamp for comparison
+        before_ts = FlextModels.Timestamp(before)
+        after_ts = FlextModels.Timestamp(after)
         assert before_ts <= plugin.created_at <= after_ts
         assert before_ts <= config.created_at <= after_ts
         assert before_ts <= config.updated_at <= after_ts

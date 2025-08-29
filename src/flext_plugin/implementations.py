@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import Protocol, cast
 
 from flext_core import (
+    FlextLogger,
     FlextResult,
-    get_logger,
 )
 from flext_core.protocols import FlextProtocols
 from structlog.stdlib import BoundLogger
@@ -80,7 +80,7 @@ class ConcretePlugin:
         self._name = name
         self._version = version
         self._entity = entity
-        self._logger = get_logger(f"plugin.{name}")
+        self._logger = FlextLogger(f"plugin.{name}")
         self._initialized = False
         self._config: dict[str, object] = {}
 
@@ -402,7 +402,7 @@ class ConcretePluginContext:
         """Get configuration for plugin."""
         return dict(self._config)
 
-    def get_logger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
+    def FlextLogger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
         """Get logger instance for plugin."""
         return self._logger  # type: ignore[return-value]
 
@@ -429,7 +429,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
     def __init__(self) -> None:
         """Initialize plugin registry."""
         self._plugins: dict[str, object] = {}
-        self._logger = get_logger("plugin.registry")
+        self._logger = FlextLogger("plugin.registry")
 
     def register(self, plugin: object) -> FlextResult[None]:
         """Register a plugin.
@@ -502,7 +502,7 @@ class ConcretePluginLoader(FlextPluginLoader):
 
         """
         self._registry = registry or ConcretePluginRegistry()
-        self._logger = get_logger("plugin.loader")
+        self._logger = FlextLogger("plugin.loader")
 
     def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
         """Load plugin from path.

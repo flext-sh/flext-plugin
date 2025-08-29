@@ -69,9 +69,7 @@ class TestPluginDiscovery:
     def test_discovery_creation_with_valid_directory(self) -> None:
         """Test PluginDiscovery() factory method with valid directory."""
         # Create discovery instance using constructor
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory="/valid/path"
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory="/valid/path")
 
         # Validate creation succeeded
         assert discovery is not None
@@ -101,9 +99,7 @@ class TestPluginDiscovery:
         empty_dir.mkdir()
 
         # Create discovery instance with real directory
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(empty_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(empty_dir))
 
         # discover_all should return empty dict
         result: dict[str, object] = await discovery.discover_all()
@@ -149,9 +145,7 @@ def get_plugin() -> dict[str, str]:
         (plugin_dir / "test_plugin2.py").write_text(plugin2_content)
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(plugin_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
         # Discover plugins
         result: dict[str, object] = await discovery.discover_all()
@@ -224,9 +218,7 @@ def plugin_function() -> str:
 ''')
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(plugin_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
         # Discover entry points
         result: dict[str, object] = await discovery.discover_all()
@@ -301,9 +293,7 @@ class ValidPlugin:
         (plugin_dir / "__main__.py").write_text("# Main file")
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(plugin_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
         # Scan plugins
         result: dict[str, object] = await discovery.discover_all()
@@ -319,9 +309,7 @@ class ValidPlugin:
         parameter combinations and validates proper entity creation.
         """
         # Test with minimal parameters
-        discovery1: PluginDiscovery = PluginDiscovery(
-            plugin_directory="/test/path"
-        )
+        discovery1: PluginDiscovery = PluginDiscovery(plugin_directory="/test/path")
         assert discovery1.plugin_directory == "/test/path"
         assert hasattr(discovery1, "id")
         assert hasattr(discovery1, "version")
@@ -331,7 +319,7 @@ class ValidPlugin:
             plugin_directory="/another/path", version=2, metadata={"env": "test"}
         )
         assert discovery2.plugin_directory == "/another/path"
-        # Version and metadata are handled by FlextEntity
+        # Version and metadata are handled by FlextModels.Entity
 
     @pytest.mark.asyncio
     async def test_scan_reports_accurate_file_sizes(self, tmp_path: Path) -> None:
@@ -354,9 +342,7 @@ class ValidPlugin:
         (plugin_dir / "large_plugin.py").write_text(large_content)
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(plugin_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
         # Scan plugins
         result: dict[str, object] = await discovery.discover_all()
@@ -364,8 +350,12 @@ class ValidPlugin:
         # Validate results include accurate size information
         assert len(result) == 2
 
-        small_plugin: dict[str, object] = cast("dict[str, object]", result["small_plugin"])
-        large_plugin: dict[str, object] = cast("dict[str, object]", result["large_plugin"])
+        small_plugin: dict[str, object] = cast(
+            "dict[str, object]", result["small_plugin"]
+        )
+        large_plugin: dict[str, object] = cast(
+            "dict[str, object]", result["large_plugin"]
+        )
 
         # Validate size accuracy
         small_size = cast("int", small_plugin["size"])
@@ -399,9 +389,7 @@ class ValidPlugin:
         )
 
         # Create discovery instance
-        discovery: PluginDiscovery = PluginDiscovery(
-            plugin_directory=str(plugin_dir)
-        )
+        discovery: PluginDiscovery = PluginDiscovery(plugin_directory=str(plugin_dir))
 
         # Scan plugins
         result: dict[str, object] = await discovery.discover_all()
@@ -416,8 +404,12 @@ class ValidPlugin:
             assert plugin["modified"] > 0  # Should be valid timestamp
 
         # Get plugins by name
-        first_plugin: dict[str, object] = cast("dict[str, object]", result["first_plugin"])
-        second_plugin: dict[str, object] = cast("dict[str, object]", result["second_plugin"])
+        first_plugin: dict[str, object] = cast(
+            "dict[str, object]", result["first_plugin"]
+        )
+        second_plugin: dict[str, object] = cast(
+            "dict[str, object]", result["second_plugin"]
+        )
 
         # Second plugin should have later timestamp (might be equal if too fast)
         first_time = cast("float", first_plugin["modified"])

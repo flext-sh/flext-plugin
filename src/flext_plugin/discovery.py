@@ -13,22 +13,22 @@ from pathlib import Path
 from typing import cast, override
 
 from flext_core import (
-    FlextEntity,
-    FlextEntityId,
+    FlextModels.Entity,
+    FlextModels.EntityId,
     FlextEventList,
-    FlextMetadata,
+    FlextModels.Metadata,
     FlextResult,
-    FlextTimestamp,
+    FlextModels.Timestamp,
     FlextUtilities,
-    FlextVersion,
-    get_logger,
+    FlextModels.Version,
+    FlextLogger,
 )
 from pydantic import Field
 
 from .flext_plugin_models import PluginType
 
 
-class PluginDiscovery(FlextEntity):
+class PluginDiscovery(FlextModels.Entity):
     """Plugin discovery system to find and scan plugin files."""
 
     # Pydantic fields
@@ -62,17 +62,17 @@ class PluginDiscovery(FlextEntity):
         """Initialize plugin discovery system."""
         # Generate ID if not provided using FlextUtilities
         final_entity_id = entity_id or FlextUtilities.generate_entity_id()
-        # Initialize FlextEntity base with required fields - use datetime for FlextEntity compatibility
+        # Initialize FlextModels.Entity base with required fields - use datetime for FlextModels.Entity compatibility
         now = datetime.now(UTC)
-        # Convert types for FlextEntity compatibility
+        # Convert types for FlextModels.Entity compatibility
 
         super().__init__(
-            id=cast("FlextEntityId", final_entity_id),
-            version=cast("FlextVersion", 1),
+            id=cast("FlextModels.EntityId", final_entity_id),
+            version=cast("FlextModels.Version", 1),
             domain_events=cast("FlextEventList", []),
-            metadata=cast("FlextMetadata", {}),
-            created_at=cast("FlextTimestamp", now),
-            updated_at=cast("FlextTimestamp", now),
+            metadata=cast("FlextModels.Metadata", {}),
+            created_at=cast("FlextModels.Timestamp", now),
+            updated_at=cast("FlextModels.Timestamp", now),
         )
         # Set business fields directly (frozen model workaround)
         object.__setattr__(self, "plugin_directory", plugin_directory)
@@ -173,13 +173,13 @@ class PluginDiscovery(FlextEntity):
                         self.discovered_plugins[plugin_name_key] = metadata
                     else:
                         # Log manifest parsing error using FlextUtilities
-                        logger = get_logger(__name__)
+                        logger = FlextLogger(__name__)
                         logger.warning(
                             f"Failed to parse plugin manifest {manifest_file}: {json_result.error}",
                         )
                 except OSError as e:
                     # Log file reading error but continue discovery process
-                    logger = get_logger(__name__)
+                    logger = FlextLogger(__name__)
                     logger.warning(
                         f"Failed to read plugin manifest {manifest_file}: {e}",
                     )
@@ -214,7 +214,7 @@ class PluginDiscovery(FlextEntity):
             return True
         except (RuntimeError, ValueError, TypeError) as e:
             # Log critical validation error using FlextUtilities and proper error handling
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             plugin_name = FlextUtilities.safe_str(getattr(plugin_class, "__name__", "Unknown"))
             logger.exception(f"Plugin class validation failed for {plugin_name}")
             msg = f"Plugin validation failed: {plugin_name}"
