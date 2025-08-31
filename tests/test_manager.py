@@ -292,7 +292,11 @@ class TestPluginExecutionContextReal:
         assert context["plugin_id"] == "complex-data-plugin"
         assert context["execution_id"] == "complex-exec-789"
         # Type-safe access to nested data
-        database_data = context["input_data"].get("database", {}) if isinstance(context["input_data"], dict) else {}
+        database_data = (
+            context["input_data"].get("database", {})
+            if isinstance(context["input_data"], dict)
+            else {}
+        )
         assert isinstance(database_data, dict)
         assert database_data.get("host") == "localhost"
 
@@ -323,7 +327,9 @@ class TestPluginManagerResultReal:
     def test_manager_result_with_errors_real(self) -> None:
         """Test REAL manager result with errors."""
         # PluginManagerResult is FlextResult[str]
-        result = PluginManagerResult.fail("validate_plugins failed: corrupted-plugin errors")
+        result = PluginManagerResult.fail(
+            "validate_plugins failed: corrupted-plugin errors"
+        )
 
         assert result.success is False
         assert result.error == "validate_plugins failed: corrupted-plugin errors"

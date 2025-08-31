@@ -109,7 +109,12 @@ class TestFlextPluginIntegration:
         assert hasattr(PluginType, "UTILITY")
 
         # Test that plugin types have values
-        plugin_types = [PluginType.TAP, PluginType.TARGET, PluginType.TRANSFORM, PluginType.UTILITY]
+        plugin_types = [
+            PluginType.TAP,
+            PluginType.TARGET,
+            PluginType.TRANSFORM,
+            PluginType.UTILITY,
+        ]
         for plugin_type in plugin_types:
             assert plugin_type.value is not None
             assert isinstance(plugin_type.value, str)

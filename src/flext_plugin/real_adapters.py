@@ -64,10 +64,12 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
 
     def health_check(self) -> FlextResult[dict[str, object]]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok({
-            "status": "healthy" if self._started else "stopped",
-            "plugin_directory": self.discovery.plugin_directory,
-        })
+        return FlextResult[dict[str, object]].ok(
+            {
+                "status": "healthy" if self._started else "stopped",
+                "plugin_directory": self.discovery.plugin_directory,
+            }
+        )
 
     @override
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
@@ -178,10 +180,12 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
 
     def health_check(self) -> FlextResult[dict[str, object]]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok({
-            "status": "healthy" if self._started else "stopped",
-            "plugin_directory": self.plugin_directory,
-        })
+        return FlextResult[dict[str, object]].ok(
+            {
+                "status": "healthy" if self._started else "stopped",
+                "plugin_directory": self.plugin_directory,
+            }
+        )
 
     @override
     def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
@@ -281,10 +285,12 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
 
     def health_check(self) -> FlextResult[dict[str, object]]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok({
-            "status": "healthy" if self._started else "stopped",
-            "plugin_directory": self.plugin_directory,
-        })
+        return FlextResult[dict[str, object]].ok(
+            {
+                "status": "healthy" if self._started else "stopped",
+                "plugin_directory": self.plugin_directory,
+            }
+        )
 
     @override
     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:

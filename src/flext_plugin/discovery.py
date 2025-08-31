@@ -13,15 +13,10 @@ from pathlib import Path
 from typing import cast, override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextModels.EntityId,
-    FlextEventList,
-    FlextModels.Metadata,
-    FlextResult,
-    FlextModels.Timestamp,
-    FlextUtilities,
-    FlextModels.Version,
     FlextLogger,
+    FlextModels,
+    FlextResult,
+    FlextUtilities,
 )
 from pydantic import Field
 
@@ -67,12 +62,11 @@ class PluginDiscovery(FlextModels.Entity):
         # Convert types for FlextModels.Entity compatibility
 
         super().__init__(
-            id=cast("FlextModels.EntityId", final_entity_id),
-            version=cast("FlextModels.Version", 1),
-            domain_events=cast("FlextEventList", []),
-            metadata=cast("FlextModels.Metadata", {}),
-            created_at=cast("FlextModels.Timestamp", now),
-            updated_at=cast("FlextModels.Timestamp", now),
+            id=final_entity_id,
+            version=1,
+            domain_events=[],
+            created_at=now,
+            updated_at=now,
         )
         # Set business fields directly (frozen model workaround)
         object.__setattr__(self, "plugin_directory", plugin_directory)

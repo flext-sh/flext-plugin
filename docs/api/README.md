@@ -140,7 +140,7 @@ class PluginExecutionContext:
 ```python
 from flext_plugin.core.types import PluginError
 
-class PluginError(FlextProcessingError):
+class PluginError(FlextExceptions.ProcessingError):
     """Base exception for plugin-related errors."""
 
     def __init__(

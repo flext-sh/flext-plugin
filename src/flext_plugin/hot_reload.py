@@ -20,7 +20,7 @@ from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
     FlextModels.Entity,
-    FlextProcessingError,
+    FlextExceptions.ProcessingError,
     FlextResult,
     FlextUtilities,
     FlextLogger,
@@ -429,7 +429,7 @@ class HotReloadManager(FlextModels.Entity):
         observer = self.observer
         if observer is None:
             msg = "Observer not initialized"
-            raise FlextProcessingError(msg)
+            raise FlextExceptions.ProcessingError(msg)
         handler = PluginFileHandler(self._on_plugin_file_changed)
         observer.schedule(handler, self.plugin_directory, recursive=True)
         observer.start()

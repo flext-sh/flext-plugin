@@ -84,7 +84,7 @@ class PluginExecutionResult:
         duration_ms: int,
         output_data: dict[str, object] | None = None,
         error_message: str = "",
-        **kwargs: object
+        **kwargs: object,
     ) -> None:
         self.execution_id = execution_id
         self.success = success

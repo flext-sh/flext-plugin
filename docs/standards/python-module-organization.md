@@ -737,10 +737,10 @@ class FlextPlugin(FlextModels.Entity):
 
 ```python
 from flext_plugin.domain.entities import FlextPluginRegistry
-from flext_core import FlextAggregates, FlextResult
+from flext_core import FlextModels, FlextResult
 from typing import Dict, List, Optional
 
-class FlextPluginRegistry(FlextAggregates):
+class FlextPluginRegistry(FlextModels.AggregateRoot):
     """
     Plugin registry aggregate managing plugin collections.
 
@@ -1205,7 +1205,7 @@ async def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
         return FlextResult[None].fail(f"Unexpected error: {e}")
 
 # ✅ Plugin error hierarchy
-class PluginError(FlextProcessingError):
+class PluginError(FlextExceptions.ProcessingError):
     """Base plugin error."""
     pass
 

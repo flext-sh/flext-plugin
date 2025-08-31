@@ -108,7 +108,7 @@ class TestPluginExecutionContextComprehensive:
         # PluginExecutionContext is dict type
         context: PluginExecutionContext = {
             "plugin_name": "test-plugin",
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
         assert context is not None
         assert isinstance(context, dict)

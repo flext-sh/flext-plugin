@@ -14,7 +14,7 @@ import re
 from datetime import datetime
 from enum import StrEnum
 
-from flext_core import FlextModel as FlextBaseModel
+from flext_core import FlextModels as FlextBaseModel
 from pydantic import ConfigDict, Field, field_validator
 
 from .flext_plugin_constants import (
