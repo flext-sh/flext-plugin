@@ -17,7 +17,8 @@ import importlib.util
 
 _docker_path = examples_path / "03_docker_integration.py"
 _spec = importlib.util.spec_from_file_location("docker_integration", _docker_path)
-assert _spec and _spec.loader
+assert _spec
+assert _spec.loader
 _docker_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_docker_mod)
 check_service_availability = _docker_mod.check_service_availability
