@@ -282,10 +282,10 @@ class TestRealPluginDiscoveryAndExecution:
         assert tap_plugin is not None
         assert hasattr(tap_plugin, "name")
         assert hasattr(tap_plugin, "execute")
-        assert tap_plugin.name == "database-tap"  # type: ignore[attr-defined]  # type: ignore[attr-defined]
+        assert tap_plugin.name == "database-tap"
 
         # Test REAL plugin execution
-        result = tap_plugin.execute()  # type: ignore[attr-defined]
+        result = tap_plugin.execute()
         assert result["status"] == "success"
         assert result["extracted_records"] == 150
         assert "tables" in result
@@ -295,10 +295,10 @@ class TestRealPluginDiscoveryAndExecution:
         target_plugin = real_plugin_loader.load_plugin(target_plugin_file)
 
         assert target_plugin is not None
-        assert target_plugin.name == "warehouse-target"  # type: ignore[attr-defined]  # type: ignore[attr-defined]
+        assert target_plugin.name == "warehouse-target"
 
         # Test REAL target execution with data
-        target_result = target_plugin.execute({"records": [1, 2, 3, 4, 5]})  # type: ignore[attr-defined]
+        target_result = target_plugin.execute({"records": [1, 2, 3, 4, 5]})
         assert target_result["status"] == "success"
         assert target_result["loaded_records"] == 5
 
@@ -313,24 +313,24 @@ class TestRealPluginDiscoveryAndExecution:
         processor_plugin = real_plugin_loader.load_plugin(processor_file)
 
         assert processor_plugin is not None
-        assert processor_plugin.name == "data-processor"  # type: ignore[attr-defined]  # type: ignore[attr-defined]
+        assert processor_plugin.name == "data-processor"
 
         # Test initialization
-        init_result = processor_plugin.initialize()  # type: ignore[attr-defined]
+        init_result = processor_plugin.initialize()
         assert init_result["status"] == "initialized"
 
         # Test REAL data processing
-        process_result = processor_plugin.execute({"items": [10, 20, 30]})  # type: ignore[attr-defined]
+        process_result = processor_plugin.execute({"items": [10, 20, 30]})
         assert process_result["status"] == "success"
         assert process_result["processed_items"] == [20, 40, 60]  # Doubled values
         assert process_result["total_processed"] == 3
 
         # Test multiple executions accumulate
-        process_result2 = processor_plugin.execute({"items": [1, 2]})  # type: ignore[attr-defined]
+        process_result2 = processor_plugin.execute({"items": [1, 2]})
         assert process_result2["total_processed"] == 5  # 3 + 2
 
         # Test cleanup
-        cleanup_result = await processor_plugin.cleanup()  # type: ignore[attr-defined]
+        cleanup_result = await processor_plugin.cleanup()
         assert cleanup_result["status"] == "cleaned"
         assert cleanup_result["total_processed"] == 5
 
@@ -344,21 +344,21 @@ class TestRealPluginDiscoveryAndExecution:
         error_plugin = real_plugin_loader.load_plugin(error_file)
 
         assert error_plugin is not None
-        assert error_plugin.name == "error-plugin"  # type: ignore[attr-defined]
+        assert error_plugin.name == "error-plugin"
 
         # Test normal execution first
-        normal_result = error_plugin.execute()  # type: ignore[attr-defined]
+        normal_result = error_plugin.execute()
         assert normal_result["status"] == "success"
 
         # Enable error mode and test exception handling
-        error_plugin.set_should_fail(True)  # type: ignore[attr-defined]
+        error_plugin.set_should_fail(True)
 
         # Test that plugin actually raises exception
         with pytest.raises(RuntimeError, match="Simulated plugin execution error"):
-            error_plugin.execute()  # type: ignore[attr-defined]
+            error_plugin.execute()
 
         # Verify health check reflects error state
-        health_result = error_plugin.health_check()  # type: ignore[attr-defined]
+        health_result = error_plugin.health_check()
         assert health_result["status"] == "unhealthy"
 
 
@@ -389,11 +389,11 @@ class TestFlextPluginServiceWithRealAdapters:
                 "error_plugin",
             }
             # Different plugins have different versions based on their actual code
-            if plugin.name == "error_plugin":  # type: ignore[attr-defined]
+            if plugin.name == "error_plugin":
                 assert plugin.plugin_version == "0.1.0"
-            elif plugin.name == "processor_transform":  # type: ignore[attr-defined]
+            elif plugin.name == "processor_transform":
                 assert plugin.plugin_version == "1.5.0"
-            elif plugin.name == "target_warehouse":  # type: ignore[attr-defined]
+            elif plugin.name == "target_warehouse":
                 assert plugin.plugin_version == "2.0.0"
             else:  # tap_database
                 assert plugin.plugin_version == "1.0.0"
@@ -500,7 +500,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test REAL execute method returns failure as designed."""
-        result = service.execute()  # type: ignore[attr-defined]
+        result = service.execute()
         assert result.is_failure
         assert "Use specific service methods instead of execute" in str(result.error)
 
@@ -892,7 +892,7 @@ class TestFlextPluginDiscoveryServiceReal:
         discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test execute method returns failure as designed."""
-        result = discovery_service.execute()  # type: ignore[attr-defined]
+        result = discovery_service.execute()
         assert not result.success
         assert "Use specific service methods instead of execute" in str(result.error)
 
@@ -1066,14 +1066,14 @@ class TestRealPluginIntegrationWorkflow:
 
         # Verify plugin loaded
         assert tap_plugin is not None
-        assert tap_plugin.name == "database-tap"  # type: ignore[attr-defined]
+        assert tap_plugin.name == "database-tap"
 
         # Step 3: Execute initialization
-        init_result = tap_plugin.initialize()  # type: ignore[attr-defined]
+        init_result = tap_plugin.initialize()
         assert init_result["status"] == "initialized"
 
         # Step 4: Execute main functionality
-        extract_result = tap_plugin.execute()  # type: ignore[attr-defined]
+        extract_result = tap_plugin.execute()
         assert extract_result["status"] == "success"
         assert extract_result["extracted_records"] == 150
 
@@ -1083,19 +1083,19 @@ class TestRealPluginIntegrationWorkflow:
 
         # Step 6: Create data pipeline between plugins
         extracted_data = {"records": list(range(extract_result["extracted_records"]))}
-        load_result = target_plugin.execute(extracted_data)  # type: ignore[attr-defined]
+        load_result = target_plugin.execute(extracted_data)
         assert load_result["status"] == "success"
         assert load_result["loaded_records"] == 150
 
         # Step 7: Health checks on loaded plugins
-        tap_health = tap_plugin.health_check()  # type: ignore[attr-defined]
-        target_health = target_plugin.health_check()  # type: ignore[attr-defined]
+        tap_health = tap_plugin.health_check()
+        target_health = target_plugin.health_check()
         assert tap_health["status"] == "healthy"
         assert target_health["status"] == "healthy"
 
         # Step 8: Cleanup workflow
-        tap_cleanup = await tap_plugin.cleanup()  # type: ignore[attr-defined]
-        target_cleanup = await target_plugin.cleanup()  # type: ignore[attr-defined]
+        tap_cleanup = await tap_plugin.cleanup()
+        target_cleanup = await target_plugin.cleanup()
         assert tap_cleanup["status"] == "cleaned"
         assert target_cleanup["status"] == "cleaned"
 
@@ -1116,9 +1116,9 @@ class TestRealPluginIntegrationWorkflow:
         processor_plugin = real_plugin_loader.load_plugin(processor_file)
 
         # Verify all loaded correctly
-        assert tap_plugin.name == "database-tap"  # type: ignore[attr-defined]
-        assert target_plugin.name == "warehouse-target"  # type: ignore[attr-defined]
-        assert processor_plugin.name == "data-processor"  # type: ignore[attr-defined]
+        assert tap_plugin.name == "database-tap"
+        assert target_plugin.name == "warehouse-target"
+        assert processor_plugin.name == "data-processor"
 
         # Test registry functionality
         loaded_plugins = real_plugin_loader.get_loaded_plugins()
@@ -1131,7 +1131,7 @@ class TestRealPluginIntegrationWorkflow:
 
         # Test plugin retrieval
         retrieved_tap = loaded_plugins["tap_database"]
-        assert retrieved_tap.name == "database-tap"  # type: ignore[attr-defined]
+        assert retrieved_tap.name == "database-tap"
 
     @pytest.mark.asyncio
     async def test_real_plugin_lifecycle_management(
@@ -1150,7 +1150,7 @@ class TestRealPluginIntegrationWorkflow:
         assert "processor_transform" in loaded_plugins
 
         # Execute to change plugin state
-        result = processor_plugin.execute({"items": [1, 2, 3]})  # type: ignore[attr-defined]
+        result = processor_plugin.execute({"items": [1, 2, 3]})
         assert result["total_processed"] == 3
 
         # Unload plugin (tests cleanup if plugin supports it)
@@ -1162,11 +1162,11 @@ class TestRealPluginIntegrationWorkflow:
 
         # Reload plugin (should start fresh)
         reloaded_plugin = real_plugin_loader.load_plugin(processor_file)
-        init_result = reloaded_plugin.initialize()  # type: ignore[attr-defined]
+        init_result = reloaded_plugin.initialize()
         assert init_result["status"] == "initialized"
 
         # Should start with fresh state
-        result_fresh = reloaded_plugin.execute({"items": [1]})  # type: ignore[attr-defined]
+        result_fresh = reloaded_plugin.execute({"items": [1]})
         assert result_fresh["total_processed"] == 1  # Fresh state, not 4
 
 
@@ -1276,21 +1276,21 @@ class TestRealPluginErrorScenarios:
 
         # Verify plugin loaded
         assert error_plugin is not None
-        assert error_plugin.name == "error-plugin"  # type: ignore[attr-defined]
+        assert error_plugin.name == "error-plugin"
 
         # Test normal execution first
-        normal_result = error_plugin.execute()  # type: ignore[attr-defined]
+        normal_result = error_plugin.execute()
         assert normal_result["status"] == "success"
 
         # Enable error mode
-        error_plugin.set_should_fail(True)  # type: ignore[attr-defined]
+        error_plugin.set_should_fail(True)
 
         # Test that we can catch REAL plugin exceptions
         with pytest.raises(RuntimeError, match="Simulated plugin execution error"):
-            error_plugin.execute()  # type: ignore[attr-defined]
+            error_plugin.execute()
 
         # Test that plugin state reflects error condition
-        health = error_plugin.health_check()  # type: ignore[attr-defined]
+        health = error_plugin.health_check()
         assert health["status"] == "unhealthy"
 
     def test_real_plugin_file_loading_errors(

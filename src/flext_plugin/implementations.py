@@ -404,7 +404,7 @@ class ConcretePluginContext:
 
     def FlextLogger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
         """Get logger instance for plugin."""
-        return self._logger  # type: ignore[return-value]
+        return self._logger
 
     def get_service(self, service_name: str) -> FlextResult[object]:
         """Get service by name from container.
@@ -517,7 +517,7 @@ class ConcretePluginLoader(FlextPluginLoader):
             self._logger.info(f"Loading plugin from {plugin_path}")
             # Simplified plugin loading - actual implementation would
             # dynamically import and instantiate plugin
-            plugin = ConcretePlugin(  # type: ignore[abstract]
+            plugin = ConcretePlugin(
                 name=f"loaded-from-{plugin_path}",
                 version="1.0.0",
             )

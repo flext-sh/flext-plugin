@@ -19,11 +19,11 @@ from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextExceptions.ProcessingError,
+    FlextExceptions,
+    FlextLogger,
+    FlextModels,
     FlextResult,
     FlextUtilities,
-    FlextLogger,
 )
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -325,7 +325,7 @@ class PluginFileHandler(FileSystemEventHandler):
             self.reload_callback(path)
 
 
-class HotReloadManager(FlextModels.Entity):
+class HotReloadManager(FlextModels):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str

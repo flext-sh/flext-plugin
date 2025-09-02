@@ -243,10 +243,10 @@ class TestPluginExecutionContextReal:
 
         assert context["plugin_id"] == "real-execution-plugin"
         assert context["execution_id"] == "exec-12345"
-        assert context["input_data"]["source"] == "database"  # type: ignore[index]
-        assert context["input_data"]["table"] == "users"  # type: ignore[index]
-        assert context["context"]["environment"] == "test"  # type: ignore[index]
-        assert context["context"]["debug"] is True  # type: ignore[index]
+        assert context["input_data"]["source"] == "database"
+        assert context["input_data"]["table"] == "users"
+        assert context["context"]["environment"] == "test"
+        assert context["context"]["debug"] is True
         assert context["timeout_seconds"] == 60
 
     def test_execution_context_defaults_real(self) -> None:

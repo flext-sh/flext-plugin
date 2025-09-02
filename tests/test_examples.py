@@ -13,7 +13,7 @@ if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
 # Now import after path setup
-from docker_integration_example import (  # type: ignore[import-not-found]
+from docker_integration_example import (
     check_service_availability,
     create_docker_ldap_plugin,
     create_docker_postgres_plugin,
@@ -99,8 +99,8 @@ def test_basic_plugin_example_functionality() -> None:
     # Test activation
     activate_result = plugin.activate()
     assert activate_result is True
-    assert plugin.status == PluginStatus.ACTIVE  # type: ignore[comparison-overlap]
-    assert plugin.is_active()  # type: ignore[unreachable]
+    assert plugin.status == PluginStatus.ACTIVE
+    assert plugin.is_active()
 
 
 def test_plugin_configuration_example_execution() -> None:

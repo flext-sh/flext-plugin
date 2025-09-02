@@ -57,9 +57,9 @@ class PluginDiscovery(FlextModels.Entity):
         """Initialize plugin discovery system."""
         # Generate ID if not provided using FlextUtilities
         final_entity_id = entity_id or FlextUtilities.generate_entity_id()
-        # Initialize FlextModels.Entity base with required fields - use datetime for FlextModels.Entity compatibility
+        # Initialize FlextModels base with required fields - use datetime for FlextModels compatibility
         now = datetime.now(UTC)
-        # Convert types for FlextModels.Entity compatibility
+        # Convert types for FlextModels compatibility
 
         super().__init__(
             id=final_entity_id,
@@ -85,7 +85,10 @@ class PluginDiscovery(FlextModels.Entity):
     def add_plugin_directory(self, directory: Path) -> None:
         """Add a plugin directory to scan using FlextUtilities validation."""
         directory_str = FlextUtilities.safe_str(str(directory))
-        if FlextUtilities.is_non_empty_string(directory_str) and directory_str not in self.plugin_directories:
+        if (
+            FlextUtilities.is_non_empty_string(directory_str)
+            and directory_str not in self.plugin_directories
+        ):
             # Modify the list in place (mutable object)
             self.plugin_directories.append(directory_str)
 
@@ -163,7 +166,9 @@ class PluginDiscovery(FlextModels.Entity):
                     json_result = FlextUtilities.parse_json_safe(manifest_content)
                     if json_result.success:
                         metadata = json_result.data
-                        plugin_name_key = FlextUtilities.safe_str(str(metadata.get("name", plugin_name)))
+                        plugin_name_key = FlextUtilities.safe_str(
+                            str(metadata.get("name", plugin_name))
+                        )
                         self.discovered_plugins[plugin_name_key] = metadata
                     else:
                         # Log manifest parsing error using FlextUtilities
@@ -209,7 +214,9 @@ class PluginDiscovery(FlextModels.Entity):
         except (RuntimeError, ValueError, TypeError) as e:
             # Log critical validation error using FlextUtilities and proper error handling
             logger = FlextLogger(__name__)
-            plugin_name = FlextUtilities.safe_str(getattr(plugin_class, "__name__", "Unknown"))
+            plugin_name = FlextUtilities.safe_str(
+                getattr(plugin_class, "__name__", "Unknown")
+            )
             logger.exception(f"Plugin class validation failed for {plugin_name}")
             msg = f"Plugin validation failed: {plugin_name}"
             raise RuntimeError(msg) from e

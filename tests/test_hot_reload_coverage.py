@@ -370,7 +370,7 @@ class LoadTestPlugin:
 
         # Add plugin to loaded plugins
         real_plugin = RealPluginWithCleanup()
-        manager._loaded_plugins["real_plugin"] = real_plugin  # type: ignore[attr-defined]
+        manager._loaded_plugins["real_plugin"] = real_plugin
 
         await manager._unload_plugin("real_plugin")
 
@@ -391,7 +391,7 @@ class LoadTestPlugin:
 
         # Add plugin to loaded plugins
         simple_plugin = RealPluginWithoutCleanup()
-        manager._loaded_plugins["simple_plugin"] = simple_plugin  # type: ignore[attr-defined]
+        manager._loaded_plugins["simple_plugin"] = simple_plugin
 
         await manager._unload_plugin("simple_plugin")
 
@@ -446,9 +446,9 @@ class LoadTestPlugin:
         plugin2 = RealCleanupPlugin("plugin2")
         plugin3 = RealCleanupPlugin("plugin3")
 
-        manager._loaded_plugins["plugin1"] = plugin1  # type: ignore[attr-defined]
-        manager._loaded_plugins["plugin2"] = plugin2  # type: ignore[attr-defined]
-        manager._loaded_plugins["plugin3"] = plugin3  # type: ignore[attr-defined]
+        manager._loaded_plugins["plugin1"] = plugin1
+        manager._loaded_plugins["plugin2"] = plugin2
+        manager._loaded_plugins["plugin3"] = plugin3
 
         await manager.reload_all_plugins()
 

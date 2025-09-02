@@ -143,7 +143,7 @@ class TestPlugin:
         assert plugin.active
 
         # Deactivate
-        deactivate_result = plugin.deactivate()  # type: ignore[unreachable]
+        deactivate_result = plugin.deactivate()
         assert deactivate_result.success
         assert not plugin.active
 
@@ -213,7 +213,7 @@ class TestPluginRegistry:
                         msg = "Registration failed"
                         raise RuntimeError(msg)
 
-                self.plugins = FailingDict()  # type: ignore[assignment]
+                self.plugins = FailingDict()
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -268,7 +268,7 @@ class TestPluginRegistry:
                         msg = "Unregistration failed"
                         raise ValueError(msg)
 
-                self.plugins = FailingDeleteDict()  # type: ignore[assignment]
+                self.plugins = FailingDeleteDict()
 
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")
@@ -408,7 +408,7 @@ class Plugin(Plugin):
                 assert result.data.name == "real-loaded-plugin"
                 assert result.error is None
                 assert hasattr(result.data, "loaded")
-                assert result.data.loaded is True  # type: ignore[attr-defined]
+                assert result.data.loaded is True
             finally:
                 # Clean up path
                 sys.path.remove(str(temp_path))
@@ -453,7 +453,7 @@ class CustomPlugin(Plugin):
                 assert result.data.name == "custom-named-plugin"
                 assert result.error is None
                 assert hasattr(result.data, "custom_attribute")
-                assert result.data.custom_attribute == "custom_value"  # type: ignore[attr-defined]
+                assert result.data.custom_attribute == "custom_value"
             finally:
                 # Clean up path
                 sys.path.remove(str(temp_path))
@@ -658,7 +658,7 @@ class TestSimplePluginIntegration:
         assert not plugin.active
 
         # Unregister plugin
-        unregister_result = registry.unregister("workflow-plugin")  # type: ignore[unreachable]
+        unregister_result = registry.unregister("workflow-plugin")
         assert unregister_result.success
         assert len(registry.list_plugins()) == 0
 

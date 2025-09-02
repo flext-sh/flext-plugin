@@ -23,7 +23,7 @@ Security Considerations:
     - Resource cleanup and memory management
 
 Architecture:
-    Built as a FlextModels.Entity following domain-driven design patterns,
+    Built as a FlextModels following domain-driven design patterns,
     the loader maintains state and provides lifecycle management
     for plugin loading operations while integrating with the
     broader FLEXT infrastructure ecosystem.
@@ -57,14 +57,10 @@ from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextModels.EntityId,
     FlextEventList,
-    FlextModels.Metadata,
+    FlextModels,
     FlextResult,
-    FlextModels.Timestamp,
     FlextUtilities,
-    FlextModels.Version,
 )
 
 
@@ -76,7 +72,7 @@ class CleanupablePlugin(Protocol):
         ...
 
 
-class PluginLoader(FlextModels.Entity):
+class PluginLoader(FlextModels):
     """Dynamic plugin loading system with security validation and hot-reload.
 
     Infrastructure component implementing dynamic Python module loading for the

@@ -319,7 +319,7 @@ class ValidPlugin:
             plugin_directory="/another/path", version=2, metadata={"env": "test"}
         )
         assert discovery2.plugin_directory == "/another/path"
-        # Version and metadata are handled by FlextModels.Entity
+        # Version and metadata are handled by FlextModels
 
     @pytest.mark.asyncio
     async def test_scan_reports_accurate_file_sizes(self, tmp_path: Path) -> None:
