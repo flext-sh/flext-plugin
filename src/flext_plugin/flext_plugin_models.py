@@ -25,7 +25,7 @@ from .flext_plugin_constants import (
 from .type_definitions import PluginConfigData
 
 
-class FlextPluginModels(FlextModels.BaseModel):
+class FlextPluginModels(FlextModels.Entity):
     """Single CONSOLIDATED class containing ALL plugin models.
 
     Consolidates ALL model definitions into one class following FLEXT patterns.
@@ -83,7 +83,7 @@ class FlextPluginModels(FlextModels.BaseModel):
         THEME = "theme"
         LANGUAGE = "language"
 
-    class ConfigModel(FlextModels.BaseModel):
+    class ConfigModel(FlextModels.Entity):
         """Pydantic model for plugin configuration."""
 
         model_config = ConfigDict(
@@ -135,7 +135,7 @@ class FlextPluginModels(FlextModels.BaseModel):
                 raise ValueError(error_msg)
             return v
 
-    class MetadataModel(FlextModels.BaseModel):
+    class MetadataModel(FlextModels.Entity):
         """Pydantic model for plugin metadata."""
 
         model_config = ConfigDict(
@@ -169,7 +169,7 @@ class FlextPluginModels(FlextModels.BaseModel):
             default=None, description="Required Python version"
         )
 
-    class PluginModel(FlextModels.BaseModel):
+    class PluginModel(FlextModels.Entity):
         """Complete Pydantic model for a FLEXT plugin."""
 
         model_config = ConfigDict(
@@ -207,7 +207,7 @@ class FlextPluginModels(FlextModels.BaseModel):
             """Get plugin status from configuration."""
             return self.config.status
 
-    class ExecutionContextModel(FlextModels.BaseModel):
+    class ExecutionContextModel(FlextModels.Entity):
         """Pydantic model for plugin execution context."""
 
         model_config = ConfigDict(
@@ -230,7 +230,7 @@ class FlextPluginModels(FlextModels.BaseModel):
             default_factory=datetime.now, description="Execution start timestamp"
         )
 
-    class ExecutionResultModel(FlextModels.BaseModel):
+    class ExecutionResultModel(FlextModels.Entity):
         """Pydantic model for plugin execution results."""
 
         model_config = ConfigDict(
@@ -261,7 +261,7 @@ class FlextPluginModels(FlextModels.BaseModel):
             """Return True if execution failed."""
             return not self.success
 
-    class ManagerResultModel(FlextModels.BaseModel):
+    class ManagerResultModel(FlextModels.Entity):
         """Pydantic model for plugin manager operation results."""
 
         model_config = ConfigDict(

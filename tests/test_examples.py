@@ -12,13 +12,18 @@ examples_path = Path(__file__).parent.parent / "examples"
 if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
-# Now import after path setup
-from docker_integration_example import (
-    check_service_availability,
-    create_docker_ldap_plugin,
-    create_docker_postgres_plugin,
-    create_docker_redis_plugin,
-)
+# Load docker integration helpers from numerically prefixed example via importlib
+import importlib.util
+
+_docker_path = examples_path / "03_docker_integration.py"
+_spec = importlib.util.spec_from_file_location("docker_integration", _docker_path)
+assert _spec and _spec.loader
+_docker_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_docker_mod)
+check_service_availability = _docker_mod.check_service_availability
+create_docker_ldap_plugin = _docker_mod.create_docker_ldap_plugin
+create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
+create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 from flext_plugin import (
     PluginStatus,
@@ -47,7 +52,7 @@ async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, s
 
 def test_basic_plugin_example_execution() -> None:
     """Test that basic_plugin_example.py runs successfully without errors."""
-    example_path = Path(__file__).parent.parent / "examples" / "basic_plugin_example.py"
+    example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
     rc, out, err = asyncio.run(
@@ -105,9 +110,7 @@ def test_basic_plugin_example_functionality() -> None:
 
 def test_plugin_configuration_example_execution() -> None:
     """Test that plugin_configuration_example.py runs successfully without errors."""
-    example_path = (
-        Path(__file__).parent.parent / "examples" / "plugin_configuration_example.py"
-    )
+    example_path = Path(__file__).parent.parent / "examples" / "02_plugin_configuration.py"
 
     # Execute the example script
     rc, out, err = asyncio.run(
@@ -362,10 +365,8 @@ def test_plugin_configuration_docker_compatibility() -> None:
 
 
 def test_docker_integration_example_execution() -> None:
-    """Test that docker_integration_example.py runs successfully without errors."""
-    example_path = (
-        Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
-    )
+    """Test that 03_docker_integration.py runs successfully without errors."""
+    example_path = Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
 
     # Execute the example script
     rc, out, err = asyncio.run(
@@ -391,7 +392,7 @@ def test_docker_integration_example_execution() -> None:
 
 
 def test_docker_integration_example_functionality() -> None:
-    """Test the actual functionality demonstrated in docker_integration_example.py."""
+    """Test the actual functionality demonstrated in 03_docker_integration.py."""
     # Import the functionality directly
 
     # Test PostgreSQL plugin creation
@@ -486,7 +487,7 @@ def test_docker_integration_example_functionality() -> None:
 def test_docker_integration_example_with_connection_testing() -> None:
     """Test docker integration example with connection testing enabled."""
     example_path = (
-        Path(__file__).parent.parent / "examples" / "docker_integration_example.py"
+        Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
     )
 
     # Execute the example script with connection testing

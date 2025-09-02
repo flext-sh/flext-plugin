@@ -5,11 +5,11 @@ This example shows how to create plugins with complex configurations,
 including database connections, environment-specific settings, and validation.
 
 Usage:
-    python examples/plugin_configuration_example.py
+    python examples/02_plugin_configuration.py
 
 Docker Usage:
     # Start services: docker-compose up -d postgres
-    # Run with database: python examples/plugin_configuration_example.py --with-db
+    # Run with database: python examples/02_plugin_configuration.py --with-db
 """
 
 from __future__ import annotations

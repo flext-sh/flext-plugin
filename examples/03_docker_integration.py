@@ -11,8 +11,8 @@ Prerequisites:
     docker-compose up -d postgres redis openldap
 
 Usage:
-    python examples/docker_integration_example.py
-    python examples/docker_integration_example.py --test-connections
+    python examples/03_docker_integration.py
+    python examples/03_docker_integration.py --test-connections
 """
 
 from __future__ import annotations

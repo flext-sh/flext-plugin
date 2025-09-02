@@ -4,7 +4,7 @@ This directory contains comprehensive examples demonstrating the FLEXT Plugin sy
 
 ## Available Examples
 
-### 1. Basic Plugin Example (`basic_plugin_example.py`)
+### 1. Basic Plugin Example (`01_basic_plugin.py`)
 
 **Purpose**: Minimal functional plugin demonstration without external dependencies.
 
@@ -18,12 +18,12 @@ This directory contains comprehensive examples demonstrating the FLEXT Plugin sy
 **Usage**:
 
 ```bash
-python examples/basic_plugin_example.py
+python examples/01_basic_plugin.py
 ```
 
 **Output**: Complete plugin creation and activation workflow with validation.
 
-### 2. Plugin Configuration Example (`plugin_configuration_example.py`)
+### 2. Plugin Configuration Example (`02_plugin_configuration.py`)
 
 **Purpose**: Advanced plugin configuration patterns for complex enterprise scenarios.
 
@@ -38,7 +38,7 @@ python examples/basic_plugin_example.py
 **Usage**:
 
 ```bash
-python examples/plugin_configuration_example.py
+python examples/02_plugin_configuration.py
 ```
 
 **Docker Integration**:
@@ -47,10 +47,10 @@ python examples/plugin_configuration_example.py
 # Optional: Start PostgreSQL for enhanced testing
 cd /home/marlonsc/flext/docker
 docker-compose up -d postgres
-python examples/plugin_configuration_example.py --with-db
+python examples/02_plugin_configuration.py --with-db
 ```
 
-### 3. Docker Integration Example (`docker_integration_example.py`)
+### 3. Docker Integration Example (`03_docker_integration.py`)
 
 **Purpose**: Real-world plugin configuration with Docker services integration.
 
@@ -67,10 +67,10 @@ python examples/plugin_configuration_example.py --with-db
 
 ```bash
 # Basic usage (configuration only)
-python examples/docker_integration_example.py
+python examples/03_docker_integration.py
 
 # With connectivity testing
-python examples/docker_integration_example.py --test-connections
+python examples/03_docker_integration.py --test-connections
 ```
 
 **Docker Setup**:
@@ -84,7 +84,7 @@ docker-compose up -d postgres redis openldap
 docker-compose ps
 
 # Test with all services available
-python examples/docker_integration_example.py --test-connections
+python examples/03_docker_integration.py --test-connections
 ```
 
 ## Configuration Compatibility

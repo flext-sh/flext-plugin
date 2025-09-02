@@ -5,7 +5,7 @@ This example shows how to create and use a basic plugin with the FLEXT Plugin sy
 Demonstrates core functionality without external dependencies.
 
 Usage:
-    python examples/basic_plugin_example.py
+    python examples/01_basic_plugin.py
 """
 
 from __future__ import annotations
