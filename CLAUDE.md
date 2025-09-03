@@ -20,22 +20,26 @@ This is `flext-plugin`, an enterprise-grade plugin management system for the FLE
 The project follows Clean Architecture with these layers:
 
 ### Core Layer (`src/flext_plugin/core/`)
+
 - **`types.py`**: Core plugin types re-exports from centralized type modules
 - **`discovery.py`**: Plugin discovery logic and protocols
 
 ### Domain Layer (`src/flext_plugin/domain/`)
+
 - **`entities.py`**: Core business entities (`FlextPlugin`, `FlextPluginConfig`, `FlextPluginMetadata`, `FlextPluginRegistry`)
 - **`ports.py`**: Domain interfaces/contracts and abstract protocols
 
 ### Application Layer (`src/flext_plugin/application/`)
+
 - **`services.py`**: Application services (`FlextPluginService`, `FlextPluginDiscoveryService`)
 - **`handlers.py`**: Command/query handlers (`FlextPluginHandler`, `FlextPluginRegistrationHandler`)
 
 ### Infrastructure Layer (Root Level)
+
 - **`platform.py`**: Main platform class (`FlextPluginPlatform`) providing unified API access
 - **`simple_api.py`**: Simplified factory functions for plugin creation
 - **`hot_reload.py`**: Hot-reload functionality with state management
-- **`loader.py`**: Plugin loading mechanisms and adapters  
+- **`loader.py`**: Plugin loading mechanisms and adapters
 - **`discovery.py`**: High-level plugin discovery (facade over core)
 - **`simple_plugin.py`**: Simple plugin interface and registry
 - **`models.py`**: Pydantic models for type definitions (`PluginStatus`, `PluginType`)
@@ -53,7 +57,7 @@ make validate          # Complete validation (lint + type + security + test) - M
 make check             # Quick health check (lint + type)
 make lint              # Ruff linting with comprehensive rules
 make type-check        # MyPy strict mode (zero errors tolerated)
-make security          # Security scans (bandit + pip-audit) 
+make security          # Security scans (bandit + pip-audit)
 make fix               # Auto-fix linting and formatting issues
 make format            # Format code with ruff
 ```
@@ -64,7 +68,7 @@ make format            # Format code with ruff
 make test              # Full test suite with 85% coverage requirement
 make test-unit         # Unit tests only (excludes integration tests)
 make test-integration  # Integration tests only
-make test-plugin       # Plugin-specific tests  
+make test-plugin       # Plugin-specific tests
 make test-hot-reload   # Hot reload functionality tests
 make test-discovery    # Plugin discovery tests
 make test-e2e          # End-to-end tests
@@ -215,7 +219,7 @@ pytest --cov=flext_plugin.application tests/test_application_handlers.py -v
 
 - `tests/unit/`: Isolated unit tests for each layer (actual directory)
 - `tests/integration/`: Cross-layer integration tests (actual directory)
-- `tests/e2e/`: End-to-end plugin lifecycle tests (actual directory) 
+- `tests/e2e/`: End-to-end plugin lifecycle tests (actual directory)
 - `tests/fixtures/`: Shared test data and fixtures (actual directory)
 - `tests/conftest.py`: Real fixtures without mocks - creates actual plugin files
 
@@ -224,7 +228,7 @@ pytest --cov=flext_plugin.application tests/test_application_handlers.py -v
 - `test_core_types.py`: Core plugin types and enums
 - `test_domain_entities.py`: Domain entities (FlextPlugin, etc.)
 - `test_domain_ports.py`: Domain interfaces and protocols
-- `test_application_handlers.py`: Application layer handlers  
+- `test_application_handlers.py`: Application layer handlers
 - `test_discovery*.py`: Plugin discovery with real file operations
 - `test_hot_reload*.py`: Hot-reload with real file watching
 - `test_manager*.py`: Plugin management with real adapters
@@ -232,6 +236,7 @@ pytest --cov=flext_plugin.application tests/test_application_handlers.py -v
 - `test_imports.py`: Import validation and module loading
 
 **Testing Philosophy:**
+
 - **Real Over Mocks**: Uses `real_adapters.py` and actual plugin files (see `conftest.py`)
 - **Functional Testing**: Tests actual plugin discovery, loading, and execution
 - **Coverage Strategy**: Targets 85% with focus on business logic validation
@@ -257,6 +262,7 @@ FLEXT_PLUGIN_MAX_WORKERS=10
 ### Key Implementation Patterns
 
 **Clean Architecture Implementation:**
+
 - **Core Layer**: Pure domain types and business logic (PluginType, PluginStatus enums)
 - **Domain Layer**: Business entities (FlextPlugin, FlextPluginConfig) with behavior
 - **Application Layer**: Services and handlers coordinating business logic
@@ -264,6 +270,7 @@ FLEXT_PLUGIN_MAX_WORKERS=10
 
 **Result Pattern Usage:**
 All operations return `FlextResult[T]` for consistent error handling:
+
 ```python
 from flext_core import FlextResult
 
@@ -277,6 +284,7 @@ def create_plugin(...) -> FlextResult[FlextPlugin]:
 
 **Dependency Injection Pattern:**
 The platform uses FlextContainer for dependency management:
+
 ```python
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginPlatform
@@ -343,7 +351,9 @@ found_plugins = direct_discovery.discover_in_directory("./plugins")
 ## Key Architectural Patterns (Critical for Understanding)
 
 ### FlextResult Pattern (Consistent Error Handling)
+
 All operations return `FlextResult[T]` for railway-oriented programming:
+
 ```python
 from flext_core import FlextResult
 
@@ -356,25 +366,28 @@ def discover_plugins(path: str) -> FlextResult[list[FlextPlugin]]:
 ```
 
 ### Clean Architecture Layers (Strict Separation)
+
 - **Core**: Types and discovery protocols (no dependencies)
 - **Domain**: Business entities and ports (depends only on core)
 - **Application**: Services and handlers (depends on domain + core)
 - **Infrastructure**: Platform, CLI, adapters (depends on all layers)
 
 ### Domain Entity Pattern (Business Logic Encapsulation)
+
 ```python
 # Domain entities encapsulate business rules and validation
 from flext_plugin.domain.entities import FlextPlugin
 
 plugin = FlextPlugin.create(
     name="my-plugin",
-    version="1.0.0", 
+    version="1.0.0",
     plugin_type=PluginType.TAP
 )
 # Entity validates name format, version constraints, type compatibility
 ```
 
 ### Real Adapter Pattern (No Mocks in Tests)
+
 ```python
 # Tests use real implementations, not mocks
 from flext_plugin.real_adapters import RealPluginDiscoveryAdapter
@@ -386,7 +399,7 @@ result = adapter.discover_plugins()  # Actually scans filesystem
 ### Quality Gate Workflow
 
 1. Make code changes following Clean Architecture patterns
-2. Run `make fix` to auto-format and fix linting issues  
+2. Run `make fix` to auto-format and fix linting issues
 3. Run `make validate` - ALL checks must pass (lint + type + security + test)
 4. Add comprehensive tests using real adapters (no mocks)
 5. Verify single test execution: `pytest tests/test_module.py::TestClass::test_method -v`
@@ -414,45 +427,56 @@ The plugin system is designed to be platform-agnostic while providing deep integ
 ## Implementation Status
 
 ### ✅ IMPLEMENTED: CLI System
+
 **Status**: COMPLETE - Full CLI implementation with Click framework
-- ✅ Complete CLI at `src/flext_plugin/cli.py` with all major commands  
+
+- ✅ Complete CLI at `src/flext_plugin/cli.py` with all major commands
 - ✅ Commands: create, install, uninstall, list, validate, watch, platform
 - ✅ FlextResult integration for consistent error handling
 - ✅ JSON and text output formats
 - ✅ Entry point configured in pyproject.toml
 
 ### ✅ IMPLEMENTED: Hot Reload System
+
 **Status**: COMPLETE - Full hot reload implementation with real testing
+
 - ✅ Complete implementation in `hot_reload.py` with state management
 - ✅ Watchdog integration for file monitoring
 - ✅ Comprehensive test coverage in `test_hot_reload_*.py` files
 - ✅ Real adapter implementations for testing without mocks
 - ✅ Plugin state management, rollback, and event handling
 
-### ✅ IMPLEMENTED: Core Architecture  
+### ✅ IMPLEMENTED: Core Architecture
+
 **Status**: COMPLETE - Clean Architecture with comprehensive domain layer
+
 - ✅ Domain entities with full lifecycle management
 - ✅ Application services and handlers
 - ✅ Platform facade with dependency injection
 - ✅ Real adapter implementations for infrastructure layer
 
 ### 🔄 IN PROGRESS: Test Coverage
+
 **Status**: ACTIVE - Systematic improvement from current state to 85% target
+
 - ✅ Comprehensive test structure (unit/integration/e2e)
 - ✅ Real testing approach without mocks (see `conftest.py`)
 - ✅ Plugin-specific test markers and categories
 - 🔄 Coverage improvement: targeting 85% (current state varies by module)
 
-### 🚨 GAPS: Singer/Meltano Integration  
+### 🚨 GAPS: Singer/Meltano Integration
+
 **Status**: TYPES ONLY - Deep integration missing
 **Current State**:
+
 - ✅ `PluginType` enum defines TAP, TARGET, TRANSFORM
 - ❌ No Singer SDK integration or Meltano project support
 - ❌ Missing Singer-specific plugin discovery and execution
 
 **Required for Production**:
+
 - [ ] Singer tap/target plugin interfaces and execution
-- [ ] Meltano project configuration integration  
+- [ ] Meltano project configuration integration
 - [ ] Singer ecosystem plugin discovery and validation
 - [ ] Examples for Singer plugin development workflows
 

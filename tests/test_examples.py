@@ -111,7 +111,9 @@ def test_basic_plugin_example_functionality() -> None:
 
 def test_plugin_configuration_example_execution() -> None:
     """Test that plugin_configuration_example.py runs successfully without errors."""
-    example_path = Path(__file__).parent.parent / "examples" / "02_plugin_configuration.py"
+    example_path = (
+        Path(__file__).parent.parent / "examples" / "02_plugin_configuration.py"
+    )
 
     # Execute the example script
     rc, out, err = asyncio.run(
@@ -367,7 +369,9 @@ def test_plugin_configuration_docker_compatibility() -> None:
 
 def test_docker_integration_example_execution() -> None:
     """Test that 03_docker_integration.py runs successfully without errors."""
-    example_path = Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
+    example_path = (
+        Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
+    )
 
     # Execute the example script
     rc, out, err = asyncio.run(
