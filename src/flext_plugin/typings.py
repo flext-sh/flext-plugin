@@ -2,14 +2,17 @@
 
 This module provides a unified interface to all type definitions
 following flext-core patterns. Import from this module for consistency.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-# Re-export core FlextResult for convenience
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
-from .flext_plugin_models import (
+from flext_plugin.flext_plugin_models import (
     FlextPluginConfigModel,
     FlextPluginMetadataModel,
     FlextPluginModel,
@@ -82,7 +85,7 @@ class PluginExecutionResult:
         *,
         success: bool,
         duration_ms: int,
-        output_data: dict[str, object] | None = None,
+        output_data: FlextTypes.Core.Dict | None = None,
         error_message: str = "",
         **kwargs: object,
     ) -> None:

@@ -16,6 +16,10 @@ Quality Standards:
     - NO MOCKS - only real hot-reload components and actual file operations
     - Enterprise-grade error handling validation
     - Complete integration testing with real temporary directories
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from flext_core import FlextTypes
 
 from flext_plugin import (
     HotReloadManager,
@@ -76,7 +81,7 @@ class TestPluginStateReal:
 
     def test_plugin_state_with_complex_data(self) -> None:
         """Test REAL plugin state with complex nested data."""
-        complex_state: dict[str, object] = {
+        complex_state: FlextTypes.Core.Dict = {
             "configuration": {
                 "database": {"host": "localhost", "port": 5432},
                 "api": {"timeout": 30, "retry_count": 3},
@@ -214,7 +219,7 @@ class ExtractorPlugin:
         self.name = "test-extractor"
 
     def extract(self):
-        return [{"data": "test"}]
+        return [{"data": "test"}]:
 """)
 
         plugin2.write_text("""
@@ -305,7 +310,7 @@ class TestStateManagerReal:
                 self.version = "1.0.0"
                 self.config = {"enabled": True, "timeout": 30}
 
-            async def get_state(self) -> dict[str, object]:
+            async def get_state(self) -> FlextTypes.Core.Dict:
                 return {
                     "config": self.config,
                     "runtime": {"active": True, "connections": 2},
@@ -400,7 +405,7 @@ class TestRollbackManagerReal:
             def __init__(self) -> None:
                 self.name = "rollback-test-plugin"
                 self.version = "1.5.0"
-                self.state: dict[str, object] = {"active": True, "data": [1, 2, 3]}
+                self.state: FlextTypes.Core.Dict = {"active": True, "data": [1, 2, 3]}
 
         real_plugin = RealRollbackPlugin()
         description = "Before critical update - rollback point"

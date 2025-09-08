@@ -1,3 +1,9 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
 """FLEXT Plugin Platform - Unified facade providing comprehensive plugin management.
 
 This module implements the platform layer of the Clean Architecture, serving as
@@ -52,8 +58,11 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
 """
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
-from __future__ import annotations
 
 from flext_core import FlextContainer, FlextResult
 
@@ -148,6 +157,9 @@ class FlextPluginPlatform:
             container during initialization. External services can be registered
             in the provided container before platform initialization for
             customization and testing scenarios.
+
+        Returns:
+            object: Description of return value.
 
         """
         self.container = container or FlextContainer()

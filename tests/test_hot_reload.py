@@ -25,6 +25,10 @@ Quality Standards:
     - NO MOCKS - only real file system and actual business logic
     - Enterprise-grade error handling validation
     - Complete integration testing with real scenarios
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

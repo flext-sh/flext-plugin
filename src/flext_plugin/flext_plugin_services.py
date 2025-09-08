@@ -4,14 +4,7 @@ This module implements the CONSOLIDATED service pattern with a single FlextPlugi
 class containing ALL plugin service definitions as nested classes. Maintains backward
 compatibility through property re-exports and follows FLEXT architectural standards.
 
-Consolidates ALL service definitions into one class following FLEXT patterns.
-Individual services available as nested classes for organization while maintaining
-backward compatibility through direct exports.
-
-This approach follows FLEXT architectural standards for single consolidated classes
-per module while preserving existing API surface for seamless migration.
-
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -19,7 +12,7 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_core import FlextContainer, FlextDomainService, FlextResult
+from flext_core import FlextContainer, FlextDomainService, FlextResult, FlextTypes
 
 from .entities import FlextPluginConfig, FlextPluginEntity
 from .exceptions import FlextPluginError
@@ -365,7 +358,9 @@ class FlextPluginServices(FlextDomainService[object]):
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             return len(plugins)
 
-        def list_plugins(self, plugin_type: object | None = None) -> list[object]:
+        def list_plugins(
+            self, plugin_type: object | None = None
+        ) -> FlextTypes.Core.List:
             """List plugin metadata optionally filtered by type."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             if plugin_type is None:

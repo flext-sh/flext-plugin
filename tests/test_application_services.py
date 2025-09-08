@@ -15,6 +15,10 @@ Quality Standards:
     - NO MOCKS - only real plugins, real loading, real execution
     - Enterprise-grade error handling validation
     - Complete integration testing with real plugin files and execution
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -24,7 +28,7 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer, FlextDomainService
+from flext_core import FlextContainer, FlextDomainService, FlextTypes
 
 from flext_plugin import (
     FlextPluginDiscoveryService,
@@ -1189,7 +1193,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
 
         # Register a REAL service object in the container
-        test_service: dict[str, object] = {
+        test_service: FlextTypes.Core.Dict = {
             "name": "test_service",
             "config": {"enabled": True},
         }

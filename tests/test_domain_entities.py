@@ -31,6 +31,10 @@ Example Test Structure:
     testing creation, validation, business operations, and integration
     scenarios. Test data uses realistic plugin scenarios and validates
     both success and failure conditions.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

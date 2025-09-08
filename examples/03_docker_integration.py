@@ -16,7 +16,7 @@ Usage:
 """
 
 from __future__ import annotations
-
+from flext_core import FlextTypes
 import socket
 import sys
 from typing import cast
@@ -44,9 +44,9 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         return False
 
 
-def create_docker_postgres_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
+def create_docker_postgres_plugin() -> tuple[FlextPluginEntity, FlextTypes.Core.Dict]:
     """Create a PostgreSQL plugin configured for Docker services."""
-    config: dict[str, object] = {
+    config: FlextTypes.Core.Dict = {
         "database": {
             "host": "localhost",
             "port": 5434,  # Actual Docker container port (flext-postgres-test-1)
@@ -92,9 +92,9 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginEntity, dict[str, object
     return plugin, config
 
 
-def create_docker_redis_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
+def create_docker_redis_plugin() -> tuple[FlextPluginEntity, FlextTypes.Core.Dict]:
     """Create a Redis plugin configured for Docker services."""
-    config: dict[str, object] = {
+    config: FlextTypes.Core.Dict = {
         "redis": {
             "host": "localhost",
             "port": 6381,  # Actual Docker container port (flext-redis-test-1)
@@ -140,9 +140,9 @@ def create_docker_redis_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
     return plugin, config
 
 
-def create_docker_ldap_plugin() -> tuple[FlextPluginEntity, dict[str, object]]:
+def create_docker_ldap_plugin() -> tuple[FlextPluginEntity, FlextTypes.Core.Dict]:
     """Create an LDAP plugin configured for Docker services."""
-    config: dict[str, object] = {
+    config: FlextTypes.Core.Dict = {
         "ldap": {
             "server": "localhost",
             "port": 389,
@@ -230,8 +230,8 @@ def main() -> None:
     print("\nCreating Docker PostgreSQL plugin")
     postgres_plugin, postgres_config = create_docker_postgres_plugin()
 
-    cast("dict[str, object]", postgres_config["database"])
-    cast("dict[str, object]", postgres_config["monitoring"])
+    cast("FlextTypes.Core.Dict", postgres_config["database"])
+    cast("FlextTypes.Core.Dict", postgres_config["monitoring"])
 
     # Validate PostgreSQL plugin
     postgres_validation = postgres_plugin.validate_business_rules()
@@ -246,8 +246,8 @@ def main() -> None:
     print("Creating Docker Redis plugin")
     redis_plugin, redis_config = create_docker_redis_plugin()
 
-    cast("dict[str, object]", redis_config["cache"])
-    cast("dict[str, object]", redis_config["connection_pool"])
+    cast("FlextTypes.Core.Dict", redis_config["cache"])
+    cast("FlextTypes.Core.Dict", redis_config["connection_pool"])
 
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_business_rules()
@@ -262,8 +262,8 @@ def main() -> None:
     print("Creating Docker LDAP plugin")
     ldap_plugin, ldap_config = create_docker_ldap_plugin()
 
-    cast("dict[str, object]", ldap_config["ldap"])
-    cast("dict[str, object]", ldap_config["connection_pool"])
+    cast("FlextTypes.Core.Dict", ldap_config["ldap"])
+    cast("FlextTypes.Core.Dict", ldap_config["connection_pool"])
 
     # Validate LDAP plugin
     ldap_validation = ldap_plugin.validate_business_rules()

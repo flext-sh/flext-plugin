@@ -18,6 +18,7 @@ from flext_core import (
     FlextLogger,
     FlextModels,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from pydantic import Field, field_validator
@@ -32,12 +33,12 @@ class FlextPluginConfigParams:
     """Parameter Object pattern for FlextPluginConfig initialization - SOLID Single Responsibility."""
 
     plugin_name: str = ""
-    config_data: dict[str, object] | None = None
+    config_data: FlextTypes.Core.Dict | None = None
     created_at: FlextModels | None = None
     updated_at: FlextModels | None = None
     enabled: bool = True
-    settings: dict[str, object] | None = None
-    dependencies: list[str] | None = None
+    settings: FlextTypes.Core.Dict | None = None
+    dependencies: FlextTypes.Core.StringList | None = None
     priority: int = 100
     max_memory_mb: int = 512
     max_cpu_percent: int = 50
@@ -48,12 +49,12 @@ class FlextPluginMetadataParams:
     """Parameter Object pattern for FlextPluginMetadata initialization - SOLID Single Responsibility."""
 
     plugin_name: str = ""
-    metadata: dict[str, object] | None = None
+    metadata: FlextTypes.Core.Dict | None = None
     name: str = ""
     entry_point: str = ""
     plugin_type: object = ""
     description: str = ""
-    dependencies: list[str] | None = None
+    dependencies: FlextTypes.Core.StringList | None = None
     trusted: bool = False
     homepage: str | None = None
     repository: str | None = None
@@ -73,7 +74,7 @@ class FlextPluginRegistryParams:
     requires_authentication: bool = False
     api_key: str = ""
     verify_signatures: bool = False
-    trusted_publishers: list[str] | None = None
+    trusted_publishers: FlextTypes.Core.StringList | None = None
 
 
 class FlextPluginEntity(FlextModels):
@@ -170,7 +171,7 @@ class FlextPluginEntity(FlextModels):
         name: str,
         plugin_version: str,
         entity_id: str | None = None,
-        config: dict[str, object] | None = None,
+        config: FlextTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> FlextPluginEntity:
         """Create plugin entity with proper validation.
@@ -196,7 +197,7 @@ class FlextPluginEntity(FlextModels):
         plugin_name = kwargs.get("plugin_id", name)
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": final_id,
             "version": kwargs.get("entity_version", 1),  # FlextModels version
             "metadata": kwargs.get("metadata", {}),
@@ -366,6 +367,9 @@ class FlextPluginEntity(FlextModels):
         Args:
             error_message: Error message to record
 
+        Returns:
+            object: Description of return value.
+
         """
         # Get current error count
         current_error_count = getattr(self, "_error_count", 0)
@@ -401,7 +405,7 @@ class FlextPluginConfig(FlextModels):
         description="Name of the plugin this config belongs to",
         min_length=1,
     )
-    config_data: dict[str, object] = Field(
+    config_data: FlextTypes.Core.Dict = Field(
         default_factory=dict,
         description="Configuration data",
     )
@@ -419,11 +423,11 @@ class FlextPluginConfig(FlextModels):
         default=True,
         description="Whether plugin configuration is enabled",
     )
-    settings: dict[str, object] = Field(
+    settings: FlextTypes.Core.Dict = Field(
         default_factory=dict,
         description="Plugin settings",
     )
-    dependencies: list[str] = Field(
+    dependencies: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="Plugin dependencies",
     )
@@ -450,19 +454,23 @@ class FlextPluginConfig(FlextModels):
         else:
             p = FlextPluginConfigParams()
             p.plugin_name = plugin_name
-            p.config_data = cast("dict[str, object] | None", kwargs.get("config_data"))
+            p.config_data = cast(
+                "FlextTypes.Core.Dict | None", kwargs.get("config_data")
+            )
             p.created_at = cast("FlextModels | None", kwargs.get("created_at"))
             p.updated_at = cast("FlextModels | None", kwargs.get("updated_at"))
             p.enabled = cast("bool", kwargs.get("enabled", True))
-            p.settings = cast("dict[str, object] | None", kwargs.get("settings"))
-            p.dependencies = cast("list[str] | None", kwargs.get("dependencies"))
+            p.settings = cast("FlextTypes.Core.Dict | None", kwargs.get("settings"))
+            p.dependencies = cast(
+                "FlextTypes.Core.StringList | None", kwargs.get("dependencies")
+            )
             p.priority = cast("int", kwargs.get("priority", 100))
             p.max_memory_mb = cast("int", kwargs.get("max_memory_mb", 512))
             p.max_cpu_percent = cast("int", kwargs.get("max_cpu_percent", 50))
             p.timeout_seconds = cast("int", kwargs.get("timeout_seconds", 30))
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
@@ -491,11 +499,14 @@ class FlextPluginConfig(FlextModels):
         """
         return bool(self.plugin_name)
 
-    def update_config(self, new_config: dict[str, object]) -> None:
+    def update_config(self, new_config: FlextTypes.Core.Dict) -> None:
         """Update configuration data.
 
         Args:
             new_config: New configuration data
+
+        Returns:
+            object: Description of return value.
 
         """
         # Update mutable dict in place
@@ -524,11 +535,11 @@ class FlextPluginMetadata(FlextModels):
         default="",
         description="Name of the plugin this metadata belongs to",
     )
-    tags: list[str] = Field(
+    tags: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="Plugin tags for categorization",
     )
-    categories: list[str] = Field(
+    categories: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="Plugin categories",
     )
@@ -542,7 +553,7 @@ class FlextPluginMetadata(FlextModels):
     entry_point: str = Field(min_length=1, description="Plugin entry point")
     plugin_type: str = Field(default="", description="Plugin type")
     description: str = Field(default="", description="Plugin description")
-    dependencies: list[str] = Field(
+    dependencies: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="Plugin dependencies",
     )
@@ -576,12 +587,14 @@ class FlextPluginMetadata(FlextModels):
         else:
             p = FlextPluginMetadataParams()
             p.plugin_name = cast("str", kwargs.get("plugin_name", name))
-            p.metadata = cast("dict[str, object] | None", kwargs.get("metadata"))
+            p.metadata = cast("FlextTypes.Core.Dict | None", kwargs.get("metadata"))
             p.name = name
             p.entry_point = entry_point
             p.plugin_type = kwargs.get("plugin_type", "")
             p.description = cast("str", kwargs.get("description", ""))
-            p.dependencies = cast("list[str] | None", kwargs.get("dependencies"))
+            p.dependencies = cast(
+                "FlextTypes.Core.StringList | None", kwargs.get("dependencies")
+            )
             p.trusted = cast("bool", kwargs.get("trusted", False))
             p.homepage = cast("str | None", kwargs.get("homepage"))
             p.repository = cast("str | None", kwargs.get("repository"))
@@ -596,7 +609,7 @@ class FlextPluginMetadata(FlextModels):
         final_name = p.name or p.plugin_name
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -704,7 +717,7 @@ class FlextPluginRegistry(FlextModels):
         default=False,
         description="Whether to verify signatures",
     )
-    trusted_publishers: list[str] = Field(
+    trusted_publishers: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="List of trusted publishers",
     )
@@ -744,12 +757,12 @@ class FlextPluginRegistry(FlextModels):
             p.api_key = cast("str", kwargs.get("api_key", ""))
             p.verify_signatures = cast("bool", kwargs.get("verify_signatures", False))
             p.trusted_publishers = cast(
-                "list[str] | None",
+                "FlextTypes.Core.StringList | None",
                 kwargs.get("trusted_publishers"),
             )
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -898,11 +911,11 @@ class FlextPluginExecution(FlextModels):
         default=None,
         description="Error message (compatibility)",
     )
-    input_data: dict[str, object] = Field(
+    input_data: FlextTypes.Core.Dict = Field(
         default_factory=dict,
         description="Input data for execution",
     )
-    output_data: dict[str, object] = Field(
+    output_data: FlextTypes.Core.Dict = Field(
         default_factory=dict,
         description="Output data from execution",
     )
@@ -912,7 +925,7 @@ class FlextPluginExecution(FlextModels):
         cls,
         *,
         plugin_name: str = "",
-        execution_config: dict[str, object] | None = None,
+        execution_config: FlextTypes.Core.Dict | None = None,
         entity_id: str | None = None,
         **kwargs: object,
     ) -> FlextPluginExecution:
@@ -941,7 +954,7 @@ class FlextPluginExecution(FlextModels):
         input_data = kwargs.get("input_data", {})
 
         # Create instance data with all required fields including base entity fields
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": final_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
@@ -978,7 +991,7 @@ class FlextPluginExecution(FlextModels):
     def memory_usage_mb(self) -> float:
         """Get memory usage in MB from resource tracking."""
         resource_usage = cast(
-            "dict[str, object]",
+            "FlextTypes.Core.Dict",
             self.output_data.get("resource_usage", {}),
         )
         memory_value = resource_usage.get("memory_mb", 0.0)
@@ -1002,7 +1015,7 @@ class FlextPluginExecution(FlextModels):
     def cpu_time_ms(self) -> float:
         """Get CPU time in milliseconds from resource tracking."""
         resource_usage = cast(
-            "dict[str, object]",
+            "FlextTypes.Core.Dict",
             self.output_data.get("resource_usage", {}),
         )
         cpu_value = resource_usage.get("cpu_time_ms", 0.0)

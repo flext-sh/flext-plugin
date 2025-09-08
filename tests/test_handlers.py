@@ -25,6 +25,10 @@ Quality Standards:
     - NO MOCKS - only real objects and actual business logic
     - Enterprise-grade error handling validation
     - Complete edge case and boundary condition testing
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

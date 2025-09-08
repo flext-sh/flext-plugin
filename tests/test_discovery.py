@@ -26,6 +26,10 @@ Quality Standards:
     - NO MOCKS - only real file operations and actual business logic
     - Enterprise-grade error handling validation
     - Complete integration testing with real discovery scenarios
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -37,6 +41,7 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
+from flext_core import FlextTypes
 
 from flext_plugin.core.discovery import PluginDiscovery
 from flext_plugin.models import PluginType
@@ -210,7 +215,7 @@ class TestPluginDiscoveryReal:
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
-            METADATA: ClassVar[dict[str, str]] = {
+            METADATA: ClassVar[FlextTypes.Core.Headers] = {
                 "name": "valid-plugin",
                 "version": "1.0.0",
             }
@@ -224,7 +229,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> dict[str, object]:
+            def execute(self) -> FlextTypes.Core.Dict:
                 return {"status": "success"}
 
         # Register plugin
@@ -250,7 +255,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> dict[str, object]:
+            def execute(self) -> FlextTypes.Core.Dict:
                 return {"status": "success"}
 
         # Register plugin (should use class name)
@@ -588,7 +593,7 @@ class ExtraPlugin:
 
         # Register manual plugin
         class ManualPlugin:
-            METADATA: ClassVar[dict[str, str]] = {
+            METADATA: ClassVar[FlextTypes.Core.Headers] = {
                 "name": "manual-plugin",
                 "version": "3.0.0",
             }
@@ -602,7 +607,7 @@ class ExtraPlugin:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> dict[str, str]:
+            def execute(self) -> FlextTypes.Core.Headers:
                 return {"source": "manual"}
 
         discovery.register_plugin(ManualPlugin)

@@ -1,4 +1,8 @@
-"""Test suite for examples to ensure they work correctly and maintain 100% functionality."""
+"""Test suite for examples to ensure they work correctly and maintain 100% functionality.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -6,6 +10,8 @@ import asyncio
 import sys
 from pathlib import Path
 from typing import cast
+
+from flext_core import FlextTypes
 
 # Add examples directory to path BEFORE imports
 examples_path = Path(__file__).parent.parent / "examples"
@@ -35,7 +41,9 @@ from flext_plugin import (
 )
 
 
-async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+async def _run(
+    cmd_list: FlextTypes.Core.StringList, cwd: str | None = None
+) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
     process = await asyncio.create_subprocess_exec(
         *cmd_list,
@@ -221,9 +229,14 @@ def test_plugin_configuration_example_functionality() -> None:
 
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
-    routes = cast("dict[str, object]", standalone_config.config_data.get("routes", {}))
+    routes = cast(
+        "FlextTypes.Core.Dict", standalone_config.config_data.get("routes", {})
+    )
     assert len(routes) == 2
-    middleware = cast("list[str]", standalone_config.config_data.get("middleware", []))
+    middleware = cast(
+        "FlextTypes.Core.StringList",
+        standalone_config.config_data.get("middleware", []),
+    )
     assert "cors" in middleware
 
     # Test metadata creation

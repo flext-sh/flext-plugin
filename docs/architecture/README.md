@@ -227,7 +227,7 @@ The plugin management system operates as a distinct bounded context within the F
 class CreatePluginCommand:
     name: str
     version: str
-    config: dict[str, object]
+    config: FlextTypes.Core.Dict
 
 class ActivatePluginCommand:
     plugin_id: str

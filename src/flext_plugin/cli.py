@@ -2,26 +2,7 @@
 
 Enterprise-grade CLI implementation using Click framework with comprehensive
 plugin management capabilities. Follows SOLID principles and integrates
-with flext-core patterns for consistent error handling and logging.
-
-Key Commands:
-    - create: Create new plugin from template
-    - install: Install plugin from registry or file
-    - uninstall: Remove plugin from system
-    - list: List installed plugins
-    - validate: Validate plugin configuration
-    - watch: Monitor plugin directory for changes
-    - platform: Manage plugin platform
-
-Architecture:
-    Built using Click framework with command groups, consistent error handling
-    through flext-core FlextResult pattern, and integration with the plugin
-    platform for all operations.
-
-Example:
-    $ flext-plugin list --format json
-    $ flext-plugin create --name my-plugin --type tap
-    $ flext-plugin validate --all
+with flext-core patterns for co
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT

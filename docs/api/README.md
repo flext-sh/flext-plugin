@@ -130,8 +130,8 @@ class PluginExecutionResult:
 class PluginExecutionContext:
     plugin_id: str
     execution_id: str
-    input_data: dict[str, object]
-    context: dict[str, object]
+    input_data: FlextTypes.Core.Dict
+    context: FlextTypes.Core.Dict
     timeout_seconds: int | None
 ```
 
@@ -181,7 +181,7 @@ class FlextPlugin(FlextModels.Entity):
         *,
         name: str = "",
         version: str = "",
-        config: dict[str, object] | None = None,
+        config: FlextTypes.Core.Dict | None = None,
         metadata: object = None,
         **kwargs: object
     ):
@@ -221,14 +221,14 @@ class FlextPluginConfig(FlextModels.Entity):
     """Plugin configuration entity with update tracking."""
 
     plugin_id: str
-    config_data: dict[str, object]
+    config_data: FlextTypes.Core.Dict
     created_at: datetime
     updated_at: datetime
     version: str
 
     def update_config(
         self,
-        new_config: dict[str, object]
+        new_config: FlextTypes.Core.Dict
     ) -> FlextResult[bool]:
         """Update configuration with validation."""
 
@@ -254,13 +254,13 @@ class FlextPluginMetadata(FlextModels.Entity):
     """Plugin metadata entity with tags and additional information."""
 
     plugin_id: str
-    tags: list[str]
+    tags: FlextTypes.Core.StringList
     homepage_url: str
     repository_url: str
     documentation_url: str
     license: str
-    keywords: list[str]
-    dependencies: list[str]
+    keywords: FlextTypes.Core.StringList
+    dependencies: FlextTypes.Core.StringList
 
     def add_tag(self, tag: str) -> FlextResult[bool]:
         """Add tag to plugin metadata."""
@@ -271,7 +271,7 @@ class FlextPluginMetadata(FlextModels.Entity):
     def has_tag(self, tag: str) -> bool:
         """Check if plugin has specific tag."""
 
-    def update_urls(self, urls: dict[str, str]) -> FlextResult[bool]:
+    def update_urls(self, urls: FlextTypes.Core.Headers) -> FlextResult[bool]:
         """Update plugin URLs (homepage, repository, docs)."""
 ```
 
@@ -286,7 +286,7 @@ class FlextPluginRegistry(FlextModels.Entity):
     """Plugin registry aggregate managing collection of plugins."""
 
     plugins: dict[str, FlextPlugin]
-    discovery_paths: list[str]
+    discovery_paths: FlextTypes.Core.StringList
     last_discovery: datetime
 
     # Registration operations
@@ -319,7 +319,7 @@ class FlextPluginRegistry(FlextModels.Entity):
     # Discovery operations
     async def discover_plugins(
         self,
-        paths: list[str] | None = None
+        paths: FlextTypes.Core.StringList | None = None
     ) -> FlextResult[list[FlextPlugin]]:
         """Discover plugins in specified paths."""
 
@@ -327,10 +327,10 @@ class FlextPluginRegistry(FlextModels.Entity):
         """Refresh plugin discovery in all configured paths."""
 
     # Lifecycle operations
-    async def activate_all_plugins(self) -> FlextResult[list[str]]:
+    async def activate_all_plugins(self) -> FlextResult[FlextTypes.Core.StringList]:
         """Activate all registered plugins."""
 
-    async def deactivate_all_plugins(self) -> FlextResult[list[str]]:
+    async def deactivate_all_plugins(self) -> FlextResult[FlextTypes.Core.StringList]:
         """Deactivate all active plugins."""
 
     async def cleanup_all(self) -> None:
@@ -355,7 +355,7 @@ class FlextPluginService:
     # Plugin lifecycle management
     async def create_plugin(
         self,
-        config: dict[str, object]
+        config: FlextTypes.Core.Dict
     ) -> FlextResult[FlextPlugin]:
         """Create new plugin with validation."""
 
@@ -374,8 +374,8 @@ class FlextPluginService:
     async def execute_plugin(
         self,
         plugin_id: str,
-        data: dict[str, object],
-        context: dict[str, object] | None = None
+        data: FlextTypes.Core.Dict,
+        context: FlextTypes.Core.Dict | None = None
     ) -> FlextResult[PluginExecutionResult]:
         """Execute plugin with data and context."""
 
@@ -383,7 +383,7 @@ class FlextPluginService:
     async def get_plugin_info(
         self,
         plugin_id: str
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive plugin information."""
 
     async def get_plugin_status(
@@ -399,14 +399,14 @@ class FlextPluginService:
     async def update_plugin_config(
         self,
         plugin_id: str,
-        config: dict[str, object]
+        config: FlextTypes.Core.Dict
     ) -> FlextResult[bool]:
         """Update plugin configuration."""
 
     async def validate_plugin_config(
         self,
         plugin_id: str,
-        config: dict[str, object]
+        config: FlextTypes.Core.Dict
     ) -> FlextResult[bool]:
         """Validate plugin configuration."""
 ```
@@ -483,38 +483,38 @@ class FlextPluginHandler:
     # Command handling
     async def handle_create_plugin_command(
         self,
-        command: dict[str, object]
+        command: FlextTypes.Core.Dict
     ) -> FlextResult[FlextPlugin]:
         """Handle plugin creation command."""
 
     async def handle_activate_plugin_command(
         self,
-        command: dict[str, object]
+        command: FlextTypes.Core.Dict
     ) -> FlextResult[bool]:
         """Handle plugin activation command."""
 
     async def handle_deactivate_plugin_command(
         self,
-        command: dict[str, object]
+        command: FlextTypes.Core.Dict
     ) -> FlextResult[bool]:
         """Handle plugin deactivation command."""
 
     async def handle_execute_plugin_command(
         self,
-        command: dict[str, object]
+        command: FlextTypes.Core.Dict
     ) -> FlextResult[PluginExecutionResult]:
         """Handle plugin execution command."""
 
     # Query handling
     async def handle_get_plugin_query(
         self,
-        query: dict[str, object]
+        query: FlextTypes.Core.Dict
     ) -> FlextResult[FlextPlugin]:
         """Handle get plugin query."""
 
     async def handle_list_plugins_query(
         self,
-        query: dict[str, object]
+        query: FlextTypes.Core.Dict
     ) -> FlextResult[list[FlextPlugin]]:
         """Handle list plugins query."""
 ```
@@ -547,7 +547,7 @@ class FlextPluginRegistrationHandler:
     async def handle_bulk_register(
         self,
         plugins: list[FlextPlugin]
-    ) -> FlextResult[list[str]]:
+    ) -> FlextResult[FlextTypes.Core.StringList]:
         """Handle bulk plugin registration."""
 
     async def validate_registration(
@@ -590,7 +590,7 @@ class FlextPluginDiscoveryPort(Protocol):
     """Port for plugin discovery operations."""
 
     async def discover_plugins(self, path: str) -> FlextResult[list[FlextPlugin]]
-    async def scan_directory(self, directory: str) -> FlextResult[list[str]]
+    async def scan_directory(self, directory: str) -> FlextResult[FlextTypes.Core.StringList]
     async def validate_plugin(self, plugin_path: str) -> FlextResult[bool]
 ```
 
@@ -632,12 +632,12 @@ class HotReloadConfig:
     """Configuration for hot reload system."""
 
     enabled: bool = True
-    watch_paths: list[str] = []
+    watch_paths: FlextTypes.Core.StringList = []
     watch_interval: int = 2
     reload_on_change: bool = True
     preserve_state: bool = True
     rollback_on_error: bool = True
-    ignore_patterns: list[str] = ["*.pyc", "__pycache__"]
+    ignore_patterns: FlextTypes.Core.StringList = ["*.pyc", "__pycache__"]
 ```
 
 ## Usage Examples

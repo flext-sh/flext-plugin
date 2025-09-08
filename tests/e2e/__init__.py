@@ -9,4 +9,8 @@ Test Focus:
     - System-wide integration testing
     - Real-world scenario simulation
     - Performance and scalability testing
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """

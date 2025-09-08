@@ -5,52 +5,16 @@ configurations, and metadata objects. These functions serve as convenience
 wrappers around the domain entities, providing sensible defaults and
 simplified parameter interfaces for common plugin creation scenarios.
 
-The simple API abstracts the complexity of direct entity construction while
-maintaining full compatibility with the underlying domain model. All functions
-return properly initialized domain entities that integrate seamlessly with
-the broader FLEXT plugin management system.
-
-Key Functions:
-    - create_flext_plugin: Create plugin entities with configuration
-    - create_flext_plugin_config: Create plugin configuration entities
-    - create_flext_plugin_metadata: Create plugin metadata entities
-    - create_flext_plugin_registry: Create plugin registry collections
-
-Factory Patterns:
-    - Automatic ID generation using UUID4 for entity uniqueness
-    - Timestamp management for creation and modification tracking
-    - Default value handling for optional parameters
-    - Type validation and conversion for data integrity
-
-Example:
-    >>> from simple_api import create_flext_plugin
-    >>>
-    >>> # Create plugin with minimal configuration
-    >>> plugin = create_flext_plugin(
-    ...     name="data-processor",
-    ...     version="1.0.0",
-    ...     config={
-    ...         "description": "Processes data efficiently",
-    ...         "author": "FLEXT Team",
-    ...     },
-    ... )
-    >>> print(f"Created plugin: {plugin.name} v{plugin.plugin_version}")
-
-Integration:
-    - Built on domain entities for architectural consistency
-    - Provides backward compatibility through function aliases
-    - Supports dictionary-based plugin creation for external integration
-    - Maintains enterprise-grade validation and error handling
-
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+
+from flext_core import FlextTypes
 
 from .entities import (
     FlextPlugin,
@@ -65,7 +29,7 @@ def create_flext_plugin(
     name: str,
     version: str,
     *,
-    config: dict[str, object] | None = None,
+    config: FlextTypes.Core.Dict | None = None,
 ) -> FlextPlugin:
     """Create a new FlextPlugin entity with automatic ID generation and timestamps.
 
@@ -73,35 +37,6 @@ def create_flext_plugin(
     with automatic UUID generation and timestamp management. This function provides
     a simplified interface for plugin creation while ensuring all required fields
     are properly initialized and validated.
-
-    The function handles entity initialization complexity, providing sensible defaults
-    and proper integration with the domain model. All created plugins are ready for
-    registration and use within the FLEXT plugin management system.
-
-    Args:
-      name: Unique plugin identifier name, must be non-empty string
-      version: Plugin version string, should follow semantic versioning
-      config: Optional configuration dict containing:
-          - description: Human-readable plugin description
-          - author: Plugin developer or organization name
-          - dependencies: List of plugin dependencies
-          - metadata: Additional plugin metadata
-          - status: Plugin lifecycle status (defaults to INACTIVE)
-
-    Returns:
-      Fully initialized FlextPlugin domain entity with generated ID and timestamps
-
-    Example:
-      >>> plugin = create_flext_plugin(
-      ...     name="data-processor",
-      ...     version="1.2.0",
-      ...     config={
-      ...         "description": "Advanced data processing plugin",
-      ...         "author": "FLEXT Development Team",
-      ...         "dependencies": ["flext-core", "flext-db"],
-      ...     },
-      ... )
-      >>> print(f"Plugin {plugin.name} v{plugin.plugin_version} created")
 
     """
     config = config or {}
@@ -117,7 +52,7 @@ def create_flext_plugin(
 
 def create_flext_plugin_config(
     plugin_name: str,
-    config_data: dict[str, object] | None = None,
+    config_data: FlextTypes.Core.Dict | None = None,
 ) -> FlextPluginConfig:
     """Create a new FlextPluginConfig entity.
 
@@ -141,7 +76,7 @@ def create_flext_plugin_config(
 def create_flext_plugin_metadata(
     plugin_name: str,
     *,
-    metadata: dict[str, object] | None = None,
+    metadata: FlextTypes.Core.Dict | None = None,
     entry_point: str = "",
 ) -> FlextPluginMetadata:
     """Create a new FlextPluginMetadata entity.
@@ -191,53 +126,13 @@ def create_flext_plugin_registry(
     )
 
 
-def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
+def create_plugin_from_dict(plugin_data: FlextTypes.Core.Dict) -> FlextPlugin:
     """Create a FlextPlugin entity from dictionary data with comprehensive validation.
 
     Factory function that creates a FlextPlugin entity from dictionary input,
     providing comprehensive validation and type conversion. This function is
     particularly useful for creating plugins from external data sources such
     as configuration files, API responses, or serialized data.
-
-    The function performs robust validation of required fields, handles type
-    conversion where appropriate, and provides meaningful error messages for
-    debugging and troubleshooting plugin creation issues.
-
-    Args:
-      plugin_data: Dictionary containing plugin information with expected keys:
-          - name (required): Plugin identifier string
-          - version (required): Plugin version string
-          - description (optional): Human-readable description
-          - author (optional): Plugin developer or organization
-          - dependencies (optional): List of plugin dependencies
-          - metadata (optional): Additional metadata dictionary
-          - status (optional): Plugin status string (defaults to "inactive")
-
-    Returns:
-      Fully initialized FlextPlugin domain entity created from dictionary data
-
-    Raises:
-      KeyError: If required fields ('name' or 'version') are missing from input
-      ValueError: If plugin data is invalid, empty, or contains invalid values
-
-    Example:
-      >>> plugin_data = {
-      ...     "name": "oracle-connector",
-      ...     "version": "2.1.0",
-      ...     "description": "Oracle database connectivity plugin",
-      ...     "author": "FLEXT Team",
-      ...     "dependencies": ["cx_Oracle", "sqlalchemy"],
-      ...     "status": "inactive",
-      ... }
-      >>> plugin = create_plugin_from_dict(plugin_data)
-      >>> print(f"Created {plugin.name} from dictionary data")
-
-    Validation Process:
-      1. Required field validation (name, version)
-      2. Type conversion and normalization
-      3. Status enum validation with fallback
-      4. Configuration object assembly
-      5. Entity creation with proper error handling
 
     """
 
@@ -292,7 +187,7 @@ def create_plugin_from_dict(plugin_data: dict[str, object]) -> FlextPlugin:
 
 def create_plugin_config_from_dict(
     plugin_name: str,
-    config_dict: dict[str, object],
+    config_dict: FlextTypes.Core.Dict,
 ) -> FlextPluginConfig:
     """Create a FlextPluginConfig from dictionary data.
 

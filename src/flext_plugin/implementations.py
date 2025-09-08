@@ -13,12 +13,13 @@ from typing import Protocol, cast
 
 from flext_core import (
     FlextLogger,
+    FlextProtocols,
     FlextResult,
+    FlextTypes,
 )
-from flext_core.protocols import FlextProtocols
 from structlog.stdlib import BoundLogger
 
-from .entities import FlextPluginEntity
+from flext_plugin.entities import FlextPluginEntity
 
 
 # Define minimal protocols for types that don't exist in flext-core yet
@@ -82,7 +83,7 @@ class ConcretePlugin:
         self._entity = entity
         self._logger = FlextLogger(f"plugin.{name}")
         self._initialized = False
-        self._config: dict[str, object] = {}
+        self._config: FlextTypes.Core.Dict = {}
 
     @property
     def name(self) -> str:
@@ -94,7 +95,7 @@ class ConcretePlugin:
         """Get plugin version."""
         return self._version
 
-    def configure(self, config: dict[str, object]) -> FlextResult[None]:
+    def configure(self, config: FlextTypes.Core.Dict) -> FlextResult[None]:
         """Configure component with provided settings."""
         try:
             # Store configuration
@@ -104,7 +105,7 @@ class ConcretePlugin:
             self._logger.exception(f"Failed to configure plugin {self.name}")
             return FlextResult[None].fail(f"Configuration failed: {e!s}")
 
-    def get_config(self) -> dict[str, object]:
+    def get_config(self) -> FlextTypes.Core.Dict:
         """Get current configuration."""
         return getattr(self, "_config", {})
 
@@ -158,7 +159,7 @@ class ConcretePlugin:
             self._logger.exception(f"Failed to shutdown plugin {self.name}")
             return FlextResult[None].fail(f"Shutdown failed: {e!s}")
 
-    def get_info(self) -> dict[str, object]:
+    def get_info(self) -> FlextTypes.Core.Dict:
         """Get plugin information.
 
         Returns:
@@ -184,7 +185,7 @@ class ConcreteExecutablePlugin(ConcretePlugin):
         self,
         name: str,
         version: str,
-        operations: dict[str, object] | None = None,
+        operations: FlextTypes.Core.Dict | None = None,
         entity: FlextPluginEntity | None = None,
     ) -> None:
         """Initialize executable plugin.
@@ -232,7 +233,7 @@ class ConcreteExecutablePlugin(ConcretePlugin):
                 self._entity.record_error(str(e))
             return FlextResult[object].fail(f"Operation failed: {e!s}")
 
-    def get_supported_operations(self) -> list[str]:
+    def get_supported_operations(self) -> FlextTypes.Core.StringList:
         """Get list of supported operations.
 
         Returns:
@@ -253,7 +254,7 @@ class ConcreteDataPlugin(ConcretePlugin):
         self,
         name: str,
         version: str,
-        connection_config: dict[str, object] | None = None,
+        connection_config: FlextTypes.Core.Dict | None = None,
         entity: FlextPluginEntity | None = None,
     ) -> None:
         """Initialize data plugin.
@@ -318,7 +319,7 @@ class ConcreteTransformPlugin(ConcretePlugin):
         self,
         name: str,
         version: str,
-        schema: dict[str, object] | None = None,
+        schema: FlextTypes.Core.Dict | None = None,
         entity: FlextPluginEntity | None = None,
     ) -> None:
         """Initialize transform plugin.
@@ -348,7 +349,7 @@ class ConcreteTransformPlugin(ConcretePlugin):
             if not isinstance(data, dict):
                 return FlextResult[object].fail("Input data must be a dictionary")
             # Apply transformation based on schema
-            transformed: dict[str, object] = dict(cast("dict[str, object]", data))
+            transformed: FlextTypes.Core.Dict = dict(cast("FlextTypes.Core.Dict", data))
             transformed["_transformed_by"] = self._name
             transformed["_transform_version"] = self._version
             return FlextResult[object].ok(transformed)
@@ -378,8 +379,8 @@ class ConcretePluginContext:
     def __init__(
         self,
         logger: BoundLogger,
-        config: dict[str, object] | None = None,
-        services: dict[str, object] | None = None,
+        config: FlextTypes.Core.Dict | None = None,
+        services: FlextTypes.Core.Dict | None = None,
     ) -> None:
         """Initialize plugin context.
 
@@ -398,7 +399,7 @@ class ConcretePluginContext:
         """Get logger for plugin."""
         return self._logger
 
-    def get_config(self) -> dict[str, object]:
+    def get_config(self) -> FlextTypes.Core.Dict:
         """Get configuration for plugin."""
         return dict(self._config)
 
@@ -428,7 +429,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
 
     def __init__(self) -> None:
         """Initialize plugin registry."""
-        self._plugins: dict[str, object] = {}
+        self._plugins: FlextTypes.Core.Dict = {}
         self._logger = FlextLogger("plugin.registry")
 
     def register(self, plugin: object) -> FlextResult[None]:
@@ -478,7 +479,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
             return FlextResult[object].fail(f"Plugin {plugin_name} not found")
         return FlextResult[object].ok(self._plugins[plugin_name])
 
-    def list_plugins(self) -> list[str]:
+    def list_plugins(self) -> FlextTypes.Core.StringList:
         """List all registered plugin names.
 
         Returns:
@@ -499,6 +500,9 @@ class ConcretePluginLoader(FlextPluginLoader):
 
         Args:
             registry: Optional plugin registry to use
+
+        Returns:
+            object: Description of return value.
 
         """
         self._registry = registry or ConcretePluginRegistry()
@@ -532,7 +536,9 @@ class ConcretePluginLoader(FlextPluginLoader):
             self._logger.exception(f"Failed to load plugin from {plugin_path}")
             return FlextResult[object].fail(f"Load failed: {e!s}")
 
-    def discover_plugins(self, search_path: str) -> FlextResult[list[str]]:
+    def discover_plugins(
+        self, search_path: str
+    ) -> FlextResult[FlextTypes.Core.StringList]:
         """Discover available plugins in path.
 
         Args:
@@ -549,10 +555,12 @@ class ConcretePluginLoader(FlextPluginLoader):
                 f"{search_path}/plugin1",
                 f"{search_path}/plugin2",
             ]
-            return FlextResult[list[str]].ok(discovered)
+            return FlextResult[FlextTypes.Core.StringList].ok(discovered)
         except Exception as e:
             self._logger.exception(f"Plugin discovery failed in {search_path}")
-            return FlextResult[list[str]].fail(f"Discovery failed: {e!s}")
+            return FlextResult[FlextTypes.Core.StringList].fail(
+                f"Discovery failed: {e!s}"
+            )
 
 
 __all__ = [

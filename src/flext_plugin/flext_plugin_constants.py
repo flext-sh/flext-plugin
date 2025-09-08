@@ -2,6 +2,10 @@
 
 Centralized constants following flext-core patterns for consistency
 across the plugin ecosystem.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

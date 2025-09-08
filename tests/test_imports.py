@@ -26,6 +26,10 @@ Enterprise Standards:
     - Comprehensive module coverage for critical system components
     - Path management best practices for test isolation
     - Import validation patterns following Python testing standards
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

@@ -10,6 +10,10 @@ Strategy: Test all 6 factory functions comprehensively:
 - create_flext_plugin_registry: Plugin registry factory
 - create_plugin_from_dict: Dictionary-based plugin creation with validation
 - create_plugin_config_from_dict: Dictionary-based config creation
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -18,7 +22,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextModels
+from flext_core import FlextModels, FlextTypes
 
 from flext_plugin import (
     FlextPlugin,
@@ -54,7 +58,7 @@ class TestCreateFlextPlugin:
 
     def test_create_plugin_with_config(self) -> None:
         """Test plugin creation with configuration dictionary."""
-        config: dict[str, object] = {
+        config: FlextTypes.Core.Dict = {
             "description": "Test plugin description",
             "author": "Test Author",
             "dependencies": ["dep1", "dep2"],
@@ -116,7 +120,7 @@ class TestCreateFlextPlugin:
 
     def test_create_plugin_with_complex_config(self) -> None:
         """Test plugin creation with complex nested configuration."""
-        config: dict[str, object] = {
+        config: FlextTypes.Core.Dict = {
             "description": "Complex test plugin",
             "author": "FLEXT Team",
             "dependencies": ["flext-core", "flext-db"],
@@ -163,7 +167,7 @@ class TestCreateFlextPluginConfig:
 
     def test_create_config_with_data(self) -> None:
         """Test config creation with configuration data."""
-        config_data: dict[str, object] = {
+        config_data: FlextTypes.Core.Dict = {
             "setting1": "value1",
             "setting2": 42,
             "setting3": True,
@@ -226,7 +230,7 @@ class TestCreateFlextPluginMetadata:
 
     def test_create_metadata_with_dict(self) -> None:
         """Test metadata creation with metadata dictionary."""
-        metadata_dict: dict[str, object] = {
+        metadata_dict: FlextTypes.Core.Dict = {
             "version": "1.0.0",
             "description": "Test plugin",
             "author": "Test Author",
@@ -341,7 +345,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_minimal(self) -> None:
         """Test plugin creation from dictionary with minimal fields."""
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -375,7 +379,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_missing_name_fails(self) -> None:
         """Test plugin creation fails when name is missing."""
-        plugin_data: dict[str, object] = {"version": "1.0.0"}
+        plugin_data: FlextTypes.Core.Dict = {"version": "1.0.0"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -384,7 +388,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_empty_name_fails(self) -> None:
         """Test plugin creation fails when name is empty."""
-        plugin_data: dict[str, object] = {"name": "", "version": "1.0.0"}
+        plugin_data: FlextTypes.Core.Dict = {"name": "", "version": "1.0.0"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -393,7 +397,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_missing_version_fails(self) -> None:
         """Test plugin creation fails when version is missing."""
-        plugin_data: dict[str, object] = {"name": "test-plugin"}
+        plugin_data: FlextTypes.Core.Dict = {"name": "test-plugin"}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -402,7 +406,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_empty_version_fails(self) -> None:
         """Test plugin creation fails when version is empty."""
-        plugin_data: dict[str, object] = {"name": "test-plugin", "version": ""}
+        plugin_data: FlextTypes.Core.Dict = {"name": "test-plugin", "version": ""}
 
         with pytest.raises(ValueError) as exc_info:
             create_plugin_from_dict(plugin_data)
@@ -411,7 +415,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_valid_status(self) -> None:
         """Test plugin creation with valid status string."""
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
             "status": "active",
@@ -424,7 +428,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_invalid_status_defaults_to_inactive(self) -> None:
         """Test plugin creation with invalid status defaults to inactive."""
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
             "status": "invalid-status",
@@ -438,7 +442,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_no_status_defaults_to_inactive(self) -> None:
         """Test plugin creation without status defaults to inactive."""
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -467,7 +471,7 @@ class TestCreatePluginFromDict:
         """Test plugin creation handles RuntimeError and re-raises as ValueError."""
         # This would require mocking create_flext_plugin to raise RuntimeError
         # For now, we'll test the general exception handling structure
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -478,7 +482,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_handles_type_error(self) -> None:
         """Test plugin creation error handling for TypeError."""
-        plugin_data: dict[str, object] = {
+        plugin_data: FlextTypes.Core.Dict = {
             "name": "test-plugin",
             "version": "1.0.0",
         }
@@ -494,7 +498,7 @@ class TestCreatePluginConfigFromDict:
 
     def test_create_config_from_dict_success(self) -> None:
         """Test successful config creation from dictionary."""
-        config_dict: dict[str, object] = {
+        config_dict: FlextTypes.Core.Dict = {
             "setting1": "value1",
             "setting2": 42,
             "setting3": True,

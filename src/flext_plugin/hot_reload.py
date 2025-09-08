@@ -5,6 +5,8 @@ providing file system monitoring, automatic plugin reloading, and development
 workflow optimization. The system integrates with watchdog for reliable
 file system event detection and provides seamless plugin development experience.
 
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ from flext_core import (
     FlextLogger,
     FlextModels,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
@@ -36,7 +39,7 @@ from .loader import PluginLoader
 class StatefulPlugin(Protocol):
     """Protocol for plugins that support state management."""
 
-    async def get_state(self) -> dict[str, object]:
+    async def get_state(self) -> FlextTypes.Core.Dict:
         """Get plugin state as dictionary."""
         ...
 
@@ -83,8 +86,8 @@ class PluginState:
         self,
         plugin_id: str,
         plugin_version: str,
-        state_data: dict[str, object] | None = None,
-        metadata: dict[str, object] | None = None,
+        state_data: FlextTypes.Core.Dict | None = None,
+        metadata: FlextTypes.Core.Dict | None = None,
         saved_at: datetime | None = None,
     ) -> None:
         """Initialize plugin state.
@@ -142,6 +145,9 @@ class PluginWatcher:
         Args:
             watch_directories: List of directories to watch
 
+        Returns:
+            object: Description of return value.
+
         """
         self.watch_directories = watch_directories
         self._observer: BaseObserver | None = None
@@ -169,58 +175,13 @@ class StateManager:
         Args:
             state_directory: Directory for state storage
 
-        """
-        self.state_directory = state_directory
-        self.enable_persistence = True
-        # Ensure state directory exists
-        self.state_directory.mkdir(parents=True, exist_ok=True)
-
-    async def save_plugin_state(self, plugin: object) -> PluginState:
-        """Save plugin state.
-
-        Args:
-            plugin: Plugin instance to save state for
         Returns:
-            PluginState object with saved state
-
-        """
-        # Extract state from plugin
-        plugin_id = getattr(plugin, "name", "unknown")
-        plugin_version = getattr(plugin, "version", "1.0.0")
-        # Get plugin state if available
-        state_data: dict[str, object] = {}
-
-        # Check if plugin implements StatefulPlugin protocol
-        if hasattr(plugin, "get_state") and callable(
-            getattr(plugin, "get_state", None)
-        ):
-            stateful_plugin = cast("StatefulPlugin", plugin)
-            try:
-                # Plugin state returned as dict from protocol method
-                state_data = await stateful_plugin.get_state()
-            except Exception:
-                state_data = {}
-        else:
-            state_data = {}
-
-        return PluginState(
-            plugin_id=plugin_id,
-            plugin_version=plugin_version,
-            state_data=state_data,
-        )
-
-    async def create_snapshot(self, _description: str) -> str:
-        """Create a state snapshot.
-
-        Args:
-            description: Snapshot description
-        Returns:
-            Snapshot identifier
+            object: Description of return value.
 
         """
         return f"snapshot_{datetime.now(UTC).isoformat()}"
 
-    def list_snapshots(self) -> list[dict[str, object]]:
+    def list_snapshots(self) -> list[FlextTypes.Core.Dict]:
         """List available snapshots.
 
         Returns:
@@ -239,15 +200,6 @@ class RollbackManager:
         Args:
             state_manager: State manager instance
 
-        """
-        self.state_manager = state_manager
-
-    async def create_rollback_point(self, _plugin: object, _description: str) -> str:
-        """Create a rollback point.
-
-        Args:
-            plugin: Plugin instance
-            description: Rollback point description
         Returns:
             Rollback point identifier
 
@@ -273,34 +225,18 @@ class PluginFileHandler(FileSystemEventHandler):
     operations through callback mechanisms. Provides filtered event handling
     to focus on relevant plugin file modifications while ignoring temporary
     files and non-plugin changes.
-    The handler integrates with the watchdog file system monitoring system
-    to provide reliable change detection with comprehensive filtering and
-    validation of plugin-related file modifications.
-    Key Features:
-      - Plugin file change detection and filtering
-      - Callback-based reload triggering
-      - Temporary file filtering and validation
-      - Event debouncing for rapid file changes
-      - Integration with hot-reload management system
-    Example:
-      >>> def reload_plugin(path: Path):
-      ...     print(f"Reloading plugin: {path}")
-      >>>
-      >>> handler = PluginFileHandler(reload_callback=reload_plugin)
-      >>> # Handler will be used by watchdog Observer
     """
 
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
         """Initialize file system event handler with reload callback.
 
-        Sets up the event handler with the provided callback function that
-        will be invoked when relevant plugin file changes are detected.
-        The callback receives the Path of the modified plugin file.
-
         Args:
             reload_callback: Function to call when plugin files are modified.
                            Must accept a single Path parameter representing
                            the modified plugin file path.
+
+        Returns:
+            object: Description of return value.
 
         """
         super().__init__()
@@ -312,6 +248,9 @@ class PluginFileHandler(FileSystemEventHandler):
 
         Args:
             event: The file system event that occurred.
+
+        Returns:
+            object: Description of return value.
 
         """
         if event.is_directory:
@@ -336,9 +275,9 @@ class HotReloadManager(FlextModels):
         """Create hot reload manager instance with proper validation."""
         entity_id = str(kwargs.get("id", FlextUtilities.generate_entity_id()))
         version = cast("int", kwargs.get("version", 1))
-        metadata = cast("dict[str, object]", kwargs.get("metadata", {}))
+        metadata = cast("FlextTypes.Core.Dict", kwargs.get("metadata", {}))
         # Create instance using Pydantic model_validate to bypass __init__
-        instance_data: dict[str, object] = {
+        instance_data: FlextTypes.Core.Dict = {
             "id": entity_id,
             "version": version,
             "metadata": metadata,
@@ -364,7 +303,7 @@ class HotReloadManager(FlextModels):
         return getattr(self, "_observer", None)
 
     @property
-    def loaded_plugins(self) -> dict[str, object]:
+    def loaded_plugins(self) -> FlextTypes.Core.Dict:
         """Get loaded plugins dictionary."""
         return getattr(self, "_loaded_plugins", {})
 
@@ -402,11 +341,14 @@ class HotReloadManager(FlextModels):
         return FlextResult[None].ok(None)
 
     @override
-    def model_post_init(self, __context: dict[str, object] | None, /) -> None:
+    def model_post_init(self, __context: FlextTypes.Core.Dict | None, /) -> None:
         """Initialize model after creation.
 
         Args:
             __context: Pydantic context.
+
+        Returns:
+            object: Description of return value.
 
         """
         # Create simplified discovery to avoid abstract class instantiation
@@ -509,26 +451,56 @@ class HotReloadManager(FlextModels):
             logger = FlextLogger(__name__)
             logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
 
-    def get_loaded_plugins(self) -> dict[str, object]:
+    def get_loaded_plugins(self) -> FlextTypes.Core.Dict:
         """Get a copy of currently loaded plugins.
 
         Returns:
             Dictionary of loaded plugins keyed by plugin name.
 
-        """
-        return self.loaded_plugins.copy()
+        Returns:
+            ReloadEvent with success/failure information
 
-    async def reload_all_plugins(self) -> None:
-        """Reload all currently loaded plugins."""
-        # Unload all
-        loaded_plugins = getattr(self, "_loaded_plugins", {})
-        for plugin_name in list(loaded_plugins.keys()):
-            await self._unload_plugin(plugin_name)
-        # Reload all
-        await self._initial_plugin_load()
+        Returns:
+            ReloadEvent with success/failure information
 
-    async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
-        """Reload a specific plugin by ID and return a reload event.
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
+
+        Returns:
+            ReloadEvent with success/failure information
 
         Args:
             plugin_id: The plugin identifier to reload

@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 from .entities import FlextPluginConfig, FlextPluginEntity
 
@@ -184,7 +184,7 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
 
     def search_plugins(
         self, registry: str, query: str
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Search for plugins in a specific registry.
 
         Args:
@@ -226,7 +226,9 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
 class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
     """Domain port interface for plugin hot reload operations."""
 
-    def start_watching(self, watch_paths: list[str]) -> FlextResult[bool]:
+    def start_watching(
+        self, watch_paths: FlextTypes.Core.StringList
+    ) -> FlextResult[bool]:
         """Start watching for plugin file changes.
 
         Args:
@@ -259,7 +261,9 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
         """
         raise NotImplementedError
 
-    def backup_plugin_state(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+    def backup_plugin_state(
+        self, plugin_name: str
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Backup plugin state before reload.
 
         Args:
@@ -274,7 +278,7 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
     def restore_plugin_state(
         self,
         plugin_name: str,
-        state: dict[str, object],
+        state: FlextTypes.Core.Dict,
     ) -> FlextResult[bool]:
         """Restore plugin state after reload.
 

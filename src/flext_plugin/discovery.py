@@ -4,6 +4,10 @@ This module implements the core layer plugin discovery functionality,
 providing sophisticated plugin scanning, metadata extraction, and plugin
 classification capabilities. The discovery system serves as the foundation
 for plugin management operations throughout the FLEXT ecosystem.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -16,6 +20,7 @@ from flext_core import (
     FlextLogger,
     FlextModels,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from pydantic import Field
@@ -31,11 +36,11 @@ class PluginDiscovery(FlextModels.Entity):
         default="/usr/local/plugins",
         description="Primary plugin directory path",
     )
-    plugin_directories: list[str] = Field(
+    plugin_directories: FlextTypes.Core.StringList = Field(
         default_factory=list,
         description="Additional plugin directories to scan",
     )
-    discovered_plugins: dict[str, object] = Field(
+    discovered_plugins: FlextTypes.Core.Dict = Field(
         default_factory=dict,
         description="Cache of discovered plugins",
         exclude=True,
@@ -51,7 +56,7 @@ class PluginDiscovery(FlextModels.Entity):
         *,
         entity_id: str | None = None,
         plugin_directory: str = "/usr/local/plugins",
-        plugin_directories: list[str] | None = None,
+        plugin_directories: FlextTypes.Core.StringList | None = None,
         **_kwargs: object,
     ) -> None:
         """Initialize plugin discovery system."""
@@ -92,20 +97,20 @@ class PluginDiscovery(FlextModels.Entity):
             # Modify the list in place (mutable object)
             self.plugin_directories.append(directory_str)
 
-    async def discover_all(self) -> dict[str, object]:
+    async def discover_all(self) -> FlextTypes.Core.Dict:
         """Discover all plugins from configured directories."""
         await self._discover_entry_points()
         await self._discover_file_system()
         return self.discovered_plugins
 
-    async def discover_by_type(self, plugin_type: PluginType) -> dict[str, object]:
+    async def discover_by_type(self, plugin_type: PluginType) -> FlextTypes.Core.Dict:
         """Discover plugins by type."""
         all_plugins = await self.discover_all()
         return {
             name: plugin
             for name, plugin in all_plugins.items()
             if isinstance(plugin, dict)
-            and cast("dict[str, object]", plugin).get("type") == plugin_type
+            and cast("FlextTypes.Core.Dict", plugin).get("type") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:
@@ -223,6 +228,6 @@ class PluginDiscovery(FlextModels.Entity):
 
 
 # Removed mock classes - use real implementations in tests
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "PluginDiscovery",
 ]

@@ -29,6 +29,10 @@ Clean Architecture Compliance:
     - Real service implementations following ports pattern
     - Actual infrastructure operations for plugin management
     - Authentic error handling and business rules validation
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -37,7 +41,7 @@ from pathlib import Path
 from typing import override
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.handlers import (
@@ -104,9 +108,9 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         """Stop the loader service."""
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[dict[str, object]]:
+    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Check service health."""
-        return FlextResult[dict[str, object]].ok({"status": "healthy"})
+        return FlextResult[FlextTypes.Core.Dict].ok({"status": "healthy"})
 
 
 class TestFlextPluginHandler:
@@ -324,7 +328,7 @@ class LifecyclePlugin:
         self.name = "lifecycle-plugin"
         self.version = "1.0.0"
 
-    def execute(self) -> dict[str, str]:
+    def execute(self) -> FlextTypes.Core.Headers:
         return {"status": "success", "message": "Plugin executed successfully"}
 ''')
 

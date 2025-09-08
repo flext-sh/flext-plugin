@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from .discovery import PluginDiscovery
 from .entities import FlextPluginConfig, FlextPluginEntity
@@ -62,9 +62,9 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[dict[str, object]]:
+    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.discovery.plugin_directory,
@@ -178,9 +178,9 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[dict[str, object]]:
+    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
@@ -283,9 +283,9 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[dict[str, object]]:
+    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,

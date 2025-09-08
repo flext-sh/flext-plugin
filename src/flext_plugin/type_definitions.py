@@ -2,6 +2,10 @@
 
 Type variables, protocols, and type aliases following flext-core patterns
 for consistent typing across the plugin ecosystem.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -9,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from typing import TypeVar
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 # =============================================================================
 # PLUGIN SYSTEM TYPE VARIABLES
@@ -83,7 +87,9 @@ ExecutionId = str
 
 # Core data type definition using forward-compatible typing
 # Use typing.Union for better Pydantic compatibility
-PluginConfigData = str | int | float | bool | dict[str, object] | list[object] | None
+PluginConfigData = (
+    str | int | float | bool | FlextTypes.Core.Dict | FlextTypes.Core.List | None
+)
 
 # Configuration type aliases
 PluginConfigDict = dict[str, PluginConfigData]
@@ -108,7 +114,7 @@ FileChangeCallback = Callable[[str], Awaitable[None]]
 
 # Result type aliases
 PluginResult = FlextResult[object]
-PluginListResult = FlextResult[list[object]]
+PluginListResult = FlextResult[FlextTypes.Core.List]
 PluginBoolResult = FlextResult[bool]
 PluginDataResult = FlextResult[PluginConfigData]
 PluginStringResult = FlextResult[str]
@@ -123,14 +129,14 @@ ExecutionInputDict = dict[str, PluginConfigData]
 ExecutionOutputDict = dict[str, PluginConfigData]
 
 # Discovery type aliases
-DiscoveryPathList = list[str]
+DiscoveryPathList = FlextTypes.Core.StringList
 DiscoveryPattern = str
 DiscoveryFilters = dict[str, PluginConfigData]
 
 # Platform type aliases
 PlatformConfig = dict[str, PluginConfigData]
-PlatformServices = dict[str, object]
-PlatformHandlers = dict[str, object]
+PlatformServices = FlextTypes.Core.Dict
+PlatformHandlers = FlextTypes.Core.Dict
 
 # =============================================================================
 # UNION TYPES

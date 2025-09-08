@@ -13,10 +13,10 @@ Docker Usage:
 """
 
 from __future__ import annotations
+from flext_core import FlextTypes
 
 import sys
 from typing import cast
-
 from flext_plugin import (
     PluginType,
     create_flext_plugin,
@@ -25,7 +25,7 @@ from flext_plugin import (
 )
 
 
-def create_database_plugin_config() -> dict[str, object]:
+def create_database_plugin_config() -> FlextTypes.Core.Dict:
     """Create configuration for a database plugin."""
     return {
         "database": {
@@ -55,7 +55,7 @@ def create_database_plugin_config() -> dict[str, object]:
     }
 
 
-def create_ldap_plugin_config() -> dict[str, object]:
+def create_ldap_plugin_config() -> FlextTypes.Core.Dict:
     """Create configuration for an LDAP plugin."""
     return {
         "ldap": {
@@ -102,7 +102,7 @@ def main() -> None:
     )
 
     print(f"Database plugin: {db_plugin.name} v{db_plugin.plugin_version}")
-    cast("dict[str, object]", db_config["database"])
+    cast("FlextTypes.Core.Dict", db_config["database"])
 
     # 2. Create LDAP plugin with service configuration
     ldap_config = create_ldap_plugin_config()
@@ -120,7 +120,7 @@ def main() -> None:
     )
 
     print(f"LDAP plugin: {ldap_plugin.name} v{ldap_plugin.plugin_version}")
-    cast("dict[str, object]", ldap_config["ldap"])
+    cast("FlextTypes.Core.Dict", ldap_config["ldap"])
 
     # 3. Create standalone plugin configuration entity
     standalone_config = create_flext_plugin_config(

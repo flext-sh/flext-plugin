@@ -22,6 +22,10 @@ Quality Patterns:
     - Edge case testing for invalid inputs and boundary conditions
     - Integration testing with realistic plugin scenarios
     - Performance validation for critical path operations
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

@@ -1,6 +1,16 @@
-"""Version management for FLEXT Plugin System."""
+"""Version management for FLEXT Plugin System.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
+from flext_core import FlextTypes
 
 try:
     __version__: str = _pkg_version("flext-plugin")
@@ -18,7 +28,7 @@ RELEASE_NAME: str = "Plugin Foundation"
 RELEASE_DATE: str = "2025-08-25"
 BUILD_TYPE: str = "stable"
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "BUILD_TYPE",
     "RELEASE_DATE",
     "RELEASE_NAME",

@@ -1,10 +1,12 @@
 """FLEXT Plugin System - Enterprise-grade plugin management for FLEXT ecosystem.
 
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+from flext_core import FlextTypes
+
 
 # ruff: noqa: F403
 # Import all from each module following flext-core pattern
@@ -36,4 +38,4 @@ from flext_plugin.typings import *
 
 # Note: __all__ is constructed dynamically at runtime from imported modules
 # This pattern is necessary for library aggregation but causes pyright warnings
-__all__: list[str] = []
+__all__: FlextTypes.Core.StringList = []

@@ -422,7 +422,7 @@ from flext_core import FlextResult
 def create_singer_tap_plugin(
     name: str,
     version: str,
-    tap_config: dict[str, object]
+    tap_config: FlextTypes.Core.Dict
 ) -> FlextResult[FlextPlugin]:
     """Create Singer tap plugin with validation."""
     try:

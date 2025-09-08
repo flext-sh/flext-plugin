@@ -9,4 +9,8 @@ Test Utilities:
     - Common test data and configuration samples
     - Shared testing utilities and helpers
     - Enterprise-grade fixture management
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """

@@ -15,10 +15,12 @@ CLASSES QUE NÃO EXISTEM (removidas dos testes):
 - ❌ PluginSecurityService (NÃO EXISTE)
 - ❌ PluginValidationService (NÃO EXISTE)
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
 
 Este arquivo foi corrigido para refletir a REALIDADE do código, não fantasias.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

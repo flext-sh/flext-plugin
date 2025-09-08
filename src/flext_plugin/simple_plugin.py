@@ -5,38 +5,8 @@ rapid plugin development and prototyping. The simple plugin system
 offers a lightweight alternative to the full domain entity system
 while maintaining compatibility and integration capabilities.
 
-The simple plugin system is designed for scenarios where full domain
-modeling complexity is not required but integration with the broader
-FLEXT plugin management system is still desired.
-
-Key Components:
-    - Plugin: Lightweight base class for simple plugin implementations
-    - SimplePluginManager: Basic plugin management and lifecycle
-    - Integration utilities for FLEXT ecosystem compatibility
-
-Use Cases:
-    - Rapid prototyping and development
-    - Simple plugin implementations without complex domain logic
-    - Educational and demonstration purposes
-    - Integration with legacy plugin systems
-
-Example:
-    >>> from simple_plugin import Plugin
-    >>>
-    >>> class MyPlugin(Plugin):
-    ...     def execute(self):
-    ...         return f"Plugin {self.name} executing"
-    >>>
-    >>> plugin = MyPlugin("my-plugin")
-    >>> result = plugin.activate()
-    >>> if result.success():
-    ...     print("Plugin activated successfully")
-
-Integration:
-    - Compatible with FLEXT plugin management system
-    - Uses flext-core FlextResult patterns for consistency
-    - Provides upgrade path to full domain entities
-    - Supports comprehensive testing and validation
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 
 """
 
@@ -44,7 +14,7 @@ from __future__ import annotations
 
 import importlib
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 
 class Plugin:
@@ -139,7 +109,7 @@ class PluginRegistry:
         """Get a plugin by name."""
         return self.plugins.get(name)
 
-    def list_plugins(self) -> list[str]:
+    def list_plugins(self) -> FlextTypes.Core.StringList:
         """List all registered plugins."""
         return list(self.plugins.keys())
 

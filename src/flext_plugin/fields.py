@@ -2,6 +2,10 @@
 
 Centralized field definitions following flext-core patterns for
 consistent validation and serialization across the plugin ecosystem.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -9,6 +13,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
+from flext_core import FlextTypes
 from pydantic import Field
 
 from .flext_plugin_constants import (
@@ -106,7 +111,7 @@ PluginRuntimeDataField = Annotated[
 
 # List Fields
 PluginTagsField = Annotated[
-    list[str],
+    FlextTypes.Core.StringList,
     Field(
         default_factory=list,
         max_length=20,
@@ -116,7 +121,7 @@ PluginTagsField = Annotated[
 ]
 
 PluginDependenciesField = Annotated[
-    list[str],
+    FlextTypes.Core.StringList,
     Field(
         default_factory=list,
         max_length=50,
@@ -126,7 +131,7 @@ PluginDependenciesField = Annotated[
 ]
 
 PluginKeywordsField = Annotated[
-    list[str],
+    FlextTypes.Core.StringList,
     Field(
         default_factory=list,
         max_length=30,
@@ -136,7 +141,7 @@ PluginKeywordsField = Annotated[
 ]
 
 PluginMaintainersField = Annotated[
-    list[str],
+    FlextTypes.Core.StringList,
     Field(
         default_factory=list,
         max_length=10,
@@ -146,11 +151,13 @@ PluginMaintainersField = Annotated[
 ]
 
 PluginErrorsField = Annotated[
-    list[str], Field(default_factory=list, description="List of error messages")
+    FlextTypes.Core.StringList,
+    Field(default_factory=list, description="List of error messages"),
 ]
 
 PluginsAffectedField = Annotated[
-    list[str], Field(default_factory=list, description="List of affected plugin names")
+    FlextTypes.Core.StringList,
+    Field(default_factory=list, description="List of affected plugin names"),
 ]
 
 # Boolean Fields

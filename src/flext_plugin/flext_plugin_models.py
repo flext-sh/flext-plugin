@@ -8,13 +8,11 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
-from __future__ import annotations
-
 import re
 from datetime import datetime
 from enum import StrEnum
 
-from flext_core import FlextModels
+from flext_core import FlextModels, FlextTypes
 from pydantic import ConfigDict, Field, field_validator
 
 from .flext_plugin_constants import (
@@ -116,10 +114,10 @@ class FlextPluginModels(FlextModels.Entity):
         auto_start: bool = Field(
             default=False, description="Whether to automatically start the plugin"
         )
-        dependencies: list[str] = Field(
+        dependencies: FlextTypes.Core.StringList = Field(
             default_factory=list, description="List of plugin dependencies"
         )
-        tags: list[str] = Field(
+        tags: FlextTypes.Core.StringList = Field(
             default_factory=list, description="Plugin tags for categorization"
         )
         config: dict[str, PluginConfigData] = Field(
@@ -158,8 +156,10 @@ class FlextPluginModels(FlextModels.Entity):
             default=None, description="Plugin documentation URL"
         )
         license: str | None = Field(default=None, description="Plugin license")
-        keywords: list[str] = Field(default_factory=list, description="Plugin keywords")
-        maintainers: list[str] = Field(
+        keywords: FlextTypes.Core.StringList = Field(
+            default_factory=list, description="Plugin keywords"
+        )
+        maintainers: FlextTypes.Core.StringList = Field(
             default_factory=list, description="Plugin maintainers"
         )
         platform_version: str | None = Field(
@@ -271,7 +271,7 @@ class FlextPluginModels(FlextModels.Entity):
 
         operation: str = Field(..., description="Operation name")
         success: bool = Field(default=False, description="Whether operation succeeded")
-        plugins_affected: list[str] = Field(
+        plugins_affected: FlextTypes.Core.StringList = Field(
             default_factory=list, description="List of affected plugin names"
         )
         execution_time_ms: float = Field(
@@ -280,7 +280,7 @@ class FlextPluginModels(FlextModels.Entity):
         details: dict[str, PluginConfigData] = Field(
             default_factory=dict, description="Additional operation details"
         )
-        errors: list[str] = Field(
+        errors: FlextTypes.Core.StringList = Field(
             default_factory=list, description="List of error messages"
         )
         completed_at: datetime = Field(
