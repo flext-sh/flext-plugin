@@ -45,7 +45,9 @@ class FlextPluginCliService:
         self._config = FlextCliConfig()
         self._plugin_handler = PluginCLI()
 
-    def handle_result(self, result: FlextResult[object], success_msg: str = "") -> FlextResult[str]:
+    def handle_result(
+        self, result: FlextResult[object], success_msg: str = ""
+    ) -> FlextResult[str]:
         """Handle FlextResult with flext-cli output patterns."""
         if result.is_failure:
             self._cli_api.display_error(f"Plugin operation failed: {result.error}")
@@ -59,21 +61,33 @@ class FlextPluginCliService:
         """Create plugin CLI interface using flext-cli patterns."""
         main_cli = FlextCliMain(
             name="flext-plugin",
-            description="FLEXT Plugin Management CLI - Enterprise plugin management system"
+            description="FLEXT Plugin Management CLI - Enterprise plugin management system",
         )
 
         # Register plugin command groups
-        create_result = main_cli.register_command_group("create", self._create_plugin_commands)
+        create_result = main_cli.register_command_group(
+            "create", self._create_plugin_commands
+        )
         if create_result.is_failure:
-            return FlextResult[FlextCliMain].fail(f"Create commands registration failed: {create_result.error}")
+            return FlextResult[FlextCliMain].fail(
+                f"Create commands registration failed: {create_result.error}"
+            )
 
-        list_result = main_cli.register_command_group("list", self._create_list_commands)
+        list_result = main_cli.register_command_group(
+            "list", self._create_list_commands
+        )
         if list_result.is_failure:
-            return FlextResult[FlextCliMain].fail(f"List commands registration failed: {list_result.error}")
+            return FlextResult[FlextCliMain].fail(
+                f"List commands registration failed: {list_result.error}"
+            )
 
-        platform_result = main_cli.register_command_group("platform", self._create_platform_commands)
+        platform_result = main_cli.register_command_group(
+            "platform", self._create_platform_commands
+        )
         if platform_result.is_failure:
-            return FlextResult[FlextCliMain].fail(f"Platform commands registration failed: {platform_result.error}")
+            return FlextResult[FlextCliMain].fail(
+                f"Platform commands registration failed: {platform_result.error}"
+            )
 
         return FlextResult[FlextCliMain].ok(main_cli)
 
@@ -85,7 +99,7 @@ class FlextPluginCliService:
                 description="Create a new plugin from template",
                 handler=self._handle_create_plugin,
                 arguments=["name", "plugin_type", "meta", "output_dir"],
-                output_format="json"
+                output_format="json",
             )
         }
         return FlextResult[dict].ok(commands)
@@ -129,7 +143,7 @@ class FlextPluginCliService:
                 name="plugins",
                 description="List available plugins",
                 handler=self._handle_list_plugins,
-                output_format="table"
+                output_format="table",
             )
         }
         return FlextResult[dict].ok(commands)
@@ -146,7 +160,7 @@ class FlextPluginCliService:
                 name="status",
                 description="Show platform status",
                 handler=self._handle_platform_status,
-                output_format="json"
+                output_format="json",
             )
         }
         return FlextResult[dict].ok(commands)
@@ -177,12 +191,7 @@ def install_plugin_legacy(plugin_name: str, registry: str = "", file: str = "") 
     FlextPluginCliService()
 
 
-__all__ = [
-    "FlextPluginCliService",
-    "PluginCLI",
-    "install_plugin_legacy",
-    "main"
-]
+__all__ = ["FlextPluginCliService", "PluginCLI", "install_plugin_legacy", "main"]
 
 
 if __name__ == "__main__":

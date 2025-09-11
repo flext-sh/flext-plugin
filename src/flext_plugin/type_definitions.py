@@ -15,10 +15,6 @@ from typing import TypeVar
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 
-# =============================================================================
-# PLUGIN SYSTEM TYPE VARIABLES
-# =============================================================================
-
 # Plugin-specific type variables
 TPlugin = TypeVar("TPlugin")  # Generic plugin type
 TPluginConfig = TypeVar("TPluginConfig")  # Plugin configuration type
@@ -42,13 +38,9 @@ TPluginValidator = TypeVar("TPluginValidator")  # Plugin validator type
 TPluginPlatform = TypeVar("TPluginPlatform")  # Plugin platform type
 TPluginSystem = TypeVar("TPluginSystem")  # Plugin system type
 
-# =============================================================================
-# PLUGIN PROTOCOLS
-# =============================================================================
-
 
 # Use flext-core plugin protocol instead of local definition
-PluginProtocol = FlextProtocols.Plugin
+PluginProtocol = FlextProtocols.Extensions.Plugin
 
 
 # Plugin execution uses Application Handler pattern
@@ -74,10 +66,6 @@ PluginValidatorProtocol = FlextProtocols.Validator
 # Hot reload uses Infrastructure Service pattern
 HotReloadProtocol = FlextProtocols.Service
 
-
-# =============================================================================
-# TYPE ALIASES
-# =============================================================================
 
 # Basic type aliases
 PluginName = str
@@ -138,9 +126,6 @@ PlatformConfig = dict[str, PluginConfigData]
 PlatformServices = FlextTypes.Core.Dict
 PlatformHandlers = FlextTypes.Core.Dict
 
-# =============================================================================
-# UNION TYPES
-# =============================================================================
 
 # Plugin data unions
 # PluginConfigData is now defined earlier in TYPE ALIASES section
@@ -156,9 +141,6 @@ PluginPathOrUrl = PluginPath | PluginUrl
 # Result unions
 PluginOperationResult = PluginResult | PluginBoolResult | PluginStringResult
 
-# =============================================================================
-# GENERIC ALIASES
-# =============================================================================
 
 # Generic plugin container
 PluginContainer = dict[str, TPlugin]
@@ -239,7 +221,6 @@ __all__ = [
     "PluginUrl",
     "PluginValidatorProtocol",
     "PluginVersion",
-    # Type Variables
     "TPlugin",
     "TPluginConfig",
     "TPluginContext",

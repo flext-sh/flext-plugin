@@ -448,7 +448,7 @@ EOF
 
 # Run quality checks
 ruff check .          # Linting
-mypy .               # Type checking
+mypy .
 pytest               # Testing
 bandit -r .          # Security scanning
 ```

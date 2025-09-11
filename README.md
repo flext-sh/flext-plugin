@@ -125,7 +125,7 @@ make validate              # Full validation pipeline
 make check                 # Quick lint + type check
 make test                  # Run all tests (85% coverage target)
 make lint                  # Code linting
-make type-check            # Type checking
+make type-check
 make format                # Code formatting
 make security              # Security scanning
 ```

@@ -65,7 +65,6 @@ from .type_definitions import (
     PluginUrl,
     PluginValidatorProtocol,
     PluginVersion,
-    # Type Variables
     TPlugin,
     TPluginConfig,
     TPluginContext,
@@ -139,7 +138,6 @@ __all__ = [
     "PluginManagerResult",
     "PluginManagerResultModel",
     "PluginMetadataDict",
-    # Type aliases (from types.py)
     "PluginName",
     "PluginNameList",
     "PluginPath",
@@ -156,7 +154,6 @@ __all__ = [
     "PluginUrl",
     "PluginValidatorProtocol",
     "PluginVersion",
-    # Type variables (from types.py)
     "TPlugin",
     "TPluginConfig",
     "TPluginContext",

@@ -315,21 +315,18 @@ class HotReloadManager(FlextModels):
     @property
     def state_manager(self) -> StateManager:
         """Get state manager instance, creating it if needed."""
-        # Simple approach: just create and return without caching on frozen model
         state_dir = Path(self.plugin_directory) / ".flext_state"
         return StateManager(state_directory=state_dir)
 
     @property
     def rollback_manager(self) -> RollbackManager:
         """Get rollback manager instance, creating it if needed."""
-        # Simple approach: just create and return without caching on frozen model
         state_mgr = self.state_manager  # This will create state manager if needed
         return RollbackManager(state_manager=state_mgr)
 
     @property
     def watcher(self) -> PluginWatcher:
         """Get plugin watcher instance, creating it if needed."""
-        # Simple approach: just create and return without caching on frozen model
         watch_dirs = [Path(self.plugin_directory)]
         return PluginWatcher(watch_directories=watch_dirs)
 

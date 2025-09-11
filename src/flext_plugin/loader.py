@@ -117,7 +117,6 @@ class PluginLoader(FlextModels):
                     spec_msg
                 )  # Early return for type narrowing
 
-            # Type narrowing: spec is not None after check
             if spec.loader is None:
                 loader_msg: str = f"No loader available for {file_path}"
                 _handle_import_error(loader_msg)

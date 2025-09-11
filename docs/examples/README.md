@@ -108,7 +108,7 @@ async def test_plugin_activation(platform):
 
 ```
 examples/
-├── basic-plugin/              # Simple plugin implementation
+├── basic-plugin/            
 │   ├── plugin.py             # Plugin class definition
 │   ├── config.json           # Plugin configuration
 │   ├── test_plugin.py        # Unit tests

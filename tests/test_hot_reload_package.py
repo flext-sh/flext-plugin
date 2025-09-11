@@ -57,7 +57,7 @@ class TestPluginStateReal:
 
         assert state.plugin_id == "real-test-plugin"
         assert state.plugin_version == "1.0.0"
-        # Type-safe state data access
+
         config_data = state.state_data.get("config", {})
         runtime_data = state.state_data.get("runtime", {})
         assert isinstance(config_data, dict)
@@ -101,7 +101,7 @@ class TestPluginStateReal:
 
         assert state.plugin_id == "complex-plugin"
         assert state.plugin_version == "2.1.0"
-        # Type-safe nested data access
+
         config = state.state_data.get("configuration", {})
         runtime = state.state_data.get("runtime", {})
         assert isinstance(config, dict)

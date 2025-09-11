@@ -346,7 +346,7 @@ from flext_plugin.platform import _InternalPlatformManager
 │          Domain Layer                   │  # entities.py, ports.py
 │   (Plugin Business Logic, DDD)          │  # value_objects.py
 ├─────────────────────────────────────────┤
-│           Core Layer                    │  # types.py, discovery.py
+│           Core Layer                    │
 │    (Plugin Types, Base Patterns)        │  # error handling
 ├─────────────────────────────────────────┤
 │        Foundation Layer                 │  # flext-core integration

@@ -8,7 +8,6 @@ from __future__ import annotations
 from flext_core import FlextTypes
 
 
-# ruff: noqa: F403
 # Import all from each module following flext-core pattern
 from flext_plugin.__version__ import *
 from flext_plugin.cli import *
