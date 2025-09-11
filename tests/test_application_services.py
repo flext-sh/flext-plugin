@@ -1064,7 +1064,7 @@ class TestRealPluginIntegrationWorkflow:
         plugin_files = list(temp_plugin_dir.glob("*.py"))
         assert len(plugin_files) == 4  # Our real plugins
 
-        # Step 2: Load tap plugin and execute real workflow
+        # Step 2: Load tap plugin and Execute workflow
         tap_file = temp_plugin_dir / "tap_database.py"
         tap_plugin = real_plugin_loader.load_plugin(tap_file)
 
