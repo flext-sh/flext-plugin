@@ -24,7 +24,7 @@ logger = FlextLogger(__name__)
 
 
 class PluginCLI:
-    """CLI handler with platform integration"""
+    """CLI handler with platform integration."""
 
     def __init__(self) -> None:
         """Initialize CLI with plugin platform."""

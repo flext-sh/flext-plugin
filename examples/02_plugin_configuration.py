@@ -13,10 +13,12 @@ Docker Usage:
 """
 
 from __future__ import annotations
-from flext_core import FlextTypes
 
 import sys
 from typing import cast
+
+from flext_core import FlextTypes
+
 from flext_plugin import (
     PluginType,
     create_flext_plugin,
