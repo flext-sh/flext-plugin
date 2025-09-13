@@ -3,20 +3,6 @@
 This test module provides comprehensive validation of application services functionality
 using REAL plugin discovery, loading, and execution without ANY mocks.
 
-Testing Strategy - REAL FUNCTIONALITY ONLY:
-    - FlextPluginService: REAL plugin management with actual Python file loading
-    - FlextPluginDiscoveryService: REAL plugin discovery using PluginDiscovery from src/
-    - Plugin Loading: REAL Python module loading using PluginLoader from src/
-    - Plugin Execution: REAL plugin execution with actual method calls
-    - Service Integration: REAL integration testing with actual domain entities
-
-Quality Standards:
-    - 100% code coverage through REAL functionality testing
-    - NO MOCKS - only real plugins, real loading, real execution
-    - Enterprise-grade error handling validation
-    - Complete integration testing with real plugin files and execution
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -59,6 +45,8 @@ def temp_plugin_dir() -> Generator[Path]:
 
 class DatabaseTapPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "database-tap"
         self.version = "1.0.0"
         self.plugin_type = "tap"
@@ -94,6 +82,8 @@ def get_plugin():
 
 class WarehouseTargetPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "warehouse-target"
         self.version = "2.0.0"
         self.plugin_type = "target"
@@ -132,6 +122,8 @@ def get_plugin():
 
 class DataProcessorPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "data-processor"
         self.version = "1.5.0"
         self.plugin_type = "processor"
@@ -172,6 +164,8 @@ def get_plugin():
 
 class ErrorPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "error-plugin"
         self.version = "0.1.0"
         self.should_fail = False
@@ -1306,9 +1300,12 @@ class TestRealPluginErrorScenarios:
         # Create malformed plugin file
         bad_plugin_file = temp_plugin_dir / "bad_syntax_plugin.py"
         bad_plugin_file.write_text("""
+
 # This file has syntax errors
 class BadPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "bad-plugin"
         # Missing closing quote and other syntax errors
         self.data = "unclosed string

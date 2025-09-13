@@ -109,6 +109,8 @@ def real_plugin_directory() -> Generator[Path]:
 
 class DatabaseTapPlugin:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "database-tap"
         self.version = "1.0.0"
         self.plugin_type = "tap"
@@ -131,6 +133,8 @@ def get_plugin():
 
 class WarehouseTargetPlugin:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "warehouse-target"
         self.version = "1.0.0"
         self.plugin_type = "target"
@@ -156,6 +160,8 @@ def get_plugin():
 
 class TransformProcessorPlugin:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "transform-processor"
         self.version = "1.0.0"
         self.plugin_type = "processor"

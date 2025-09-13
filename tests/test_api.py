@@ -1,17 +1,5 @@
 """Coverage-focused test suite for flext_plugin.simple_api module.
 
-This test module focuses on maximizing code coverage for the simple API
-factory functions by testing all branches, error conditions, and edge cases.
-
-Strategy: Test all 6 factory functions comprehensively:
-- create_flext_plugin: Main plugin factory with config handling
-- create_flext_plugin_config: Plugin configuration factory
-- create_flext_plugin_metadata: Plugin metadata factory
-- create_flext_plugin_registry: Plugin registry factory
-- create_plugin_from_dict: Dictionary-based plugin creation with validation
-- create_plugin_config_from_dict: Dictionary-based config creation
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

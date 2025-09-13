@@ -1,24 +1,5 @@
 """REAL tests for flext_plugin domain ports - APENAS classes que EXISTEM.
 
-Este módulo testa APENAS as interfaces de domínio que REALMENTE existem no
-flext_plugin, não classes imaginárias. Focamos em validar contratos reais
-das interfaces de domínio seguindo a arquitetura limpa.
-
-CLASSES QUE EXISTEM E PODEM SER TESTADAS:
-- ✅ PluginDiscoveryService (existe)
-
-CLASSES QUE NÃO EXISTEM (removidas dos testes):
-- ❌ PluginExecutionService (NÃO EXISTE)
-- ❌ PluginHotReloadService (NÃO EXISTE)
-- ❌ PluginLifecycleService (NÃO EXISTE)
-- ❌ PluginRegistryService (NÃO EXISTE)
-- ❌ PluginSecurityService (NÃO EXISTE)
-- ❌ PluginValidationService (NÃO EXISTE)
-
-
-Este arquivo foi corrigido para refletir a REALIDADE do código, não fantasias.
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

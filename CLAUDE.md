@@ -13,19 +13,22 @@
 ### ⛔ ABSOLUTELY FORBIDDEN (IMMEDIATE TERMINATION POLICIES)
 
 #### 1. **Plugin System Violations**
+
 - **FORBIDDEN**: Direct plugin loading without FlextPluginPlatform
 - **FORBIDDEN**: Custom plugin discovery implementations
 - **FORBIDDEN**: Plugin lifecycle management outside domain entities
 - **FORBIDDEN**: Manual plugin state management bypassing FlextPluginRegistry
 - **MANDATORY**: ALL plugin operations MUST use FlextPluginPlatform
 
-#### 2. **Plugin Architecture Violations** 
+#### 2. **Plugin Architecture Violations**
+
 - **FORBIDDEN**: Plugin business logic mixed with infrastructure code
 - **FORBIDDEN**: Direct file system operations outside discovery protocols
 - **FORBIDDEN**: Plugin configuration outside FlextPluginConfig entities
 - **MANDATORY**: Use Clean Architecture layers for ALL plugin operations
 
 #### 3. **Enterprise Plugin Security Violations**
+
 - **FORBIDDEN**: Plugin execution without validation
 - **FORBIDDEN**: Custom plugin isolation mechanisms
 - **FORBIDDEN**: Plugin secrets in plain text or unsafe storage
@@ -34,6 +37,7 @@
 ## 🏛️ ENTERPRISE PLUGIN ARCHITECTURE (CLEAN ARCHITECTURE + DDD AUTHORITY)
 
 ### **Zero Tolerance Plugin Quality Requirements**
+
 ```bash
 # MANDATORY before ANY plugin development
 make validate                   # Complete pipeline: 100% type safety + 85% coverage + zero security issues
@@ -45,6 +49,7 @@ make test-plugin              # Execute comprehensive plugin test suite
 ### **Production Plugin Management Configuration (MANDATORY)**
 
 #### Enterprise Plugin Platform (FLEXT AUTHORITY)
+
 ```python
 from flext_plugin import FlextPluginPlatform, FlextPluginConfig
 from flext_core import FlextContainer
@@ -76,6 +81,7 @@ if registration_result.success:
 ### **Plugin Discovery & Lifecycle Management (PRODUCTION PATTERNS)**
 
 #### Enterprise Plugin Discovery (Clean Architecture)
+
 ```python
 from flext_plugin import (
     FlextPluginDiscoveryService,
@@ -113,6 +119,7 @@ if discovery_result.success:
 ### **Plugin Hot Reload System (ENTERPRISE AUTOMATION)**
 
 #### Production Hot Reload Management
+
 ```python
 from flext_plugin import FlextPluginHotReloadManager
 
@@ -139,6 +146,7 @@ await hot_reload_manager.start_monitoring()
 ### **Plugin Security Framework (PRODUCTION REQUIREMENTS)**
 
 #### Plugin Validation & Sandboxing
+
 ```python
 from flext_plugin import FlextPluginSecurity, PluginSecurityLevel
 
@@ -160,6 +168,7 @@ if security_result.success:
 ```
 
 ### **Plugin Data Protection (ENTERPRISE COMPLIANCE)**
+
 - **Plugin Isolation**: All plugins executed in secure sandboxes
 - **Data Encryption**: Plugin data encrypted at rest and in transit
 - **Access Control**: Role-based plugin access via FlextAuth integration
@@ -168,17 +177,19 @@ if security_result.success:
 ## 🔧 ENTERPRISE PLUGIN DEVELOPMENT COMMANDS (ZERO TOLERANCE WORKFLOWS)
 
 ### **Mandatory Plugin Quality Gates (ZERO ERRORS TOLERANCE)**
+
 ```bash
 # MANDATORY: Complete plugin system validation pipeline
 make validate                   # 100% type safety + 85% coverage + zero security vulnerabilities
 make plugin-validate           # Enterprise plugin system integrity validation
-make plugin-discovery          # Plugin discovery mechanisms verification  
+make plugin-discovery          # Plugin discovery mechanisms verification
 make test-plugin               # Production plugin functionality validation
 make test-hot-reload           # Hot-reload system validation with real file operations
 make security                  # Bandit + pip-audit: zero security vulnerabilities
 ```
 
 ### **Plugin System Quality Standards (PRODUCTION REQUIREMENTS)**
+
 ```bash
 # Type Safety & Code Quality (ZERO TOLERANCE)
 make type-check                # MyPy strict mode: zero errors across all plugin modules
@@ -194,6 +205,7 @@ make coverage-html             # Detailed HTML coverage report generation
 ```
 
 ### **Plugin CLI Operations (ENTERPRISE PLUGIN MANAGEMENT)**
+
 ```bash
 # Enterprise Plugin CLI Commands
 flext-plugin create --name enterprise-extension --type EXTENSION
@@ -211,13 +223,14 @@ flext-plugin backup --plugins-state /backup/plugins-$(date +%Y%m%d)
 ```
 
 ### **Plugin Development Workflow (CLEAN ARCHITECTURE)**
+
 ```bash
 # Environment Setup
 make setup                     # Complete plugin development environment
 make install                   # Install all enterprise dependencies
 make deps-update               # Update plugin dependencies securely
 
-# Plugin System Operations  
+# Plugin System Operations
 make plugin-operations         # Complete plugin system validation
 make plugin-test               # Test plugin platform with real scenarios
 make diagnose                  # Complete plugin system diagnostics and health check
@@ -228,6 +241,7 @@ make diagnose                  # Complete plugin system diagnostics and health c
 ### **Plugin System Integration Layers (PRODUCTION SEPARATION)**
 
 #### 1. **Domain Layer (Plugin Business Logic)**
+
 ```python
 # Plugin domain entities with business rules
 from flext_plugin import (
@@ -241,7 +255,8 @@ from flext_plugin import (
 ```
 
 #### 2. **Application Layer (Plugin Use Cases)**
-```python  
+
+```python
 # Plugin application services and handlers
 from flext_plugin import (
     FlextPluginService,             # Core plugin service
@@ -252,6 +267,7 @@ from flext_plugin import (
 ```
 
 #### 3. **Infrastructure Layer (Plugin Platform)**
+
 ```python
 # Plugin platform and infrastructure services
 from flext_plugin import (
@@ -262,6 +278,7 @@ from flext_plugin import (
 ```
 
 #### 4. **Interface Layer (CLI & APIs)**
+
 ```python
 # Plugin interfaces and CLI operations
 from flext_plugin import (
@@ -272,13 +289,14 @@ from flext_plugin import (
 ```
 
 ### **Plugin Configuration Architecture (ENTERPRISE PATTERNS)**
+
 ```python
 # MANDATORY: Enterprise plugin configuration structure
 from flext_plugin import FlextPluginConfig
 
 enterprise_config = FlextPluginConfig(
     name="enterprise-extension",
-    version="0.9.0", 
+    version="0.9.0",
     plugin_type=PluginType.EXTENSION,
     author="FLEXT Enterprise",
     dependencies=["flext-core>=0.9.0", "flext-api>=0.9.0"],
@@ -297,6 +315,7 @@ enterprise_config = FlextPluginConfig(
 ```
 
 ### **Plugin Exception Architecture (COMPREHENSIVE ERROR HANDLING)**
+
 ```python
 # Complete plugin system error hierarchy
 from flext_plugin import (
@@ -312,6 +331,7 @@ from flext_plugin import (
 ## 📦 FLEXT ECOSYSTEM INTEGRATION (MANDATORY PLUGIN DEPENDENCIES)
 
 ### **FLEXT Foundation Dependencies (ENTERPRISE PLUGIN INTEGRATION)**
+
 ```python
 # MANDATORY: Core FLEXT patterns for plugin system
 from flext_core import (
@@ -321,7 +341,7 @@ from flext_core import (
     FlextConfig,             # Configuration management for plugin settings
 )
 
-# MANDATORY: Enterprise API patterns for plugin integrations  
+# MANDATORY: Enterprise API patterns for plugin integrations
 from flext_api import (
     FlextApiClient,          # Base API client patterns for plugin APIs
     FlextApiAuth,            # Enterprise authentication for plugin access
@@ -345,6 +365,7 @@ from flext_config import (
 ### **Plugin System Import Standards (ZERO TOLERANCE ENFORCEMENT)**
 
 #### ✅ **MANDATORY: Always Use These Plugin Patterns**
+
 ```python
 # CORRECT: Root-level plugin imports ONLY
 from flext_plugin import FlextPluginPlatform
@@ -357,6 +378,7 @@ plugin_result: FlextResult[FlextPlugin] = await platform.register_plugin(config)
 ```
 
 #### ❌ **ABSOLUTELY FORBIDDEN: These Plugin Import Patterns**
+
 ```python
 # FORBIDDEN: Internal plugin module imports
 from flext_plugin.domain.entities import FlextPlugin          # ❌ VIOLATION
@@ -374,6 +396,7 @@ class MyPluginManager: pass                                  # ❌ VIOLATION (us
 ## 🔍 PLUGIN SYSTEM QUALITY REQUIREMENTS (ENTERPRISE STANDARDS)
 
 ### **Plugin Type Safety (100% COMPLIANCE MANDATORY)**
+
 ```python
 # MANDATORY: All plugin operations must be typed
 async def register_plugin(
@@ -382,8 +405,8 @@ async def register_plugin(
     security_level: PluginSecurityLevel = PluginSecurityLevel.HIGH,
 ) -> FlextResult[FlextPlugin]:
     """Register plugin with complete type safety."""
-    
-# MANDATORY: Use FlextResult for ALL plugin operations  
+
+# MANDATORY: Use FlextResult for ALL plugin operations
 result = await platform.register_plugin(plugin_config)
 if result.success:
     plugin: FlextPlugin = result.value
@@ -393,6 +416,7 @@ else:
 ```
 
 ### **Plugin Security Framework (COMPREHENSIVE PROTECTION)**
+
 ```python
 # MANDATORY: Use plugin security framework
 from flext_plugin import FlextPluginSecurity, PluginSecurityLevel
@@ -415,6 +439,7 @@ except FlextPluginExecutionError as e:
 ### **Domain-Driven Plugin Design (MANDATORY PATTERNS)**
 
 #### Enterprise Plugin Service Layer
+
 ```python
 # MANDATORY: Clean Architecture separation for plugin services
 from flext_plugin import (
@@ -427,16 +452,16 @@ from flext_core import FlextResult, get_logger
 
 class EnterprisePluginOrchestrator:
     """Domain service orchestrating plugin operations."""
-    
+
     def __init__(self, platform: FlextPluginPlatform):
         self.platform = platform
         self.plugin_service = FlextPluginService(platform)
         self.discovery_service = FlextPluginDiscoveryService()
         self.hot_reload_mgr = FlextPluginHotReloadManager(platform)
         self.logger = get_logger(__name__)
-    
+
     async def orchestrate_plugin_lifecycle(
-        self, 
+        self,
         plugin_path: str
     ) -> FlextResult[PluginLifecycleResult]:
         """Orchestrate complete plugin lifecycle in enterprise environment."""
@@ -444,19 +469,20 @@ class EnterprisePluginOrchestrator:
         discovery_result = await self.discovery_service.discover_plugin(plugin_path)
         if discovery_result.is_failure:
             return FlextResult.fail(f"Plugin discovery failed: {discovery_result.error}")
-        
+
         # Step 2: Validate plugin security
         plugin_config = discovery_result.value
         security_result = await self.platform.validate_plugin_security(plugin_config)
         if security_result.is_failure:
             return FlextResult.fail(f"Security validation failed: {security_result.error}")
-        
+
         # Step 3: Register and activate plugin
         registration_result = await self.platform.register_plugin(plugin_config)
         return registration_result
 ```
 
 #### Plugin Configuration Patterns (ENTERPRISE SECURITY)
+
 ```python
 # MANDATORY: Enterprise plugin configuration with secrets management
 from flext_plugin import FlextPluginConfig, PluginType, PluginSecurityLevel
@@ -464,19 +490,19 @@ from flext_core import FlextSecretManager
 
 class PluginConfigurationService:
     """Enterprise plugin configuration management."""
-    
+
     @classmethod
     async def create_production_plugin_config(cls, plugin_name: str) -> FlextPluginConfig:
         """Create production plugin configuration."""
         secret_manager = FlextSecretManager()
-        
+
         return FlextPluginConfig(
             name=plugin_name,
             version="0.9.0",
-            
+
             # Plugin classification
             plugin_type=PluginType.EXTENSION,
-            
+
             # Enterprise security requirements
             security_level=PluginSecurityLevel.HIGH,
             security_requirements={
@@ -485,7 +511,7 @@ class PluginConfigurationService:
                 "file_system_access": "read-only",
                 "allowed_imports": ["flext_core", "flext_api", "flext_observability"]
             },
-            
+
             # Enterprise monitoring
             monitoring={
                 "enable_metrics": True,
@@ -493,12 +519,12 @@ class PluginConfigurationService:
                 "enable_health_checks": True,
                 "enable_audit_logging": True
             },
-            
+
             # Production settings
             enable_hot_reload=True,
             enable_rollback=True,
             max_execution_time=300,  # 5 minutes for production operations
-            
+
             # Dependencies
             dependencies=[
                 "flext-core>=0.9.0",
@@ -511,6 +537,7 @@ class PluginConfigurationService:
 ### **Plugin Testing Patterns (ENTERPRISE VALIDATION)**
 
 #### Integration Testing with Real Plugin Operations
+
 ```python
 # MANDATORY: Real plugin integration testing
 import pytest
@@ -524,19 +551,20 @@ async def test_plugin_system_integration():
     """Test real plugin system operations."""
     # Use test plugin platform instance
     platform = await PluginTestEnvironment.create_test_platform()
-    
+
     # Test plugin registration
     plugin_config = await PluginConfigurationService.create_test_plugin_config()
     registration_result = await platform.register_plugin(plugin_config)
     assert registration_result.success
     assert registration_result.value.status == PluginStatus.ACTIVE
-    
+
     # Test plugin execution
     execution_result = await platform.execute_plugin(registration_result.value)
     assert execution_result.success
 ```
 
 #### Hot-Reload Testing with Real File Operations
+
 ```python
 # MANDATORY: Real hot-reload testing without mocks
 @pytest.mark.hot_reload
@@ -546,16 +574,16 @@ async def test_plugin_hot_reload_complete_workflow():
     async with PluginHotReloadTestEnvironment() as test_env:
         platform = test_env.platform
         hot_reload_manager = test_env.hot_reload_manager
-        
+
         # Create initial plugin file
         plugin_path = await test_env.create_test_plugin("test_plugin.py")
-        
+
         # Start hot-reload monitoring
         await hot_reload_manager.start_monitoring([plugin_path.parent])
-        
+
         # Modify plugin file and verify hot-reload
         await test_env.modify_plugin_file(plugin_path)
-        
+
         # Verify plugin was reloaded automatically
         reload_result = await hot_reload_manager.wait_for_reload(timeout=5)
         assert reload_result.success
@@ -565,6 +593,7 @@ async def test_plugin_hot_reload_complete_workflow():
 ## 🎯 PLUGIN SYSTEM CRITICAL SUCCESS METRICS (ENTERPRISE KPIS)
 
 ### **Production Readiness Requirements (ZERO TOLERANCE)**
+
 - **Type Safety**: 100% MyPy compliance across all plugin system modules
 - **Test Coverage**: 85% minimum with real plugin operations testing
 - **Security Compliance**: Zero security vulnerabilities in plugin execution
@@ -573,6 +602,7 @@ async def test_plugin_hot_reload_complete_workflow():
 - **Error Handling**: 100% of plugin operations handled via FlextResult patterns
 
 ### **Plugin System Health Metrics**
+
 ```bash
 # MANDATORY: Health monitoring commands
 make plugin-validate          # Plugin system integrity validation
@@ -584,6 +614,7 @@ make test-hot-reload         # Hot-reload system health validation
 ## ⚡ PERFORMANCE OPTIMIZATION (ENTERPRISE PLUGIN SYSTEM)
 
 ### **Plugin System Performance Optimization**
+
 - **Plugin Loading**: Optimized plugin discovery and loading mechanisms
 - **Hot Reload Efficiency**: Intelligent file watching with minimal resource usage
 - **Plugin Sandboxing**: Efficient security isolation without performance penalties
@@ -593,6 +624,7 @@ make test-hot-reload         # Hot-reload system health validation
 ## 📋 ENTERPRISE PLUGIN INTEGRATION CHECKLIST
 
 ### **Pre-Development Validation (MANDATORY)**
+
 ```bash
 # REQUIRED: Execute BEFORE any plugin development
 □ make validate                    # Zero errors across all quality gates
@@ -603,6 +635,7 @@ make test-hot-reload         # Hot-reload system health validation
 ```
 
 ### **Development Standards Compliance**
+
 ```bash
 # REQUIRED: During plugin development
 □ 100% type safety (MyPy strict mode)
@@ -614,6 +647,7 @@ make test-hot-reload         # Hot-reload system health validation
 ```
 
 ### **Production Deployment Readiness**
+
 ```bash
 # REQUIRED: Before production
 □ Enterprise plugin platform configuration validated
@@ -641,18 +675,21 @@ make test-hot-reload         # Hot-reload system health validation
 ## 🔗 RELATED FLEXT ECOSYSTEM PROJECTS
 
 ### **Core Dependencies (MANDATORY)**
+
 - **flext-core**: Foundation patterns, FlextResult, logging, DI container
 - **flext-api**: Enterprise API client patterns and authentication
 - **flext-observability**: Plugin monitoring, tracing, and alerting
 - **flext-config**: Centralized plugin configuration management
 
 ### **Singer/Meltano Integration Projects**
-- **flext-tap-***: Singer tap plugins (data extraction)
-- **flext-target-***: Singer target plugins (data loading)
-- **flext-dbt-***: dbt transformation plugins
+
+- **flext-tap-\***: Singer tap plugins (data extraction)
+- **flext-target-\***: Singer target plugins (data loading)
+- **flext-dbt-\***: dbt transformation plugins
 - **flext-meltano**: Meltano project configuration integration
 
 ### **Enterprise Platform Integration**
+
 - **flext-auth**: Enterprise authentication for plugin access
 - **flext-quality**: Quality gates and plugin validation framework
 - **flext-security**: Enterprise security framework for plugin sandboxing

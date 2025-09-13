@@ -32,8 +32,8 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
-from .discovery import PluginDiscovery
-from .loader import PluginLoader
+from flext_plugin.discovery import PluginDiscovery
+from flext_plugin.loader import PluginLoader
 
 
 class StatefulPlugin(Protocol):
@@ -179,6 +179,16 @@ class StateManager:
             object: Description of return value.
 
         """
+        self.state_directory = state_directory
+        self._snapshots: list[FlextTypes.Core.Dict] = []
+
+    def create_snapshot(self) -> str:
+        """Create a new snapshot.
+
+        Returns:
+            Snapshot identifier.
+
+        """
         return f"snapshot_{datetime.now(UTC).isoformat()}"
 
     def list_snapshots(self) -> list[FlextTypes.Core.Dict]:
@@ -202,6 +212,16 @@ class RollbackManager:
 
         Returns:
             Rollback point identifier
+
+        """
+        self.state_manager = state_manager
+        self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
+
+    def create_rollback_point(self) -> str:
+        """Create a new rollback point.
+
+        Returns:
+            Rollback point identifier.
 
         """
         return f"rollback_{datetime.now(UTC).isoformat()}"
@@ -454,50 +474,11 @@ class HotReloadManager(FlextModels):
         Returns:
             Dictionary of loaded plugins keyed by plugin name.
 
-        Returns:
-            ReloadEvent with success/failure information
+        """
+        return dict(self.loaded_plugins)
 
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
-
-        Returns:
-            ReloadEvent with success/failure information
+    async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
+        """Reload a specific plugin by ID.
 
         Args:
             plugin_id: The plugin identifier to reload

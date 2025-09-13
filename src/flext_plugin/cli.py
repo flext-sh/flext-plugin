@@ -6,7 +6,6 @@ with flext-core patterns for co
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
@@ -16,8 +15,8 @@ import sys
 from flext_cli import FlextCliApi, FlextCliConfig, FlextCliMain
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
-from .flext_plugin_models import PluginType
-from .flext_plugin_platform import FlextPluginPlatform
+from flext_plugin.flext_plugin_models import PluginType
+from flext_plugin.flext_plugin_platform import FlextPluginPlatform
 
 # Initialize logger
 logger = FlextLogger(__name__)
@@ -91,7 +90,7 @@ class FlextPluginCliService:
 
         return FlextResult[FlextCliMain].ok(main_cli)
 
-    def _create_plugin_commands(self) -> FlextResult[dict]:
+    def _create_plugin_commands(self) -> FlextResult[dict[str, object]]:
         """Create plugin creation commands using flext-cli patterns."""
         commands = {
             "plugin": self._cli_api.create_command(
@@ -102,9 +101,9 @@ class FlextPluginCliService:
                 output_format="json",
             )
         }
-        return FlextResult[dict].ok(commands)
+        return FlextResult[dict[str, object]].ok(commands)
 
-    def _handle_create_plugin(self, args: dict) -> FlextResult[str]:
+    def _handle_create_plugin(self, args: dict[str, object]) -> FlextResult[str]:
         """Handle plugin creation command."""
         name = args.get("name")
         if not name:
@@ -136,7 +135,7 @@ class FlextPluginCliService:
             f"Plugin '{name}' created successfully in {output_dir}",
         )
 
-    def _create_list_commands(self) -> FlextResult[dict]:
+    def _create_list_commands(self) -> FlextResult[dict[str, object]]:
         """Create plugin list commands using flext-cli patterns."""
         commands = {
             "plugins": self._cli_api.create_command(
@@ -146,14 +145,14 @@ class FlextPluginCliService:
                 output_format="table",
             )
         }
-        return FlextResult[dict].ok(commands)
+        return FlextResult[dict[str, object]].ok(commands)
 
-    def _handle_list_plugins(self, args: dict) -> FlextResult[str]:
+    def _handle_list_plugins(self, _args: dict[str, object]) -> FlextResult[str]:
         """Handle list plugins command."""
         list_result = self._plugin_handler.platform.list_plugins()
         return self.handle_result(list_result, "Plugins listed successfully")
 
-    def _create_platform_commands(self) -> FlextResult[dict]:
+    def _create_platform_commands(self) -> FlextResult[dict[str, object]]:
         """Create platform management commands using flext-cli patterns."""
         commands = {
             "status": self._cli_api.create_command(
@@ -163,9 +162,9 @@ class FlextPluginCliService:
                 output_format="json",
             )
         }
-        return FlextResult[dict].ok(commands)
+        return FlextResult[dict[str, object]].ok(commands)
 
-    def _handle_platform_status(self, args: dict) -> FlextResult[str]:
+    def _handle_platform_status(self, _args: dict[str, object]) -> FlextResult[str]:
         """Handle platform status command."""
         status_result = self._plugin_handler.platform.get_platform_status()
         return self.handle_result(status_result, "Platform status retrieved")
@@ -185,7 +184,7 @@ def main() -> None:
 
 
 # Legacy functions for compatibility (without Click dependencies)
-def install_plugin_legacy(plugin_name: str, registry: str = "", file: str = "") -> None:
+def install_plugin_legacy(_plugin_name: str, _registry: str = "", _file: str = "") -> None:
     """Legacy plugin installation function."""
     # Implementation would use FlextPluginCliService
     FlextPluginCliService()

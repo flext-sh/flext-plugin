@@ -1,73 +1,16 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
 """FLEXT Plugin Platform - Unified facade providing comprehensive plugin management.
-
-This module implements the platform layer of the Clean Architecture, serving as
-the primary entry point and facade for all plugin management operations. The
-platform coordinates application services, manages dependency injection, and
-provides a simplified, unified API for plugin operations across the FLEXT ecosystem.
-
-The platform layer abstracts the complexity of the underlying application and
-domain layers, providing a clean, intuitive interface for plugin management
-while maintaining proper separation of concerns and architectural boundaries.
-
-Key Components:
-    - FlextPluginPlatform: Main platform facade coordinating all plugin operations
-    - Service coordination and dependency injection management
-    - Unified API surface for external integration and consumption
-
-Architecture:
-    The platform implements the Facade pattern to provide a simplified interface
-    to the complex plugin management subsystem. It coordinates multiple application
-    services while maintaining Clean Architecture principles and proper
-    dependency management through the FlextContainer system.
-
-Platform Responsibilities:
-    - Service lifecycle management and coordination
-    - Dependency injection container management
-    - Unified API facade for plugin operations
-    - Error handling and result coordination
-    - Integration point for external systems
-
-Example:
-    >>> from flext_plugin_platform import FlextPluginPlatform
-    >>>
-    >>> # Initialize platform with dependency injection
-    >>> platform = FlextPluginPlatform()
-    >>>
-    >>> # Discover and load plugins
-    >>> discovery_result = platform.discover_plugins("./plugins")
-    >>> if discovery_result.success():
-    ...     plugins = discovery_result.data
-    ...     for plugin in plugins:
-    ...         load_result = platform.load_plugin(plugin)
-    ...         if load_result.success():
-    ...             print(f"Successfully loaded: {plugin.name}")
-
-Integration:
-    - Built on flext-core container and service patterns
-    - Coordinates application services for business logic execution
-    - Provides external API for platform integration
-    - Supports comprehensive testing and mocking strategies
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
 """
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
 
+from __future__ import annotations
 
 from flext_core import FlextContainer, FlextResult
 
-from .entities import FlextPluginConfig, FlextPluginEntity
-from .flext_plugin_services import (
+from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
+from flext_plugin.flext_plugin_services import (
     FlextPluginDiscoveryService,
     FlextPluginService,
 )

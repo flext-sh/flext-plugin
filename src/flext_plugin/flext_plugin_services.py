@@ -12,11 +12,16 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_core import FlextContainer, FlextDomainService, FlextResult, FlextTypes
+from flext_core import (
+    FlextContainer,
+    FlextDomainService,
+    FlextExceptions,
+    FlextResult,
+    FlextTypes,
+)
 
-from .entities import FlextPluginConfig, FlextPluginEntity
-from .exceptions import FlextPluginError
-from .ports import (
+from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
+from flext_plugin.ports import (
     FlextPluginDiscoveryPort,
     FlextPluginLoaderPort,
     FlextPluginManagerPort,
@@ -54,7 +59,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 kwargs["container"] = container_arg
             else:
                 kwargs["container"] = FlextContainer()
-            super().__init__(**kwargs)
+            super().__init__()
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
             object.__setattr__(self, "_loader_port", None)
@@ -82,7 +87,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
             # FLEXT COMPLIANCE: No mocks allowed - fail fast if port not configured
             msg = "Plugin discovery port not configured in container"
-            raise FlextPluginError(msg)
+            raise FlextExceptions.BaseError(msg)
 
         @property
         def loader_port(self) -> FlextPluginLoaderPort:
@@ -99,7 +104,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
             # FLEXT COMPLIANCE: No mocks allowed - fail fast if port not configured
             msg = "Plugin loader port not configured in container"
-            raise FlextPluginError(msg)
+            raise FlextExceptions.BaseError(msg)
 
         @property
         def manager_port(self) -> FlextPluginManagerPort:
@@ -116,7 +121,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
             # FLEXT COMPLIANCE: No mocks allowed - fail fast if port not configured
             msg = "Plugin manager port not configured in container"
-            raise FlextPluginError(msg)
+            raise FlextExceptions.BaseError(msg)
 
         def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
             """Discover plugins in the given path."""
@@ -138,7 +143,11 @@ class FlextPluginServices(FlextDomainService[object]):
                     return FlextResult[bool].fail("Invalid plugin")
                 # Validate plugin first
                 validation_result = self.discovery_port.validate_plugin(plugin)
-                validation_data: bool = validation_result.data
+                validation_data: bool = (
+                    validation_result.data
+                    if validation_result.data is not None
+                    else False
+                )
                 if not validation_result.success or not validation_data:
                     return FlextResult[bool].fail("Plugin validation failed")
                 return self.loader_port.load_plugin(plugin)
@@ -245,7 +254,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 kwargs["container"] = container_arg
             else:
                 kwargs["container"] = FlextContainer()
-            super().__init__(**kwargs)
+            super().__init__()
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
 
@@ -271,7 +280,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
             # FLEXT COMPLIANCE: No mocks allowed - fail fast if port not configured
             msg = "Plugin discovery port not configured in container"
-            raise FlextPluginError(msg)
+            raise FlextExceptions.BaseError(msg)
 
         def scan_directory(
             self, directory_path: str
@@ -313,7 +322,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 kwargs["container"] = container_arg
             else:
                 kwargs["container"] = FlextContainer()
-            super().__init__(**kwargs)
+            super().__init__()
             # Store private registry
             object.__setattr__(self, "_plugins", {})
 

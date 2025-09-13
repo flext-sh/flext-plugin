@@ -705,7 +705,7 @@ except PluginError as e:
 ### Type Aliases
 
 ```python
-from typing import Dict, List, Optional, Union, object
+from typing import Dict, List, Optional, Union
 
 # Common type aliases used throughout the API
 PluginId = str

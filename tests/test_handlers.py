@@ -131,6 +131,7 @@ class TestFlextPluginRegistrationHandler:
         # Create REAL object that mimics plugin but has empty name
         class PluginWithEmptyName:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = ""  # Empty name should fail validation
                 self.plugin_version = "1.0.0"
                 self.config = {"description": "Test plugin"}
@@ -153,6 +154,7 @@ class TestFlextPluginRegistrationHandler:
         # Create REAL object that mimics plugin but has empty version
         class PluginWithEmptyVersion:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "test-plugin"
                 self.plugin_version = ""  # Empty version should fail validation
                 self.config = {"description": "Test plugin"}
@@ -187,6 +189,7 @@ class TestFlextPluginRegistrationHandler:
         # Create REAL plugin object that implements minimum interface but might cause issues
         class ProblematicPlugin:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "test-plugin"
                 self.plugin_version = "1.0.0"
 
@@ -304,6 +307,7 @@ class TestFlextPluginEventHandler:
         # Create REAL object without proper name attribute
         class PluginWithoutName:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 # Intentionally missing name attribute
                 self.plugin_version = "1.0.0"
 
@@ -323,6 +327,7 @@ class TestFlextPluginEventHandler:
         # Create REAL object that mimics plugin but has empty name
         class PluginWithEmptyName:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = ""  # Empty name should fail validation
                 self.plugin_version = "1.0.0"
 
@@ -540,11 +545,13 @@ class TestHandlerIntegration:
         # Create objects that mimic plugins but have validation issues
         class PluginWithEmptyName:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = ""
                 self.plugin_version = "1.0.0"
 
         class PluginWithEmptyVersion:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "test-plugin"
                 self.plugin_version = ""
 

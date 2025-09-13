@@ -3,7 +3,6 @@
 Type variables, protocols, and type aliases following flext-core patterns
 for consistent typing across the plugin ecosystem.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -52,19 +51,19 @@ PluginDiscoveryProtocol = FlextProtocols.Domain.Service
 
 
 # Plugin loading uses Service pattern
-PluginLoaderProtocol = FlextProtocols.Service
+PluginLoaderProtocol = FlextProtocols.Domain.Service
 
 
 # Plugin registry uses Repository pattern
-PluginRegistryProtocol = FlextProtocols.Repository
+PluginRegistryProtocol = FlextProtocols.Domain.Repository
 
 
 # Plugin validation uses Validator pattern
-PluginValidatorProtocol = FlextProtocols.Validator
+PluginValidatorProtocol = FlextProtocols.Foundation.Validator
 
 
 # Hot reload uses Infrastructure Service pattern
-HotReloadProtocol = FlextProtocols.Service
+HotReloadProtocol = FlextProtocols.Domain.Service
 
 
 # Basic type aliases

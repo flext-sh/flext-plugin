@@ -7,18 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextBaseHandler, FlextResult
+from flext_core import FlextResult
 
-from .entities import FlextPluginEntity
-from .ports import FlextPluginLoaderPort
+from flext_plugin.entities import FlextPluginEntity
+from flext_plugin.ports import FlextPluginLoaderPort
 
 
-class FlextPluginHandler(FlextBaseHandler):
+class FlextPluginHandler:
     """Base handler for plugin operations."""
 
     def __init__(self, plugin_service: FlextPluginLoaderPort | None = None) -> None:
         """Initialize handler with optional plugin service."""
-        super().__init__()
         self._plugin_service = plugin_service
 
 
@@ -67,7 +66,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             return FlextResult[bool].fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler(FlextBaseHandler):
+class FlextPluginEventHandler:
     """CQRS event handler for plugin lifecycle events and domain event processing."""
 
     def handle_plugin_loaded(self, plugin: FlextPluginEntity) -> FlextResult[bool]:

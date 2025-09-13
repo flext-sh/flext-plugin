@@ -3,7 +3,6 @@
 This module provides a unified interface to all type definitions
 following flext-core patterns. Import from this module for consistency.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -88,6 +87,7 @@ class PluginExecutionResult:
         error_message: str = "",
         **kwargs: object,
     ) -> None:
+        """Initialize the instance."""
         self.execution_id = execution_id
         self.success = success
         self.duration_ms = duration_ms

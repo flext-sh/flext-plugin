@@ -5,7 +5,6 @@ providing sophisticated plugin scanning, metadata extraction, and plugin
 classification capabilities. The discovery system serves as the foundation
 for plugin management operations throughout the FLEXT ecosystem.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -25,7 +24,7 @@ from flext_core import (
 )
 from pydantic import Field
 
-from .flext_plugin_models import PluginType
+from flext_plugin.flext_plugin_models import PluginType
 
 
 class PluginDiscovery(FlextModels.Entity):
@@ -59,7 +58,7 @@ class PluginDiscovery(FlextModels.Entity):
         plugin_directories: FlextTypes.Core.StringList | None = None,
         **_kwargs: object,
     ) -> None:
-        """Initialize plugin discovery system."""
+        """Initialize the instance."""
         # Generate ID if not provided using FlextUtilities
         final_entity_id = entity_id or FlextUtilities.generate_entity_id()
         # Initialize FlextModels base with required fields - use datetime for FlextModels compatibility
@@ -138,6 +137,7 @@ class PluginDiscovery(FlextModels.Entity):
 
     async def _discover_entry_points(self) -> None:
         """Discover plugins from entry points."""
+
         # Entry point discovery implementation
 
     async def _discover_file_system(self) -> None:

@@ -73,6 +73,7 @@ class TestPluginFileHandler:
         # Create REAL directory event simulation
         class DirectoryEvent:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.is_directory = True
                 self.src_path = "/test/directory"
 
@@ -94,6 +95,7 @@ class TestPluginFileHandler:
         # Create REAL non-Python file event simulation
         class NonPythonFileEvent:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.is_directory = False
                 self.src_path = "/test/file.txt"
 
@@ -115,6 +117,7 @@ class TestPluginFileHandler:
         # Create REAL Python file event simulation
         class PythonFileEvent:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.is_directory = False
                 self.src_path = "/test/plugin.py"
 
@@ -138,6 +141,7 @@ class TestPluginFileHandler:
         # Create REAL dunder file event simulation
         class DunderFileEvent:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.is_directory = False
                 self.src_path = "/test/__init__.py"
 
@@ -159,6 +163,7 @@ class TestPluginFileHandler:
         # Create REAL bytes path event simulation
         class BytesPathEvent:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.is_directory = False
                 self.src_path = b"/test/plugin.py"
 
@@ -285,6 +290,8 @@ class TestPlugin:
     """A REAL test plugin implementation."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "test-plugin"
         self.version = "1.0.0"
 
@@ -321,8 +328,11 @@ class TestPlugin:
         # Create REAL plugin file
         test_file = plugin_dir / "reload_test.py"
         test_file.write_text("""
+
 class ReloadTestPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "reload-test"
         self.version = "1.0.0"
 """)
@@ -343,8 +353,11 @@ class ReloadTestPlugin:
         # Create REAL plugin file
         load_test_file = plugin_dir / "load_test.py"
         load_test_file.write_text("""
+
 class LoadTestPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "load-test"
         self.version = "1.0.0"
 
@@ -366,6 +379,7 @@ class LoadTestPlugin:
         # Create REAL plugin-like object with cleanup
         class RealPluginWithCleanup:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "real-plugin"
                 self.cleaned_up = False
 
@@ -391,6 +405,7 @@ class LoadTestPlugin:
         # Create REAL plugin-like object without cleanup
         class RealPluginWithoutCleanup:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "simple-plugin"
 
         # Add plugin to loaded plugins
@@ -439,6 +454,7 @@ class LoadTestPlugin:
         # Create REAL plugin objects with cleanup
         class RealCleanupPlugin:
             def __init__(self, name: str) -> None:
+                """Initialize the instance."""
                 self.name = name
                 self.cleaned_up = False
 
@@ -508,6 +524,7 @@ class TestHotReloadIntegration:
             # Create REAL event simulation
             class RealFileEvent:
                 def __init__(self) -> None:
+                    """Initialize the instance."""
                     self.is_directory = False
                     self.src_path = str(Path(tmp_dir) / "test_plugin.py")
 
@@ -529,6 +546,8 @@ class TestHotReloadIntegration:
 
 class LifecyclePlugin:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "lifecycle-plugin"
         self.version = "1.0.0"
 
@@ -580,6 +599,8 @@ class LifecyclePlugin:
 
 class E2EPlugin:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "e2e-plugin"
         self.version = "2.0.0"
         self.initialized = True
@@ -626,6 +647,8 @@ class E2EPlugin:
 
 class ConcurrentPlugin{i}:
     def __init__(self):
+        """Initialize the instance."""
+
         self.name = "concurrent-plugin-{i}"
         self.version = "1.0.{i}"
 

@@ -1,34 +1,5 @@
 """REAL test suite for flext_plugin.simple_plugin module.
 
-This test module provides complete coverage for the simple plugin system
-using REAL plugin classes and functionality without ANY mocks.
-
-Testing Strategy - REAL FUNCTIONALITY ONLY:
-    - Plugin class: REAL activation, deactivation, lifecycle management
-    - PluginRegistry class: REAL registration, unregistration, listing operations
-    - Utility functions: REAL load_plugin and create_registry with actual modules
-    - Error handling: REAL exception scenarios with genuine edge cases
-    - Integration: REAL FlextResult patterns and error management
-
-Real Component Testing:
-    - Plugin: REAL lifecycle with actual state management
-    - PluginRegistry: REAL plugin storage and retrieval operations
-    - load_plugin(): REAL dynamic module loading with actual Python files
-    - create_registry(): REAL registry instantiation
-
-Real Integration Testing:
-    - REAL plugin class hierarchies and inheritance
-    - Actual FlextResult success and failure patterns
-    - REAL error handling with genuine exceptions
-    - Complete edge case validation with real scenarios
-
-Quality Standards:
-    - 100% code coverage through REAL functionality testing
-    - NO MOCKS - only real plugin classes and actual business logic
-    - Enterprise-grade error handling validation
-    - Complete integration testing with real plugin scenarios
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -116,6 +87,7 @@ class TestPlugin:
         # Create a plugin that will fail during deactivation
         class FailingDeactivatePlugin(Plugin):
             def __init__(self, name: str) -> None:
+                """Initialize the instance."""
                 self.name = name
                 # Skip the automatic self.active = False in parent __init__
                 self.active = True  # Start as active
@@ -208,6 +180,7 @@ class TestPluginRegistry:
         # Create a registry that will fail during registration
         class FailingRegistry(PluginRegistry):
             def __init__(self) -> None:
+                """Initialize the instance."""
                 super().__init__()
 
                 # Create a dict that will raise exception on assignment
@@ -263,6 +236,7 @@ class TestPluginRegistry:
         # Create a registry that will fail during unregistration
         class FailingUnregisterRegistry(PluginRegistry):
             def __init__(self) -> None:
+                """Initialize the instance."""
                 super().__init__()
 
                 # Create a dict that will raise exception on deletion
@@ -392,6 +366,8 @@ class Plugin(Plugin):
     """REAL plugin implementation."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         super().__init__("real-loaded-plugin")
         self.loaded = True
 
@@ -431,12 +407,13 @@ class Plugin(Plugin):
             module_file.write_text('''
 """REAL test plugin module with custom class name."""
 
-from flext_plugin.simple_plugin import Plugin
 
 class CustomPlugin(Plugin):
     """REAL plugin implementation with custom name."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         super().__init__("custom-named-plugin")
         self.custom_attribute = "custom_value"
 
@@ -520,12 +497,13 @@ class SomeOtherClass:
             module_file.write_text('''
 """REAL test plugin module with failing initialization."""
 
-from flext_plugin.simple_plugin import Plugin
 
 class Plugin(Plugin):
     """REAL plugin implementation that fails during instantiation."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         raise RuntimeError("Plugin instantiation failed")
 ''')
 
@@ -558,12 +536,13 @@ class Plugin(Plugin):
             module_file.write_text('''
 """REAL test plugin module with invalid configuration."""
 
-from flext_plugin.simple_plugin import Plugin
 
 class Plugin(Plugin):
     """REAL plugin implementation with invalid configuration."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         raise ValueError("Invalid plugin configuration")
 ''')
 
@@ -596,12 +575,15 @@ class Plugin(Plugin):
             module_file.write_text('''
 """REAL test plugin module with type error."""
 
-from flext_plugin.simple_plugin import Plugin
+from flext_core import FlextResult
+from typing import Type
 
 class Plugin(Plugin):
     """REAL plugin implementation with type error."""
 
     def __init__(self):
+        """Initialize the instance."""
+
         raise TypeError("Type error in plugin")
 ''')
 

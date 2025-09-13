@@ -622,7 +622,7 @@ class AdvancedPluginDiscovery:
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextModels.Entity, FlextResult
-from typing import List, Dict, object
+from typing import List, Dict
 from datetime import datetime
 
 class FlextPlugin(FlextModels.Entity):
@@ -940,7 +940,7 @@ class FlextPluginConfig(FlextModels.Value):
 
 ```python
 from functools import cached_property
-from typing import Optional, Dict, object
+from typing import Optional, Dict
 
 class LazyPluginLoader:
     """Lazy loading pattern for plugin resources."""

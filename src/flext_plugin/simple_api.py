@@ -16,13 +16,13 @@ from datetime import UTC, datetime
 
 from flext_core import FlextTypes
 
-from .entities import (
+from flext_plugin.entities import (
     FlextPlugin,
     FlextPluginConfig,
     FlextPluginMetadata,
     FlextPluginRegistry,
 )
-from .flext_plugin_models import PluginStatus
+from flext_plugin.flext_plugin_models import PluginStatus
 
 
 def create_flext_plugin(

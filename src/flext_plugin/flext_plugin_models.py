@@ -15,12 +15,12 @@ from enum import StrEnum
 from flext_core import FlextModels, FlextTypes
 from pydantic import ConfigDict, Field, field_validator
 
-from .flext_plugin_constants import (
+from flext_plugin.flext_plugin_constants import (
     MAX_PLUGIN_NAME_LENGTH,
     MIN_PLUGIN_NAME_LENGTH,
     VALID_PLUGIN_NAME_PATTERN,
 )
-from .type_definitions import PluginConfigData
+from flext_plugin.type_definitions import PluginConfigData
 
 
 class FlextPluginModels(FlextModels.Entity):
@@ -81,7 +81,7 @@ class FlextPluginModels(FlextModels.Entity):
         THEME = "theme"
         LANGUAGE = "language"
 
-    class ConfigModel(FlextModels.Entity):
+    class ConfigModel(FlextModels.Value):
         """Pydantic model for plugin configuration."""
 
         model_config = ConfigDict(
@@ -102,11 +102,11 @@ class FlextPluginModels(FlextModels.Entity):
         )
         description: str = Field(default="", description="Plugin description")
         author: str = Field(default="", description="Plugin author")
-        plugin_type: FlextPluginModels.Type = Field(
+        plugin_type: "FlextPluginModels.Type" = Field(
             default_factory=lambda: FlextPluginModels.Type.UTILITY,
             description="Plugin type category",
         )
-        status: FlextPluginModels.Status = Field(
+        status: "FlextPluginModels.Status" = Field(
             default_factory=lambda: FlextPluginModels.Status.INACTIVE,
             description="Current plugin status",
         )
@@ -169,7 +169,7 @@ class FlextPluginModels(FlextModels.Entity):
             default=None, description="Required Python version"
         )
 
-    class PluginModel(FlextModels.Entity):
+    class PluginModel(FlextModels.Value):
         """Complete Pydantic model for a FLEXT plugin."""
 
         model_config = ConfigDict(
@@ -177,10 +177,10 @@ class FlextPluginModels(FlextModels.Entity):
             validate_assignment=True,
         )
 
-        config: FlextPluginModels.ConfigModel = Field(
+        config: "FlextPluginModels.ConfigModel" = Field(
             ..., description="Plugin configuration"
         )
-        metadata: FlextPluginModels.MetadataModel = Field(
+        metadata: "FlextPluginModels.MetadataModel" = Field(
             ..., description="Plugin metadata"
         )
         runtime_data: dict[str, PluginConfigData] = Field(
@@ -198,12 +198,12 @@ class FlextPluginModels(FlextModels.Entity):
             return self.config.version
 
         @property
-        def plugin_type(self) -> FlextPluginModels.Type:
+        def plugin_type(self) -> "FlextPluginModels.Type":
             """Get plugin type from configuration."""
             return self.config.plugin_type
 
         @property
-        def status(self) -> FlextPluginModels.Status:
+        def status(self) -> "FlextPluginModels.Status":
             """Get plugin status from configuration."""
             return self.config.status
 

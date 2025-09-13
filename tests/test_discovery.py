@@ -3,31 +3,6 @@
 This test module provides comprehensive validation of plugin discovery functionality
 using REAL method calls and actual file system operations without ANY mocks.
 
-Real Functionality Testing Strategy:
-    - Use actual plugin discovery with REAL file system operations
-    - Test REAL directory scanning and plugin file discovery
-    - Validate REAL plugin validation and blacklisting functionality
-    - Test REAL business logic without any mock dependencies
-
-Component Testing:
-    - PluginDiscovery: REAL discovery system with actual directory management
-    - Plugin validation: REAL plugin class validation with actual methods
-    - Directory management: REAL directory addition and scanning
-    - Blacklisting: REAL plugin blacklisting and filtering mechanisms
-
-Integration Testing:
-    - REAL file system operations with temporary directories
-    - Actual Python file and manifest creation and reading
-    - REAL async discovery operations
-    - Comprehensive error scenarios with genuine exceptions
-
-Quality Standards:
-    - 100% code coverage through REAL functionality testing
-    - NO MOCKS - only real file operations and actual business logic
-    - Enterprise-grade error handling validation
-    - Complete integration testing with real discovery scenarios
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -549,6 +524,7 @@ class TestPlugin:
         # Create plugins in main directory
         main_plugin_file = main_dir / "main_plugin.py"
         main_plugin_file.write_text("""
+
 class MainPlugin:
     def initialize(self): pass
     def cleanup(self): pass
@@ -569,6 +545,7 @@ class MainPlugin:
         # Create plugins in extra directory
         extra_plugin_file = extra_dir / "extra_plugin.py"
         extra_plugin_file.write_text("""
+
 class ExtraPlugin:
     def initialize(self): pass
     def cleanup(self): pass

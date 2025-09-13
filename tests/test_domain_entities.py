@@ -5,34 +5,6 @@ business rules, and integration patterns following enterprise testing standards.
 Tests cover entity lifecycle, validation rules, business logic enforcement,
 and integration scenarios across all domain entities.
 
-Test Coverage:
-    - FlextPlugin: Core plugin entity lifecycle and validation
-    - FlextPluginConfig: Configuration entity behavior and updates
-    - FlextPluginMetadata: Metadata entity creation and management
-    - FlextPluginRegistry: Registry collection management and operations
-    - FlextPluginExecution: Execution tracking and state management
-
-Testing Patterns:
-    - Unit tests for individual entity behavior
-    - Integration tests for entity interactions
-    - Business rule validation and enforcement
-    - Error handling and edge case scenarios
-    - Performance and resource management validation
-
-Quality Standards:
-    - Comprehensive test coverage for all entity methods
-    - Business rule validation with realistic scenarios
-    - Error condition testing with proper exception handling
-    - Integration testing with dependency validation
-    - Performance testing for critical operations
-
-Example Test Structure:
-    Each test class focuses on a specific domain entity with methods
-    testing creation, validation, business operations, and integration
-    scenarios. Test data uses realistic plugin scenarios and validates
-    both success and failure conditions.
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

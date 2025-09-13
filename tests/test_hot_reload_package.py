@@ -216,6 +216,8 @@ class TestPluginWatcherReal:
 
 class ExtractorPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "test-extractor"
 
     def extract(self):
@@ -227,6 +229,8 @@ class ExtractorPlugin:
 
 class LoaderPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "test-loader"
 
     def load(self, data):
@@ -306,6 +310,7 @@ class TestStateManagerReal:
         # Create a REAL plugin-like object (not a mock)
         class RealTestPlugin:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "real-test-plugin"
                 self.version = "1.0.0"
                 self.config = {"enabled": True, "timeout": 30}
@@ -336,6 +341,7 @@ class TestStateManagerReal:
         # Create a plugin without get_state method
         class SimplePlugin:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "simple-plugin"
                 self.version = "2.0.0"
 
@@ -403,6 +409,7 @@ class TestRollbackManagerReal:
         # Create a REAL plugin-like object
         class RealRollbackPlugin:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.name = "rollback-test-plugin"
                 self.version = "1.5.0"
                 self.state: FlextTypes.Core.Dict = {"active": True, "data": [1, 2, 3]}
@@ -500,6 +507,8 @@ class TestHotReloadManagerReal:
 
 class TestLifecyclePlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "test-lifecycle-plugin"
         self.version = "1.0.0"
 
@@ -549,6 +558,8 @@ class TestLifecyclePlugin:
 
 class ChangeTestPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "change-test-plugin"
         self.data = {"initialized": True}
 
@@ -598,8 +609,11 @@ class ChangeTestPlugin:
 
         plugin1 = plugin_dir / "multi_plugin_1.py"
         plugin1.write_text("""
+
 class MultiPlugin1:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "multi-plugin-1"
 
     def execute(self):
@@ -611,8 +625,11 @@ def get_plugin():
 
         plugin2 = plugin_dir / "multi_plugin_2.py"
         plugin2.write_text("""
+
 class MultiPlugin2:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "multi-plugin-2"
 
     def execute(self):
@@ -641,8 +658,11 @@ def get_plugin():
 
         # Create initial plugin version
         workflow_plugin.write_text("""
+
 class WorkflowPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "workflow-plugin"
         self.version = "1.0.0"
         self.data = {"version": 1}
@@ -659,8 +679,11 @@ def get_plugin():
 
         # Simulate plugin file change
         workflow_plugin.write_text("""
+
 class WorkflowPlugin:
     def __init__(self):
+        \"\"\"Initialize the instance.\"\"\"
+
         self.name = "workflow-plugin"
         self.version = "2.0.0"
         self.data = {"version": 2, "updated": True}

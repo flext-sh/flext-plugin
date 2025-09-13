@@ -220,7 +220,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         """Core data processing logic."""
         payload = data.get("payload", {})
 
-      
+
         processed_payload = {}
 
         for key, value in payload.items():

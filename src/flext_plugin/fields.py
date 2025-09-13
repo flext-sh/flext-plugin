@@ -16,15 +16,13 @@ from typing import Annotated
 from flext_core import FlextTypes
 from pydantic import Field
 
-from .flext_plugin_constants import (
+from flext_plugin.flext_plugin_constants import (
     DEFAULT_PLUGIN_TIMEOUT_SECONDS,
     MAX_PLUGIN_NAME_LENGTH,
     MIN_PLUGIN_NAME_LENGTH,
     VALID_PLUGIN_NAME_PATTERN,
 )
-
-# Import types
-from .type_definitions import PluginConfigData
+from flext_plugin.type_definitions import PluginConfigData
 
 # Plugin Name Fields
 PluginNameField = Annotated[

@@ -1,8 +1,4 @@
-"""Constants for the FLEXT Plugin system.
-
-Centralized constants following flext-core patterns for consistency
-across the plugin ecosystem.
-
+"""Centralized constants following flext-core patterns for consistency.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT

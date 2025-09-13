@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 
-from .entities import FlextPluginConfig, FlextPluginEntity
+from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 
 
 class FlextPluginDiscoveryPort(FlextProtocols.Domain.Service):

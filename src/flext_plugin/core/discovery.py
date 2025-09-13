@@ -1,11 +1,3 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Legacy facade for discovery - BACKWARD COMPATIBILITY ONLY.
 
 This module provides backward compatibility for legacy imports.
@@ -15,10 +7,12 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
 
 import warnings
 
-# Backward compatibility facade - import all from main discovery module
+from flext_core import FlextTypes
+
 from flext_plugin.discovery import *
 
 # Deprecation warning for legacy usage

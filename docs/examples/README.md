@@ -108,7 +108,7 @@ async def test_plugin_activation(platform):
 
 ```
 examples/
-├── basic-plugin/            
+├── basic-plugin/
 │   ├── plugin.py             # Plugin class definition
 │   ├── config.json           # Plugin configuration
 │   ├── test_plugin.py        # Unit tests
@@ -189,7 +189,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Dict, object
+from typing import Dict
 
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
@@ -393,7 +393,7 @@ async def cleanup(self) -> FlextResult[bool]:
 All examples use proper type hints:
 
 ```python
-from typing import Dict, List, Optional, object
+from typing import Dict, List, Optional
 from flext_core import FlextResult
 
 async def process_data(
@@ -425,7 +425,6 @@ Comprehensive test coverage for all plugin functionality:
    ```
 
 2. **Follow Template Structure**:
-
    - `plugin.py` - Main plugin implementation
    - `test_plugin.py` - Comprehensive tests
    - `config.json` - Configuration example

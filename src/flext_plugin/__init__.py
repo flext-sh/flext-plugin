@@ -8,33 +8,363 @@ from __future__ import annotations
 
 from flext_core import FlextTypes
 
-# Import all from each module following flext-core pattern
-from flext_plugin.__version__ import *
-from flext_plugin.cli import *
-from flext_plugin.discovery import *
-from flext_plugin.entities import *
-from flext_plugin.exceptions import *
-from flext_plugin.fields import *
-from flext_plugin.flext_plugin_constants import *
-from flext_plugin.flext_plugin_handlers import *
-from flext_plugin.flext_plugin_models import *
-from flext_plugin.flext_plugin_platform import *
-from flext_plugin.flext_plugin_services import *
-from flext_plugin.flext_plugin_types import *
-from flext_plugin.handlers import *  # Legacy facade
-from flext_plugin.hot_reload import *
-from flext_plugin.implementations import *
-from flext_plugin.legacy import *
-from flext_plugin.loader import *
-from flext_plugin.models import *  # Legacy facade
-from flext_plugin.ports import *
-from flext_plugin.real_adapters import *
-from flext_plugin.services import *  # Legacy facade
-from flext_plugin.simple_api import *
-from flext_plugin.simple_plugin import *
-from flext_plugin.type_definitions import *
-from flext_plugin.typings import *
+from flext_plugin.__version__ import __version__, __version_info__
 
-# Note: __all__ is constructed dynamically at runtime from imported modules
-# This pattern is necessary for library aggregation but causes pyright warnings
-__all__: FlextTypes.Core.StringList = []
+# CLI functionality - explicit imports
+from flext_plugin.cli import (
+    FlextPluginCliCommands,
+    FlextPluginCliMain,
+    FlextPluginCliService,
+    PluginCLI,
+    install_plugin_legacy,
+    main,
+)
+
+# Discovery - explicit imports
+from flext_plugin.discovery import (
+    FlextPluginDiscovery,
+    FlextPluginRegistry,
+    PluginDiscovery,
+)
+
+# Core entities - explicit imports
+from flext_plugin.entities import (
+    FlextPlugin,
+    FlextPluginConfig,
+    FlextPluginConfigParams,
+    FlextPluginEntity,
+    FlextPluginExecution,
+    FlextPluginMetadata,
+    FlextPluginMetadataParams,
+    FlextPluginRegistryParams,
+    Plugin,
+    PluginConfig,
+    PluginConfiguration,
+    PluginExecution,
+    PluginInstance,
+    PluginMetadata,
+    PluginRegistry,
+)
+
+# Exceptions - explicit imports
+from flext_plugin.exceptions import (
+    FlextPluginCompatibilityError,
+    FlextPluginConfigurationError,
+    FlextPluginConfigurationOperationError,
+    FlextPluginDependencyError,
+    FlextPluginDiscoveryError,
+    FlextPluginDiscoveryOperationError,
+    FlextPluginError,
+    FlextPluginErrorCodes,
+    FlextPluginExceptions,
+    FlextPluginExecutionError,
+    FlextPluginExecutionOperationError,
+    FlextPluginHotReloadError,
+    FlextPluginHotReloadOperationError,
+    FlextPluginLifecycleError,
+    FlextPluginLifecycleOperationError,
+    FlextPluginLoadingError,
+    FlextPluginLoadOperationError,
+    FlextPluginMetadataError,
+    FlextPluginNotFoundError,
+    FlextPluginPlatformError,
+    FlextPluginRegistryError,
+    FlextPluginSecurityError,
+    FlextPluginValidationError,
+    PluginError,
+)
+
+# Constants - explicit imports
+from flext_plugin.flext_plugin_constants import (
+    ARCHITECTURE_PLUGIN_TYPES,
+    DEFAULT_CACHE_DIR,
+    DEFAULT_CONFIG_DIR,
+    DEFAULT_DISCOVERY_TIMEOUT_SECONDS,
+    DEFAULT_HOT_RELOAD_INTERVAL_SECONDS,
+    DEFAULT_PLUGIN_DIR,
+    DEFAULT_PLUGIN_TIMEOUT_SECONDS,
+    FLEXT_PLUGIN_CONSTANTS,
+    HOT_RELOAD_DEBOUNCE_MS,
+    HOT_RELOAD_MAX_RETRIES,
+    INTEGRATION_PLUGIN_TYPES,
+    JSON_CONFIG_EXTENSION,
+    MAX_PLUGIN_NAME_LENGTH,
+    MAX_PLUGIN_WORKERS,
+    MIN_PLUGIN_NAME_LENGTH,
+    MIN_PLUGIN_WORKERS,
+    PLUGIN_ALREADY_EXISTS_MSG,
+    PLUGIN_INVALID_NAME_MSG,
+    PLUGIN_LIFECYCLE_STATES,
+    PLUGIN_LOAD_FAILED_MSG,
+    PLUGIN_NOT_FOUND_MSG,
+    PYTHON_PLUGIN_EXTENSION,
+    SINGER_PLUGIN_TYPES,
+    TOML_CONFIG_EXTENSION,
+    UTILITY_PLUGIN_TYPES,
+    VALID_PLUGIN_NAME_PATTERN,
+    YAML_CONFIG_EXTENSION,
+)
+
+# Handlers - explicit imports
+from flext_plugin.flext_plugin_handlers import (
+    FlextPluginEventHandler,
+    FlextPluginHandler,
+    FlextPluginRegistrationHandler,
+)
+
+# Models - explicit imports
+from flext_plugin.flext_plugin_models import (
+    FlextPluginConfigModel,
+    FlextPluginMetadataModel,
+    FlextPluginModel,
+    FlextPluginModels,
+    PluginExecutionContextModel,
+    PluginExecutionResultModel,
+    PluginManagerResultModel,
+    PluginStatus,
+    PluginType,
+)
+
+# Platform - explicit imports
+from flext_plugin.flext_plugin_platform import (
+    FlextPluginPlatform,
+    PluginPlatform,
+)
+
+# Services - explicit imports
+from flext_plugin.flext_plugin_services import (
+    FlextPluginDiscoveryService,
+    FlextPluginService,
+    FlextPluginServices,
+    PluginDiscoveryService,
+    PluginService,
+    create_plugin_manager,
+)
+
+# Hot reload - explicit imports
+from flext_plugin.hot_reload import (
+    FlextPluginHotReload,
+    HotReloadManager,
+    PluginFileHandler,
+    PluginState,
+    PluginWatcher,
+    ReloadEvent,
+    RollbackManager,
+    StatefulPlugin,
+    StateManager,
+    WatchEvent,
+    WatchEventType,
+    create_hot_reload_manager,
+)
+
+# Implementations - explicit imports
+from flext_plugin.implementations import (
+    ConcreteDataPlugin,
+    ConcreteExecutablePlugin,
+    ConcretePlugin,
+    ConcretePluginContext,
+    ConcretePluginLoader,
+    ConcretePluginRegistry,
+    ConcreteTransformPlugin,
+    FlextPluginImplementation,
+)
+
+# Loader - explicit imports
+from flext_plugin.loader import (
+    CleanupablePlugin,
+    FlextPluginLoader,
+    PluginLoader,
+)
+
+# Ports - explicit imports
+from flext_plugin.ports import (
+    FlextPluginDiscoveryPort,
+    FlextPluginHotReloadPort,
+    FlextPluginLoaderPort,
+    FlextPluginManagerPort,
+    FlextPluginPort,
+    FlextPluginRegistryPort,
+    PluginDiscoveryPort,
+    PluginLoaderPort,
+    PluginManagerPort,
+)
+
+# Real adapters - explicit imports
+from flext_plugin.real_adapters import (
+    FlextPluginAdapter,
+    RealPluginDiscoveryAdapter,
+    RealPluginLoaderAdapter,
+    RealPluginManagerAdapter,
+)
+
+# Simple API - explicit imports
+from flext_plugin.simple_api import (
+    create_flext_plugin,
+    create_flext_plugin_config,
+    create_flext_plugin_metadata,
+    create_flext_plugin_registry,
+    create_plugin,
+    create_plugin_config,
+    create_plugin_config_from_dict,
+    create_plugin_from_dict,
+    create_plugin_metadata,
+    create_plugin_registry,
+)
+
+# Simple plugin - explicit imports
+from flext_plugin.simple_plugin import (
+    Plugin as SimplePlugin,
+    PluginRegistry as SimplePluginRegistry,
+    create_registry,
+    load_plugin,
+)
+
+__all__: FlextTypes.Core.StringList = [
+    "ARCHITECTURE_PLUGIN_TYPES",
+    "DEFAULT_CACHE_DIR",
+    "DEFAULT_CONFIG_DIR",
+    "DEFAULT_DISCOVERY_TIMEOUT_SECONDS",
+    "DEFAULT_HOT_RELOAD_INTERVAL_SECONDS",
+    "DEFAULT_PLUGIN_DIR",
+    "DEFAULT_PLUGIN_TIMEOUT_SECONDS",
+    "FLEXT_PLUGIN_CONSTANTS",
+    "HOT_RELOAD_DEBOUNCE_MS",
+    "HOT_RELOAD_MAX_RETRIES",
+    "INTEGRATION_PLUGIN_TYPES",
+    "JSON_CONFIG_EXTENSION",
+    "MAX_PLUGIN_NAME_LENGTH",
+    "MAX_PLUGIN_WORKERS",
+    "MIN_PLUGIN_NAME_LENGTH",
+    "MIN_PLUGIN_WORKERS",
+    "PLUGIN_ALREADY_EXISTS_MSG",
+    "PLUGIN_INVALID_NAME_MSG",
+    "PLUGIN_LIFECYCLE_STATES",
+    "PLUGIN_LOAD_FAILED_MSG",
+    "PLUGIN_NOT_FOUND_MSG",
+    "PYTHON_PLUGIN_EXTENSION",
+    "SINGER_PLUGIN_TYPES",
+    "TOML_CONFIG_EXTENSION",
+    "UTILITY_PLUGIN_TYPES",
+    "VALID_PLUGIN_NAME_PATTERN",
+    "YAML_CONFIG_EXTENSION",
+    "CleanupablePlugin",
+    "ConcreteDataPlugin",
+    "ConcreteExecutablePlugin",
+    "ConcretePlugin",
+    "ConcretePluginContext",
+    "ConcretePluginLoader",
+    "ConcretePluginRegistry",
+    "ConcreteTransformPlugin",
+    "FlextPlugin",
+    "FlextPluginAdapter",
+    "FlextPluginCliCommands",
+    "FlextPluginCliMain",
+    "FlextPluginCliService",
+    "FlextPluginCompatibilityError",
+    "FlextPluginConfig",
+    "FlextPluginConfigModel",
+    "FlextPluginConfigParams",
+    "FlextPluginConfigurationError",
+    "FlextPluginConfigurationOperationError",
+    "FlextPluginDependencyError",
+    "FlextPluginDiscovery",
+    "FlextPluginDiscoveryError",
+    "FlextPluginDiscoveryOperationError",
+    "FlextPluginDiscoveryPort",
+    "FlextPluginDiscoveryService",
+    "FlextPluginEntity",
+    "FlextPluginError",
+    "FlextPluginErrorCodes",
+    "FlextPluginEventHandler",
+    "FlextPluginExceptions",
+    "FlextPluginExecution",
+    "FlextPluginExecutionError",
+    "FlextPluginExecutionOperationError",
+    "FlextPluginHandler",
+    "FlextPluginHotReload",
+    "FlextPluginHotReloadError",
+    "FlextPluginHotReloadOperationError",
+    "FlextPluginHotReloadPort",
+    "FlextPluginImplementation",
+    "FlextPluginLifecycleError",
+    "FlextPluginLifecycleOperationError",
+    "FlextPluginLoadOperationError",
+    "FlextPluginLoader",
+    "FlextPluginLoaderPort",
+    "FlextPluginLoadingError",
+    "FlextPluginManagerPort",
+    "FlextPluginMetadata",
+    "FlextPluginMetadataError",
+    "FlextPluginMetadataModel",
+    "FlextPluginMetadataParams",
+    "FlextPluginModel",
+    "FlextPluginModels",
+    "FlextPluginNotFoundError",
+    "FlextPluginPlatform",
+    "FlextPluginPlatformError",
+    "FlextPluginPort",
+    "FlextPluginRegistrationHandler",
+    "FlextPluginRegistry",
+    "FlextPluginRegistryError",
+    "FlextPluginRegistryParams",
+    "FlextPluginRegistryPort",
+    "FlextPluginSecurityError",
+    "FlextPluginService",
+    "FlextPluginServices",
+    "FlextPluginValidationError",
+    "HotReloadManager",
+    "Plugin",
+    "PluginCLI",
+    "PluginConfig",
+    "PluginConfiguration",
+    "PluginDiscovery",
+    "PluginDiscoveryPort",
+    "PluginDiscoveryService",
+    "PluginError",
+    "PluginExecution",
+    "PluginExecutionContextModel",
+    "PluginExecutionResultModel",
+    "PluginFileHandler",
+    "PluginInstance",
+    "PluginLoader",
+    "PluginLoaderPort",
+    "PluginManagerPort",
+    "PluginManagerResultModel",
+    "PluginMetadata",
+    "PluginPlatform",
+    "PluginRegistry",
+    "PluginService",
+    "PluginState",
+    "PluginStatus",
+    "PluginType",
+    "PluginWatcher",
+    "RealPluginDiscoveryAdapter",
+    "RealPluginLoaderAdapter",
+    "RealPluginManagerAdapter",
+    "ReloadEvent",
+    "RollbackManager",
+    "SimplePlugin",
+    "SimplePluginRegistry",
+    "StateManager",
+    "StatefulPlugin",
+    "WatchEvent",
+    "WatchEventType",
+    "__version__",
+    "__version_info__",
+    "create_flext_plugin",
+    "create_flext_plugin_config",
+    "create_flext_plugin_metadata",
+    "create_flext_plugin_registry",
+    "create_hot_reload_manager",
+    "create_plugin",
+    "create_plugin_config",
+    "create_plugin_config_from_dict",
+    "create_plugin_from_dict",
+    "create_plugin_manager",
+    "create_plugin_metadata",
+    "create_plugin_registry",
+    "create_registry",
+    "install_plugin_legacy",
+    "load_plugin",
+    "main",
+]

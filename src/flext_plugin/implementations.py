@@ -382,7 +382,7 @@ class ConcretePluginContext:
         config: FlextTypes.Core.Dict | None = None,
         services: FlextTypes.Core.Dict | None = None,
     ) -> None:
-        """Initialize plugin context.
+        """Initialize the instance.
 
         Args:
             logger: Structured logger for plugin

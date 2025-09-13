@@ -14,10 +14,9 @@ from __future__ import annotations
 import importlib.util
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import ClassVar, Protocol, cast, override
+from typing import ClassVar, Protocol, cast
 
 from flext_core import (
-    FlextEventList,
     FlextModels,
     FlextResult,
     FlextTypes,
@@ -33,7 +32,7 @@ class CleanupablePlugin(Protocol):
         ...
 
 
-class PluginLoader(FlextModels):
+class PluginLoader(FlextModels.Entity):
     """Dynamic plugin loading system with security validation and hot-reload.
 
     Infrastructure component implementing dynamic Python module loading for the
@@ -53,19 +52,16 @@ class PluginLoader(FlextModels):
         entity_id: str = "",
         security_enabled: bool = True,
     ) -> None:
-        """Initialize plugin loader."""
+        """Initialize the instance."""
         # Generate ID if not provided for backward compatibility
-        final_entity_id = entity_id or FlextUtilities.generate_entity_id()
+        final_entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
         # Initialize FlextModels.Entity with all required parameters
 
-        now = datetime.now(UTC)
+        datetime.now(UTC)
         super().__init__(
-            id=cast("FlextModels.EntityId", final_entity_id),
-            version=cast("FlextModels.Version", 1),
-            domain_events=cast("FlextEventList", []),
-            metadata=cast("FlextModels.Metadata", {}),
-            created_at=cast("FlextModels.Timestamp", now),
-            updated_at=cast("FlextModels.Timestamp", now),
+            id=final_entity_id,
+            version=1,
+            domain_events=[],
         )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)
@@ -76,7 +72,6 @@ class PluginLoader(FlextModels):
         """Get security enabled status."""
         return getattr(self, "_security_enabled", True)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
         return FlextResult[None].ok(None)

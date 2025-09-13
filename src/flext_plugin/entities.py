@@ -1,12 +1,7 @@
-"""FLEXT Plugin Domain Entities - Rich business entities for plugin management.
+"""Plugin entities for the FLEXT Plugin System.
 
-This module implements the core domain entities following Domain-Driven Design
-principles. These entities encapsulate business logic, maintain consistency
-boundaries, and provide the primary abstractions for plugin management operations.
-
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
@@ -23,7 +18,7 @@ from flext_core import (
 )
 from pydantic import Field, field_validator
 
-from . import typings as plugin_typings
+from flext_plugin import typings as plugin_typings
 
 PluginStatus = plugin_typings.PluginStatus
 PluginType = plugin_typings.PluginType

@@ -1,36 +1,5 @@
 """REAL test suite for flext_plugin.application.handlers - NO MOCKS.
 
-This module tests the actual CQRS application handler implementations with real
-functionality validation, following user requirement: "pare de ficar mockando tudo".
-
-Test Coverage:
-    - FlextPluginHandler: Real base handler initialization and behavior
-    - FlextPluginRegistrationHandler: Real plugin registration with actual plugins
-    - FlextPluginEventHandler: Real event handling with authentic plugin entities
-    - Error handling with real validation and business rules
-    - FlextResult patterns with actual success/failure scenarios
-
-Testing Architecture:
-    - REAL plugin entities created with actual factory methods
-    - REAL service implementations (not mocks)
-    - REAL file system operations for plugin loading
-    - REAL validation logic testing
-    - REAL error condition testing
-
-Quality Patterns:
-    - Direct testing of actual handler implementations
-    - Real plugin creation and lifecycle management
-    - Comprehensive coverage of success and failure scenarios
-    - Integration testing with real plugin loading
-    - Performance validation for real operations
-
-Clean Architecture Compliance:
-    - Application layer testing with real domain entities
-    - Real service implementations following ports pattern
-    - Actual infrastructure operations for plugin management
-    - Authentic error handling and business rules validation
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -325,6 +294,8 @@ class LifecyclePlugin:
     """A real test plugin for lifecycle testing."""
 
     def __init__(self) -> None:
+        """Initialize the instance."""
+
         self.name = "lifecycle-plugin"
         self.version = "1.0.0"
 

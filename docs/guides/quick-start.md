@@ -152,7 +152,7 @@ import asyncio
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
-from typing import Dict, object
+from typing import Dict
 
 class GreetingPlugin(FlextPlugin):
     """Custom plugin that generates personalized greetings."""

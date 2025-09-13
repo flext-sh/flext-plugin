@@ -1,24 +1,5 @@
 """REAL tests for flext_plugin manager components - APENAS classes que EXISTEM.
 
-Este módulo testa APENAS os componentes de gerenciamento que REALMENTE existem no
-flext_plugin, não classes imaginárias.
-
-CLASSES QUE EXISTEM E PODEM SER TESTADAS:
-- ✅ SimplePluginRegistry (existe)
-- ✅ PluginExecutionContext (existe)
-- ✅ PluginManagerResult (existe)
-- ✅ PluginType (existe)
-- ✅ create_flext_plugin (função factory que existe)
-- ✅ create_plugin_manager (função factory que existe - retorna RegistryService)
-- ✅ FlextPlugin (entidade que existe)
-
-CLASSES QUE NÃO EXISTEM (removidas dos testes):
-- ❌ FlextPluginManager (NÃO EXISTE - era import alias incorreto)
-
-
-Este arquivo foi corrigido para refletir a REALIDADE do código, não fantasias.
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

@@ -1,6 +1,5 @@
 """Version management for FLEXT Plugin System.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 
@@ -28,6 +27,9 @@ RELEASE_NAME: str = "Plugin Foundation"
 RELEASE_DATE: str = "2025-08-25"
 BUILD_TYPE: str = "stable"
 
+# Version info tuple for compatibility
+__version_info__ = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
+
 __all__: FlextTypes.Core.StringList = [
     "BUILD_TYPE",
     "RELEASE_DATE",
@@ -36,4 +38,5 @@ __all__: FlextTypes.Core.StringList = [
     "VERSION_MINOR",
     "VERSION_PATCH",
     "__version__",
+    "__version_info__",
 ]

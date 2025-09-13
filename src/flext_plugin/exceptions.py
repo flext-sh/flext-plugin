@@ -16,15 +16,7 @@ from flext_core import FlextExceptions
 
 
 class FlextPluginExceptions(FlextExceptions):
-    """Single CONSOLIDATED class containing ALL plugin exceptions.
-
-    Consolidates ALL exception definitions into one class following FLEXT patterns.
-    Individual exceptions available as nested classes for organization while maintaining
-    backward compatibility through property access.
-
-    This approach follows FLEXT architectural standards for single consolidated classes
-    per module while preserving existing API surface for seamless migration.
-    """
+    """Single CONSOLIDATED class containing ALL plugin exceptions."""
 
     class ErrorCodes(Enum):
         """Error codes for plugin domain operations."""
@@ -46,15 +38,16 @@ class FlextPluginExceptions(FlextExceptions):
         PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
     # Base plugin exception classes as nested classes
-    class BaseError(FlextExceptions):
+    class BaseError(Exception):
         """Base exception for all plugin domain errors."""
 
         def __init__(
             self, message: str, plugin_id: str | None = None, **kwargs: object
         ) -> None:
-            # Remove error_code from kwargs if present and always use FLEXT_PROCESSING_ERROR
-            kwargs.pop("error_code", None)
-            super().__init__(message, error_code="FLEXT_PROCESSING_ERROR", **kwargs)
+            """Initialize the instance."""
+            # Store error_code for later use if needed
+            self.error_code = "FLEXT_PROCESSING_ERROR"
+            super().__init__(message)
             self.plugin_id = plugin_id
 
     class DiscoveryError(FlextExceptions):
