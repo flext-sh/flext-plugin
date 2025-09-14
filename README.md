@@ -1,8 +1,8 @@
 # flext-plugin
 
-**Plugin management system** for the FLEXT ecosystem, providing dynamic loading and lifecycle management using **Clean Architecture patterns** with domain-driven design.
+**Plugin discovery, loading, and lifecycle management** for the FLEXT ecosystem, providing **dynamic component loading** using **Clean Architecture patterns** with domain-driven design.
 
-> **⚠️ STATUS**: Active development with architectural compliance issues requiring resolution before production use.
+> **⚠️ STATUS**: Functional implementation with architectural compliance violations requiring resolution
 
 ---
 
@@ -10,20 +10,20 @@
 
 ### **For the FLEXT Ecosystem**
 
-flext-plugin serves as the plugin management infrastructure for the FLEXT ecosystem's 33 interconnected projects, enabling dynamic component loading and extensibility across data integration services.
+flext-plugin provides plugin management infrastructure for dynamic component loading across FLEXT projects. Current implementation includes plugin discovery, lifecycle management, and hot reload capabilities.
 
 ### **Key Responsibilities**
 
-1. **Plugin Lifecycle Management** - Discovery, loading, activation, and hot reload capabilities
-2. **FLEXT Integration** - Native integration with flext-core patterns and dependency injection
-3. **Singer Ecosystem Support** - Plugin framework for Singer taps, targets, and transforms
+1. **Plugin Lifecycle Management** - Discovery, loading, activation, deactivation operations
+2. **FLEXT Integration** - Uses FlextResult, FlextContainer, FlextModels.Entity patterns
+3. **Extensibility Framework** - Foundation for Singer taps, targets, and custom extensions
 
 ### **Integration Points**
 
-- **flext-core** → Base patterns, FlextResult, domain models, dependency injection
+- **flext-core** → FlextResult, FlextContainer, FlextModels, FlextUtilities
 - **flext-cli** → Command-line plugin management (currently disabled)
-- **Singer Projects (15)** → Plugin framework for data pipeline components
-- **All 33 FLEXT Projects** → Extensibility and component management
+- **Singer Projects** → Plugin framework for data pipeline components
+- **FLEXT Projects** → Extensibility infrastructure
 
 ---
 
@@ -31,30 +31,35 @@ flext-plugin serves as the plugin management infrastructure for the FLEXT ecosys
 
 ### **FLEXT-Core Integration Status**
 
-| Pattern             | Status    | Description                     |
-| ------------------- | --------- | ------------------------------- |
-| **FlextResult<T>**  | 🟢 85%    | Domain operations and API calls |
-| **FlextService**    | 🟢 90%    | Application service layer       |
-| **FlextContainer**  | 🟢 80%    | Dependency injection container  |
-| **Domain Patterns** | 🟢 85%    | DDD entities and business rules |
+| Pattern             | Status         | Description                     |
+| ------------------- | -------------- | ------------------------------- |
+| **FlextResult<T>**  | 🟢 Complete | Operations return FlextResult |
+| **FlextService**    | 🟢 Complete | FlextPluginService inheritance  |
+| **FlextContainer**  | 🟢 Complete | Dependency injection throughout |
+| **Domain Patterns** | 🟢 Complete | FlextModels.Entity inheritance  |
 
-> **Status**: 🔴 Critical | 🟡 Partial | 🟢 Complete
+> **Status**: 🔴 Critical Issues | 🟡 Partial Implementation | 🟢 Implemented
 
-### **Current Architecture**
+### **Implementation Metrics**
+
+- **Source Code**: 6,562 lines across 20 modules
+- **Classes**: 54 classes (violates FLEXT single-class-per-module standard)
+- **Platform Methods**: 14 public methods (discover, load, unload, install, etc.)
+- **Test Coverage**: 339 test methods
+
+### **Architecture Diagram**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    FLEXT ECOSYSTEM (33 Projects)                │
+│                FlextPluginPlatform (Facade)                     │
+│  • discover_plugins()  • load_plugin()  • unload_plugin()       │
+│  • install_plugin()   • enable_plugin() • disable_plugin()     │
 ├─────────────────────────────────────────────────────────────────┤
-│ Services: FlexCore(Go) | FLEXT Service(Go/Python) | Clients     │
+│ FlextPluginService | FlextPluginDiscoveryService               │
 ├─────────────────────────────────────────────────────────────────┤
-│ Applications: API | Auth | Web | CLI | Quality | Observability  │
-├═════════════════════════════════════════════════════════════════┤
-│ Infrastructure: Oracle | LDAP | LDIF | gRPC | [FLEXT-PLUGIN]   │
+│ FlextPluginEntity | FlextPluginConfig | FlextPluginMetadata     │
 ├─────────────────────────────────────────────────────────────────┤
-│ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
-├─────────────────────────────────────────────────────────────────┤
-│ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
+│ PluginDiscovery | HotReload | RealAdapters                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -65,7 +70,7 @@ flext-plugin serves as the plugin management infrastructure for the FLEXT ecosys
 ### **Installation**
 
 ```bash
-# Clone FLEXT workspace
+# FLEXT workspace development
 git clone https://github.com/flext-sh/flext.git
 cd flext/flext-plugin
 
@@ -73,31 +78,24 @@ cd flext/flext-plugin
 make setup
 
 # Verify installation
-python -c "import flext_plugin; print(f'FLEXT Plugin v{flext_plugin.__version__}')"
+python -c "import flext_plugin; print(f'Version: {flext_plugin.__version__}')"
 ```
 
 ### **Basic Usage**
 
 ```python
-from flext_plugin import FlextPluginPlatform, create_flext_plugin
-from flext_plugin.typings import PluginStatus
+from flext_plugin import FlextPluginPlatform
+from flext_core import FlextContainer
 
-# Create plugin platform
-platform = FlextPluginPlatform()
+# Initialize platform
+container = FlextContainer()
+platform = FlextPluginPlatform(container)
 
-# Create a plugin
-plugin = create_flext_plugin(
-    name="data-processor",
-    version="0.9.0",
-    config={"description": "Data processing plugin"}
-)
-
-# Plugin lifecycle management
-result = platform.load_plugin(plugin)
+# Discover plugins (file-based only currently)
+result = platform.discover_plugins("./plugins")
 if result.success:
-    activation = platform.enable_plugin("data-processor")
-    if activation.success:
-        print("Plugin loaded and activated")
+    plugins = result.data
+    print(f"Found {len(plugins)} plugins")
 ```
 
 ---
@@ -107,27 +105,23 @@ if result.success:
 ### **Essential Commands**
 
 ```bash
-# Setup and validation
-make setup                 # Complete development environment
-make validate              # Full validation pipeline
-make check                 # Quick health check (lint + type)
+# Quality validation
+make validate                   # Complete validation pipeline
+make test                      # Run 339 test methods
+make lint                      # Code quality checks
+make type-check               # Type safety validation
 
-# Testing
-make test                  # Full test suite (33% coverage currently)
-make test-unit             # Unit tests only
-make coverage-html         # Detailed coverage report
-
-# Plugin development
-make plugin-validate       # Validate plugin system
-make plugin-watch          # Hot reload development mode
+# Development workflow
+make format                   # Auto-format code
+make check                    # Quick lint and type check
 ```
 
 ### **Quality Gates**
 
-- **Type Safety**: MyPy strict mode with 100% coverage target
-- **Code Quality**: Ruff linting with comprehensive rules
-- **Security**: Bandit + pip-audit scanning
-- **Coverage**: 85% minimum (currently 33%)
+- **Test Suite**: 339 test methods across multiple test files
+- **Type Safety**: MyPy compliance throughout codebase
+- **Architecture**: Single-class-per-module compliance required
+- **Coverage**: 90% minimum target configured
 
 ---
 
@@ -137,19 +131,18 @@ make plugin-watch          # Hot reload development mode
 
 ```
 tests/
-├── unit/              # Domain and application layer tests
-├── integration/       # Cross-layer integration tests
-├── e2e/              # End-to-end plugin scenarios
-└── fixtures/         # Shared test data and utilities
+├── unit/              # Domain and application tests
+├── integration/       # Cross-layer integration
+├── test_*.py         # Various test modules
+└── conftest.py       # Test configuration
 ```
 
 ### **Testing Commands**
 
 ```bash
-make test              # Full suite with coverage
-make test-unit         # Fast unit tests
-make test-integration  # Integration tests
-pytest -m "not slow"   # Skip slow tests
+pytest tests/                  # Run all 339 tests
+pytest --cov=flext_plugin     # Run with coverage reporting
+pytest -m "not slow"          # Skip slow tests
 ```
 
 ---
@@ -158,34 +151,36 @@ pytest -m "not slow"   # Skip slow tests
 
 ### **Quality Standards**
 
-- **Coverage**: 85% minimum (currently 33%)
-- **Type Safety**: MyPy strict mode compliance
-- **Security**: Zero vulnerabilities via Bandit + pip-audit
-- **FLEXT-Core Compliance**: 85% (architecture issues pending)
+- **Coverage**: 90% minimum target (339 test methods)
+- **Type Safety**: Complete MyPy compliance
+- **Security**: File-based discovery only (no sandboxing)
+- **FLEXT-Core Compliance**: Complete patterns, architecture issues remain
 
 ### **Ecosystem Integration**
 
-- **Direct Dependencies**: Singer taps/targets, flext-web, flext-api
-- **Service Dependencies**: flext-core, flext-observability
-- **Integration Points**: 15+ connections across ecosystem
+- **Direct Dependencies**: All FLEXT projects can use plugin system
+- **Service Dependencies**: flext-core (mandatory), flext-cli (disabled)
+- **Integration Points**: Platform facade provides ecosystem-wide plugin management
 
 ---
 
 ## 🗺️ Roadmap
 
-### **Current Version (v0.9.0)**
+### **Current Version (0.9.0)**
 
-Focus on architectural compliance and core plugin functionality:
-- Fix multi-class-per-module issues (54 classes across 23 files)
-- Enable CLI integration via flext-cli
-- Improve test coverage and documentation
+Functional implementation with limitations:
+- FlextPluginPlatform with 14 public methods
+- Clean Architecture implementation
+- Hot reload capabilities with file monitoring
+- **Critical Issue**: 54 classes violate FLEXT single-class-per-module standard
 
-### **Next Version (v0.10.0)**
+### **Next Version (0.10.0)**
 
-Enhanced plugin discovery and security:
-- Entry points implementation alongside manual discovery
-- Basic process isolation for plugin security
-- Plugin packaging and distribution system
+Required fixes:
+- Architectural consolidation to FLEXT compliance
+- Entry points discovery implementation (currently empty)
+- CLI integration restoration
+- Test failure resolution
 
 ---
 
@@ -195,47 +190,27 @@ Enhanced plugin discovery and security:
 - **[Architecture](docs/architecture.md)** - Design patterns and structure
 - **[API Reference](docs/api-reference.md)** - Complete API documentation
 - **[Development](docs/development.md)** - Contributing and workflows
-- **[Integration](docs/integration.md)** - Ecosystem integration patterns
-- **[Examples](docs/examples/)** - Working code examples
-- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-- **[TODO & Roadmap](docs/TODO.md)** - Development status and plans
+- **[TODO & Roadmap](TODO.md)** - Development status and plans
 
 ---
 
 ## 🤝 Contributing
 
-### **FLEXT-Core Compliance Checklist**
+This project follows FLEXT ecosystem development standards:
 
-- [ ] Use FlextResult<T> for all operations
-- [ ] Implement single class per module
-- [ ] Follow Clean Architecture patterns
-- [ ] Use dependency injection via FlextContainer
-- [ ] Maintain 85%+ test coverage
+1. **Code Standards**: Single class per module (compliance required)
+2. **Quality Gates**: 90% test coverage, zero lint errors, type safety
+3. **Architecture**: Clean Architecture with domain-driven design
+4. **Integration**: Proper FLEXT-core pattern usage
 
-### **Quality Standards**
-
-- All code must pass MyPy strict mode
-- Zero linting violations via Ruff
-- Security scanning via Bandit + pip-audit
-- Integration with flext-core patterns
-- Professional English in all documentation
+See [CLAUDE.md](CLAUDE.md) for technical development guidance.
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - Copyright (c) 2025 FLEXT Team. All rights reserved.
 
 ---
 
-## 🆘 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/flext-sh/flext/issues)
-- **Security**: Report security issues privately to maintainers
-
----
-
-**flext-plugin v0.9.0** - Plugin management infrastructure enabling dynamic component loading across the FLEXT ecosystem.
-
-**Mission**: Provide reliable, secure, and extensible plugin management capabilities that integrate seamlessly with FLEXT ecosystem patterns and standards.
+**FLEXT Plugin System** - Extensibility foundation for the FLEXT data integration ecosystem.

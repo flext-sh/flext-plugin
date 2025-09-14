@@ -175,15 +175,28 @@ class StateManager:
         Args:
             state_directory: Directory for state storage
 
-        Returns:
-            object: Description of return value.
-
         """
         self.state_directory = state_directory
         self._snapshots: list[FlextTypes.Core.Dict] = []
+        self.enable_persistence = True
 
-    def create_snapshot(self) -> str:
+    async def save_plugin_state(self, plugin: StatefulPlugin) -> FlextTypes.Core.Dict:
+        """Save plugin state.
+
+        Args:
+            plugin: Plugin instance to save state for
+
+        Returns:
+            Plugin state dictionary
+
+        """
+        return await plugin.get_state()
+
+    async def create_snapshot(self, description: str = "") -> str:
         """Create a new snapshot.
+
+        Args:
+            description: Optional snapshot description
 
         Returns:
             Snapshot identifier.
@@ -210,15 +223,16 @@ class RollbackManager:
         Args:
             state_manager: State manager instance
 
-        Returns:
-            Rollback point identifier
-
         """
         self.state_manager = state_manager
         self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
 
-    def create_rollback_point(self) -> str:
+    async def create_rollback_point(self, description: str = "", plugin_id: str = "") -> str:
         """Create a new rollback point.
+
+        Args:
+            description: Optional rollback description
+            plugin_id: Optional plugin identifier
 
         Returns:
             Rollback point identifier.
