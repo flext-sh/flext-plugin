@@ -13,7 +13,7 @@ import pytest
 from flext_core import FlextResult, FlextTypes
 
 from flext_plugin.entities import FlextPluginEntity
-from flext_plugin.handlers import (
+from flext_plugin.flext_plugin_handlers import (
     FlextPluginEventHandler,
     FlextPluginHandler,
     FlextPluginRegistrationHandler,
@@ -65,7 +65,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         return self._loaded_plugins.get(plugin_name)
 
     # Service protocol methods required by Port
-    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:
+    def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 

@@ -13,8 +13,6 @@ import warnings
 
 from flext_core import FlextTypes
 
-from flext_plugin.discovery import *
-
 # Deprecation warning for legacy usage
 warnings.warn(
     "flext_plugin.core.discovery is deprecated. Use flext_plugin.discovery instead.",

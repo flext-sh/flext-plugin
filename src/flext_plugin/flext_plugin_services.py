@@ -55,10 +55,12 @@ class FlextPluginServices(FlextDomainService[object]):
             """Initialize plugin management service with dependency injection container."""
             # Extract container from kwargs or create default
             container_arg = kwargs.pop("container", None)
-            if container_arg is not None:
-                kwargs["container"] = container_arg
+            if container_arg is not None and isinstance(container_arg, FlextContainer):
+                self.container = container_arg
             else:
-                kwargs["container"] = FlextContainer()
+                self.container = FlextContainer()
+
+            # FlextDomainService only needs the required fields, no arbitrary kwargs
             super().__init__()
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)

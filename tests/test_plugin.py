@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import sys
 import tempfile
-from collections import UserDict
 from pathlib import Path
 from typing import override
 
 import pytest
+from flext_core import FlextResult
 
 from flext_plugin.simple_plugin import (
     Plugin,
@@ -182,15 +182,13 @@ class TestPluginRegistry:
             def __init__(self) -> None:
                 """Initialize the instance."""
                 super().__init__()
+                # Override the plugins dict to raise exception on assignment
+                self.plugins = {}
 
-                # Create a dict that will raise exception on assignment
-                class FailingDict(UserDict[str, Plugin]):
-                    @override
-                    def __setitem__(self, key: str, value: Plugin) -> None:
-                        msg = "Registration failed"
-                        raise RuntimeError(msg)
-
-                self.plugins = FailingDict()
+            def register(self, _plugin: Plugin) -> FlextResult[None]:
+                """Override register to always fail."""
+                msg = "Registration failed"
+                raise RuntimeError(msg)
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -239,14 +237,10 @@ class TestPluginRegistry:
                 """Initialize the instance."""
                 super().__init__()
 
-                # Create a dict that will raise exception on deletion
-                class FailingDeleteDict(UserDict[str, Plugin]):
-                    @override
-                    def __delitem__(self, key: str) -> None:
-                        msg = "Unregistration failed"
-                        raise ValueError(msg)
-
-                self.plugins = FailingDeleteDict()
+            def unregister(self, _name: str) -> FlextResult[None]:
+                """Override unregister to always fail."""
+                msg = "Unregistration failed"
+                raise ValueError(msg)
 
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")

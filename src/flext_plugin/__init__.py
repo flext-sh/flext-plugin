@@ -11,19 +11,15 @@ from flext_core import FlextTypes
 from flext_plugin.__version__ import __version__, __version_info__
 
 # CLI functionality - explicit imports
-from flext_plugin.cli import (
-    FlextPluginCliCommands,
-    FlextPluginCliMain,
-    FlextPluginCliService,
-    PluginCLI,
-    install_plugin_legacy,
-    main,
-)
-
+# Temporarily disabled due to flext-cli dependency issues
+# from flext_plugin.cli import (
+#     FlextPluginCliService,
+#     PluginCLI,
+#     install_plugin_legacy,
+#     main,
+# )
 # Discovery - explicit imports
 from flext_plugin.discovery import (
-    FlextPluginDiscovery,
-    FlextPluginRegistry,
     PluginDiscovery,
 )
 
@@ -36,6 +32,7 @@ from flext_plugin.entities import (
     FlextPluginExecution,
     FlextPluginMetadata,
     FlextPluginMetadataParams,
+    FlextPluginRegistry,
     FlextPluginRegistryParams,
     Plugin,
     PluginConfig,
@@ -66,7 +63,6 @@ from flext_plugin.exceptions import (
     FlextPluginLoadingError,
     FlextPluginLoadOperationError,
     FlextPluginMetadataError,
-    FlextPluginNotFoundError,
     FlextPluginPlatformError,
     FlextPluginRegistryError,
     FlextPluginSecurityError,
@@ -83,7 +79,6 @@ from flext_plugin.flext_plugin_constants import (
     DEFAULT_HOT_RELOAD_INTERVAL_SECONDS,
     DEFAULT_PLUGIN_DIR,
     DEFAULT_PLUGIN_TIMEOUT_SECONDS,
-    FLEXT_PLUGIN_CONSTANTS,
     HOT_RELOAD_DEBOUNCE_MS,
     HOT_RELOAD_MAX_RETRIES,
     INTEGRATION_PLUGIN_TYPES,
@@ -143,7 +138,6 @@ from flext_plugin.flext_plugin_services import (
 
 # Hot reload - explicit imports
 from flext_plugin.hot_reload import (
-    FlextPluginHotReload,
     HotReloadManager,
     PluginFileHandler,
     PluginState,
@@ -166,13 +160,11 @@ from flext_plugin.implementations import (
     ConcretePluginLoader,
     ConcretePluginRegistry,
     ConcreteTransformPlugin,
-    FlextPluginImplementation,
 )
 
 # Loader - explicit imports
 from flext_plugin.loader import (
     CleanupablePlugin,
-    FlextPluginLoader,
     PluginLoader,
 )
 
@@ -182,7 +174,6 @@ from flext_plugin.ports import (
     FlextPluginHotReloadPort,
     FlextPluginLoaderPort,
     FlextPluginManagerPort,
-    FlextPluginPort,
     FlextPluginRegistryPort,
     PluginDiscoveryPort,
     PluginLoaderPort,
@@ -191,7 +182,6 @@ from flext_plugin.ports import (
 
 # Real adapters - explicit imports
 from flext_plugin.real_adapters import (
-    FlextPluginAdapter,
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
@@ -227,7 +217,6 @@ __all__: FlextTypes.Core.StringList = [
     "DEFAULT_HOT_RELOAD_INTERVAL_SECONDS",
     "DEFAULT_PLUGIN_DIR",
     "DEFAULT_PLUGIN_TIMEOUT_SECONDS",
-    "FLEXT_PLUGIN_CONSTANTS",
     "HOT_RELOAD_DEBOUNCE_MS",
     "HOT_RELOAD_MAX_RETRIES",
     "INTEGRATION_PLUGIN_TYPES",
@@ -256,10 +245,6 @@ __all__: FlextTypes.Core.StringList = [
     "ConcretePluginRegistry",
     "ConcreteTransformPlugin",
     "FlextPlugin",
-    "FlextPluginAdapter",
-    "FlextPluginCliCommands",
-    "FlextPluginCliMain",
-    "FlextPluginCliService",
     "FlextPluginCompatibilityError",
     "FlextPluginConfig",
     "FlextPluginConfigModel",
@@ -267,7 +252,6 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginConfigurationError",
     "FlextPluginConfigurationOperationError",
     "FlextPluginDependencyError",
-    "FlextPluginDiscovery",
     "FlextPluginDiscoveryError",
     "FlextPluginDiscoveryOperationError",
     "FlextPluginDiscoveryPort",
@@ -281,15 +265,12 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginExecutionError",
     "FlextPluginExecutionOperationError",
     "FlextPluginHandler",
-    "FlextPluginHotReload",
     "FlextPluginHotReloadError",
     "FlextPluginHotReloadOperationError",
     "FlextPluginHotReloadPort",
-    "FlextPluginImplementation",
     "FlextPluginLifecycleError",
     "FlextPluginLifecycleOperationError",
     "FlextPluginLoadOperationError",
-    "FlextPluginLoader",
     "FlextPluginLoaderPort",
     "FlextPluginLoadingError",
     "FlextPluginManagerPort",
@@ -299,10 +280,8 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginMetadataParams",
     "FlextPluginModel",
     "FlextPluginModels",
-    "FlextPluginNotFoundError",
     "FlextPluginPlatform",
     "FlextPluginPlatformError",
-    "FlextPluginPort",
     "FlextPluginRegistrationHandler",
     "FlextPluginRegistry",
     "FlextPluginRegistryError",

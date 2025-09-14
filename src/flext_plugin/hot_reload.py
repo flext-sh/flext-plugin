@@ -284,7 +284,7 @@ class PluginFileHandler(FileSystemEventHandler):
             self.reload_callback(path)
 
 
-class HotReloadManager(FlextModels):
+class HotReloadManager(FlextModels.Entity):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
@@ -293,7 +293,9 @@ class HotReloadManager(FlextModels):
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
-        entity_id = str(kwargs.get("id", FlextUtilities.generate_entity_id()))
+        entity_id = str(
+            kwargs.get("id", FlextUtilities.Generators.generate_entity_id())
+        )
         version = cast("int", kwargs.get("version", 1))
         metadata = cast("FlextTypes.Core.Dict", kwargs.get("metadata", {}))
         # Create instance using Pydantic model_validate to bypass __init__
@@ -350,14 +352,12 @@ class HotReloadManager(FlextModels):
         watch_dirs = [Path(self.plugin_directory)]
         return PluginWatcher(watch_directories=watch_dirs)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
         if not self.plugin_directory:
             return FlextResult[None].fail("Plugin directory cannot be empty")
         return FlextResult[None].ok(None)
 
-    @override
     def model_post_init(self, __context: FlextTypes.Core.Dict | None, /) -> None:
         """Initialize model after creation.
 

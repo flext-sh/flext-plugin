@@ -99,7 +99,7 @@ class TestDomainServiceExceptionCoverage:
 
             def validate_business_rules(self) -> FlextResult[None]:
                 # Try to access a field that doesn't exist or cause Pydantic error
-                _ = self.nonexistent_field  # type: ignore
+                _ = self.nonexistent_field
                 return FlextResult[None].ok(None)
 
         service = PydanticErrorService()
@@ -202,7 +202,7 @@ class TestDomainServiceExceptionCoverage:
 
             def validate_business_rules(self) -> FlextResult[None]:
                 msg = "Validation threw exception"
-                raise Exception(msg)
+                raise ValueError(msg)
 
         exception_service = ExceptionService()
         result = exception_service.is_valid()

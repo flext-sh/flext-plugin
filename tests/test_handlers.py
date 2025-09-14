@@ -40,9 +40,9 @@ from flext_plugin import (
     FlextPluginEventHandler,
     FlextPluginHandler,
     FlextPluginRegistrationHandler,
+    FlextPluginService,
     create_flext_plugin,
 )
-from flext_plugin.services import FlextPluginService
 
 
 class TestFlextPluginHandler:
@@ -112,7 +112,10 @@ class TestFlextPluginRegistrationHandler:
         result = handler_with_real_service.handle_register_plugin(valid_plugin)
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if not result.success and (
+            "not configured" in str(result.error)
+            or "Plugin discovery port not configured" in str(result.error)
+        ):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
@@ -220,7 +223,10 @@ class TestFlextPluginRegistrationHandler:
         result = handler_with_real_service.handle_unregister_plugin("test-plugin")
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if not result.success and (
+            "not configured" in str(result.error)
+            or "Plugin loader port not configured" in str(result.error)
+        ):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
@@ -452,6 +458,7 @@ class TestHandlerIntegration:
         # Check for expected infrastructure failures - these are acceptable
         if not register_result.success and (
             "not configured" in str(register_result.error)
+            or "Plugin discovery port not configured" in str(register_result.error)
         ):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {register_result.error}")
@@ -510,7 +517,10 @@ class TestHandlerIntegration:
             result = registration_handler.handle_register_plugin(plugin)
 
             # Check for expected infrastructure failures - these are acceptable
-            if not result.success and ("not configured" in str(result.error)):
+            if not result.success and (
+                "not configured" in str(result.error)
+                or "Plugin discovery port not configured" in str(result.error)
+            ):
                 # This is expected - plugin service needs properly configured container
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
@@ -569,7 +579,10 @@ class TestHandlerIntegration:
             if should_succeed:
                 # For coverage tests, we accept infrastructure-related failures as expected
                 # The important thing is that the validation logic ran
-                if not result.success and ("not configured" in str(result.error)):
+                if not result.success and (
+                    "not configured" in str(result.error)
+                    or "Plugin discovery port not configured" in str(result.error)
+                ):
                     # This is expected - plugin service needs properly configured container
                     continue
                 assert result.success, f"Expected success for plugin {plugin.name}"

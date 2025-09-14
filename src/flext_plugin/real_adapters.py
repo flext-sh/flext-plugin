@@ -48,7 +48,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         )
         self._started = False
 
-    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:
+    def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
@@ -164,7 +164,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         self.plugin_directory = plugin_directory
         self._started = False
 
-    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:
+    def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
@@ -269,7 +269,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         )
         self._started = False
 
-    def __call__(self, *args: object, **kwargs: object) -> FlextResult[None]:
+    def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 

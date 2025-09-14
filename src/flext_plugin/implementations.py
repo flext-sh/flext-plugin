@@ -110,7 +110,7 @@ class ConcretePlugin:
         return getattr(self, "_config", {})
 
     def initialize(
-        self, context: FlextProtocols.Extensions.PluginContext
+        self, _context: FlextProtocols.Extensions.PluginContext
     ) -> FlextResult[None]:
         """Initialize plugin with context.
 
@@ -369,6 +369,42 @@ class ConcreteTransformPlugin(ConcretePlugin):
         return FlextResult[Mapping[str, object]].ok(self._schema)
 
 
+class LoggerAdapter:
+    """Adapter to make BoundLogger compatible with LoggerProtocol."""
+
+    def __init__(self, logger: BoundLogger) -> None:
+        """Initialize with BoundLogger instance."""
+        self._logger = logger
+
+    def critical(self, message: str, **kwargs: object) -> None:
+        """Log critical message."""
+        self._logger.critical(message, **kwargs)
+
+    def error(self, message: str, **kwargs: object) -> None:
+        """Log error message."""
+        self._logger.error(message, **kwargs)
+
+    def warning(self, message: str, **kwargs: object) -> None:
+        """Log warning message."""
+        self._logger.warning(message, **kwargs)
+
+    def info(self, message: str, **kwargs: object) -> None:
+        """Log info message."""
+        self._logger.info(message, **kwargs)
+
+    def debug(self, message: str, **kwargs: object) -> None:
+        """Log debug message."""
+        self._logger.debug(message, **kwargs)
+
+    def trace(self, message: str, **kwargs: object) -> None:
+        """Log trace message."""
+        self._logger.debug(message, **kwargs)  # structlog doesn't have trace, use debug
+
+    def exception(self, message: str, **kwargs: object) -> None:
+        """Log exception message."""
+        self._logger.error(message, **kwargs)
+
+
 class ConcretePluginContext:
     """Concrete implementation of plugin runtime context.
 
@@ -403,9 +439,9 @@ class ConcretePluginContext:
         """Get configuration for plugin."""
         return dict(self._config)
 
-    def FlextLogger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
+    def get_logger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
         """Get logger instance for plugin."""
-        return self._logger
+        return LoggerAdapter(self._logger)
 
     def get_service(self, service_name: str) -> FlextResult[object]:
         """Get service by name from container.

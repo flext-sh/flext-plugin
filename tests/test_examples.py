@@ -7,11 +7,20 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+import importlib.util
 import sys
 from pathlib import Path
 from typing import cast
 
 from flext_core import FlextTypes
+
+from flext_plugin import (
+    PluginStatus,
+    PluginType,
+    create_flext_plugin,
+    create_flext_plugin_config,
+    create_flext_plugin_metadata,
+)
 
 # Add examples directory to path BEFORE imports
 examples_path = Path(__file__).parent.parent / "examples"
@@ -19,7 +28,6 @@ if str(examples_path) not in sys.path:
     sys.path.insert(0, str(examples_path))
 
 # Load docker integration helpers from numerically prefixed example via importlib
-import importlib.util
 
 _docker_path = examples_path / "03_docker_integration.py"
 _spec = importlib.util.spec_from_file_location("docker_integration", _docker_path)
@@ -31,14 +39,6 @@ check_service_availability = _docker_mod.check_service_availability
 create_docker_ldap_plugin = _docker_mod.create_docker_ldap_plugin
 create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
 create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
-
-from flext_plugin import (
-    PluginStatus,
-    PluginType,
-    create_flext_plugin,
-    create_flext_plugin_config,
-    create_flext_plugin_metadata,
-)
 
 
 async def _run(

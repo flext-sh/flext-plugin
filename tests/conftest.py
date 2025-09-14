@@ -19,12 +19,12 @@ import pytest
 from flext_core import FlextContainer, FlextTypes
 
 from flext_plugin.entities import FlextPluginEntity
-from flext_plugin.models import PluginType
 from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
+from flext_plugin.typings import PluginType
 
 
 # Test environment setup

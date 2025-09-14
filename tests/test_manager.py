@@ -10,8 +10,8 @@ import pytest
 
 # REAL imports - apenas classes que existem
 from flext_plugin import (
-    PluginExecutionContext,
-    PluginManagerResult,
+    PluginExecutionContextModel,
+    PluginManagerResultModel,
     PluginType,
     SimplePluginRegistry,
     create_flext_plugin,
@@ -61,19 +61,23 @@ class TestPluginManagerResultComprehensive:
 
     def test_plugin_manager_result_success(self) -> None:
         """Test PluginManagerResult success creation."""
-        # PluginManagerResult is FlextResult[str]
-        result = PluginManagerResult.ok("Operation successful")
+        # PluginManagerResultModel is a Pydantic model
+        result = PluginManagerResultModel(
+            operation="test_operation", success=True, plugins_affected=["plugin1"]
+        )
 
         assert result.success is True
-        assert result.data == "Operation successful"
+        assert result.operation == "test_operation"
 
     def test_plugin_manager_result_failure(self) -> None:
         """Test PluginManagerResult failure case."""
-        # PluginManagerResult is FlextResult[str]
-        result = PluginManagerResult.fail("Operation failed")
+        # PluginManagerResultModel is a Pydantic model
+        result = PluginManagerResultModel(
+            operation="test_operation", success=False, plugins_affected=[]
+        )
 
         assert result.success is False
-        assert result.error == "Operation failed"
+        assert result.operation == "test_operation"
 
 
 class TestPluginExecutionContextComprehensive:
@@ -81,21 +85,24 @@ class TestPluginExecutionContextComprehensive:
 
     def test_execution_context_creation(self) -> None:
         """Test PluginExecutionContext creation."""
-        # PluginExecutionContext is just a dict type
-        context: PluginExecutionContext = {}
+        # PluginExecutionContextModel is a Pydantic model
+        context = PluginExecutionContextModel(
+            plugin_id="test-plugin", execution_id="exec-123"
+        )
         assert context is not None
-        assert isinstance(context, dict)
+        assert isinstance(context, PluginExecutionContextModel)
 
     def test_execution_context_with_data(self) -> None:
         """Test PluginExecutionContext with data."""
-        # PluginExecutionContext is dict type
-        context: PluginExecutionContext = {
-            "plugin_name": "test-plugin",
-            "version": "1.0.0",
-        }
+        # PluginExecutionContextModel is a Pydantic model
+        context = PluginExecutionContextModel(
+            plugin_id="test-plugin",
+            execution_id="exec-123",
+            input_data={"test": "data"},
+        )
         assert context is not None
-        assert isinstance(context, dict)
-        assert context["plugin_name"] == "test-plugin"
+        assert isinstance(context, PluginExecutionContextModel)
+        assert context.plugin_id == "test-plugin"
 
 
 class TestCreatePluginManagerComprehensive:

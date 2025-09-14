@@ -68,8 +68,8 @@ def create_flext_plugin_config(
         plugin_name=plugin_name,
         entity_id=str(uuid.uuid4()),
         config_data=config_data,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+        created_at=datetime.now(UTC).isoformat(),
+        updated_at=datetime.now(UTC).isoformat(),
     )
 
 

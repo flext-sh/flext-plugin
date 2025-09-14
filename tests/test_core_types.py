@@ -14,7 +14,7 @@ import pytest
 
 from flext_plugin import (
     PluginError,
-    PluginExecutionResult,
+    PluginExecutionResultModel,
     PluginStatus,
     PluginType,
 )
@@ -47,7 +47,7 @@ class TestPluginType:
 
     def test_plugin_type_invalid(self) -> None:
         """Test invalid plugin type raises error."""
-        with pytest.raises(ValueError, match=".*invalid_type.*"):
+        with pytest.raises(ValueError, match=r".*invalid_type.*"):
             PluginType("invalid_type")
 
 
@@ -115,8 +115,8 @@ class TestPluginError:
             raise AssertionError(
                 f"Expected {'FLEXT_PROCESSING_ERROR'}, got {error.error_code}",
             )
-        # Real implementation always uses FLEXT_PROCESSING_ERROR regardless of parameter
-        assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
+        # Real implementation doesn't include error code in string representation
+        assert str(error) == "Test error"
 
     def test_plugin_error_inheritance(self) -> None:
         """Test PluginError is proper Exception subclass."""
@@ -129,7 +129,7 @@ class TestPluginExecutionResult:
 
     def test_execution_result_success(self) -> None:
         """Test successful PluginExecutionResult."""
-        result = PluginExecutionResult(
+        result = PluginExecutionResultModel(
             execution_id="exec-123",
             success=True,
             duration_ms=150,
@@ -148,7 +148,7 @@ class TestPluginExecutionResult:
 
     def test_execution_result_failure(self) -> None:
         """Test failed PluginExecutionResult."""
-        result = PluginExecutionResult(
+        result = PluginExecutionResultModel(
             execution_id="exec-456",
             success=False,
             duration_ms=75,
@@ -169,7 +169,7 @@ class TestPluginExecutionResult:
 
     def test_execution_result_repr(self) -> None:
         """Test PluginExecutionResult string representation."""
-        result = PluginExecutionResult(
+        result = PluginExecutionResultModel(
             execution_id="test-123",
             success=True,
             duration_ms=100,

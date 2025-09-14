@@ -18,8 +18,8 @@ from typing import ClassVar
 import pytest
 from flext_core import FlextTypes
 
-from flext_plugin.core.discovery import PluginDiscovery
-from flext_plugin.models import PluginType
+from flext_plugin.discovery import PluginDiscovery
+from flext_plugin.flext_plugin_models import PluginType
 
 
 class TestPluginDiscoveryReal:

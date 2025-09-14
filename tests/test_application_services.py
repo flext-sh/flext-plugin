@@ -21,7 +21,7 @@ from flext_plugin import (
     FlextPluginService,
     PluginType,
 )
-from flext_plugin.core.discovery import PluginDiscovery
+from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.loader import PluginLoader
 from flext_plugin.real_adapters import (
@@ -29,7 +29,6 @@ from flext_plugin.real_adapters import (
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
-from flext_plugin.services import PluginDiscoveryService, PluginService
 
 
 @pytest.fixture
@@ -597,7 +596,6 @@ class TestFlextPluginServiceReal:
     def test_load_plugin_with_real_plugin_entity(
         self,
         service: FlextPluginService,
-        temp_plugin_dir: Path,
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
         # Create REAL plugin entity that corresponds to actual file
@@ -1501,7 +1499,7 @@ class TestBackwardsCompatibilityAliasesReal:
         """Test PluginService alias exists and works with REAL functionality."""
         # Import from application.services module
 
-        service = PluginService()
+        service = FlextPluginService()
         assert service is not None
         assert isinstance(service, FlextPluginService)
 
@@ -1523,7 +1521,7 @@ class TestBackwardsCompatibilityAliasesReal:
         """Test PluginDiscoveryService alias exists and works with REAL functionality."""
         # Import from application.services module
 
-        service = PluginDiscoveryService()
+        service = FlextPluginDiscoveryService()
         assert service is not None
         assert isinstance(service, FlextPluginDiscoveryService)
 
