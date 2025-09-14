@@ -57,7 +57,9 @@ class FlextPluginCliService:
         except Exception as e:
             return FlextResult[FlextCliMain].fail(f"CLI initialization failed: {e}")
 
-    def handle_create_plugin(self, name: str, plugin_type: str = "EXTENSION") -> FlextResult[str]:
+    def handle_create_plugin(
+        self, name: str, plugin_type: str = "EXTENSION"
+    ) -> FlextResult[str]:
         """Handle plugin creation command."""
         try:
             if not name or not name.strip():

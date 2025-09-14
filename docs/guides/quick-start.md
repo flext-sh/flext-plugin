@@ -1,12 +1,18 @@
 # Quick Start Guide
 
-Get up and running with FLEXT Plugin in just a few minutes. This guide will walk you through installation, creating your first plugin, and basic usage patterns.
+**⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0 compliance. Current implementation is non-compliant with FLEXT standards and modern Python practices.
 
 ## Prerequisites
 
+**IMMEDIATE REQUIREMENTS (Phase 0):**
+- **FLEXT Compliance**: Single class per module architecture
+- **Modern Python Libraries**: setuptools entry points, importlib-metadata, packaging
+- **Production Security**: Process isolation (NO RestrictedPython)
+
+**Standard Prerequisites:**
 - **Python 3.13+** with pip or Poetry
 - **Git** (for development setup)
-- Basic understanding of Python async/await patterns
+- Understanding of modern Python plugin architecture
 
 ## Installation
 

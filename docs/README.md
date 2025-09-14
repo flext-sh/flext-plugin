@@ -1,6 +1,8 @@
 # FLEXT Plugin Documentation
 
-Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise-grade plugin management system for the FLEXT data integration platform.
+Welcome to the comprehensive documentation for FLEXT Plugin, the advanced plugin management system for the FLEXT ecosystem.
+
+> 🚨 **CRITICAL STATUS**: Currently non-compliant with FLEXT standards and modern Python best practices. Requires immediate architectural refactoring before feature development can continue.
 
 ## Documentation Structure
 
@@ -35,7 +37,13 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise-grad
 
 ### Prerequisites
 
-- **Python 3.13+**: Modern Python with type hints and async support
+**IMMEDIATE REQUIREMENTS (Phase 0):**
+- **Python 3.13+**: Modern Python with latest typing and async features
+- **FLEXT Standards Compliance**: Single class per module, consolidated architecture
+- **Modern Python Libraries**: setuptools, importlib-metadata, packaging for standards-compliant plugin discovery
+- **Production Security**: Process/container isolation (NOT RestrictedPython)
+
+**Development Environment:**
 - **Poetry**: Dependency management and packaging
 - **Git**: Version control and repository management
 
@@ -97,27 +105,30 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 - **Code Quality**: Ruff linting with ALL rules enabled
 - **Security**: Bandit scanning and pip-audit dependency checks
 
-### Development Commands
+### Development Commands (UPDATED FOR COMPLIANCE)
 
 ```bash
-# Setup development environment
-make setup
+# CRITICAL: Phase 0 compliance validation (MUST PASS FIRST)
+make architectural-audit   # Check single-class-per-module compliance
+make dependencies-audit    # Verify modern Python libraries
+make security-audit        # Validate production-grade security approach
 
-# Quality gates (required before commit)
+# Standard development workflow (ONLY after Phase 0 compliance)
+make setup                 # Development environment
 make validate              # Complete validation pipeline
 make check                 # Quick health check
-make fix                   # Auto-fix issues
 
-# Testing
-make test                  # Full test suite
-make test-unit             # Unit tests only
-make test-integration      # Integration tests
+# Testing (requires architectural compliance first)
+make test                  # Full test suite (post-refactoring)
 make coverage-html         # Coverage report
 
-# Plugin development
-make plugin-watch          # Hot reload development
-make plugin-validate       # Validate plugin system
+# Plugin development (POST-COMPLIANCE)
+make plugin-discover       # Entry point discovery testing
+make plugin-isolate        # Test process isolation
+make plugin-watch          # Modern hot reload with debouncing
 ```
+
+**⚠️ All development commands will fail until Phase 0 architectural compliance is achieved.**
 
 ## Architecture Principles
 
