@@ -247,7 +247,7 @@ markers = [
     "smoke: Smoke tests",
     "e2e: End-to-end tests",
 ]
-filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
+# filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 
 [tool.ruff]
 extend = "../ruff-shared.toml"

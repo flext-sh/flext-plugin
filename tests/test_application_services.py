@@ -1228,7 +1228,9 @@ class TestServicesIntegrationReal:
 
         # Both should work with real plugin directories - handle infrastructure errors
         try:
-            plugin_discovery_result = plugin_service.discover_plugins(str(temp_plugin_dir))
+            plugin_discovery_result = plugin_service.discover_plugins(
+                str(temp_plugin_dir)
+            )
         except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
             pytest.skip(f"Infrastructure not configured: {e}")

@@ -60,8 +60,9 @@ class FlextPluginServices(FlextDomainService[object]):
             else:
                 container = FlextContainer()
 
-            # FlextDomainService only needs the required fields, no arbitrary kwargs
-            super().__init__(container=container)  # type: ignore[call-arg]
+            # Initialize Pydantic model with container field
+            super().__init__(**kwargs)
+            object.__setattr__(self, "container", container)
             object.__setattr__(self, "_discovery_port", None)
             object.__setattr__(self, "_loader_port", None)
             object.__setattr__(self, "_manager_port", None)
@@ -266,8 +267,9 @@ class FlextPluginServices(FlextDomainService[object]):
             else:
                 container = FlextContainer()
 
-            # Initialize parent with arbitrary data including container
-            super().__init__(container=container)  # type: ignore[call-arg]
+            # Initialize Pydantic model
+            super().__init__(**kwargs)
+            object.__setattr__(self, "container", container)
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
 
@@ -341,8 +343,9 @@ class FlextPluginServices(FlextDomainService[object]):
             else:
                 container = FlextContainer()
 
-            # Initialize parent with arbitrary data including container
-            super().__init__(container=container)  # type: ignore[call-arg]
+            # Initialize Pydantic model
+            super().__init__(**kwargs)
+            object.__setattr__(self, "container", container)
             # Store private registry
             object.__setattr__(self, "_plugins", {})
 

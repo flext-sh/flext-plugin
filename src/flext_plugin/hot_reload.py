@@ -183,7 +183,7 @@ class StateManager:
         # Create state directory if it doesn't exist
         self.state_directory.mkdir(parents=True, exist_ok=True)
 
-    async def save_plugin_state(self, plugin: StatefulPlugin) -> PluginState:
+    async def save_plugin_state(self, plugin: StatefulPlugin | object) -> PluginState:
         """Save plugin state.
 
         Args:
@@ -193,7 +193,13 @@ class StateManager:
             Plugin state object
 
         """
-        state_data = await plugin.get_state()
+        # Check if plugin has get_state method
+        if hasattr(plugin, "get_state") and callable(getattr(plugin, "get_state")):
+            state_data = await plugin.get_state()
+        else:
+            # Plugin doesn't have get_state method, return empty state
+            state_data = {}
+
         plugin_id = getattr(plugin, "name", "unknown")
         plugin_version = getattr(plugin, "version", "1.0.0")
 
