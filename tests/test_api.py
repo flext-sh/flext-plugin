@@ -10,7 +10,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextModels, FlextTypes
+from flext_core import FlextTypes
 
 from flext_plugin import (
     FlextPlugin,
@@ -91,10 +91,10 @@ class TestCreateFlextPlugin:
         # Verify timestamp was added
         assert hasattr(plugin, "created_at")
         assert plugin.created_at is not None
-        # Convert datetime to FlextModels for proper comparison
-        before_ts = FlextModels(before_creation)
-        after_ts = FlextModels(after_creation)
-        assert before_ts <= plugin.created_at <= after_ts
+        # Compare datetime strings (timestamps are stored as ISO strings)
+        before_str = before_creation.isoformat()
+        after_str = after_creation.isoformat()
+        assert before_str <= plugin.created_at <= after_str
 
     def test_create_plugin_generates_unique_ids(self) -> None:
         """Test that multiple plugin creations generate unique IDs."""
@@ -197,11 +197,11 @@ class TestCreateFlextPluginConfig:
 
         after_creation = datetime.now(UTC)
 
-        # Convert datetime to FlextModels for proper comparison
-        before_ts = FlextModels(before_creation)
-        after_ts = FlextModels(after_creation)
-        assert before_ts <= config.created_at <= after_ts
-        assert before_ts <= config.updated_at <= after_ts
+        # Compare datetime strings (timestamps are stored as ISO strings)
+        before_str = before_creation.isoformat()
+        after_str = after_creation.isoformat()
+        assert before_str <= config.created_at <= after_str
+        assert before_str <= config.updated_at <= after_str
 
 
 class TestCreateFlextPluginMetadata:
@@ -277,10 +277,10 @@ class TestCreateFlextPluginMetadata:
         # Verify timestamp was added to metadata dict
         assert hasattr(metadata, "created_at")
         assert metadata.created_at is not None
-        # Convert datetime to FlextModels for proper comparison
-        before_ts = FlextModels(before_creation)
-        after_ts = FlextModels(after_creation)
-        assert before_ts <= metadata.created_at <= after_ts
+        # Compare datetime strings (timestamps are stored as ISO strings)
+        before_str = before_creation.isoformat()
+        after_str = after_creation.isoformat()
+        assert before_str <= metadata.created_at <= after_str
 
 
 class TestCreateFlextPluginRegistry:
@@ -347,7 +347,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_complete(self) -> None:
         """Test plugin creation from dictionary with all fields."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": "complete-plugin",
             "version": "2.0.0",
             "description": "Complete test plugin",
@@ -442,7 +442,7 @@ class TestCreatePluginFromDict:
 
     def test_create_plugin_from_dict_type_conversion(self) -> None:
         """Test plugin creation handles type conversion."""
-        plugin_data = {
+        plugin_data: dict[str, object] = {
             "name": 123,  # Non-string name
             "version": 1.0,  # Non-string version
             "description": 456,  # Non-string description
@@ -597,14 +597,14 @@ class TestEdgeCasesAndIntegration:
 
         after = datetime.now(UTC)
 
-        # All should have proper timestamps - convert datetime to FlextModels for comparison
-        before_ts = FlextModels(before)
-        after_ts = FlextModels(after)
-        assert before_ts <= plugin.created_at <= after_ts
-        assert before_ts <= config.created_at <= after_ts
-        assert before_ts <= config.updated_at <= after_ts
-        assert before_ts <= metadata.created_at <= after_ts
-        assert before_ts <= registry.created_at <= after_ts
+        # All should have proper timestamps - compare datetime strings
+        before_str = before.isoformat()
+        after_str = after.isoformat()
+        assert before_str <= plugin.created_at <= after_str
+        assert before_str <= config.created_at <= after_str
+        assert before_str <= config.updated_at <= after_str
+        assert before_str <= metadata.created_at <= after_str
+        assert before_str <= registry.created_at <= after_str
 
     def test_plugin_creation_with_all_factory_components(self) -> None:
         """Test creating a complete plugin with all factory functions."""

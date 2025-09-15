@@ -227,7 +227,9 @@ class RollbackManager:
         self.state_manager = state_manager
         self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
 
-    async def create_rollback_point(self, description: str = "", plugin_id: str = "") -> str:
+    async def create_rollback_point(
+        self, description: str = "", plugin_id: str = ""
+    ) -> str:
         """Create a new rollback point.
 
         Args:
@@ -303,6 +305,9 @@ class HotReloadManager(FlextModels.Entity):
 
     plugin_directory: str
     model_config: ClassVar = {"arbitrary_types_allowed": True}
+
+    # Private attributes initialized in model_post_init
+    _loaded_plugins: FlextTypes.Core.Dict
 
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:

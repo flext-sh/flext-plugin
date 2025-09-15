@@ -71,13 +71,9 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL directory event simulation
-        class DirectoryEvent:
-            def __init__(self) -> None:
-                """Initialize the instance."""
-                self.is_directory = True
-                self.src_path = "/test/directory"
+        from watchdog.events import DirModifiedEvent
 
-        event = DirectoryEvent()
+        event = DirModifiedEvent("/test/directory")
         handler.on_modified(event)
 
         # Callback should not be called for directories
@@ -93,13 +89,9 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL non-Python file event simulation
-        class NonPythonFileEvent:
-            def __init__(self) -> None:
-                """Initialize the instance."""
-                self.is_directory = False
-                self.src_path = "/test/file.txt"
+        from watchdog.events import FileModifiedEvent
 
-        event = NonPythonFileEvent()
+        event = FileModifiedEvent("/test/file.txt")
         handler.on_modified(event)
 
         # Callback should not be called for non-Python files
@@ -115,13 +107,9 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL Python file event simulation
-        class PythonFileEvent:
-            def __init__(self) -> None:
-                """Initialize the instance."""
-                self.is_directory = False
-                self.src_path = "/test/plugin.py"
+        from watchdog.events import FileModifiedEvent
 
-        event = PythonFileEvent()
+        event = FileModifiedEvent("/test/plugin.py")
         handler.on_modified(event)
 
         # Callback should be called with Path object
@@ -139,13 +127,9 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL dunder file event simulation
-        class DunderFileEvent:
-            def __init__(self) -> None:
-                """Initialize the instance."""
-                self.is_directory = False
-                self.src_path = "/test/__init__.py"
+        from watchdog.events import FileModifiedEvent
 
-        event = DunderFileEvent()
+        event = FileModifiedEvent("/test/__init__.py")
         handler.on_modified(event)
 
         # Callback should not be called for dunder files
@@ -161,10 +145,12 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL bytes path event simulation
-        class BytesPathEvent:
+        from watchdog.events import FileModifiedEvent
+
+        class BytesPathEvent(FileModifiedEvent):
             def __init__(self) -> None:
-                """Initialize the instance."""
-                self.is_directory = False
+                """Initialize with bytes path."""
+                super().__init__("/test/plugin.py")
                 self.src_path = b"/test/plugin.py"
 
         event = BytesPathEvent()
