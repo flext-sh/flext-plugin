@@ -172,13 +172,13 @@ class TestPluginExecutionResult:
         result = PluginExecutionResultModel(
             execution_id="test-123",
             success=True,
-            duration_ms=100,
+            execution_time=0.1,  # 0.1 seconds = 100 milliseconds
         )
 
         repr_str = repr(result)
         # Real implementation doesn't have custom __repr__, just check object type
-        if "PluginExecutionResult" not in repr_str:
-            raise AssertionError(f"Expected {'PluginExecutionResult'} in {repr_str}")
+        if "ExecutionResultModel" not in repr_str:
+            raise AssertionError(f"Expected {'ExecutionResultModel'} in {repr_str}")
         # Real implementation uses default object repr - test basic properties instead
         assert result.execution_id == "test-123"
         assert result.success is True

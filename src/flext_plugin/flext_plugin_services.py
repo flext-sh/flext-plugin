@@ -61,7 +61,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 container = FlextContainer()
 
             # FlextDomainService only needs the required fields, no arbitrary kwargs
-            super().__init__(container=container)
+            super().__init__(container=container)  # type: ignore[call-arg]
             object.__setattr__(self, "_discovery_port", None)
             object.__setattr__(self, "_loader_port", None)
             object.__setattr__(self, "_manager_port", None)
@@ -267,7 +267,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 container = FlextContainer()
 
             # Initialize parent with arbitrary data including container
-            super().__init__(container=container)
+            super().__init__(container=container)  # type: ignore[call-arg]
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
 
@@ -342,7 +342,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 container = FlextContainer()
 
             # Initialize parent with arbitrary data including container
-            super().__init__(container=container)
+            super().__init__(container=container)  # type: ignore[call-arg]
             # Store private registry
             object.__setattr__(self, "_plugins", {})
 

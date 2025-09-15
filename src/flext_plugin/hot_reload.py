@@ -524,7 +524,10 @@ class HotReloadManager(FlextModels.Entity):
                     plugin_id=plugin_id,
                     success=bool(result),
                 )
-            # Fallback implementation
+
+            # Fallback implementation: unload the plugin (cleanup and remove)
+            await self._unload_plugin(plugin_id)
+
             return ReloadEvent(
                 event_type="plugin_reload",
                 plugin_id=plugin_id,
@@ -548,7 +551,10 @@ class HotReloadManager(FlextModels.Entity):
         reload_events: list[ReloadEvent] = []
         loaded_plugins = self.loaded_plugins
 
-        for plugin_id in loaded_plugins:
+        # Create a copy of plugin IDs to avoid "dictionary changed size during iteration"
+        plugin_ids = list(loaded_plugins.keys())
+
+        for plugin_id in plugin_ids:
             reload_event = await self.reload_plugin(plugin_id)
             reload_events.append(reload_event)
 
