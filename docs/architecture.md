@@ -46,6 +46,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 ### Core Entities
 
 #### FlextPlugin
+
 ```python
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
@@ -62,6 +63,7 @@ class FlextPlugin(FlextModels.Entity):
 ```
 
 #### FlextPluginConfig
+
 ```python
 class FlextPluginConfig(FlextModels.Entity):
     """Plugin configuration with validation"""
@@ -114,6 +116,7 @@ class FlextPluginPlatform:
 ### Adapters
 
 #### File System Discovery
+
 ```python
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
@@ -123,6 +126,7 @@ class FileSystemPluginDiscovery:
 ```
 
 #### Watchdog Integration
+
 ```python
 class WatchdogHotReload:
     """File system monitoring for hot reload"""
@@ -138,6 +142,7 @@ class WatchdogHotReload:
 ### FLEXT-Core Integration
 
 #### FlextResult Pattern
+
 All operations return `FlextResult[T]` for railway-oriented programming:
 
 ```python
@@ -150,6 +155,7 @@ def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
 ```
 
 #### Dependency Injection
+
 Uses FlextContainer for service management:
 
 ```python

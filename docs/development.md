@@ -152,21 +152,25 @@ export FLEXT_PLUGIN_WATCH_INTERVAL=2
 ## Contributing Process
 
 ### 1. Issue Discussion
+
 - Discuss significant changes in GitHub issues
 - Get alignment on approach before implementation
 
 ### 2. Development
+
 - Create feature branch from main
 - Follow code standards and architecture patterns
 - Add tests for new functionality
 
 ### 3. Quality Validation
+
 ```bash
 make validate          # All quality gates must pass
 make test             # 85% coverage required
 ```
 
 ### 4. Pull Request
+
 - Clear description of changes
 - Reference related issues
 - Pass all CI checks
@@ -178,6 +182,7 @@ make test             # 85% coverage required
 ### Common Issues
 
 #### Import Errors
+
 ```bash
 # Verify Python path
 export PYTHONPATH="src:$PYTHONPATH"
@@ -187,6 +192,7 @@ poetry show --tree
 ```
 
 #### Plugin Loading Issues
+
 ```python
 # Enable debug logging
 import logging
@@ -199,6 +205,7 @@ if result.is_failure:
 ```
 
 #### Hot Reload Problems
+
 ```bash
 # Check watchdog integration
 make plugin-validate

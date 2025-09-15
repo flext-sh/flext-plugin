@@ -5,11 +5,13 @@
 ## Prerequisites
 
 **IMMEDIATE REQUIREMENTS (Phase 0):**
+
 - **FLEXT Compliance**: Single class per module architecture
 - **Modern Python Libraries**: setuptools entry points, importlib-metadata, packaging
 - **Production Security**: Process isolation (NO RestrictedPython)
 
 **Standard Prerequisites:**
+
 - **Python 3.13+** with pip or Poetry
 - **Git** (for development setup)
 - Understanding of modern Python plugin architecture

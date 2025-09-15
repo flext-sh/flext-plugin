@@ -198,9 +198,7 @@ class StateManager:
         plugin_version = getattr(plugin, "version", "1.0.0")
 
         return PluginState(
-            plugin_id=plugin_id,
-            plugin_version=plugin_version,
-            state_data=state_data
+            plugin_id=plugin_id, plugin_version=plugin_version, state_data=state_data
         )
 
     async def create_snapshot(self, _description: str = "") -> str:
