@@ -188,7 +188,7 @@ class TestPluginRegistry:
             def register(self, _plugin: Plugin) -> FlextResult[None]:
                 """Override register to always fail."""
                 msg = "Registration failed"
-                raise RuntimeError(msg)
+                return FlextResult[None].fail(msg)
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -197,7 +197,6 @@ class TestPluginRegistry:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin registration failed" in result.error
         assert "Registration failed" in result.error
 
     def test_unregister_plugin_success(

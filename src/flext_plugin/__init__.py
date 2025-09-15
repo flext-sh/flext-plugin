@@ -293,7 +293,6 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginValidationError",
     "HotReloadManager",
     "Plugin",
-    "PluginCLI",
     "PluginConfig",
     "PluginConfiguration",
     "PluginDiscovery",
@@ -343,7 +342,5 @@ __all__: FlextTypes.Core.StringList = [
     "create_plugin_metadata",
     "create_plugin_registry",
     "create_registry",
-    "install_plugin_legacy",
     "load_plugin",
-    "main",
 ]

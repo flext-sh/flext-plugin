@@ -132,7 +132,7 @@ class TestDomainServiceExceptionCoverage:
             def execute(self) -> FlextResult[str]:
                 return FlextResult[str].ok("test")
 
-        service = MockableService()
+        service = MockableService(container={})
 
         # Mock validate_business_rules to raise an exception
         with patch.object(

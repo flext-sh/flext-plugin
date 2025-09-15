@@ -56,13 +56,12 @@ class FlextPluginServices(FlextDomainService[object]):
             # Extract container from kwargs or create default
             container_arg = kwargs.pop("container", None)
             if container_arg is not None and isinstance(container_arg, FlextContainer):
-                self.container = container_arg
+                container = container_arg
             else:
-                self.container = FlextContainer()
+                container = FlextContainer()
 
             # FlextDomainService only needs the required fields, no arbitrary kwargs
-            super().__init__()
-            # Store private attributes
+            super().__init__(container=container)
             object.__setattr__(self, "_discovery_port", None)
             object.__setattr__(self, "_loader_port", None)
             object.__setattr__(self, "_manager_port", None)
@@ -153,7 +152,12 @@ class FlextPluginServices(FlextDomainService[object]):
                 if not validation_result.success or not validation_data:
                     return FlextResult[bool].fail("Plugin validation failed")
                 return self.loader_port.load_plugin(plugin)
-            except (RuntimeError, ValueError, TypeError) as e:
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+                FlextExceptions.BaseError,
+            ) as e:
                 return FlextResult[bool].fail(f"Failed to load plugin: {e}")
 
         def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -162,7 +166,12 @@ class FlextPluginServices(FlextDomainService[object]):
                 if not plugin_name:
                     return FlextResult[bool].fail("Plugin name is required")
                 return self.loader_port.unload_plugin(plugin_name)
-            except (RuntimeError, ValueError, TypeError) as e:
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+                FlextExceptions.BaseError,
+            ) as e:
                 return FlextResult[bool].fail(f"Failed to unload plugin: {e}")
 
         def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:
@@ -252,11 +261,13 @@ class FlextPluginServices(FlextDomainService[object]):
             """Initialize plugin discovery service with dependency injection container."""
             # Extract container from kwargs or create default
             container_arg = kwargs.pop("container", None)
-            if container_arg is not None:
-                kwargs["container"] = container_arg
+            if container_arg is not None and isinstance(container_arg, FlextContainer):
+                container = container_arg
             else:
-                kwargs["container"] = FlextContainer()
-            super().__init__()
+                container = FlextContainer()
+
+            # Initialize parent with arbitrary data including container
+            super().__init__(container=container)
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
 
@@ -307,7 +318,12 @@ class FlextPluginServices(FlextDomainService[object]):
                 if not plugin:
                     return FlextResult[bool].fail("Plugin is required")
                 return self.discovery_port.validate_plugin(plugin)
-            except (RuntimeError, ValueError, TypeError) as e:
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+                FlextExceptions.BaseError,
+            ) as e:
                 return FlextResult[bool].fail(f"Failed to validate plugin: {e}")
 
     class RegistryService(FlextDomainService[object]):
@@ -320,11 +336,13 @@ class FlextPluginServices(FlextDomainService[object]):
             """Initialize plugin registry service."""
             # Extract container from kwargs or create default
             container_arg = kwargs.pop("container", None)
-            if container_arg is not None:
-                kwargs["container"] = container_arg
+            if container_arg is not None and isinstance(container_arg, FlextContainer):
+                container = container_arg
             else:
-                kwargs["container"] = FlextContainer()
-            super().__init__()
+                container = FlextContainer()
+
+            # Initialize parent with arbitrary data including container
+            super().__init__(container=container)
             # Store private registry
             object.__setattr__(self, "_plugins", {})
 

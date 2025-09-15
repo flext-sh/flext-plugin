@@ -180,17 +180,28 @@ class StateManager:
         self._snapshots: list[FlextTypes.Core.Dict] = []
         self.enable_persistence = True
 
-    async def save_plugin_state(self, plugin: StatefulPlugin) -> FlextTypes.Core.Dict:
+        # Create state directory if it doesn't exist
+        self.state_directory.mkdir(parents=True, exist_ok=True)
+
+    async def save_plugin_state(self, plugin: StatefulPlugin) -> PluginState:
         """Save plugin state.
 
         Args:
             plugin: Plugin instance to save state for
 
         Returns:
-            Plugin state dictionary
+            Plugin state object
 
         """
-        return await plugin.get_state()
+        state_data = await plugin.get_state()
+        plugin_id = getattr(plugin, "name", "unknown")
+        plugin_version = getattr(plugin, "version", "1.0.0")
+
+        return PluginState(
+            plugin_id=plugin_id,
+            plugin_version=plugin_version,
+            state_data=state_data
+        )
 
     async def create_snapshot(self, _description: str = "") -> str:
         """Create a new snapshot.
@@ -528,6 +539,22 @@ class HotReloadManager(FlextModels.Entity):
                 success=False,
                 error=str(e),
             )
+
+    async def reload_all_plugins(self) -> list[ReloadEvent]:
+        """Reload all currently loaded plugins.
+
+        Returns:
+            List of ReloadEvent results for each plugin
+
+        """
+        reload_events: list[ReloadEvent] = []
+        loaded_plugins = self.loaded_plugins
+
+        for plugin_id in loaded_plugins:
+            reload_event = await self.reload_plugin(plugin_id)
+            reload_events.append(reload_event)
+
+        return reload_events
 
     async def _handle_plugin_change(self, watch_event: WatchEvent) -> None:
         """Handle plugin file change events.

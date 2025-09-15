@@ -172,16 +172,10 @@ class PluginDiscovery(FlextModels.Entity):
                     )
                     self.discovered_plugins[plugin_name_key] = metadata
                 except Exception as e:
-                    # Log manifest parsing error using FlextUtilities
+                    # Log manifest parsing/reading error using FlextUtilities
                     logger = FlextLogger(__name__)
                     logger.warning(
-                        f"Failed to parse plugin manifest {manifest_file}: {e}",
-                    )
-                except OSError as e:
-                    # Log file reading error but continue discovery process
-                    logger = FlextLogger(__name__)
-                    logger.warning(
-                        f"Failed to read plugin manifest {manifest_file}: {e}",
+                        f"Failed to process plugin manifest {manifest_file}: {e}",
                     )
             else:
                 # Create basic plugin metadata from file system information using FlextUtilities

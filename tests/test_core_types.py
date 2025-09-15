@@ -115,8 +115,8 @@ class TestPluginError:
             raise AssertionError(
                 f"Expected {'FLEXT_PROCESSING_ERROR'}, got {error.error_code}",
             )
-        # Real implementation doesn't include error code in string representation
-        assert str(error) == "Test error"
+        # Real implementation includes error code in string representation
+        assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
 
     def test_plugin_error_inheritance(self) -> None:
         """Test PluginError is proper Exception subclass."""

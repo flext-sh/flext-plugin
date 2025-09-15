@@ -18,7 +18,7 @@ from flext_core import FlextExceptions
 class FlextPluginExceptions(FlextExceptions):
     """Single CONSOLIDATED class containing ALL plugin exceptions."""
 
-    class ErrorCodes(Enum):
+    class PluginErrorCodes(Enum):
         """Error codes for plugin domain operations."""
 
         PLUGIN_ERROR = "PLUGIN_ERROR"
@@ -38,7 +38,7 @@ class FlextPluginExceptions(FlextExceptions):
         PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
     # Base plugin exception classes as nested classes
-    class BaseError(Exception):
+    class PluginBaseError(Exception):
         """Base exception for all plugin domain errors."""
 
         def __init__(
@@ -49,6 +49,11 @@ class FlextPluginExceptions(FlextExceptions):
             self.error_code = "FLEXT_PROCESSING_ERROR"
             super().__init__(message)
             self.plugin_id = plugin_id
+
+        def __str__(self) -> str:
+            """Format exception with error code prefix."""
+            message = super().__str__()
+            return f"[{self.error_code}] {message}"
 
     class DiscoveryError(FlextExceptions):
         """Plugin discovery errors."""
@@ -110,8 +115,8 @@ class FlextPluginExceptions(FlextExceptions):
 
 
 # Export consolidated class and individual exceptions for backward compatibility
-FlextPluginErrorCodes = FlextPluginExceptions.ErrorCodes
-FlextPluginError = FlextPluginExceptions.BaseError
+FlextPluginErrorCodes = FlextPluginExceptions.PluginErrorCodes
+FlextPluginError = FlextPluginExceptions.PluginBaseError
 FlextPluginDiscoveryError = FlextPluginExceptions.DiscoveryError
 FlextPluginLoadingError = FlextPluginExceptions.LoadingError
 FlextPluginExecutionError = FlextPluginExceptions.ExecutionError
