@@ -39,6 +39,7 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
+from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 from flext_plugin import HotReloadManager, PluginFileHandler, create_hot_reload_manager
 
@@ -71,8 +72,6 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL directory event simulation
-        from watchdog.events import DirModifiedEvent
-
         event = DirModifiedEvent("/test/directory")
         handler.on_modified(event)
 
@@ -89,8 +88,6 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL non-Python file event simulation
-        from watchdog.events import FileModifiedEvent
-
         event = FileModifiedEvent("/test/file.txt")
         handler.on_modified(event)
 
@@ -107,8 +104,6 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL Python file event simulation
-        from watchdog.events import FileModifiedEvent
-
         event = FileModifiedEvent("/test/plugin.py")
         handler.on_modified(event)
 
@@ -127,8 +122,6 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL dunder file event simulation
-        from watchdog.events import FileModifiedEvent
-
         event = FileModifiedEvent("/test/__init__.py")
         handler.on_modified(event)
 
@@ -145,8 +138,6 @@ class TestPluginFileHandler:
         handler = PluginFileHandler(reload_callback=track_reloads)
 
         # Create REAL bytes path event simulation
-        from watchdog.events import FileModifiedEvent
-
         class BytesPathEvent(FileModifiedEvent):
             def __init__(self) -> None:
                 """Initialize with bytes path."""

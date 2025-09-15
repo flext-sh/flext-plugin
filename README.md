@@ -1,8 +1,8 @@
 # flext-plugin
 
-**Plugin discovery, loading, and lifecycle management** for the FLEXT ecosystem, providing **dynamic component loading** using **Clean Architecture patterns** with domain-driven design.
+**Enterprise plugin management system** for the FLEXT ecosystem, providing **comprehensive plugin lifecycle management** with **hot-reload capabilities**, **security validation**, and **Clean Architecture patterns**.
 
-> **⚠️ STATUS**: Functional implementation with architectural compliance violations requiring resolution
+> **📊 STATUS**: Functional plugin system with architectural consolidation needed for FLEXT compliance
 
 ---
 
@@ -14,16 +14,20 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 
 ### **Key Responsibilities**
 
-1. **Plugin Lifecycle Management** - Discovery, loading, activation, deactivation operations
-2. **FLEXT Integration** - Uses FlextResult, FlextContainer, FlextModels.Entity patterns
-3. **Extensibility Framework** - Foundation for Singer taps, targets, and custom extensions
+1. **Plugin Lifecycle Management** - Discovery, loading, activation, deactivation, and hot-reload
+2. **Entry Points & File Discovery** - Dual discovery mechanisms for maximum flexibility
+3. **Security & Validation** - Plugin sandboxing and comprehensive validation framework
+4. **FLEXT Integration** - Complete FlextResult, FlextContainer, FlextModels patterns
+5. **Singer/Meltano Support** - Foundation for data pipeline plugin ecosystem
 
 ### **Integration Points**
 
-- **flext-core** → FlextResult, FlextContainer, FlextModels, FlextUtilities
-- **flext-cli** → Command-line plugin management (currently disabled)
-- **Singer Projects** → Plugin framework for data pipeline components
-- **FLEXT Projects** → Extensibility infrastructure
+- **flext-core** → FlextResult, FlextContainer, FlextModels, FlextUtilities, FlextLogger
+- **flext-cli** → Command-line plugin management (implemented, disabled in __init__.py)
+- **watchdog** → File system monitoring for hot-reload capabilities
+- **Singer Projects** → Plugin framework for data pipeline taps and targets
+- **Setuptools** → Entry points discovery (stub implementation)
+- **FLEXT Ecosystem** → Foundation for all plugin-enabled FLEXT projects
 
 ---
 
@@ -42,10 +46,12 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 
 ### **Implementation Metrics**
 
-- **Source Code**: 6,562 lines across 20 modules
-- **Classes**: 54 classes (violates FLEXT single-class-per-module standard)
-- **Platform Methods**: 14 public methods (discover, load, unload, install, etc.)
-- **Test Coverage**: 339 test methods
+- **Source Code**: 6,581 lines across 23 modules
+- **Classes**: 114 classes across plugin system components
+- **Exports**: 89 public API exports in __init__.py
+- **Platform Methods**: 14+ public methods (discover, load, unload, install, hot-reload)
+- **Test Coverage**: Comprehensive test suite with real plugin operations
+- **Architecture**: Clean Architecture with domain/application/infrastructure layers
 
 ### **Architecture Diagram**
 
@@ -140,9 +146,12 @@ tests/
 ### **Testing Commands**
 
 ```bash
-pytest tests/                  # Run all 339 tests
+pytest tests/                  # Run comprehensive test suite (21 test files)
 pytest --cov=flext_plugin     # Run with coverage reporting
 pytest -m "not slow"          # Skip slow tests
+pytest tests/unit/             # Unit tests only
+pytest tests/integration/      # Integration tests only
+pytest tests/e2e/             # End-to-end tests only
 ```
 
 ---
@@ -151,10 +160,12 @@ pytest -m "not slow"          # Skip slow tests
 
 ### **Quality Standards**
 
-- **Coverage**: 90% minimum target (339 test methods)
-- **Type Safety**: Complete MyPy compliance
-- **Security**: File-based discovery only (no sandboxing)
-- **FLEXT-Core Compliance**: Complete patterns, architecture issues remain
+- **Coverage**: 90% minimum target with real plugin operations
+- **Type Safety**: Complete MyPy compliance across 23 modules
+- **Security**: File-based discovery (sandboxing framework planned)
+- **FLEXT-Core Compliance**: Complete FlextResult/Container/Models patterns
+- **Architecture**: Clean Architecture with 114 classes requiring consolidation
+- **Hot Reload**: Real-time plugin monitoring with watchdog integration
 
 ### **Ecosystem Integration**
 
@@ -168,19 +179,22 @@ pytest -m "not slow"          # Skip slow tests
 
 ### **Current Version (0.9.0)**
 
-Functional implementation with limitations:
-- FlextPluginPlatform with 14 public methods
-- Clean Architecture implementation
-- Hot reload capabilities with file monitoring
-- **Critical Issue**: 54 classes violate FLEXT single-class-per-module standard
+Comprehensive plugin ecosystem:
+- **FlextPluginPlatform** - Main facade with complete plugin lifecycle
+- **Discovery System** - File-based and entry points mechanisms
+- **Hot Reload** - Real-time plugin monitoring with watchdog integration
+- **Security Framework** - Plugin validation and sandboxing (planned)
+- **Clean Architecture** - Domain entities, ports, adapters, services
+- **Architecture Consolidation Needed** - Multiple classes per module requiring unification
 
 ### **Next Version (0.10.0)**
 
-Required fixes:
-- Architectural consolidation to FLEXT compliance
-- Entry points discovery implementation (currently empty)
-- CLI integration restoration
-- Test failure resolution
+Architectural consolidation:
+- **Single-class-per-module compliance** - Unify 114 classes following FLEXT standards
+- **Entry points discovery** - Complete setuptools entry points implementation
+- **CLI integration** - Restore flext-cli integration (currently disabled)
+- **Security hardening** - Complete plugin sandboxing implementation
+- **Performance optimization** - Plugin loading and hot-reload efficiency
 
 ---
 
@@ -198,10 +212,11 @@ Required fixes:
 
 This project follows FLEXT ecosystem development standards:
 
-1. **Code Standards**: Single class per module (compliance required)
+1. **Code Standards**: Single class per module (consolidation in progress)
 2. **Quality Gates**: 90% test coverage, zero lint errors, type safety
-3. **Architecture**: Clean Architecture with domain-driven design
-4. **Integration**: Proper FLEXT-core pattern usage
+3. **Architecture**: Clean Architecture with domain/application/infrastructure layers
+4. **Modern Patterns**: Entry points + file discovery, hot reload, security validation
+5. **Integration**: Complete FLEXT-core pattern usage with FlextResult throughout
 
 See [CLAUDE.md](CLAUDE.md) for technical development guidance.
 

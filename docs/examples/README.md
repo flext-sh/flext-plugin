@@ -63,7 +63,7 @@ tap_plugin = create_flext_plugin(
     config={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
-        "singer_spec": "0.7.0"
+        "singer_spec": "0.9.0"
     }
 )
 ```

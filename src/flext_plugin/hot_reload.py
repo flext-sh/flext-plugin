@@ -192,7 +192,7 @@ class StateManager:
         """
         return await plugin.get_state()
 
-    async def create_snapshot(self, description: str = "") -> str:
+    async def create_snapshot(self, _description: str = "") -> str:
         """Create a new snapshot.
 
         Args:
@@ -228,7 +228,7 @@ class RollbackManager:
         self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
 
     async def create_rollback_point(
-        self, description: str = "", plugin_id: str = ""
+        self, _description: str = "", _plugin_id: str = ""
     ) -> str:
         """Create a new rollback point.
 

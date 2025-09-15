@@ -432,7 +432,7 @@ def create_singer_tap_plugin(
             plugin_type=PluginType.TAP,
             config={
                 **tap_config,
-                "singer_spec": "0.7.0",
+                "singer_spec": "0.9.0",
                 "description": f"Singer tap for {name} data extraction"
             }
         )
@@ -1482,7 +1482,7 @@ def create_oracle_tap_plugin(tap_config: Dict[str, object]) -> FlextResult[Flext
         plugin_type=PluginType.TAP,
         config={
             **tap_config,
-            "singer_spec": "0.7.0",
+            "singer_spec": "0.9.0",
             "description": f"Oracle tap for {tap_config.get('schema')} schema"
         }
     ))
