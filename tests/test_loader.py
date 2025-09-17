@@ -3,7 +3,7 @@
 This test module provides comprehensive validation of plugin loading functionality
 using REAL plugin components without ANY mocks.
 
-Testing Strategy - REAL FUNCTIONALITY ONLY:
+Testing Strategy ONLY:
     - PluginLoader: REAL plugin loading system with actual initialization
     - FlextPluginEntity: REAL plugin entities with actual business logic
     - Validation: REAL business rules and error handling

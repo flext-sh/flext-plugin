@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import override
 
 import pytest
-from flext_core import FlextResult, FlextTypes
 
+from flext_core import FlextResult, FlextTypes
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.flext_plugin_handlers import (
     FlextPluginEventHandler,

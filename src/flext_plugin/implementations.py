@@ -11,14 +11,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Protocol, cast
 
+from structlog.stdlib import BoundLogger
+
 from flext_core import (
     FlextLogger,
     FlextProtocols,
     FlextResult,
     FlextTypes,
 )
-from structlog.stdlib import BoundLogger
-
 from flext_plugin.entities import FlextPluginEntity
 
 

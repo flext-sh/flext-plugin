@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextResult
-
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.ports import FlextPluginLoaderPort
 

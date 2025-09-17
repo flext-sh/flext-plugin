@@ -13,9 +13,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
-from flext_core import FlextTypes
 from pydantic import Field
 
+from flext_core import FlextTypes
 from flext_plugin.flext_plugin_constants import (
     DEFAULT_PLUGIN_TIMEOUT_SECONDS,
     MAX_PLUGIN_NAME_LENGTH,

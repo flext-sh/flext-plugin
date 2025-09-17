@@ -15,7 +15,6 @@ import uuid
 from datetime import UTC, datetime
 
 from flext_core import FlextTypes
-
 from flext_plugin.entities import (
     FlextPlugin,
     FlextPluginConfig,

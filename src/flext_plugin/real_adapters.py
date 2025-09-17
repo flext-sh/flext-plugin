@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
-
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.flext_plugin_models import PluginType

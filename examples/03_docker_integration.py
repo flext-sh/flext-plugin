@@ -22,7 +22,6 @@ import sys
 from typing import cast
 
 from flext_core import FlextTypes
-
 from flext_plugin import PluginType, create_flext_plugin
 from flext_plugin.entities import FlextPluginEntity
 

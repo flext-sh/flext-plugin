@@ -20,6 +20,10 @@ from enum import Enum
 from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
+from watchdog.events import FileSystemEvent, FileSystemEventHandler
+from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
+
 from flext_core import (
     FlextExceptions,
     FlextLogger,
@@ -28,10 +32,6 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
-from watchdog.observers.api import BaseObserver
-
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
 

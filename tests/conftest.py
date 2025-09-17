@@ -16,8 +16,8 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer, FlextTypes
 
+from flext_core import FlextContainer, FlextTypes
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,

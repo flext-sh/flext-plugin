@@ -16,6 +16,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
+from pydantic import Field
+
 from flext_core import (
     FlextLogger,
     FlextModels,
@@ -23,8 +25,6 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from pydantic import Field
-
 from flext_plugin.flext_plugin_models import PluginType
 
 

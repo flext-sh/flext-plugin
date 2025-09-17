@@ -3,7 +3,7 @@
 This test module provides comprehensive validation of hot-reload functionality
 using REAL hot-reload components without ANY mocks.
 
-Testing Strategy - REAL FUNCTIONALITY ONLY:
+Testing Strategy ONLY:
     - PluginState: REAL state serialization and persistence validation
     - ReloadEvent: REAL event-driven reload notification and status tracking
     - PluginWatcher: REAL file system monitoring with change detection
@@ -30,8 +30,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from flext_core import FlextTypes
 
+from flext_core import FlextTypes
 from flext_plugin import (
     HotReloadManager,
     PluginState,

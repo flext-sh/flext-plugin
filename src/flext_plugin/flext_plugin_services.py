@@ -19,7 +19,6 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.ports import (
     FlextPluginDiscoveryPort,

@@ -13,7 +13,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
-
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 
 

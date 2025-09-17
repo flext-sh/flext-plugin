@@ -14,26 +14,20 @@ from typing import TypeVar
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 
-# Plugin-specific type variables
+# Plugin domain-specific TypeVars - defined locally in flext-plugin
 TPlugin = TypeVar("TPlugin")  # Generic plugin type
 TPluginConfig = TypeVar("TPluginConfig")  # Plugin configuration type
 TPluginMetadata = TypeVar("TPluginMetadata")  # Plugin metadata type
 TPluginResult = TypeVar("TPluginResult")  # Plugin operation result type
 TPluginData = TypeVar("TPluginData")  # Plugin data type
 TPluginContext = TypeVar("TPluginContext")  # Plugin execution context type
-
-# Service and handler type variables
 TPluginService = TypeVar("TPluginService")  # Plugin service type
 TPluginHandler = TypeVar("TPluginHandler")  # Plugin handler type
 TPluginManager = TypeVar("TPluginManager")  # Plugin manager type
 TPluginRegistry = TypeVar("TPluginRegistry")  # Plugin registry type
-
-# Discovery and loading type variables
 TPluginDiscovery = TypeVar("TPluginDiscovery")  # Plugin discovery type
 TPluginLoader = TypeVar("TPluginLoader")  # Plugin loader type
 TPluginValidator = TypeVar("TPluginValidator")  # Plugin validator type
-
-# Platform and system type variables
 TPluginPlatform = TypeVar("TPluginPlatform")  # Plugin platform type
 TPluginSystem = TypeVar("TPluginSystem")  # Plugin system type
 

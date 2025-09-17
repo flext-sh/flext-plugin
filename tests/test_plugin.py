@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import override
 
 import pytest
-from flext_core import FlextResult
 
+from flext_core import FlextResult
 from flext_plugin.simple_plugin import (
     Plugin,
     PluginRegistry,

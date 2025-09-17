@@ -12,9 +12,9 @@ import re
 from datetime import datetime
 from enum import StrEnum
 
-from flext_core import FlextModels, FlextTypes
 from pydantic import ConfigDict, Field, field_validator
 
+from flext_core import FlextModels, FlextTypes
 from flext_plugin.flext_plugin_constants import (
     MAX_PLUGIN_NAME_LENGTH,
     MIN_PLUGIN_NAME_LENGTH,
