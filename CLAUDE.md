@@ -1,8 +1,20 @@
 # FLEXT-PLUGIN CLAUDE.MD
 
-**Enterprise Plugin Management System & Extensibility Foundation for FLEXT Ecosystem**  
-**Version**: 0.9.0 | **Authority**: PLUGIN SYSTEM AUTHORITY | **Updated**: 2025-01-08  
+**Enterprise Plugin Management System & Extensibility Foundation for FLEXT Ecosystem**
+**Version**: 0.9.0 | **Authority**: PLUGIN SYSTEM AUTHORITY | **Updated**: 2025-01-08
 **Status**: Production-ready plugin management platform with zero errors across all quality gates
+
+**Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
+
+## 🔗 MCP SERVER INTEGRATION
+
+| MCP Server | Purpose | Status |
+|------------|---------|--------|
+| **serena** | Plugin system codebase analysis and extensibility patterns | **ACTIVE** |
+| **sequential-thinking** | Plugin architecture and system extension problem solving | **ACTIVE** |
+| **github** | Plugin ecosystem integration and system PRs | **ACTIVE** |
+
+**Usage**: `claude mcp list` for available servers, leverage for plugin-specific development patterns and extensibility analysis.
 
 ## 🎯 FLEXT-PLUGIN MISSION (PLUGIN SYSTEM AUTHORITY)
 
@@ -662,7 +674,7 @@ make test-hot-reload         # Hot-reload system health validation
 
 **FLEXT-PLUGIN AUTHORITY**: This document establishes flext-plugin as the definitive plugin management system and extensibility foundation for the entire FLEXT ecosystem.
 
-**ZERO TOLERANCE ENFORCEMENT**: Any deviation from these patterns requires explicit approval from FLEXT architecture authority.
+**ZERO TOLERANCE ENFORCEMENT**: object deviation from these patterns requires explicit approval from FLEXT architecture authority.
 
 **ENTERPRISE GRADE**: Production-ready plugin management with comprehensive security, monitoring, and hot-reload capabilities.
 
