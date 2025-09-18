@@ -250,7 +250,7 @@ class MyTapPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="tap-my-source",
-            version="0.9.0",
+            version="0.9.9",
             config={"plugin_type": PluginType.TAP},
             **kwargs
         )
@@ -269,7 +269,7 @@ from flext_plugin import FlextPluginPlatform, create_flext_plugin
 platform = FlextPluginPlatform()
 
 # Create and load plugin
-plugin = create_flext_plugin("my-plugin", "0.9.0")
+plugin = create_flext_plugin("my-plugin", "0.9.9")
 result = platform.load_plugin(plugin)
 
 if result.success:

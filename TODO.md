@@ -1,6 +1,6 @@
 # TODO - flext-plugin Development Roadmap
 
-**Version**: 0.9.0 | **Updated**: September 17, 2025
+**Version**: 0.9.9 RC | **Updated**: September 17, 2025
 
 ## Deep Investigation Findings
 
@@ -33,14 +33,14 @@
 - `ports.py`: 5 classes → Unified `PluginPorts`
 - `real_adapters.py`: 3 classes → Unified `PluginAdapters`
 
-**Status**: Architectural pattern adjustment needed, not critical functionality issue
+**Status**: Architectural pattern adjustment needed, not critical functionality issue · 1.0.0 Release Preparation
 
 ### 1.2 CLI Integration Status
 
 **Current**: CLI implementation exists but disabled in `__init__.py`
 **Evidence**: Lines 15-20 in `__init__.py` comment out CLI imports
 **Reason**: `flext-cli` dependency issues
-**Status**: Working CLI code available, requires dependency resolution
+**Status**: Working CLI code available, requires dependency resolution · 1.0.0 Release Preparation
 
 ---
 
@@ -161,7 +161,7 @@ def _discover_entry_points(self) -> None:
 
 ### 3.2 Hot Reload Implementation
 
-**Status**: Implemented (546 lines in hot_reload.py)
+**Status**: Implemented (546 lines in hot_reload.py) · 1.0.0 Release Preparation
 **Issue**: Test failures in rollback functionality
 **Required**: Fix hot reload test failures
 

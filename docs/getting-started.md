@@ -1,6 +1,6 @@
 # Getting Started with FLEXT Plugin
 
-**Version**: 0.9.0
+**Version**: 0.9.9 RC
 **Last Updated**: 2025-09-17
 
 ---
@@ -35,8 +35,8 @@ flext-plugin integrates with these FLEXT ecosystem components:
 
 ```bash
 # Core dependencies (automatically installed)
-flext-core>=0.9.0        # Foundation patterns and FlextResult
-flext-observability>=0.9.0  # Monitoring and observability
+flext-core>=0.9.9        # Foundation patterns and FlextResult
+flext-observability>=0.9.9  # Monitoring and observability
 ```
 
 ---
@@ -55,7 +55,7 @@ platform = FlextPluginPlatform()
 # Create a simple plugin
 plugin = create_flext_plugin(
     name="hello-world",
-    version="0.9.0",
+    version="0.9.9",
     config={
         "description": "A basic plugin example",
         "author": "FLEXT Developer"

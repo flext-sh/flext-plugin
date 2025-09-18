@@ -143,8 +143,8 @@ class TestPluginExecutionResult:
         if result.duration_ms != 150:
             raise AssertionError(f"Expected {150}, got {result.duration_ms}")
         assert result.output_data == {"key": "value"}
-        # Real implementation defaults error_message to empty string
-        assert result.error_message == ""
+        # Real implementation defaults error to empty string
+        assert not result.error
 
     def test_execution_result_failure(self) -> None:
         """Test failed PluginExecutionResult."""
@@ -152,7 +152,7 @@ class TestPluginExecutionResult:
             execution_id="exec-456",
             success=False,
             duration_ms=75,
-            error_message="Something went wrong",
+            error="Something went wrong",
         )
 
         if result.execution_id != "exec-456":
@@ -160,9 +160,9 @@ class TestPluginExecutionResult:
         if result.success:
             raise AssertionError(f"Expected False, got {result.success}")
         assert result.duration_ms == 75
-        if result.error_message != "Something went wrong":
+        if result.error != "Something went wrong":
             raise AssertionError(
-                f"Expected {'Something went wrong'}, got {result.error_message}",
+                f"Expected {'Something went wrong'}, got {result.error}",
             )
         # Real implementation defaults output_data to None
         assert result.output_data is None

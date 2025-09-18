@@ -1,18 +1,18 @@
 # FLEXT-PLUGIN CLAUDE.MD
 
 **Enterprise Plugin Management System & Extensibility Foundation for FLEXT Ecosystem**
-**Version**: 0.9.0 | **Authority**: PLUGIN SYSTEM AUTHORITY | **Updated**: 2025-01-08
-**Status**: Production-ready plugin management platform with zero errors across all quality gates
+**Version**: 0.9.9 RC | **Authority**: PLUGIN SYSTEM AUTHORITY | **Updated**: 2025-01-08
+**Status**: Production-ready plugin management platform with zero errors across all quality gates · 1.0.0 Release Preparation
 
 **Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
 
 ## 🔗 MCP SERVER INTEGRATION
 
-| MCP Server | Purpose | Status |
-|------------|---------|--------|
-| **serena** | Plugin system codebase analysis and extensibility patterns | **ACTIVE** |
-| **sequential-thinking** | Plugin architecture and system extension problem solving | **ACTIVE** |
-| **github** | Plugin ecosystem integration and system PRs | **ACTIVE** |
+| MCP Server              | Purpose                                                    | Status     |
+| ----------------------- | ---------------------------------------------------------- | ---------- |
+| **serena**              | Plugin system codebase analysis and extensibility patterns | **ACTIVE** |
+| **sequential-thinking** | Plugin architecture and system extension problem solving   | **ACTIVE** |
+| **github**              | Plugin ecosystem integration and system PRs                | **ACTIVE** |
 
 **Usage**: `claude mcp list` for available servers, leverage for plugin-specific development patterns and extensibility analysis.
 
@@ -73,7 +73,7 @@ platform = FlextPluginPlatform(container)
 # MANDATORY: Enterprise plugin configuration
 plugin_config = FlextPluginConfig(
     name="enterprise-extension",
-    version="0.9.0",
+    version="0.9.9",
     plugin_type=PluginType.EXTENSION,          # Enterprise plugin classification
     author="FLEXT Enterprise",                 # Enterprise attribution
     description="Production enterprise plugin",
@@ -229,7 +229,7 @@ flext-plugin platform --status --health-check
 
 # Production Plugin Operations
 flext-plugin registry --add-source https://plugins.flext.enterprise
-flext-plugin registry --publish-plugin ./my-plugin --version 0.9.0
+flext-plugin registry --publish-plugin ./my-plugin --version 0.9.9
 flext-plugin security --scan-plugin ./suspicious-plugin
 flext-plugin backup --plugins-state /backup/plugins-$(date +%Y%m%d)
 ```
@@ -308,10 +308,10 @@ from flext_plugin import FlextPluginConfig
 
 enterprise_config = FlextPluginConfig(
     name="enterprise-extension",
-    version="0.9.0",
+    version="0.9.9",
     plugin_type=PluginType.EXTENSION,
     author="FLEXT Enterprise",
-    dependencies=["flext-core>=0.9.0", "flext-api>=0.9.0"],
+    dependencies=["flext-core>=0.9.9", "flext-api>=0.9.9"],
     security_requirements={
         "sandboxing": True,
         "network_access": False,
@@ -510,7 +510,7 @@ class PluginConfigurationService:
 
         return FlextPluginConfig(
             name=plugin_name,
-            version="0.9.0",
+            version="0.9.9",
 
             # Plugin classification
             plugin_type=PluginType.EXTENSION,
@@ -539,9 +539,9 @@ class PluginConfigurationService:
 
             # Dependencies
             dependencies=[
-                "flext-core>=0.9.0",
-                "flext-api>=0.9.0",
-                "flext-observability>=0.9.0"
+                "flext-core>=0.9.9",
+                "flext-api>=0.9.9",
+                "flext-observability>=0.9.9"
             ]
         )
 ```

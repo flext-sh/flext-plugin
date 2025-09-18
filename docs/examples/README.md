@@ -40,7 +40,7 @@ from flext_plugin.core.types import PluginType
 # Create simple plugin
 plugin = create_flext_plugin(
     name="hello-world",
-    version="0.9.0",
+    version="0.9.9",
     plugin_type=PluginType.UTILITY
 )
 
@@ -58,12 +58,12 @@ from flext_plugin.core.types import PluginType
 # Create Singer tap plugin
 tap_plugin = create_flext_plugin(
     name="tap-example-api",
-    version="0.9.0",
+    version="0.9.9",
     plugin_type=PluginType.TAP,
     config={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
-        "singer_spec": "0.9.0"
+        "singer_spec": "0.9.9"
     }
 )
 ```
@@ -97,7 +97,7 @@ async def platform():
 
 async def test_plugin_activation(platform):
     """Test plugin activation."""
-    plugin = create_flext_plugin(name="test-plugin", version="0.9.0")
+    plugin = create_flext_plugin(name="test-plugin", version="0.9.9")
     await platform.register_plugin(plugin)
 
     result = await platform.activate_plugin("test-plugin")
@@ -197,7 +197,7 @@ class ExamplePlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="example-plugin",
-            version="0.9.0",
+            version="0.9.9",
             config={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Example plugin template",
@@ -275,7 +275,7 @@ class TestExamplePlugin:
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "example-plugin"
-        assert plugin.plugin_version == "0.9.0"
+        assert plugin.plugin_version == "0.9.9"
         assert plugin.is_valid()
 
     async def test_plugin_initialization(self, plugin):
@@ -324,7 +324,7 @@ class TestExamplePlugin:
 {
   "plugin": {
     "name": "example-plugin",
-    "version": "0.9.0",
+    "version": "0.9.9",
     "type": "utility",
     "description": "Example plugin for demonstration",
     "author": "Your Name",
@@ -337,8 +337,8 @@ class TestExamplePlugin:
     "batch_size": 100
   },
   "dependencies": {
-    "flext-core": ">=0.9.0",
-    "flext-observability": ">=0.9.0"
+    "flext-core": ">=0.9.9",
+    "flext-observability": ">=0.9.9"
   },
   "metadata": {
     "tags": ["example", "demo", "utility"],

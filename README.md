@@ -42,7 +42,7 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 | **FlextContainer**  | 🟢 Complete | Dependency injection throughout |
 | **Domain Patterns** | 🟢 Complete | FlextModels.Entity inheritance  |
 
-> **Status**: 🔴 Critical Issues | 🟡 Partial Implementation | 🟢 Implemented
+> **Status**: 🔴 Critical Issues · 1.0.0 Release Preparation | 🟡 Partial Implementation | 🟢 Implemented
 
 ### **Implementation Metrics**
 
@@ -177,7 +177,7 @@ pytest tests/e2e/             # End-to-end tests only
 
 ## 🗺️ Roadmap
 
-### **Current Version (0.9.0)**
+### **Current Version (0.9.9)**
 
 Functional plugin management system:
 

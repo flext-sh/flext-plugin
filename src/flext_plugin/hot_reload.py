@@ -403,14 +403,14 @@ class HotReloadManager(FlextModels.Entity):
 
         """
         # Create simplified discovery to avoid abstract class instantiation
-        object.__setattr__(self, "_discovery", None)  # We'll create this on-demand
-        object.__setattr__(self, "_loader", PluginLoader())
-        object.__setattr__(self, "_observer", Observer())
-        object.__setattr__(self, "_loaded_plugins", {})
+        setattr(self, "_discovery", None)  # We'll create this on-demand
+        setattr(self, "_loader", PluginLoader())
+        setattr(self, "_observer", Observer())
+        setattr(self, "_loaded_plugins", {})
         # Pre-initialize lazy properties to avoid attribute errors
-        object.__setattr__(self, "_state_manager", None)
-        object.__setattr__(self, "_rollback_manager", None)
-        object.__setattr__(self, "_watcher", None)
+        setattr(self, "_state_manager", None)
+        setattr(self, "_rollback_manager", None)
+        setattr(self, "_watcher", None)
 
     async def start_watching(self) -> None:
         """Start watching for plugin file changes.

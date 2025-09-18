@@ -299,7 +299,7 @@ class FlextPluginEntity(FlextModels.Entity):
         """
         # Handle both enum and string values due to use_enum_values=True
         if self.status in {PluginStatus.INACTIVE, PluginStatus.INACTIVE.value}:
-            object.__setattr__(self, "status", PluginStatus.ACTIVE)
+            setattr(self, "status", PluginStatus.ACTIVE)
             return True
         return False
 
@@ -312,7 +312,7 @@ class FlextPluginEntity(FlextModels.Entity):
         """
         # Handle both enum and string values due to use_enum_values=True
         if self.status in {PluginStatus.ACTIVE, PluginStatus.ACTIVE.value}:
-            object.__setattr__(self, "status", PluginStatus.INACTIVE)
+            setattr(self, "status", PluginStatus.INACTIVE)
             return True
         return False
 
@@ -347,16 +347,16 @@ class FlextPluginEntity(FlextModels.Entity):
         new_count = current_count + 1
         new_avg = ((current_avg * current_count) + execution_time_ms) / new_count
 
-        # Set new values using object.__setattr__ for frozen model
-        object.__setattr__(self, "_execution_count", new_count)
-        object.__setattr__(self, "_average_execution_time_ms", new_avg)
-        object.__setattr__(
+        # Set new values using setattr for frozen model
+        setattr(self, "_execution_count", new_count)
+        setattr(self, "_average_execution_time_ms", new_avg)
+        setattr(
             self, "_last_execution", FlextUtilities.Generators.generate_iso_timestamp()
         )
 
         # Update status based on success
         if not success:
-            object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
+            setattr(self, "status", PluginStatus.UNHEALTHY)
 
     def record_error(self, error_message: str) -> None:
         """Record plugin error for tracking.
@@ -371,13 +371,13 @@ class FlextPluginEntity(FlextModels.Entity):
         # Get current error count
         current_error_count = getattr(self, "_error_count", 0)
 
-        # Set new values using object.__setattr__ for frozen model
-        object.__setattr__(self, "_error_count", current_error_count + 1)
-        object.__setattr__(self, "_last_error", error_message)
-        object.__setattr__(
+        # Set new values using setattr for frozen model
+        setattr(self, "_error_count", current_error_count + 1)
+        setattr(self, "_last_error", error_message)
+        setattr(
             self, "_last_error_time", FlextUtilities.Generators.generate_iso_timestamp()
         )
-        object.__setattr__(self, "status", PluginStatus.UNHEALTHY)
+        setattr(self, "status", PluginStatus.UNHEALTHY)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin entity.
@@ -511,9 +511,7 @@ class FlextPluginConfig(FlextModels.Entity):
         # Update mutable dict in place
         self.config_data.update(new_config)
         # Update timestamp using frozen model workaround
-        object.__setattr__(
-            self, "updated_at", FlextUtilities.Generators.generate_iso_timestamp()
-        )
+        setattr(self, "updated_at", FlextUtilities.Generators.generate_iso_timestamp())
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin configuration entity.
@@ -647,7 +645,7 @@ class FlextPluginMetadata(FlextModels.Entity):
     @classmethod
     def validate_entry_point_not_empty(cls, v: str) -> str:
         """Validate that entry_point is not empty when provided."""
-        if v != "" and not v.strip():
+        if v and not v.strip():
             msg = "Plugin entry point cannot be empty"
             raise ValueError(msg)
         return v
@@ -793,15 +791,13 @@ class FlextPluginRegistry(FlextModels.Entity):
             plugin_count: Number of plugins synced (only updated on success)
 
         """
-        object.__setattr__(
-            self, "last_sync", FlextUtilities.Generators.generate_iso_timestamp()
-        )
+        setattr(self, "last_sync", FlextUtilities.Generators.generate_iso_timestamp())
 
         if success and plugin_count is not None:
-            object.__setattr__(self, "plugin_count", plugin_count)
+            setattr(self, "plugin_count", plugin_count)
         elif not success:
             # Increment error count on failure
-            object.__setattr__(self, "sync_error_count", self.sync_error_count + 1)
+            setattr(self, "sync_error_count", self.sync_error_count + 1)
 
     def is_valid(self) -> bool:
         """Validate plugin registry entity state.
@@ -1047,10 +1043,8 @@ class FlextPluginExecution(FlextModels.Entity):
 
     def mark_started(self) -> None:
         """Mark execution as started."""
-        object.__setattr__(self, "status", "running")
-        object.__setattr__(
-            self, "start_time", FlextUtilities.Generators.generate_iso_timestamp()
-        )
+        setattr(self, "status", "running")
+        setattr(self, "start_time", FlextUtilities.Generators.generate_iso_timestamp())
 
     def mark_completed(
         self,
@@ -1065,16 +1059,14 @@ class FlextPluginExecution(FlextModels.Entity):
             error_message: Error message if execution failed
 
         """
-        object.__setattr__(
-            self, "end_time", FlextUtilities.Generators.generate_iso_timestamp()
-        )
+        setattr(self, "end_time", FlextUtilities.Generators.generate_iso_timestamp())
         if success:
-            object.__setattr__(self, "status", "completed")
+            setattr(self, "status", "completed")
         else:
-            object.__setattr__(self, "status", "failed")
+            setattr(self, "status", "failed")
             if error_message:
-                object.__setattr__(self, "error", error_message)
-                object.__setattr__(self, "error_message", error_message)
+                setattr(self, "error", error_message)
+                setattr(self, "error_message", error_message)
 
     def update_resource_usage(
         self,
@@ -1101,7 +1093,7 @@ class FlextPluginExecution(FlextModels.Entity):
                 },
             },
         )
-        object.__setattr__(self, "output_data", current_output)
+        setattr(self, "output_data", current_output)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin execution entity.

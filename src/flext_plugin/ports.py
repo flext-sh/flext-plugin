@@ -12,6 +12,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from abc import abstractmethod
+
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 
@@ -19,6 +21,7 @@ from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 class FlextPluginDiscoveryPort(FlextProtocols.Domain.Service):
     """Domain port interface for plugin discovery and validation operations."""
 
+    @abstractmethod
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
         """Discover plugins in the given path.
 
@@ -28,8 +31,8 @@ class FlextPluginDiscoveryPort(FlextProtocols.Domain.Service):
             FlextResult containing list of discovered plugins
 
         """
-        raise NotImplementedError
 
+    @abstractmethod
     def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
         """Validate a plugin.
 
@@ -39,12 +42,12 @@ class FlextPluginDiscoveryPort(FlextProtocols.Domain.Service):
             FlextResult indicating if plugin is valid
 
         """
-        raise NotImplementedError
 
 
 class FlextPluginLoaderPort(FlextProtocols.Domain.Service):
     """Domain port interface for plugin loading and memory management operations."""
 
+    @abstractmethod
     def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
         """Load a plugin.
 
@@ -54,8 +57,10 @@ class FlextPluginLoaderPort(FlextProtocols.Domain.Service):
             FlextResult indicating if loading was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin.
 
@@ -65,8 +70,8 @@ class FlextPluginLoaderPort(FlextProtocols.Domain.Service):
             FlextResult indicating if unloading was successful
 
         """
-        raise NotImplementedError
 
+    @abstractmethod
     def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
         """Check if a plugin is loaded.
 
@@ -76,12 +81,12 @@ class FlextPluginLoaderPort(FlextProtocols.Domain.Service):
             FlextResult indicating if plugin is loaded
 
         """
-        raise NotImplementedError
 
 
 class FlextPluginManagerPort(FlextProtocols.Domain.Service):
     """Domain port interface for comprehensive plugin management and configuration."""
 
+    @abstractmethod
     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:
         """Install a plugin from the given path.
 
@@ -91,8 +96,8 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult containing installed plugin
 
         """
-        raise NotImplementedError
 
+    @abstractmethod
     def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Uninstall a plugin.
 
@@ -102,8 +107,8 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult indicating if uninstallation was successful
 
         """
-        raise NotImplementedError
 
+    @abstractmethod
     def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Enable a plugin.
 
@@ -113,8 +118,10 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult indicating if enabling was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Disable a plugin.
 
@@ -124,8 +131,10 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult indicating if disabling was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
         """Get configuration for a plugin.
 
@@ -135,8 +144,10 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult containing plugin configuration
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def update_plugin_config(
         self,
         plugin_name: str,
@@ -151,12 +162,14 @@ class FlextPluginManagerPort(FlextProtocols.Domain.Service):
             FlextResult indicating if update was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
 
 class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
     """Domain port interface for plugin registry operations."""
 
+    @abstractmethod
     def register_registry(self, registry: str) -> FlextResult[bool]:
         """Register a plugin registry.
 
@@ -167,8 +180,10 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
             FlextResult indicating if registration was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def sync_registry(self, registry_name: str) -> FlextResult[bool]:
         """Synchronize with a plugin registry.
 
@@ -179,8 +194,10 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
             FlextResult indicating if sync was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def search_plugins(
         self, registry: str, query: str
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
@@ -194,8 +211,10 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
             FlextResult containing list of plugin search results
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def download_plugin(self, plugin_id: str, registry: str) -> FlextResult[str]:
         """Download a plugin from a registry.
 
@@ -207,8 +226,10 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
             FlextResult containing path to downloaded plugin
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def verify_plugin_signature(self, plugin_path: str) -> FlextResult[bool]:
         """Verify a plugin's digital signature.
 
@@ -219,12 +240,14 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
             FlextResult indicating if signature is valid
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
 
 class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
     """Domain port interface for plugin hot reload operations."""
 
+    @abstractmethod
     def start_watching(
         self, watch_paths: FlextTypes.Core.StringList
     ) -> FlextResult[bool]:
@@ -237,8 +260,10 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
             FlextResult indicating if watching was started successfully
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def stop_watching(self) -> FlextResult[bool]:
         """Stop watching for plugin file changes.
 
@@ -246,8 +271,10 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
             FlextResult indicating if watching was stopped successfully
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def reload_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
         """Reload a specific plugin.
 
@@ -258,8 +285,10 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
             FlextResult indicating if reload was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def backup_plugin_state(
         self, plugin_name: str
     ) -> FlextResult[FlextTypes.Core.Dict]:
@@ -272,8 +301,10 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
             FlextResult containing backed up state data
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
+    @abstractmethod
     def restore_plugin_state(
         self,
         plugin_name: str,
@@ -289,7 +320,8 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
             FlextResult indicating if restoration was successful
 
         """
-        raise NotImplementedError
+        ...
+        # Abstract method - implemented by adapters
 
 
 # Backwards compatibility aliases

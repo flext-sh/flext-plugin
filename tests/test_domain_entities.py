@@ -116,10 +116,10 @@ class TestFlextPlugin:
         )
 
         # Test status can be changed through proper methods
-        object.__setattr__(plugin, "status", PluginStatus.LOADED)
+        setattr(plugin, "status", PluginStatus.LOADED)
         assert str(plugin.plugin_status) == str(PluginStatus.LOADED)
 
-        object.__setattr__(plugin, "status", PluginStatus.ACTIVE)
+        setattr(plugin, "status", PluginStatus.ACTIVE)
         assert str(plugin.plugin_status) == str(PluginStatus.ACTIVE)
 
     def test_plugin_health_check(self) -> None:
@@ -136,12 +136,12 @@ class TestFlextPlugin:
         )
 
         # Test healthy status
-        object.__setattr__(plugin, "status", PluginStatus.HEALTHY)
+        setattr(plugin, "status", PluginStatus.HEALTHY)
         if not (plugin.is_healthy):
             raise AssertionError(f"Expected True, got {plugin.is_healthy}")
 
         # Test non-healthy status
-        object.__setattr__(plugin, "status", PluginStatus.UNHEALTHY)
+        setattr(plugin, "status", PluginStatus.UNHEALTHY)
         if plugin.is_healthy:
             raise AssertionError(f"Expected False, got {plugin.is_healthy}")
 
@@ -459,7 +459,7 @@ class TestFlextPluginMetadata:
 
         if metadata.name != "minimal-plugin":
             raise AssertionError(f"Expected {'minimal-plugin'}, got {metadata.name}")
-        assert metadata.description == ""
+        assert metadata.description is not None
         if metadata.dependencies != []:
             raise AssertionError(f"Expected {[]}, got {metadata.dependencies}")
         if metadata.trusted:

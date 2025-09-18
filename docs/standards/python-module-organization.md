@@ -266,7 +266,7 @@ async def deploy_plugin():
     platform = create_flext_plugin_platform()
     plugin = create_flext_plugin(
         name="data-processor",
-        version="0.9.0",
+        version="0.9.9",
         plugin_type=PluginType.PROCESSOR
     )
     return await platform.register_plugin(plugin)
@@ -282,7 +282,7 @@ from flext_plugin.core.types import PluginStatus, PluginType
 
 # More explicit but verbose
 service = FlextPluginService(registry)
-plugin = FlextPlugin(name="custom", version="0.9.0")
+plugin = FlextPlugin(name="custom", version="0.9.9")
 ```
 
 #### **3. Factory Function Pattern**
@@ -432,7 +432,7 @@ def create_singer_tap_plugin(
             plugin_type=PluginType.TAP,
             config={
                 **tap_config,
-                "singer_spec": "0.9.0",
+                "singer_spec": "0.9.9",
                 "description": f"Singer tap for {name} data extraction"
             }
         )
@@ -649,7 +649,7 @@ class FlextPlugin(FlextModels.Entity):
 
     # Dependencies and compatibility
     dependencies: List[str] = field(default_factory=list)
-    flext_core_version: str = ">=0.9.0"
+    flext_core_version: str = ">=0.9.9"
     python_version: str = ">=3.13"
 
     # Runtime state
@@ -751,7 +751,7 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
     plugins: Dict[str, FlextPlugin] = field(default_factory=dict)
     discovery_paths: List[str] = field(default_factory=list)
     last_discovery: Optional[datetime] = None
-    registry_version: str = "0.9.0"
+    registry_version: str = "0.9.9"
 
     # Registry-level business rules
     MAX_PLUGINS_PER_TYPE = 100
@@ -891,7 +891,7 @@ class FlextPluginConfig(FlextModels.Value):
     """
 
     config_data: Dict[str, object]
-    schema_version: str = "0.9.0"
+    schema_version: str = "0.9.9"
     environment: str = "production"
 
     def __post_init__(self):
@@ -1464,12 +1464,12 @@ def create_oracle_wms_plugin(config: Dict[str, object]) -> FlextResult[FlextPlug
     """Create Oracle WMS plugin following ecosystem standards."""
     return FlextResult[None].ok(create_flext_plugin(
         name="oracle-wms-connector",
-        version="0.9.0",
+        version="0.9.9",
         plugin_type=PluginType.DATABASE,
         config={
             **config,
             "description": "Oracle WMS database connector plugin",
-            "dependencies": ["flext-core>=0.9.0", "flext-db-oracle>=0.9.0"]
+            "dependencies": ["flext-core>=0.9.9", "flext-db-oracle>=0.9.9"]
         }
     ))
 
@@ -1478,11 +1478,11 @@ def create_oracle_tap_plugin(tap_config: Dict[str, object]) -> FlextResult[Flext
     """Create Oracle Singer tap plugin."""
     return FlextResult[None].ok(create_flext_plugin(
         name=f"tap-oracle-{tap_config.get('schema', 'default')}",
-        version="0.9.0",
+        version="0.9.9",
         plugin_type=PluginType.TAP,
         config={
             **tap_config,
-            "singer_spec": "0.9.0",
+            "singer_spec": "0.9.9",
             "description": f"Oracle tap for {tap_config.get('schema')} schema"
         }
     ))
@@ -1560,4 +1560,4 @@ class EcosystemPluginManager:
 **Last Updated**: August 3, 2025
 **Target Audience**: FLEXT Plugin developers and ecosystem contributors
 **Scope**: Python module organization for plugin system development
-**Version**: 0.9.0 → 0.9.0 development guidelines for plugin architecture
+**Version**: 0.9.9 RC → 0.9.9 development guidelines for plugin architecture

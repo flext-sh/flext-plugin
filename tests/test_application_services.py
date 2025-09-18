@@ -803,7 +803,7 @@ class TestFlextPluginServiceReal:
         # Create config and make it invalid using object.__setattr__ to bypass validation
         config = FlextPluginConfig.create(plugin_name="test-plugin")
         # Directly set to empty to bypass Pydantic validation
-        object.__setattr__(config, "plugin_name", "")
+        setattr(config, "plugin_name", "")
         result = service.update_plugin_config("test-plugin", config)
         assert not result.success
         assert "Invalid plugin configuration" in str(result.error)
@@ -990,7 +990,7 @@ class TestFlextPluginDiscoveryServiceReal:
         # Verify the corresponding plugin file actually exists
         plugin_file = temp_plugin_dir / "tap_database.py"
         assert plugin_file.exists()
-        assert plugin_file.read_text().strip() != ""  # Has actual content
+        assert plugin_file.read_text().strip()  # Has actual content
 
 
 class TestRealPluginIntegrationWorkflow:

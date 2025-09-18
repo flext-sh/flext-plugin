@@ -81,7 +81,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 result = self.container.get("plugin_discovery_port")
                 if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                     discovery_port_data: FlextPluginDiscoveryPort = result.data
-                    object.__setattr__(self, "_discovery_port", discovery_port_data)
+                    setattr(self, "_discovery_port", discovery_port_data)
                     return discovery_port_data
             if isinstance(discovery_port, FlextPluginDiscoveryPort):
                 return discovery_port
@@ -98,7 +98,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 result = self.container.get("plugin_loader_port")
                 if result.success and isinstance(result.data, FlextPluginLoaderPort):
                     loader_port_data: FlextPluginLoaderPort = result.data
-                    object.__setattr__(self, "_loader_port", loader_port_data)
+                    setattr(self, "_loader_port", loader_port_data)
                     return loader_port_data
             if isinstance(loader_port, FlextPluginLoaderPort):
                 return loader_port
@@ -115,7 +115,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 result = self.container.get("plugin_manager_port")
                 if result.success and isinstance(result.data, FlextPluginManagerPort):
                     manager_port_data: FlextPluginManagerPort = result.data
-                    object.__setattr__(self, "_manager_port", manager_port_data)
+                    setattr(self, "_manager_port", manager_port_data)
                     return manager_port_data
             if isinstance(manager_port, FlextPluginManagerPort):
                 return manager_port
@@ -287,7 +287,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 result = self.container.get("plugin_discovery_port")
                 if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                     discovery_port_data: FlextPluginDiscoveryPort = result.data
-                    object.__setattr__(self, "_discovery_port", discovery_port_data)
+                    setattr(self, "_discovery_port", discovery_port_data)
                     return discovery_port_data
             if isinstance(discovery_port, FlextPluginDiscoveryPort):
                 return discovery_port
