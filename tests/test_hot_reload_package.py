@@ -199,7 +199,9 @@ class TestPluginWatcherReal:
         assert all(isinstance(d, Path) for d in watcher.watch_directories)
 
     def test_get_watched_files_real(
-        self, watcher: PluginWatcher, temp_dir: Path,
+        self,
+        watcher: PluginWatcher,
+        temp_dir: Path,
     ) -> None:
         """Test getting REAL watched files with actual plugin files."""
         # Create real plugin files
@@ -529,7 +531,8 @@ class TestLifecyclePlugin:
 
     @pytest.mark.asyncio
     async def test_reload_plugin_real(
-        self, hot_reload_manager: HotReloadManager,
+        self,
+        hot_reload_manager: HotReloadManager,
     ) -> None:
         """Test reloading REAL specific plugin."""
         plugin_id = "real-reload-test-plugin"

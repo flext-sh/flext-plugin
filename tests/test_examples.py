@@ -41,7 +41,8 @@ create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
 async def _run(
-    cmd_list: FlextTypes.Core.StringList, cwd: str | None = None,
+    cmd_list: FlextTypes.Core.StringList,
+    cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
     process = await asyncio.create_subprocess_exec(
@@ -229,7 +230,8 @@ def test_plugin_configuration_example_functionality() -> None:
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
     routes = cast(
-        "FlextTypes.Core.Dict", standalone_config.config_data.get("routes", {}),
+        "FlextTypes.Core.Dict",
+        standalone_config.config_data.get("routes", {}),
     )
     assert len(routes) == 2
     middleware = cast(

@@ -128,7 +128,9 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
                 except Exception as e:
                     # Log exception but continue discovery
                     logger.warning(
-                        "Failed to process plugin file %s: %s", plugin_file, e,
+                        "Failed to process plugin file %s: %s",
+                        plugin_file,
+                        e,
                     )
                     continue
 

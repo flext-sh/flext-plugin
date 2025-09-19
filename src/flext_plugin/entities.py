@@ -199,7 +199,8 @@ class FlextPluginEntity(FlextModels.Entity):
             "author": config.get("author", kwargs.get("author", "")),
             "status": config.get("status", kwargs.get("status", PluginStatus.INACTIVE)),
             "plugin_type": config.get(
-                "plugin_type", kwargs.get("plugin_type", PluginType.UTILITY),
+                "plugin_type",
+                kwargs.get("plugin_type", PluginType.UTILITY),
             ),
         }
 
@@ -348,7 +349,9 @@ class FlextPluginEntity(FlextModels.Entity):
         setattr(self, "_execution_count", new_count)
         setattr(self, "_average_execution_time_ms", new_avg)
         setattr(
-            self, "_last_execution", FlextUtilities.Generators.generate_iso_timestamp(),
+            self,
+            "_last_execution",
+            FlextUtilities.Generators.generate_iso_timestamp(),
         )
 
         # Update status based on success
@@ -372,7 +375,9 @@ class FlextPluginEntity(FlextModels.Entity):
         setattr(self, "_error_count", current_error_count + 1)
         setattr(self, "_last_error", error_message)
         setattr(
-            self, "_last_error_time", FlextUtilities.Generators.generate_iso_timestamp(),
+            self,
+            "_last_error_time",
+            FlextUtilities.Generators.generate_iso_timestamp(),
         )
         setattr(self, "status", PluginStatus.UNHEALTHY)
 
@@ -450,14 +455,16 @@ class FlextPluginConfig(FlextModels.Entity):
             p = FlextPluginConfigParams()
             p.plugin_name = plugin_name
             p.config_data = cast(
-                "FlextTypes.Core.Dict | None", kwargs.get("config_data"),
+                "FlextTypes.Core.Dict | None",
+                kwargs.get("config_data"),
             )
             p.created_at = cast("str | None", kwargs.get("created_at"))
             p.updated_at = cast("str | None", kwargs.get("updated_at"))
             p.enabled = cast("bool", kwargs.get("enabled", True))
             p.settings = cast("FlextTypes.Core.Dict | None", kwargs.get("settings"))
             p.dependencies = cast(
-                "FlextTypes.Core.StringList | None", kwargs.get("dependencies"),
+                "FlextTypes.Core.StringList | None",
+                kwargs.get("dependencies"),
             )
             p.priority = cast("int", kwargs.get("priority", 100))
             p.max_memory_mb = cast("int", kwargs.get("max_memory_mb", 512))
@@ -588,7 +595,8 @@ class FlextPluginMetadata(FlextModels.Entity):
             p.plugin_type = kwargs.get("plugin_type", "")
             p.description = cast("str", kwargs.get("description", ""))
             p.dependencies = cast(
-                "FlextTypes.Core.StringList | None", kwargs.get("dependencies"),
+                "FlextTypes.Core.StringList | None",
+                kwargs.get("dependencies"),
             )
             p.trusted = cast("bool", kwargs.get("trusted", False))
             p.homepage = cast("str | None", kwargs.get("homepage"))
@@ -953,7 +961,8 @@ class FlextPluginExecution(FlextModels.Entity):
             "plugin_id": kwargs.get("plugin_id", plugin_name),
             "execution_id": execution_id,
             "start_time": execution_config.get(
-                "start_time", FlextUtilities.Generators.generate_iso_timestamp(),
+                "start_time",
+                FlextUtilities.Generators.generate_iso_timestamp(),
             ),
             "end_time": execution_config.get("end_time"),
             "status": execution_config.get("status", "pending"),

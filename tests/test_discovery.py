@@ -49,7 +49,8 @@ class TestPluginDiscoveryReal:
         assert hasattr(discovery, "blacklisted_plugins")
 
     def test_discovery_initialization_with_custom_directory(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test plugin discovery initialization with custom directory."""
         custom_dir = str(temp_dir / "custom_plugins")
@@ -60,7 +61,8 @@ class TestPluginDiscoveryReal:
         assert len(discovery.plugin_directories) == 0
 
     def test_discovery_initialization_with_additional_directories(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test plugin discovery initialization with additional directories."""
         main_dir = str(temp_dir / "main_plugins")
@@ -512,7 +514,8 @@ class TestPlugin:
 
     @pytest.mark.asyncio
     async def test_full_discovery_workflow_with_real_files(
-        self, temp_dir: Path,
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test complete discovery workflow with REAL files and operations."""
         # Setup multiple plugin directories

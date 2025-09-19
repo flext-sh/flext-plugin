@@ -297,7 +297,8 @@ class FlextPluginServices(FlextDomainService[object]):
             raise FlextExceptions.BaseError(msg)
 
         def scan_directory(
-            self, directory_path: str,
+            self,
+            directory_path: str,
         ) -> FlextResult[list[FlextPluginEntity]]:
             """Scan directory for plugins."""
             try:
@@ -312,7 +313,8 @@ class FlextPluginServices(FlextDomainService[object]):
                 )
 
         def validate_plugin_integrity(
-            self, plugin: FlextPluginEntity | None,
+            self,
+            plugin: FlextPluginEntity | None,
         ) -> FlextResult[bool]:
             """Validate plugin integrity."""
             try:
@@ -356,7 +358,8 @@ class FlextPluginServices(FlextDomainService[object]):
             )
 
         async def register_plugin(
-            self, plugin: FlextPluginEntity,
+            self,
+            plugin: FlextPluginEntity,
         ) -> FlextResult[FlextPluginEntity]:
             """Register plugin instance ensuring required fields."""
             try:
@@ -390,7 +393,8 @@ class FlextPluginServices(FlextDomainService[object]):
             return len(plugins)
 
         def list_plugins(
-            self, plugin_type: object | None = None,
+            self,
+            plugin_type: object | None = None,
         ) -> FlextTypes.Core.List:
             """List plugin metadata optionally filtered by type."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})

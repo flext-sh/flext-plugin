@@ -185,10 +185,12 @@ class PluginDiscovery(FlextModels.Entity):
                     "path": FlextUtilities.TextProcessor.safe_string(str(py_file)),
                     "file_name": FlextUtilities.TextProcessor.safe_string(py_file.name),
                     "size": FlextUtilities.Conversions.safe_int(
-                        file_stat.st_size, default=0,
+                        file_stat.st_size,
+                        default=0,
                     ),
                     "modified": FlextUtilities.Conversions.safe_float(
-                        file_stat.st_mtime, default=0.0,
+                        file_stat.st_mtime,
+                        default=0.0,
                     ),
                     "module_name": FlextUtilities.TextProcessor.safe_string(
                         plugin_name,

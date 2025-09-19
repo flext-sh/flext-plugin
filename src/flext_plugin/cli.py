@@ -37,7 +37,9 @@ class FlextPluginCliService:
         self._plugin_handler = PluginCLI()
 
     def handle_result(
-        self, result: FlextResult[object], success_msg: str = "",
+        self,
+        result: FlextResult[object],
+        success_msg: str = "",
     ) -> FlextResult[str]:
         """Handle FlextResult with basic logging."""
         if result.is_failure:
@@ -58,7 +60,9 @@ class FlextPluginCliService:
             return FlextResult[FlextCliMain].fail(f"CLI initialization failed: {e}")
 
     def handle_create_plugin(
-        self, name: str, plugin_type: str = "EXTENSION",
+        self,
+        name: str,
+        plugin_type: str = "EXTENSION",
     ) -> FlextResult[str]:
         """Handle plugin creation command."""
         try:

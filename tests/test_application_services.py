@@ -652,7 +652,8 @@ class TestFlextPluginServiceReal:
             assert hasattr(result, "data")
 
     def test_unload_plugin_empty_name_fails_real(
-        self, service: FlextPluginService,
+        self,
+        service: FlextPluginService,
     ) -> None:
         """Test REAL unload_plugin with empty name fails."""
         result = service.unload_plugin("")
@@ -676,7 +677,8 @@ class TestFlextPluginServiceReal:
         assert hasattr(result, "error")
 
     def test_install_plugin_empty_path_fails_real(
-        self, service: FlextPluginService,
+        self,
+        service: FlextPluginService,
     ) -> None:
         """Test REAL install_plugin with empty path fails."""
         result = service.install_plugin("")

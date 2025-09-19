@@ -42,7 +42,10 @@ class FlextPluginExceptions(FlextExceptions):
         """Base exception for all plugin domain errors."""
 
         def __init__(
-            self, message: str, plugin_id: str | None = None, **_kwargs: object,
+            self,
+            message: str,
+            plugin_id: str | None = None,
+            **_kwargs: object,
         ) -> None:
             """Initialize the instance."""
             # Store error_code for later use if needed
@@ -139,8 +142,7 @@ FlextPluginConfigurationOperationError = (
 FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
 FlextPluginHotReloadOperationError = FlextPluginExceptions.HotReloadOperationError
 
-# Legacy alias
-PluginError = FlextPluginError
+# Legacy alias eliminated - use FlextPluginError directly
 
 __all__ = [
     # Legacy backward compatibility exports
@@ -168,5 +170,4 @@ __all__ = [
     "FlextPluginSecurityError",
     "FlextPluginValidationError",
     # Legacy compatibility
-    "PluginError",
 ]

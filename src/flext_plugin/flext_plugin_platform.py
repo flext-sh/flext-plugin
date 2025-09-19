@@ -254,7 +254,8 @@ class FlextPluginPlatform:
         return self.plugin_service.is_plugin_loaded(plugin_name)
 
     def scan_directory(
-        self, directory_path: str,
+        self,
+        directory_path: str,
     ) -> FlextResult[list[FlextPluginEntity]]:
         """Scan directory for plugins.
 

@@ -98,7 +98,8 @@ class FlextPluginModels(FlextModels.Entity):
             description="Plugin name following naming conventions",
         )
         version: str = Field(
-            default="1.0.0", description="Plugin version in semantic versioning format",
+            default="1.0.0",
+            description="Plugin version in semantic versioning format",
         )
         description: str = Field(default="", description="Plugin description")
         author: str = Field(default="", description="Plugin author")
@@ -112,16 +113,20 @@ class FlextPluginModels(FlextModels.Entity):
         )
         enabled: bool = Field(default=True, description="Whether the plugin is enabled")
         auto_start: bool = Field(
-            default=False, description="Whether to automatically start the plugin",
+            default=False,
+            description="Whether to automatically start the plugin",
         )
         dependencies: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="List of plugin dependencies",
+            default_factory=list,
+            description="List of plugin dependencies",
         )
         tags: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="Plugin tags for categorization",
+            default_factory=list,
+            description="Plugin tags for categorization",
         )
         config: dict[str, PluginConfigData] = Field(
-            default_factory=dict, description="Plugin-specific configuration",
+            default_factory=dict,
+            description="Plugin-specific configuration",
         )
 
         @field_validator("name")
@@ -143,30 +148,38 @@ class FlextPluginModels(FlextModels.Entity):
 
         plugin_id: str = Field(..., description="Unique plugin identifier")
         created_at: datetime = Field(
-            default_factory=datetime.now, description="Plugin creation timestamp",
+            default_factory=datetime.now,
+            description="Plugin creation timestamp",
         )
         updated_at: datetime | None = Field(
-            default=None, description="Last update timestamp",
+            default=None,
+            description="Last update timestamp",
         )
         homepage: str | None = Field(default=None, description="Plugin homepage URL")
         repository: str | None = Field(
-            default=None, description="Plugin repository URL",
+            default=None,
+            description="Plugin repository URL",
         )
         documentation: str | None = Field(
-            default=None, description="Plugin documentation URL",
+            default=None,
+            description="Plugin documentation URL",
         )
         license: str | None = Field(default=None, description="Plugin license")
         keywords: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="Plugin keywords",
+            default_factory=list,
+            description="Plugin keywords",
         )
         maintainers: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="Plugin maintainers",
+            default_factory=list,
+            description="Plugin maintainers",
         )
         platform_version: str | None = Field(
-            default=None, description="Required platform version",
+            default=None,
+            description="Required platform version",
         )
         python_version: str | None = Field(
-            default=None, description="Required Python version",
+            default=None,
+            description="Required Python version",
         )
 
     class PluginModel(FlextModels.Value):
@@ -178,13 +191,16 @@ class FlextPluginModels(FlextModels.Entity):
         )
 
         config: "FlextPluginModels.ConfigModel" = Field(
-            ..., description="Plugin configuration",
+            ...,
+            description="Plugin configuration",
         )
         metadata: "FlextPluginModels.MetadataModel" = Field(
-            ..., description="Plugin metadata",
+            ...,
+            description="Plugin metadata",
         )
         runtime_data: dict[str, PluginConfigData] = Field(
-            default_factory=dict, description="Runtime-specific data",
+            default_factory=dict,
+            description="Runtime-specific data",
         )
 
         @property
@@ -218,16 +234,20 @@ class FlextPluginModels(FlextModels.Entity):
         plugin_id: str = Field(..., description="Plugin identifier")
         execution_id: str = Field(..., description="Unique execution identifier")
         input_data: dict[str, PluginConfigData] = Field(
-            default_factory=dict, description="Input data for execution",
+            default_factory=dict,
+            description="Input data for execution",
         )
         context: dict[str, PluginConfigData] = Field(
-            default_factory=dict, description="Execution context data",
+            default_factory=dict,
+            description="Execution context data",
         )
         timeout_seconds: int | None = Field(
-            default=None, description="Execution timeout in seconds",
+            default=None,
+            description="Execution timeout in seconds",
         )
         started_at: datetime = Field(
-            default_factory=datetime.now, description="Execution start timestamp",
+            default_factory=datetime.now,
+            description="Execution start timestamp",
         )
 
     class ExecutionResultModel(FlextModels.Entity):
@@ -240,16 +260,19 @@ class FlextPluginModels(FlextModels.Entity):
 
         success: bool = Field(default=False, description="Whether execution succeeded")
         data: PluginConfigData = Field(
-            default=None, description="Execution output data",
+            default=None,
+            description="Execution output data",
         )
         error: str = Field(default="", description="Error message if execution failed")
         plugin_name: str = Field(default="", description="Name of the executed plugin")
         execution_time: float = Field(
-            default=0.0, description="Execution time in seconds",
+            default=0.0,
+            description="Execution time in seconds",
         )
         execution_id: str = Field(default="", description="Unique execution identifier")
         completed_at: datetime = Field(
-            default_factory=datetime.now, description="Execution completion timestamp",
+            default_factory=datetime.now,
+            description="Execution completion timestamp",
         )
 
         @property
@@ -272,19 +295,24 @@ class FlextPluginModels(FlextModels.Entity):
         operation: str = Field(..., description="Operation name")
         success: bool = Field(default=False, description="Whether operation succeeded")
         plugins_affected: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="List of affected plugin names",
+            default_factory=list,
+            description="List of affected plugin names",
         )
         execution_time_ms: float = Field(
-            default=0.0, description="Operation execution time in milliseconds",
+            default=0.0,
+            description="Operation execution time in milliseconds",
         )
         details: dict[str, PluginConfigData] = Field(
-            default_factory=dict, description="Additional operation details",
+            default_factory=dict,
+            description="Additional operation details",
         )
         errors: FlextTypes.Core.StringList = Field(
-            default_factory=list, description="List of error messages",
+            default_factory=list,
+            description="List of error messages",
         )
         completed_at: datetime = Field(
-            default_factory=datetime.now, description="Operation completion timestamp",
+            default_factory=datetime.now,
+            description="Operation completion timestamp",
         )
 
 

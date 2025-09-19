@@ -66,7 +66,6 @@ from flext_plugin.exceptions import (
     FlextPluginRegistryError,
     FlextPluginSecurityError,
     FlextPluginValidationError,
-    PluginError,
 )
 
 # Constants - explicit imports
@@ -297,7 +296,6 @@ __all__: FlextTypes.Core.StringList = [
     "PluginDiscovery",
     "PluginDiscoveryPort",
     "PluginDiscoveryService",
-    "PluginError",
     "PluginExecution",
     "PluginExecutionContextModel",
     "PluginExecutionResultModel",
