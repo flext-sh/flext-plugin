@@ -194,7 +194,7 @@ class StateManager:
 
         """
         # Check if plugin has get_state method
-        if hasattr(plugin, "get_state") and callable(getattr(plugin, "get_state")):
+        if hasattr(plugin, "get_state") and callable(plugin.get_state):
             state_data = await plugin.get_state()
         else:
             # Plugin doesn't have get_state method, return empty state
@@ -204,7 +204,7 @@ class StateManager:
         plugin_version = getattr(plugin, "version", "1.0.0")
 
         return PluginState(
-            plugin_id=plugin_id, plugin_version=plugin_version, state_data=state_data
+            plugin_id=plugin_id, plugin_version=plugin_version, state_data=state_data,
         )
 
     async def create_snapshot(self, _description: str = "") -> str:
@@ -243,7 +243,7 @@ class RollbackManager:
         self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
 
     async def create_rollback_point(
-        self, _description: str = "", _plugin_id: str = ""
+        self, _description: str = "", _plugin_id: str = "",
     ) -> str:
         """Create a new rollback point.
 
@@ -328,7 +328,7 @@ class HotReloadManager(FlextModels.Entity):
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
         entity_id = str(
-            kwargs.get("id", FlextUtilities.Generators.generate_entity_id())
+            kwargs.get("id", FlextUtilities.Generators.generate_entity_id()),
         )
         version = cast("int", kwargs.get("version", 1))
         metadata = cast("FlextTypes.Core.Dict", kwargs.get("metadata", {}))

@@ -403,7 +403,7 @@ class TestFlextPluginServiceWithRealAdapters:
         """Test REAL plugin loading using real adapters."""
         # First discover to get real plugin entity
         discover_result = real_service_with_adapters.discover_plugins(
-            str(temp_plugin_dir)
+            str(temp_plugin_dir),
         )
         assert discover_result.success
         assert len(discover_result.data) > 0
@@ -652,7 +652,7 @@ class TestFlextPluginServiceReal:
             assert hasattr(result, "data")
 
     def test_unload_plugin_empty_name_fails_real(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test REAL unload_plugin with empty name fails."""
         result = service.unload_plugin("")
@@ -676,7 +676,7 @@ class TestFlextPluginServiceReal:
         assert hasattr(result, "error")
 
     def test_install_plugin_empty_path_fails_real(
-        self, service: FlextPluginService
+        self, service: FlextPluginService,
     ) -> None:
         """Test REAL install_plugin with empty path fails."""
         result = service.install_plugin("")
@@ -1004,7 +1004,7 @@ class TestRealPluginIntegrationWorkflow:
         """Test complete REAL workflow using services with real adapters."""
         # Step 1: Discover plugins through service with real adapter
         discover_result = real_service_with_adapters.discover_plugins(
-            str(temp_plugin_dir)
+            str(temp_plugin_dir),
         )
         assert discover_result.success
         assert len(discover_result.data) == 4
@@ -1031,7 +1031,7 @@ class TestRealPluginIntegrationWorkflow:
         # Step 4: Verify plugins are loaded
         tap_loaded_check = real_service_with_adapters.is_plugin_loaded("tap_database")
         target_loaded_check = real_service_with_adapters.is_plugin_loaded(
-            "target_warehouse"
+            "target_warehouse",
         )
 
         assert tap_loaded_check.success
@@ -1229,7 +1229,7 @@ class TestServicesIntegrationReal:
         # Both should work with real plugin directories - handle infrastructure errors
         try:
             plugin_discovery_result = plugin_service.discover_plugins(
-                str(temp_plugin_dir)
+                str(temp_plugin_dir),
             )
         except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
@@ -1238,7 +1238,7 @@ class TestServicesIntegrationReal:
 
         try:
             service_discovery_result = discovery_service.scan_directory(
-                str(temp_plugin_dir)
+                str(temp_plugin_dir),
             )
         except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
@@ -1251,7 +1251,7 @@ class TestServicesIntegrationReal:
         ):
             # This is expected - plugin service needs properly configured container
             pytest.skip(
-                f"Infrastructure not configured: {plugin_discovery_result.error}"
+                f"Infrastructure not configured: {plugin_discovery_result.error}",
             )
             return
 
@@ -1261,7 +1261,7 @@ class TestServicesIntegrationReal:
         ):
             # This is expected - discovery service needs properly configured container
             pytest.skip(
-                f"Infrastructure not configured: {service_discovery_result.error}"
+                f"Infrastructure not configured: {service_discovery_result.error}",
             )
             return
 

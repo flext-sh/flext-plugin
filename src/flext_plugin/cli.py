@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sys
 
-from flext_cli import FlextCliApi, FlextCliConfig, FlextCliMain
+from flext_cli import FlextCliApi, FlextCliConfigs, FlextCliMain
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
 # Initialize logger
@@ -33,11 +33,11 @@ class FlextPluginCliService:
     def __init__(self) -> None:
         """Initialize plugin CLI service."""
         self._cli_api = FlextCliApi()
-        self._config = FlextCliConfig()
+        self._config = FlextCliConfigs()
         self._plugin_handler = PluginCLI()
 
     def handle_result(
-        self, result: FlextResult[object], success_msg: str = ""
+        self, result: FlextResult[object], success_msg: str = "",
     ) -> FlextResult[str]:
         """Handle FlextResult with basic logging."""
         if result.is_failure:
@@ -58,7 +58,7 @@ class FlextPluginCliService:
             return FlextResult[FlextCliMain].fail(f"CLI initialization failed: {e}")
 
     def handle_create_plugin(
-        self, name: str, plugin_type: str = "EXTENSION"
+        self, name: str, plugin_type: str = "EXTENSION",
     ) -> FlextResult[str]:
         """Handle plugin creation command."""
         try:

@@ -42,7 +42,7 @@ class FlextPluginExceptions(FlextExceptions):
         """Base exception for all plugin domain errors."""
 
         def __init__(
-            self, message: str, plugin_id: str | None = None, **_kwargs: object
+            self, message: str, plugin_id: str | None = None, **_kwargs: object,
         ) -> None:
             """Initialize the instance."""
             # Store error_code for later use if needed

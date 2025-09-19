@@ -110,7 +110,7 @@ class ConcretePlugin:
         return getattr(self, "_config", {})
 
     def initialize(
-        self, _context: FlextProtocols.Extensions.PluginContext
+        self, _context: FlextProtocols.Extensions.PluginContext,
     ) -> FlextResult[None]:
         """Initialize plugin with context.
 
@@ -573,7 +573,7 @@ class ConcretePluginLoader(FlextPluginLoader):
             return FlextResult[object].fail(f"Load failed: {e!s}")
 
     def discover_plugins(
-        self, search_path: str
+        self, search_path: str,
     ) -> FlextResult[FlextTypes.Core.StringList]:
         """Discover available plugins in path.
 
@@ -595,7 +595,7 @@ class ConcretePluginLoader(FlextPluginLoader):
         except Exception as e:
             self._logger.exception(f"Plugin discovery failed in {search_path}")
             return FlextResult[FlextTypes.Core.StringList].fail(
-                f"Discovery failed: {e!s}"
+                f"Discovery failed: {e!s}",
             )
 
 

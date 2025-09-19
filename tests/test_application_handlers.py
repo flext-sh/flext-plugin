@@ -165,7 +165,7 @@ class TestFlextPluginRegistrationHandler:
 
         # Create valid plugin entity
         plugin = FlextPluginEntity.create(
-            name="valid-test-plugin", plugin_version="1.0.0"
+            name="valid-test-plugin", plugin_version="1.0.0",
         )
 
         # Should attempt real registration through the loader
@@ -232,7 +232,7 @@ class TestFlextPluginEventHandler:
 
         # Create real plugin entity
         plugin = FlextPluginEntity.create(
-            name="loaded-test-plugin", plugin_version="1.0.0"
+            name="loaded-test-plugin", plugin_version="1.0.0",
         )
 
         result: FlextResult[bool] = handler.handle_plugin_loaded(plugin)
@@ -306,13 +306,13 @@ class LifecyclePlugin:
         # Create real plugin loader adapter and handlers
         plugin_loader = TestPluginLoaderAdapter()
         registration_handler = FlextPluginRegistrationHandler(
-            plugin_service=plugin_loader
+            plugin_service=plugin_loader,
         )
         event_handler = FlextPluginEventHandler()
 
         # Create real plugin entity
         plugin = FlextPluginEntity.create(
-            name="lifecycle-plugin", plugin_version="1.0.0"
+            name="lifecycle-plugin", plugin_version="1.0.0",
         )
 
         # Test registration
@@ -326,7 +326,7 @@ class LifecyclePlugin:
 
         # Test unregistration
         unregistration_result = registration_handler.handle_unregister_plugin(
-            "lifecycle-plugin"
+            "lifecycle-plugin",
         )
         assert isinstance(unregistration_result, FlextResult)
 
@@ -341,7 +341,7 @@ class LifecyclePlugin:
 
         # Test normal case
         plugin = FlextPluginEntity.create(
-            name="error-test-plugin", plugin_version="1.0.0"
+            name="error-test-plugin", plugin_version="1.0.0",
         )
 
         # Normal case should work
@@ -364,7 +364,7 @@ class LifecyclePlugin:
         # Test valid entity but check if handler validates properly
         # Create plugin with valid name then test handler logic
         valid_plugin = FlextPluginEntity.create(
-            name="valid-plugin", plugin_version="1.0.0"
+            name="valid-plugin", plugin_version="1.0.0",
         )
 
         # Handler should accept valid plugin

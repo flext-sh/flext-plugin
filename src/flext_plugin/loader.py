@@ -109,14 +109,14 @@ class PluginLoader(FlextModels.Entity):
                 spec_msg: str = f"Failed to create spec for {file_path}"
                 _handle_import_error(spec_msg)
                 return FlextResult[None].fail(
-                    spec_msg
+                    spec_msg,
                 )  # Early return for type narrowing
 
             if spec.loader is None:
                 loader_msg: str = f"No loader available for {file_path}"
                 _handle_import_error(loader_msg)
                 return FlextResult[None].fail(
-                    loader_msg
+                    loader_msg,
                 )  # Early return for type narrowing
 
             module = importlib.util.module_from_spec(spec)
@@ -159,7 +159,7 @@ class PluginLoader(FlextModels.Entity):
             plugin = self.loaded_plugins[plugin_name]
             # Check if plugin implements CleanupablePlugin protocol
             if hasattr(plugin, "cleanup") and callable(
-                getattr(plugin, "cleanup", None)
+                getattr(plugin, "cleanup", None),
             ):
                 cleanupable_plugin = cast("CleanupablePlugin", plugin)
                 await cleanupable_plugin.cleanup()

@@ -168,7 +168,7 @@ class PluginDiscovery(FlextModels.Entity):
                     manifest_content = manifest_file.read_text(encoding="utf-8")
                     metadata = json.loads(manifest_content)
                     plugin_name_key = FlextUtilities.TextProcessor.safe_string(
-                        str(metadata.get("name", plugin_name))
+                        str(metadata.get("name", plugin_name)),
                     )
                     self.discovered_plugins[plugin_name_key] = metadata
                 except Exception as e:
@@ -185,13 +185,13 @@ class PluginDiscovery(FlextModels.Entity):
                     "path": FlextUtilities.TextProcessor.safe_string(str(py_file)),
                     "file_name": FlextUtilities.TextProcessor.safe_string(py_file.name),
                     "size": FlextUtilities.Conversions.safe_int(
-                        file_stat.st_size, default=0
+                        file_stat.st_size, default=0,
                     ),
                     "modified": FlextUtilities.Conversions.safe_float(
-                        file_stat.st_mtime, default=0.0
+                        file_stat.st_mtime, default=0.0,
                     ),
                     "module_name": FlextUtilities.TextProcessor.safe_string(
-                        plugin_name
+                        plugin_name,
                     ),
                     "plugin_class": "Plugin",  # Generic class name
                     "type": "generic",  # Generic type
@@ -216,7 +216,7 @@ class PluginDiscovery(FlextModels.Entity):
             # Log critical validation error using FlextUtilities and proper error handling
             logger = FlextLogger(__name__)
             plugin_name = FlextUtilities.TextProcessor.safe_string(
-                getattr(plugin_class, "__name__", "Unknown")
+                getattr(plugin_class, "__name__", "Unknown"),
             )
             logger.exception(f"Plugin class validation failed for {plugin_name}")
             msg = f"Plugin validation failed: {plugin_name}"

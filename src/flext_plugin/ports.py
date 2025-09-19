@@ -199,7 +199,7 @@ class FlextPluginRegistryPort(FlextProtocols.Domain.Service):
 
     @abstractmethod
     def search_plugins(
-        self, registry: str, query: str
+        self, registry: str, query: str,
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Search for plugins in a specific registry.
 
@@ -249,7 +249,7 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
 
     @abstractmethod
     def start_watching(
-        self, watch_paths: FlextTypes.Core.StringList
+        self, watch_paths: FlextTypes.Core.StringList,
     ) -> FlextResult[bool]:
         """Start watching for plugin file changes.
 
@@ -290,7 +290,7 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
 
     @abstractmethod
     def backup_plugin_state(
-        self, plugin_name: str
+        self, plugin_name: str,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Backup plugin state before reload.
 

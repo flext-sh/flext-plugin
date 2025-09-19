@@ -70,7 +70,7 @@ class FlextPluginServices(FlextDomainService[object]):
         def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
             return FlextResult[object].fail(
-                "Use specific service methods instead of execute"
+                "Use specific service methods instead of execute",
             )
 
         @property
@@ -129,12 +129,12 @@ class FlextPluginServices(FlextDomainService[object]):
             try:
                 if not path:
                     return FlextResult[list[FlextPluginEntity]].fail(
-                        "Path is required for plugin discovery"
+                        "Path is required for plugin discovery",
                     )
                 return self.discovery_port.discover_plugins(path)
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[list[FlextPluginEntity]].fail(
-                    f"Failed to discover plugins: {e}"
+                    f"Failed to discover plugins: {e}",
                 )
 
         def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
@@ -179,12 +179,12 @@ class FlextPluginServices(FlextDomainService[object]):
             try:
                 if not plugin_path:
                     return FlextResult[FlextPluginEntity].fail(
-                        "Plugin path is required"
+                        "Plugin path is required",
                     )
                 return self.manager_port.install_plugin(plugin_path)
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[FlextPluginEntity].fail(
-                    f"Failed to install plugin: {e}"
+                    f"Failed to install plugin: {e}",
                 )
 
         def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -219,12 +219,12 @@ class FlextPluginServices(FlextDomainService[object]):
             try:
                 if not plugin_name:
                     return FlextResult[FlextPluginConfig].fail(
-                        "Plugin name is required"
+                        "Plugin name is required",
                     )
                 return self.manager_port.get_plugin_config(plugin_name)
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[FlextPluginConfig].fail(
-                    f"Failed to get plugin config: {e}"
+                    f"Failed to get plugin config: {e}",
                 )
 
         def update_plugin_config(
@@ -276,7 +276,7 @@ class FlextPluginServices(FlextDomainService[object]):
         def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
             return FlextResult[object].fail(
-                "Use specific service methods instead of execute"
+                "Use specific service methods instead of execute",
             )
 
         @property
@@ -297,22 +297,22 @@ class FlextPluginServices(FlextDomainService[object]):
             raise FlextExceptions.BaseError(msg)
 
         def scan_directory(
-            self, directory_path: str
+            self, directory_path: str,
         ) -> FlextResult[list[FlextPluginEntity]]:
             """Scan directory for plugins."""
             try:
                 if not directory_path:
                     return FlextResult[list[FlextPluginEntity]].fail(
-                        "Directory path is required"
+                        "Directory path is required",
                     )
                 return self.discovery_port.discover_plugins(directory_path)
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[list[FlextPluginEntity]].fail(
-                    f"Failed to scan directory: {e}"
+                    f"Failed to scan directory: {e}",
                 )
 
         def validate_plugin_integrity(
-            self, plugin: FlextPluginEntity | None
+            self, plugin: FlextPluginEntity | None,
         ) -> FlextResult[bool]:
             """Validate plugin integrity."""
             try:
@@ -352,17 +352,17 @@ class FlextPluginServices(FlextDomainService[object]):
         def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextDomainService)."""
             return FlextResult[object].fail(
-                "Use specific service methods instead of execute"
+                "Use specific service methods instead of execute",
             )
 
         async def register_plugin(
-            self, plugin: FlextPluginEntity
+            self, plugin: FlextPluginEntity,
         ) -> FlextResult[FlextPluginEntity]:
             """Register plugin instance ensuring required fields."""
             try:
                 if not hasattr(plugin, "name"):
                     return FlextResult[FlextPluginEntity].fail(
-                        "Plugin registration failed: missing name"
+                        "Plugin registration failed: missing name",
                     )
                 plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
                 plugin_name: str = plugin.name
@@ -370,7 +370,7 @@ class FlextPluginServices(FlextDomainService[object]):
                 return FlextResult[FlextPluginEntity].ok(plugin)
             except Exception as e:
                 return FlextResult[FlextPluginEntity].fail(
-                    f"Plugin registration failed: {e}"
+                    f"Plugin registration failed: {e}",
                 )
 
         async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -390,7 +390,7 @@ class FlextPluginServices(FlextDomainService[object]):
             return len(plugins)
 
         def list_plugins(
-            self, plugin_type: object | None = None
+            self, plugin_type: object | None = None,
         ) -> FlextTypes.Core.List:
             """List plugin metadata optionally filtered by type."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})

@@ -47,7 +47,7 @@ class TestSimplePluginRegistryComprehensive:
         assert isinstance(registry, SimplePluginRegistry)
 
     def test_registry_with_real_plugin(
-        self, registry: SimplePluginRegistry, real_plugin: FlextPlugin
+        self, registry: SimplePluginRegistry, real_plugin: FlextPlugin,
     ) -> None:
         """Test registry operations with real plugin."""
         assert registry is not None
@@ -63,7 +63,7 @@ class TestPluginManagerResultComprehensive:
         """Test PluginManagerResult success creation."""
         # PluginManagerResultModel is a Pydantic model
         result = PluginManagerResultModel(
-            operation="test_operation", success=True, plugins_affected=["plugin1"]
+            operation="test_operation", success=True, plugins_affected=["plugin1"],
         )
 
         assert result.success is True
@@ -73,7 +73,7 @@ class TestPluginManagerResultComprehensive:
         """Test PluginManagerResult failure case."""
         # PluginManagerResultModel is a Pydantic model
         result = PluginManagerResultModel(
-            operation="test_operation", success=False, plugins_affected=[]
+            operation="test_operation", success=False, plugins_affected=[],
         )
 
         assert result.success is False
@@ -87,7 +87,7 @@ class TestPluginExecutionContextComprehensive:
         """Test PluginExecutionContext creation."""
         # PluginExecutionContextModel is a Pydantic model
         context = PluginExecutionContextModel(
-            plugin_id="test-plugin", execution_id="exec-123"
+            plugin_id="test-plugin", execution_id="exec-123",
         )
         assert context is not None
         assert isinstance(context, PluginExecutionContextModel)

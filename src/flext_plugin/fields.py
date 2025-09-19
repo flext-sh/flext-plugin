@@ -71,7 +71,7 @@ PluginDescriptionField = Annotated[
 ]
 
 PluginLongDescriptionField = Annotated[
-    str, Field(default="", max_length=2000, description="Detailed plugin description")
+    str, Field(default="", max_length=2000, description="Detailed plugin description"),
 ]
 
 # Author Fields
@@ -160,15 +160,15 @@ PluginsAffectedField = Annotated[
 
 # Boolean Fields
 PluginEnabledField = Annotated[
-    bool, Field(default=True, description="Whether the plugin is enabled")
+    bool, Field(default=True, description="Whether the plugin is enabled"),
 ]
 
 PluginAutoStartField = Annotated[
-    bool, Field(default=False, description="Whether to automatically start the plugin")
+    bool, Field(default=False, description="Whether to automatically start the plugin"),
 ]
 
 PluginSuccessField = Annotated[
-    bool, Field(default=False, description="Whether operation/execution succeeded")
+    bool, Field(default=False, description="Whether operation/execution succeeded"),
 ]
 
 # Numeric Fields
@@ -183,11 +183,11 @@ PluginTimeoutField = Annotated[
 ]
 
 PluginExecutionTimeField = Annotated[
-    float, Field(default=0.0, ge=0.0, description="Execution time in seconds")
+    float, Field(default=0.0, ge=0.0, description="Execution time in seconds"),
 ]
 
 PluginExecutionTimeMsField = Annotated[
-    float, Field(default=0.0, ge=0.0, description="Execution time in milliseconds")
+    float, Field(default=0.0, ge=0.0, description="Execution time in milliseconds"),
 ]
 
 # Identifier Fields
@@ -202,24 +202,24 @@ ExecutionIdField = Annotated[
 ]
 
 OperationNameField = Annotated[
-    str, Field(..., min_length=1, max_length=50, description="Operation name")
+    str, Field(..., min_length=1, max_length=50, description="Operation name"),
 ]
 
 # Timestamp Fields
 CreatedAtField = Annotated[
-    datetime, Field(default_factory=datetime.now, description="Creation timestamp")
+    datetime, Field(default_factory=datetime.now, description="Creation timestamp"),
 ]
 
 UpdatedAtField = Annotated[
-    datetime | None, Field(default=None, description="Last update timestamp")
+    datetime | None, Field(default=None, description="Last update timestamp"),
 ]
 
 StartedAtField = Annotated[
-    datetime, Field(default_factory=datetime.now, description="Start timestamp")
+    datetime, Field(default_factory=datetime.now, description="Start timestamp"),
 ]
 
 CompletedAtField = Annotated[
-    datetime, Field(default_factory=datetime.now, description="Completion timestamp")
+    datetime, Field(default_factory=datetime.now, description="Completion timestamp"),
 ]
 
 # Data Fields
@@ -229,7 +229,7 @@ InputDataField = Annotated[
 ]
 
 OutputDataField = Annotated[
-    PluginConfigData, Field(default=None, description="Output data from execution")
+    PluginConfigData, Field(default=None, description="Output data from execution"),
 ]
 
 ContextDataField = Annotated[
@@ -244,7 +244,7 @@ DetailsDataField = Annotated[
 
 # Error Fields
 ErrorMessageField = Annotated[
-    str, Field(default="", max_length=1000, description="Error message")
+    str, Field(default="", max_length=1000, description="Error message"),
 ]
 
 # License Field

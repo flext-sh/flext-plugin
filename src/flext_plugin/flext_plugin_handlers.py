@@ -88,7 +88,7 @@ class FlextPluginEventHandler:
             # For now, we consider successful if plugin has required attributes
             if not hasattr(plugin, "name") or not plugin.name:
                 return FlextResult[bool].fail(
-                    "Plugin loaded event: plugin missing name"
+                    "Plugin loaded event: plugin missing name",
                 )
             return FlextResult[bool].ok(data=True)
         except (RuntimeError, ValueError, TypeError) as e:
@@ -117,7 +117,7 @@ class FlextPluginEventHandler:
             return FlextResult[None].ok(None)
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult[None].fail(
-                f"Failed to handle plugin unloaded event: {e}"
+                f"Failed to handle plugin unloaded event: {e}",
             )
 
 

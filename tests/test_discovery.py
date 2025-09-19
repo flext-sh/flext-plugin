@@ -49,7 +49,7 @@ class TestPluginDiscoveryReal:
         assert hasattr(discovery, "blacklisted_plugins")
 
     def test_discovery_initialization_with_custom_directory(
-        self, temp_dir: Path
+        self, temp_dir: Path,
     ) -> None:
         """Test plugin discovery initialization with custom directory."""
         custom_dir = str(temp_dir / "custom_plugins")
@@ -60,7 +60,7 @@ class TestPluginDiscoveryReal:
         assert len(discovery.plugin_directories) == 0
 
     def test_discovery_initialization_with_additional_directories(
-        self, temp_dir: Path
+        self, temp_dir: Path,
     ) -> None:
         """Test plugin discovery initialization with additional directories."""
         main_dir = str(temp_dir / "main_plugins")
@@ -342,8 +342,8 @@ class TestPlugin:
                     "name": "plugin-1",
                     "version": "1.0.0",
                     "type": PluginType.TAP.value,
-                }
-            )
+                },
+            ),
         )
 
         # Create plugin in second directory
@@ -356,8 +356,8 @@ class TestPlugin:
                     "name": "plugin-2",
                     "version": "2.0.0",
                     "type": PluginType.TARGET.value,
-                }
-            )
+                },
+            ),
         )
 
         discovery = PluginDiscovery()
@@ -387,8 +387,8 @@ class TestPlugin:
                     "name": "tap-plugin",
                     "type": PluginType.TAP.value,
                     "version": "1.0.0",
-                }
-            )
+                },
+            ),
         )
 
         # Create TARGET plugin
@@ -401,8 +401,8 @@ class TestPlugin:
                     "name": "target-plugin",
                     "type": PluginType.TARGET.value,
                     "version": "1.0.0",
-                }
-            )
+                },
+            ),
         )
 
         discovery = PluginDiscovery()
@@ -447,8 +447,8 @@ class TestPlugin:
                 {
                     "name": "valid-plugin",
                     "version": "1.0.0",
-                }
-            )
+                },
+            ),
         )
 
         discovery = PluginDiscovery()
@@ -482,8 +482,8 @@ class TestPlugin:
                 {
                     "name": "valid-plugin",
                     "version": "1.0.0",
-                }
-            )
+                },
+            ),
         )
 
         discovery = PluginDiscovery()
@@ -512,7 +512,7 @@ class TestPlugin:
 
     @pytest.mark.asyncio
     async def test_full_discovery_workflow_with_real_files(
-        self, temp_dir: Path
+        self, temp_dir: Path,
     ) -> None:
         """Test complete discovery workflow with REAL files and operations."""
         # Setup multiple plugin directories
@@ -538,8 +538,8 @@ class MainPlugin:
                     "name": "main-plugin",
                     "type": PluginType.TAP.value,
                     "version": "1.0.0",
-                }
-            )
+                },
+            ),
         )
 
         # Create plugins in extra directory
@@ -559,8 +559,8 @@ class ExtraPlugin:
                     "name": "extra-plugin",
                     "type": PluginType.TARGET.value,
                     "version": "2.0.0",
-                }
-            )
+                },
+            ),
         )
 
         # Initialize discovery

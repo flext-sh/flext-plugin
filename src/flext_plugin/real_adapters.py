@@ -67,7 +67,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.discovery.plugin_directory,
-            }
+            },
         )
 
     @override
@@ -128,7 +128,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
                 except Exception as e:
                     # Log exception but continue discovery
                     logger.warning(
-                        "Failed to process plugin file %s: %s", plugin_file, e
+                        "Failed to process plugin file %s: %s", plugin_file, e,
                     )
                     continue
 
@@ -183,7 +183,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
-            }
+            },
         )
 
     @override
@@ -288,7 +288,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
-            }
+            },
         )
 
     @override
@@ -301,7 +301,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             plugin_file = Path(plugin_path)
             if not plugin_file.exists():
                 return FlextResult[FlextPluginEntity].fail(
-                    f"Plugin file not found: {plugin_path}"
+                    f"Plugin file not found: {plugin_path}",
                 )
 
             # Load plugin to validate it's real
@@ -338,7 +338,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
                         task = asyncio.create_task(
-                            self.loader.unload_plugin(plugin_name)
+                            self.loader.unload_plugin(plugin_name),
                         )
                         # Store task reference to prevent garbage collection
                         task.add_done_callback(lambda _: None)

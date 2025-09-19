@@ -141,7 +141,7 @@ class TestFlextPluginRegistrationHandler:
 
         plugin_with_empty_name = PluginWithEmptyName()
         result = handler_with_real_service.handle_register_plugin(
-            plugin_with_empty_name
+            plugin_with_empty_name,
         )
 
         assert not result.success
@@ -164,7 +164,7 @@ class TestFlextPluginRegistrationHandler:
 
         plugin_with_empty_version = PluginWithEmptyVersion()
         result = handler_with_real_service.handle_register_plugin(
-            plugin_with_empty_version
+            plugin_with_empty_version,
         )
 
         assert not result.success
@@ -206,7 +206,7 @@ class TestFlextPluginRegistrationHandler:
                     error_msg = "Simulated plugin error"
                     raise RuntimeError(error_msg)
                 raise AttributeError(
-                    f"'{type(self).__name__}' object has no attribute '{name}'"
+                    f"'{type(self).__name__}' object has no attribute '{name}'",
                 )
 
         problematic_plugin = ProblematicPlugin()
@@ -472,7 +472,7 @@ class TestHandlerIntegration:
 
         # Unregister plugin with REAL service
         unregister_result = registration_handler.handle_unregister_plugin(
-            "workflow-plugin"
+            "workflow-plugin",
         )
         assert unregister_result.success
 
@@ -534,7 +534,7 @@ class TestHandlerIntegration:
         # Unregister all plugins with REAL service
         for i in range(len(plugins)):
             unregister_result = registration_handler.handle_unregister_plugin(
-                f"plugin-{i}"
+                f"plugin-{i}",
             )
             assert unregister_result.success
 
@@ -618,7 +618,7 @@ class TestHandlerIntegration:
         assert register_result.data is True
 
         unregister_result = handler.handle_unregister_plugin(
-            "service-integration-plugin"
+            "service-integration-plugin",
         )
         assert unregister_result.success
         assert unregister_result.data is True
