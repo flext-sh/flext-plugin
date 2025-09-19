@@ -18,10 +18,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from flext_plugin import typings as plugin_typings
-
-PluginStatus = plugin_typings.PluginStatus
-PluginType = plugin_typings.PluginType
+from flext_plugin.flext_plugin.typings import PluginStatus, PluginType
 
 
 class FlextPluginConfigParams:
