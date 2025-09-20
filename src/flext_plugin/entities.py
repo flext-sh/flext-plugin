@@ -77,49 +77,6 @@ class FlextPluginEntity(FlextModels.Entity):
     plugin identity, metadata, configuration, and business rules while
     maintaining consistency with Domain-Driven Design principles.
 
-    IMPORTANT: This entity is distinct from flext_core.FlextPlugin,
-    which is the abstract interface that actual plugin implementations must follow.
-    This entity represents the domain concept of a plugin in the business layer.
-
-    Business Rules:
-      - Plugin names must be non-empty and unique within a registry
-      - Version strings must follow semantic versioning patterns
-      - Status transitions must follow defined lifecycle rules
-      - Configuration changes require validation before application
-
-    Lifecycle States:
-      DISCOVERED → LOADED → ACTIVE ↔ INACTIVE
-                         ↓
-                      ERROR → DISABLED
-
-    Attributes:
-      name: Unique plugin identifier within the system
-      plugin_version: Semantic version string (e.g., "1.2.3")
-      description: Human-readable plugin description
-      author: Plugin developer or organization name
-      status: Current plugin lifecycle status
-
-    Domain Events:
-      The entity generates domain events for:
-      - Plugin activation/deactivation
-      - Configuration changes
-      - Status transitions
-      - Error conditions
-
-    Example:
-      >>> plugin = FlextPluginEntity.model_validate(
-      ...     {
-      ...         "id": "plugin-123",
-      ...         "name": "oracle-connector",
-      ...         "plugin_version": "2.1.0",
-      ...         "description": "Oracle database connector",
-      ...         "author": "FLEXT Team",
-      ...     }
-      ... )
-      >>> activation_result = plugin.activate()
-      >>> if activation_result.success():
-      ...     print(f"Plugin {plugin.name} activated successfully")
-
     """
 
     # Pydantic field definitions with comprehensive metadata
