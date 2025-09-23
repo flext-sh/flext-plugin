@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextDomainService, FlextResult
+from flext_core import FlextResult, FlextService
 
 
 class TestDomainServiceExceptionCoverage:
-    """Targeted tests for FlextDomainService exception handling coverage."""
+    """Targeted tests for FlextService exception handling coverage."""
 
     def test_is_valid_exception_handling_comprehensive(self) -> None:
         """Test is_valid method exception handling - covers lines 50-52."""
 
-        class ExceptionThrowingService(FlextDomainService[str]):
+        class ExceptionThrowingService(FlextService[str]):
             """Service that throws exceptions in validate_business_rules."""
 
             def execute(self) -> FlextResult[str]:
@@ -35,7 +35,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_various_error_types(self) -> None:
         """Test is_valid method handles different exception types."""
 
-        class ValueErrorService(FlextDomainService[str]):
+        class ValueErrorService(FlextService[str]):
             """Service that throws ValueError in validate_business_rules."""
 
             def execute(self) -> FlextResult[str]:
@@ -49,7 +49,7 @@ class TestDomainServiceExceptionCoverage:
         result = service.is_valid()
         assert result is False
 
-        class TypeErrorService(FlextDomainService[str]):
+        class TypeErrorService(FlextService[str]):
             """Service that throws TypeError in validate_business_rules."""
 
             def execute(self) -> FlextResult[str]:
@@ -66,7 +66,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_nested_method_calls(self) -> None:
         """Test is_valid exception handling with nested method failures."""
 
-        class NestedFailureService(FlextDomainService[str]):
+        class NestedFailureService(FlextService[str]):
             """Service with nested failures in validate_business_rules."""
 
             def execute(self) -> FlextResult[str]:
@@ -89,7 +89,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_pydantic_validation_errors(self) -> None:
         """Test is_valid handles Pydantic validation errors in business rules."""
 
-        class PydanticErrorService(FlextDomainService[str]):
+        class PydanticErrorService(FlextService[str]):
             """Service that causes Pydantic errors in validate_business_rules."""
 
             def execute(self) -> FlextResult[str]:
@@ -107,7 +107,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_system_errors(self) -> None:
         """Test is_valid handles system-level exceptions."""
 
-        class SystemErrorService(FlextDomainService[str]):
+        class SystemErrorService(FlextService[str]):
             """Service that throws system-level errors."""
 
             def execute(self) -> FlextResult[str]:
@@ -124,7 +124,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_mock_patch(self) -> None:
         """Test is_valid exception handling using mock to force exceptions."""
 
-        class MockableService(FlextDomainService[str]):
+        class MockableService(FlextService[str]):
             """Service that simulates exception during validation."""
 
             def execute(self) -> FlextResult[str]:
@@ -159,7 +159,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_memory_error(self) -> None:
         """Test is_valid handles memory-related errors."""
 
-        class MemoryErrorService(FlextDomainService[str]):
+        class MemoryErrorService(FlextService[str]):
             """Service that simulates memory errors."""
 
             def execute(self) -> FlextResult[str]:
@@ -176,7 +176,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_success_path_still_works(self) -> None:
         """Verify is_valid success path still works after exception testing."""
 
-        class SuccessfulService(FlextDomainService[str]):
+        class SuccessfulService(FlextService[str]):
             """Service with successful validation."""
 
             def execute(self) -> FlextResult[str]:
@@ -193,7 +193,7 @@ class TestDomainServiceExceptionCoverage:
         """Test difference between business rule failure and exception."""
 
         # Business rule failure (returns False from result)
-        class BusinessFailureService(FlextDomainService[str]):
+        class BusinessFailureService(FlextService[str]):
             """Service with business rule failure."""
 
             def execute(self) -> FlextResult[str]:
@@ -207,7 +207,7 @@ class TestDomainServiceExceptionCoverage:
         assert result is False
 
         # Exception during validation (caught by exception handler)
-        class ExceptionService(FlextDomainService[str]):
+        class ExceptionService(FlextService[str]):
             """Service with exception during validation."""
 
             def execute(self) -> FlextResult[str]:
@@ -224,7 +224,7 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_coverage_with_keyboard_interrupt(self) -> None:
         """Test is_valid handles KeyboardInterrupt gracefully."""
 
-        class KeyboardInterruptService(FlextDomainService[str]):
+        class KeyboardInterruptService(FlextService[str]):
             """Service that simulates KeyboardInterrupt."""
 
             def execute(self) -> FlextResult[str]:

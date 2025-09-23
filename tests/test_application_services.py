@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_core import FlextContainer, FlextDomainService, FlextExceptions, FlextTypes
+from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
 from flext_plugin import (
     FlextPluginDiscoveryService,
     FlextPluginService,
@@ -474,7 +474,7 @@ class TestFlextPluginServiceReal:
         assert isinstance(service.container, FlextContainer)
 
         # Verify service inheritance
-        assert isinstance(service, FlextDomainService)
+        assert isinstance(service, FlextService)
 
     def test_service_initialization_with_container_real(self) -> None:
         """Test REAL service initialization with provided container."""
@@ -482,11 +482,11 @@ class TestFlextPluginServiceReal:
         service = FlextPluginService(container=container)
         assert service is not None
         assert service.container is container
-        assert isinstance(service, FlextDomainService)
+        assert isinstance(service, FlextService)
 
     def test_service_inheritance_real(self, service: FlextPluginService) -> None:
         """Test REAL service inheritance patterns."""
-        assert isinstance(service, FlextDomainService)
+        assert isinstance(service, FlextService)
 
         # Verify domain service capabilities
         assert hasattr(service, "container")
@@ -883,7 +883,7 @@ class TestFlextPluginDiscoveryServiceReal:
         discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test discovery service inherits correctly."""
-        assert isinstance(discovery_service, FlextDomainService)
+        assert isinstance(discovery_service, FlextService)
 
     def test_execute_method_fails_as_expected(
         self,

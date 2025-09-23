@@ -14,9 +14,9 @@ from typing import ClassVar, override
 
 from flext_core import (
     FlextContainer,
-    FlextDomainService,
     FlextExceptions,
     FlextResult,
+    FlextService,
     FlextTypes,
 )
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
@@ -27,7 +27,7 @@ from flext_plugin.ports import (
 )
 
 
-class FlextPluginServices(FlextDomainService[object]):
+class FlextPluginServices(FlextService[object]):
     """Single CONSOLIDATED class containing ALL plugin services.
 
     Consolidates ALL service definitions into one class following FLEXT patterns.
@@ -38,7 +38,7 @@ class FlextPluginServices(FlextDomainService[object]):
     per module while preserving existing API surface for seamless migration.
     """
 
-    class PluginService(FlextDomainService[object]):
+    class PluginService(FlextService[object]):
         """Core plugin management service orchestrating plugin lifecycle operations.
 
         Application service providing comprehensive plugin management capabilities
@@ -68,7 +68,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
         @override
         def execute(self) -> FlextResult[object]:
-            """Execute service operation (required by FlextDomainService)."""
+            """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
@@ -251,7 +251,7 @@ class FlextPluginServices(FlextDomainService[object]):
             except (RuntimeError, ValueError, TypeError) as e:
                 return FlextResult[bool].fail(f"Failed to check plugin status: {e}")
 
-    class DiscoveryService(FlextDomainService[object]):
+    class DiscoveryService(FlextService[object]):
         """Specialized service for plugin discovery and validation operations."""
 
         container: FlextContainer
@@ -274,7 +274,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
         @override
         def execute(self) -> FlextResult[object]:
-            """Execute service operation (required by FlextDomainService)."""
+            """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
@@ -329,7 +329,7 @@ class FlextPluginServices(FlextDomainService[object]):
             ) as e:
                 return FlextResult[bool].fail(f"Failed to validate plugin: {e}")
 
-    class RegistryService(FlextDomainService[object]):
+    class RegistryService(FlextService[object]):
         """Simple plugin registry service for legacy compatibility."""
 
         container: FlextContainer
@@ -352,7 +352,7 @@ class FlextPluginServices(FlextDomainService[object]):
 
         @override
         def execute(self) -> FlextResult[object]:
-            """Execute service operation (required by FlextDomainService)."""
+            """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
