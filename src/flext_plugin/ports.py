@@ -267,7 +267,7 @@ class FlextPluginHotReloadPort(FlextProtocols.Domain.Service):
         # Abstract method - implemented by adapters
 
     @abstractmethod
-    def stop_watching(self) -> FlextResult[bool]:
+    def stop_watching(self: object) -> FlextResult[bool]:
         """Stop watching for plugin file changes.
 
         Returns:

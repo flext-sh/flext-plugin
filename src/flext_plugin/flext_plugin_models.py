@@ -204,22 +204,22 @@ class FlextPluginModels(FlextModels.Entity):
         )
 
         @property
-        def name(self) -> str:
+        def name(self: object) -> str:
             """Get plugin name from configuration."""
             return self.config.name
 
         @property
-        def version(self) -> str:
+        def version(self: object) -> str:
             """Get plugin version from configuration."""
             return self.config.version
 
         @property
-        def plugin_type(self) -> "FlextPluginModels.Type":
+        def plugin_type(self: object) -> "FlextPluginModels.Type":
             """Get plugin type from configuration."""
             return self.config.plugin_type
 
         @property
-        def status(self) -> "FlextPluginModels.Status":
+        def status(self: object) -> "FlextPluginModels.Status":
             """Get plugin status from configuration."""
             return self.config.status
 
@@ -276,11 +276,11 @@ class FlextPluginModels(FlextModels.Entity):
         )
 
         @property
-        def duration_ms(self) -> float:
+        def duration_ms(self: object) -> float:
             """Get execution time in milliseconds."""
             return self.execution_time * 1000
 
-        def is_failure(self) -> bool:
+        def is_failure(self: object) -> bool:
             """Return True if execution failed."""
             return not self.success
 

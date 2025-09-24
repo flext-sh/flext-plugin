@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sys
 
-from flext_cli import FlextCliApi, FlextCliConfigs, FlextCliMain
+from flext_cli import FlextCliApi, FlextCliCommands, FlextCliConfigs
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
 # Initialize logger
@@ -18,7 +18,7 @@ logger = FlextLogger(__name__)
 class PluginCLI:
     """Simplified CLI handler."""
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize CLI."""
         try:
             self.container = FlextContainer()
@@ -30,10 +30,10 @@ class PluginCLI:
 class FlextPluginCliService:
     """Simplified FLEXT Plugin CLI service."""
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize plugin CLI service."""
         self._cli_api = FlextCliApi()
-        self._config = FlextCliConfigs()
+        self._config: dict[str, object] = FlextCliConfigs()
         self._plugin_handler = PluginCLI()
 
     def handle_result(
@@ -51,13 +51,13 @@ class FlextPluginCliService:
             return FlextResult[str].ok(success_msg)
         return FlextResult[str].ok("Operation completed")
 
-    def create_plugin_cli_interface(self) -> FlextResult[FlextCliMain]:
+    def create_plugin_cli_interface(self: object) -> FlextResult[FlextCliCommands]:
         """Create simplified plugin CLI interface."""
         try:
-            main_cli = FlextCliMain()
-            return FlextResult[FlextCliMain].ok(main_cli)
+            main_cli = FlextCliCommands()
+            return FlextResult[FlextCliCommands].ok(main_cli)
         except Exception as e:
-            return FlextResult[FlextCliMain].fail(f"CLI initialization failed: {e}")
+            return FlextResult[FlextCliCommands].fail(f"CLI initialization failed: {e}")
 
     def handle_create_plugin(
         self,
@@ -75,7 +75,7 @@ class FlextPluginCliService:
         except Exception as e:
             return FlextResult[str].fail(f"Plugin creation failed: {e}")
 
-    def handle_list_plugins(self) -> FlextResult[str]:
+    def handle_list_plugins(self: object) -> FlextResult[str]:
         """Handle list plugins command."""
         try:
             logger.info("Listing available plugins")
@@ -83,7 +83,7 @@ class FlextPluginCliService:
         except Exception as e:
             return FlextResult[str].fail(f"Plugin listing failed: {e}")
 
-    def handle_platform_status(self) -> FlextResult[str]:
+    def handle_platform_status(self: object) -> FlextResult[str]:
         """Handle platform status command."""
         try:
             logger.info("Getting platform status")
@@ -96,7 +96,7 @@ def main() -> None:
     """Main CLI entry point."""
     try:
         cli_service = FlextPluginCliService()
-        cli_result = cli_service.create_plugin_cli_interface()
+        cli_result: FlextResult[object] = cli_service.create_plugin_cli_interface()
         if cli_result.is_success:
             cli = cli_result.unwrap()
             cli.execute()

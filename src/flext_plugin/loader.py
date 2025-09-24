@@ -68,11 +68,11 @@ class PluginLoader(FlextModels.Entity):
         self._loaded_plugins: FlextTypes.Core.Dict = {}
 
     @property
-    def security_enabled(self) -> bool:
+    def security_enabled(self: object) -> bool:
         """Get security enabled status."""
         return getattr(self, "_security_enabled", True)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
         return FlextResult[None].ok(None)
 
@@ -173,7 +173,7 @@ class PluginLoader(FlextModels.Entity):
         await self.unload_plugin(plugin_name)
         return self.load_plugin(Path(file_path))
 
-    def get_loaded_plugins(self) -> FlextTypes.Core.Dict:
+    def get_loaded_plugins(self: object) -> FlextTypes.Core.Dict:
         """Get copy of loaded plugins."""
         return self.loaded_plugins.copy()
 
@@ -211,7 +211,7 @@ class PluginLoader(FlextModels.Entity):
         """
         return plugin_name in self._loaded_plugins
 
-    def get_all_loaded_plugins(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def get_all_loaded_plugins(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get all loaded plugins.
 
         Returns:

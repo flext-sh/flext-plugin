@@ -53,23 +53,25 @@ class FlextPluginPlatform:
       >>> platform = FlextPluginPlatform()
       >>>
       >>> # Full plugin management workflow
-      >>> discovery_result = platform.discover_plugins("./plugins")
+      >>> discovery_result: FlextResult[object] = platform.discover_plugins("./plugins")
       >>> if discovery_result.success():
       ...     for plugin in discovery_result.data:
       ...         # Validate plugin before loading
       ...         validation = platform.validate_plugin(plugin)
       ...         if validation.success() and validation.data:
       ...             # Load validated plugin
-      ...             load_result = platform.load_plugin(plugin)
+      ...             load_result: FlextResult[object] = platform.load_plugin(plugin)
       ...             if load_result.success():
       ...                 print(f"Successfully loaded plugin: {plugin.name}")
       >>>
       >>> # Configuration management
-      >>> config_result = platform.get_plugin_config("my-plugin")
+      >>> config_result: FlextResult[object] = platform.get_plugin_config("my-plugin")
       >>> if config_result.success():
-      ...     config = config_result.data
+      ...     config: dict[str, object] = config_result.data
       ...     # Modify configuration and update
-      ...     update_result = platform.update_plugin_config("my-plugin", config)
+      ...     update_result: FlextResult[object] = platform.update_plugin_config(
+      ...         "my-plugin", config
+      ...     )
     Error Handling:
       All platform methods return FlextResult objects for consistent error
       handling and railway-oriented programming patterns. The platform
@@ -107,7 +109,7 @@ class FlextPluginPlatform:
         self.container = container or FlextContainer()
         self._setup_services()
 
-    def _setup_services(self) -> None:
+    def _setup_services(self: object) -> None:
         """Set up platform services in the container."""
         # Register services in container
         # DRY SOLID pattern: Use container kwarg for service initialization
@@ -121,18 +123,18 @@ class FlextPluginPlatform:
         )
 
     @property
-    def plugin_service(self) -> FlextPluginService:
+    def plugin_service(self: object) -> FlextPluginService:
         """Get plugin management service."""
-        result = self.container.get("plugin_service")
+        result: FlextResult[object] = self.container.get("plugin_service")
         if result.success and isinstance(result.data, FlextPluginService):
             return result.data
         msg: str = f"Failed to get plugin service: {result.error}"
         raise RuntimeError(msg)
 
     @property
-    def discovery_service(self) -> FlextPluginDiscoveryService:
+    def discovery_service(self: object) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
-        result = self.container.get("plugin_discovery_service")
+        result: FlextResult[object] = self.container.get("plugin_discovery_service")
         if result.success and isinstance(result.data, FlextPluginDiscoveryService):
             return result.data
         msg: str = f"Failed to get discovery service: {result.error}"

@@ -38,7 +38,7 @@ def create_flext_plugin(
     are properly initialized and validated.
 
     """
-    config = config or {}
+    config: dict[str, object] = config or {}
     config["created_at"] = datetime.now(UTC)
 
     return FlextPlugin.create(
@@ -157,8 +157,8 @@ def create_plugin_from_dict(plugin_data: FlextTypes.Core.Dict) -> FlextPlugin:
         # Extract optional fields
         description = str(plugin_data.get("description", ""))
         author = str(plugin_data.get("author", ""))
-        dependencies = plugin_data.get("dependencies", [])
-        metadata = plugin_data.get("metadata", {})
+        dependencies: list[object] = plugin_data.get("dependencies", [])
+        metadata: dict[str, object] = plugin_data.get("metadata", {})
 
         # Handle status conversion
         status_str = plugin_data.get("status", "inactive")

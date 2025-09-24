@@ -77,7 +77,7 @@ class PluginDiscovery(FlextModels.Entity):
         object.__setattr__(self, "discovered_plugins", {})
         object.__setattr__(self, "blacklisted_plugins", set())
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin discovery using FlextUtilities."""
         # Use FlextUtilities for validation - maintain original error message for test compatibility
         if not FlextUtilities.Validation.is_non_empty_string(self.plugin_directory):
@@ -126,7 +126,7 @@ class PluginDiscovery(FlextModels.Entity):
         """Manually register a plugin class."""
         if self._validate_plugin_class(plugin_class):
             # Create plugin instance directly from class
-            plugin_name = getattr(plugin_class, "METADATA", {}).get(
+            plugin_name: dict[str, object] = getattr(plugin_class, "METADATA", {}).get(
                 "name",
                 plugin_class.__name__,
             )
@@ -166,7 +166,7 @@ class PluginDiscovery(FlextModels.Entity):
                 try:
                     # Use FlextUtilities for safe JSON parsing
                     manifest_content = manifest_file.read_text(encoding="utf-8")
-                    metadata = json.loads(manifest_content)
+                    metadata: dict[str, object] = json.loads(manifest_content)
                     plugin_name_key = FlextUtilities.TextProcessor.safe_string(
                         str(metadata.get("name", plugin_name)),
                     )

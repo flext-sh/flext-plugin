@@ -14,7 +14,7 @@ from typing import override
 import pytest
 
 from flext_core import FlextResult
-from flext_plugin.simple_plugin import (
+from flext_plugin import (
     Plugin,
     PluginRegistry,
     create_registry,
@@ -352,8 +352,7 @@ class TestUtilityFunctions:
             # Write REAL plugin module content
             module_file.write_text('''
 """REAL test plugin module."""
-
-from flext_plugin.simple_plugin import Plugin
+from flext_plugin import Plugin
 
 class Plugin(Plugin):
     """REAL plugin implementation."""
@@ -370,8 +369,6 @@ class Plugin(Plugin):
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_real_plugin", "Plugin")
 
@@ -383,9 +380,7 @@ class Plugin(Plugin):
                 assert hasattr(result.data, "loaded")
                 assert result.data.loaded is True
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_real_plugin" in sys.modules:
                     del sys.modules["test_real_plugin"]
 
@@ -416,8 +411,6 @@ class CustomPlugin(Plugin):
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_custom_plugin", "CustomPlugin")
 
@@ -429,9 +422,7 @@ class CustomPlugin(Plugin):
                 assert hasattr(result.data, "custom_attribute")
                 assert result.data.custom_attribute == "custom_value"
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_custom_plugin" in sys.modules:
                     del sys.modules["test_custom_plugin"]
 
@@ -464,8 +455,6 @@ class SomeOtherClass:
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_no_plugin_class", "Plugin")
 
@@ -473,9 +462,7 @@ class SomeOtherClass:
                 assert result.error is not None
                 assert "Plugin class not found" in result.error
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_no_plugin_class" in sys.modules:
                     del sys.modules["test_no_plugin_class"]
 
@@ -502,8 +489,6 @@ class Plugin(Plugin):
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_failing_plugin", "Plugin")
 
@@ -512,9 +497,7 @@ class Plugin(Plugin):
                 assert "Plugin loading failed" in result.error
                 assert "Plugin instantiation failed" in result.error
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_failing_plugin" in sys.modules:
                     del sys.modules["test_failing_plugin"]
 
@@ -541,8 +524,6 @@ class Plugin(Plugin):
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_invalid_plugin", "Plugin")
 
@@ -551,9 +532,7 @@ class Plugin(Plugin):
                 assert "Plugin loading failed" in result.error
                 assert "Invalid plugin configuration" in result.error
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_invalid_plugin" in sys.modules:
                     del sys.modules["test_invalid_plugin"]
 
@@ -582,8 +561,6 @@ class Plugin(Plugin):
 
             # Add temp directory to Python path temporarily
 
-            sys.path.insert(0, str(temp_path))
-
             try:
                 result = load_plugin("test_type_error_plugin", "Plugin")
 
@@ -592,9 +569,7 @@ class Plugin(Plugin):
                 assert "Plugin loading failed" in result.error
                 assert "Type error in plugin" in result.error
             finally:
-                # Clean up path
-                sys.path.remove(str(temp_path))
-                # Remove module from cache
+                # Clean up module from cache
                 if "test_type_error_plugin" in sys.modules:
                     del sys.modules["test_type_error_plugin"]
 

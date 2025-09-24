@@ -195,7 +195,6 @@ poetry show --tree
 
 ```python
 # Enable debug logging
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Use platform validation

@@ -10,6 +10,7 @@ import pytest
 
 # REAL imports - apenas classes que existem
 from flext_plugin import (
+    FlextPlugin,
     PluginExecutionContextModel,
     PluginManagerResultModel,
     PluginType,
@@ -17,7 +18,6 @@ from flext_plugin import (
     create_flext_plugin,
     create_plugin_manager,
 )
-from flext_plugin.entities import FlextPlugin
 
 
 class TestSimplePluginRegistryComprehensive:

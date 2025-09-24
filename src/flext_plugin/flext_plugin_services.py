@@ -67,18 +67,20 @@ class FlextPluginServices(FlextService[object]):
             object.__setattr__(self, "_manager_port", None)
 
         @override
-        def execute(self) -> FlextResult[object]:
+        def execute(self: object) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
 
         @property
-        def discovery_port(self) -> FlextPluginDiscoveryPort:
+        def discovery_port(self: object) -> FlextPluginDiscoveryPort:
             """Get plugin discovery port."""
             discovery_port = getattr(self, "_discovery_port", None)
             if discovery_port is None:
-                result = self.container.get("plugin_discovery_port")
+                result: FlextResult[object] = self.container.get(
+                    "plugin_discovery_port"
+                )
                 if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                     discovery_port_data: FlextPluginDiscoveryPort = result.data
                     setattr(self, "_discovery_port", discovery_port_data)
@@ -91,11 +93,11 @@ class FlextPluginServices(FlextService[object]):
             raise FlextExceptions.BaseError(msg)
 
         @property
-        def loader_port(self) -> FlextPluginLoaderPort:
+        def loader_port(self: object) -> FlextPluginLoaderPort:
             """Get plugin loader port."""
             loader_port = getattr(self, "_loader_port", None)
             if loader_port is None:
-                result = self.container.get("plugin_loader_port")
+                result: FlextResult[object] = self.container.get("plugin_loader_port")
                 if result.success and isinstance(result.data, FlextPluginLoaderPort):
                     loader_port_data: FlextPluginLoaderPort = result.data
                     setattr(self, "_loader_port", loader_port_data)
@@ -108,11 +110,11 @@ class FlextPluginServices(FlextService[object]):
             raise FlextExceptions.BaseError(msg)
 
         @property
-        def manager_port(self) -> FlextPluginManagerPort:
+        def manager_port(self: object) -> FlextPluginManagerPort:
             """Get plugin manager port."""
             manager_port = getattr(self, "_manager_port", None)
             if manager_port is None:
-                result = self.container.get("plugin_manager_port")
+                result: FlextResult[object] = self.container.get("plugin_manager_port")
                 if result.success and isinstance(result.data, FlextPluginManagerPort):
                     manager_port_data: FlextPluginManagerPort = result.data
                     setattr(self, "_manager_port", manager_port_data)
@@ -143,7 +145,9 @@ class FlextPluginServices(FlextService[object]):
                 if not plugin.is_valid():
                     return FlextResult[bool].fail("Invalid plugin")
                 # Validate plugin first
-                validation_result = self.discovery_port.validate_plugin(plugin)
+                validation_result: FlextResult[object] = (
+                    self.discovery_port.validate_plugin(plugin)
+                )
                 validation_data: bool = (
                     validation_result.data
                     if validation_result.data is not None
@@ -273,18 +277,20 @@ class FlextPluginServices(FlextService[object]):
             object.__setattr__(self, "_discovery_port", None)
 
         @override
-        def execute(self) -> FlextResult[object]:
+        def execute(self: object) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
 
         @property
-        def discovery_port(self) -> FlextPluginDiscoveryPort:
+        def discovery_port(self: object) -> FlextPluginDiscoveryPort:
             """Get plugin discovery port."""
             discovery_port = getattr(self, "_discovery_port", None)
             if discovery_port is None:
-                result = self.container.get("plugin_discovery_port")
+                result: FlextResult[object] = self.container.get(
+                    "plugin_discovery_port"
+                )
                 if result.success and isinstance(result.data, FlextPluginDiscoveryPort):
                     discovery_port_data: FlextPluginDiscoveryPort = result.data
                     setattr(self, "_discovery_port", discovery_port_data)
@@ -351,7 +357,7 @@ class FlextPluginServices(FlextService[object]):
             object.__setattr__(self, "_plugins", {})
 
         @override
-        def execute(self) -> FlextResult[object]:
+        def execute(self: object) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
@@ -387,7 +393,7 @@ class FlextPluginServices(FlextService[object]):
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             return plugins.get(plugin_name)
 
-        def get_plugin_count(self) -> int:
+        def get_plugin_count(self: object) -> int:
             """Return number of registered plugins."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             return len(plugins)

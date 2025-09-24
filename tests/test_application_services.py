@@ -17,14 +17,13 @@ import pytest
 
 from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
 from flext_plugin import (
+    FlextPluginConfig,
     FlextPluginDiscoveryService,
+    FlextPluginEntity,
     FlextPluginService,
+    PluginDiscovery,
+    PluginLoader,
     PluginType,
-)
-from flext_plugin.discovery import PluginDiscovery
-from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
-from flext_plugin.loader import PluginLoader
-from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,

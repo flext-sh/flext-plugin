@@ -152,7 +152,7 @@ class PluginWatcher:
         self.watch_directories = watch_directories
         self._observer: BaseObserver | None = None
 
-    def get_watched_files(self) -> list[Path]:
+    def get_watched_files(self: object) -> list[Path]:
         """Get list of watched files.
 
         Returns:
@@ -195,7 +195,7 @@ class StateManager:
         """
         # Check if plugin has get_state method
         if hasattr(plugin, "get_state") and callable(plugin.get_state):
-            state_data = await plugin.get_state()
+            state_data: dict[str, object] = await plugin.get_state()
         else:
             # Plugin doesn't have get_state method, return empty state
             state_data = {}
@@ -221,7 +221,7 @@ class StateManager:
         """
         return f"snapshot_{datetime.now(UTC).isoformat()}"
 
-    def list_snapshots(self) -> list[FlextTypes.Core.Dict]:
+    def list_snapshots(self: object) -> list[FlextTypes.Core.Dict]:
         """List available snapshots.
 
         Returns:
@@ -335,7 +335,9 @@ class HotReloadManager(FlextModels.Entity):
             kwargs.get("id", FlextUtilities.Generators.generate_entity_id()),
         )
         version = cast("int", kwargs.get("version", 1))
-        metadata = cast("FlextTypes.Core.Dict", kwargs.get("metadata", {}))
+        metadata: dict[str, object] = cast(
+            "FlextTypes.Core.Dict", kwargs.get("metadata", {})
+        )
         # Create instance using Pydantic model_validate to bypass __init__
         instance_data: FlextTypes.Core.Dict = {
             "id": entity_id,
@@ -348,49 +350,49 @@ class HotReloadManager(FlextModels.Entity):
 
     # Removed __init__ - use create() class method instead
     @property
-    def discovery(self) -> PluginDiscovery | None:
+    def discovery(self: object) -> PluginDiscovery | None:
         """Get plugin discovery instance."""
         return getattr(self, "_discovery", None)
 
     @property
-    def loader(self) -> PluginLoader | None:
+    def loader(self: object) -> PluginLoader | None:
         """Get plugin loader instance."""
         return getattr(self, "_loader", None)
 
     @property
-    def observer(self) -> BaseObserver | None:
+    def observer(self: object) -> BaseObserver | None:
         """Get file system observer instance."""
         return getattr(self, "_observer", None)
 
     @property
-    def loaded_plugins(self) -> FlextTypes.Core.Dict:
+    def loaded_plugins(self: object) -> FlextTypes.Core.Dict:
         """Get loaded plugins dictionary."""
         return getattr(self, "_loaded_plugins", {})
 
     @property
-    def plugin_manager(self) -> object | None:
+    def plugin_manager(self: object) -> object | None:
         """Get plugin manager instance."""
         return getattr(self, "_plugin_manager", None)
 
     @property
-    def state_manager(self) -> StateManager:
+    def state_manager(self: object) -> StateManager:
         """Get state manager instance, creating it if needed."""
         state_dir = Path(self.plugin_directory) / ".flext_state"
         return StateManager(state_directory=state_dir)
 
     @property
-    def rollback_manager(self) -> RollbackManager:
+    def rollback_manager(self: object) -> RollbackManager:
         """Get rollback manager instance, creating it if needed."""
         state_mgr = self.state_manager  # This will create state manager if needed
         return RollbackManager(state_manager=state_mgr)
 
     @property
-    def watcher(self) -> PluginWatcher:
+    def watcher(self: object) -> PluginWatcher:
         """Get plugin watcher instance, creating it if needed."""
         watch_dirs = [Path(self.plugin_directory)]
         return PluginWatcher(watch_directories=watch_dirs)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for hot reload manager."""
         if not self.plugin_directory:
             return FlextResult[None].fail("Plugin directory cannot be empty")
@@ -484,7 +486,7 @@ class HotReloadManager(FlextModels.Entity):
             loader = self.loader
             if loader:
                 plugin_instance = loader.load_plugin(file_path)
-                loaded_plugins = getattr(self, "_loaded_plugins", {})
+                loaded_plugins: dict[str, object] = getattr(self, "_loaded_plugins", {})
                 loaded_plugins[plugin_name] = plugin_instance
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin loading error and continue hot-reload process
@@ -494,7 +496,7 @@ class HotReloadManager(FlextModels.Entity):
     async def _unload_plugin(self, plugin_name: str) -> None:
         """Unload a specific plugin."""
         try:
-            loaded_plugins = getattr(self, "_loaded_plugins", {})
+            loaded_plugins: dict[str, object] = getattr(self, "_loaded_plugins", {})
             if plugin_name in loaded_plugins:
                 plugin = loaded_plugins[plugin_name]
                 # Call plugin cleanup if available:
@@ -506,7 +508,7 @@ class HotReloadManager(FlextModels.Entity):
             logger = FlextLogger(__name__)
             logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
 
-    def get_loaded_plugins(self) -> FlextTypes.Core.Dict:
+    def get_loaded_plugins(self: object) -> FlextTypes.Core.Dict:
         """Get a copy of currently loaded plugins.
 
         Returns:
@@ -528,7 +530,9 @@ class HotReloadManager(FlextModels.Entity):
             # Try to reload via plugin manager if available
             plugin_manager = getattr(self, "plugin_manager", None)
             if plugin_manager and hasattr(plugin_manager, "reload_plugin"):
-                result = await plugin_manager.reload_plugin(plugin_id)
+                result: FlextResult[object] = await plugin_manager.reload_plugin(
+                    plugin_id
+                )
                 return ReloadEvent(
                     event_type="plugin_reload",
                     plugin_id=plugin_id,

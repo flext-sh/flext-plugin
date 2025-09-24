@@ -26,7 +26,6 @@ from typing import Dict, Optional
 
 import asyncio
 import json
-import logging
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -304,7 +303,6 @@ class BasicDataProcessorPlugin(FlextPlugin):
 ```python
 # usage_example.py
 import asyncio
-import logging
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 

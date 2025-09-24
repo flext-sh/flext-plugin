@@ -24,9 +24,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin.entities import FlextPluginEntity
-from flext_plugin.loader import PluginLoader
-from flext_plugin.typings import PluginStatus, PluginType
+from flext_plugin import FlextPluginEntity, PluginLoader, PluginStatus, PluginType
 
 
 class TestPluginLoaderReal:

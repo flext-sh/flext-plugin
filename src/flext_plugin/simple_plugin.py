@@ -55,7 +55,7 @@ class Plugin:
       >>> plugin = DataProcessorPlugin("data-processor")
       >>> activation = plugin.activate()
       >>> if activation.success():
-      ...     result = plugin.execute(my_data)
+      ...     result: FlextResult[object] = plugin.execute(my_data)
 
     """
 
@@ -64,7 +64,7 @@ class Plugin:
         self.name = name
         self.active = False
 
-    def activate(self) -> FlextResult[None]:
+    def activate(self: object) -> FlextResult[None]:
         """Activate plugin."""
         try:
             self.active = True
@@ -72,7 +72,7 @@ class Plugin:
         except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult[None].fail(f"Plugin activation failed: {e}")
 
-    def deactivate(self) -> FlextResult[None]:
+    def deactivate(self: object) -> FlextResult[None]:
         """Deactivate plugin."""
         try:
             self.active = False
@@ -84,7 +84,7 @@ class Plugin:
 class PluginRegistry:
     """Simple plugin registry."""
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize empty plugin registry."""
         self.plugins: dict[str, Plugin] = {}
 
@@ -109,7 +109,7 @@ class PluginRegistry:
         """Get a plugin by name."""
         return self.plugins.get(name)
 
-    def list_plugins(self) -> FlextTypes.Core.StringList:
+    def list_plugins(self: object) -> FlextTypes.Core.StringList:
         """List all registered plugins."""
         return list(self.plugins.keys())
 

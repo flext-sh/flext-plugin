@@ -12,14 +12,14 @@ from typing import override
 import pytest
 
 from flext_core import FlextResult, FlextTypes
-from flext_plugin.entities import FlextPluginEntity
-from flext_plugin.flext_plugin_handlers import (
+from flext_plugin import (
+    FlextPluginEntity,
     FlextPluginEventHandler,
     FlextPluginHandler,
+    FlextPluginLoaderPort,
     FlextPluginRegistrationHandler,
+    PluginLoader,
 )
-from flext_plugin.loader import PluginLoader
-from flext_plugin.ports import FlextPluginLoaderPort
 
 
 class TestPluginLoaderAdapter(FlextPluginLoaderPort):

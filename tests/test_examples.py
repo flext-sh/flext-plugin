@@ -21,10 +21,8 @@ from flext_plugin import (
     create_flext_plugin_metadata,
 )
 
-# Add examples directory to path BEFORE imports
+# Load examples from examples directory
 examples_path = Path(__file__).parent.parent / "examples"
-if str(examples_path) not in sys.path:
-    sys.path.insert(0, str(examples_path))
 
 # Load docker integration helpers from numerically prefixed example via importlib
 

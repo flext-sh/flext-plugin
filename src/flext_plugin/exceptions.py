@@ -53,7 +53,7 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(message)
             self.plugin_id = plugin_id
 
-        def __str__(self) -> str:
+        def __str__(self: object) -> str:
             """Format exception with error code prefix."""
             message = super().__str__()
             return f"[{self.error_code}] {message}"

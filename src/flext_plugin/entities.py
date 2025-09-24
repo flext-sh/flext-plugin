@@ -18,7 +18,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from flext_plugin.flext_plugin.typings import PluginStatus, PluginType
+from flext_plugin.typings import PluginStatus, PluginType
 
 
 class FlextPluginConfigParams:
@@ -140,7 +140,7 @@ class FlextPluginEntity(FlextModels.Entity):
         final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
 
         # Extract config values
-        config = config or {}
+        config: dict[str, object] = config or {}
 
         # Handle testing convenience for plugin_id in kwargs
         plugin_name = kwargs.get("plugin_id", name)
@@ -168,16 +168,16 @@ class FlextPluginEntity(FlextModels.Entity):
 
     # Testing convenience properties (without conflicting names)
     @property
-    def plugin_name(self) -> str:
+    def plugin_name(self: object) -> str:
         """Get plugin name (convenience)."""
         return self.name
 
-    def get_version(self) -> str:
+    def get_version(self: object) -> str:
         """Get plugin version (convenience)."""
         return self.plugin_version
 
     @property
-    def plugin_status(self) -> str:
+    def plugin_status(self: object) -> str:
         """Get plugin status (convenience) - returns value string."""
         # FlextModels uses use_enum_values=True, so status is already a string
         return str(self.status)
@@ -194,49 +194,49 @@ class FlextPluginEntity(FlextModels.Entity):
 
     # Health and status checking properties
     @property
-    def is_healthy(self) -> bool:
+    def is_healthy(self: object) -> bool:
         """Check if plugin is healthy."""
         # Handle both enum and string values due to use_enum_values=True
         return self.status in {PluginStatus.HEALTHY, PluginStatus.HEALTHY.value}
 
     # Execution tracking properties (for testing convenience)
     @property
-    def execution_count(self) -> int:
+    def execution_count(self: object) -> int:
         """Get number of executions recorded."""
         # For testing convenience, return a placeholder
         return getattr(self, "_execution_count", 0)
 
     @property
-    def average_execution_time_ms(self) -> float:
+    def average_execution_time_ms(self: object) -> float:
         """Get average execution time in milliseconds."""
         # For testing convenience, return a placeholder
         return getattr(self, "_average_execution_time_ms", 0.0)
 
     @property
-    def last_execution(self) -> datetime | None:
+    def last_execution(self: object) -> datetime | None:
         """Get timestamp of last execution."""
         # For testing convenience, return a placeholder
         return getattr(self, "_last_execution", None)
 
     @property
-    def error_count(self) -> int:
+    def error_count(self: object) -> int:
         """Get number of errors recorded."""
         # For testing convenience, return a placeholder
         return getattr(self, "_error_count", 0)
 
     @property
-    def last_error(self) -> str:
+    def last_error(self: object) -> str:
         """Get last error message."""
         # For testing convenience, return a placeholder
         return getattr(self, "_last_error", "")
 
     @property
-    def last_error_time(self) -> datetime | None:
+    def last_error_time(self: object) -> datetime | None:
         """Get timestamp of last error."""
         # For testing convenience, return a placeholder
         return getattr(self, "_last_error_time", None)
 
-    def is_valid(self) -> bool:
+    def is_valid(self: object) -> bool:
         """Validate plugin entity state.
 
         Returns:
@@ -245,7 +245,7 @@ class FlextPluginEntity(FlextModels.Entity):
         """
         return bool(self.name and self.plugin_version)
 
-    def activate(self) -> bool:
+    def activate(self: object) -> bool:
         """Activate the plugin.
 
         Returns:
@@ -258,7 +258,7 @@ class FlextPluginEntity(FlextModels.Entity):
             return True
         return False
 
-    def deactivate(self) -> bool:
+    def deactivate(self: object) -> bool:
         """Deactivate the plugin.
 
         Returns:
@@ -271,7 +271,7 @@ class FlextPluginEntity(FlextModels.Entity):
             return True
         return False
 
-    def is_active(self) -> bool:
+    def is_active(self: object) -> bool:
         """Check if plugin is active.
 
         Returns:
@@ -338,7 +338,7 @@ class FlextPluginEntity(FlextModels.Entity):
         )
         setattr(self, "status", PluginStatus.UNHEALTHY)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin entity.
 
         Returns:
@@ -450,7 +450,7 @@ class FlextPluginConfig(FlextModels.Entity):
 
     # Remove __init__ override to prevent recursion - let Pydantic handle construction
 
-    def is_valid(self) -> bool:
+    def is_valid(self: object) -> bool:
         """Validate plugin configuration entity state.
 
         Returns:
@@ -474,7 +474,7 @@ class FlextPluginConfig(FlextModels.Entity):
         # Update timestamp using frozen model workaround
         setattr(self, "updated_at", FlextUtilities.Generators.generate_iso_timestamp())
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin configuration entity.
 
         Returns:
@@ -546,7 +546,9 @@ class FlextPluginMetadata(FlextModels.Entity):
         else:
             p = FlextPluginMetadataParams()
             p.plugin_name = cast("str", kwargs.get("plugin_name", name))
-            p.metadata = cast("FlextTypes.Core.Dict | None", kwargs.get("metadata"))
+            p.metadata: dict[str, object] = cast(
+                "FlextTypes.Core.Dict | None", kwargs.get("metadata")
+            )
             p.name = name
             p.entry_point = entry_point
             p.plugin_type = kwargs.get("plugin_type", "")
@@ -612,7 +614,7 @@ class FlextPluginMetadata(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def is_valid(self) -> bool:
+    def is_valid(self: object) -> bool:
         """Validate plugin metadata entity state.
 
         Returns:
@@ -621,7 +623,7 @@ class FlextPluginMetadata(FlextModels.Entity):
         """
         return bool(self.plugin_name)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin metadata entity.
 
         Returns:
@@ -741,7 +743,7 @@ class FlextPluginRegistry(FlextModels.Entity):
     # Remove __init__ override to prevent recursion - let Pydantic handle construction
 
     @property
-    def is_available(self) -> bool:
+    def is_available(self: object) -> bool:
         """Check if registry is available (enabled and has URL)."""
         return self.is_enabled and bool(self.registry_url)
 
@@ -761,7 +763,7 @@ class FlextPluginRegistry(FlextModels.Entity):
             # Increment error count on failure
             setattr(self, "sync_error_count", self.sync_error_count + 1)
 
-    def is_valid(self) -> bool:
+    def is_valid(self: object) -> bool:
         """Validate plugin registry entity state.
 
         Returns:
@@ -812,7 +814,7 @@ class FlextPluginRegistry(FlextModels.Entity):
         """
         return self.plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[FlextPluginEntity]:
+    def list_plugins(self: object) -> list[FlextPluginEntity]:
         """List all registered plugins.
 
         Returns:
@@ -821,7 +823,7 @@ class FlextPluginRegistry(FlextModels.Entity):
         """
         return list(self.plugins.values())
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin registry entity.
 
         Returns:
@@ -907,7 +909,7 @@ class FlextPluginExecution(FlextModels.Entity):
         if "plugin_id" in kwargs:
             plugin_name = plugin_name or str(kwargs["plugin_id"])
         execution_id = kwargs.get("execution_id", final_id)
-        input_data = kwargs.get("input_data", {})
+        input_data: dict[str, object] = kwargs.get("input_data", {})
 
         # Create instance data with all required fields including base entity fields
         instance_data: FlextTypes.Core.Dict = {
@@ -932,22 +934,22 @@ class FlextPluginExecution(FlextModels.Entity):
 
         return cls.model_validate(instance_data)
 
-    def is_valid(self) -> bool:
+    def is_valid(self: object) -> bool:
         """Validate plugin execution entity state."""
         return bool(self.plugin_name)
 
     @property
-    def success(self) -> bool:
+    def success(self: object) -> bool:
         """Check if execution was successful."""
         return self.status == "completed"
 
     @property
-    def execution_status(self) -> str:
+    def execution_status(self: object) -> str:
         """Get execution status (compatibility alias)."""
         return self.status
 
     @property
-    def memory_usage_mb(self) -> float:
+    def memory_usage_mb(self: object) -> float:
         """Get memory usage in MB from resource tracking."""
         resource_usage = cast(
             "FlextTypes.Core.Dict",
@@ -971,7 +973,7 @@ class FlextPluginExecution(FlextModels.Entity):
         return 0.0
 
     @property
-    def cpu_time_ms(self) -> float:
+    def cpu_time_ms(self: object) -> float:
         """Get CPU time in milliseconds from resource tracking."""
         resource_usage = cast(
             "FlextTypes.Core.Dict",
@@ -995,16 +997,16 @@ class FlextPluginExecution(FlextModels.Entity):
         return 0.0
 
     @property
-    def is_running(self) -> bool:
+    def is_running(self: object) -> bool:
         """Check if execution is currently running."""
         return self.status == "running"
 
     @property
-    def is_completed(self) -> bool:
+    def is_completed(self: object) -> bool:
         """Check if execution is completed (successful or failed)."""
         return self.status in {"completed", "failed"}
 
-    def mark_started(self) -> None:
+    def mark_started(self: object) -> None:
         """Mark execution as started."""
         setattr(self, "status", "running")
         setattr(self, "start_time", FlextUtilities.Generators.generate_iso_timestamp())
@@ -1058,7 +1060,7 @@ class FlextPluginExecution(FlextModels.Entity):
         )
         setattr(self, "output_data", current_output)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate domain rules for plugin execution entity.
 
         Returns:

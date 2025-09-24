@@ -22,8 +22,7 @@ import sys
 from typing import cast
 
 from flext_core import FlextTypes
-from flext_plugin import PluginType, create_flext_plugin
-from flext_plugin.entities import FlextPluginEntity
+from flext_plugin import FlextPluginEntity, PluginType, create_flext_plugin
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:

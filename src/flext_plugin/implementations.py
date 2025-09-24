@@ -11,8 +11,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Protocol, cast
 
-from structlog.stdlib import BoundLogger
-
+# Use FlextLogger from flext_core instead
 from flext_core import (
     FlextLogger,
     FlextProtocols,
@@ -86,12 +85,12 @@ class ConcretePlugin:
         self._config: FlextTypes.Core.Dict = {}
 
     @property
-    def name(self) -> str:
+    def name(self: object) -> str:
         """Get plugin name."""
         return self._name
 
     @property
-    def version(self) -> str:
+    def version(self: object) -> str:
         """Get plugin version."""
         return self._version
 
@@ -99,13 +98,13 @@ class ConcretePlugin:
         """Configure component with provided settings."""
         try:
             # Store configuration
-            self._config = config
+            self._config: dict[str, object] = config
             return FlextResult[None].ok(None)
         except Exception as e:
             self._logger.exception(f"Failed to configure plugin {self.name}")
             return FlextResult[None].fail(f"Configuration failed: {e!s}")
 
-    def get_config(self) -> FlextTypes.Core.Dict:
+    def get_config(self: object) -> FlextTypes.Core.Dict:
         """Get current configuration."""
         return getattr(self, "_config", {})
 
@@ -139,7 +138,7 @@ class ConcretePlugin:
             self._logger.exception(f"Failed to initialize plugin {self.name}")
             return FlextResult[None].fail(f"Initialization failed: {e!s}")
 
-    def shutdown(self) -> FlextResult[None]:
+    def shutdown(self: object) -> FlextResult[None]:
         """Shutdown plugin and release resources.
 
         Returns:
@@ -160,7 +159,7 @@ class ConcretePlugin:
             self._logger.exception(f"Failed to shutdown plugin {self.name}")
             return FlextResult[None].fail(f"Shutdown failed: {e!s}")
 
-    def get_info(self) -> FlextTypes.Core.Dict:
+    def get_info(self: object) -> FlextTypes.Core.Dict:
         """Get plugin information.
 
         Returns:
@@ -234,7 +233,7 @@ class ConcreteExecutablePlugin(ConcretePlugin):
                 self._entity.record_error(str(e))
             return FlextResult[object].fail(f"Operation failed: {e!s}")
 
-    def get_supported_operations(self) -> FlextTypes.Core.StringList:
+    def get_supported_operations(self: object) -> FlextTypes.Core.StringList:
         """Get list of supported operations.
 
         Returns:
@@ -288,7 +287,7 @@ class ConcreteDataPlugin(ConcretePlugin):
         self._connection_config.update(config)
         return FlextResult[None].ok(None)
 
-    def test_connection(self) -> FlextResult[None]:
+    def test_connection(self: object) -> FlextResult[None]:
         """Test connection to data source/destination.
 
         Returns:
@@ -358,7 +357,7 @@ class ConcreteTransformPlugin(ConcretePlugin):
             self._logger.exception("Transformation failed")
             return FlextResult[object].fail(f"Transform failed: {e!s}")
 
-    def get_schema(self) -> FlextResult[Mapping[str, object]]:
+    def get_schema(self: object) -> FlextResult[Mapping[str, object]]:
         """Get transformation schema.
 
         Returns:
@@ -371,10 +370,10 @@ class ConcreteTransformPlugin(ConcretePlugin):
 
 
 class LoggerAdapter:
-    """Adapter to make BoundLogger compatible with LoggerProtocol."""
+    """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
-    def __init__(self, logger: BoundLogger) -> None:
-        """Initialize with BoundLogger instance."""
+    def __init__(self, logger: FlextLogger) -> None:
+        """Initialize with FlextLogger instance."""
         self._logger = logger
 
     def critical(self, message: str, **kwargs: object) -> None:
@@ -415,7 +414,7 @@ class ConcretePluginContext:
 
     def __init__(
         self,
-        logger: BoundLogger,
+        logger: FlextLogger,
         config: FlextTypes.Core.Dict | None = None,
         services: FlextTypes.Core.Dict | None = None,
     ) -> None:
@@ -428,19 +427,19 @@ class ConcretePluginContext:
 
         """
         self._logger = logger
-        self._config = config or {}
+        self._config: dict[str, object] = config or {}
         self._services = services or {}
 
     @property
-    def logger(self) -> BoundLogger:
+    def logger(self: object) -> FlextLogger:
         """Get logger for plugin."""
         return self._logger
 
-    def get_config(self) -> FlextTypes.Core.Dict:
+    def get_config(self: object) -> FlextTypes.Core.Dict:
         """Get configuration for plugin."""
         return dict(self._config)
 
-    def get_logger(self) -> FlextProtocols.Infrastructure.LoggerProtocol:
+    def get_logger(self: object) -> FlextProtocols.Infrastructure.LoggerProtocol:
         """Get logger instance for plugin."""
         return LoggerAdapter(self._logger)
 
@@ -464,7 +463,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
     Manages plugin registration, discovery, and lifecycle.
     """
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize plugin registry."""
         self._plugins: FlextTypes.Core.Dict = {}
         self._logger = FlextLogger("plugin.registry")
@@ -516,7 +515,7 @@ class ConcretePluginRegistry(FlextPluginRegistry):
             return FlextResult[object].fail(f"Plugin {plugin_name} not found")
         return FlextResult[object].ok(self._plugins[plugin_name])
 
-    def list_plugins(self) -> FlextTypes.Core.StringList:
+    def list_plugins(self: object) -> FlextTypes.Core.StringList:
         """List all registered plugin names.
 
         Returns:
@@ -563,7 +562,7 @@ class ConcretePluginLoader(FlextPluginLoader):
                 version="1.0.0",
             )
             # Register loaded plugin
-            reg_result = self._registry.register(plugin)
+            reg_result: FlextResult[object] = self._registry.register(plugin)
             if not reg_result.success:
                 return FlextResult[object].fail(
                     f"Failed to register loaded plugin: {reg_result.error}",

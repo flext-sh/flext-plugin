@@ -51,17 +51,17 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self) -> FlextResult[None]:
+    def start(self: object) -> FlextResult[None]:
         """Start the discovery service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self) -> FlextResult[None]:
+    def stop(self: object) -> FlextResult[None]:
         """Stop the discovery service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
@@ -169,17 +169,17 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self) -> FlextResult[None]:
+    def start(self: object) -> FlextResult[None]:
         """Start the loader service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self) -> FlextResult[None]:
+    def stop(self: object) -> FlextResult[None]:
         """Stop the loader service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
@@ -274,17 +274,17 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self) -> FlextResult[None]:
+    def start(self: object) -> FlextResult[None]:
         """Start the manager service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self) -> FlextResult[None]:
+    def stop(self: object) -> FlextResult[None]:
         """Stop the manager service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
@@ -396,7 +396,9 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 return FlextResult[FlextPluginConfig].fail("Plugin name is required")
 
             # Real config - create from loaded plugin or default
-            config = FlextPluginConfig.create(plugin_name=plugin_name)
+            config: dict[str, object] = FlextPluginConfig.create(
+                plugin_name=plugin_name
+            )
 
             return FlextResult[FlextPluginConfig].ok(config)
 

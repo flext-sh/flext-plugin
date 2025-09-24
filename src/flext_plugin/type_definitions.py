@@ -16,10 +16,12 @@ from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 # Plugin domain-specific TypeVars - defined locally in flext-plugin
 TPlugin = TypeVar("TPlugin")  # Generic plugin type
-TPluginConfig = TypeVar("TPluginConfig")  # Plugin configuration type
-TPluginMetadata = TypeVar("TPluginMetadata")  # Plugin metadata type
-TPluginResult = TypeVar("TPluginResult")  # Plugin operation result type
-TPluginData = TypeVar("TPluginData")  # Plugin data type
+TPluginConfig: dict[str, object] = TypeVar("TPluginConfig")  # Plugin configuration type
+TPluginMetadata: dict[str, object] = TypeVar("TPluginMetadata")  # Plugin metadata type
+TPluginResult: FlextResult[object] = TypeVar(
+    "TPluginResult"
+)  # Plugin operation result type
+TPluginData: dict[str, object] = TypeVar("TPluginData")  # Plugin data type
 TPluginContext = TypeVar("TPluginContext")  # Plugin execution context type
 TPluginService = TypeVar("TPluginService")  # Plugin service type
 TPluginHandler = TypeVar("TPluginHandler")  # Plugin handler type
