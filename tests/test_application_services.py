@@ -483,7 +483,7 @@ class TestFlextPluginServiceReal:
         assert service.container is container
         assert isinstance(service, FlextService)
 
-    def test_service_inheritance_real(self, service: FlextPluginService) -> None:
+    def test_service_inheritance_patterns(self, service: FlextPluginService) -> None:
         """Test REAL service inheritance patterns."""
         assert isinstance(service, FlextService)
 

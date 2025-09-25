@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import sys
 
-from flext_cli import FlextCliApi, FlextCliCommands, FlextCliConfigs
+from Flext_cli import FlextCliApi, FlextCliCommands, FlextCliConfig
+
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
 # Initialize logger
@@ -33,7 +34,7 @@ class FlextPluginCliService:
     def __init__(self: object) -> None:
         """Initialize plugin CLI service."""
         self._cli_api = FlextCliApi()
-        self._config: dict[str, object] = FlextCliConfigs()
+        self._config: dict[str, object] = FlextCliConfig()
         self._plugin_handler = PluginCLI()
 
     def handle_result(

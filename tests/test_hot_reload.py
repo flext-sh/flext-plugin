@@ -296,7 +296,9 @@ class TestPlugin:
         await manager._initial_plugin_load()
 
     @pytest.mark.asyncio
-    async def test_reload_plugin_with_real_file(self, temp_dir: Path) -> None:
+    async def test_reload_plugin_with_real_file_operations(
+        self, temp_dir: Path
+    ) -> None:
         """Test reload plugin with REAL file operations."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -348,7 +350,7 @@ class LoadTestPlugin:
         # Should complete without errors
 
     @pytest.mark.asyncio
-    async def test_unload_plugin_with_real_plugin(self, temp_dir: Path) -> None:
+    async def test_unload_plugin_with_real_plugin_object(self, temp_dir: Path) -> None:
         """Test unload plugin with REAL plugin object."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -374,7 +376,7 @@ class LoadTestPlugin:
         assert real_plugin.cleaned_up
 
     @pytest.mark.asyncio
-    async def test_unload_plugin_without_cleanup(self, temp_dir: Path) -> None:
+    async def test_unload_plugin_without_cleanup_method(self, temp_dir: Path) -> None:
         """Test unload plugin without cleanup method."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -404,7 +406,7 @@ class LoadTestPlugin:
         await manager._unload_plugin("nonexistent_plugin")
 
     @pytest.mark.asyncio
-    async def test_on_plugin_file_changed_with_real_path(self, temp_dir: Path) -> None:
+    async def test_file_change_handler_with_real_path(self, temp_dir: Path) -> None:
         """Test file change handler with REAL path."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -423,7 +425,9 @@ class LoadTestPlugin:
         # Should complete without errors
 
     @pytest.mark.asyncio
-    async def test_reload_all_plugins_with_real_plugins(self, temp_dir: Path) -> None:
+    async def test_reload_all_plugins_with_real_plugin_objects(
+        self, temp_dir: Path
+    ) -> None:
         """Test reload all plugins with REAL plugin objects."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -456,7 +460,9 @@ class LoadTestPlugin:
         assert plugin3.cleaned_up
 
     @pytest.mark.asyncio
-    async def test_reload_all_plugins_empty(self, temp_dir: Path) -> None:
+    async def test_reload_all_plugins_with_no_loaded_plugins(
+        self, temp_dir: Path
+    ) -> None:
         """Test reload all plugins with no loaded plugins."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)

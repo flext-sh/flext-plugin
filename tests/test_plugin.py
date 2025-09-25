@@ -40,7 +40,7 @@ class TestPlugin:
         assert not plugin.active
         assert isinstance(plugin, Plugin)
 
-    def test_plugin_activate_success(self, plugin: Plugin) -> None:
+    def test_plugin_activation(self, plugin: Plugin) -> None:
         """Test successful plugin activation."""
         result = plugin.activate()
 
@@ -69,7 +69,7 @@ class TestPlugin:
         assert "Plugin activation failed" in result.error
         assert "Activation failed" in result.error
 
-    def test_plugin_deactivate_success(self, plugin: Plugin) -> None:
+    def test_plugin_deactivation(self, plugin: Plugin) -> None:
         """Test successful plugin deactivation."""
         # First activate the plugin
         plugin.active = True
@@ -108,7 +108,7 @@ class TestPlugin:
         assert "Plugin deactivation failed" in result.error
         assert "Deactivation failed" in result.error
 
-    def test_plugin_lifecycle_complete(self, plugin: Plugin) -> None:
+    def test_plugin_lifecycle(self, plugin: Plugin) -> None:
         """Test complete plugin lifecycle: inactive -> active -> inactive."""
         # Initial state
         assert not plugin.active
@@ -123,7 +123,7 @@ class TestPlugin:
         assert deactivate_result.success
         assert not plugin.active
 
-    def test_plugin_multiple_activations(self, plugin: Plugin) -> None:
+    def test_multiple_activations(self, plugin: Plugin) -> None:
         """Test multiple activations are handled correctly."""
         # First activation
         result1 = plugin.activate()
@@ -254,7 +254,9 @@ class TestPluginRegistry:
         assert "Plugin unregistration failed" in result.error
         assert "Unregistration failed" in result.error
 
-    def test_get_plugin_success(self, registry: PluginRegistry, plugin: Plugin) -> None:
+    def test_plugin_retrieval_success(
+        self, registry: PluginRegistry, plugin: Plugin
+    ) -> None:
         """Test successful plugin retrieval."""
         registry.register(plugin)
 
@@ -264,7 +266,7 @@ class TestPluginRegistry:
         assert retrieved_plugin is not None  # For pyright
         assert retrieved_plugin.name == plugin.name
 
-    def test_get_plugin_not_found(self, registry: PluginRegistry) -> None:
+    def test_retrieve_nonexistent_plugin(self, registry: PluginRegistry) -> None:
         """Test retrieving plugin that doesn't exist."""
         retrieved_plugin = registry.get("nonexistent-plugin")
 
@@ -277,7 +279,7 @@ class TestPluginRegistry:
         assert isinstance(plugins, list)
         assert len(plugins) == 0
 
-    def test_list_plugins_multiple(self, registry: PluginRegistry) -> None:
+    def test_list_multiple_plugins(self, registry: PluginRegistry) -> None:
         """Test listing multiple registered plugins."""
         plugin1 = Plugin("plugin-1")
         plugin2 = Plugin("plugin-2")
@@ -295,7 +297,7 @@ class TestPluginRegistry:
         assert "plugin-2" in plugins
         assert "plugin-3" in plugins
 
-    def test_registry_multiple_operations(self, registry: PluginRegistry) -> None:
+    def test_multiple_registry_operations(self, registry: PluginRegistry) -> None:
         """Test multiple registry operations in sequence."""
         plugin1 = Plugin("plugin-1")
         plugin2 = Plugin("plugin-2")

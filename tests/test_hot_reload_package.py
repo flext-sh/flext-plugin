@@ -192,7 +192,7 @@ class TestPluginWatcherReal:
         assert expected_dir in watcher.watch_directories
         assert len(watcher.watch_directories) == 1
 
-    def test_watcher_properties_real(self, watcher: PluginWatcher) -> None:
+    def test_watcher_properties(self, watcher: PluginWatcher) -> None:
         """Test REAL watcher properties."""
         assert hasattr(watcher, "watch_directories")
         assert isinstance(watcher.watch_directories, list)
@@ -254,7 +254,7 @@ class LoaderPlugin:
         assert "loader_plugin.py" in file_names
         assert "__init__.py" in file_names
 
-    def test_watcher_with_multiple_directories(self, temp_dir: Path) -> None:
+    def test_watcher_with_multiple_watch_directories(self, temp_dir: Path) -> None:
         """Test REAL watcher with multiple watch directories."""
         # Create multiple plugin directories
         plugins_dir1 = temp_dir / "plugins"
@@ -355,7 +355,9 @@ class TestStateManagerReal:
         assert state.state_data == {}  # Empty since no get_state method
 
     @pytest.mark.asyncio
-    async def test_create_snapshot_real(self, state_manager: StateManager) -> None:
+    async def test_create_real_state_snapshot(
+        self, state_manager: StateManager
+    ) -> None:
         """Test creating REAL state snapshot."""
         description = "Production backup before update"
         snapshot_id = await state_manager.create_snapshot(description)
@@ -366,7 +368,7 @@ class TestStateManagerReal:
         # Verify snapshot ID contains timestamp
         assert len(snapshot_id) > len("snapshot_")
 
-    def test_list_snapshots_real(self, state_manager: StateManager) -> None:
+    def test_list_real_snapshots(self, state_manager: StateManager) -> None:
         """Test listing REAL snapshots."""
         snapshots = state_manager.list_snapshots()
         assert isinstance(snapshots, list)
@@ -427,7 +429,7 @@ class TestRollbackManagerReal:
         assert isinstance(rollback_id, str)
         assert "rollback_" in rollback_id
 
-    def test_get_rollback_history_real(self, rollback_manager: RollbackManager) -> None:
+    def test_get_real_rollback_history(self, rollback_manager: RollbackManager) -> None:
         """Test getting REAL rollback history."""
         plugin_id = "real-test-plugin"
         history = rollback_manager.get_rollback_history(plugin_id)

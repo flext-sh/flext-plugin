@@ -10,28 +10,29 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TypeVar
 
-from flext_core import FlextProtocols, FlextResult, FlextTypes
+from flext_core import (
+    FlextProtocols,
+    FlextResult,
+    FlextTypes,
+    # Plugin-specific TypeVars
+    TPlugin,
+    TPluginConfig,
+    TPluginContext,
+    TPluginData,
+    TPluginDiscovery,
+    TPluginHandler,
+    TPluginLoader,
+    TPluginManager,
+    TPluginMetadata,
+    TPluginPlatform,
+    TPluginRegistry,
+    TPluginService,
+    TPluginSystem,
+    TPluginValidator,
+)
 
-# Plugin domain-specific TypeVars - defined locally in flext-plugin
-TPlugin = TypeVar("TPlugin")  # Generic plugin type
-TPluginConfig: dict[str, object] = TypeVar("TPluginConfig")  # Plugin configuration type
-TPluginMetadata: dict[str, object] = TypeVar("TPluginMetadata")  # Plugin metadata type
-TPluginResult: FlextResult[object] = TypeVar(
-    "TPluginResult"
-)  # Plugin operation result type
-TPluginData: dict[str, object] = TypeVar("TPluginData")  # Plugin data type
-TPluginContext = TypeVar("TPluginContext")  # Plugin execution context type
-TPluginService = TypeVar("TPluginService")  # Plugin service type
-TPluginHandler = TypeVar("TPluginHandler")  # Plugin handler type
-TPluginManager = TypeVar("TPluginManager")  # Plugin manager type
-TPluginRegistry = TypeVar("TPluginRegistry")  # Plugin registry type
-TPluginDiscovery = TypeVar("TPluginDiscovery")  # Plugin discovery type
-TPluginLoader = TypeVar("TPluginLoader")  # Plugin loader type
-TPluginValidator = TypeVar("TPluginValidator")  # Plugin validator type
-TPluginPlatform = TypeVar("TPluginPlatform")  # Plugin platform type
-TPluginSystem = TypeVar("TPluginSystem")  # Plugin system type
+# All Plugin TypeVars now imported from flext-core centralized TypeVars
 
 
 # Use flext-core plugin protocol instead of local definition
@@ -70,8 +71,8 @@ ExecutionId = str
 
 # Core data type definition using forward-compatible typing
 # Use typing.Union for better Pydantic compatibility
-PluginConfigData = (
-    str | int | float | bool | FlextTypes.Core.Dict | FlextTypes.Core.List | None
+PluginConfigData = (str | int | float) | (
+    bool | FlextTypes.Core.Dict | FlextTypes.Core.List | None
 )
 
 # Configuration type aliases
@@ -134,7 +135,7 @@ PluginIdentifier = PluginName | PluginId
 PluginPathOrUrl = PluginPath | PluginUrl
 
 # Result unions
-PluginOperationResult = PluginResult | PluginBoolResult | PluginStringResult
+PluginOperationResult = (PluginResult | PluginBoolResult) | PluginStringResult
 
 
 # Generic plugin container

@@ -99,7 +99,7 @@ class TestPluginDiscoveryReal:
         assert result.error is not None
         assert "Plugin directory is required" in result.error
 
-    def test_add_plugin_directory_new_directory(self, temp_dir: Path) -> None:
+    def test_add_plugin_directory(self, temp_dir: Path) -> None:
         """Test adding a new plugin directory."""
         discovery = PluginDiscovery()
         new_dir = temp_dir / "new_plugins"
@@ -114,7 +114,7 @@ class TestPluginDiscoveryReal:
         assert len(discovery.plugin_directories) == 1
         assert str(new_dir) in discovery.plugin_directories
 
-    def test_add_plugin_directory_duplicate_ignored(self, temp_dir: Path) -> None:
+    def test_add_duplicate_plugin_directory_ignored(self, temp_dir: Path) -> None:
         """Test adding duplicate plugin directory is ignored."""
         discovery = PluginDiscovery()
         plugin_dir = temp_dir / "plugins"
@@ -259,7 +259,7 @@ class TestPluginDiscoveryReal:
         assert plugin is None
 
     @pytest.mark.asyncio
-    async def test_discover_all_empty_directories(self, temp_dir: Path) -> None:
+    async def test_discover_plugins_empty_directories(self, temp_dir: Path) -> None:
         """Test discovering plugins from empty directories."""
         plugin_dir = temp_dir / "empty_plugins"
         plugin_dir.mkdir()
@@ -274,7 +274,7 @@ class TestPluginDiscoveryReal:
         assert len(result) == 0
 
     @pytest.mark.asyncio
-    async def test_discover_all_with_real_plugins(self, temp_dir: Path) -> None:
+    async def test_discover_plugins_with_real_files(self, temp_dir: Path) -> None:
         """Test discovering plugins with REAL plugin files and manifests."""
         plugin_dir = temp_dir / "real_plugins"
         plugin_dir.mkdir()
@@ -325,7 +325,9 @@ class TestPlugin:
         assert plugin_info["version"] == "1.0.0"
 
     @pytest.mark.asyncio
-    async def test_discover_all_with_multiple_plugins(self, temp_dir: Path) -> None:
+    async def test_discover_multiple_plugins_different_directories(
+        self, temp_dir: Path
+    ) -> None:
         """Test discovering multiple plugins from different directories."""
         # Create multiple plugin directories
         dir1 = temp_dir / "plugins1"
@@ -373,7 +375,7 @@ class TestPlugin:
         assert "plugin-2" in result
 
     @pytest.mark.asyncio
-    async def test_discover_by_type_with_real_plugins(self, temp_dir: Path) -> None:
+    async def test_discover_plugins_by_type(self, temp_dir: Path) -> None:
         """Test discovering plugins by type with REAL plugins."""
         plugin_dir = temp_dir / "typed_plugins"
         plugin_dir.mkdir()
@@ -424,7 +426,7 @@ class TestPlugin:
         assert "tap-plugin" not in target_plugins
 
     @pytest.mark.asyncio
-    async def test_discover_all_ignores_dunder_files(self, temp_dir: Path) -> None:
+    async def test_discovery_ignores_system_files(self, temp_dir: Path) -> None:
         """Test that discovery ignores __init__.py and similar files."""
         plugin_dir = temp_dir / "dunder_test"
         plugin_dir.mkdir()
@@ -462,7 +464,7 @@ class TestPlugin:
         assert "valid-plugin" in result
 
     @pytest.mark.asyncio
-    async def test_discover_all_handles_invalid_manifest(self, temp_dir: Path) -> None:
+    async def test_discovery_handles_invalid_manifests(self, temp_dir: Path) -> None:
         """Test discovery handles invalid manifest files gracefully."""
         plugin_dir = temp_dir / "invalid_manifest_test"
         plugin_dir.mkdir()
@@ -498,7 +500,7 @@ class TestPlugin:
         assert "broken-plugin" not in result
 
     @pytest.mark.asyncio
-    async def test_discover_all_nonexistent_directory(self, temp_dir: Path) -> None:
+    async def test_discovery_with_nonexistent_directory(self, temp_dir: Path) -> None:
         """Test discovery with nonexistent directory."""
         nonexistent_dir = temp_dir / "does_not_exist"
 

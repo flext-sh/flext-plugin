@@ -41,7 +41,7 @@ class TestSimplePluginRegistryComprehensive:
             },
         )
 
-    def test_registry_initialization(self, registry: SimplePluginRegistry) -> None:
+    def test_self(self, registry: SimplePluginRegistry) -> None:
         """Test registry initialization."""
         assert registry is not None
         assert isinstance(registry, SimplePluginRegistry)

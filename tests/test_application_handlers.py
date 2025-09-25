@@ -65,7 +65,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         return self._loaded_plugins.get(plugin_name)
 
     # Service protocol methods required by Port
-    def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
+    def __call__(self, *_args, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
@@ -282,7 +282,7 @@ class TestFlextPluginEventHandler:
 class TestHandlerIntegration:
     """REAL integration tests for handler interactions with real services."""
 
-    def test_full_plugin_lifecycle_with_real_handlers(self, tmp_path: Path) -> None:
+    def test_self(self, tmp_path: Path) -> None:
         """Test complete plugin lifecycle using real handlers and services."""
         # Create real plugin file for testing
         plugin_dir = tmp_path / "test_plugins"

@@ -71,7 +71,7 @@ class FlextPluginLoadingConfig(FlextModels.Config):
     isolation_mode: str = Field(
         default="process",
         description="Plugin isolation mode: process, thread, or none",
-        pattern="^(process|thread|none)$",
+        pattern="^(Union[Union[process, thread], none])$",
     )
 
     def validate_business_rules(self: object) -> FlextResult[None]:
