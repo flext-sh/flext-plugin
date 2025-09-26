@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib
+from typing import override
 
 from flext_core import FlextResult, FlextTypes
 
@@ -46,7 +47,8 @@ class Plugin:
 
     Example:
       >>> class DataProcessorPlugin(Plugin):
-      ...     def execute(self, data):
+      ...     @override
+     def execute(self, data):
       ...         if not self.active:
       ...             return FlextResult[None].fail("Plugin not active")
       ...         # Process data
@@ -59,6 +61,8 @@ class Plugin:
 
     """
 
+    @override
+    @override
     def __init__(self, name: str) -> None:
         """Initialize plugin with a name."""
         self.name = name
@@ -84,6 +88,8 @@ class Plugin:
 class PluginRegistry:
     """Simple plugin registry."""
 
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize empty plugin registry."""
         self.plugins: dict[str, Plugin] = {}

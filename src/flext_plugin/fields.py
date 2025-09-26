@@ -16,12 +16,7 @@ from typing import Annotated
 from pydantic import Field
 
 from flext_core import FlextTypes
-from flext_plugin.flext_plugin_constants import (
-    DEFAULT_PLUGIN_TIMEOUT_SECONDS,
-    MAX_PLUGIN_NAME_LENGTH,
-    MIN_PLUGIN_NAME_LENGTH,
-    VALID_PLUGIN_NAME_PATTERN,
-)
+from flext_plugin.flext_plugin_constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 
 # Plugin Name Fields
@@ -29,9 +24,9 @@ PluginNameField = Annotated[
     str,
     Field(
         ...,
-        min_length=MIN_PLUGIN_NAME_LENGTH,
-        max_length=MAX_PLUGIN_NAME_LENGTH,
-        pattern=VALID_PLUGIN_NAME_PATTERN,
+        min_length=FlextPluginConstants.MIN_PLUGIN_NAME_LENGTH,
+        max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
+        pattern=FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN,
         description="Plugin name following naming conventions",
         examples=["my_plugin", "data-extractor", "auth_service"],
     ),
@@ -42,8 +37,8 @@ OptionalPluginNameField = Annotated[
     Field(
         default="",
         min_length=0,
-        max_length=MAX_PLUGIN_NAME_LENGTH,
-        pattern=rf"^$|{VALID_PLUGIN_NAME_PATTERN}",
+        max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
+        pattern=rf"^$|{FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN}",
         description="Optional plugin name following naming conventions",
     ),
 ]
@@ -99,12 +94,12 @@ PluginUrlField = Annotated[
 
 # Configuration Fields
 PluginConfigField = Annotated[
-    dict[str, PluginConfigData],
+    dict["str", "PluginConfigData"],
     Field(default_factory=dict, description="Plugin-specific configuration dictionary"),
 ]
 
 PluginRuntimeDataField = Annotated[
-    dict[str, PluginConfigData],
+    dict["str", "PluginConfigData"],
     Field(default_factory=dict, description="Runtime-specific data dictionary"),
 ]
 
@@ -179,7 +174,7 @@ PluginSuccessField = Annotated[
 PluginTimeoutField = Annotated[
     int,
     Field(
-        default=DEFAULT_PLUGIN_TIMEOUT_SECONDS,
+        default=FlextPluginConstants.DEFAULT_PLUGIN_TIMEOUT_SECONDS,
         ge=1,
         le=3600,
         description="Timeout in seconds (1-3600)",
@@ -235,7 +230,7 @@ CompletedAtField = Annotated[
 
 # Data Fields
 InputDataField = Annotated[
-    dict[str, PluginConfigData],
+    dict["str", "PluginConfigData"],
     Field(default_factory=dict, description="Input data dictionary"),
 ]
 
@@ -245,12 +240,12 @@ OutputDataField = Annotated[
 ]
 
 ContextDataField = Annotated[
-    dict[str, PluginConfigData],
+    dict["str", "PluginConfigData"],
     Field(default_factory=dict, description="Context data dictionary"),
 ]
 
 DetailsDataField = Annotated[
-    dict[str, PluginConfigData],
+    dict["str", "PluginConfigData"],
     Field(default_factory=dict, description="Additional details dictionary"),
 ]
 

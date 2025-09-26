@@ -14,7 +14,7 @@ from __future__ import annotations
 import importlib.util
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import ClassVar, Protocol, cast
+from typing import ClassVar, Protocol, cast, override
 
 from flext_core import (
     FlextModels,
@@ -44,8 +44,9 @@ class PluginLoader(FlextModels.Entity):
     loaded_plugins: ClassVar[FlextTypes.Core.Dict] = {}
     plugin_modules: ClassVar[FlextTypes.Core.Dict] = {}
 
-    model_config: ClassVar = {"arbitrary_types_allowed": True}
+    model_config: ClassVar = {"arbitrary_types_allowed": "True"}
 
+    @override
     def __init__(
         self,
         *,

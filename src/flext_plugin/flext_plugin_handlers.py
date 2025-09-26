@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_core import FlextResult
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.ports import FlextPluginLoaderPort
@@ -15,6 +17,7 @@ from flext_plugin.ports import FlextPluginLoaderPort
 class FlextPluginHandler:
     """Base handler for plugin operations."""
 
+    @override
     def __init__(self, plugin_service: FlextPluginLoaderPort | None = None) -> None:
         """Initialize handler with optional plugin service."""
         self._plugin_service = plugin_service

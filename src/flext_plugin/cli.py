@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import sys
+from typing import override
 
 from Flext_cli import FlextCliApi, FlextCliCommands, FlextCliConfig
 
@@ -19,6 +20,8 @@ logger = FlextLogger(__name__)
 class PluginCLI:
     """Simplified CLI handler."""
 
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize CLI."""
         try:
@@ -31,6 +34,8 @@ class PluginCLI:
 class FlextPluginCliService:
     """Simplified FLEXT Plugin CLI service."""
 
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize plugin CLI service."""
         self._cli_api = FlextCliApi()

@@ -9,6 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
+import fnmatch
+import os
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -1059,7 +1062,13 @@ class TestRealPluginIntegrationWorkflow:
         """Test complete REAL workflow: discover -> load -> execute -> cleanup."""
         # Step 1: Real plugin discovery
         real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
-        plugin_files = list(temp_plugin_dir.glob("*.py"))
+        plugin_files = await asyncio.to_thread(
+            lambda: [
+                Path(temp_plugin_dir) / f
+                for f in os.listdir(temp_plugin_dir)
+                if fnmatch.fnmatch(f, "*.py")
+            ]
+        )
         assert len(plugin_files) == 4  # Our real plugins
 
         # Step 2: Load tap plugin and Execute workflow

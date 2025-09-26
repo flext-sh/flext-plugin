@@ -205,8 +205,9 @@ class TestFlextPluginRegistrationHandler:
                 if name == "some_problematic_attr":
                     error_msg = "Simulated plugin error"
                     raise RuntimeError(error_msg)
+                msg = f"'{type(self).__name__}' object has no attribute '{name}'"
                 raise AttributeError(
-                    f"'{type(self).__name__}' object has no attribute '{name}'",
+                    msg,
                 )
 
         problematic_plugin = ProblematicPlugin()

@@ -26,23 +26,25 @@ class TestPluginType:
     def test_plugin_type_values(self) -> None:
         """Test all plugin type enum values."""
         if PluginType.TAP.value != "tap":
-            raise AssertionError(f"Expected {'tap'}, got {PluginType.TAP.value}")
+            error_message = f"Expected {'tap'}, got {PluginType.TAP.value}"
+            raise AssertionError(error_message)
         assert PluginType.TARGET.value == "target"
         if PluginType.TRANSFORM.value != "transform":
-            raise AssertionError(
-                f"Expected {'transform'}, got {PluginType.TRANSFORM.value}",
-            )
+            error_message = f"Expected {'transform'}, got {PluginType.TRANSFORM.value}"
+            raise AssertionError(error_message)
         assert PluginType.UTILITY.value == "utility"
 
     def test_plugin_type_from_string(self) -> None:
         """Test creating PluginType from string values."""
         if PluginType("tap") != PluginType.TAP:
-            raise AssertionError(f"Expected {PluginType.TAP}, got {PluginType('tap')}")
+            error_message = f"Expected {PluginType.TAP}, got {PluginType('tap')}"
+            raise AssertionError(error_message)
         assert PluginType("target") == PluginType.TARGET
         if PluginType("transform") != PluginType.TRANSFORM:
-            raise AssertionError(
-                f"Expected {PluginType.TRANSFORM}, got {PluginType('transform')}",
+            error_message = (
+                f"Expected {PluginType.TRANSFORM}, got {PluginType('transform')}"
             )
+            raise AssertionError(error_message)
         assert PluginType("utility") == PluginType.UTILITY
 
     def test_plugin_type_invalid(self) -> None:
@@ -57,33 +59,39 @@ class TestPluginStatus:
     def test_plugin_status_values(self) -> None:
         """Test all plugin status enum values."""
         if PluginStatus.UNKNOWN.value != "unknown":
+            msg = f"Expected {'unknown'}, got {PluginStatus.UNKNOWN.value}"
             raise AssertionError(
-                f"Expected {'unknown'}, got {PluginStatus.UNKNOWN.value}",
+                msg,
             )
         assert PluginStatus.DISCOVERED.value == "discovered"
         if PluginStatus.LOADED.value != "loaded":
+            msg = f"Expected {'loaded'}, got {PluginStatus.LOADED.value}"
             raise AssertionError(
-                f"Expected {'loaded'}, got {PluginStatus.LOADED.value}",
+                msg,
             )
         assert PluginStatus.ACTIVE.value == "active"
         if PluginStatus.ERROR.value != "error":
-            raise AssertionError(f"Expected {'error'}, got {PluginStatus.ERROR.value}")
+            msg = f"Expected {'error'}, got {PluginStatus.ERROR.value}"
+            raise AssertionError(msg)
 
     def test_plugin_status_from_string(self) -> None:
         """Test creating PluginStatus from string values."""
         if PluginStatus("unknown") != PluginStatus.UNKNOWN:
+            msg = f"Expected {PluginStatus.UNKNOWN}, got {PluginStatus('unknown')}"
             raise AssertionError(
-                f"Expected {PluginStatus.UNKNOWN}, got {PluginStatus('unknown')}",
+                msg,
             )
         assert PluginStatus("discovered") == PluginStatus.DISCOVERED
         if PluginStatus("loaded") != PluginStatus.LOADED:
+            msg = f"Expected {PluginStatus.LOADED}, got {PluginStatus('loaded')}"
             raise AssertionError(
-                f"Expected {PluginStatus.LOADED}, got {PluginStatus('loaded')}",
+                msg,
             )
         assert PluginStatus("active") == PluginStatus.ACTIVE
         if PluginStatus("error") != PluginStatus.ERROR:
+            msg = f"Expected {PluginStatus.ERROR}, got {PluginStatus('error')}"
             raise AssertionError(
-                f"Expected {PluginStatus.ERROR}, got {PluginStatus('error')}",
+                msg,
             )
 
 
@@ -95,15 +103,17 @@ class TestPluginError:
         error = PluginError("Test error message")
         # Real implementation prefixes with [FLEXT_PROCESSING_ERROR]
         if str(error) != "[FLEXT_PROCESSING_ERROR] Test error message":
+            msg = f"Expected {'[FLEXT_PROCESSING_ERROR] Test error message'}, got {error!s}"
             raise AssertionError(
-                f"Expected {'[FLEXT_PROCESSING_ERROR] Test error message'}, got {error!s}",
+                msg,
             )
 
     def test_plugin_error_with_plugin_id(self) -> None:
         """Test PluginError with plugin_id."""
         error = PluginError("Test error", plugin_id="test-plugin")
         if error.plugin_id != "test-plugin":
-            raise AssertionError(f"Expected {'test-plugin'}, got {error.plugin_id}")
+            msg = f"Expected {'test-plugin'}, got {error.plugin_id}"
+            raise AssertionError(msg)
         # Real implementation prefixes with [FLEXT_PROCESSING_ERROR]
         assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
 
@@ -112,8 +122,9 @@ class TestPluginError:
         error = PluginError("Test error", error_code="TEST_ERROR")
         # Real implementation ignores error_code parameter and uses FLEXT_PROCESSING_ERROR
         if error.error_code != "FLEXT_PROCESSING_ERROR":
+            msg = f"Expected {'FLEXT_PROCESSING_ERROR'}, got {error.error_code}"
             raise AssertionError(
-                f"Expected {'FLEXT_PROCESSING_ERROR'}, got {error.error_code}",
+                msg,
             )
         # Real implementation includes error code in string representation
         assert str(error) == "[FLEXT_PROCESSING_ERROR] Test error"
@@ -137,11 +148,14 @@ class TestPluginExecutionResult:
         )
 
         if result.execution_id != "exec-123":
-            raise AssertionError(f"Expected {'exec-123'}, got {result.execution_id}")
+            msg = f"Expected {'exec-123'}, got {result.execution_id}"
+            raise AssertionError(msg)
         if not (result.success):
-            raise AssertionError(f"Expected True, got {result.success}")
+            msg = f"Expected True, got {result.success}"
+            raise AssertionError(msg)
         if result.duration_ms != 150:
-            raise AssertionError(f"Expected {150}, got {result.duration_ms}")
+            msg = f"Expected {150}, got {result.duration_ms}"
+            raise AssertionError(msg)
         assert result.output_data == {"key": "value"}
         # Real implementation defaults error to empty string
         assert not result.error
@@ -156,13 +170,16 @@ class TestPluginExecutionResult:
         )
 
         if result.execution_id != "exec-456":
-            raise AssertionError(f"Expected {'exec-456'}, got {result.execution_id}")
+            msg = f"Expected {'exec-456'}, got {result.execution_id}"
+            raise AssertionError(msg)
         if result.success:
-            raise AssertionError(f"Expected False, got {result.success}")
+            msg = f"Expected False, got {result.success}"
+            raise AssertionError(msg)
         assert result.duration_ms == 75
         if result.error != "Something went wrong":
+            msg = f"Expected {'Something went wrong'}, got {result.error}"
             raise AssertionError(
-                f"Expected {'Something went wrong'}, got {result.error}",
+                msg,
             )
         # Real implementation defaults output_data to None
         assert result.output_data is None
@@ -178,7 +195,8 @@ class TestPluginExecutionResult:
         repr_str = repr(result)
         # Real implementation doesn't have custom __repr__, just check object type
         if "ExecutionResultModel" not in repr_str:
-            raise AssertionError(f"Expected {'ExecutionResultModel'} in {repr_str}")
+            msg = f"Expected {'ExecutionResultModel'} in {repr_str}"
+            raise AssertionError(msg)
         # Real implementation uses default object repr - test basic properties instead
         assert result.execution_id == "test-123"
         assert result.success is True

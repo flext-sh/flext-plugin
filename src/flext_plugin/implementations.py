@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Protocol, cast
+from typing import Protocol, cast, override
 
 # Use FlextLogger from flext_core instead
 from flext_core import (
@@ -63,6 +63,14 @@ class ConcretePlugin:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         name: str,
@@ -181,6 +189,14 @@ class ConcreteExecutablePlugin(ConcretePlugin):
     in the FlextExecutablePlugin interface.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         name: str,
@@ -200,6 +216,7 @@ class ConcreteExecutablePlugin(ConcretePlugin):
         super().__init__(name, version, entity)
         self._operations = operations or {}
 
+    @override
     def execute(
         self,
         operation: str,
@@ -250,6 +267,14 @@ class ConcreteDataPlugin(ConcretePlugin):
     transformation, and loading operations.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         name: str,
@@ -315,6 +340,14 @@ class ConcreteTransformPlugin(ConcretePlugin):
     transformation operations like DBT models.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         name: str,
@@ -365,13 +398,21 @@ class ConcreteTransformPlugin(ConcretePlugin):
 
         """
         if not self._schema:
-            return FlextResult[Mapping[str, object]].fail("No schema defined")
-        return FlextResult[Mapping[str, object]].ok(self._schema)
+            return FlextResult[Mapping["str", "object"]].fail("No schema defined")
+        return FlextResult[Mapping["str", "object"]].ok(self._schema)
 
 
 class LoggerAdapter:
     """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, logger: FlextLogger) -> None:
         """Initialize with FlextLogger instance."""
         self._logger = logger
@@ -412,6 +453,14 @@ class ConcretePluginContext:
     and logging infrastructure.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         logger: FlextLogger,
@@ -463,6 +512,14 @@ class ConcretePluginRegistry(FlextPluginRegistry):
     Manages plugin registration, discovery, and lifecycle.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize plugin registry."""
         self._plugins: FlextTypes.Core.Dict = {}
@@ -531,6 +588,14 @@ class ConcretePluginLoader(FlextPluginLoader):
     Handles dynamic plugin loading and discovery.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, registry: FlextPluginRegistry | None = None) -> None:
         """Initialize plugin loader.
 

@@ -69,34 +69,7 @@ from flext_plugin.exceptions import (
 )
 
 # Constants - explicit imports
-from flext_plugin.flext_plugin_constants import (
-    ARCHITECTURE_PLUGIN_TYPES,
-    DEFAULT_CACHE_DIR,
-    DEFAULT_CONFIG_DIR,
-    DEFAULT_DISCOVERY_TIMEOUT_SECONDS,
-    DEFAULT_HOT_RELOAD_INTERVAL_SECONDS,
-    DEFAULT_PLUGIN_DIR,
-    DEFAULT_PLUGIN_TIMEOUT_SECONDS,
-    HOT_RELOAD_DEBOUNCE_MS,
-    HOT_RELOAD_MAX_RETRIES,
-    INTEGRATION_PLUGIN_TYPES,
-    JSON_CONFIG_EXTENSION,
-    MAX_PLUGIN_NAME_LENGTH,
-    MAX_PLUGIN_WORKERS,
-    MIN_PLUGIN_NAME_LENGTH,
-    MIN_PLUGIN_WORKERS,
-    PLUGIN_ALREADY_EXISTS_MSG,
-    PLUGIN_INVALID_NAME_MSG,
-    PLUGIN_LIFECYCLE_STATES,
-    PLUGIN_LOAD_FAILED_MSG,
-    PLUGIN_NOT_FOUND_MSG,
-    PYTHON_PLUGIN_EXTENSION,
-    SINGER_PLUGIN_TYPES,
-    TOML_CONFIG_EXTENSION,
-    UTILITY_PLUGIN_TYPES,
-    VALID_PLUGIN_NAME_PATTERN,
-    YAML_CONFIG_EXTENSION,
-)
+from flext_plugin.flext_plugin_constants import FlextPluginConstants
 
 # Handlers - explicit imports
 from flext_plugin.flext_plugin_handlers import (
@@ -208,32 +181,6 @@ from flext_plugin.simple_plugin import (
 )
 
 __all__: FlextTypes.Core.StringList = [
-    "ARCHITECTURE_PLUGIN_TYPES",
-    "DEFAULT_CACHE_DIR",
-    "DEFAULT_CONFIG_DIR",
-    "DEFAULT_DISCOVERY_TIMEOUT_SECONDS",
-    "DEFAULT_HOT_RELOAD_INTERVAL_SECONDS",
-    "DEFAULT_PLUGIN_DIR",
-    "DEFAULT_PLUGIN_TIMEOUT_SECONDS",
-    "HOT_RELOAD_DEBOUNCE_MS",
-    "HOT_RELOAD_MAX_RETRIES",
-    "INTEGRATION_PLUGIN_TYPES",
-    "JSON_CONFIG_EXTENSION",
-    "MAX_PLUGIN_NAME_LENGTH",
-    "MAX_PLUGIN_WORKERS",
-    "MIN_PLUGIN_NAME_LENGTH",
-    "MIN_PLUGIN_WORKERS",
-    "PLUGIN_ALREADY_EXISTS_MSG",
-    "PLUGIN_INVALID_NAME_MSG",
-    "PLUGIN_LIFECYCLE_STATES",
-    "PLUGIN_LOAD_FAILED_MSG",
-    "PLUGIN_NOT_FOUND_MSG",
-    "PYTHON_PLUGIN_EXTENSION",
-    "SINGER_PLUGIN_TYPES",
-    "TOML_CONFIG_EXTENSION",
-    "UTILITY_PLUGIN_TYPES",
-    "VALID_PLUGIN_NAME_PATTERN",
-    "YAML_CONFIG_EXTENSION",
     "CleanupablePlugin",
     "ConcreteDataPlugin",
     "ConcreteExecutablePlugin",
@@ -249,6 +196,7 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginConfigParams",
     "FlextPluginConfigurationError",
     "FlextPluginConfigurationOperationError",
+    "FlextPluginConstants",
     "FlextPluginDependencyError",
     "FlextPluginDiscoveryError",
     "FlextPluginDiscoveryOperationError",

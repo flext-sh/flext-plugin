@@ -6,13 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import threading
+from typing import ClassVar
+
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextConfig, FlextModels, FlextResult, FlextTypes
 
 
-class FlextPluginDiscoveryConfig(FlextModels.Config):
+class FlextPluginDiscoveryConfig(FlextModels.Configuration):
     """Plugin discovery configuration."""
 
     enabled: bool = Field(
@@ -38,7 +41,7 @@ class FlextPluginDiscoveryConfig(FlextModels.Config):
         description="Include system-level plugins",
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate plugin discovery configuration."""
         if not self.plugin_directories:
             return FlextResult[None].fail("At least one plugin directory required")
@@ -47,7 +50,7 @@ class FlextPluginDiscoveryConfig(FlextModels.Config):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginLoadingConfig(FlextModels.Config):
+class FlextPluginLoadingConfig(FlextModels.Configuration):
     """Plugin loading configuration."""
 
     lazy_loading: bool = Field(
@@ -70,11 +73,11 @@ class FlextPluginLoadingConfig(FlextModels.Config):
     )
     isolation_mode: str = Field(
         default="process",
-        description="Plugin isolation mode: process, thread, or none",
-        pattern="^(Union[Union[process, thread], none])$",
+        description='Plugin isolation mode: "process", thread, or none',
+        pattern="^(process | thread | none)$",
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate plugin loading configuration."""
         valid_modes = {"process", "thread", "none"}
         if self.isolation_mode not in valid_modes:
@@ -86,7 +89,7 @@ class FlextPluginLoadingConfig(FlextModels.Config):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginSecurityConfig(FlextModels.Config):
+class FlextPluginSecurityConfig(FlextModels.Configuration):
     """Plugin security configuration."""
 
     verify_signatures: bool = Field(
@@ -114,7 +117,7 @@ class FlextPluginSecurityConfig(FlextModels.Config):
         le=100,
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate plugin security configuration."""
         if not self.allowed_sources:
             return FlextResult[None].fail("At least one allowed source required")
@@ -132,6 +135,10 @@ class FlextPluginConfig(FlextConfig):
     Provides comprehensive plugin discovery, loading, security, and
     lifecycle management configuration.
     """
+
+    # Singleton pattern attributes
+    _global_instance: ClassVar[FlextPluginConfig | None] = None
+    _lock: ClassVar[threading.Lock] = threading.Lock()
 
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_PLUGIN_",
@@ -184,7 +191,7 @@ class FlextPluginConfig(FlextConfig):
         description="Project version",
     )
 
-    def validate_domain_rules(self: object) -> FlextResult[None]:
+    def validate_domain_rules(self) -> FlextResult[None]:
         """Validate complete plugin configuration."""
         validations = [
             ("Discovery", self.discovery.validate_business_rules()),
@@ -193,7 +200,7 @@ class FlextPluginConfig(FlextConfig):
         ]
 
         for section_name, validation_result in validations:
-            if not validation_result.success:
+            if validation_result.is_failure:
                 return FlextResult[None].fail(
                     f"{section_name} validation failed: {validation_result.error}",
                 )
@@ -204,7 +211,7 @@ class FlextPluginConfig(FlextConfig):
 
         return FlextResult[None].ok(None)
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Alias to validate_domain_rules for business rule validation."""
         return self.validate_domain_rules()
 
@@ -218,15 +225,30 @@ class FlextPluginConfig(FlextConfig):
             "discovery": FlextPluginDiscoveryConfig(),
             "loading": FlextPluginLoadingConfig(),
             "security": FlextPluginSecurityConfig(),
-            "hot_reload_enabled": True,
+            "hot_reload_enabled": "True",
             "hot_reload_interval_seconds": 5,
-            "registry_path": None,
-            "enable_remote_registry": False,
+            "registry_path": "None",
+            "enable_remote_registry": "False",
             "project_name": "flext-plugin",
             "project_version": "0.9.0",
         }
         defaults.update(overrides)
         return cls.model_validate(defaults)
+
+    # Singleton pattern override for proper typing
+    @classmethod
+    def get_global_instance(cls) -> FlextPluginConfig:
+        """Get the global singleton instance of FlextPluginConfig."""
+        if cls._global_instance is None:
+            with cls._lock:
+                if cls._global_instance is None:
+                    cls._global_instance = cls()
+        return cls._global_instance
+
+    @classmethod
+    def reset_global_instance(cls) -> None:
+        """Reset the global FlextPluginConfig instance (mainly for testing)."""
+        cls._global_instance = None
 
 
 __all__: FlextTypes.Core.StringList = [

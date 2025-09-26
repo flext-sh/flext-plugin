@@ -1,3 +1,7 @@
+"""Module docstring."""
+
+from __future__ import annotations
+
 """FLEXT Plugin Models - Single CONSOLIDATED Class Following FLEXT Patterns.
 
 This module implements the CONSOLIDATED model pattern with a single FlextPluginModels
@@ -15,11 +19,7 @@ from enum import StrEnum
 from pydantic import ConfigDict, Field, field_validator
 
 from flext_core import FlextModels, FlextTypes
-from flext_plugin.flext_plugin_constants import (
-    MAX_PLUGIN_NAME_LENGTH,
-    MIN_PLUGIN_NAME_LENGTH,
-    VALID_PLUGIN_NAME_PATTERN,
-)
+from flext_plugin.flext_plugin_constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 
 
@@ -85,16 +85,16 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin configuration."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
             str_strip_whitespace=True,
         )
 
         name: str = Field(
             ...,
-            min_length=MIN_PLUGIN_NAME_LENGTH,
-            max_length=MAX_PLUGIN_NAME_LENGTH,
-            pattern=VALID_PLUGIN_NAME_PATTERN,
+            min_length=FlextPluginConstants.MIN_PLUGIN_NAME_LENGTH,
+            max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
+            pattern=FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN,
             description="Plugin name following naming conventions",
         )
         version: str = Field(
@@ -103,11 +103,11 @@ class FlextPluginModels(FlextModels.Entity):
         )
         description: str = Field(default="", description="Plugin description")
         author: str = Field(default="", description="Plugin author")
-        plugin_type: "FlextPluginModels.Type" = Field(
+        plugin_type: FlextPluginModels.Type = Field(
             default_factory=lambda: FlextPluginModels.Type.UTILITY,
             description="Plugin type category",
         )
-        status: "FlextPluginModels.Status" = Field(
+        status: FlextPluginModels.Status = Field(
             default_factory=lambda: FlextPluginModels.Status.INACTIVE,
             description="Current plugin status",
         )
@@ -133,7 +133,7 @@ class FlextPluginModels(FlextModels.Entity):
         @classmethod
         def validate_name(cls, v: str) -> str:
             """Validate plugin name format."""
-            if not re.match(VALID_PLUGIN_NAME_PATTERN, v):
+            if not re.match(FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN, v):
                 error_msg = f"Plugin name '{v}' does not match required pattern"
                 raise ValueError(error_msg)
             return v
@@ -142,7 +142,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin metadata."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
         )
 
@@ -186,15 +186,15 @@ class FlextPluginModels(FlextModels.Entity):
         """Complete Pydantic model for a FLEXT plugin."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
         )
 
-        config: "FlextPluginModels.ConfigModel" = Field(
+        config: FlextPluginModels.ConfigModel = Field(
             ...,
             description="Plugin configuration",
         )
-        metadata: "FlextPluginModels.MetadataModel" = Field(
+        metadata: FlextPluginModels.MetadataModel = Field(
             ...,
             description="Plugin metadata",
         )
@@ -214,12 +214,12 @@ class FlextPluginModels(FlextModels.Entity):
             return self.config.version
 
         @property
-        def plugin_type(self: object) -> "FlextPluginModels.Type":
+        def plugin_type(self: object) -> FlextPluginModels.Type:
             """Get plugin type from configuration."""
             return self.config.plugin_type
 
         @property
-        def status(self: object) -> "FlextPluginModels.Status":
+        def status(self: object) -> FlextPluginModels.Status:
             """Get plugin status from configuration."""
             return self.config.status
 
@@ -227,7 +227,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin execution context."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
         )
 
@@ -254,7 +254,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin execution results."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
         )
 
@@ -288,7 +288,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin manager operation results."""
 
         model_config = ConfigDict(
-            extra="allow",
+            extra=allow,
             validate_assignment=True,
         )
 

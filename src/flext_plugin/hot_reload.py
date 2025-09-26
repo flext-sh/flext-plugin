@@ -20,6 +20,13 @@ from enum import Enum
 from pathlib import Path
 from typing import ClassVar, Protocol, cast, override
 
+try:
+    import anyio
+
+    ASYNC_PATH_AVAILABLE = True
+except ImportError:
+    ASYNC_PATH_AVAILABLE = False
+
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
@@ -60,6 +67,12 @@ class WatchEventType(Enum):
 class WatchEvent:
     """File system watch event data."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         event_type: WatchEventType,
@@ -82,6 +95,12 @@ class WatchEvent:
 class PluginState:
     """Plugin state data model for hot-reload operations."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         plugin_id: str,
@@ -110,6 +129,12 @@ class PluginState:
 class ReloadEvent:
     """Plugin reload event data."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         event_type: str,
@@ -139,6 +164,12 @@ class ReloadEvent:
 class PluginWatcher:
     """File system watcher for plugin directories."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, watch_directories: list[Path]) -> None:
         """Initialize plugin watcher.
 
@@ -169,6 +200,12 @@ class PluginWatcher:
 class StateManager:
     """Plugin state management system."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, state_directory: Path) -> None:
         """Initialize state manager.
 
@@ -234,6 +271,12 @@ class StateManager:
 class RollbackManager:
     """Plugin rollback management system."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, state_manager: StateManager) -> None:
         """Initialize rollback manager.
 
@@ -282,6 +325,12 @@ class PluginFileHandler(FileSystemEventHandler):
     files and non-plugin changes.
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
         """Initialize file system event handler with reload callback.
 
@@ -323,7 +372,7 @@ class HotReloadManager(FlextModels.Entity):
     """Plugin hot reload manager with file watching capabilities."""
 
     plugin_directory: str
-    model_config: ClassVar = {"arbitrary_types_allowed": True}
+    model_config: ClassVar = {"arbitrary_types_allowed": "True"}
 
     # Private attributes initialized in model_post_init
     _loaded_plugins: FlextTypes.Core.Dict
@@ -331,19 +380,17 @@ class HotReloadManager(FlextModels.Entity):
     @classmethod
     def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
-        entity_id = str(
+        str(
             kwargs.get("id", FlextUtilities.Generators.generate_entity_id()),
         )
-        version = cast("int", kwargs.get("version", 1))
-        metadata: dict[str, object] = cast(
-            "FlextTypes.Core.Dict", kwargs.get("metadata", {})
-        )
+        cast("int", kwargs.get("version", 1))
+        cast("FlextTypes.Core.Dict", kwargs.get("metadata", {}))
         # Create instance using Pydantic model_validate to bypass __init__
         instance_data: FlextTypes.Core.Dict = {
-            "id": entity_id,
-            "version": version,
-            "metadata": metadata,
-            "plugin_directory": plugin_directory,
+            "id": "entity_id",
+            "version": "version",
+            "metadata": "metadata",
+            "plugin_directory": "plugin_directory",
         }
         return cls.model_validate(instance_data)
         # model_post_init is called automatically by Pydantic
@@ -447,10 +494,30 @@ class HotReloadManager(FlextModels.Entity):
         try:
             # Simplified plugin discovery - scan directory for .py files
             plugin_dir = Path(self.plugin_directory)
-            if plugin_dir.exists():
-                for py_file in plugin_dir.glob("*.py"):
-                    if not py_file.name.startswith("__"):
-                        await self._load_plugin(py_file)
+
+            # Use async-safe path operations
+            if ASYNC_PATH_AVAILABLE:
+                async_dir = anyio.Path(plugin_dir)
+                if not await async_dir.exists():
+                    return
+                py_files = [f async for f in async_dir.glob("*.py")]
+            else:
+                # Fallback to thread-safe synchronous operations
+                if not await asyncio.get_event_loop().run_in_executor(
+                    None, plugin_dir.exists
+                ):
+                    return
+
+                def get_python_files(path: Path) -> list[Path]:
+                    return [f for f in path.iterdir() if f.name.endswith(".py")]
+
+                py_files = await asyncio.get_event_loop().run_in_executor(
+                    None, get_python_files, plugin_dir
+                )
+
+            for py_file in py_files:
+                if not py_file.name.startswith("__"):
+                    await self._load_plugin(py_file)
         except (OSError, RuntimeError, ValueError, KeyError) as e:
             # Log plugin discovery error and continue
             logger = FlextLogger(__name__)
@@ -534,7 +601,7 @@ class HotReloadManager(FlextModels.Entity):
                     plugin_id
                 )
                 return ReloadEvent(
-                    event_type="plugin_reload",
+                    event_type=plugin_reload,
                     plugin_id=plugin_id,
                     success=bool(result),
                 )
@@ -543,13 +610,13 @@ class HotReloadManager(FlextModels.Entity):
             await self._unload_plugin(plugin_id)
 
             return ReloadEvent(
-                event_type="plugin_reload",
+                event_type=plugin_reload,
                 plugin_id=plugin_id,
                 success=True,
             )
         except Exception as e:
             return ReloadEvent(
-                event_type="plugin_reload",
+                event_type=plugin_reload,
                 plugin_id=plugin_id,
                 success=False,
                 error=str(e),

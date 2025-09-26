@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_core import FlextContainer, FlextResult
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.flext_plugin_services import (
@@ -67,7 +69,7 @@ class FlextPluginPlatform:
       >>> # Configuration management
       >>> config_result: FlextResult[object] = platform.get_plugin_config("my-plugin")
       >>> if config_result.success():
-      ...     config: dict[str, object] = config_result.data
+      ...     config: dict["str", "object"] = config_result.data
       ...     # Modify configuration and update
       ...     update_result: FlextResult[object] = platform.update_plugin_config(
       ...         "my-plugin", config
@@ -79,6 +81,7 @@ class FlextPluginPlatform:
       meaningful error messages and recovery suggestions.
     """
 
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize plugin management platform with dependency injection container.
 

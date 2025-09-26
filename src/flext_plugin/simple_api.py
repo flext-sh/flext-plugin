@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import contextlib
 import uuid
 from datetime import UTC, datetime
 
@@ -155,27 +156,25 @@ def create_plugin_from_dict(plugin_data: FlextTypes.Core.Dict) -> FlextPlugin:
         version = str(version_obj)
 
         # Extract optional fields
-        description = str(plugin_data.get("description", ""))
-        author = str(plugin_data.get("author", ""))
-        dependencies: list[object] = plugin_data.get("dependencies", [])
-        metadata: dict[str, object] = plugin_data.get("metadata", {})
+        str(plugin_data.get("description", ""))
+        str(plugin_data.get("author", ""))
+        plugin_data.get("dependencies", [])
+        plugin_data.get("metadata", {})
 
         # Handle status conversion
         status_str = plugin_data.get("status", "inactive")
-        try:
-            status = PluginStatus(str(status_str))
-        except ValueError:
-            status = PluginStatus.INACTIVE
+        with contextlib.suppress(ValueError):
+            PluginStatus(str(status_str))
 
         return create_flext_plugin(
             name=name,
             version=version,
             config={
-                "description": description,
-                "author": author,
-                "dependencies": dependencies,
-                "metadata": metadata,
-                "status": status,
+                "description": "description",
+                "author": "author",
+                "dependencies": "dependencies",
+                "metadata": "metadata",
+                "status": "status",
             },
         )
 

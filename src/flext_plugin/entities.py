@@ -137,21 +137,21 @@ class FlextPluginEntity(FlextModels.Entity):
 
         """
         # Generate ID if not provided
-        final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
+        entity_id or FlextUtilities.Generators.generate_entity_id()
 
         # Extract config values
         config: dict[str, object] = config or {}
 
         # Handle testing convenience for plugin_id in kwargs
-        plugin_name = kwargs.get("plugin_id", name)
+        kwargs.get("plugin_id", name)
 
         # Create instance data
         instance_data: FlextTypes.Core.Dict = {
-            "id": final_id,
+            "id": "final_id",
             "version": kwargs.get("entity_version", 1),  # FlextModels version
             "metadata": kwargs.get("metadata", {}),
-            "name": plugin_name,
-            "plugin_version": plugin_version,
+            "name": "plugin_name",
+            "plugin_version": "plugin_version",
             "description": config.get("description", kwargs.get("description", "")),
             "author": config.get("author", kwargs.get("author", "")),
             "status": config.get("status", kwargs.get("status", PluginStatus.INACTIVE)),
@@ -403,7 +403,7 @@ class FlextPluginConfig(FlextModels.Entity):
         **kwargs: object,
     ) -> FlextPluginConfig:
         """Create plugin configuration entity with proper validation."""
-        final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
+        entity_id or FlextUtilities.Generators.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -430,7 +430,7 @@ class FlextPluginConfig(FlextModels.Entity):
 
         # Create instance data
         instance_data: FlextTypes.Core.Dict = {
-            "id": final_id,
+            "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
             "plugin_name": p.plugin_name,
@@ -538,7 +538,7 @@ class FlextPluginMetadata(FlextModels.Entity):
         **kwargs: object,
     ) -> FlextPluginMetadata:
         """Create plugin metadata entity with proper validation."""
-        final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
+        entity_id or FlextUtilities.Generators.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -565,20 +565,19 @@ class FlextPluginMetadata(FlextModels.Entity):
         metadata_dict = p.metadata or {}
 
         # Handle plugin_type conversion
-        plugin_type_value: str = str(p.plugin_type) if p.plugin_type is not None else ""
+        str(p.plugin_type) if p.plugin_type is not None else ""
 
         # Use name parameter or fall back to plugin_name
-        final_name = p.name or p.plugin_name
 
         # Create instance data
         instance_data: FlextTypes.Core.Dict = {
-            "id": final_id,
+            "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
-            "plugin_name": final_name,
-            "name": final_name,
+            "plugin_name": "final_name",
+            "name": "final_name",
             "entry_point": p.entry_point,
-            "plugin_type": plugin_type_value,
+            "plugin_type": "plugin_type_value",
             "description": p.description,
             "dependencies": p.dependencies or [],
             "trusted": p.trusted,
@@ -691,7 +690,7 @@ class FlextPluginRegistry(FlextModels.Entity):
         **kwargs: object,
     ) -> FlextPluginRegistry:
         """Create plugin registry entity with proper validation."""
-        final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
+        entity_id or FlextUtilities.Generators.generate_entity_id()
 
         # Use params if provided, otherwise create from individual parameters
         if params is not None:
@@ -722,7 +721,7 @@ class FlextPluginRegistry(FlextModels.Entity):
 
         # Create instance data
         instance_data: FlextTypes.Core.Dict = {
-            "id": final_id,
+            "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
             "name": p.name,
@@ -862,7 +861,7 @@ class FlextPluginExecution(FlextModels.Entity):
         default=None,
         description="Execution end time",
     )
-    status: str = Field(default="pending", description="Execution status")
+    status: str = Field(default=pending, description="Execution status")
     result: object | None = Field(default=None, description="Execution result")
     error: str = Field(default="", description="Execution error message")
     error_message: str | None = Field(
@@ -908,17 +907,17 @@ class FlextPluginExecution(FlextModels.Entity):
         # Handle testing convenience - tests may pass plugin_id
         if "plugin_id" in kwargs:
             plugin_name = plugin_name or str(kwargs["plugin_id"])
-        execution_id = kwargs.get("execution_id", final_id)
-        input_data: dict[str, object] = kwargs.get("input_data", {})
+        kwargs.get("execution_id", final_id)
+        kwargs.get("input_data", {})
 
         # Create instance data with all required fields including base entity fields
         instance_data: FlextTypes.Core.Dict = {
-            "id": final_id,
+            "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
-            "plugin_name": plugin_name,
+            "plugin_name": "plugin_name",
             "plugin_id": kwargs.get("plugin_id", plugin_name),
-            "execution_id": execution_id,
+            "execution_id": "execution_id",
             "start_time": execution_config.get(
                 "start_time",
                 FlextUtilities.Generators.generate_iso_timestamp(),
@@ -928,7 +927,7 @@ class FlextPluginExecution(FlextModels.Entity):
             "result": execution_config.get("result"),
             "error": execution_config.get("error", ""),
             "error_message": execution_config.get("error_message"),
-            "input_data": input_data,
+            "input_data": "input_data",
             "output_data": execution_config.get("output_data", {}),
         }
 
@@ -1050,8 +1049,8 @@ class FlextPluginExecution(FlextModels.Entity):
         current_output.update(
             {
                 "resource_usage": {
-                    "memory_mb": memory_mb,
-                    "cpu_time_ms": cpu_time_ms,
+                    "memory_mb": "memory_mb",
+                    "cpu_time_ms": "cpu_time_ms",
                     "timestamp": str(
                         FlextUtilities.Generators.generate_iso_timestamp(),
                     ),

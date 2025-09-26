@@ -32,6 +32,9 @@ from flext_core import (
     TPluginValidator,
 )
 
+# Import local plugin types
+from flext_plugin.typings import TPluginResult
+
 # All Plugin TypeVars now imported from flext-core centralized TypeVars
 
 
@@ -76,14 +79,14 @@ PluginConfigData = (str | int | float) | (
 )
 
 # Configuration type aliases
-PluginConfigDict = dict[str, PluginConfigData]
-PluginMetadataDict = dict[str, PluginConfigData]
-PluginRuntimeDict = dict[str, PluginConfigData]
+PluginConfigDict = dict["str", "PluginConfigData"]
+PluginMetadataDict = dict["str", "PluginConfigData"]
+PluginRuntimeDict = dict["str", "PluginConfigData"]
 
 # Collection type aliases
 PluginList = list[TPlugin]
 PluginNameList = list[PluginName]
-PluginDict = dict[PluginName, TPlugin]
+PluginDict = dict["PluginName", "TPlugin"]
 
 # Path and URL type aliases
 PluginPath = str
@@ -104,21 +107,21 @@ PluginDataResult = FlextResult[PluginConfigData]
 PluginStringResult = FlextResult[str]
 
 # Service type aliases
-PluginServiceDict = dict[str, TPluginService]
-PluginHandlerDict = dict[str, TPluginHandler]
+PluginServiceDict = dict["str", "TPluginService"]
+PluginHandlerDict = dict["str", "TPluginHandler"]
 
 # Execution type aliases
-ExecutionContextDict = dict[str, PluginConfigData]
-ExecutionInputDict = dict[str, PluginConfigData]
-ExecutionOutputDict = dict[str, PluginConfigData]
+ExecutionContextDict = dict["str", "PluginConfigData"]
+ExecutionInputDict = dict["str", "PluginConfigData"]
+ExecutionOutputDict = dict["str", "PluginConfigData"]
 
 # Discovery type aliases
 DiscoveryPathList = FlextTypes.Core.StringList
 DiscoveryPattern = str
-DiscoveryFilters = dict[str, PluginConfigData]
+DiscoveryFilters = dict["str", "PluginConfigData"]
 
 # Platform type aliases
-PlatformConfig = dict[str, PluginConfigData]
+PlatformConfig = dict["str", "PluginConfigData"]
 PlatformServices = FlextTypes.Core.Dict
 PlatformHandlers = FlextTypes.Core.Dict
 
@@ -139,19 +142,19 @@ PluginOperationResult = (PluginResult | PluginBoolResult) | PluginStringResult
 
 
 # Generic plugin container
-PluginContainer = dict[str, TPlugin]
+PluginContainer = dict["str", "TPlugin"]
 
 # Generic plugin mapping
-PluginMapping = Mapping[str, TPlugin]
+PluginMapping = Mapping["str", "TPlugin"]
 
 # Generic plugin sequence
 PluginSequence = Sequence[TPlugin]
 
 # Generic configuration mapping
-ConfigMapping = Mapping[str, PluginConfigData]
+ConfigMapping = Mapping["str", "PluginConfigData"]
 
 # Generic metadata mapping
-MetadataMapping = Mapping[str, PluginConfigData]
+MetadataMapping = Mapping["str", "PluginConfigData"]
 
 __all__ = [
     "ConfigMapping",

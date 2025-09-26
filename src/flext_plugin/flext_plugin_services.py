@@ -48,7 +48,7 @@ class FlextPluginServices(FlextService[object]):
         """
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
+        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin management service with dependency injection container."""
@@ -259,7 +259,7 @@ class FlextPluginServices(FlextService[object]):
         """Specialized service for plugin discovery and validation operations."""
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
+        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin discovery service with dependency injection container."""
@@ -339,7 +339,7 @@ class FlextPluginServices(FlextService[object]):
         """Simple plugin registry service for legacy compatibility."""
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": True, "frozen": False}
+        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin registry service."""

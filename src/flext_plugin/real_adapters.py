@@ -65,7 +65,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "status": "healthy" if self._started else "stopped",
+                "status": healthy if self._started else "stopped",
                 "plugin_directory": self.discovery.plugin_directory,
             },
         )
@@ -183,7 +183,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "status": "healthy" if self._started else "stopped",
+                "status": healthy if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
             },
         )
@@ -288,7 +288,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         """Perform health check."""
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "status": "healthy" if self._started else "stopped",
+                "status": healthy if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
             },
         )

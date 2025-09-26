@@ -11,10 +11,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import cast, override
+
+try:
+    import anyio
+
+    ASYNC_PATH_AVAILABLE = True
+except ImportError:
+    ASYNC_PATH_AVAILABLE = False
 
 from pydantic import Field
 
@@ -51,6 +59,7 @@ class PluginDiscovery(FlextModels.Entity):
         exclude=True,
     )
 
+    @override
     def __init__(
         self,
         *,
@@ -152,9 +161,27 @@ class PluginDiscovery(FlextModels.Entity):
 
     async def _scan_directory(self, directory: Path) -> None:
         """Scan a directory for plugin files."""
-        if not directory.exists():
-            return
-        for py_file in directory.glob("*.py"):
+        # Use async-safe path operations
+        if ASYNC_PATH_AVAILABLE:
+            async_dir = anyio.Path(directory)
+            if not await async_dir.exists():
+                return
+            py_files = [f async for f in async_dir.glob("*.py")]
+        else:
+            # Fallback to thread-safe synchronous operations
+            if not await asyncio.get_event_loop().run_in_executor(
+                None, directory.exists
+            ):
+                return
+
+            def get_python_files(path: Path) -> list[Path]:
+                return [f for f in path.iterdir() if f.name.endswith(".py")]
+
+            py_files = await asyncio.get_event_loop().run_in_executor(
+                None, get_python_files, directory
+            )
+
+        for py_file in py_files:
             if py_file.name.startswith("__"):
                 continue
 

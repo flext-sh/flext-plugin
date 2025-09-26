@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import Enum
+from typing import override
 
 from flext_core import FlextExceptions
 
@@ -41,6 +42,7 @@ class FlextPluginExceptions(FlextExceptions):
     class PluginBaseError(Exception):
         """Base exception for all plugin domain errors."""
 
+        @override
         def __init__(
             self,
             message: str,
@@ -53,6 +55,7 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(message)
             self.plugin_id = plugin_id
 
+        @override
         def __str__(self: object) -> str:
             """Format exception with error code prefix."""
             message = super().__str__()
