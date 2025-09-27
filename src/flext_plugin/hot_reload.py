@@ -378,7 +378,7 @@ class HotReloadManager(FlextModels.Entity):
     _loaded_plugins: FlextTypes.Core.Dict
 
     @classmethod
-    def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
+    def create(cls, *, _plugin_directory: str, **kwargs: object) -> HotReloadManager:
         """Create hot reload manager instance with proper validation."""
         str(
             kwargs.get("id", FlextUtilities.Generators.generate_entity_id()),
@@ -601,7 +601,7 @@ class HotReloadManager(FlextModels.Entity):
                     plugin_id
                 )
                 return ReloadEvent(
-                    event_type=plugin_reload,
+                    event_type="plugin_reload",
                     plugin_id=plugin_id,
                     success=bool(result),
                 )
@@ -610,13 +610,13 @@ class HotReloadManager(FlextModels.Entity):
             await self._unload_plugin(plugin_id)
 
             return ReloadEvent(
-                event_type=plugin_reload,
+                event_type="plugin_reload",
                 plugin_id=plugin_id,
                 success=True,
             )
         except Exception as e:
             return ReloadEvent(
-                event_type=plugin_reload,
+                event_type="plugin_reload",
                 plugin_id=plugin_id,
                 success=False,
                 error=str(e),

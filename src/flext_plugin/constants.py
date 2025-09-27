@@ -146,5 +146,17 @@ class FlextPluginConstants(FlextConstants):
         # Use FlextConstants for security-related timeouts
         SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
 
+    class Performance:
+        """Plugin performance and resource limits."""
+
+        # Concurrent loading thresholds
+        MAX_CONCURRENT_LOADS_WARNING_THRESHOLD: Final[int] = 20
+
+        # Memory limits
+        MINIMUM_MEMORY_LIMIT_MB: Final[int] = 64
+
+        # Execution timeouts
+        MAXIMUM_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600  # 1 hour
+
 
 __all__ = ["FlextPluginConstants"]

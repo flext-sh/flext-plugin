@@ -18,19 +18,20 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from flext_plugin.typings import PluginStatus, PluginType
+from flext_plugin.models import PluginStatus, PluginType
+from flext_plugin.typings import FlextPluginTypes
 
 
 class FlextPluginConfigParams:
     """Parameter Object pattern for FlextPluginConfig initialization - SOLID Single Responsibility."""
 
     plugin_name: str = ""
-    config_data: FlextTypes.Core.Dict | None = None
+    config_data: FlextPluginTypes.Core.ConfigDict | None = None
     created_at: str | None = None
     updated_at: str | None = None
     enabled: bool = True
-    settings: FlextTypes.Core.Dict | None = None
-    dependencies: FlextTypes.Core.StringList | None = None
+    settings: FlextPluginTypes.Core.SettingsDict | None = None
+    dependencies: FlextPluginTypes.Core.StringList | None = None
     priority: int = 100
     max_memory_mb: int = 512
     max_cpu_percent: int = 50
@@ -41,12 +42,12 @@ class FlextPluginMetadataParams:
     """Parameter Object pattern for FlextPluginMetadata initialization - SOLID Single Responsibility."""
 
     plugin_name: str = ""
-    metadata: FlextTypes.Core.Dict | None = None
+    metadata: FlextPluginTypes.Core.MetadataDict | None = None
     name: str = ""
     entry_point: str = ""
     plugin_type: object = ""
     description: str = ""
-    dependencies: FlextTypes.Core.StringList | None = None
+    dependencies: FlextPluginTypes.Core.StringList | None = None
     trusted: bool = False
     homepage: str | None = None
     repository: str | None = None
@@ -118,9 +119,9 @@ class FlextPluginEntity(FlextModels.Entity):
         cls,
         *,
         name: str,
-        plugin_version: str,
+        _plugin_version: str,
         entity_id: str | None = None,
-        config: FlextTypes.Core.Dict | None = None,
+        config: FlextPluginTypes.Core.ConfigDict | None = None,
         **kwargs: object,
     ) -> FlextPluginEntity:
         """Create plugin entity with proper validation.
@@ -146,7 +147,7 @@ class FlextPluginEntity(FlextModels.Entity):
         kwargs.get("plugin_id", name)
 
         # Create instance data
-        instance_data: FlextTypes.Core.Dict = {
+        instance_data: FlextPluginTypes.Core.PluginDict = {
             "id": "final_id",
             "version": kwargs.get("entity_version", 1),  # FlextModels version
             "metadata": kwargs.get("metadata", {}),
@@ -354,138 +355,6 @@ class FlextPluginEntity(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-class FlextPluginConfig(FlextModels.Entity):
-    """Plugin configuration entity with validation and business rules."""
-
-    # Pydantic fields
-    plugin_name: str = Field(
-        description="Name of the plugin this config belongs to",
-        min_length=1,
-    )
-    config_data: FlextTypes.Core.Dict = Field(
-        default_factory=dict,
-        description="Configuration data",
-    )
-    created_at: str = Field(
-        default_factory=FlextUtilities.Generators.generate_iso_timestamp,
-        description="Configuration creation timestamp",
-    )
-    updated_at: str = Field(
-        default_factory=FlextUtilities.Generators.generate_iso_timestamp,
-        description="Last update timestamp",
-    )
-
-    # Configuration fields for testing convenience
-    enabled: bool = Field(
-        default=True,
-        description="Whether plugin configuration is enabled",
-    )
-    settings: FlextTypes.Core.Dict = Field(
-        default_factory=dict,
-        description="Plugin settings",
-    )
-    dependencies: FlextTypes.Core.StringList = Field(
-        default_factory=list,
-        description="Plugin dependencies",
-    )
-    priority: int = Field(default=100, description="Plugin priority")
-    max_memory_mb: int = Field(default=512, description="Maximum memory usage in MB")
-    max_cpu_percent: int = Field(default=50, description="Maximum CPU usage percentage")
-    timeout_seconds: int = Field(default=30, description="Timeout in seconds")
-
-    @classmethod
-    def create(
-        cls,
-        *,
-        plugin_name: str,
-        entity_id: str | None = None,
-        params: FlextPluginConfigParams | None = None,
-        **kwargs: object,
-    ) -> FlextPluginConfig:
-        """Create plugin configuration entity with proper validation."""
-        entity_id or FlextUtilities.Generators.generate_entity_id()
-
-        # Use params if provided, otherwise create from individual parameters
-        if params is not None:
-            p = params
-        else:
-            p = FlextPluginConfigParams()
-            p.plugin_name = plugin_name
-            p.config_data = cast(
-                "FlextTypes.Core.Dict | None",
-                kwargs.get("config_data"),
-            )
-            p.created_at = cast("str | None", kwargs.get("created_at"))
-            p.updated_at = cast("str | None", kwargs.get("updated_at"))
-            p.enabled = cast("bool", kwargs.get("enabled", True))
-            p.settings = cast("FlextTypes.Core.Dict | None", kwargs.get("settings"))
-            p.dependencies = cast(
-                "FlextTypes.Core.StringList | None",
-                kwargs.get("dependencies"),
-            )
-            p.priority = cast("int", kwargs.get("priority", 100))
-            p.max_memory_mb = cast("int", kwargs.get("max_memory_mb", 512))
-            p.max_cpu_percent = cast("int", kwargs.get("max_cpu_percent", 50))
-            p.timeout_seconds = cast("int", kwargs.get("timeout_seconds", 30))
-
-        # Create instance data
-        instance_data: FlextTypes.Core.Dict = {
-            "id": "final_id",
-            "version": kwargs.get("version", 1),
-            "metadata": kwargs.get("metadata", {}),
-            "plugin_name": p.plugin_name,
-            "config_data": p.config_data or {},
-            "updated_at": p.updated_at
-            or FlextUtilities.Generators.generate_iso_timestamp(),
-            "enabled": p.enabled,
-            "settings": p.settings or {},
-            "dependencies": p.dependencies or [],
-            "priority": p.priority,
-            "max_memory_mb": p.max_memory_mb,
-            "max_cpu_percent": p.max_cpu_percent,
-            "timeout_seconds": p.timeout_seconds,
-        }
-
-        return cls.model_validate(instance_data)
-
-    # Remove __init__ override to prevent recursion - let Pydantic handle construction
-
-    def is_valid(self: object) -> bool:
-        """Validate plugin configuration entity state.
-
-        Returns:
-            True if configuration is valid, False otherwise
-
-        """
-        return bool(self.plugin_name)
-
-    def update_config(self, new_config: FlextTypes.Core.Dict) -> None:
-        """Update configuration data.
-
-        Args:
-            new_config: New configuration data
-
-        Returns:
-            object: Description of return value.
-
-        """
-        # Update mutable dict in place
-        self.config_data.update(new_config)
-        # Update timestamp using frozen model workaround
-        setattr(self, "updated_at", FlextUtilities.Generators.generate_iso_timestamp())
-
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Validate domain rules for plugin configuration entity.
-
-        Returns:
-            FlextResult indicating success or failure of validation
-
-        """
-        if not self.plugin_name or not self.plugin_name.strip():
-            return FlextResult[None].fail("Plugin name is required and cannot be empty")
-        return FlextResult[None].ok(None)
-
-
 class FlextPluginMetadata(FlextModels.Entity):
     """Plugin metadata entity containing additional plugin information."""
 
@@ -512,7 +381,7 @@ class FlextPluginMetadata(FlextModels.Entity):
     entry_point: str = Field(min_length=1, description="Plugin entry point")
     plugin_type: str = Field(default="", description="Plugin type")
     description: str = Field(default="", description="Plugin description")
-    dependencies: FlextTypes.Core.StringList = Field(
+    dependencies: FlextPluginTypes.Core.StringList = Field(
         default_factory=list,
         description="Plugin dependencies",
     )
@@ -570,7 +439,7 @@ class FlextPluginMetadata(FlextModels.Entity):
         # Use name parameter or fall back to plugin_name
 
         # Create instance data
-        instance_data: FlextTypes.Core.Dict = {
+        instance_data: FlextPluginTypes.Core.PluginDict = {
             "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -720,7 +589,7 @@ class FlextPluginRegistry(FlextModels.Entity):
             )
 
         # Create instance data
-        instance_data: FlextTypes.Core.Dict = {
+        instance_data: FlextPluginTypes.Core.PluginDict = {
             "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),
@@ -861,18 +730,18 @@ class FlextPluginExecution(FlextModels.Entity):
         default=None,
         description="Execution end time",
     )
-    status: str = Field(default=pending, description="Execution status")
+    status: str = Field(default="pending", description="Execution status")
     result: object | None = Field(default=None, description="Execution result")
     error: str = Field(default="", description="Execution error message")
     error_message: str | None = Field(
         default=None,
         description="Error message (compatibility)",
     )
-    input_data: FlextTypes.Core.Dict = Field(
+    input_data: FlextPluginTypes.Core.InputDict = Field(
         default_factory=dict,
         description="Input data for execution",
     )
-    output_data: FlextTypes.Core.Dict = Field(
+    output_data: FlextPluginTypes.Core.OutputDict = Field(
         default_factory=dict,
         description="Output data from execution",
     )
@@ -882,7 +751,7 @@ class FlextPluginExecution(FlextModels.Entity):
         cls,
         *,
         plugin_name: str = "",
-        execution_config: FlextTypes.Core.Dict | None = None,
+        execution_config: FlextPluginTypes.Core.ConfigDict | None = None,
         entity_id: str | None = None,
         **kwargs: object,
     ) -> FlextPluginExecution:
@@ -911,7 +780,7 @@ class FlextPluginExecution(FlextModels.Entity):
         kwargs.get("input_data", {})
 
         # Create instance data with all required fields including base entity fields
-        instance_data: FlextTypes.Core.Dict = {
+        instance_data: FlextPluginTypes.Core.PluginDict = {
             "id": "final_id",
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("metadata", {}),
@@ -1034,8 +903,8 @@ class FlextPluginExecution(FlextModels.Entity):
 
     def update_resource_usage(
         self,
-        memory_mb: float = 0.0,
-        cpu_time_ms: float = 0.0,
+        _memory_mb: float = 0.0,
+        _cpu_time_ms: float = 0.0,
     ) -> None:
         """Update resource usage tracking.
 
@@ -1078,8 +947,10 @@ Plugin = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
 FlextPlugin = (
     FlextPluginEntity  # TRANSITIONAL: Conflicts with interface, use FlextPluginEntity
 )
-PluginConfig = FlextPluginConfig
-PluginConfiguration = FlextPluginConfig  # Additional alias for tests
+# Legacy aliases for the plugin entity (NOT the configuration)
+# The actual FlextPluginConfig is now in config.py (application configuration)
+PluginConfig = FlextPluginEntity
+PluginConfiguration = FlextPluginEntity  # Additional alias for tests
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
 PluginInstance = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
@@ -1087,7 +958,6 @@ PluginExecution = FlextPluginExecution
 
 __all__ = [
     "FlextPlugin",  # Use FlextPluginEntity
-    "FlextPluginConfig",
     # Parameter classes
     "FlextPluginConfigParams",
     # Main entity classes

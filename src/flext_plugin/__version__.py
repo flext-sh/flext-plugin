@@ -1,7 +1,3 @@
-"""Module docstring."""
-
-from __future__ import annotations
-
 """Version management for FLEXT Plugin System.
 
 SPDX-License-Identifier: MIT
@@ -10,6 +6,8 @@ SPDX-License-Identifier: MIT
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
+
+from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 

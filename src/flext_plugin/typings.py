@@ -176,6 +176,46 @@ class FlextPluginTypes(FlextTypes):
         type MonitoringHealth = dict[str, bool | str | dict[str, object]]
 
     # =========================================================================
+    # CORE TYPES - Essential Plugin types extending FlextTypes.Core
+    # =========================================================================
+
+    class Core(FlextTypes.Core):
+        """Core Plugin system types extending FlextTypes.Core.
+
+        Essential domain-specific types for plugin management operations.
+        Replaces generic dict[str, object] with semantic plugin types.
+        """
+
+        # Configuration and management types
+        type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | object]
+        type PluginDict = dict[str, object]
+        type MetadataDict = dict[str, object]
+        type SettingsDict = dict[str, object]
+
+        # Execution and processing types
+        type InputDict = dict[str, object]
+        type OutputDict = dict[str, object]
+        type StateDict = dict[str, object]
+        type ContextDict = dict[str, object]
+
+        # Discovery and registry types
+        type DiscoveryDict = dict[str, list[dict[str, object]] | bool | str]
+        type RegistryDict = dict[str, list[dict[str, object]] | dict[str, object]]
+        type LoadedPluginsDict = dict[str, object]
+        type ManifestDict = dict[str, object]
+
+        # Lifecycle and operation types
+        type LifecycleDict = dict[str, str | bool | list[str] | dict[str, object]]
+        type SecurityDict = dict[str, str | bool | list[str] | dict[str, object]]
+        type MonitoringDict = dict[str, bool | str | dict[str, object]]
+        type DetailsDict = dict[str, object]
+
+        # Collection types for plugin operations
+        type PluginList = list[PluginDict]
+        type MetadataList = list[MetadataDict]
+        type StringList = list[str]
+
+    # =========================================================================
     # PLUGIN PROJECT TYPES - Domain-specific project types extending FlextTypes
     # =========================================================================
 

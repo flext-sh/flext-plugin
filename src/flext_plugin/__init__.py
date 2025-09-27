@@ -9,6 +9,12 @@ from __future__ import annotations
 from flext_core import FlextTypes
 from flext_plugin.__version__ import __version__, __version_info__
 
+# Configuration - explicit imports (ACTUAL application configuration)
+from flext_plugin.config import FlextPluginConfig
+
+# Constants - explicit imports
+from flext_plugin.constants import FlextPluginConstants
+
 # CLI functionality - explicit imports
 # Temporarily disabled due to flext-cli dependency issues
 # from flext_plugin.cli import (
@@ -25,7 +31,6 @@ from flext_plugin.discovery import (
 # Core entities - explicit imports
 from flext_plugin.entities import (
     FlextPlugin,
-    FlextPluginConfig,
     FlextPluginConfigParams,
     FlextPluginEntity,
     FlextPluginExecution,
@@ -67,9 +72,6 @@ from flext_plugin.exceptions import (
     FlextPluginSecurityError,
     FlextPluginValidationError,
 )
-
-# Constants - explicit imports
-from flext_plugin.flext_plugin_constants import FlextPluginConstants
 
 # Handlers - explicit imports
 from flext_plugin.flext_plugin_handlers import (
@@ -180,6 +182,9 @@ from flext_plugin.simple_plugin import (
     load_plugin,
 )
 
+# Utilities - explicit imports
+from flext_plugin.utilities import FlextPluginUtilities
+
 __all__: FlextTypes.Core.StringList = [
     "CleanupablePlugin",
     "ConcreteDataPlugin",
@@ -236,6 +241,7 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginSecurityError",
     "FlextPluginService",
     "FlextPluginServices",
+    "FlextPluginUtilities",
     "FlextPluginValidationError",
     "HotReloadManager",
     "Plugin",

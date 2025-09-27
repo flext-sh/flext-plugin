@@ -1,7 +1,3 @@
-"""Module docstring."""
-
-from __future__ import annotations
-
 """FLEXT Plugin Models - Single CONSOLIDATED Class Following FLEXT Patterns.
 
 This module implements the CONSOLIDATED model pattern with a single FlextPluginModels
@@ -12,14 +8,16 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
+
 import re
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Extra, Field, field_validator
 
 from flext_core import FlextModels, FlextTypes
-from flext_plugin.flext_plugin_constants import FlextPluginConstants
+from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 
 
@@ -85,7 +83,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin configuration."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
             str_strip_whitespace=True,
         )
@@ -142,7 +140,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin metadata."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
         )
 
@@ -186,7 +184,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Complete Pydantic model for a FLEXT plugin."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
         )
 
@@ -227,7 +225,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin execution context."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
         )
 
@@ -254,7 +252,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin execution results."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
         )
 
@@ -288,7 +286,7 @@ class FlextPluginModels(FlextModels.Entity):
         """Pydantic model for plugin manager operation results."""
 
         model_config = ConfigDict(
-            extra=allow,
+            extra=Extra.allow,
             validate_assignment=True,
         )
 

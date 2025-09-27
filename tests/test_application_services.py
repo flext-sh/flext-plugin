@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import asyncio
 import fnmatch
-import os
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -1064,9 +1063,9 @@ class TestRealPluginIntegrationWorkflow:
         real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
         plugin_files = await asyncio.to_thread(
             lambda: [
-                Path(temp_plugin_dir) / f
-                for f in os.listdir(temp_plugin_dir)
-                if fnmatch.fnmatch(f, "*.py")
+                f
+                for f in Path(temp_plugin_dir).iterdir()  # noqa: ASYNC240
+                if fnmatch.fnmatch(f.name, "*.py")
             ]
         )
         assert len(plugin_files) == 4  # Our real plugins

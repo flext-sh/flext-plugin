@@ -9,7 +9,7 @@ from __future__ import annotations
 import sys
 from typing import override
 
-from Flext_cli import FlextCliApi, FlextCliCommands, FlextCliConfig
+from Flext_cli import FlextCliApi, FlextCliCommands
 
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
@@ -35,11 +35,10 @@ class FlextPluginCliService:
     """Simplified FLEXT Plugin CLI service."""
 
     @override
-    @override
-    def __init__(self: object) -> None:
+    def __init__(self) -> None:
         """Initialize plugin CLI service."""
         self._cli_api = FlextCliApi()
-        self._config: dict[str, object] = FlextCliConfig()
+        self._config: dict[str, object] = {}
         self._plugin_handler = PluginCLI()
 
     def handle_result(
