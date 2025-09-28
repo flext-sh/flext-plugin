@@ -1064,7 +1064,7 @@ class TestRealPluginIntegrationWorkflow:
         plugin_files = await asyncio.to_thread(
             lambda: [
                 f
-                for f in Path(temp_plugin_dir).iterdir()  # noqa: ASYNC240
+                for f in Path(temp_plugin_dir).iterdir()
                 if fnmatch.fnmatch(f.name, "*.py")
             ]
         )

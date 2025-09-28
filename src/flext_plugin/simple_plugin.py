@@ -62,7 +62,6 @@ class Plugin:
     """
 
     @override
-    @override
     def __init__(self, name: str) -> None:
         """Initialize plugin with a name."""
         self.name = name
@@ -88,7 +87,6 @@ class Plugin:
 class PluginRegistry:
     """Simple plugin registry."""
 
-    @override
     @override
     def __init__(self: object) -> None:
         """Initialize empty plugin registry."""

@@ -78,7 +78,6 @@ class PluginDiscovery(FlextModels.Entity):
         super().__init__(
             id=final_entity_id,
             version=1,
-            domain_events=[],
         )
         # Set business fields directly (frozen model workaround)
         object.__setattr__(self, "plugin_directory", plugin_directory)

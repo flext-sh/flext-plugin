@@ -62,7 +62,6 @@ class PluginLoader(FlextModels.Entity):
         super().__init__(
             id=final_entity_id,
             version=1,
-            domain_events=[],
         )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)

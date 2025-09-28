@@ -21,7 +21,6 @@ class PluginCLI:
     """Simplified CLI handler."""
 
     @override
-    @override
     def __init__(self: object) -> None:
         """Initialize CLI."""
         try:
