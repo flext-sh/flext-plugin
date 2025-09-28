@@ -90,9 +90,9 @@ class FlextPluginModels(FlextModels.Entity):
 
         name: str = Field(
             ...,
-            min_length=FlextPluginConstants.MIN_PLUGIN_NAME_LENGTH,
-            max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
-            pattern=FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN,
+            min_length=FlextPluginConstants.Discovery.MIN_PLUGIN_NAME_LENGTH,
+            max_length=FlextPluginConstants.Discovery.MAX_PLUGIN_NAME_LENGTH,
+            pattern=FlextPluginConstants.Discovery.VALID_PLUGIN_NAME_PATTERN,
             description="Plugin name following naming conventions",
         )
         version: str = Field(

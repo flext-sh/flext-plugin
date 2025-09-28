@@ -9,13 +9,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import fnmatch
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import Any, Protocol, cast
 
 import pytest
+
+# Import anyio.path for async file operations
+from anyio import Path as AnyioPath
 
 from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
 from flext_plugin import (
@@ -30,6 +33,30 @@ from flext_plugin import (
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
+
+
+class PluginInterface(Protocol):
+    """Protocol for plugin instances loaded by PluginLoader.
+
+    This protocol defines the interface that all plugin instances
+    loaded by PluginLoader should implement.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the plugin instance."""
+
+    @property
+    def name(self) -> str: ...
+
+    def initialize(self) -> dict[str, Any]: ...
+
+    def execute(self, data: dict[str, Any] | None = None) -> dict[str, Any]: ...
+
+    async def cleanup(self) -> dict[str, Any]: ...
+
+    def health_check(self) -> dict[str, Any]: ...
+
+    def set_should_fail(self, should_fail: bool) -> None: ...
 
 
 @pytest.fixture
@@ -278,12 +305,12 @@ class TestRealPluginDiscoveryAndExecution:
 
         # Verify plugin loaded correctly
         assert tap_plugin is not None
-        assert hasattr(tap_plugin, "name")
-        assert hasattr(tap_plugin, "execute")
-        assert tap_plugin.name == "database-tap"
+        # Cast to proper plugin interface
+        plugin = cast("PluginInterface", tap_plugin)
+        assert plugin.name == "database-tap"
 
         # Test REAL plugin execution
-        result = tap_plugin.execute()
+        result = plugin.execute()
         assert result["status"] == "success"
         assert result["extracted_records"] == 150
         assert "tables" in result
@@ -293,10 +320,12 @@ class TestRealPluginDiscoveryAndExecution:
         target_plugin = real_plugin_loader.load_plugin(target_plugin_file)
 
         assert target_plugin is not None
-        assert target_plugin.name == "warehouse-target"
+        # Cast to proper plugin interface
+        target = cast("PluginInterface", target_plugin)
+        assert target.name == "warehouse-target"
 
         # Test REAL target execution with data
-        target_result = target_plugin.execute({"records": [1, 2, 3, 4, 5]})
+        target_result = target.execute({"records": [1, 2, 3, 4, 5]})
         assert target_result["status"] == "success"
         assert target_result["loaded_records"] == 5
 
@@ -311,24 +340,26 @@ class TestRealPluginDiscoveryAndExecution:
         processor_plugin = real_plugin_loader.load_plugin(processor_file)
 
         assert processor_plugin is not None
-        assert processor_plugin.name == "data-processor"
+        # Cast to proper plugin interface
+        processor = cast("PluginInterface", processor_plugin)
+        assert processor.name == "data-processor"
 
         # Test initialization
-        init_result = processor_plugin.initialize()
+        init_result = processor.initialize()
         assert init_result["status"] == "initialized"
 
         # Test REAL data processing
-        process_result = processor_plugin.execute({"items": [10, 20, 30]})
+        process_result = processor.execute({"items": [10, 20, 30]})
         assert process_result["status"] == "success"
         assert process_result["processed_items"] == [20, 40, 60]  # Doubled values
         assert process_result["total_processed"] == 3
 
         # Test multiple executions accumulate
-        process_result2 = processor_plugin.execute({"items": [1, 2]})
+        process_result2 = processor.execute({"items": [1, 2]})
         assert process_result2["total_processed"] == 5  # 3 + 2
 
         # Test cleanup
-        cleanup_result = await processor_plugin.cleanup()
+        cleanup_result = await processor.cleanup()
         assert cleanup_result["status"] == "cleaned"
         assert cleanup_result["total_processed"] == 5
 
@@ -342,21 +373,23 @@ class TestRealPluginDiscoveryAndExecution:
         error_plugin = real_plugin_loader.load_plugin(error_file)
 
         assert error_plugin is not None
-        assert error_plugin.name == "error-plugin"
+        # Cast to proper plugin interface
+        error = cast("PluginInterface", error_plugin)
+        assert error.name == "error-plugin"
 
         # Test normal execution first
-        normal_result = error_plugin.execute()
+        normal_result = error.execute()
         assert normal_result["status"] == "success"
 
         # Enable error mode and test exception handling
-        error_plugin.set_should_fail(True)
+        error.set_should_fail(True)
 
         # Test that plugin actually raises exception
         with pytest.raises(RuntimeError, match="Simulated plugin execution error"):
-            error_plugin.execute()
+            error.execute()
 
         # Verify health check reflects error state
-        health_result = error_plugin.health_check()
+        health_result = error.health_check()
         assert health_result["status"] == "unhealthy"
 
 
@@ -373,7 +406,7 @@ class TestFlextPluginServiceWithRealAdapters:
         result = real_service_with_adapters.discover_plugins(str(temp_plugin_dir))
 
         # Should succeed and find REAL plugins
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, list)
         assert len(result.data) == 4  # Our 4 real plugin files
 
@@ -406,7 +439,7 @@ class TestFlextPluginServiceWithRealAdapters:
         discover_result = real_service_with_adapters.discover_plugins(
             str(temp_plugin_dir),
         )
-        assert discover_result.success
+        assert discover_result.is_success
         assert len(discover_result.data) > 0
 
         # Get a real plugin entity
@@ -420,7 +453,7 @@ class TestFlextPluginServiceWithRealAdapters:
 
         # Load the real plugin using real adapter
         load_result = real_service_with_adapters.load_plugin(tap_plugin)
-        assert load_result.success
+        assert load_result.is_success
         assert load_result.data is True
 
     def test_install_plugin_with_real_adapters(
@@ -433,7 +466,7 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_file = temp_plugin_dir / "tap_database.py"
 
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
-        assert install_result.success
+        assert install_result.is_success
         assert isinstance(install_result.data, FlextPluginEntity)
         assert install_result.data.name == "tap_database"
 
@@ -446,16 +479,16 @@ class TestFlextPluginServiceWithRealAdapters:
         # First install a plugin
         tap_plugin_file = temp_plugin_dir / "tap_database.py"
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
-        assert install_result.success
+        assert install_result.is_success
 
         # Check if plugin is really loaded
         loaded_result = real_service_with_adapters.is_plugin_loaded("tap_database")
-        assert loaded_result.success
+        assert loaded_result.is_success
         assert loaded_result.data is True  # Should be loaded
 
         # Check non-loaded plugin
         not_loaded_result = real_service_with_adapters.is_plugin_loaded("non_existent")
-        assert not_loaded_result.success
+        assert not_loaded_result.is_success
         assert not_loaded_result.data is False  # Should not be loaded
 
 
@@ -518,7 +551,7 @@ class TestFlextPluginServiceReal:
         # Test actual discovery functionality
         result = port.discover_plugins("/non/existent/path")
         # Should handle non-existent paths gracefully
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
         assert hasattr(result, "error")
 
@@ -534,7 +567,7 @@ class TestFlextPluginServiceReal:
             # Test actual loading functionality
             result = port.is_plugin_loaded("non-existent-plugin")
             # Should handle non-existent plugins
-            assert isinstance(result.success, bool)
+            assert isinstance(result.is_success, bool)
             assert hasattr(result, "data")
             assert hasattr(result, "error")
         except Exception as e:
@@ -555,7 +588,7 @@ class TestFlextPluginServiceReal:
         # Test actual management functionality
         result = port.uninstall_plugin("non-existent-plugin")
         # Should handle non-existent plugins gracefully
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
         assert hasattr(result, "error")
 
@@ -579,15 +612,15 @@ class TestFlextPluginServiceReal:
         result = service.discover_plugins(str(temp_plugin_dir))
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
         # Should succeed with actual plugin directory
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
-        if result.success:
+        if result.is_success:
             assert isinstance(result.data, list)
 
         # Test that plugin files are actually discoverable
@@ -611,17 +644,17 @@ class TestFlextPluginServiceReal:
         result = service.load_plugin(plugin)
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
         assert hasattr(result, "error")
 
         # The load should validate the plugin first
-        if not result.success:
+        if not result.is_success:
             # Expected if fallback port can't find actual plugin file
             assert (
                 "validation failed" in str(result.error).lower()
@@ -649,7 +682,7 @@ class TestFlextPluginServiceReal:
             )
 
             result = service.load_plugin(plugin)
-            assert isinstance(result.success, bool)
+            assert isinstance(result.is_success, bool)
             assert hasattr(result, "data")
 
     def test_unload_plugin_empty_name_fails_real(
@@ -673,7 +706,7 @@ class TestFlextPluginServiceReal:
         """Test REAL unload_plugin with valid plugin name."""
         result = service.unload_plugin("real-unload-plugin")
         # Test actual result handling
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
         assert hasattr(result, "error")
 
@@ -702,12 +735,12 @@ class TestFlextPluginServiceReal:
 
         result = service.install_plugin(str(tap_plugin_file))
         # Test actual result handling with real plugin file
-        assert isinstance(result.success, bool)
+        assert isinstance(result.is_success, bool)
         assert hasattr(result, "data")
         assert hasattr(result, "error")
 
         # With fallback implementation, might fail but should handle gracefully
-        if not result.success:
+        if not result.is_success:
             # Expected with fallback port implementation
             assert (
                 "mock implementation" in str(result.error).lower()
@@ -720,7 +753,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test uninstall_plugin with empty name fails."""
         result = service.uninstall_plugin("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_uninstall_plugin_valid_name_real(
@@ -730,12 +763,12 @@ class TestFlextPluginServiceReal:
         """Test uninstall_plugin with REAL valid name."""
         result = service.uninstall_plugin("real-test-plugin")
         # With fallback implementation, should succeed
-        assert result.success
+        assert result.is_success
 
     def test_enable_plugin_empty_name_fails(self, service: FlextPluginService) -> None:
         """Test enable_plugin with empty name fails."""
         result = service.enable_plugin("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_enable_plugin_valid_name_real(
@@ -745,12 +778,12 @@ class TestFlextPluginServiceReal:
         """Test enable_plugin with REAL valid name."""
         result = service.enable_plugin("real-test-plugin")
         # With fallback implementation, should succeed
-        assert result.success
+        assert result.is_success
 
     def test_disable_plugin_empty_name_fails(self, service: FlextPluginService) -> None:
         """Test disable_plugin with empty name fails."""
         result = service.disable_plugin("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_disable_plugin_valid_name_real(
@@ -760,7 +793,7 @@ class TestFlextPluginServiceReal:
         """Test disable_plugin with REAL valid name."""
         result = service.disable_plugin("real-test-plugin")
         # With fallback implementation, should succeed
-        assert result.success
+        assert result.is_success
 
     def test_get_plugin_config_empty_name_fails(
         self,
@@ -768,7 +801,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test get_plugin_config with empty name fails."""
         result = service.get_plugin_config("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_get_plugin_config_valid_name_real(
@@ -779,13 +812,13 @@ class TestFlextPluginServiceReal:
         result = service.get_plugin_config("real-test-plugin")
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
         # Fallback implementation returns failure (no actual config)
-        assert not result.success
+        assert not result.is_success
         assert "Mock implementation" in str(result.error)  # Expected fallback message
 
     def test_update_plugin_config_empty_name_fails(
@@ -795,7 +828,7 @@ class TestFlextPluginServiceReal:
         """Test update_plugin_config with empty name fails."""
         config = FlextPluginConfig.create(plugin_name="test")
         result = service.update_plugin_config("", config)
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_update_plugin_config_invalid_config_fails(
@@ -808,7 +841,7 @@ class TestFlextPluginServiceReal:
         # Directly set to empty to bypass Pydantic validation
         setattr(config, "plugin_name", "")
         result = service.update_plugin_config("test-plugin", config)
-        assert not result.success
+        assert not result.is_success
         assert "Invalid plugin configuration" in str(result.error)
 
     def test_update_plugin_config_valid_params_real(
@@ -820,13 +853,13 @@ class TestFlextPluginServiceReal:
         result = service.update_plugin_config("real-test-plugin", config)
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
         # With fallback implementation, should succeed
-        assert result.success
+        assert result.is_success
 
     def test_is_plugin_loaded_empty_name_fails(
         self,
@@ -834,7 +867,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test is_plugin_loaded with empty name fails."""
         result = service.is_plugin_loaded("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
     def test_is_plugin_loaded_valid_name_real(
@@ -845,12 +878,12 @@ class TestFlextPluginServiceReal:
         result = service.is_plugin_loaded("real-test-plugin")
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
-        assert result.success
+        assert result.is_success
         assert result.data is False  # Plugin not actually loaded
 
 
@@ -892,7 +925,7 @@ class TestFlextPluginDiscoveryServiceReal:
     ) -> None:
         """Test execute method returns failure as designed."""
         result = discovery_service.execute()
-        assert not result.success
+        assert not result.is_success
         assert "Use specific service methods instead of execute" in str(result.error)
 
     def test_discovery_port_property_real_fallback(
@@ -905,13 +938,13 @@ class TestFlextPluginDiscoveryServiceReal:
             assert port is not None
             # Should be fallback implementation
             result = port.discover_plugins("/non/existent")
-            assert result.success
+            assert result.is_success
             assert result.data == []
 
             # Test actual port functionality
             with tempfile.TemporaryDirectory() as temp_dir:
                 result = port.discover_plugins(temp_dir)
-                assert result.success
+                assert result.is_success
                 assert isinstance(result.data, list)
         except Exception as e:
             if "not configured" in str(e):
@@ -926,7 +959,7 @@ class TestFlextPluginDiscoveryServiceReal:
     ) -> None:
         """Test scan_directory with empty path fails."""
         result = discovery_service.scan_directory("")
-        assert not result.success
+        assert not result.is_success
         assert "Directory path is required" in str(result.error)
 
     def test_scan_directory_with_real_plugins(
@@ -943,12 +976,12 @@ class TestFlextPluginDiscoveryServiceReal:
             return
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, list)
 
         # With fallback implementation, might return empty but should handle real directory
@@ -962,7 +995,7 @@ class TestFlextPluginDiscoveryServiceReal:
     ) -> None:
         """Test validate_plugin_integrity with None plugin fails."""
         result = discovery_service.validate_plugin_integrity(None)
-        assert not result.success
+        assert not result.is_success
         assert "Plugin is required" in str(result.error)
 
     def test_validate_plugin_integrity_with_real_plugin_data(
@@ -982,12 +1015,12 @@ class TestFlextPluginDiscoveryServiceReal:
         result = discovery_service.validate_plugin_integrity(plugin)
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - discovery service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
-        assert result.success  # Fallback should validate as true
+        assert result.is_success  # Fallback should validate as true
         assert result.data is True
 
         # Verify the corresponding plugin file actually exists
@@ -1009,7 +1042,7 @@ class TestRealPluginIntegrationWorkflow:
         discover_result = real_service_with_adapters.discover_plugins(
             str(temp_plugin_dir),
         )
-        assert discover_result.success
+        assert discover_result.is_success
         assert len(discover_result.data) == 4
 
         # Step 2: Find specific plugins
@@ -1028,8 +1061,8 @@ class TestRealPluginIntegrationWorkflow:
         tap_load_result = real_service_with_adapters.load_plugin(tap_plugin)
         target_load_result = real_service_with_adapters.load_plugin(target_plugin)
 
-        assert tap_load_result.success
-        assert target_load_result.success
+        assert tap_load_result.is_success
+        assert target_load_result.is_success
 
         # Step 4: Verify plugins are loaded
         tap_loaded_check = real_service_with_adapters.is_plugin_loaded("tap_database")
@@ -1037,18 +1070,18 @@ class TestRealPluginIntegrationWorkflow:
             "target_warehouse",
         )
 
-        assert tap_loaded_check.success
-        assert target_loaded_check.success
+        assert tap_loaded_check.is_success
+        assert target_loaded_check.is_success
         assert tap_loaded_check.data is True
         assert target_loaded_check.data is True
 
         # Step 5: Test unloading
         unload_result = real_service_with_adapters.unload_plugin("tap_database")
-        assert unload_result.success
+        assert unload_result.is_success
 
         # Step 6: Verify unloaded
         unloaded_check = real_service_with_adapters.is_plugin_loaded("tap_database")
-        assert unloaded_check.success
+        assert unloaded_check.is_success
         assert unloaded_check.data is False
 
     @pytest.mark.asyncio
@@ -1061,13 +1094,15 @@ class TestRealPluginIntegrationWorkflow:
         """Test complete REAL workflow: discover -> load -> execute -> cleanup."""
         # Step 1: Real plugin discovery
         real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
-        plugin_files = await asyncio.to_thread(
-            lambda: [
+
+        async def _get_plugin_files() -> list[AnyioPath]:
+            return [
                 f
-                for f in Path(temp_plugin_dir).iterdir()
+                async for f in AnyioPath(temp_plugin_dir).iterdir()
                 if fnmatch.fnmatch(f.name, "*.py")
             ]
-        )
+
+        plugin_files = await _get_plugin_files()
         assert len(plugin_files) == 4  # Our real plugins
 
         # Step 2: Load tap plugin and Execute workflow
@@ -1076,14 +1111,16 @@ class TestRealPluginIntegrationWorkflow:
 
         # Verify plugin loaded
         assert tap_plugin is not None
-        assert tap_plugin.name == "database-tap"
+        # Cast to proper plugin interface
+        tap = cast("PluginInterface", tap_plugin)
+        assert tap.name == "database-tap"
 
         # Step 3: Execute initialization
-        init_result = tap_plugin.initialize()
+        init_result = tap.initialize()
         assert init_result["status"] == "initialized"
 
         # Step 4: Execute main functionality
-        extract_result = tap_plugin.execute()
+        extract_result = tap.execute()
         assert extract_result["status"] == "success"
         assert extract_result["extracted_records"] == 150
 
@@ -1091,21 +1128,24 @@ class TestRealPluginIntegrationWorkflow:
         target_file = temp_plugin_dir / "target_warehouse.py"
         target_plugin = real_plugin_loader.load_plugin(target_file)
 
+        # Cast to proper plugin interface
+        target = cast("PluginInterface", target_plugin)
+
         # Step 6: Create data pipeline between plugins
         extracted_data = {"records": list(range(extract_result["extracted_records"]))}
-        load_result = target_plugin.execute(extracted_data)
+        load_result = target.execute(extracted_data)
         assert load_result["status"] == "success"
         assert load_result["loaded_records"] == 150
 
         # Step 7: Health checks on loaded plugins
-        tap_health = tap_plugin.health_check()
-        target_health = target_plugin.health_check()
+        tap_health = tap.health_check()
+        target_health = target.health_check()
         assert tap_health["status"] == "healthy"
         assert target_health["status"] == "healthy"
 
         # Step 8: Cleanup workflow
-        tap_cleanup = await tap_plugin.cleanup()
-        target_cleanup = await target_plugin.cleanup()
+        tap_cleanup = await tap.cleanup()
+        target_cleanup = await target.cleanup()
         assert tap_cleanup["status"] == "cleaned"
         assert target_cleanup["status"] == "cleaned"
 
@@ -1125,10 +1165,15 @@ class TestRealPluginIntegrationWorkflow:
         target_plugin = real_plugin_loader.load_plugin(target_file)
         processor_plugin = real_plugin_loader.load_plugin(processor_file)
 
+        # Cast to proper plugin interfaces
+        tap = cast("PluginInterface", tap_plugin)
+        target = cast("PluginInterface", target_plugin)
+        processor = cast("PluginInterface", processor_plugin)
+
         # Verify all loaded correctly
-        assert tap_plugin.name == "database-tap"
-        assert target_plugin.name == "warehouse-target"
-        assert processor_plugin.name == "data-processor"
+        assert tap.name == "database-tap"
+        assert target.name == "warehouse-target"
+        assert processor.name == "data-processor"
 
         # Test registry functionality
         loaded_plugins = real_plugin_loader.get_loaded_plugins()
@@ -1141,7 +1186,8 @@ class TestRealPluginIntegrationWorkflow:
 
         # Test plugin retrieval
         retrieved_tap = loaded_plugins["tap_database"]
-        assert retrieved_tap.name == "database-tap"
+        retrieved_plugin = cast("PluginInterface", retrieved_tap)
+        assert retrieved_plugin.name == "database-tap"
 
     @pytest.mark.asyncio
     async def test_real_plugin_lifecycle_management(
@@ -1156,11 +1202,13 @@ class TestRealPluginIntegrationWorkflow:
 
         # Verify loaded
         assert processor_plugin is not None
+        # Cast to proper plugin interface
+        processor = cast("PluginInterface", processor_plugin)
         loaded_plugins = real_plugin_loader.get_loaded_plugins()
         assert "processor_transform" in loaded_plugins
 
         # Execute to change plugin state
-        result = processor_plugin.execute({"items": [1, 2, 3]})
+        result = processor.execute({"items": [1, 2, 3]})
         assert result["total_processed"] == 3
 
         # Unload plugin (tests cleanup if plugin supports it)
@@ -1172,11 +1220,12 @@ class TestRealPluginIntegrationWorkflow:
 
         # Reload plugin (should start fresh)
         reloaded_plugin = real_plugin_loader.load_plugin(processor_file)
-        init_result = reloaded_plugin.initialize()
+        reloaded = cast("PluginInterface", reloaded_plugin)
+        init_result = reloaded.initialize()
         assert init_result["status"] == "initialized"
 
         # Should start with fresh state
-        result_fresh = reloaded_plugin.execute({"items": [1]})
+        result_fresh = reloaded.execute({"items": [1]})
         assert result_fresh["total_processed"] == 1  # Fresh state, not 4
 
 
@@ -1213,8 +1262,8 @@ class TestServicesIntegrationReal:
         result1 = plugin_service.container.get("test_service")
         result2 = discovery_service.container.get("test_service")
 
-        assert result1.success
-        assert result2.success
+        assert result1.is_success
+        assert result2.is_success
         assert result1.data is test_service
         assert result2.data is test_service
         # Verify actual data
@@ -1255,7 +1304,7 @@ class TestServicesIntegrationReal:
             return
 
         # Check for expected infrastructure failures - these are acceptable
-        if not plugin_discovery_result.success and (
+        if not plugin_discovery_result.is_success and (
             "not configured" in str(plugin_discovery_result.error)
         ):
             # This is expected - plugin service needs properly configured container
@@ -1265,7 +1314,7 @@ class TestServicesIntegrationReal:
             return
 
         # Check for expected infrastructure failures - these are acceptable
-        if not service_discovery_result.success and (
+        if not service_discovery_result.is_success and (
             "not configured" in str(service_discovery_result.error)
         ):
             # This is expected - discovery service needs properly configured container
@@ -1274,8 +1323,8 @@ class TestServicesIntegrationReal:
             )
             return
 
-        assert plugin_discovery_result.success
-        assert service_discovery_result.success
+        assert plugin_discovery_result.is_success
+        assert service_discovery_result.is_success
         assert isinstance(plugin_discovery_result.data, list)
         assert isinstance(service_discovery_result.data, list)
 
@@ -1299,21 +1348,23 @@ class TestRealPluginErrorScenarios:
 
         # Verify plugin loaded
         assert error_plugin is not None
-        assert error_plugin.name == "error-plugin"
+        # Cast to proper plugin interface
+        error = cast("PluginInterface", error_plugin)
+        assert error.name == "error-plugin"
 
         # Test normal execution first
-        normal_result = error_plugin.execute()
+        normal_result = error.execute()
         assert normal_result["status"] == "success"
 
         # Enable error mode
-        error_plugin.set_should_fail(True)
+        error.set_should_fail(True)
 
         # Test that we can catch REAL plugin exceptions
         with pytest.raises(RuntimeError, match="Simulated plugin execution error"):
-            error_plugin.execute()
+            error.execute()
 
         # Test that plugin state reflects error condition
-        health = error_plugin.health_check()
+        health = error.health_check()
         assert health["status"] == "unhealthy"
 
     def test_real_plugin_file_loading_errors(
@@ -1373,12 +1424,12 @@ class TestServiceErrorHandling:
         result = service.discover_plugins(str(temp_plugin_dir))
 
         # Check for expected infrastructure failures - these are acceptable
-        if not result.success and ("not configured" in str(result.error)):
+        if result.is_failure and ("not configured" in str(result.error)):
             # This is expected - plugin service needs properly configured container
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, list)
 
         # Verify real plugin files exist in directory being tested
@@ -1398,12 +1449,12 @@ class TestServiceErrorHandling:
             result = discovery_service.scan_directory(temp_dir)
 
             # Check for expected infrastructure failures - these are acceptable
-            if not result.success and ("not configured" in str(result.error)):
+            if result.is_failure and ("not configured" in str(result.error)):
                 # This is expected - plugin service needs properly configured container
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
 
-            assert result.success
+            assert result.is_success
             assert isinstance(result.data, list)
             assert result.data == []  # Empty directory
 
@@ -1423,12 +1474,12 @@ class TestServiceErrorHandling:
 
             # All should be fallback implementations that work with REAL data
             with tempfile.TemporaryDirectory() as temp_dir:
-                assert port1.discover_plugins(temp_dir).success
-                assert port2.discover_plugins(temp_dir).success
-                assert port3.is_plugin_loaded("real-plugin").success
-                assert port4.is_plugin_loaded("real-plugin").success
-                assert port5.uninstall_plugin("real-plugin").success
-                assert port6.uninstall_plugin("real-plugin").success
+                assert port1.discover_plugins(temp_dir).is_success
+                assert port2.discover_plugins(temp_dir).is_success
+                assert port3.is_plugin_loaded("real-plugin").is_success
+                assert port4.is_plugin_loaded("real-plugin").is_success
+                assert port5.uninstall_plugin("real-plugin").is_success
+                assert port6.uninstall_plugin("real-plugin").is_success
         except Exception as e:
             if "not configured" in str(e):
                 pytest.skip(f"Infrastructure not configured: {e}")
@@ -1449,8 +1500,8 @@ class TestServiceErrorHandling:
 
             # Both should be fallback implementations that work with REAL directories
             with tempfile.TemporaryDirectory() as temp_dir:
-                assert port1.discover_plugins(temp_dir).success
-                assert port2.discover_plugins(temp_dir).success
+                assert port1.discover_plugins(temp_dir).is_success
+                assert port2.discover_plugins(temp_dir).is_success
         except Exception as e:
             if "not configured" in str(e):
                 pytest.skip(f"Infrastructure not configured: {e}")
@@ -1464,15 +1515,15 @@ class TestServiceErrorHandling:
 
         # Test with invalid path (should handle gracefully)
         result = service.discover_plugins("")
-        assert not result.success
+        assert not result.is_success
         assert "Path is required" in str(result.error)
 
         # Test with very long invalid path (should handle gracefully)
         invalid_path = "/" + "x" * 500  # Very long path
         result2 = service.discover_plugins(invalid_path)
         # Should either succeed (empty result) or fail gracefully
-        assert isinstance(result2.success, bool)
-        if not result2.success:
+        assert isinstance(result2.is_success, bool)
+        if not result2.is_success:
             assert (
                 "Failed to discover plugins" in str(result2.error)
                 or "path" in str(result2.error).lower()
@@ -1484,15 +1535,15 @@ class TestServiceErrorHandling:
 
         # Test with empty plugin name (should handle gracefully)
         result = service.unload_plugin("")
-        assert not result.success
+        assert not result.is_success
         assert "Plugin name is required" in str(result.error)
 
         # Test with very long plugin name (should handle gracefully)
         long_name = "x" * 1000  # Very long name
         result2 = service.unload_plugin(long_name)
         # Should either succeed or fail gracefully
-        assert isinstance(result2.success, bool)
-        if not result2.success:
+        assert isinstance(result2.is_success, bool)
+        if not result2.is_success:
             assert (
                 "Failed to unload plugin" in str(result2.error)
                 or "plugin" in str(result2.error).lower()
@@ -1504,15 +1555,15 @@ class TestServiceErrorHandling:
 
         # Test with empty directory path (should handle gracefully)
         result = service.scan_directory("")
-        assert not result.success
+        assert not result.is_success
         assert "Directory path is required" in str(result.error)
 
         # Test with very long invalid path (should handle gracefully)
         invalid_path = "/" + "x" * 500  # Very long path
         result2 = service.scan_directory(invalid_path)
         # Should either succeed (empty result) or fail gracefully
-        assert isinstance(result2.success, bool)
-        if not result2.success:
+        assert isinstance(result2.is_success, bool)
+        if not result2.is_success:
             assert (
                 "Failed to scan directory" in str(result2.error)
                 or "directory" in str(result2.error).lower()
@@ -1536,12 +1587,12 @@ class TestBackwardsCompatibilityAliasesReal:
             result = service.discover_plugins(temp_dir)
 
             # Check for expected infrastructure failures - these are acceptable
-            if not result.success and ("not configured" in str(result.error)):
+            if result.is_failure and ("not configured" in str(result.error)):
                 # This is expected - plugin service needs properly configured container
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
 
-            assert result.success
+            assert result.is_success
             assert isinstance(result.data, list)
 
     def test_plugin_discovery_service_alias_exists_real(self) -> None:
@@ -1558,10 +1609,10 @@ class TestBackwardsCompatibilityAliasesReal:
             result = service.scan_directory(temp_dir)
 
             # Check for expected infrastructure failures - these are acceptable
-            if not result.success and ("not configured" in str(result.error)):
+            if result.is_failure and ("not configured" in str(result.error)):
                 # This is expected - plugin service needs properly configured container
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
 
-            assert result.success
+            assert result.is_success
             assert isinstance(result.data, list)

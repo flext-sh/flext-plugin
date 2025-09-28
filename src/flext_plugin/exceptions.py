@@ -23,7 +23,7 @@ class FlextPluginExceptions(FlextExceptions):
         """Error codes for plugin domain operations."""
 
         PLUGIN_ERROR = "PLUGIN_ERROR"
-        FLEXT_PROCESSING_ERROR = "FLEXT_PROCESSING_ERROR"  # Legacy compatibility
+        PLUGIN_PROCESSING_ERROR = "PLUGIN_PROCESSING_ERROR"
         PLUGIN_DISCOVERY_ERROR = "PLUGIN_DISCOVERY_ERROR"
         PLUGIN_LOADING_ERROR = "PLUGIN_LOADING_ERROR"
         PLUGIN_EXECUTION_ERROR = "PLUGIN_EXECUTION_ERROR"
@@ -51,7 +51,7 @@ class FlextPluginExceptions(FlextExceptions):
         ) -> None:
             """Initialize the instance."""
             # Store error_code for later use if needed
-            self.error_code = "FLEXT_PROCESSING_ERROR"
+            self.error_code = "PLUGIN_PROCESSING_ERROR"
             super().__init__(message)
             self.plugin_id = plugin_id
 
@@ -120,35 +120,32 @@ class FlextPluginExceptions(FlextExceptions):
         """Plugin hot reload operation specific errors."""
 
 
-# Export consolidated class and individual exceptions for backward compatibility
-FlextPluginErrorCodes = FlextPluginExceptions.PluginErrorCodes
+# Backward compatibility aliases - property-based exports
 FlextPluginError = FlextPluginExceptions.PluginBaseError
+FlextPluginErrorCodes = FlextPluginExceptions.PluginErrorCodes
 FlextPluginDiscoveryError = FlextPluginExceptions.DiscoveryError
+FlextPluginDiscoveryOperationError = FlextPluginExceptions.DiscoveryOperationError
 FlextPluginLoadingError = FlextPluginExceptions.LoadingError
+FlextPluginLoadOperationError = FlextPluginExceptions.LoadOperationError
 FlextPluginExecutionError = FlextPluginExceptions.ExecutionError
+FlextPluginExecutionOperationError = FlextPluginExceptions.ExecutionOperationError
 FlextPluginConfigurationError = FlextPluginExceptions.ConfigurationError
+FlextPluginConfigurationOperationError = (
+    FlextPluginExceptions.ConfigurationOperationError
+)
 FlextPluginValidationError = FlextPluginExceptions.ValidationError
 FlextPluginLifecycleError = FlextPluginExceptions.LifecycleError
+FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
 FlextPluginDependencyError = FlextPluginExceptions.DependencyError
 FlextPluginRegistryError = FlextPluginExceptions.RegistryError
 FlextPluginHotReloadError = FlextPluginExceptions.HotReloadError
+FlextPluginHotReloadOperationError = FlextPluginExceptions.HotReloadOperationError
 FlextPluginSecurityError = FlextPluginExceptions.SecurityError
 FlextPluginCompatibilityError = FlextPluginExceptions.CompatibilityError
 FlextPluginMetadataError = FlextPluginExceptions.MetadataError
 FlextPluginPlatformError = FlextPluginExceptions.PlatformError
-FlextPluginDiscoveryOperationError = FlextPluginExceptions.DiscoveryOperationError
-FlextPluginLoadOperationError = FlextPluginExceptions.LoadOperationError
-FlextPluginExecutionOperationError = FlextPluginExceptions.ExecutionOperationError
-FlextPluginConfigurationOperationError = (
-    FlextPluginExceptions.ConfigurationOperationError
-)
-FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
-FlextPluginHotReloadOperationError = FlextPluginExceptions.HotReloadOperationError
-
-# Legacy alias eliminated - use FlextPluginError directly
 
 __all__ = [
-    # Legacy backward compatibility exports
     "FlextPluginCompatibilityError",
     "FlextPluginConfigurationError",
     "FlextPluginConfigurationOperationError",
@@ -157,7 +154,6 @@ __all__ = [
     "FlextPluginDiscoveryOperationError",
     "FlextPluginError",
     "FlextPluginErrorCodes",
-    # CONSOLIDATED class (FLEXT pattern)
     "FlextPluginExceptions",
     "FlextPluginExecutionError",
     "FlextPluginExecutionOperationError",
@@ -172,5 +168,4 @@ __all__ = [
     "FlextPluginRegistryError",
     "FlextPluginSecurityError",
     "FlextPluginValidationError",
-    # Legacy compatibility
 ]

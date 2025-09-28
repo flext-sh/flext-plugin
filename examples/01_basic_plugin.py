@@ -30,7 +30,7 @@ def main() -> None:
 
     # Demonstrate domain validation
     validation_result = plugin.validate_business_rules()
-    if validation_result.success:
+    if validation_result.is_success:
         pass
 
     # Demonstrate status transitions

@@ -284,10 +284,6 @@ class FlextPluginPlatform:
         return self.discovery_service.validate_plugin_integrity(plugin)
 
 
-# Backwards compatibility alias
-PluginPlatform = FlextPluginPlatform
-
 __all__ = [
     "FlextPluginPlatform",
-    "PluginPlatform",  # Legacy alias
 ]

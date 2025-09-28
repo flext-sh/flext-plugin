@@ -9,8 +9,7 @@ from __future__ import annotations
 import sys
 from typing import override
 
-from Flext_cli import FlextCliApi, FlextCliCommands
-
+from flext_cli import FlextCliApi, FlextCliCommands
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
 # Initialize logger
@@ -20,9 +19,9 @@ logger = FlextLogger(__name__)
 class PluginCLI:
     """Simplified CLI handler."""
 
-    @override
-    def __init__(self: object) -> None:
+    def __init__(self) -> None:
         """Initialize CLI."""
+        self.container: FlextContainer
         try:
             self.container = FlextContainer()
         except Exception as e:
@@ -100,7 +99,7 @@ def main() -> None:
     """Main CLI entry point."""
     try:
         cli_service = FlextPluginCliService()
-        cli_result: FlextResult[object] = cli_service.create_plugin_cli_interface()
+        cli_result: FlextResult[FlextCliCommands] = cli_service.create_plugin_cli_interface()
         if cli_result.is_success:
             cli = cli_result.unwrap()
             cli.execute()

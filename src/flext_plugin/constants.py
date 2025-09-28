@@ -11,7 +11,7 @@ from typing import ClassVar, Final
 from flext_core import FlextConstants
 
 
-class FlextPluginConstants(FlextConstants):
+class FlextPluginConstants:
     """Plugin system-specific constants following FLEXT single-class pattern.
 
     Inherits from FlextConstants for universal constants, defines only

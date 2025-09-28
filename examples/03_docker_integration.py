@@ -231,7 +231,7 @@ def main() -> None:
 
     # Validate PostgreSQL plugin
     postgres_validation = postgres_plugin.validate_business_rules()
-    if postgres_validation.success:
+    if postgres_validation.is_success:
         # Test activation
         postgres_activation = postgres_plugin.activate()
         if postgres_activation:
@@ -245,7 +245,7 @@ def main() -> None:
 
     # Validate Redis plugin
     redis_validation = redis_plugin.validate_business_rules()
-    if redis_validation.success:
+    if redis_validation.is_success:
         # Test activation
         redis_activation = redis_plugin.activate()
         if redis_activation:
@@ -259,7 +259,7 @@ def main() -> None:
 
     # Validate LDAP plugin
     ldap_validation = ldap_plugin.validate_business_rules()
-    if ldap_validation.success:
+    if ldap_validation.is_success:
         # Test activation
         ldap_activation = ldap_plugin.activate()
         if ldap_activation:

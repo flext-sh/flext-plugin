@@ -163,7 +163,7 @@ def main() -> None:
     plugins_to_validate = [db_plugin, ldap_plugin]
     for plugin in plugins_to_validate:
         validation_result = plugin.validate_business_rules()
-        if validation_result.success:
+        if validation_result.is_success:
             pass
 
 

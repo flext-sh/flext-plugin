@@ -65,6 +65,14 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         return self._loaded_plugins.get(plugin_name)
 
     # Service protocol methods required by Port
+    def execute(self) -> FlextResult[object]:
+        """Execute the main domain operation (required by Service protocol)."""
+        return FlextResult[object].ok(None)
+
+    def is_valid(self) -> bool:
+        """Check if the domain service is in a valid state (required by Service protocol)."""
+        return True
+
     def __call__(self, *_args: object, **_kwargs: object) -> FlextResult[None]:
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
@@ -124,7 +132,7 @@ class TestFlextPluginRegistrationHandler:
         # Should fail because no service is configured
         result: FlextResult[bool] = handler.handle_register_plugin(plugin)
 
-        assert not result.success
+        assert result.is_failure
         assert result.error is not None
         assert "Plugin service not available" in result.error
 
@@ -175,7 +183,7 @@ class TestFlextPluginRegistrationHandler:
         # May succeed or fail depending on actual loader implementation
         # But should not fail on validation
         assert isinstance(result, FlextResult)
-        if not result.success:
+        if result.is_failure:
             # If fails, should be due to actual loading issues, not validation
             assert result.error is not None
             assert "Plugin name is required" not in result.error
@@ -187,7 +195,7 @@ class TestFlextPluginRegistrationHandler:
 
         result: FlextResult[bool] = handler.handle_unregister_plugin("test-plugin")
 
-        assert not result.success
+        assert result.is_failure
         assert result.error is not None
         assert "Plugin service not available" in result.error
 
@@ -198,7 +206,7 @@ class TestFlextPluginRegistrationHandler:
 
         result: FlextResult[bool] = handler.handle_unregister_plugin("")
 
-        assert not result.success
+        assert result.is_failure
         assert result.error is not None
         assert "Plugin name is required" in result.error
 
@@ -212,7 +220,7 @@ class TestFlextPluginRegistrationHandler:
         # Should attempt real unregistration through the loader
         assert isinstance(result, FlextResult)
         # May succeed or fail depending on whether plugin exists
-        if not result.success:
+        if result.is_failure:
             assert result.error is not None
             assert "Plugin name is required" not in result.error
 
@@ -239,7 +247,7 @@ class TestFlextPluginEventHandler:
 
         result: FlextResult[bool] = handler.handle_plugin_loaded(plugin)
 
-        assert result.success
+        assert result.is_success
         assert result.data is True
 
     def test_handle_plugin_loaded_event_plugin_without_name(self) -> None:
@@ -264,7 +272,7 @@ class TestFlextPluginEventHandler:
         result: FlextResult[None] = handler.handle_plugin_unloaded("unloaded-plugin")
 
         # Should succeed for valid name (basic implementation)
-        assert result.success
+        assert result.is_success
         assert result.data is None
 
     def test_handle_plugin_unloaded_event_empty_name(self) -> None:
@@ -274,7 +282,7 @@ class TestFlextPluginEventHandler:
         result: FlextResult[None] = handler.handle_plugin_unloaded("")
 
         # Should fail for empty name
-        assert not result.success
+        assert result.is_failure
         assert result.error is not None
         assert "plugin name is required" in result.error
 
@@ -324,7 +332,7 @@ class LifecyclePlugin:
 
         # Test plugin loaded event
         loaded_result = event_handler.handle_plugin_loaded(plugin)
-        assert loaded_result.success
+        assert loaded_result.is_success
         assert loaded_result.data is True
 
         # Test unregistration
@@ -335,7 +343,7 @@ class LifecyclePlugin:
 
         # Test plugin unloaded event
         unloaded_result = event_handler.handle_plugin_unloaded("lifecycle-plugin")
-        assert unloaded_result.success
+        assert unloaded_result.is_success
         assert unloaded_result.data is None
 
     def test_error_handling_with_real_exceptions(self) -> None:
@@ -350,7 +358,7 @@ class LifecyclePlugin:
 
         # Normal case should work
         result = handler.handle_plugin_loaded(plugin)
-        assert result.success
+        assert result.is_success
 
         # Test entity creation validation at Pydantic level
         # Empty name should fail at entity creation, not handler level
@@ -374,5 +382,5 @@ class LifecyclePlugin:
 
         # Handler should accept valid plugin
         valid_result = handler.handle_plugin_loaded(valid_plugin)
-        assert valid_result.success
+        assert valid_result.is_success
         assert valid_result.data is True

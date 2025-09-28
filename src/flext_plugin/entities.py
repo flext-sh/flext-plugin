@@ -18,7 +18,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from flext_plugin.models import PluginStatus, PluginType
+from flext_plugin.flext_plugin_models import PluginStatus, PluginType
 from flext_plugin.typings import FlextPluginTypes
 
 
@@ -119,7 +119,7 @@ class FlextPluginEntity(FlextModels.Entity):
         cls,
         *,
         name: str,
-        _plugin_version: str,
+        plugin_version: str,
         entity_id: str | None = None,
         config: FlextPluginTypes.Core.ConfigDict | None = None,
         **kwargs: object,
@@ -148,11 +148,11 @@ class FlextPluginEntity(FlextModels.Entity):
 
         # Create instance data
         instance_data: FlextPluginTypes.Core.PluginDict = {
-            "id": "final_id",
+            "id": entity_id or "final_id",
             "version": kwargs.get("entity_version", 1),  # FlextModels version
             "metadata": kwargs.get("metadata", {}),
-            "name": "plugin_name",
-            "plugin_version": "plugin_version",
+            "name": name,
+            "plugin_version": plugin_version,
             "description": config.get("description", kwargs.get("description", "")),
             "author": config.get("author", kwargs.get("author", "")),
             "status": config.get("status", kwargs.get("status", PluginStatus.INACTIVE)),
@@ -165,7 +165,6 @@ class FlextPluginEntity(FlextModels.Entity):
         return cls.model_validate(instance_data)
 
     # Remove __new__ method - let Pydantic handle object creation naturally
-    # Use factory method create() for backward compatibility
 
     # Testing convenience properties (without conflicting names)
     @property
@@ -716,7 +715,7 @@ class FlextPluginExecution(FlextModels.Entity):
     )
     plugin_id: str = Field(
         default="",
-        description="Plugin identifier (backward compatibility)",
+        description="Plugin identifier",
     )
     execution_id: str = Field(
         default="",
@@ -940,39 +939,25 @@ class FlextPluginExecution(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-# Testing convenience aliases - TRANSITIONAL: Use FlextPluginEntity instead
-# These aliases are maintained for testing convenience but should be migrated
-# to use the new naming convention to avoid confusion with interface names.
-Plugin = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
-FlextPlugin = (
-    FlextPluginEntity  # TRANSITIONAL: Conflicts with interface, use FlextPluginEntity
-)
-# Legacy aliases for the plugin entity (NOT the configuration)
-# The actual FlextPluginConfig is now in config.py (application configuration)
-PluginConfig = FlextPluginEntity
-PluginConfiguration = FlextPluginEntity  # Additional alias for tests
+FlextPlugin = FlextPluginEntity
+
+# Backward compatibility aliases
+Plugin = FlextPluginEntity
+PluginExecution = FlextPluginExecution
 PluginMetadata = FlextPluginMetadata
 PluginRegistry = FlextPluginRegistry
-PluginInstance = FlextPluginEntity  # TRANSITIONAL: Use FlextPluginEntity
-PluginExecution = FlextPluginExecution
 
 __all__ = [
-    "FlextPlugin",  # Use FlextPluginEntity
-    # Parameter classes
+    "FlextPlugin",
     "FlextPluginConfigParams",
-    # Main entity classes
     "FlextPluginEntity",
     "FlextPluginExecution",
     "FlextPluginMetadata",
     "FlextPluginMetadataParams",
     "FlextPluginRegistry",
     "FlextPluginRegistryParams",
-    # Legacy aliases (transitional - use actual classes instead)
-    "Plugin",  # Use FlextPluginEntity
-    "PluginConfig",
-    "PluginConfiguration",
+    "Plugin",
     "PluginExecution",
-    "PluginInstance",  # Use FlextPluginEntity
     "PluginMetadata",
     "PluginRegistry",
 ]

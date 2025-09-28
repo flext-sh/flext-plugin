@@ -64,7 +64,6 @@ class ConcretePlugin:
     """
 
     @override
-    @override
     def __init__(
         self,
         name: str,
@@ -184,7 +183,6 @@ class ConcreteExecutablePlugin(ConcretePlugin):
     """
 
     @override
-    @override
     def __init__(
         self,
         name: str,
@@ -256,7 +254,6 @@ class ConcreteDataPlugin(ConcretePlugin):
     """
 
     @override
-    @override
     def __init__(
         self,
         name: str,
@@ -323,7 +320,6 @@ class ConcreteTransformPlugin(ConcretePlugin):
     """
 
     @override
-    @override
     def __init__(
         self,
         name: str,
@@ -382,7 +378,6 @@ class LoggerAdapter:
     """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
     @override
-    @override
     def __init__(self, logger: FlextLogger) -> None:
         """Initialize with FlextLogger instance."""
         self._logger = logger
@@ -423,7 +418,6 @@ class ConcretePluginContext:
     and logging infrastructure.
     """
 
-    @override
     @override
     def __init__(
         self,
@@ -476,7 +470,6 @@ class ConcretePluginRegistry(FlextPluginRegistry):
     Manages plugin registration, discovery, and lifecycle.
     """
 
-    @override
     @override
     def __init__(self: object) -> None:
         """Initialize plugin registry."""
@@ -546,7 +539,6 @@ class ConcretePluginLoader(FlextPluginLoader):
     Handles dynamic plugin loading and discovery.
     """
 
-    @override
     @override
     def __init__(self, registry: FlextPluginRegistry | None = None) -> None:
         """Initialize plugin loader.

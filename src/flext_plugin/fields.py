@@ -16,7 +16,7 @@ from typing import Annotated
 from pydantic import Field
 
 from flext_core import FlextTypes
-from flext_plugin.flext_plugin_constants import FlextPluginConstants
+from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 
 # Plugin Name Fields
@@ -24,9 +24,9 @@ PluginNameField = Annotated[
     str,
     Field(
         ...,
-        min_length=FlextPluginConstants.MIN_PLUGIN_NAME_LENGTH,
-        max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
-        pattern=FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN,
+        min_length=FlextPluginConstants.Discovery.MIN_PLUGIN_NAME_LENGTH,
+        max_length=FlextPluginConstants.Discovery.MAX_PLUGIN_NAME_LENGTH,
+        pattern=FlextPluginConstants.Discovery.VALID_PLUGIN_NAME_PATTERN,
         description="Plugin name following naming conventions",
         examples=["my_plugin", "data-extractor", "auth_service"],
     ),
@@ -37,8 +37,8 @@ OptionalPluginNameField = Annotated[
     Field(
         default="",
         min_length=0,
-        max_length=FlextPluginConstants.MAX_PLUGIN_NAME_LENGTH,
-        pattern=rf"^$|{FlextPluginConstants.VALID_PLUGIN_NAME_PATTERN}",
+        max_length=FlextPluginConstants.Discovery.MAX_PLUGIN_NAME_LENGTH,
+        pattern=rf"^$|{FlextPluginConstants.Discovery.VALID_PLUGIN_NAME_PATTERN}",
         description="Optional plugin name following naming conventions",
     ),
 ]
@@ -174,7 +174,7 @@ PluginSuccessField = Annotated[
 PluginTimeoutField = Annotated[
     int,
     Field(
-        default=FlextPluginConstants.DEFAULT_PLUGIN_TIMEOUT_SECONDS,
+        default=FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS,
         ge=1,
         le=3600,
         description="Timeout in seconds (1-3600)",

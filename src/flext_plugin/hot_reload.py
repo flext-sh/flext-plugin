@@ -68,7 +68,6 @@ class WatchEvent:
     """File system watch event data."""
 
     @override
-    @override
     def __init__(
         self,
         event_type: WatchEventType,
@@ -91,7 +90,6 @@ class WatchEvent:
 class PluginState:
     """Plugin state data model for hot-reload operations."""
 
-    @override
     @override
     def __init__(
         self,
@@ -121,7 +119,6 @@ class PluginState:
 class ReloadEvent:
     """Plugin reload event data."""
 
-    @override
     @override
     def __init__(
         self,
@@ -153,7 +150,6 @@ class PluginWatcher:
     """File system watcher for plugin directories."""
 
     @override
-    @override
     def __init__(self, watch_directories: list[Path]) -> None:
         """Initialize plugin watcher.
 
@@ -184,7 +180,6 @@ class PluginWatcher:
 class StateManager:
     """Plugin state management system."""
 
-    @override
     @override
     def __init__(self, state_directory: Path) -> None:
         """Initialize state manager.
@@ -252,7 +247,6 @@ class RollbackManager:
     """Plugin rollback management system."""
 
     @override
-    @override
     def __init__(self, state_manager: StateManager) -> None:
         """Initialize rollback manager.
 
@@ -301,7 +295,6 @@ class PluginFileHandler(FileSystemEventHandler):
     files and non-plugin changes.
     """
 
-    @override
     @override
     def __init__(self, reload_callback: Callable[[Path], None]) -> None:
         """Initialize file system event handler with reload callback.

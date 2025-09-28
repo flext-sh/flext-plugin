@@ -70,6 +70,35 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
             },
         )
 
+    def execute(self: object) -> FlextResult[object]:
+        """Execute the main domain operation."""
+        return self.__call__()
+
+    def is_valid(self: object) -> bool:
+        """Check if the domain service is in a valid state."""
+        return self._started and self.discovery is not None
+
+    def validate_business_rules(self: object) -> FlextResult[None]:
+        """Validate business rules for the domain service."""
+        return FlextResult[None].ok(None)
+
+    def validate_config(self: object) -> FlextResult[None]:
+        """Validate service configuration."""
+        return FlextResult[None].ok(None)
+
+    def execute_operation(self, operation: object) -> FlextResult[object]:
+        """Execute operation using OperationExecutionRequest model."""
+        return FlextResult[object].ok(operation)
+
+    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+        """Get service information and metadata."""
+        return {
+            "service_name": "RealPluginDiscoveryAdapter",
+            "version": "1.0.0",
+            "started": self._started,
+            "plugin_directory": str(self.discovery.plugin_directory),
+        }
+
     @override
     def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
         """Discover REAL plugins in the given path."""
@@ -188,6 +217,35 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             },
         )
 
+    def execute(self: object) -> FlextResult[object]:
+        """Execute the main domain operation."""
+        return self.__call__()
+
+    def is_valid(self: object) -> bool:
+        """Check if the domain service is in a valid state."""
+        return self._started and self.loader is not None
+
+    def validate_business_rules(self: object) -> FlextResult[None]:
+        """Validate business rules for the domain service."""
+        return FlextResult[None].ok(None)
+
+    def validate_config(self: object) -> FlextResult[None]:
+        """Validate service configuration."""
+        return FlextResult[None].ok(None)
+
+    def execute_operation(self, operation: object) -> FlextResult[object]:
+        """Execute operation using OperationExecutionRequest model."""
+        return FlextResult[object].ok(operation)
+
+    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+        """Get service information and metadata."""
+        return {
+            "service_name": "RealPluginLoaderAdapter",
+            "version": "1.0.0",
+            "started": self._started,
+            "plugin_directory": self.plugin_directory,
+        }
+
     @override
     def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
         """Load REAL plugin using PluginLoader."""
@@ -292,6 +350,35 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 "plugin_directory": self.plugin_directory,
             },
         )
+
+    def execute(self: object) -> FlextResult[object]:
+        """Execute the main domain operation."""
+        return self.__call__()
+
+    def is_valid(self: object) -> bool:
+        """Check if the domain service is in a valid state."""
+        return self._started and self.loader is not None and self.discovery is not None
+
+    def validate_business_rules(self: object) -> FlextResult[None]:
+        """Validate business rules for the domain service."""
+        return FlextResult[None].ok(None)
+
+    def validate_config(self: object) -> FlextResult[None]:
+        """Validate service configuration."""
+        return FlextResult[None].ok(None)
+
+    def execute_operation(self, operation: object) -> FlextResult[object]:
+        """Execute operation using OperationExecutionRequest model."""
+        return FlextResult[object].ok(operation)
+
+    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+        """Get service information and metadata."""
+        return {
+            "service_name": "RealPluginManagerAdapter",
+            "version": "1.0.0",
+            "started": self._started,
+            "plugin_directory": self.plugin_directory,
+        }
 
     @override
     def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:

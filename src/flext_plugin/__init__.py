@@ -39,10 +39,7 @@ from flext_plugin.entities import (
     FlextPluginRegistry,
     FlextPluginRegistryParams,
     Plugin,
-    PluginConfig,
-    PluginConfiguration,
     PluginExecution,
-    PluginInstance,
     PluginMetadata,
     PluginRegistry,
 )
@@ -96,7 +93,6 @@ from flext_plugin.flext_plugin_models import (
 # Platform - explicit imports
 from flext_plugin.flext_plugin_platform import (
     FlextPluginPlatform,
-    PluginPlatform,
 )
 
 # Services - explicit imports
@@ -148,9 +144,6 @@ from flext_plugin.ports import (
     FlextPluginLoaderPort,
     FlextPluginManagerPort,
     FlextPluginRegistryPort,
-    PluginDiscoveryPort,
-    PluginLoaderPort,
-    PluginManagerPort,
 )
 
 # Real adapters - explicit imports
@@ -166,12 +159,8 @@ from flext_plugin.simple_api import (
     create_flext_plugin_config,
     create_flext_plugin_metadata,
     create_flext_plugin_registry,
-    create_plugin,
-    create_plugin_config,
     create_plugin_config_from_dict,
     create_plugin_from_dict,
-    create_plugin_metadata,
-    create_plugin_registry,
 )
 
 # Simple plugin - explicit imports
@@ -184,6 +173,11 @@ from flext_plugin.simple_plugin import (
 
 # Utilities - explicit imports
 from flext_plugin.utilities import FlextPluginUtilities
+
+# Aliases for backward compatibility and convenience
+PluginConfig = FlextPluginConfig
+PluginConfiguration = FlextPluginConfig  # For backward compatibility
+PluginInstance = FlextPluginEntity
 
 __all__: FlextTypes.Core.StringList = [
     "CleanupablePlugin",
@@ -248,7 +242,6 @@ __all__: FlextTypes.Core.StringList = [
     "PluginConfig",
     "PluginConfiguration",
     "PluginDiscovery",
-    "PluginDiscoveryPort",
     "PluginDiscoveryService",
     "PluginExecution",
     "PluginExecutionContextModel",
@@ -256,11 +249,8 @@ __all__: FlextTypes.Core.StringList = [
     "PluginFileHandler",
     "PluginInstance",
     "PluginLoader",
-    "PluginLoaderPort",
-    "PluginManagerPort",
     "PluginManagerResultModel",
     "PluginMetadata",
-    "PluginPlatform",
     "PluginRegistry",
     "PluginService",
     "PluginState",
@@ -285,13 +275,9 @@ __all__: FlextTypes.Core.StringList = [
     "create_flext_plugin_metadata",
     "create_flext_plugin_registry",
     "create_hot_reload_manager",
-    "create_plugin",
-    "create_plugin_config",
     "create_plugin_config_from_dict",
     "create_plugin_from_dict",
     "create_plugin_manager",
-    "create_plugin_metadata",
-    "create_plugin_registry",
     "create_registry",
     "load_plugin",
 ]

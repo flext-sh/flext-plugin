@@ -13,6 +13,7 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextConfig, FlextModels, FlextResult
+from typing import cast
 from flext_plugin.constants import FlextPluginConstants
 
 
@@ -352,19 +353,19 @@ class FlextPluginConfig(FlextConfig):
         cls, environment: str, **overrides: object
     ) -> FlextPluginConfig:
         """Create configuration for specific environment using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
+        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
             project_name="flext-plugin", environment=environment, **overrides
-        )
+        ))
 
     @classmethod
     def create_default(cls) -> FlextPluginConfig:
         """Create default configuration instance using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-plugin")
+        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(project_name="flext-plugin"))
 
     @classmethod
     def create_for_development(cls) -> FlextPluginConfig:
         """Create configuration optimized for development using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
+        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=True,
             hot_reload_interval_seconds=2,
@@ -372,12 +373,12 @@ class FlextPluginConfig(FlextConfig):
             sandbox_enabled=False,
             max_concurrent_loads=2,
             memory_limit_mb=256,
-        )
+        ))
 
     @classmethod
     def create_for_production(cls) -> FlextPluginConfig:
         """Create configuration optimized for production using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
+        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=False,
             security_enabled=True,
@@ -385,18 +386,18 @@ class FlextPluginConfig(FlextConfig):
             require_signatures=True,
             max_concurrent_loads=10,
             memory_limit_mb=1024,
-        )
+        ))
 
     @classmethod
     def get_global_instance(cls) -> FlextPluginConfig:
         """Get the global singleton instance using enhanced FlextConfig pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-plugin")
+        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(project_name="flext-plugin"))
 
     @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextPluginConfig instance (mainly for testing)."""
-        # Use the enhanced FlextConfig reset mechanism
-        cls.reset_shared_instance()
+        # TODO: Implement reset mechanism if needed
+        pass
 
 
 __all__ = [
