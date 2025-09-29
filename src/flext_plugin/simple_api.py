@@ -22,7 +22,7 @@ from flext_plugin.entities import (
     FlextPluginMetadata,
     FlextPluginRegistry,
 )
-from flext_plugin.flext_plugin_models import PluginStatus
+from flext_plugin.models import PluginStatus
 
 
 def create_flext_plugin(

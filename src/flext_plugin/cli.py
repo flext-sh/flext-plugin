@@ -99,7 +99,9 @@ def main() -> None:
     """Main CLI entry point."""
     try:
         cli_service = FlextPluginCliService()
-        cli_result: FlextResult[FlextCliCommands] = cli_service.create_plugin_cli_interface()
+        cli_result: FlextResult[FlextCliCommands] = (
+            cli_service.create_plugin_cli_interface()
+        )
         if cli_result.is_success:
             cli = cli_result.unwrap()
             cli.execute()

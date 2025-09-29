@@ -22,7 +22,7 @@ from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextResult, FlextUtilities
-from flext_plugin.flext_plugin_models import FlextPluginModels
+from flext_plugin.models import FlextPluginModels
 
 
 class FlextPluginUtilities(FlextUtilities):

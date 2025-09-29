@@ -94,12 +94,12 @@ PluginUrlField = Annotated[
 
 # Configuration Fields
 PluginConfigField = Annotated[
-    dict["str", "PluginConfigData"],
+    dict[str, PluginConfigData],
     Field(default_factory=dict, description="Plugin-specific configuration dictionary"),
 ]
 
 PluginRuntimeDataField = Annotated[
-    dict["str", "PluginConfigData"],
+    dict[str, PluginConfigData],
     Field(default_factory=dict, description="Runtime-specific data dictionary"),
 ]
 
@@ -230,7 +230,7 @@ CompletedAtField = Annotated[
 
 # Data Fields
 InputDataField = Annotated[
-    dict["str", "PluginConfigData"],
+    dict[str, PluginConfigData],
     Field(default_factory=dict, description="Input data dictionary"),
 ]
 
@@ -240,12 +240,12 @@ OutputDataField = Annotated[
 ]
 
 ContextDataField = Annotated[
-    dict["str", "PluginConfigData"],
+    dict[str, PluginConfigData],
     Field(default_factory=dict, description="Context data dictionary"),
 ]
 
 DetailsDataField = Annotated[
-    dict["str", "PluginConfigData"],
+    dict[str, PluginConfigData],
     Field(default_factory=dict, description="Additional details dictionary"),
 ]
 

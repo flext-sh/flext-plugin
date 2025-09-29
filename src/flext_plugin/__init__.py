@@ -78,7 +78,7 @@ from flext_plugin.flext_plugin_handlers import (
 )
 
 # Models - explicit imports
-from flext_plugin.flext_plugin_models import (
+from flext_plugin.models import (
     FlextPluginConfigModel,
     FlextPluginMetadataModel,
     FlextPluginModel,
@@ -145,6 +145,9 @@ from flext_plugin.ports import (
     FlextPluginManagerPort,
     FlextPluginRegistryPort,
 )
+
+# Protocols - explicit imports
+from flext_plugin.protocols import FlextPluginProtocols
 
 # Real adapters - explicit imports
 from flext_plugin.real_adapters import (
@@ -227,6 +230,7 @@ __all__: FlextTypes.Core.StringList = [
     "FlextPluginModels",
     "FlextPluginPlatform",
     "FlextPluginPlatformError",
+    "FlextPluginProtocols",
     "FlextPluginRegistrationHandler",
     "FlextPluginRegistry",
     "FlextPluginRegistryError",

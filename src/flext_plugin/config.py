@@ -12,8 +12,7 @@ from typing import Self
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextModels, FlextResult
-from typing import cast
+from flext_core import FlextConfig, FlextConstants, FlextModels, FlextResult
 from flext_plugin.constants import FlextPluginConstants
 
 
@@ -58,7 +57,7 @@ class FlextPluginConfig(FlextConfig):
     )
 
     discovery_interval_seconds: int = Field(
-        default=300,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT * 10,
         gt=0,
         le=3600,
         description="Plugin discovery interval in seconds",
@@ -81,14 +80,14 @@ class FlextPluginConfig(FlextConfig):
     )
 
     max_load_retries: int = Field(
-        default=3,
+        default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
         ge=0,
         le=10,
         description="Maximum plugin load retries",
     )
 
     load_timeout_seconds: int = Field(
-        default=30,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT,
         gt=0,
         le=300,
         description="Plugin load timeout in seconds",
@@ -132,7 +131,7 @@ class FlextPluginConfig(FlextConfig):
     )
 
     hot_reload_interval_seconds: int = Field(
-        default=5,
+        default=FlextConstants.Container.DEFAULT_WORKERS,
         gt=0,
         le=3600,
         description="Hot reload check interval in seconds",
@@ -156,20 +155,20 @@ class FlextPluginConfig(FlextConfig):
 
     # Performance Configuration using FlextPluginConstants for defaults
     max_concurrent_loads: int = Field(
-        default=5,
+        default=FlextConstants.Container.DEFAULT_WORKERS,
         ge=1,
         le=50,
         description="Maximum concurrent plugin loads",
     )
 
     memory_limit_mb: int = Field(
-        default=512,
+        default=FlextConstants.Logging.MAX_FILE_SIZE // (1024 * 1024),
         gt=0,
         description="Memory limit per plugin in MB",
     )
 
     execution_timeout_seconds: int = Field(
-        default=60,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT * 2,
         gt=0,
         description="Plugin execution timeout in seconds",
     )
@@ -353,19 +352,23 @@ class FlextPluginConfig(FlextConfig):
         cls, environment: str, **overrides: object
     ) -> FlextPluginConfig:
         """Create configuration for specific environment using enhanced singleton pattern."""
-        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
+        instance = cls.get_or_create_shared_instance(
             project_name="flext-plugin", environment=environment, **overrides
-        ))
+        )
+        assert isinstance(instance, cls)
+        return instance
 
     @classmethod
     def create_default(cls) -> FlextPluginConfig:
         """Create default configuration instance using enhanced singleton pattern."""
-        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(project_name="flext-plugin"))
+        instance = cls.get_or_create_shared_instance(project_name="flext-plugin")
+        assert isinstance(instance, cls)
+        return instance
 
     @classmethod
     def create_for_development(cls) -> FlextPluginConfig:
         """Create configuration optimized for development using enhanced singleton pattern."""
-        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
+        instance = cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=True,
             hot_reload_interval_seconds=2,
@@ -373,12 +376,14 @@ class FlextPluginConfig(FlextConfig):
             sandbox_enabled=False,
             max_concurrent_loads=2,
             memory_limit_mb=256,
-        ))
+        )
+        assert isinstance(instance, cls)
+        return instance
 
     @classmethod
     def create_for_production(cls) -> FlextPluginConfig:
         """Create configuration optimized for production using enhanced singleton pattern."""
-        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(
+        instance = cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=False,
             security_enabled=True,
@@ -386,12 +391,16 @@ class FlextPluginConfig(FlextConfig):
             require_signatures=True,
             max_concurrent_loads=10,
             memory_limit_mb=1024,
-        ))
+        )
+        assert isinstance(instance, cls)
+        return instance
 
     @classmethod
     def get_global_instance(cls) -> FlextPluginConfig:
         """Get the global singleton instance using enhanced FlextConfig pattern."""
-        return cast(FlextPluginConfig, cls.get_or_create_shared_instance(project_name="flext-plugin"))
+        instance = cls.get_or_create_shared_instance(project_name="flext-plugin")
+        assert isinstance(instance, cls)
+        return instance
 
     @classmethod
     def reset_global_instance(cls) -> None:

@@ -22,7 +22,7 @@ from typing import override
 from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
-from flext_plugin.flext_plugin_models import PluginType
+from flext_plugin.models import PluginType
 from flext_plugin.loader import PluginLoader
 from flext_plugin.ports import (
     FlextPluginDiscoveryPort,

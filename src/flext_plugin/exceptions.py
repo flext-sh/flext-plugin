@@ -56,48 +56,48 @@ class FlextPluginExceptions(FlextExceptions):
             self.plugin_id = plugin_id
 
         @override
-        def __str__(self: object) -> str:
+        def __str__(self) -> str:
             """Format exception with error code prefix."""
             message = super().__str__()
             return f"[{self.error_code}] {message}"
 
-    class DiscoveryError(FlextExceptions):
+    class DiscoveryError(PluginBaseError):
         """Plugin discovery errors."""
 
-    class LoadingError(FlextExceptions):
+    class LoadingError(PluginBaseError):
         """Plugin loading errors."""
 
-    class ExecutionError(FlextExceptions):
+    class ExecutionError(PluginBaseError):
         """Plugin execution errors."""
 
-    class ConfigurationError(FlextExceptions):
+    class PluginConfigurationError(PluginBaseError):
         """Plugin configuration errors."""
 
-    class ValidationError(FlextExceptions):
+    class PluginValidationError(PluginBaseError):
         """Plugin validation errors."""
 
-    class LifecycleError(FlextExceptions):
+    class LifecycleError(PluginBaseError):
         """Plugin lifecycle management errors."""
 
-    class DependencyError(FlextExceptions):
+    class DependencyError(PluginBaseError):
         """Plugin dependency resolution errors."""
 
-    class RegistryError(FlextExceptions):
+    class RegistryError(PluginBaseError):
         """Plugin registry operation errors."""
 
-    class HotReloadError(FlextExceptions):
+    class HotReloadError(PluginBaseError):
         """Plugin hot reload errors."""
 
-    class SecurityError(FlextExceptions):
+    class SecurityError(PluginBaseError):
         """Plugin security validation errors."""
 
-    class CompatibilityError(FlextExceptions):
+    class CompatibilityError(PluginBaseError):
         """Plugin compatibility errors."""
 
-    class MetadataError(FlextExceptions):
+    class MetadataError(PluginBaseError):
         """Plugin metadata validation errors."""
 
-    class PlatformError(FlextExceptions):
+    class PlatformError(PluginBaseError):
         """Plugin platform integration errors."""
 
     # Domain-specific operation exceptions
@@ -110,7 +110,7 @@ class FlextPluginExceptions(FlextExceptions):
     class ExecutionOperationError(ExecutionError):
         """Plugin execution operation specific errors."""
 
-    class ConfigurationOperationError(ConfigurationError):
+    class ConfigurationOperationError(PluginConfigurationError):
         """Plugin configuration operation specific errors."""
 
     class LifecycleOperationError(LifecycleError):
@@ -129,11 +129,11 @@ FlextPluginLoadingError = FlextPluginExceptions.LoadingError
 FlextPluginLoadOperationError = FlextPluginExceptions.LoadOperationError
 FlextPluginExecutionError = FlextPluginExceptions.ExecutionError
 FlextPluginExecutionOperationError = FlextPluginExceptions.ExecutionOperationError
-FlextPluginConfigurationError = FlextPluginExceptions.ConfigurationError
+FlextPluginConfigurationError = FlextPluginExceptions.PluginConfigurationError
 FlextPluginConfigurationOperationError = (
     FlextPluginExceptions.ConfigurationOperationError
 )
-FlextPluginValidationError = FlextPluginExceptions.ValidationError
+FlextPluginValidationError = FlextPluginExceptions.PluginValidationError
 FlextPluginLifecycleError = FlextPluginExceptions.LifecycleError
 FlextPluginLifecycleOperationError = FlextPluginExceptions.LifecycleOperationError
 FlextPluginDependencyError = FlextPluginExceptions.DependencyError

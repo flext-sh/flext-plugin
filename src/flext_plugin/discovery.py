@@ -33,7 +33,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from flext_plugin.flext_plugin_models import PluginType
+from flext_plugin.models import PluginType
 
 
 class PluginDiscovery(FlextModels.Entity):
@@ -85,7 +85,7 @@ class PluginDiscovery(FlextModels.Entity):
         object.__setattr__(self, "discovered_plugins", {})
         object.__setattr__(self, "blacklisted_plugins", set())
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin discovery using FlextUtilities."""
         # Use FlextUtilities for validation - maintain original error message for test compatibility
         if not FlextUtilities.Validation.is_non_empty_string(self.plugin_directory):
@@ -134,7 +134,7 @@ class PluginDiscovery(FlextModels.Entity):
         """Manually register a plugin class."""
         if self._validate_plugin_class(plugin_class):
             # Create plugin instance directly from class
-            plugin_name: dict[str, object] = getattr(plugin_class, "METADATA", {}).get(
+            plugin_name = getattr(plugin_class, "METADATA", {}).get(
                 "name",
                 plugin_class.__name__,
             )
@@ -168,9 +168,7 @@ class PluginDiscovery(FlextModels.Entity):
             py_files = [f async for f in async_dir.glob("*.py")]
         else:
             # Fallback to thread-safe synchronous operations
-            if not await asyncio.get_event_loop().run_in_executor(
-                None, directory.exists
-            ):
+            if not directory.exists():
                 return
 
             def get_python_files(path: Path) -> list[Path]:
@@ -192,7 +190,7 @@ class PluginDiscovery(FlextModels.Entity):
                 try:
                     # Use FlextUtilities for safe JSON parsing
                     manifest_content = manifest_file.read_text(encoding="utf-8")
-                    metadata: dict[str, object] = json.loads(manifest_content)
+                    metadata: dict[str, object] = json.loads(str(manifest_content))
                     plugin_name_key = FlextUtilities.TextProcessor.safe_string(
                         str(metadata.get("name", plugin_name)),
                     )
@@ -210,14 +208,8 @@ class PluginDiscovery(FlextModels.Entity):
                     "name": FlextUtilities.TextProcessor.safe_string(plugin_name),
                     "path": FlextUtilities.TextProcessor.safe_string(str(py_file)),
                     "file_name": FlextUtilities.TextProcessor.safe_string(py_file.name),
-                    "size": FlextUtilities.Conversions.safe_int(
-                        file_stat.st_size,
-                        default=0,
-                    ),
-                    "modified": FlextUtilities.Conversions.safe_float(
-                        file_stat.st_mtime,
-                        default=0.0,
-                    ),
+                    "size": int(getattr(file_stat, "st_size", 0)),
+                    "modified": float(getattr(file_stat, "st_mtime", 0.0)),
                     "module_name": FlextUtilities.TextProcessor.safe_string(
                         plugin_name,
                     ),
