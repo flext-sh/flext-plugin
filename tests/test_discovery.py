@@ -16,8 +16,8 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
-
 from flext_core import FlextTypes
+
 from flext_plugin import PluginDiscovery, PluginType
 
 
@@ -97,7 +97,9 @@ class TestPluginDiscoveryReal:
 
         assert not result.success
         assert result.error is not None
-        assert "Plugin directory is required" in result.error
+        assert (
+            result.error is not None and "Plugin directory is required" in result.error
+        )
 
     def test_add_plugin_directory(self, temp_dir: Path) -> None:
         """Test adding a new plugin directory."""

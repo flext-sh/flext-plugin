@@ -9,8 +9,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import cast, override
 
-from pydantic import Field, field_validator
-
 from flext_core import (
     FlextLogger,
     FlextModels,
@@ -18,6 +16,8 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+from pydantic import Field, field_validator
+
 from flext_plugin.models import PluginStatus, PluginType
 from flext_plugin.typings import FlextPluginTypes
 

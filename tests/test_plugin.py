@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import override
 
 import pytest
-
 from flext_core import FlextResult
+
 from flext_plugin import (
     Plugin,
     PluginRegistry,
@@ -66,8 +66,8 @@ class TestPlugin:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin activation failed" in result.error
-        assert "Activation failed" in result.error
+        assert result.error is not None and "Plugin activation failed" in result.error
+        assert result.error is not None and "Activation failed" in result.error
 
     def test_plugin_deactivation(self, plugin: Plugin) -> None:
         """Test successful plugin deactivation."""
@@ -105,8 +105,8 @@ class TestPlugin:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin deactivation failed" in result.error
-        assert "Deactivation failed" in result.error
+        assert result.error is not None and "Plugin deactivation failed" in result.error
+        assert result.error is not None and "Deactivation failed" in result.error
 
     def test_plugin_lifecycle(self, plugin: Plugin) -> None:
         """Test complete plugin lifecycle: inactive -> active -> inactive."""
@@ -197,7 +197,7 @@ class TestPluginRegistry:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Registration failed" in result.error
+        assert result.error is not None and "Registration failed" in result.error
 
     def test_unregister_plugin_success(
         self,
@@ -251,8 +251,10 @@ class TestPluginRegistry:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin unregistration failed" in result.error
-        assert "Unregistration failed" in result.error
+        assert (
+            result.error is not None and "Plugin unregistration failed" in result.error
+        )
+        assert result.error is not None and "Unregistration failed" in result.error
 
     def test_plugin_retrieval_success(
         self, registry: PluginRegistry, plugin: Plugin
@@ -434,8 +436,8 @@ class CustomPlugin(Plugin):
 
         assert result.is_failure
         assert result.error is not None
-        assert "Module import failed" in result.error
-        assert "No module named" in result.error
+        assert result.error is not None and "Module import failed" in result.error
+        assert result.error is not None and "No module named" in result.error
 
     def test_load_plugin_attribute_error_with_real_missing_class(self) -> None:
         """Test plugin loading with missing class from REAL module."""
@@ -462,7 +464,10 @@ class SomeOtherClass:
 
                 assert result.is_failure
                 assert result.error is not None
-                assert "Plugin class not found" in result.error
+                assert (
+                    result.error is not None
+                    and "Plugin class not found" in result.error
+                )
             finally:
                 # Clean up module from cache
                 if "test_no_plugin_class" in sys.modules:
@@ -496,8 +501,13 @@ class Plugin(Plugin):
 
                 assert result.is_failure
                 assert result.error is not None
-                assert "Plugin loading failed" in result.error
-                assert "Plugin instantiation failed" in result.error
+                assert (
+                    result.error is not None and "Plugin loading failed" in result.error
+                )
+                assert (
+                    result.error is not None
+                    and "Plugin instantiation failed" in result.error
+                )
             finally:
                 # Clean up module from cache
                 if "test_failing_plugin" in sys.modules:
@@ -531,8 +541,13 @@ class Plugin(Plugin):
 
                 assert result.is_failure
                 assert result.error is not None
-                assert "Plugin loading failed" in result.error
-                assert "Invalid plugin configuration" in result.error
+                assert (
+                    result.error is not None and "Plugin loading failed" in result.error
+                )
+                assert (
+                    result.error is not None
+                    and "Invalid plugin configuration" in result.error
+                )
             finally:
                 # Clean up module from cache
                 if "test_invalid_plugin" in sys.modules:
@@ -550,7 +565,6 @@ class Plugin(Plugin):
 """REAL test plugin module with type error."""
 
 from flext_core import FlextResult
-from typing import Type
 
 class Plugin(Plugin):
     """REAL plugin implementation with type error."""
@@ -568,8 +582,12 @@ class Plugin(Plugin):
 
                 assert result.is_failure
                 assert result.error is not None
-                assert "Plugin loading failed" in result.error
-                assert "Type error in plugin" in result.error
+                assert (
+                    result.error is not None and "Plugin loading failed" in result.error
+                )
+                assert (
+                    result.error is not None and "Type error in plugin" in result.error
+                )
             finally:
                 # Clean up module from cache
                 if "test_type_error_plugin" in sys.modules:

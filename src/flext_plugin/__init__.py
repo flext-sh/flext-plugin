@@ -6,29 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import Final
+
 from flext_core import FlextTypes
-from flext_plugin.__version__ import __version__, __version_info__
 
-# Configuration - explicit imports (ACTUAL application configuration)
+from flext_plugin.version import VERSION, FlextPluginVersion
+
+PROJECT_VERSION: Final[FlextPluginVersion] = VERSION
+
+__version__: str = VERSION.version
+__version_info__: tuple[int | str, ...] = VERSION.version_info
+
 from flext_plugin.config import FlextPluginConfig
-
-# Constants - explicit imports
 from flext_plugin.constants import FlextPluginConstants
-
-# CLI functionality - explicit imports
-# Temporarily disabled due to flext-cli dependency issues
-# from flext_plugin.cli import (
-#     FlextPluginCliService,
-#     PluginCLI,
-#     install_plugin_legacy,
-#     main,
-# )
-# Discovery - explicit imports
-from flext_plugin.discovery import (
-    PluginDiscovery,
-)
-
-# Core entities - explicit imports
+from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.entities import (
     FlextPlugin,
     FlextPluginConfigParams,
@@ -43,8 +34,6 @@ from flext_plugin.entities import (
     PluginMetadata,
     PluginRegistry,
 )
-
-# Exceptions - explicit imports
 from flext_plugin.exceptions import (
     FlextPluginCompatibilityError,
     FlextPluginConfigurationError,
@@ -69,33 +58,14 @@ from flext_plugin.exceptions import (
     FlextPluginSecurityError,
     FlextPluginValidationError,
 )
-
-# Handlers - explicit imports
 from flext_plugin.flext_plugin_handlers import (
     FlextPluginEventHandler,
     FlextPluginHandler,
     FlextPluginRegistrationHandler,
 )
-
-# Models - explicit imports
-from flext_plugin.models import (
-    FlextPluginConfigModel,
-    FlextPluginMetadataModel,
-    FlextPluginModel,
-    FlextPluginModels,
-    PluginExecutionContextModel,
-    PluginExecutionResultModel,
-    PluginManagerResultModel,
-    PluginStatus,
-    PluginType,
-)
-
-# Platform - explicit imports
 from flext_plugin.flext_plugin_platform import (
     FlextPluginPlatform,
 )
-
-# Services - explicit imports
 from flext_plugin.flext_plugin_services import (
     FlextPluginDiscoveryService,
     FlextPluginService,
@@ -104,8 +74,6 @@ from flext_plugin.flext_plugin_services import (
     PluginService,
     create_plugin_manager,
 )
-
-# Hot reload - explicit imports
 from flext_plugin.hot_reload import (
     HotReloadManager,
     PluginFileHandler,
@@ -119,8 +87,6 @@ from flext_plugin.hot_reload import (
     WatchEventType,
     create_hot_reload_manager,
 )
-
-# Implementations - explicit imports
 from flext_plugin.implementations import (
     ConcreteDataPlugin,
     ConcreteExecutablePlugin,
@@ -130,14 +96,21 @@ from flext_plugin.implementations import (
     ConcretePluginRegistry,
     ConcreteTransformPlugin,
 )
-
-# Loader - explicit imports
 from flext_plugin.loader import (
     CleanupablePlugin,
     PluginLoader,
 )
-
-# Ports - explicit imports
+from flext_plugin.models import (
+    FlextPluginConfigModel,
+    FlextPluginMetadataModel,
+    FlextPluginModel,
+    FlextPluginModels,
+    PluginExecutionContextModel,
+    PluginExecutionResultModel,
+    PluginManagerResultModel,
+    PluginStatus,
+    PluginType,
+)
 from flext_plugin.ports import (
     FlextPluginDiscoveryPort,
     FlextPluginHotReloadPort,
@@ -145,18 +118,12 @@ from flext_plugin.ports import (
     FlextPluginManagerPort,
     FlextPluginRegistryPort,
 )
-
-# Protocols - explicit imports
 from flext_plugin.protocols import FlextPluginProtocols
-
-# Real adapters - explicit imports
 from flext_plugin.real_adapters import (
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
-
-# Simple API - explicit imports
 from flext_plugin.simple_api import (
     create_flext_plugin,
     create_flext_plugin_config,
@@ -165,22 +132,20 @@ from flext_plugin.simple_api import (
     create_plugin_config_from_dict,
     create_plugin_from_dict,
 )
-
-# Simple plugin - explicit imports
 from flext_plugin.simple_plugin import (
     Plugin as SimplePlugin,
+)
+from flext_plugin.simple_plugin import (
     PluginRegistry as SimplePluginRegistry,
+)
+from flext_plugin.simple_plugin import (
     create_registry,
     load_plugin,
 )
-
-# Utilities - explicit imports
 from flext_plugin.utilities import FlextPluginUtilities
 
-# Aliases for backward compatibility and convenience
 PluginConfig = FlextPluginConfig
-PluginConfiguration = FlextPluginConfig  # For backward compatibility
-PluginInstance = FlextPluginEntity
+PluginConfiguration = FlextPluginConfigPluginInstance = FlextPluginEntity
 
 __all__: FlextTypes.Core.StringList = [
     "CleanupablePlugin",

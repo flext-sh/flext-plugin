@@ -8,8 +8,9 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import Any, Self
+from typing import Self
 
+from flext_core import FlextModels
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -21,9 +22,8 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import FlextModels
-from flext_plugin.typings import FlextPluginTypes
 from flext_plugin.type_definitions import PluginConfigData
+from flext_plugin.typings import FlextPluginTypes
 
 # Constants for plugin performance thresholds and validation
 PERCENTAGE_MAX: int = 100
@@ -66,7 +66,7 @@ class FlextPluginModels(FlextModels):
     # Plugin performance metrics and analysis capabilities
     @computed_field
     @property
-    def plugin_performance_analysis(self) -> dict[str, Any]:
+    def plugin_performance_analysis(self) -> dict[str, object]:
         """Computed field for comprehensive plugin performance analysis."""
         return {
             "performance_thresholds": {
@@ -96,7 +96,7 @@ class FlextPluginModels(FlextModels):
             ]
         )
 
-    def plugin_system_summary(self) -> dict[str, Any]:
+    def plugin_system_summary(self) -> dict[str, object]:
         """Generate comprehensive plugin system summary."""
         return {
             "system_overview": {
@@ -137,7 +137,7 @@ class FlextPluginModels(FlextModels):
 
     def serialize_with_plugin_metadata(
         self, info: SerializationInfo | None = None
-    ) -> dict[str, Any]:
+    ) -> dict[str, object]:
         """Enhanced serialization with plugin metadata."""
         base_data = self.model_dump(mode="json")
         return {
@@ -307,7 +307,7 @@ class FlextPluginModels(FlextModels):
         @field_serializer("dependencies", when_used="json")
         def serialize_dependencies_with_validation(
             self, value: list[str]
-        ) -> dict[str, Any]:
+        ) -> dict[str, object]:
             """Field serializer for dependencies with validation metadata."""
             return {
                 "dependencies": value,
@@ -340,7 +340,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def config_summary(self) -> dict[str, Any]:
+        def config_summary(self) -> dict[str, object]:
             """Computed field providing comprehensive configuration summary."""
             return {
                 "operational_config": {
@@ -458,7 +458,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def security_assessment(self) -> dict[str, Any]:
+        def security_assessment(self) -> dict[str, object]:
             """Comprehensive security assessment."""
             score = self.security_score
             return {
@@ -546,7 +546,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def monitoring_coverage(self) -> dict[str, Any]:
+        def monitoring_coverage(self) -> dict[str, object]:
             """Compute monitoring coverage analysis."""
             enabled_features = sum(
                 [

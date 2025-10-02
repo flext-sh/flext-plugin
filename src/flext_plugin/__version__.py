@@ -1,44 +1,17 @@
-"""Version management for FLEXT Plugin System.
-
-SPDX-License-Identifier: MIT
-
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Version metadata for flext plugin."""
 
 from __future__ import annotations
 
-from importlib.metadata import PackageNotFoundError, version as _pkg_version
+from typing import Final, cast
 
-from flext_core import FlextTypes
+from flext_core.metadata import build_metadata_exports
 
-try:
-    __version__: str = _pkg_version("flext-plugin")
-except PackageNotFoundError:
-    # Fallback for local development without installed distribution metadata
-    __version__ = "0.0.0-dev"
+_metadata = build_metadata_exports(__file__)
 
-# Version metadata for programmatic access
-VERSION_MAJOR: int = 0
-VERSION_MINOR: int = 9
-VERSION_PATCH: int = 0
+__version__: Final[str] = cast(str, _metadata["__version__"])
+__version_info__: Final[tuple[int | str, ...]] = cast(
+    tuple[int | str, ...],
+    _metadata["__version_info__"],
+)
 
-# Release information
-RELEASE_NAME: str = "Plugin Foundation"
-RELEASE_DATE: str = "2025-08-25"
-BUILD_TYPE: str = "stable"
-
-# Version info tuple for compatibility
-__version_info__ = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
-
-__all__: FlextTypes.Core.StringList = [
-    "BUILD_TYPE",
-    "RELEASE_DATE",
-    "RELEASE_NAME",
-    "VERSION_MAJOR",
-    "VERSION_MINOR",
-    "VERSION_PATCH",
-    "__version__",
-    "__version_info__",
-]
+__all__ = ["__version__", "__version_info__"]

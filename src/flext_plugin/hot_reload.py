@@ -17,7 +17,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, Protocol, cast, override
+from typing import Callable, ClassVar, Protocol, cast, override
 
 try:
     import anyio
@@ -25,10 +25,6 @@ try:
     PATH_AVAILABLE = True
 except ImportError:
     PATH_AVAILABLE = False
-
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
-from watchdog.observers.api import BaseObserver
 
 from flext_core import (
     FlextExceptions,
@@ -38,6 +34,10 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+from watchdog.events import FileSystemEvent, FileSystemEventHandler
+from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
+
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.loader import PluginLoader
 

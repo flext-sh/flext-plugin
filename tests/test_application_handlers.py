@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import override
 
 import pytest
-
 from flext_core import FlextResult, FlextTypes
+
 from flext_plugin import (
     FlextPluginEntity,
     FlextPluginEventHandler,
@@ -134,7 +134,9 @@ class TestFlextPluginRegistrationHandler:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin service not available" in result.error
+        assert (
+            result.error is not None and "Plugin service not available" in result.error
+        )
 
     def test_register_plugin_missing_name(self) -> None:
         """Test plugin registration with missing name (should fail at Pydantic level)."""
@@ -197,7 +199,9 @@ class TestFlextPluginRegistrationHandler:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin service not available" in result.error
+        assert (
+            result.error is not None and "Plugin service not available" in result.error
+        )
 
     def test_unregister_plugin_missing_name(self) -> None:
         """Test plugin unregistration with missing name (should fail)."""
@@ -208,7 +212,7 @@ class TestFlextPluginRegistrationHandler:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Plugin name is required" in result.error
+        assert result.error is not None and "Plugin name is required" in result.error
 
     def test_unregister_valid_plugin_with_real_service(self) -> None:
         """Test plugin unregistration with valid name and real service."""
@@ -284,7 +288,7 @@ class TestFlextPluginEventHandler:
         # Should fail for empty name
         assert result.is_failure
         assert result.error is not None
-        assert "plugin name is required" in result.error
+        assert result.error is not None and "plugin name is required" in result.error
 
 
 class TestHandlerIntegration:

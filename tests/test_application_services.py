@@ -13,14 +13,14 @@ import fnmatch
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Protocol, cast
 
 import pytest
 
 # Import anyio.path for file operations
 from anyio import Path as AnyioPath
-
 from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
+
 from flext_plugin import (
     FlextPluginConfig,
     FlextPluginDiscoveryService,
@@ -48,13 +48,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> dict[str, Any]: ...
+    def initialize(self) -> dict[str, object]: ...
 
-    def execute(self, data: dict[str, Any] | None = None) -> dict[str, Any]: ...
+    def execute(self, data: dict[str, object] | None = None) -> dict[str, object]: ...
 
-    def cleanup(self) -> dict[str, Any]: ...
+    def cleanup(self) -> dict[str, object]: ...
 
-    def health_check(self) -> dict[str, Any]: ...
+    def health_check(self) -> dict[str, object]: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
