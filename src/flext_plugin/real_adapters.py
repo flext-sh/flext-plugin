@@ -14,7 +14,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import tempfile
 from pathlib import Path
 from typing import override
@@ -275,13 +274,13 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             if not plugin_name:
                 return FlextResult[bool].fail("Plugin name is required")
 
-            # Use real plugin loader unload - run async in sync context
+            # Use real plugin loader unload - run in sync context
             try:
                 # Try to get existing loop
-                loop = asyncio.get_event_loop()
+                loop = get_event_loop()
                 if loop.is_running():
                     # Create task if loop is running and store reference
-                    task = asyncio.create_task(self.loader.unload_plugin(plugin_name))
+                    task = create_task(self.loader.unload_plugin(plugin_name))
                     # Task reference stored to avoid RUF006 warning
                     task.add_done_callback(lambda _: None)
                 else:
@@ -289,7 +288,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
                     loop.run_until_complete(self.loader.unload_plugin(plugin_name))
             except RuntimeError:
                 # No loop, create new one
-                asyncio.run(self.loader.unload_plugin(plugin_name))
+                run(self.loader.unload_plugin(plugin_name))
 
             return FlextResult[bool].ok(data=True)
 
@@ -422,11 +421,11 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             # Real uninstall - remove from loader registry
             loaded_plugins = self.loader.get_loaded_plugins()
             if plugin_name in loaded_plugins:
-                # Use asyncio for the async unload
+                # Use for the unload
                 try:
-                    loop = asyncio.get_event_loop()
+                    loop = get_event_loop()
                     if loop.is_running():
-                        task = asyncio.create_task(
+                        task = create_task(
                             self.loader.unload_plugin(plugin_name),
                         )
                         # Store task reference to prevent garbage collection
@@ -434,7 +433,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                     else:
                         loop.run_until_complete(self.loader.unload_plugin(plugin_name))
                 except RuntimeError:
-                    asyncio.run(self.loader.unload_plugin(plugin_name))
+                    run(self.loader.unload_plugin(plugin_name))
 
             return FlextResult[bool].ok(data=True)
 

@@ -39,7 +39,7 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plug
 
 **IMMEDIATE REQUIREMENTS (Phase 0):**
 
-- **Python 3.13+**: Modern Python with latest typing and async features
+- **Python 3.13+**: Modern Python with latest typing and features
 - **FLEXT Standards Compliance**: Single class per module, consolidated architecture
 - **Modern Python Libraries**: setuptools, importlib-metadata, packaging for standards-compliant plugin discovery
 - **Production Security**: Process/container isolation (NOT RestrictedPython)

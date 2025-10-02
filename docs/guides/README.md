@@ -77,15 +77,15 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    async def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> FlextResult[bool]:
         # Setup plugin resources
         return FlextResult[None].ok(data=True)
 
-    async def execute(self, data) -> FlextResult:
+    def execute(self, data) -> FlextResult:
         # Core plugin logic
         return FlextResult[None].ok({"processed": True})
 
-    async def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         # Cleanup resources
         return FlextResult[None].ok(data=True)
 ```
@@ -102,7 +102,7 @@ class MyPlugin(FlextPlugin):
 
 ### System Requirements
 
-- **Python 3.13+**: Modern Python with type hints and async support
+- **Python 3.13+**: Modern Python with type hints and support
 - **Poetry**: Dependency management and packaging
 - **Git**: Version control and repository management
 

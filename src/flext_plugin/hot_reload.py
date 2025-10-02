@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import importlib
 import sys
 from collections.abc import Callable
@@ -23,9 +22,9 @@ from typing import ClassVar, Protocol, cast, override
 try:
     import anyio
 
-    ASYNC_PATH_AVAILABLE = True
+    PATH_AVAILABLE = True
 except ImportError:
-    ASYNC_PATH_AVAILABLE = False
+    PATH_AVAILABLE = False
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -46,11 +45,11 @@ from flext_plugin.loader import PluginLoader
 class StatefulPlugin(Protocol):
     """Protocol for plugins that support state management."""
 
-    async def get_state(self) -> FlextTypes.Core.Dict:
+    def get_state(self) -> FlextTypes.Core.Dict:
         """Get plugin state as dictionary."""
         ...
 
-    async def cleanup(self) -> None:
+    def cleanup(self) -> None:
         """Cleanup plugin resources."""
         ...
 
@@ -195,7 +194,7 @@ class StateManager:
         # Create state directory if it doesn't exist
         self.state_directory.mkdir(parents=True, exist_ok=True)
 
-    async def save_plugin_state(self, plugin: StatefulPlugin | object) -> PluginState:
+    def save_plugin_state(self, plugin: StatefulPlugin | object) -> PluginState:
         """Save plugin state.
 
         Args:
@@ -207,7 +206,7 @@ class StateManager:
         """
         # Check if plugin has get_state method
         if hasattr(plugin, "get_state") and callable(plugin.get_state):
-            state_data: dict[str, object] = await plugin.get_state()
+            state_data: dict[str, object] = plugin.get_state()
         else:
             # Plugin doesn't have get_state method, return empty state
             state_data = {}
@@ -221,7 +220,7 @@ class StateManager:
             state_data=state_data,
         )
 
-    async def create_snapshot(self, _description: str = "") -> str:
+    def create_snapshot(self, _description: str = "") -> str:
         """Create a new snapshot.
 
         Args:
@@ -257,7 +256,7 @@ class RollbackManager:
         self.state_manager = state_manager
         self._rollback_history: dict[str, list[FlextTypes.Core.Dict]] = {}
 
-    async def create_rollback_point(
+    def create_rollback_point(
         self,
         _description: str = "",
         _plugin_id: str = "",
@@ -430,7 +429,7 @@ class HotReloadManager(FlextModels.Entity):
         setattr(self, "_rollback_manager", None)
         setattr(self, "_watcher", None)
 
-    async def start_watching(self) -> None:
+    def start_watching(self) -> None:
         """Start watching for plugin file changes.
 
         Raises:
@@ -445,44 +444,42 @@ class HotReloadManager(FlextModels.Entity):
         observer.schedule(handler, self.plugin_directory, recursive=True)
         observer.start()
         # Initial plugin scan and load
-        await self._initial_plugin_load()
+        self._initial_plugin_load()
 
-    async def stop_watching(self) -> None:
+    def stop_watching(self) -> None:
         """Stop watching for plugin file changes."""
         observer = self.observer
         if observer and observer.is_alive():
             observer.stop()
             observer.join()
 
-    async def _initial_plugin_load(self) -> None:
+    def _initial_plugin_load(self) -> None:
         """Perform initial plugin loading."""
         try:
             # Simplified plugin discovery - scan directory for .py files
             plugin_dir = Path(self.plugin_directory)
 
-            # Use async-safe path operations
-            if ASYNC_PATH_AVAILABLE:
-                async_dir = anyio.Path(plugin_dir)
-                if not await async_dir.exists():
+            # Use -safe path operations
+            if PATH_AVAILABLE:
+                dir = anyio.Path(plugin_dir)
+                if not dir.exists():
                     return
-                py_files = [f async for f in async_dir.glob("*.py")]
+                py_files = [f for f in dir.glob("*.py")]
             else:
                 # Fallback to thread-safe synchronous operations
-                if not await asyncio.get_event_loop().run_in_executor(
-                    None, plugin_dir.exists
-                ):
+                if not get_event_loop().run_in_executor(None, plugin_dir.exists):
                     return
 
                 def get_python_files(path: Path) -> list[Path]:
                     return [f for f in path.iterdir() if f.name.endswith(".py")]
 
-                py_files = await asyncio.get_event_loop().run_in_executor(
+                py_files = get_event_loop().run_in_executor(
                     None, get_python_files, plugin_dir
                 )
 
             for py_file in py_files:
                 if not py_file.name.startswith("__"):
-                    await self._load_plugin(py_file)
+                    self._load_plugin(py_file)
         except (OSError, RuntimeError, ValueError, KeyError) as e:
             # Log plugin discovery error and continue
             logger = FlextLogger(__name__)
@@ -491,27 +488,27 @@ class HotReloadManager(FlextModels.Entity):
 
     def _on_plugin_file_changed(self, file_path: Path) -> None:
         """Handle plugin file change events."""
-        task = asyncio.create_task(self._reload_plugin(file_path))
+        task = create_task(self._reload_plugin(file_path))
         task.add_done_callback(lambda _: None)  # Prevent dangling task warning
 
-    async def _reload_plugin(self, file_path: Path) -> None:
+    def _reload_plugin(self, file_path: Path) -> None:
         """Reload a specific plugin."""
         try:
             plugin_name = file_path.stem
             # Unload existing plugin
             if plugin_name in self.loaded_plugins:
-                await self._unload_plugin(plugin_name)
+                self._unload_plugin(plugin_name)
             # Reload plugin module
             if plugin_name in sys.modules:
                 importlib.reload(sys.modules[plugin_name])
             # Load updated plugin
-            await self._load_plugin(file_path)
+            self._load_plugin(file_path)
         except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
             # Log plugin reload error and continue hot-reload process
             logger = FlextLogger(__name__)
             logger.warning(f"Plugin reload failed for {file_path}: {e}")
 
-    async def _load_plugin(self, file_path: Path) -> None:
+    def _load_plugin(self, file_path: Path) -> None:
         """Load a plugin from file path."""
         try:
             plugin_name = file_path.stem
@@ -525,7 +522,7 @@ class HotReloadManager(FlextModels.Entity):
             logger = FlextLogger(__name__)
             logger.warning(f"Plugin loading failed for {file_path}: {e}")
 
-    async def _unload_plugin(self, plugin_name: str) -> None:
+    def _unload_plugin(self, plugin_name: str) -> None:
         """Unload a specific plugin."""
         try:
             loaded_plugins: dict[str, object] = getattr(self, "_loaded_plugins", {})
@@ -533,7 +530,7 @@ class HotReloadManager(FlextModels.Entity):
                 plugin = loaded_plugins[plugin_name]
                 # Call plugin cleanup if available:
                 if hasattr(plugin, "cleanup"):
-                    await plugin.cleanup()
+                    plugin.cleanup()
                 del loaded_plugins[plugin_name]
         except (RuntimeError, ValueError, AttributeError, KeyError) as e:
             # Log plugin unload error and continue hot-reload process
@@ -549,7 +546,7 @@ class HotReloadManager(FlextModels.Entity):
         """
         return dict(self.loaded_plugins)
 
-    async def reload_plugin(self, plugin_id: str) -> ReloadEvent:
+    def reload_plugin(self, plugin_id: str) -> ReloadEvent:
         """Reload a specific plugin by ID.
 
         Args:
@@ -562,9 +559,7 @@ class HotReloadManager(FlextModels.Entity):
             # Try to reload via plugin manager if available
             plugin_manager = getattr(self, "plugin_manager", None)
             if plugin_manager and hasattr(plugin_manager, "reload_plugin"):
-                result: FlextResult[object] = await plugin_manager.reload_plugin(
-                    plugin_id
-                )
+                result: FlextResult[object] = plugin_manager.reload_plugin(plugin_id)
                 return ReloadEvent(
                     event_type="plugin_reload",
                     plugin_id=plugin_id,
@@ -572,7 +567,7 @@ class HotReloadManager(FlextModels.Entity):
                 )
 
             # Fallback implementation: unload the plugin (cleanup and remove)
-            await self._unload_plugin(plugin_id)
+            self._unload_plugin(plugin_id)
 
             return ReloadEvent(
                 event_type="plugin_reload",
@@ -587,7 +582,7 @@ class HotReloadManager(FlextModels.Entity):
                 error=str(e),
             )
 
-    async def reload_all_plugins(self) -> list[ReloadEvent]:
+    def reload_all_plugins(self) -> list[ReloadEvent]:
         """Reload all currently loaded plugins.
 
         Returns:
@@ -601,12 +596,12 @@ class HotReloadManager(FlextModels.Entity):
         plugin_ids = list(loaded_plugins.keys())
 
         for plugin_id in plugin_ids:
-            reload_event = await self.reload_plugin(plugin_id)
+            reload_event = self.reload_plugin(plugin_id)
             reload_events.append(reload_event)
 
         return reload_events
 
-    async def _handle_plugin_change(self, watch_event: WatchEvent) -> None:
+    def _handle_plugin_change(self, watch_event: WatchEvent) -> None:
         """Handle plugin file change events.
 
         Args:
@@ -616,14 +611,14 @@ class HotReloadManager(FlextModels.Entity):
         # Extract plugin ID from path
         plugin_id = watch_event.path.stem
         # Trigger plugin reload
-        await self.reload_plugin(plugin_id)
+        self.reload_plugin(plugin_id)
 
 
 # Convenience function for quick setup
-async def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
+def create_hot_reload_manager(plugin_directory: str) -> HotReloadManager:
     """Create and start hot reload manager for plugin directory."""
     manager = HotReloadManager.create(plugin_directory=plugin_directory)
-    await manager.start_watching()
+    manager.start_watching()
     return manager
 
 

@@ -24,7 +24,6 @@ from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextResult
 from typing import Dict, Optional
 
-import asyncio
 import json
 from datetime import datetime
 
@@ -69,7 +68,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         }
         self._is_initialized = False
 
-    async def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> FlextResult[bool]:
         """
         Initialize plugin resources and validate configuration.
 
@@ -80,16 +79,16 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.info(f"Initializing plugin: {self.name}")
 
             # Validate configuration
-            validation_result = await self._validate_configuration()
+            validation_result = self._validate_configuration()
             if not validation_result.success():
                 return validation_result
 
             # Setup logging if enabled
             if self._get_config_value("enable_logging", True):
-                await self._setup_logging()
+                self._setup_logging()
 
             # Initialize processing resources
-            await self._setup_processing_resources()
+            self._setup_processing_resources()
 
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
@@ -101,7 +100,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return FlextResult[None].fail(error_msg)
 
-    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """
         Execute plugin processing logic on input data.
 
@@ -120,7 +119,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
                 return FlextResult[None].fail("Plugin not active")
 
             # Validate input data
-            validation_result = await self._validate_input_data(data)
+            validation_result = self._validate_input_data(data)
             if not validation_result.success():
                 return validation_result
 
@@ -129,7 +128,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._processing_stats["last_execution"] = start_time
 
             # Process data
-            processed_data = await self._process_data(data)
+            processed_data = self._process_data(data)
 
             # Update statistics
             self._processing_stats["total_processed"] += 1
@@ -156,7 +155,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return FlextResult[None].fail(error_msg)
 
-    async def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         """
         Cleanup plugin resources and save final state.
 
@@ -167,10 +166,10 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.info(f"Cleaning up plugin: {self.name}")
 
             # Save processing statistics
-            await self._save_statistics()
+            self._save_statistics()
 
             # Cleanup resources
-            await self._cleanup_processing_resources()
+            self._cleanup_processing_resources()
 
             # Reset state
             self._is_initialized = False
@@ -185,7 +184,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Plugin-specific helper methods
 
-    async def _validate_configuration(self) -> FlextResult[bool]:
+    def _validate_configuration(self) -> FlextResult[bool]:
         """Validate plugin configuration."""
         try:
             batch_size = self._get_config_value("batch_size", 100)
@@ -201,7 +200,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
-    async def _validate_input_data(self, data: Dict[str, object]) -> FlextResult[bool]:
+    def _validate_input_data(self, data: Dict[str, object]) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -215,7 +214,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Input validation failed: {e}")
 
-    async def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
+    def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -242,7 +241,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             "transformation_count": len(processed_payload)
         }
 
-    async def _setup_logging(self):
+    def _setup_logging(self):
         """Setup plugin-specific logging."""
         # Configure logger for this plugin
         plugin_logger = logging.getLogger(f"flext.plugin.{self.name}")
@@ -256,18 +255,18 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
         logger.info("Logging configured for plugin")
 
-    async def _setup_processing_resources(self):
+    def _setup_processing_resources(self):
         """Setup resources needed for processing."""
         # Initialize any processing resources
         # For example: database connections, file handles, etc.
         logger.info("Processing resources initialized")
 
-    async def _cleanup_processing_resources(self):
+    def _cleanup_processing_resources(self):
         """Cleanup processing resources."""
         # Cleanup any allocated resources
         logger.info("Processing resources cleaned up")
 
-    async def _save_statistics(self):
+    def _save_statistics(self):
         """Save processing statistics."""
         stats_file = f"{self.name}_stats.json"
         try:
@@ -302,7 +301,6 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
 ```python
 # usage_example.py
-import asyncio
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 
@@ -310,7 +308,7 @@ from flext_plugin import create_flext_plugin_platform
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def main():
+def main():
     """Demonstrate basic plugin usage."""
 
     # Create plugin with custom configuration
@@ -331,7 +329,7 @@ async def main():
     try:
         # Register plugin
         logger.info("Registering plugin...")
-        register_result = await platform.register_plugin(plugin)
+        register_result = platform.register_plugin(plugin)
         if not register_result.success():
             logger.error(f"Registration failed: {register_result.error}")
             return
@@ -340,7 +338,7 @@ async def main():
 
         # Activate plugin
         logger.info("Activating plugin...")
-        activate_result = await platform.activate_plugin(plugin.name)
+        activate_result = platform.activate_plugin(plugin.name)
         if not activate_result.success():
             logger.error(f"Activation failed: {activate_result.error}")
             return
@@ -362,7 +360,7 @@ async def main():
         }
 
         logger.info("Executing plugin with sample data...")
-        execution_result = await platform.execute_plugin(plugin.name, sample_data)
+        execution_result = platform.execute_plugin(plugin.name, sample_data)
 
         if execution_result.success():
             logger.info("Plugin execution successful!")
@@ -398,7 +396,7 @@ async def main():
                 }
             }
 
-            result = await platform.execute_plugin(plugin.name, test_data)
+            result = platform.execute_plugin(plugin.name, test_data)
             if result.success():
                 logger.info(f"Execution {i+1}: Success")
             else:
@@ -412,7 +410,7 @@ async def main():
 
         # Deactivate plugin
         logger.info("\nDeactivating plugin...")
-        deactivate_result = await platform.deactivate_plugin(plugin.name)
+        deactivate_result = platform.deactivate_plugin(plugin.name)
         if deactivate_result.success():
             logger.info("Plugin deactivated successfully")
         else:
@@ -424,10 +422,10 @@ async def main():
     finally:
         # Cleanup platform
         logger.info("Shutting down platform...")
-        await platform.shutdown()
+        platform.shutdown()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run(main())
 ```
 
 ### 3. Comprehensive Tests
@@ -435,7 +433,6 @@ if __name__ == "__main__":
 ```python
 # test_basic_plugin.py
 import pytest
-import asyncio
 from unittest.mock import patch, mock_open
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
@@ -459,11 +456,11 @@ class TestBasicDataProcessorPlugin:
         return BasicDataProcessorPlugin(config=plugin_config)
 
     @pytest.fixture
-    async def platform(self):
+    def platform(self):
         """Create test platform."""
         platform = create_flext_plugin_platform(config={"test_mode": True})
         yield platform
-        await platform.shutdown()
+        platform.shutdown()
 
     # Basic Plugin Tests
 
@@ -481,29 +478,29 @@ class TestBasicDataProcessorPlugin:
         assert plugin._get_config_value("enable_logging") is False
         assert plugin._get_config_value("nonexistent", "default") == "default"
 
-    async def test_plugin_initialization(self, plugin):
+    def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
-        result = await plugin.initialize()
+        result = plugin.initialize()
         assert result.success()
         assert plugin._is_initialized
 
-    async def test_initialization_failure(self):
+    def test_initialization_failure(self):
         """Test initialization failure with invalid config."""
         invalid_plugin = BasicDataProcessorPlugin(config={
             "batch_size": -1,  # Invalid
             "timeout_seconds": 10
         })
 
-        result = await invalid_plugin.initialize()
+        result = invalid_plugin.initialize()
         assert result.is_failure()
         assert "batch_size must be a positive integer" in result.error
 
     # Execution Tests
 
-    async def test_plugin_execution_success(self, plugin):
+    def test_plugin_execution_success(self, plugin):
         """Test successful plugin execution."""
         # Initialize and activate plugin
-        await plugin.initialize()
+        plugin.initialize()
         plugin.activate()
 
         # Test data
@@ -517,7 +514,7 @@ class TestBasicDataProcessorPlugin:
         }
 
         # Execute plugin
-        result = await plugin.execute(test_data)
+        result = plugin.execute(test_data)
 
         assert result.success()
         assert "processed_data" in result.data
@@ -530,44 +527,44 @@ class TestBasicDataProcessorPlugin:
         assert processed_data["processed_payload"]["processed_scores_count"] == 3
         assert processed_data["transformation_count"] == 4
 
-    async def test_execution_without_initialization(self, plugin):
+    def test_execution_without_initialization(self, plugin):
         """Test execution failure when plugin not initialized."""
         plugin.activate()
 
         test_data = {"payload": {"test": "data"}}
-        result = await plugin.execute(test_data)
+        result = plugin.execute(test_data)
 
         assert result.is_failure()
         assert "Plugin not initialized" in result.error
 
-    async def test_execution_when_inactive(self, plugin):
+    def test_execution_when_inactive(self, plugin):
         """Test execution failure when plugin inactive."""
-        await plugin.initialize()
+        plugin.initialize()
         # Don't activate plugin
 
         test_data = {"payload": {"test": "data"}}
-        result = await plugin.execute(test_data)
+        result = plugin.execute(test_data)
 
         assert result.is_failure()
         assert "Plugin not active" in result.error
 
-    async def test_execution_invalid_input(self, plugin):
+    def test_execution_invalid_input(self, plugin):
         """Test execution with invalid input data."""
-        await plugin.initialize()
+        plugin.initialize()
         plugin.activate()
 
         # Test with invalid input (missing payload)
         invalid_data = {"invalid": "data"}
-        result = await plugin.execute(invalid_data)
+        result = plugin.execute(invalid_data)
 
         assert result.is_failure()
         assert "Input data must contain 'payload' key" in result.error
 
     # Statistics Tests
 
-    async def test_statistics_tracking(self, plugin):
+    def test_statistics_tracking(self, plugin):
         """Test statistics tracking during execution."""
-        await plugin.initialize()
+        plugin.initialize()
         plugin.activate()
 
         # Initial statistics
@@ -577,7 +574,7 @@ class TestBasicDataProcessorPlugin:
 
         # Execute plugin successfully
         test_data = {"payload": {"test": "data"}}
-        result = await plugin.execute(test_data)
+        result = plugin.execute(test_data)
         assert result.success()
 
         # Check updated statistics
@@ -604,11 +601,11 @@ class TestBasicDataProcessorPlugin:
 
     @patch("builtins.open", mock_open())
     @patch("json.dump")
-    async def test_plugin_cleanup(self, mock_json_dump, plugin):
+    def test_plugin_cleanup(self, mock_json_dump, plugin):
         """Test plugin cleanup."""
-        await plugin.initialize()
+        plugin.initialize()
 
-        result = await plugin.cleanup()
+        result = plugin.cleanup()
         assert result.success()
         assert not plugin._is_initialized
 
@@ -617,16 +614,16 @@ class TestBasicDataProcessorPlugin:
 
     # Integration Tests
 
-    async def test_full_plugin_lifecycle(self, platform):
+    def test_full_plugin_lifecycle(self, platform):
         """Test complete plugin lifecycle through platform."""
         plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
 
         # Register plugin
-        register_result = await platform.register_plugin(plugin)
+        register_result = platform.register_plugin(plugin)
         assert register_result.success()
 
         # Activate plugin
-        activate_result = await platform.activate_plugin(plugin.name)
+        activate_result = platform.activate_plugin(plugin.name)
         assert activate_result.success()
 
         # Execute plugin
@@ -637,7 +634,7 @@ class TestBasicDataProcessorPlugin:
             }
         }
 
-        execute_result = await platform.execute_plugin(plugin.name, test_data)
+        execute_result = platform.execute_plugin(plugin.name, test_data)
         assert execute_result.success()
 
         # Verify execution result
@@ -652,15 +649,15 @@ class TestBasicDataProcessorPlugin:
         assert processed["processed_count"] == 10
 
         # Deactivate plugin
-        deactivate_result = await platform.deactivate_plugin(plugin.name)
+        deactivate_result = platform.deactivate_plugin(plugin.name)
         assert deactivate_result.success()
 
-    async def test_multiple_executions(self, platform):
+    def test_multiple_executions(self, platform):
         """Test multiple plugin executions."""
         plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
 
-        await platform.register_plugin(plugin)
-        await platform.activate_plugin(plugin.name)
+        platform.register_plugin(plugin)
+        platform.activate_plugin(plugin.name)
 
         # Execute multiple times
         for i in range(5):
@@ -671,7 +668,7 @@ class TestBasicDataProcessorPlugin:
                 }
             }
 
-            result = await platform.execute_plugin(plugin.name, test_data)
+            result = platform.execute_plugin(plugin.name, test_data)
             assert result.success()
 
         # Check final statistics
@@ -681,14 +678,14 @@ class TestBasicDataProcessorPlugin:
 
     # Error Handling Tests
 
-    async def test_execution_error_handling(self, plugin):
+    def test_execution_error_handling(self, plugin):
         """Test error handling during execution."""
-        await plugin.initialize()
+        plugin.initialize()
         plugin.activate()
 
         # Force an error by providing non-dict data
         with patch.object(plugin, '_process_data', side_effect=Exception("Processing error")):
-            result = await plugin.execute({"payload": {"test": "data"}})
+            result = plugin.execute({"payload": {"test": "data"}})
 
             assert result.is_failure()
             assert "Processing error" in result.error
@@ -702,15 +699,15 @@ class TestPluginPerformance:
     """Performance tests for the plugin."""
 
     @pytest.fixture
-    async def initialized_plugin(self):
+    def initialized_plugin(self):
         """Create and initialize plugin for performance testing."""
         plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
-        await plugin.initialize()
+        plugin.initialize()
         plugin.activate()
         return plugin
 
-    @pytest.mark.asyncio
-    async def test_execution_performance(self, initialized_plugin):
+    @pytest.mark.io
+    def test_execution_performance(self, initialized_plugin):
         """Test plugin execution performance."""
         import time
 
@@ -724,7 +721,7 @@ class TestPluginPerformance:
 
         # Measure execution time
         start_time = time.time()
-        result = await initialized_plugin.execute(test_data)
+        result = initialized_plugin.execute(test_data)
         execution_time = time.time() - start_time
 
         assert result.success()

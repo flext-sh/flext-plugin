@@ -110,13 +110,13 @@
 ```python
 from importlib.metadata import entry_points
 
-async def _discover_entry_points(self) -> None:
+def _discover_entry_points(self) -> None:
     """Discover plugins using importlib.metadata entry points."""
     try:
         eps = entry_points(group='flext.plugins')
         for ep in eps:
             plugin_loader = ep.load()
-            plugin_metadata = await self._extract_plugin_metadata(plugin_loader)
+            plugin_metadata = self._extract_plugin_metadata(plugin_loader)
             self.discovered_plugins[ep.name] = plugin_metadata
     except Exception as e:
         logger.warning(f"Entry points discovery failed: {e}")

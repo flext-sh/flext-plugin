@@ -123,13 +123,13 @@ class PluginWorkflow:
     def __init__(self, service: FlextPluginService):
         self.service = service
 
-    async def deploy_plugin(self, plugin_config: dict) -> FlextResult[FlextPlugin]:
+    def deploy_plugin(self, plugin_config: dict) -> FlextResult[FlextPlugin]:
         """Complete plugin deployment workflow"""
         return (
-            await self.service.validate_plugin_config(plugin_config)
-            .flat_map_async(lambda config: self.service.create_plugin(config))
-            .flat_map_async(lambda plugin: self.service.register_plugin(plugin))
-            .flat_map_async(lambda plugin: self.service.activate_plugin(plugin.id))
+            self.service.validate_plugin_config(plugin_config)
+            .flat_map(lambda config: self.service.create_plugin(config))
+            .flat_map(lambda plugin: self.service.register_plugin(plugin))
+            .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
         )
 ```
 
@@ -262,14 +262,14 @@ from flext_plugin import (
 from flext_plugin.core.types import PluginStatus, PluginType
 
 # Use patterns directly
-async def deploy_plugin():
+def deploy_plugin():
     platform = create_flext_plugin_platform()
     plugin = create_flext_plugin(
         name="data-processor",
         version="0.9.9",
         plugin_type=PluginType.PROCESSOR
     )
-    return await platform.register_plugin(plugin)
+    return platform.register_plugin(plugin)
 ```
 
 #### **2. Specific Module Pattern (For Advanced Usage)**
@@ -462,19 +462,19 @@ from flext_core import FlextResult
 class PluginLifecycleManager:
     """Manages plugin lifecycle with state transitions."""
 
-    async def initialize_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
+    def initialize_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
         """Initialize plugin with resource allocation."""
         if plugin.status != PluginStatus.LOADED:
             return FlextResult[None].fail("Plugin must be loaded before initialization")
 
         try:
             # Allocate resources
-            await self._allocate_plugin_resources(plugin)
+            self._allocate_plugin_resources(plugin)
 
             # Run initialization logic
-            init_result = await plugin.initialize()
+            init_result = plugin.initialize()
             if init_result.is_failure:
-                await self._cleanup_plugin_resources(plugin)
+                self._cleanup_plugin_resources(plugin)
                 return init_result
 
             # Update status
@@ -484,56 +484,56 @@ class PluginLifecycleManager:
             return FlextResult[None].ok(data=True)
 
         except Exception as e:
-            await self._cleanup_plugin_resources(plugin)
+            self._cleanup_plugin_resources(plugin)
             return FlextResult[None].fail(f"Plugin initialization failed: {e}")
 
-    async def activate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
+    def activate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
         """Activate plugin with dependency checking."""
         if plugin.status not in [PluginStatus.INACTIVE, PluginStatus.LOADED]:
             return FlextResult[None].fail("Plugin not ready for activation")
 
         # Check dependencies
-        dependency_check = await self._validate_plugin_dependencies(plugin)
+        dependency_check = self._validate_plugin_dependencies(plugin)
         if dependency_check.is_failure:
             return dependency_check
 
         # Activate plugin
-        activation_result = await plugin.activate()
+        activation_result = plugin.activate()
         if activation_result.success:
             plugin.status = PluginStatus.ACTIVE
             self._emit_plugin_event("PluginActivated", plugin)
 
         return activation_result
 
-    async def hot_reload_plugin(self, plugin_id: str) -> FlextResult[FlextPlugin]:
+    def hot_reload_plugin(self, plugin_id: str) -> FlextResult[FlextPlugin]:
         """Hot reload plugin with state preservation."""
         try:
             # Get current plugin
-            current_plugin = await self._get_plugin(plugin_id)
+            current_plugin = self._get_plugin(plugin_id)
             if current_plugin.is_failure:
                 return current_plugin
 
             plugin = current_plugin.data
 
             # Save current state
-            state_backup = await self._backup_plugin_state(plugin)
+            state_backup = self._backup_plugin_state(plugin)
 
             # Deactivate and unload
-            await self.deactivate_plugin(plugin)
-            await self._unload_plugin(plugin)
+            self.deactivate_plugin(plugin)
+            self._unload_plugin(plugin)
 
             # Reload plugin
-            reload_result = await self._reload_plugin_from_file(plugin_id)
+            reload_result = self._reload_plugin_from_file(plugin_id)
             if reload_result.is_failure:
                 # Restore from backup
-                await self._restore_plugin_state(plugin, state_backup.data)
+                self._restore_plugin_state(plugin, state_backup.data)
                 return reload_result
 
             new_plugin = reload_result.data
 
             # Restore state and reactivate
-            await self._restore_plugin_state(new_plugin, state_backup.data)
-            await self.activate_plugin(new_plugin)
+            self._restore_plugin_state(new_plugin, state_backup.data)
+            self.activate_plugin(new_plugin)
 
             return FlextResult[None].ok(new_plugin)
 
@@ -555,7 +555,7 @@ class AdvancedPluginDiscovery:
         self.discovery_service = discovery_service
         self.core_discovery = PluginDiscovery()
 
-    async def discover_plugins_by_type(
+    def discover_plugins_by_type(
         self,
         plugin_type: PluginType,
         paths: List[str]
@@ -565,7 +565,7 @@ class AdvancedPluginDiscovery:
             all_plugins = []
 
             for path in paths:
-                result = await self.discovery_service.discover_plugins(path)
+                result = self.discovery_service.discover_plugins(path)
                 if result.success:
                     # Filter by type
                     typed_plugins = [
@@ -579,7 +579,7 @@ class AdvancedPluginDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Plugin discovery failed: {e}")
 
-    async def discover_singer_plugins(self, meltano_path: str) -> FlextResult[dict[str, List[FlextPlugin]]]:
+    def discover_singer_plugins(self, meltano_path: str) -> FlextResult[dict[str, List[FlextPlugin]]]:
         """Discover Singer plugins from Meltano project structure."""
         try:
             meltano_yml_path = Path(meltano_path) / "meltano.yml"
@@ -587,20 +587,20 @@ class AdvancedPluginDiscovery:
                 return FlextResult[None].fail("meltano.yml not found")
 
             # Parse meltano.yml
-            meltano_config = await self._parse_meltano_config(meltano_yml_path)
+            meltano_config = self._parse_meltano_config(meltano_yml_path)
 
             # Discover by Singer plugin type
             singer_plugins = {
-                "taps": await self.discover_plugins_by_type(PluginType.TAP, [meltano_path]),
-                "targets": await self.discover_plugins_by_type(PluginType.TARGET, [meltano_path]),
-                "transforms": await self.discover_plugins_by_type(PluginType.TRANSFORM, [meltano_path])
+                "taps": self.discover_plugins_by_type(PluginType.TAP, [meltano_path]),
+                "targets": self.discover_plugins_by_type(PluginType.TARGET, [meltano_path]),
+                "transforms": self.discover_plugins_by_type(PluginType.TRANSFORM, [meltano_path])
             }
 
             # Validate against meltano.yml
             validated_plugins = {}
             for category, plugins_result in singer_plugins.items():
                 if plugins_result.success:
-                    validated = await self._validate_against_meltano_config(
+                    validated = self._validate_against_meltano_config(
                         plugins_result.data,
                         meltano_config.get(category, [])
                     )
@@ -757,7 +757,7 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
     MAX_PLUGINS_PER_TYPE = 100
     RESERVED_PLUGIN_NAMES = ["system", "core", "REDACTED_LDAP_BIND_PASSWORD", "flext"]
 
-    async def register_plugin(self, plugin: FlextPlugin) -> FlextResult[FlextPlugin]:
+    def register_plugin(self, plugin: FlextPlugin) -> FlextResult[FlextPlugin]:
         """Register plugin with business rule validation."""
         try:
             # Validate plugin name
@@ -1031,7 +1031,7 @@ class PluginCache:
         """Decorator for caching plugin operation results."""
         def decorator(func: Callable[..., FlextResult[object]]):
             @wraps(func)
-            async def wrapper(*args, **kwargs) -> FlextResult[object]:
+            def wrapper(*args, **kwargs) -> FlextResult[object]:
                 # Generate cache key
                 cache_key = cache_key_func(*args, **kwargs)
 
@@ -1041,7 +1041,7 @@ class PluginCache:
                     return FlextResult[None].ok(cached_result)
 
                 # Execute function
-                result = await func(*args, **kwargs)
+                result = func(*args, **kwargs)
 
                 # Cache successful results
                 if result.success:
@@ -1103,7 +1103,7 @@ plugin_cache = PluginCache()
     cache_key_func=lambda plugin_id, config: f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}",
     invalidate_on_plugin_change=True
 )
-async def execute_plugin_cached(plugin_id: str, config: Dict[str, object]) -> FlextResult[object]:
+def execute_plugin_cached(plugin_id: str, config: Dict[str, object]) -> FlextResult[object]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass
@@ -1124,15 +1124,15 @@ from flext_core import FlextResult
 class PluginInterface(Protocol):
     """Protocol defining plugin interface with complete type safety."""
 
-    async def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> FlextResult[bool]:
         """Initialize plugin resources."""
         ...
 
-    async def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Execute plugin with typed input/output."""
         ...
 
-    async def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         ...
 
@@ -1140,14 +1140,14 @@ class PluginInterface(Protocol):
 T = TypeVar('T')
 U = TypeVar('U')
 
-async def process_plugin_data(
+def process_plugin_data(
     plugin: PluginInterface,
     data: Dict[str, object],
     transformer: Callable[[Dict[str, object]], T],
     validator: Callable[[T], FlextResult[U]]
 ) -> FlextResult[U]:
     """Process plugin data with complete type safety."""
-    execution_result = await plugin.execute(data)
+    execution_result = plugin.execute(data)
 
     if execution_result.is_failure:
         return FlextResult[None].fail(execution_result.error)
@@ -1169,7 +1169,7 @@ def execute_plugin(plugin, data):  # Missing types
 # ✅ Plugin-specific error handling with FlextResult
 from flext_plugin.core.types import PluginError
 
-async def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
+def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
     """Plugin operation with comprehensive error handling."""
     try:
         # Validate plugin state
@@ -1177,12 +1177,12 @@ async def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
             return FlextResult[None].fail("Plugin is not in valid state")
 
         # Check plugin dependencies
-        dependency_check = await validate_plugin_dependencies(plugin)
+        dependency_check = validate_plugin_dependencies(plugin)
         if dependency_check.is_failure:
             return dependency_check
 
         # Execute plugin operation
-        result = await plugin.execute({})
+        result = plugin.execute({})
 
         if result.is_failure:
             # Log plugin-specific error
@@ -1222,7 +1222,7 @@ class PluginExecutionError(PluginError):
     pass
 
 # ❌ Avoid raising exceptions in plugin business logic
-async def bad_plugin_operation(plugin: FlextPlugin) -> None:
+def bad_plugin_operation(plugin: FlextPlugin) -> None:
     if not plugin.is_valid():
         raise ValueError("Invalid plugin")  # Breaks railway pattern
 ```
@@ -1275,8 +1275,8 @@ class DataProcessorPlugin(FlextPlugin):
         ...     "formats": ["json"]
         ... })
         >>> plugin = DataProcessorPlugin(config=config)
-        >>> await plugin.initialize()
-        >>> result = await plugin.execute({"data": [...]})
+        >>> plugin.initialize()
+        >>> result = plugin.execute({"data": [...]})
         >>> if result.success:
         ...     print(f"Processed {len(result.data)} records")
 
@@ -1337,7 +1337,7 @@ class DataProcessorPlugin(FlextPlugin):
             **kwargs
         )
 
-    async def execute(
+    def execute(
         self,
         data: Dict[str, object]
     ) -> FlextResult[Dict[str, object]]:
@@ -1396,7 +1396,7 @@ class DataProcessorPlugin(FlextPlugin):
             ...     "format": "json",
             ...     "batch_mode": True
             ... }
-            >>> result = await plugin.execute(input_data)
+            >>> result = plugin.execute(input_data)
             >>> if result.success:
             ...     stats = result.data["statistics"]
             ...     print(f"Processed {stats['records_processed']} records")
@@ -1532,7 +1532,7 @@ class EcosystemPluginManager:
         self.platform = create_flext_plugin_platform()
         self.registry = self.platform.registry
 
-    async def register_ecosystem_plugins(self) -> FlextResult[List[str]]:
+    def register_ecosystem_plugins(self) -> FlextResult[List[str]]:
         """Register plugins from all ecosystem projects."""
         plugin_sources = [
             "./flext-tap-oracle/plugins",
@@ -1545,10 +1545,10 @@ class EcosystemPluginManager:
         registered_plugins = []
 
         for source_path in plugin_sources:
-            discovery_result = await self.platform.discover_plugins(source_path)
+            discovery_result = self.platform.discover_plugins(source_path)
             if discovery_result.success:
                 for plugin in discovery_result.data:
-                    register_result = await self.registry.register_plugin(plugin)
+                    register_result = self.registry.register_plugin(plugin)
                     if register_result.success:
                         registered_plugins.append(plugin.name)
 

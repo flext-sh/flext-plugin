@@ -17,7 +17,7 @@ Component Testing:
 Integration Testing:
     - REAL file system operations with temporary directories
     - Actual Python file creation, modification, and deletion
-    - REAL async operations and event handling
+    - REAL operations and event handling
     - Comprehensive error scenarios with genuine exceptions
 
 Quality Standards:
@@ -33,7 +33,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -225,35 +224,32 @@ class TestHotReloadManager:
         loaded_plugins["test"] = "value"
         assert "test" not in manager.get_loaded_plugins()
 
-    @pytest.mark.asyncio
-    async def test_start_watching_with_real_directory(self, temp_dir: Path) -> None:
+    def test_start_watching_with_real_directory(self, temp_dir: Path) -> None:
         """Test start_watching with REAL directory."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
         manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
 
         # Start watching should initialize observer
-        await manager.start_watching()
+        manager.start_watching()
 
         # Observer should be started (we can check if it's alive)
         assert manager.observer is not None
         assert hasattr(manager.observer, "is_alive")
 
-    @pytest.mark.asyncio
-    async def test_stop_watching_with_real_observer(self, temp_dir: Path) -> None:
+    def test_stop_watching_with_real_observer(self, temp_dir: Path) -> None:
         """Test stop_watching with REAL observer."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
         manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
 
         # Start then stop watching
-        await manager.start_watching()
-        await manager.stop_watching()
+        manager.start_watching()
+        manager.stop_watching()
 
         # Should complete without error
 
-    @pytest.mark.asyncio
-    async def test_initial_plugin_load_with_real_files(self, temp_dir: Path) -> None:
+    def test_initial_plugin_load_with_real_files(self, temp_dir: Path) -> None:
         """Test initial plugin load with REAL Python files."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -279,12 +275,11 @@ class TestPlugin:
         manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
 
         # Initial load should scan the directory and find the plugin
-        await manager._initial_plugin_load()
+        manager._initial_plugin_load()
 
         # Should complete without errors
 
-    @pytest.mark.asyncio
-    async def test_initial_plugin_load_nonexistent_directory(
+    def test_initial_plugin_load_nonexistent_directory(
         self,
         temp_dir: Path,
     ) -> None:
@@ -293,12 +288,9 @@ class TestPlugin:
         manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
 
         # Should not raise exception
-        await manager._initial_plugin_load()
+        manager._initial_plugin_load()
 
-    @pytest.mark.asyncio
-    async def test_reload_plugin_with_real_file_operations(
-        self, temp_dir: Path
-    ) -> None:
+    def test_reload_plugin_with_real_file_operations(self, temp_dir: Path) -> None:
         """Test reload plugin with REAL file operations."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -318,12 +310,11 @@ class ReloadTestPlugin:
 
         # Test reload operation
         test_path = Path("reload_test.py")
-        await manager._reload_plugin(test_path)
+        manager._reload_plugin(test_path)
 
         # Should complete without errors
 
-    @pytest.mark.asyncio
-    async def test_load_plugin_with_real_file(self, temp_dir: Path) -> None:
+    def test_load_plugin_with_real_file(self, temp_dir: Path) -> None:
         """Test load plugin with REAL file."""
         plugin_dir = temp_dir / "plugins"
         plugin_dir.mkdir()
@@ -345,12 +336,11 @@ class LoadTestPlugin:
 """)
 
         test_path = Path("load_test.py")
-        await manager._load_plugin(test_path)
+        manager._load_plugin(test_path)
 
         # Should complete without errors
 
-    @pytest.mark.asyncio
-    async def test_unload_plugin_with_real_plugin_object(self, temp_dir: Path) -> None:
+    def test_unload_plugin_with_real_plugin_object(self, temp_dir: Path) -> None:
         """Test unload plugin with REAL plugin object."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -362,21 +352,20 @@ class LoadTestPlugin:
                 self.name = "real-plugin"
                 self.cleaned_up = False
 
-            async def cleanup(self) -> None:
+            def cleanup(self) -> None:
                 self.cleaned_up = True
 
         # Add plugin to loaded plugins
         real_plugin = RealPluginWithCleanup()
         manager._loaded_plugins["real_plugin"] = real_plugin
 
-        await manager._unload_plugin("real_plugin")
+        manager._unload_plugin("real_plugin")
 
         # Plugin should be removed and cleaned up
         assert "real_plugin" not in manager.loaded_plugins
         assert real_plugin.cleaned_up
 
-    @pytest.mark.asyncio
-    async def test_unload_plugin_without_cleanup_method(self, temp_dir: Path) -> None:
+    def test_unload_plugin_without_cleanup_method(self, temp_dir: Path) -> None:
         """Test unload plugin without cleanup method."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -391,22 +380,20 @@ class LoadTestPlugin:
         simple_plugin = RealPluginWithoutCleanup()
         manager._loaded_plugins["simple_plugin"] = simple_plugin
 
-        await manager._unload_plugin("simple_plugin")
+        manager._unload_plugin("simple_plugin")
 
         # Plugin should be removed
         assert "simple_plugin" not in manager.loaded_plugins
 
-    @pytest.mark.asyncio
-    async def test_unload_nonexistent_plugin(self, temp_dir: Path) -> None:
+    def test_unload_nonexistent_plugin(self, temp_dir: Path) -> None:
         """Test unload nonexistent plugin."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
 
         # Should not raise exception
-        await manager._unload_plugin("nonexistent_plugin")
+        manager._unload_plugin("nonexistent_plugin")
 
-    @pytest.mark.asyncio
-    async def test_file_change_handler_with_real_path(self, temp_dir: Path) -> None:
+    def test_file_change_handler_with_real_path(self, temp_dir: Path) -> None:
         """Test file change handler with REAL path."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -416,18 +403,15 @@ class LoadTestPlugin:
         real_plugin_path.parent.mkdir(exist_ok=True)
         real_plugin_path.write_text("# Changed plugin content")
 
-        # File change creates async task, so we need async context
+        # File change creates task, so we need context
         manager._on_plugin_file_changed(real_plugin_path)
 
-        # Give a moment for async task to be created
-        await asyncio.sleep(0.01)
+        # Give a moment for task to be created
+        sleep(0.01)
 
         # Should complete without errors
 
-    @pytest.mark.asyncio
-    async def test_reload_all_plugins_with_real_plugin_objects(
-        self, temp_dir: Path
-    ) -> None:
+    def test_reload_all_plugins_with_real_plugin_objects(self, temp_dir: Path) -> None:
         """Test reload all plugins with REAL plugin objects."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
@@ -439,7 +423,7 @@ class LoadTestPlugin:
                 self.name = name
                 self.cleaned_up = False
 
-            async def cleanup(self) -> None:
+            def cleanup(self) -> None:
                 self.cleaned_up = True
 
         # Add multiple REAL plugins
@@ -451,7 +435,7 @@ class LoadTestPlugin:
         manager._loaded_plugins["plugin2"] = plugin2
         manager._loaded_plugins["plugin3"] = plugin3
 
-        await manager.reload_all_plugins()
+        manager.reload_all_plugins()
 
         # All plugins should be unloaded and cleaned up
         assert len(manager.loaded_plugins) == 0
@@ -459,43 +443,38 @@ class LoadTestPlugin:
         assert plugin2.cleaned_up
         assert plugin3.cleaned_up
 
-    @pytest.mark.asyncio
-    async def test_reload_all_plugins_with_no_loaded_plugins(
-        self, temp_dir: Path
-    ) -> None:
+    def test_reload_all_plugins_with_no_loaded_plugins(self, temp_dir: Path) -> None:
         """Test reload all plugins with no loaded plugins."""
         plugin_dir = str(temp_dir / "plugins")
         manager = HotReloadManager.create(plugin_directory=plugin_dir)
 
         # Should not raise exception
-        await manager.reload_all_plugins()
+        manager.reload_all_plugins()
         assert len(manager.loaded_plugins) == 0
 
 
 class TestHotReloadConvenienceFunction:
     """Test the convenience function for creating hot reload manager."""
 
-    @pytest.mark.asyncio
-    async def test_create_hot_reload_manager_with_real_directory(self) -> None:
+    def test_create_hot_reload_manager_with_real_directory(self) -> None:
         """Test create_hot_reload_manager convenience function with REAL directory."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = Path(tmp_dir) / "plugins"
             plugin_dir.mkdir()  # Create the directory first
-            manager = await create_hot_reload_manager(str(plugin_dir))
+            manager = create_hot_reload_manager(str(plugin_dir))
 
             assert manager is not None
             assert isinstance(manager, HotReloadManager)
             assert manager.plugin_directory == str(plugin_dir)
 
             # Clean up properly
-            await manager.stop_watching()
+            manager.stop_watching()
 
 
 class TestHotReloadIntegration:
     """Integration tests for hot reload system with REAL file operations."""
 
-    @pytest.mark.asyncio
-    async def test_file_handler_integration_with_real_manager(self) -> None:
+    def test_file_handler_integration_with_real_manager(self) -> None:
         """Test file handler integration with REAL manager."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = str(Path(tmp_dir) / "plugins")
@@ -515,8 +494,7 @@ class TestHotReloadIntegration:
             # Handler should call manager callback without errors
             handler.on_modified(event)
 
-    @pytest.mark.asyncio
-    async def test_manager_lifecycle_with_real_files(self) -> None:
+    def test_manager_lifecycle_with_real_files(self) -> None:
         """Test complete manager lifecycle with REAL files."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = Path(tmp_dir) / "plugins"
@@ -537,17 +515,17 @@ class LifecyclePlugin:
     def execute(self):
         return {"message": "REAL lifecycle execution"}
 
-    async def cleanup(self):
+    def cleanup(self):
         pass
 ''')
 
             manager = HotReloadManager.create(plugin_directory=str(plugin_dir))
 
             # Test complete lifecycle with REAL operations
-            await manager.start_watching()
-            await manager._initial_plugin_load()
-            await manager.stop_watching()
-            await manager.reload_all_plugins()
+            manager.start_watching()
+            manager._initial_plugin_load()
+            manager.stop_watching()
+            manager.reload_all_plugins()
 
     def test_comprehensive_error_handling_with_real_scenarios(self) -> None:
         """Test comprehensive error handling across the system with REAL scenarios."""
@@ -566,8 +544,7 @@ class LifecyclePlugin:
             validation_result = manager.validate_business_rules()
             assert validation_result.success
 
-    @pytest.mark.asyncio
-    async def test_real_file_operations_end_to_end(self) -> None:
+    def test_real_file_operations_end_to_end(self) -> None:
         """Test end-to-end with REAL file operations."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = Path(tmp_dir) / "plugins"
@@ -591,30 +568,29 @@ class E2EPlugin:
     def is_valid(self):
         return self.initialized
 
-    async def cleanup(self):
+    def cleanup(self):
         self.initialized = False
 ''')
 
             # Start watching
-            await manager.start_watching()
+            manager.start_watching()
 
             # Load plugins
-            await manager._initial_plugin_load()
+            manager._initial_plugin_load()
 
             # Simulate file change
             plugin_file.write_text(plugin_file.read_text() + "\n# Modified")
 
             # Reload specific plugin
-            await manager._reload_plugin(Path("e2e_plugin.py"))
+            manager._reload_plugin(Path("e2e_plugin.py"))
 
             # Stop watching
-            await manager.stop_watching()
+            manager.stop_watching()
 
             # Cleanup all plugins
-            await manager.reload_all_plugins()
+            manager.reload_all_plugins()
 
-    @pytest.mark.asyncio
-    async def test_concurrent_operations_with_real_files(self) -> None:
+    def test_concurrent_operations_with_real_files(self) -> None:
         """Test concurrent operations with REAL files."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             plugin_dir = Path(tmp_dir) / "plugins"
@@ -635,12 +611,12 @@ class ConcurrentPlugin{i}:
         self.name = "concurrent-plugin-{i}"
         self.version = "1.0.{i}"
 
-    async def cleanup(self):
+    def cleanup(self):
         pass
 ''')
 
             # Test concurrent operations
-            await asyncio.gather(
+            gather(
                 manager._load_plugin(Path("concurrent_plugin_0.py")),
                 manager._load_plugin(Path("concurrent_plugin_1.py")),
                 manager._load_plugin(Path("concurrent_plugin_2.py")),

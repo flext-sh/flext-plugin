@@ -302,8 +302,7 @@ class TestStateManagerReal:
         assert expected_dir.exists()
         assert expected_dir.is_dir()
 
-    @pytest.mark.asyncio
-    async def test_save_plugin_state_real(
+    def test_save_plugin_state_real(
         self,
         state_manager: StateManager,
     ) -> None:
@@ -317,14 +316,14 @@ class TestStateManagerReal:
                 self.version = "1.0.0"
                 self.config = {"enabled": True, "timeout": 30}
 
-            async def get_state(self) -> FlextTypes.Core.Dict:
+            def get_state(self) -> FlextTypes.Core.Dict:
                 return {
                     "config": self.config,
                     "runtime": {"active": True, "connections": 2},
                 }
 
         real_plugin = RealTestPlugin()
-        state = await state_manager.save_plugin_state(real_plugin)
+        state = state_manager.save_plugin_state(real_plugin)
 
         assert state.plugin_id == "real-test-plugin"
         assert state.plugin_version == "1.0.0"
@@ -333,8 +332,7 @@ class TestStateManagerReal:
         assert isinstance(config_data, dict)
         assert config_data.get("enabled") is True
 
-    @pytest.mark.asyncio
-    async def test_save_plugin_state_without_get_state_method(
+    def test_save_plugin_state_without_get_state_method(
         self,
         state_manager: StateManager,
     ) -> None:
@@ -348,19 +346,16 @@ class TestStateManagerReal:
                 self.version = "2.0.0"
 
         simple_plugin = SimplePlugin()
-        state = await state_manager.save_plugin_state(simple_plugin)
+        state = state_manager.save_plugin_state(simple_plugin)
 
         assert state.plugin_id == "simple-plugin"
         assert state.plugin_version == "2.0.0"
         assert state.state_data == {}  # Empty since no get_state method
 
-    @pytest.mark.asyncio
-    async def test_create_real_state_snapshot(
-        self, state_manager: StateManager
-    ) -> None:
+    def test_create_real_state_snapshot(self, state_manager: StateManager) -> None:
         """Test creating REAL state snapshot."""
         description = "Production backup before update"
-        snapshot_id = await state_manager.create_snapshot(description)
+        snapshot_id = state_manager.create_snapshot(description)
 
         assert snapshot_id is not None
         assert isinstance(snapshot_id, str)
@@ -403,8 +398,7 @@ class TestRollbackManagerReal:
         assert hasattr(rollback_manager, "state_manager")
         assert isinstance(rollback_manager.state_manager, StateManager)
 
-    @pytest.mark.asyncio
-    async def test_create_rollback_point_real(
+    def test_create_rollback_point_real(
         self,
         rollback_manager: RollbackManager,
     ) -> None:
@@ -420,7 +414,7 @@ class TestRollbackManagerReal:
 
         real_plugin = RealRollbackPlugin()
         description = "Before critical update - rollback point"
-        rollback_id = await rollback_manager.create_rollback_point(
+        rollback_id = rollback_manager.create_rollback_point(
             real_plugin,
             description,
         )
@@ -497,8 +491,7 @@ class TestHotReloadManagerReal:
         assert isinstance(hot_reload_manager.rollback_manager, RollbackManager)
         assert isinstance(hot_reload_manager.watcher, PluginWatcher)
 
-    @pytest.mark.asyncio
-    async def test_watching_lifecycle_real(
+    def test_watching_lifecycle_real(
         self,
         hot_reload_manager: HotReloadManager,
         temp_dir: Path,
@@ -522,17 +515,16 @@ class TestLifecyclePlugin:
 """)
 
         # Test start watching
-        await hot_reload_manager.start_watching()
+        hot_reload_manager.start_watching()
 
         # Verify initial plugins were loaded
         loaded_plugins = hot_reload_manager.get_loaded_plugins()
         assert isinstance(loaded_plugins, dict)
 
         # Test stop watching
-        await hot_reload_manager.stop_watching()
+        hot_reload_manager.stop_watching()
 
-    @pytest.mark.asyncio
-    async def test_reload_plugin_real(
+    def test_reload_plugin_real(
         self,
         hot_reload_manager: HotReloadManager,
     ) -> None:
@@ -540,7 +532,7 @@ class TestLifecyclePlugin:
         plugin_id = "real-reload-test-plugin"
 
         # Test reload without any mocks - should use fallback implementation
-        result = await hot_reload_manager.reload_plugin(plugin_id)
+        result = hot_reload_manager.reload_plugin(plugin_id)
 
         assert isinstance(result, ReloadEvent)
         assert result.event_type == "plugin_reload"
@@ -549,8 +541,7 @@ class TestLifecyclePlugin:
         assert result.success is True
         assert result.error is None
 
-    @pytest.mark.asyncio
-    async def test_handle_plugin_change_real(
+    def test_handle_plugin_change_real(
         self,
         hot_reload_manager: HotReloadManager,
         temp_dir: Path,
@@ -581,7 +572,7 @@ class ChangeTestPlugin:
         )
 
         # Handle the plugin change event (accessing protected method for testing)
-        await hot_reload_manager._handle_plugin_change(watch_event)
+        hot_reload_manager._handle_plugin_change(watch_event)
 
         # Test passes if no exception is raised
 
@@ -603,8 +594,7 @@ class ChangeTestPlugin:
         loaded_plugins = hot_reload_manager.get_loaded_plugins()
         assert isinstance(loaded_plugins, dict)
 
-    @pytest.mark.asyncio
-    async def test_reload_all_plugins_real(
+    def test_reload_all_plugins_real(
         self,
         hot_reload_manager: HotReloadManager,
         temp_dir: Path,
@@ -649,14 +639,13 @@ def get_plugin():
         # Get loaded plugins and reload them individually
         loaded_plugins = hot_reload_manager.get_loaded_plugins()
         for plugin_id in loaded_plugins:
-            await hot_reload_manager.reload_plugin(plugin_id)
+            hot_reload_manager.reload_plugin(plugin_id)
 
         # Verify reload completed without errors
         loaded_plugins = hot_reload_manager.get_loaded_plugins()
         assert isinstance(loaded_plugins, dict)
 
-    @pytest.mark.asyncio
-    async def test_integration_with_real_plugin_workflow(
+    def test_integration_with_real_plugin_workflow(
         self,
         hot_reload_manager: HotReloadManager,
         temp_dir: Path,
@@ -684,7 +673,7 @@ def get_plugin():
 """)
 
         # Start watching and load initial plugins
-        await hot_reload_manager.start_watching()
+        hot_reload_manager.start_watching()
 
         # Simulate plugin file change
         workflow_plugin.write_text("""
@@ -705,9 +694,9 @@ def get_plugin():
 """)
 
         # Test plugin reload
-        result = await hot_reload_manager.reload_plugin("workflow-plugin")
+        result = hot_reload_manager.reload_plugin("workflow-plugin")
         assert isinstance(result, ReloadEvent)
         assert result.plugin_id == "workflow-plugin"
 
         # Stop watching
-        await hot_reload_manager.stop_watching()
+        hot_reload_manager.stop_watching()

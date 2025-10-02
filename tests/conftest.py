@@ -147,7 +147,7 @@ class WarehouseTargetPlugin:
             "status": "success"
         }
 
-    async def cleanup(self):
+    def cleanup(self):
         pass
 
 def get_plugin():
@@ -174,7 +174,7 @@ class TransformProcessorPlugin:
             "status": "success"
         }
 
-    async def cleanup(self):
+    def cleanup(self):
         pass
 
 def get_plugin():

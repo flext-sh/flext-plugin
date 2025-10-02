@@ -218,7 +218,7 @@ class FlextPluginProtocols(FlextProtocols):
             """
             ...
 
-        def execute_plugin_async(
+        def execute_plugin(
             self,
             plugin: object,
             method: str,
@@ -226,7 +226,7 @@ class FlextPluginProtocols(FlextProtocols):
             args: list[object] | None = None,
             kwargs: dict[str, object] | None = None,
         ) -> FlextResult[object]:
-            """Execute plugin method asynchronously.
+            """Execute plugin method hronously.
 
             Args:
                 plugin: Plugin to execute

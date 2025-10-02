@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -20,9 +19,9 @@ from typing import cast, override
 try:
     import anyio
 
-    ASYNC_PATH_AVAILABLE = True
+    PATH_AVAILABLE = True
 except ImportError:
-    ASYNC_PATH_AVAILABLE = False
+    PATH_AVAILABLE = False
 
 from pydantic import Field
 
@@ -102,15 +101,15 @@ class PluginDiscovery(FlextModels.Entity):
             # Modify the list in place (mutable object)
             self.plugin_directories.append(directory_str)
 
-    async def discover_all(self) -> FlextTypes.Core.Dict:
+    def discover_all(self) -> FlextTypes.Core.Dict:
         """Discover all plugins from configured directories."""
-        await self._discover_entry_points()
-        await self._discover_file_system()
+        self._discover_entry_points()
+        self._discover_file_system()
         return self.discovered_plugins
 
-    async def discover_by_type(self, plugin_type: PluginType) -> FlextTypes.Core.Dict:
+    def discover_by_type(self, plugin_type: PluginType) -> FlextTypes.Core.Dict:
         """Discover plugins by type."""
-        all_plugins = await self.discover_all()
+        all_plugins = self.discover_all()
         return {
             name: plugin
             for name, plugin in all_plugins.items()
@@ -141,31 +140,31 @@ class PluginDiscovery(FlextModels.Entity):
             plugin_instance = plugin_class()
             self.discovered_plugins[plugin_name] = plugin_instance
 
-    async def _discover_entry_points(self) -> None:
+    def _discover_entry_points(self) -> None:
         """Discover plugins from entry points."""
 
         # Entry point discovery implementation
 
-    async def _discover_file_system(self) -> None:
+    def _discover_file_system(self) -> None:
         """Discover plugins from file system."""
         # Always scan the primary plugin directory first
         if self.plugin_directory:
             primary_directory = Path(self.plugin_directory)
-            await self._scan_directory(primary_directory)
+            self._scan_directory(primary_directory)
 
         # Then scan additional directories
         for directory_str in self.plugin_directories:
             directory = Path(directory_str)
-            await self._scan_directory(directory)
+            self._scan_directory(directory)
 
-    async def _scan_directory(self, directory: Path) -> None:
+    def _scan_directory(self, directory: Path) -> None:
         """Scan a directory for plugin files."""
-        # Use async-safe path operations
-        if ASYNC_PATH_AVAILABLE:
-            async_dir = anyio.Path(directory)
-            if not await async_dir.exists():
+        # Use -safe path operations
+        if PATH_AVAILABLE:
+            dir = anyio.Path(directory)
+            if not dir.exists():
                 return
-            py_files = [f async for f in async_dir.glob("*.py")]
+            py_files = [f for f in dir.glob("*.py")]
         else:
             # Fallback to thread-safe synchronous operations
             if not directory.exists():
@@ -174,7 +173,7 @@ class PluginDiscovery(FlextModels.Entity):
             def get_python_files(path: Path) -> list[Path]:
                 return [f for f in path.iterdir() if f.name.endswith(".py")]
 
-            py_files = await asyncio.get_event_loop().run_in_executor(
+            py_files = get_event_loop().run_in_executor(
                 None, get_python_files, directory
             )
 

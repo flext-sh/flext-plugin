@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import importlib.util
 import sys
 from pathlib import Path
@@ -38,18 +37,18 @@ create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
 create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
-async def _run(
+def _run(
     cmd_list: FlextTypes.Core.StringList,
     cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
-    process = await asyncio.create_subprocess_exec(
+    process = create_subprocess_exec(
         *cmd_list,
         cwd=cwd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-    stdout_bytes, stderr_bytes = await process.communicate()
+    stdout_bytes, stderr_bytes = process.communicate()
     return (
         process.returncode or 0,
         stdout_bytes.decode("utf-8"),
@@ -62,7 +61,7 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    rc, out, err = asyncio.run(
+    rc, out, err = run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -122,7 +121,7 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = asyncio.run(
+    rc, out, err = run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -386,7 +385,7 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = asyncio.run(
+    rc, out, err = run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -508,7 +507,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    rc, out, err = asyncio.run(
+    rc, out, err = run(
         _run(
             [sys.executable, str(example_path), "--test-connections"],
             cwd=str(Path(__file__).parent.parent),

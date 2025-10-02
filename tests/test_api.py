@@ -119,7 +119,7 @@ class TestCreateFlextPlugin:
             },
             "features": {
                 "hot_reload": True,
-                "async_support": True,
+                "support": True,
                 "settings": {
                     "timeout": 30,
                     "retries": 3,

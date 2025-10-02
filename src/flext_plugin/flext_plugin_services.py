@@ -363,7 +363,7 @@ class FlextPluginServices(FlextService[object]):
                 "Use specific service methods instead of execute",
             )
 
-        async def register_plugin(
+        def register_plugin(
             self,
             plugin: FlextPluginEntity,
         ) -> FlextResult[FlextPluginEntity]:
@@ -382,7 +382,7 @@ class FlextPluginServices(FlextService[object]):
                     f"Plugin registration failed: {e}",
                 )
 
-        async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Unregister plugin by name."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             plugins.pop(plugin_name, None)
@@ -412,7 +412,7 @@ class FlextPluginServices(FlextService[object]):
                 if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
             ]
 
-        async def cleanup_all(self) -> None:
+        def cleanup_all(self) -> None:
             """Clear all registered plugins."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             plugins.clear()

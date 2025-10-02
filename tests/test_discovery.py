@@ -258,8 +258,7 @@ class TestPluginDiscoveryReal:
         plugin = discovery.get_discovered_plugin("InvalidPlugin")
         assert plugin is None
 
-    @pytest.mark.asyncio
-    async def test_discover_plugins_empty_directories(self, temp_dir: Path) -> None:
+    def test_discover_plugins_empty_directories(self, temp_dir: Path) -> None:
         """Test discovering plugins from empty directories."""
         plugin_dir = temp_dir / "empty_plugins"
         plugin_dir.mkdir()
@@ -267,14 +266,13 @@ class TestPluginDiscoveryReal:
         discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
         discovery.add_plugin_directory(plugin_dir)
 
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         # Should return empty dict for empty directories
         assert isinstance(result, dict)
         assert len(result) == 0
 
-    @pytest.mark.asyncio
-    async def test_discover_plugins_with_real_files(self, temp_dir: Path) -> None:
+    def test_discover_plugins_with_real_files(self, temp_dir: Path) -> None:
         """Test discovering plugins with REAL plugin files and manifests."""
         plugin_dir = temp_dir / "real_plugins"
         plugin_dir.mkdir()
@@ -312,7 +310,7 @@ class TestPlugin:
         discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
         discovery.add_plugin_directory(plugin_dir)
 
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         # Should discover the plugin
         assert isinstance(result, dict)
@@ -324,8 +322,7 @@ class TestPlugin:
         assert plugin_info["name"] == "test-plugin"
         assert plugin_info["version"] == "1.0.0"
 
-    @pytest.mark.asyncio
-    async def test_discover_multiple_plugins_different_directories(
+    def test_discover_multiple_plugins_different_directories(
         self, temp_dir: Path
     ) -> None:
         """Test discovering multiple plugins from different directories."""
@@ -367,15 +364,14 @@ class TestPlugin:
         discovery.add_plugin_directory(dir1)
         discovery.add_plugin_directory(dir2)
 
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         # Should discover both plugins
         assert len(result) == 2
         assert "plugin-1" in result
         assert "plugin-2" in result
 
-    @pytest.mark.asyncio
-    async def test_discover_plugins_by_type(self, temp_dir: Path) -> None:
+    def test_discover_plugins_by_type(self, temp_dir: Path) -> None:
         """Test discovering plugins by type with REAL plugins."""
         plugin_dir = temp_dir / "typed_plugins"
         plugin_dir.mkdir()
@@ -412,21 +408,20 @@ class TestPlugin:
         discovery.add_plugin_directory(plugin_dir)
 
         # Discover TAP plugins only
-        tap_plugins = await discovery.discover_by_type(PluginType.TAP)
+        tap_plugins = discovery.discover_by_type(PluginType.TAP)
 
         assert len(tap_plugins) == 1
         assert "tap-plugin" in tap_plugins
         assert "target-plugin" not in tap_plugins
 
         # Discover TARGET plugins only
-        target_plugins = await discovery.discover_by_type(PluginType.TARGET)
+        target_plugins = discovery.discover_by_type(PluginType.TARGET)
 
         assert len(target_plugins) == 1
         assert "target-plugin" in target_plugins
         assert "tap-plugin" not in target_plugins
 
-    @pytest.mark.asyncio
-    async def test_discovery_ignores_system_files(self, temp_dir: Path) -> None:
+    def test_discovery_ignores_system_files(self, temp_dir: Path) -> None:
         """Test that discovery ignores __init__.py and similar files."""
         plugin_dir = temp_dir / "dunder_test"
         plugin_dir.mkdir()
@@ -457,14 +452,13 @@ class TestPlugin:
         discovery = PluginDiscovery()
         discovery.add_plugin_directory(plugin_dir)
 
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         # Should only discover the valid plugin
         assert len(result) == 1
         assert "valid-plugin" in result
 
-    @pytest.mark.asyncio
-    async def test_discovery_handles_invalid_manifests(self, temp_dir: Path) -> None:
+    def test_discovery_handles_invalid_manifests(self, temp_dir: Path) -> None:
         """Test discovery handles invalid manifest files gracefully."""
         plugin_dir = temp_dir / "invalid_manifest_test"
         plugin_dir.mkdir()
@@ -492,15 +486,14 @@ class TestPlugin:
         discovery = PluginDiscovery()
         discovery.add_plugin_directory(plugin_dir)
 
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         # Should discover valid plugin and ignore invalid one
         assert len(result) == 1
         assert "valid-plugin" in result
         assert "broken-plugin" not in result
 
-    @pytest.mark.asyncio
-    async def test_discovery_with_nonexistent_directory(self, temp_dir: Path) -> None:
+    def test_discovery_with_nonexistent_directory(self, temp_dir: Path) -> None:
         """Test discovery with nonexistent directory."""
         nonexistent_dir = temp_dir / "does_not_exist"
 
@@ -508,13 +501,12 @@ class TestPlugin:
         discovery.add_plugin_directory(nonexistent_dir)
 
         # Should not raise exception
-        result = await discovery.discover_all()
+        result = discovery.discover_all()
 
         assert isinstance(result, dict)
         assert len(result) == 0
 
-    @pytest.mark.asyncio
-    async def test_full_discovery_workflow_with_real_files(
+    def test_full_discovery_workflow_with_real_files(
         self,
         temp_dir: Path,
     ) -> None:
@@ -597,7 +589,7 @@ class ExtraPlugin:
         discovery.blacklist_plugin("extra-plugin")
 
         # Discover all
-        all_plugins = await discovery.discover_all()
+        all_plugins = discovery.discover_all()
 
         # Verify results
         assert len(all_plugins) >= 2  # File-based + manual
@@ -606,8 +598,8 @@ class ExtraPlugin:
         assert discovery.is_blacklisted("extra-plugin")  # But it's blacklisted
 
         # Test type-specific discovery
-        tap_plugins = await discovery.discover_by_type(PluginType.TAP)
-        target_plugins = await discovery.discover_by_type(PluginType.TARGET)
+        tap_plugins = discovery.discover_by_type(PluginType.TAP)
+        target_plugins = discovery.discover_by_type(PluginType.TARGET)
 
         assert "main-plugin" in tap_plugins
         assert "extra-plugin" in target_plugins

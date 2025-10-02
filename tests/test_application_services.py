@@ -17,7 +17,7 @@ from typing import Any, Protocol, cast
 
 import pytest
 
-# Import anyio.path for async file operations
+# Import anyio.path for file operations
 from anyio import Path as AnyioPath
 
 from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
@@ -52,7 +52,7 @@ class PluginInterface(Protocol):
 
     def execute(self, data: dict[str, Any] | None = None) -> dict[str, Any]: ...
 
-    async def cleanup(self) -> dict[str, Any]: ...
+    def cleanup(self) -> dict[str, Any]: ...
 
     def health_check(self) -> dict[str, Any]: ...
 
@@ -92,7 +92,7 @@ class DatabaseTapPlugin:
             "status": "success"
         }
 
-    async def cleanup(self):
+    def cleanup(self):
         return {"status": "cleaned", "plugin": self.name}
 
     def health_check(self):
@@ -132,7 +132,7 @@ class WarehouseTargetPlugin:
             "status": "success"
         }
 
-    async def cleanup(self):
+    def cleanup(self):
         return {"status": "cleaned", "loaded_total": self.loaded_records}
 
     def health_check(self):
@@ -174,7 +174,7 @@ class DataProcessorPlugin:
             "status": "success"
         }
 
-    async def cleanup(self):
+    def cleanup(self):
         return {"status": "cleaned", "total_processed": self.processed_items}
 
     def health_check(self):
@@ -208,7 +208,7 @@ class ErrorPlugin:
     def set_should_fail(self, should_fail: bool):
         self.should_fail = should_fail
 
-    async def cleanup(self):
+    def cleanup(self):
         return {"status": "cleaned"}
 
     def health_check(self):
@@ -329,8 +329,7 @@ class TestRealPluginDiscoveryAndExecution:
         assert target_result["status"] == "success"
         assert target_result["loaded_records"] == 5
 
-    @pytest.mark.asyncio
-    async def test_real_plugin_processor_execution(
+    def test_real_plugin_processor_execution(
         self,
         real_plugin_loader: PluginLoader,
         temp_plugin_dir: Path,
@@ -359,7 +358,7 @@ class TestRealPluginDiscoveryAndExecution:
         assert process_result2["total_processed"] == 5  # 3 + 2
 
         # Test cleanup
-        cleanup_result = await processor.cleanup()
+        cleanup_result = processor.cleanup()
         assert cleanup_result["status"] == "cleaned"
         assert cleanup_result["total_processed"] == 5
 
@@ -1084,8 +1083,7 @@ class TestRealPluginIntegrationWorkflow:
         assert unloaded_check.is_success
         assert unloaded_check.data is False
 
-    @pytest.mark.asyncio
-    async def test_complete_plugin_workflow_real(
+    def test_complete_plugin_workflow_real(
         self,
         real_plugin_loader: PluginLoader,
         real_plugin_discovery: PluginDiscovery,
@@ -1095,14 +1093,14 @@ class TestRealPluginIntegrationWorkflow:
         # Step 1: Real plugin discovery
         real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
 
-        async def _get_plugin_files() -> list[AnyioPath]:
+        def _get_plugin_files() -> list[AnyioPath]:
             return [
                 f
-                async for f in AnyioPath(temp_plugin_dir).iterdir()
+                for f in AnyioPath(temp_plugin_dir).iterdir()
                 if fnmatch.fnmatch(f.name, "*.py")
             ]
 
-        plugin_files = await _get_plugin_files()
+        plugin_files = _get_plugin_files()
         assert len(plugin_files) == 4  # Our real plugins
 
         # Step 2: Load tap plugin and Execute workflow
@@ -1144,8 +1142,8 @@ class TestRealPluginIntegrationWorkflow:
         assert target_health["status"] == "healthy"
 
         # Step 8: Cleanup workflow
-        tap_cleanup = await tap.cleanup()
-        target_cleanup = await target.cleanup()
+        tap_cleanup = tap.cleanup()
+        target_cleanup = target.cleanup()
         assert tap_cleanup["status"] == "cleaned"
         assert target_cleanup["status"] == "cleaned"
 
@@ -1189,8 +1187,7 @@ class TestRealPluginIntegrationWorkflow:
         retrieved_plugin = cast("PluginInterface", retrieved_tap)
         assert retrieved_plugin.name == "database-tap"
 
-    @pytest.mark.asyncio
-    async def test_real_plugin_lifecycle_management(
+    def test_real_plugin_lifecycle_management(
         self,
         real_plugin_loader: PluginLoader,
         temp_plugin_dir: Path,
@@ -1212,7 +1209,7 @@ class TestRealPluginIntegrationWorkflow:
         assert result["total_processed"] == 3
 
         # Unload plugin (tests cleanup if plugin supports it)
-        await real_plugin_loader.unload_plugin("processor_transform")
+        real_plugin_loader.unload_plugin("processor_transform")
 
         # Verify unloaded
         loaded_plugins_after = real_plugin_loader.get_loaded_plugins()

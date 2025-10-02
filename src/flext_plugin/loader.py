@@ -27,7 +27,7 @@ from flext_core import (
 class CleanupablePlugin(Protocol):
     """Protocol for plugins that support cleanup operations."""
 
-    async def cleanup(self) -> None:
+    def cleanup(self) -> None:
         """Cleanup plugin resources."""
         ...
 
@@ -153,7 +153,7 @@ class PluginLoader(FlextModels.Entity):
         # This should never be reached, all paths above either return or raise
         return None
 
-    async def unload_plugin(self, plugin_name: str) -> None:
+    def unload_plugin(self, plugin_name: str) -> None:
         """Unload plugin by name."""
         if plugin_name in self.loaded_plugins:
             plugin = self.loaded_plugins[plugin_name]
@@ -162,25 +162,25 @@ class PluginLoader(FlextModels.Entity):
                 getattr(plugin, "cleanup", None),
             ):
                 cleanupable_plugin = cast("CleanupablePlugin", plugin)
-                await cleanupable_plugin.cleanup()
+                cleanupable_plugin.cleanup()
             del self.loaded_plugins[plugin_name]
 
         if plugin_name in self.plugin_modules:
             del self.plugin_modules[plugin_name]
 
-    async def reload_plugin(self, plugin_name: str, file_path: str) -> object:
+    def reload_plugin(self, plugin_name: str, file_path: str) -> object:
         """Reload plugin from file."""
-        await self.unload_plugin(plugin_name)
+        self.unload_plugin(plugin_name)
         return self.load_plugin(Path(file_path))
 
     def get_loaded_plugins(self: object) -> FlextTypes.Core.Dict:
         """Get copy of loaded plugins."""
         return self.loaded_plugins.copy()
 
-    async def cleanup_all(self) -> None:
+    def cleanup_all(self) -> None:
         """Cleanup all loaded plugins."""
         for plugin_name in list(self.loaded_plugins.keys()):
-            await self.unload_plugin(plugin_name)
+            self.unload_plugin(plugin_name)
 
         self.loaded_plugins.clear()
         self.plugin_modules.clear()

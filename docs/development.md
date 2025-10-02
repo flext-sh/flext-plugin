@@ -127,7 +127,7 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    async def execute(self, data: dict) -> FlextResult[dict]:
+    def execute(self, data: dict) -> FlextResult[dict]:
         """Plugin business logic"""
         try:
             # Process data
