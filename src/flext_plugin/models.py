@@ -559,41 +559,14 @@ class FlextPluginModels(FlextModels):
         )
 
 
-# Export individual models for backward compatibility
+# Export core enums for __init__.py compatibility
 PluginStatus = FlextPluginModels.PluginStatus
 PluginType = FlextPluginModels.PluginType
-FlextPluginConfigModel = FlextPluginModels.ConfigModel
-FlextPluginMetadataModel = FlextPluginModels.MetadataModel
-# Alias for backward compatibility
-PluginMetadata = FlextPluginModels.MetadataModel
-FlextPluginModel = FlextPluginModels.PluginModel
-PluginExecutionContextModel = FlextPluginModels.ExecutionContextModel
-PluginExecutionResultModel = FlextPluginModels.ExecutionResultModel
-PluginManagerResultModel = FlextPluginModels.ManagerResultModel
 
 __all__ = [
     # Main unified class
     "FlextPluginModels",
-    # Legacy backward compatibility exports
-    "FlextPluginConfigModel",
-    "FlextPluginMetadataModel",
-    "PluginMetadata",
-    "FlextPluginModel",
-    "PluginExecutionContextModel",
-    "PluginExecutionResultModel",
-    "PluginManagerResultModel",
+    # Core enums for compatibility
     "PluginStatus",
     "PluginType",
-    # Constants
-    "PERCENTAGE_MAX",
-    "PERCENTAGE_MIN",
-    "PERFORMANCE_EXCELLENT_SUCCESS_RATE",
-    "PERFORMANCE_GOOD_SUCCESS_RATE",
-    "PERFORMANCE_FAIR_SUCCESS_RATE",
-    "PERFORMANCE_EXCELLENT_TIME_MS",
-    "PERFORMANCE_GOOD_TIME_MS",
-    "PERFORMANCE_FAIR_TIME_MS",
-    "EXECUTION_TIME_SCALE_MS_TO_S",
-    "PRODUCTION_READY_TIMEOUT_SECONDS",
-    "PRODUCTION_READY_MAX_MEMORY_MB",
 ]
