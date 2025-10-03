@@ -85,9 +85,9 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         """Stop the loader service."""
         return FlextResult[None].ok(None)
 
-    def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Check service health."""
-        return FlextResult[FlextTypes.Core.Dict].ok({"status": "healthy"})
+        return FlextResult[FlextTypes.Dict].ok({"status": "healthy"})
 
 
 class TestFlextPluginHandler:
@@ -313,7 +313,7 @@ class LifecyclePlugin:
         self.name = "lifecycle-plugin"
         self.version = "1.0.0"
 
-    def execute(self) -> FlextTypes.Core.Headers:
+    def execute(self) -> FlextTypes.StringDict:
         return {"status": "success", "message": "Plugin executed successfully"}
 ''')
 

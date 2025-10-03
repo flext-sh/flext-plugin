@@ -14,6 +14,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from asyncio import create_task, get_event_loop, run
 import tempfile
 from pathlib import Path
 from typing import override
@@ -61,9 +62,9 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
-        return FlextResult[FlextTypes.Core.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.discovery.plugin_directory,
@@ -90,7 +91,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+    def get_service_info(self: object) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginDiscoveryAdapter",
@@ -208,9 +209,9 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
-        return FlextResult[FlextTypes.Core.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
@@ -237,7 +238,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+    def get_service_info(self: object) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginLoaderAdapter",
@@ -342,9 +343,9 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
-        return FlextResult[FlextTypes.Core.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "status": "healthy" if self._started else "stopped",
                 "plugin_directory": self.plugin_directory,
@@ -371,7 +372,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Core.Dict:
+    def get_service_info(self: object) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginManagerAdapter",
@@ -483,9 +484,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
                 return FlextResult[FlextPluginConfig].fail("Plugin name is required")
 
             # Real config - create from loaded plugin or default
-            config: dict[str, object] = FlextPluginConfig.create(
-                plugin_name=plugin_name
-            )
+            config: FlextTypes.Dict = FlextPluginConfig.create(plugin_name=plugin_name)
 
             return FlextResult[FlextPluginConfig].ok(config)
 

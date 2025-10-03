@@ -8,4 +8,4 @@ from __future__ import annotations
 
 from flext_core import FlextTypes
 
-__all__: FlextTypes.Core.StringList = []
+__all__: FlextTypes.StringList = []

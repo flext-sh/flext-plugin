@@ -42,17 +42,21 @@ class FlextPluginTypes(FlextTypes):
         """Plugin management complex types."""
 
         type PluginConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | int | bool | dict[str, FlextTypes.ConfigValue]
         ]
         type PluginRegistration = dict[
-            str, str | bool | dict[str, FlextTypes.Core.JsonValue]
+            str, str | bool | dict[str, FlextTypes.JsonValue]
         ]
-        type PluginLifecycle = dict[str, str | bool | list[str] | dict[str, object]]
-        type PluginDependencies = list[dict[str, str | dict[str, object]]]
+        type PluginLifecycle = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
+        ]
+        type PluginDependencies = list[dict[str, str | FlextTypes.Dict]]
         type PluginCapabilities = dict[
-            str, bool | list[str] | dict[str, FlextTypes.Core.JsonValue]
+            str, bool | FlextTypes.StringList | dict[str, FlextTypes.JsonValue]
         ]
-        type PluginValidation = dict[str, bool | str | list[str] | dict[str, object]]
+        type PluginValidation = dict[
+            str, bool | str | FlextTypes.StringList | FlextTypes.Dict
+        ]
 
     # =========================================================================
     # PLUGIN DISCOVERY TYPES - Complex plugin discovery types
@@ -62,17 +66,15 @@ class FlextPluginTypes(FlextTypes):
         """Plugin discovery complex types."""
 
         type DiscoveryConfiguration = dict[
-            str, str | bool | list[str] | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | bool | FlextTypes.StringList | dict[str, FlextTypes.ConfigValue]
         ]
         type DiscoveryContext = dict[
-            str, str | list[str] | dict[str, FlextTypes.Core.JsonValue]
+            str, str | FlextTypes.StringList | dict[str, FlextTypes.JsonValue]
         ]
-        type DiscoveryResult = dict[str, list[dict[str, object]] | bool | str]
-        type DiscoveryFilters = list[dict[str, str | bool | list[str]]]
-        type DiscoveryMetrics = dict[
-            str, int | float | dict[str, FlextTypes.Core.JsonValue]
-        ]
-        type DiscoveryCache = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type DiscoveryResult = dict[str, list[FlextTypes.Dict] | bool | str]
+        type DiscoveryFilters = list[dict[str, str | bool | FlextTypes.StringList]]
+        type DiscoveryMetrics = dict[str, int | float | dict[str, FlextTypes.JsonValue]]
+        type DiscoveryCache = dict[str, str | dict[str, FlextTypes.JsonValue]]
 
     # =========================================================================
     # PLUGIN EXECUTION TYPES - Complex plugin execution types
@@ -82,21 +84,21 @@ class FlextPluginTypes(FlextTypes):
         """Plugin execution complex types."""
 
         type ExecutionConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | int | bool | dict[str, FlextTypes.ConfigValue]
         ]
         type ExecutionContext = dict[
-            str, str | object | dict[str, FlextTypes.Core.JsonValue]
+            str, str | object | dict[str, FlextTypes.JsonValue]
         ]
         type ExecutionResult = dict[
-            str, bool | str | object | dict[str, FlextTypes.Core.JsonValue]
+            str, bool | str | object | dict[str, FlextTypes.JsonValue]
         ]
-        type ExecutionMetrics = dict[
-            str, int | float | dict[str, FlextTypes.Core.JsonValue]
-        ]
+        type ExecutionMetrics = dict[str, int | float | dict[str, FlextTypes.JsonValue]]
         type ExecutionSecurity = dict[
-            str, str | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | bool | dict[str, FlextTypes.ConfigValue]
         ]
-        type ExecutionSandbox = dict[str, str | bool | list[str] | dict[str, object]]
+        type ExecutionSandbox = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
+        ]
 
     # =========================================================================
     # PLUGIN REGISTRY TYPES - Complex plugin registry types
@@ -106,15 +108,13 @@ class FlextPluginTypes(FlextTypes):
         """Plugin registry complex types."""
 
         type RegistryConfiguration = dict[
-            str, str | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | bool | dict[str, FlextTypes.ConfigValue]
         ]
-        type RegistryEntry = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
-        type RegistryIndex = dict[str, list[dict[str, object]] | dict[str, object]]
-        type RegistryMetadata = dict[
-            str, str | int | dict[str, FlextTypes.Core.JsonValue]
-        ]
-        type RegistryValidation = dict[str, bool | str | list[str]]
-        type RegistrySync = dict[str, str | bool | dict[str, object]]
+        type RegistryEntry = dict[str, str | dict[str, FlextTypes.JsonValue]]
+        type RegistryIndex = dict[str, list[FlextTypes.Dict] | FlextTypes.Dict]
+        type RegistryMetadata = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
+        type RegistryValidation = dict[str, bool | str | FlextTypes.StringList]
+        type RegistrySync = dict[str, str | bool | FlextTypes.Dict]
 
     # =========================================================================
     # PLUGIN SECURITY TYPES - Complex plugin security types
@@ -124,19 +124,21 @@ class FlextPluginTypes(FlextTypes):
         """Plugin security complex types."""
 
         type SecurityConfiguration = dict[
-            str, str | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | bool | dict[str, FlextTypes.ConfigValue]
         ]
-        type SecurityPolicy = dict[str, str | bool | list[str] | dict[str, object]]
-        type SecurityValidation = dict[str, bool | str | list[str] | dict[str, object]]
+        type SecurityPolicy = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
+        ]
+        type SecurityValidation = dict[
+            str, bool | str | FlextTypes.StringList | FlextTypes.Dict
+        ]
         type SecuritySandbox = dict[
-            str, str | bool | list[str] | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | bool | FlextTypes.StringList | dict[str, FlextTypes.ConfigValue]
         ]
         type SecurityAudit = list[
-            dict[str, str | int | dict[str, FlextTypes.Core.JsonValue]]
+            dict[str, str | int | dict[str, FlextTypes.JsonValue]]
         ]
-        type SecurityCredentials = dict[
-            str, str | dict[str, FlextTypes.Core.ConfigValue]
-        ]
+        type SecurityCredentials = dict[str, str | dict[str, FlextTypes.ConfigValue]]
 
     # =========================================================================
     # PLUGIN HOT RELOAD TYPES - Complex hot reload types
@@ -146,17 +148,15 @@ class FlextPluginTypes(FlextTypes):
         """Plugin hot reload complex types."""
 
         type HotReloadConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.Core.ConfigValue]
+            str, str | int | bool | dict[str, FlextTypes.ConfigValue]
         ]
-        type HotReloadContext = dict[
-            str, str | bool | dict[str, FlextTypes.Core.JsonValue]
+        type HotReloadContext = dict[str, str | bool | dict[str, FlextTypes.JsonValue]]
+        type HotReloadEvent = dict[str, str | dict[str, FlextTypes.JsonValue]]
+        type HotReloadState = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
         ]
-        type HotReloadEvent = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
-        type HotReloadState = dict[str, str | bool | list[str] | dict[str, object]]
-        type HotReloadMetrics = dict[
-            str, int | float | dict[str, FlextTypes.Core.JsonValue]
-        ]
-        type HotReloadValidation = dict[str, bool | str | list[str]]
+        type HotReloadMetrics = dict[str, int | float | dict[str, FlextTypes.JsonValue]]
+        type HotReloadValidation = dict[str, bool | str | FlextTypes.StringList]
 
     # =========================================================================
     # PLUGIN MONITORING TYPES - Complex plugin monitoring types
@@ -166,57 +166,61 @@ class FlextPluginTypes(FlextTypes):
         """Plugin monitoring complex types."""
 
         type MonitoringConfiguration = dict[
-            str, bool | str | int | dict[str, FlextTypes.Core.ConfigValue]
+            str, bool | str | int | dict[str, FlextTypes.ConfigValue]
         ]
         type MonitoringMetrics = dict[
-            str, int | float | dict[str, FlextTypes.Core.JsonValue]
+            str, int | float | dict[str, FlextTypes.JsonValue]
         ]
-        type MonitoringAlerts = list[dict[str, str | int | bool | dict[str, object]]]
+        type MonitoringAlerts = list[dict[str, str | int | bool | FlextTypes.Dict]]
         type MonitoringDashboard = dict[
-            str, str | list[dict[str, FlextTypes.Core.JsonValue]]
+            str, str | list[dict[str, FlextTypes.JsonValue]]
         ]
-        type MonitoringReports = dict[str, str | list[dict[str, object]]]
-        type MonitoringHealth = dict[str, bool | str | dict[str, object]]
+        type MonitoringReports = dict[str, str | list[FlextTypes.Dict]]
+        type MonitoringHealth = dict[str, bool | str | FlextTypes.Dict]
 
     # =========================================================================
-    # CORE TYPES - Essential Plugin types extending FlextTypes.Core
+    # CORE TYPES - Essential Plugin types extending FlextTypes
     # =========================================================================
 
-    class Core(FlextTypes.Core):
-        """Core Plugin system types extending FlextTypes.Core.
+    class Core(FlextTypes):
+        """Core Plugin system types extending FlextTypes.
 
         Essential domain-specific types for plugin management operations.
-        Replaces generic dict[str, object] with semantic plugin types.
+        Replaces generic FlextTypes.Dict with semantic plugin types.
         """
 
         # Configuration and management types
-        type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | object]
-        type PluginDict = dict[str, object]
-        type MetadataDict = dict[str, object]
-        type SettingsDict = dict[str, object]
+        type ConfigDict = dict[str, FlextTypes.ConfigValue | object]
+        type PluginDict = FlextTypes.Dict
+        type MetadataDict = FlextTypes.Dict
+        type SettingsDict = FlextTypes.Dict
 
         # Execution and processing types
-        type InputDict = dict[str, object]
-        type OutputDict = dict[str, object]
-        type StateDict = dict[str, object]
-        type ContextDict = dict[str, object]
+        type InputDict = FlextTypes.Dict
+        type OutputDict = FlextTypes.Dict
+        type StateDict = FlextTypes.Dict
+        type ContextDict = FlextTypes.Dict
 
         # Discovery and registry types
-        type DiscoveryDict = dict[str, list[dict[str, object]] | bool | str]
-        type RegistryDict = dict[str, list[dict[str, object]] | dict[str, object]]
-        type LoadedPluginsDict = dict[str, object]
-        type ManifestDict = dict[str, object]
+        type DiscoveryDict = dict[str, list[FlextTypes.Dict] | bool | str]
+        type RegistryDict = dict[str, list[FlextTypes.Dict] | FlextTypes.Dict]
+        type LoadedPluginsDict = FlextTypes.Dict
+        type ManifestDict = FlextTypes.Dict
 
         # Lifecycle and operation types
-        type LifecycleDict = dict[str, str | bool | list[str] | dict[str, object]]
-        type SecurityDict = dict[str, str | bool | list[str] | dict[str, object]]
-        type MonitoringDict = dict[str, bool | str | dict[str, object]]
-        type DetailsDict = dict[str, object]
+        type LifecycleDict = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
+        ]
+        type SecurityDict = dict[
+            str, str | bool | FlextTypes.StringList | FlextTypes.Dict
+        ]
+        type MonitoringDict = dict[str, bool | str | FlextTypes.Dict]
+        type DetailsDict = FlextTypes.Dict
 
         # Collection types for plugin operations
         type PluginList = list[PluginDict]
         type MetadataList = list[MetadataDict]
-        type StringList = list[str]
+        type StringList = FlextTypes.StringList
 
     # =========================================================================
     # PLUGIN PROJECT TYPES - Domain-specific project types extending FlextTypes
@@ -256,17 +260,17 @@ class FlextPluginTypes(FlextTypes):
         ]
 
         # Plugin-specific project configurations
-        type PluginProjectConfig = dict[str, FlextTypes.Core.ConfigValue | object]
-        type ExtensibilityConfig = dict[str, str | int | bool | list[str]]
-        type PluginRegistryConfig = dict[str, bool | str | dict[str, object]]
-        type HotReloadConfig = dict[str, FlextTypes.Core.ConfigValue | object]
+        type PluginProjectConfig = dict[str, FlextTypes.ConfigValue | object]
+        type ExtensibilityConfig = dict[str, str | int | bool | FlextTypes.StringList]
+        type PluginRegistryConfig = dict[str, bool | str | FlextTypes.Dict]
+        type HotReloadConfig = dict[str, FlextTypes.ConfigValue | object]
 
 
 # =============================================================================
 # PUBLIC API EXPORTS - Plugin TypeVars and types
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.StringList = [
     "FlextPluginTypes",
     "TPluginResult",
 ]

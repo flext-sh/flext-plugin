@@ -9,18 +9,21 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextResult
+from flext_core import FlextHandlers, FlextResult
 
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.ports import FlextPluginLoaderPort
 
 
-class FlextPluginHandler:
-    """Base handler for plugin operations."""
+class FlextPluginHandler(
+    FlextHandlers[FlextPluginEntity, FlextResult[FlextPluginEntity]]
+):
+    """Base handler for plugin operations extending FlextHandlers."""
 
     @override
     def __init__(self, plugin_service: FlextPluginLoaderPort | None = None) -> None:
         """Initialize handler with optional plugin service."""
+        super().__init__()
         self._plugin_service = plugin_service
 
 
@@ -69,7 +72,7 @@ class FlextPluginRegistrationHandler(FlextPluginHandler):
             return FlextResult[bool].fail(f"Failed to unregister plugin: {e}")
 
 
-class FlextPluginEventHandler:
+class FlextPluginEventHandler(FlextHandlers[FlextPluginEntity, None]):
     """CQRS event handler for plugin lifecycle events and domain event processing."""
 
     def handle_plugin_loaded(self, plugin: FlextPluginEntity) -> FlextResult[bool]:

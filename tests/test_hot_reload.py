@@ -33,7 +33,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
 import tempfile
+import time
 from collections.abc import Generator
 from pathlib import Path
 
@@ -407,7 +409,7 @@ class LoadTestPlugin:
         manager._on_plugin_file_changed(real_plugin_path)
 
         # Give a moment for task to be created
-        sleep(0.01)
+        time.sleep(0.01)
 
         # Should complete without errors
 
@@ -616,7 +618,7 @@ class ConcurrentPlugin{i}:
 ''')
 
             # Test concurrent operations
-            gather(
+            asyncio.gather(
                 manager._load_plugin(Path("concurrent_plugin_0.py")),
                 manager._load_plugin(Path("concurrent_plugin_1.py")),
                 manager._load_plugin(Path("concurrent_plugin_2.py")),

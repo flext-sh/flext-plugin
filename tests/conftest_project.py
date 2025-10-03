@@ -41,7 +41,7 @@ def set_test_environment() -> Generator[None]:
 
 # REAL Plugin test configuration
 @pytest.fixture
-def real_plugin_config() -> FlextTypes.Core.Dict:
+def real_plugin_config() -> FlextTypes.Dict:
     """REAL plugin configuration for testing."""
     return {
         "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
@@ -63,7 +63,7 @@ def simple_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_plugin_data() -> FlextTypes.Core.Dict:
+def real_plugin_data() -> FlextTypes.Dict:
     """REAL plugin data matching actual plugin files."""
     return {
         "plugins": [
@@ -235,7 +235,7 @@ def real_manager_adapter(real_plugin_directory: Path) -> RealPluginManagerAdapte
 
 # REAL Configuration fixtures
 @pytest.fixture
-def real_plugin_configs() -> dict[str, FlextTypes.Core.Dict]:
+def real_plugin_configs() -> FlextTypes.NestedDict:
     """REAL plugin configurations matching plugin files."""
     return {
         "tap_database": {
@@ -311,7 +311,7 @@ def real_processor_plugin() -> FlextPluginEntity:
 
 # REAL Dependency fixtures
 @pytest.fixture
-def real_plugin_dependencies() -> dict[str, FlextTypes.Core.StringList]:
+def real_plugin_dependencies() -> dict[str, FlextTypes.StringList]:
     """REAL plugin dependency graph."""
     return {
         "tap_database": [],
@@ -322,7 +322,7 @@ def real_plugin_dependencies() -> dict[str, FlextTypes.Core.StringList]:
 
 # Performance testing fixtures
 @pytest.fixture
-def performance_config() -> FlextTypes.Core.Dict:
+def performance_config() -> FlextTypes.Dict:
     """Configuration for REAL plugin performance testing."""
     return {
         "max_load_time": 2.0,  # seconds for real plugins

@@ -113,36 +113,34 @@ class PluginRegistry:
         """Get a plugin by name."""
         return self.plugins.get(name)
 
-    def list_plugins(self: object) -> FlextTypes.Core.StringList:
+    def list_plugins(self: object) -> FlextTypes.StringList:
         """List all registered plugins."""
         return list(self.plugins.keys())
 
+    @staticmethod
+    def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plugin]:
+        """Load a plugin from module."""
+        try:
+            module = importlib.import_module(module_name)
+            plugin_class = getattr(module, class_name)
+            plugin = plugin_class()
+            return FlextResult[Plugin].ok(plugin)
+        except ImportError as e:
+            return FlextResult[Plugin].fail(f"Module import failed: {e}")
+        except AttributeError as e:
+            return FlextResult[Plugin].fail(f"Plugin class not found: {e}")
+        except (RuntimeError, ValueError, TypeError) as e:
+            return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
+        except Exception as e:
+            return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
 
-def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plugin]:
-    """Load a plugin from module."""
-    try:
-        module = importlib.import_module(module_name)
-        plugin_class = getattr(module, class_name)
-        plugin = plugin_class()
-        return FlextResult[Plugin].ok(plugin)
-    except ImportError as e:
-        return FlextResult[Plugin].fail(f"Module import failed: {e}")
-    except AttributeError as e:
-        return FlextResult[Plugin].fail(f"Plugin class not found: {e}")
-    except (RuntimeError, ValueError, TypeError) as e:
-        return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
-    except Exception as e:
-        return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
-
-
-def create_registry() -> PluginRegistry:
-    """Create a new plugin registry."""
-    return PluginRegistry()
+    @staticmethod
+    def create_registry() -> PluginRegistry:
+        """Create a new plugin registry."""
+        return PluginRegistry()
 
 
 __all__ = [
     "Plugin",
     "PluginRegistry",
-    "create_registry",
-    "load_plugin",
 ]

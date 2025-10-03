@@ -10,27 +10,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Callable
+from typing import TypeVar
 
 from flext_core import (
     FlextProtocols,
     FlextResult,
     FlextTypes,
-    # Plugin-specific TypeVars
-    TPlugin,
-    TPluginConfig,
-    TPluginContext,
-    TPluginData,
-    TPluginDiscovery,
-    TPluginHandler,
-    TPluginLoader,
-    TPluginManager,
-    TPluginMetadata,
-    TPluginPlatform,
-    TPluginRegistry,
-    TPluginService,
-    TPluginSystem,
-    TPluginValidator,
 )
 
 # Import local plugin types
@@ -38,7 +23,9 @@ from flext_plugin.typings import TPluginResult
 
 # All Plugin TypeVars now imported from flext-core centralized TypeVars
 
-
+TPlugin = TypeVar("TPlugin")
+TPluginService = TypeVar("TPluginService")
+TPluginHandler = TypeVar("TPluginHandler")
 # Use flext-core plugin protocol instead of local definition
 PluginProtocol = FlextProtocols.Extensions.Plugin
 
@@ -76,7 +63,7 @@ ExecutionId = str
 # Core data type definition using forward-compatible typing
 # Use typing.Union for better Pydantic compatibility
 PluginConfigData = (str | int | float) | (
-    bool | FlextTypes.Core.Dict | FlextTypes.Core.List | None
+    bool | FlextTypes.Dict | FlextTypes.List | None
 )
 
 # Configuration type aliases
@@ -102,7 +89,7 @@ FileChangeCallback = Callable[[str], Awaitable[None]]
 
 # Result type aliases
 PluginResult = FlextResult[object]
-PluginListResult = FlextResult[FlextTypes.Core.List]
+PluginListResult = FlextResult[FlextTypes.List]
 PluginBoolResult = FlextResult[bool]
 PluginDataResult = FlextResult[PluginConfigData]
 PluginStringResult = FlextResult[str]
@@ -117,14 +104,14 @@ ExecutionInputDict = dict["str", "PluginConfigData"]
 ExecutionOutputDict = dict["str", "PluginConfigData"]
 
 # Discovery type aliases
-DiscoveryPathList = FlextTypes.Core.StringList
+DiscoveryPathList = FlextTypes.StringList
 DiscoveryPattern = str
 DiscoveryFilters = dict["str", "PluginConfigData"]
 
 # Platform type aliases
 PlatformConfig = dict["str", "PluginConfigData"]
-PlatformServices = FlextTypes.Core.Dict
-PlatformHandlers = FlextTypes.Core.Dict
+PlatformServices = FlextTypes.Dict
+PlatformHandlers = FlextTypes.Dict
 
 
 # Plugin data unions
@@ -221,19 +208,5 @@ __all__ = [
     "PluginUrl",
     "PluginValidatorProtocol",
     "PluginVersion",
-    "TPlugin",
-    "TPluginConfig",
-    "TPluginContext",
-    "TPluginData",
-    "TPluginDiscovery",
-    "TPluginHandler",
-    "TPluginLoader",
-    "TPluginManager",
-    "TPluginMetadata",
-    "TPluginPlatform",
-    "TPluginRegistry",
     "TPluginResult",
-    "TPluginService",
-    "TPluginSystem",
-    "TPluginValidator",
 ]

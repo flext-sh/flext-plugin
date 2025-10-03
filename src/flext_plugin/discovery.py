@@ -43,11 +43,11 @@ class PluginDiscovery(FlextModels.Entity):
         default="/usr/local/plugins",
         description="Primary plugin directory path",
     )
-    plugin_directories: FlextTypes.Core.StringList = Field(
+    plugin_directories: FlextTypes.StringList = Field(
         default_factory=list,
         description="Additional plugin directories to scan",
     )
-    discovered_plugins: FlextTypes.Core.Dict = Field(
+    discovered_plugins: FlextTypes.Dict = Field(
         default_factory=dict,
         description="Cache of discovered plugins",
         exclude=True,
@@ -64,7 +64,7 @@ class PluginDiscovery(FlextModels.Entity):
         *,
         entity_id: str | None = None,
         plugin_directory: str = "/usr/local/plugins",
-        plugin_directories: FlextTypes.Core.StringList | None = None,
+        plugin_directories: FlextTypes.StringList | None = None,
         **_kwargs: object,
     ) -> None:
         """Initialize the instance."""
@@ -101,20 +101,20 @@ class PluginDiscovery(FlextModels.Entity):
             # Modify the list in place (mutable object)
             self.plugin_directories.append(directory_str)
 
-    def discover_all(self) -> FlextTypes.Core.Dict:
+    def discover_all(self) -> FlextTypes.Dict:
         """Discover all plugins from configured directories."""
         self._discover_entry_points()
         self._discover_file_system()
         return self.discovered_plugins
 
-    def discover_by_type(self, plugin_type: PluginType) -> FlextTypes.Core.Dict:
+    def discover_by_type(self, plugin_type: PluginType) -> FlextTypes.Dict:
         """Discover plugins by type."""
         all_plugins = self.discover_all()
         return {
             name: plugin
             for name, plugin in all_plugins.items()
             if isinstance(plugin, dict)
-            and cast("FlextTypes.Core.Dict", plugin).get("type") == plugin_type
+            and cast("FlextTypes.Dict", plugin).get("type") == plugin_type
         }
 
     def get_discovered_plugin(self, plugin_name: str) -> object | None:
@@ -159,12 +159,20 @@ class PluginDiscovery(FlextModels.Entity):
 
     def _scan_directory(self, directory: Path) -> None:
         """Scan a directory for plugin files."""
-        # Use -safe path operations
+        # Use async-safe path operations
         if PATH_AVAILABLE:
             dir = anyio.Path(directory)
             if not dir.exists():
                 return
-            py_files = [f for f in dir.glob("*.py")]
+            # Properly handle AsyncIterator - convert to sync for now
+            py_files = []
+            import asyncio
+
+            async def collect_py_files():
+                async for f in dir.glob("*.py"):
+                    py_files.append(Path(f))
+
+            asyncio.run(collect_py_files())
         else:
             # Fallback to thread-safe synchronous operations
             if not directory.exists():
@@ -173,8 +181,12 @@ class PluginDiscovery(FlextModels.Entity):
             def get_python_files(path: Path) -> list[Path]:
                 return [f for f in path.iterdir() if f.name.endswith(".py")]
 
-            py_files = get_event_loop().run_in_executor(
-                None, get_python_files, directory
+            # Use asyncio.get_event_loop() explicitly
+            import asyncio
+
+            loop = asyncio.get_event_loop()
+            py_files = loop.run_until_complete(
+                loop.run_in_executor(None, get_python_files, directory)
             )
 
         for py_file in py_files:
@@ -189,7 +201,7 @@ class PluginDiscovery(FlextModels.Entity):
                 try:
                     # Use FlextUtilities for safe JSON parsing
                     manifest_content = manifest_file.read_text(encoding="utf-8")
-                    metadata: dict[str, object] = json.loads(str(manifest_content))
+                    metadata: FlextTypes.Dict = json.loads(str(manifest_content))
                     plugin_name_key = FlextUtilities.TextProcessor.safe_string(
                         str(metadata.get("name", plugin_name)),
                     )
@@ -243,6 +255,6 @@ class PluginDiscovery(FlextModels.Entity):
 
 
 # Removed mock classes - use real implementations in tests
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextTypes.StringList = [
     "PluginDiscovery",
 ]

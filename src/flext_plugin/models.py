@@ -10,7 +10,8 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Self
 
-from flext_core import FlextModels
+from flext_core import FlextModels, FlextTypes
+from typing import cast
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -66,7 +67,7 @@ class FlextPluginModels(FlextModels):
     # Plugin performance metrics and analysis capabilities
     @computed_field
     @property
-    def plugin_performance_analysis(self) -> dict[str, object]:
+    def plugin_performance_analysis(self) -> FlextTypes.Dict:
         """Computed field for comprehensive plugin performance analysis."""
         return {
             "performance_thresholds": {
@@ -96,7 +97,7 @@ class FlextPluginModels(FlextModels):
             ]
         )
 
-    def plugin_system_summary(self) -> dict[str, object]:
+    def plugin_system_summary(self) -> FlextTypes.Dict:
         """Generate comprehensive plugin system summary."""
         return {
             "system_overview": {
@@ -126,18 +127,18 @@ class FlextPluginModels(FlextModels):
     def validate_plugin_system_consistency(self) -> bool:
         """Validate overall plugin system model consistency."""
         try:
-            summary = self.plugin_system_summary()
-            return (
-                summary["model_capabilities"]["configuration_management"]
-                and summary["operational_status"]["models_loaded"]
-                and self.active_plugin_models_count > 0
+            summary = cast(dict[str, dict[str, object]], self.plugin_system_summary())
+            config_mgmt = summary["model_capabilities"]["configuration_management"]
+            models_loaded = summary["operational_status"]["models_loaded"]
+            return bool(
+                config_mgmt and models_loaded and self.active_plugin_models_count > 0
             )
         except Exception:
             return False
 
     def serialize_with_plugin_metadata(
         self, info: SerializationInfo | None = None
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Dict:
         """Enhanced serialization with plugin metadata."""
         base_data = self.model_dump(mode="json")
         return {
@@ -262,10 +263,10 @@ class FlextPluginModels(FlextModels):
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")
-        dependencies: list[str] = Field(
+        dependencies: FlextTypes.StringList = Field(
             default_factory=list, description="Required plugin dependencies"
         )
-        tags: list[str] = Field(
+        tags: FlextTypes.StringList = Field(
             default_factory=list, description="Plugin categorization tags"
         )
         created_at: datetime = Field(
@@ -291,7 +292,9 @@ class FlextPluginModels(FlextModels):
 
         @field_validator("dependencies")
         @classmethod
-        def validate_dependencies_format(cls, value: list[str]) -> list[str]:
+        def validate_dependencies_format(
+            cls, value: FlextTypes.StringList
+        ) -> FlextTypes.StringList:
             """Validate dependency format and constraints."""
             if len(value) > 50:
                 error_msg = "Too many dependencies (max 50)"
@@ -306,8 +309,8 @@ class FlextPluginModels(FlextModels):
 
         @field_serializer("dependencies", when_used="json")
         def serialize_dependencies_with_validation(
-            self, value: list[str]
-        ) -> dict[str, object]:
+            self, value: FlextTypes.StringList
+        ) -> FlextTypes.Dict:
             """Field serializer for dependencies with validation metadata."""
             return {
                 "dependencies": value,
@@ -340,7 +343,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def config_summary(self) -> dict[str, object]:
+        def config_summary(self) -> FlextTypes.Dict:
             """Computed field providing comprehensive configuration summary."""
             return {
                 "operational_config": {
@@ -414,7 +417,7 @@ class FlextPluginModels(FlextModels):
             pattern=r"^(low|medium|high|critical)$",
             description="Plugin security clearance level",
         )
-        permissions: list[str] = Field(
+        permissions: FlextTypes.StringList = Field(
             default_factory=list, description="Required security permissions"
         )
         sandboxed: bool = Field(
@@ -458,7 +461,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def security_assessment(self) -> dict[str, object]:
+        def security_assessment(self) -> FlextTypes.Dict:
             """Comprehensive security assessment."""
             score = self.security_score
             return {
@@ -481,7 +484,7 @@ class FlextPluginModels(FlextModels):
                 return "high"
             return "very_high"
 
-        def _generate_security_recommendations(self) -> list[str]:
+        def _generate_security_recommendations(self) -> FlextTypes.StringList:
             """Generate security recommendations based on current config."""
             recommendations = []
             if not self.sandboxed:
@@ -496,7 +499,7 @@ class FlextPluginModels(FlextModels):
                 recommendations.append("Implement signature verification")
             return recommendations
 
-        def _check_compliance(self) -> dict[str, bool]:
+        def _check_compliance(self) -> FlextTypes.BoolDict:
             """Check compliance with security standards."""
             return {
                 "enterprise_ready": self.security_score >= 75,
@@ -531,7 +534,7 @@ class FlextPluginModels(FlextModels):
             pattern=r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
             description="Logging level for plugin",
         )
-        alert_thresholds: dict[str, float] = Field(
+        alert_thresholds: FlextTypes.FloatDict = Field(
             default_factory=lambda: {
                 "cpu_percent": 80.0,
                 "memory_percent": 85.0,
@@ -546,7 +549,7 @@ class FlextPluginModels(FlextModels):
 
         @computed_field
         @property
-        def monitoring_coverage(self) -> dict[str, object]:
+        def monitoring_coverage(self) -> FlextTypes.Dict:
             """Compute monitoring coverage analysis."""
             enabled_features = sum(
                 [
@@ -577,7 +580,7 @@ class FlextPluginModels(FlextModels):
                 return "basic"
             return "minimal"
 
-        def _get_monitoring_recommendations(self) -> list[str]:
+        def _get_monitoring_recommendations(self) -> FlextTypes.StringList:
             """Get monitoring improvement recommendations."""
             recommendations = []
             if not self.metrics_enabled:
@@ -594,7 +597,9 @@ class FlextPluginModels(FlextModels):
 
         @field_validator("alert_thresholds")
         @classmethod
-        def validate_alert_thresholds(cls, value: dict[str, float]) -> dict[str, float]:
+        def validate_alert_thresholds(
+            cls, value: FlextTypes.FloatDict
+        ) -> FlextTypes.FloatDict:
             """Validate alert threshold values."""
             required_thresholds = {
                 "cpu_percent",
@@ -645,11 +650,11 @@ class FlextPluginModels(FlextModels):
             description="Plugin documentation URL",
         )
         license: str | None = Field(default=None, description="Plugin license")
-        keywords: list[str] = Field(
+        keywords: FlextTypes.StringList = Field(
             default_factory=list,
             description="Plugin keywords",
         )
-        maintainers: list[str] = Field(
+        maintainers: FlextTypes.StringList = Field(
             default_factory=list,
             description="Plugin maintainers",
         )
@@ -733,7 +738,7 @@ class FlextPluginModels(FlextModels):
 
         operation: str = Field(..., description="Operation name")
         success: bool = Field(default=False, description="Whether operation succeeded")
-        plugins_affected: list[str] = Field(
+        plugins_affected: FlextTypes.StringList = Field(
             default_factory=list,
             description="List of affected plugin names",
         )
@@ -745,7 +750,7 @@ class FlextPluginModels(FlextModels):
             default_factory=dict,
             description="Additional operation details",
         )
-        errors: list[str] = Field(
+        errors: FlextTypes.StringList = Field(
             default_factory=list,
             description="List of error messages",
         )
@@ -760,6 +765,8 @@ PluginStatus = FlextPluginModels.PluginStatus
 PluginType = FlextPluginModels.PluginType
 FlextPluginConfigModel = FlextPluginModels.ConfigModel
 FlextPluginMetadataModel = FlextPluginModels.MetadataModel
+# Alias for backward compatibility
+PluginMetadata = FlextPluginModels.MetadataModel
 FlextPluginModel = FlextPluginModels.PluginModel
 PluginExecutionContextModel = FlextPluginModels.ExecutionContextModel
 PluginExecutionResultModel = FlextPluginModels.ExecutionResultModel
@@ -771,6 +778,7 @@ __all__ = [
     # Legacy backward compatibility exports
     "FlextPluginConfigModel",
     "FlextPluginMetadataModel",
+    "PluginMetadata",
     "FlextPluginModel",
     "PluginExecutionContextModel",
     "PluginExecutionResultModel",

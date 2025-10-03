@@ -17,6 +17,8 @@ from typing import cast
 import pytest
 from pydantic import ValidationError
 
+from flext_core import FlextModels
+
 from flext_plugin import (
     FlextPlugin,
     FlextPluginConfig,

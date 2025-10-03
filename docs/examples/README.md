@@ -215,7 +215,7 @@ class ExamplePlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
-    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
@@ -241,7 +241,7 @@ class ExamplePlugin(FlextPlugin):
         """Setup plugin-specific resources."""
         pass
 
-    def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
+    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
 
@@ -398,8 +398,8 @@ from flext_core import FlextResult
 
 def process_data(
     self,
-    data: Dict[str, object]
-) -> FlextResult[Dict[str, object]]:
+    data: FlextTypes.Dict
+) -> FlextResult[FlextTypes.Dict]:
     """Type-safe data processing."""
     pass
 ```

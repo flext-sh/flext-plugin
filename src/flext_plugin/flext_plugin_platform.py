@@ -9,7 +9,17 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextContainer, FlextResult
+from flext_core import (
+    FlextBus,
+    FlextContainer,
+    FlextContext,
+    FlextDispatcher,
+    FlextLogger,
+    FlextProcessors,
+    FlextRegistry,
+    FlextResult,
+    FlextService,
+)
 
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.flext_plugin_services import (
@@ -18,25 +28,35 @@ from flext_plugin.flext_plugin_services import (
 )
 
 
-class FlextPluginPlatform:
-    """Unified plugin management platform providing comprehensive facade for plugins.
+class FlextPluginPlatform(FlextService[None]):
+    """Unified plugin management platform with complete FLEXT ecosystem integration.
 
     The main platform class that serves as the primary entry point for plugin
     management operations within the FLEXT ecosystem. Implements the Facade pattern
     to provide a simplified, unified interface to the complex plugin management
     subsystem while maintaining Clean Architecture principles.
 
-    This platform coordinates multiple application services, manages dependency
-    injection, and provides a consistent API surface for plugin discovery, loading,
-    installation, configuration, and lifecycle management operations.
+    Extends FlextService and integrates the complete FLEXT ecosystem:
+    - FlextBus: Event emission for plugin lifecycle events
+    - FlextContainer: Dependency injection and service management
+    - FlextContext: Operation context tracking and correlation
+    - FlextCqrs: CQRS pattern for plugin operations and queries
+    - FlextDispatcher: Message routing and command coordination
+    - FlextProcessors: Processing utilities for plugin workflows
+    - FlextRegistry: Component registration and discovery
+    - FlextLogger: Structured logging for plugin operations
+    - FlextResult: Railway-oriented programming for all operations
+
     Key Features:
       - Unified API facade for all plugin operations
+      - Complete FLEXT ecosystem component integration
       - Dependency injection container management
       - Service lifecycle coordination and management
       - Comprehensive error handling and result coordination
       - Integration support for external systems and frameworks
     Architecture Integration:
       - Implements Clean Architecture platform layer patterns
+      - Extends FlextService for consistent service behavior
       - Coordinates application services without containing business logic
       - Manages cross-cutting concerns like dependency injection
       - Provides external integration points and API boundaries
@@ -57,20 +77,20 @@ class FlextPluginPlatform:
       >>>
       >>> # Full plugin management workflow
       >>> discovery_result: FlextResult[object] = platform.discover_plugins("./plugins")
-      >>> if discovery_result.success():
-      ...     for plugin in discovery_result.data:
+      >>> if discovery_result.success:
+      ...     for plugin in discovery_result.value:
       ...         # Validate plugin before loading
       ...         validation = platform.validate_plugin(plugin)
-      ...         if validation.success() and validation.data:
+      ...         if validation.success and validation.value:
       ...             # Load validated plugin
       ...             load_result: FlextResult[object] = platform.load_plugin(plugin)
-      ...             if load_result.success():
+      ...             if load_result.success:
       ...                 print(f"Successfully loaded plugin: {plugin.name}")
       >>>
       >>> # Configuration management
       >>> config_result: FlextResult[object] = platform.get_plugin_config("my-plugin")
-      >>> if config_result.success():
-      ...     config: dict["str", "object"] = config_result.data
+      >>> if config_result.success:
+      ...     config: dict[str, object] = config_result.value
       ...     # Modify configuration and update
       ...     update_result: FlextResult[object] = platform.update_plugin_config(
       ...         "my-plugin", config
@@ -84,12 +104,22 @@ class FlextPluginPlatform:
 
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize plugin management platform with dependency injection container.
+        """Initialize plugin management platform with complete FLEXT ecosystem integration.
 
         Sets up the platform with proper dependency injection container and
         initializes all required application services for plugin management
         operations. The platform uses the container to manage service lifecycles
         and coordinate dependencies across the plugin management system.
+
+        Integrates complete FLEXT ecosystem components:
+        - FlextBus: Event emission for plugin lifecycle events
+        - FlextContainer: Dependency injection and service management
+        - FlextContext: Operation context tracking and correlation
+        - FlextCqrs: CQRS pattern for plugin operations and queries
+        - FlextDispatcher: Message routing and command coordination
+        - FlextProcessors: Processing utilities for plugin workflows
+        - FlextRegistry: Component registration and discovery
+        - FlextLogger: Structured logging for plugin operations
 
         Args:
             container: Optional FlextContainer instance for dependency injection.
@@ -98,8 +128,9 @@ class FlextPluginPlatform:
         Initialization Process:
             1. Container setup and configuration
             2. Service registration and dependency injection
-            3. Platform service coordination and integration
-            4. Error handling and recovery mechanism setup
+            3. FLEXT ecosystem component integration
+            4. Platform service coordination and integration
+            5. Error handling and recovery mechanism setup
         Note:
             The platform automatically registers all required services in the
             container during initialization. External services can be registered
@@ -110,10 +141,26 @@ class FlextPluginPlatform:
             object: Description of return value.
 
         """
+        super().__init__()
         self.container = container or FlextContainer()
+        self._logger = FlextLogger(__name__)
+
+        # Complete FLEXT ecosystem integration
+        self._bus = FlextBus()
+        self._context = FlextContext()
+        self._cqrs = FlextCqrs()
+        self._dispatcher = FlextDispatcher()
+        self._processors = FlextProcessors()
+        self._registry = FlextRegistry(dispatcher=self._dispatcher)
+
         self._setup_services()
 
-    def _setup_services(self: object) -> None:
+    @override
+    def execute(self) -> FlextResult[None]:
+        """Execute platform initialization (required by FlextService)."""
+        return FlextResult[None].ok(None)
+
+    def _setup_services(self) -> None:
         """Set up platform services in the container."""
         # Register services in container
         # DRY SOLID pattern: Use container kwarg for service initialization
@@ -127,7 +174,7 @@ class FlextPluginPlatform:
         )
 
     @property
-    def plugin_service(self: object) -> FlextPluginService:
+    def plugin_service(self) -> FlextPluginService:
         """Get plugin management service."""
         result: FlextResult[object] = self.container.get("plugin_service")
         if result.success and isinstance(result.data, FlextPluginService):
@@ -136,7 +183,7 @@ class FlextPluginPlatform:
         raise RuntimeError(msg)
 
     @property
-    def discovery_service(self: object) -> FlextPluginDiscoveryService:
+    def discovery_service(self) -> FlextPluginDiscoveryService:
         """Get plugin discovery service."""
         result: FlextResult[object] = self.container.get("plugin_discovery_service")
         if result.success and isinstance(result.data, FlextPluginDiscoveryService):

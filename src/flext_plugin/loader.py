@@ -41,10 +41,10 @@ class PluginLoader(FlextModels.Entity):
     error handling throughout the plugin lifecycle.
     """
 
-    loaded_plugins: ClassVar[FlextTypes.Core.Dict] = {}
-    plugin_modules: ClassVar[FlextTypes.Core.Dict] = {}
+    loaded_plugins: ClassVar[FlextTypes.Dict] = {}
+    plugin_modules: ClassVar[FlextTypes.Dict] = {}
 
-    model_config: ClassVar = {"arbitrary_types_allowed": "True"}
+    model_config = {"arbitrary_types_allowed": True}
 
     @override
     def __init__(
@@ -65,14 +65,14 @@ class PluginLoader(FlextModels.Entity):
         )
         # Store security setting as instance attribute (not Pydantic field)
         object.__setattr__(self, "_security_enabled", security_enabled)
-        self._loaded_plugins: FlextTypes.Core.Dict = {}
+        self._loaded_plugins: FlextTypes.Dict = {}
 
     @property
-    def security_enabled(self: object) -> bool:
+    def security_enabled(self) -> bool:
         """Get security enabled status."""
         return getattr(self, "_security_enabled", True)
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate domain rules for plugin loader."""
         return FlextResult[None].ok(None)
 
@@ -173,7 +173,7 @@ class PluginLoader(FlextModels.Entity):
         self.unload_plugin(plugin_name)
         return self.load_plugin(Path(file_path))
 
-    def get_loaded_plugins(self: object) -> FlextTypes.Core.Dict:
+    def get_loaded_plugins(self) -> FlextTypes.Dict:
         """Get copy of loaded plugins."""
         return self.loaded_plugins.copy()
 
@@ -211,14 +211,14 @@ class PluginLoader(FlextModels.Entity):
         """
         return plugin_name in self._loaded_plugins
 
-    def get_all_loaded_plugins(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def get_all_loaded_plugins(self) -> FlextResult[FlextTypes.Dict]:
         """Get all loaded plugins.
 
         Returns:
             FlextResult containing dictionary of loaded plugins
 
         """
-        return FlextResult[FlextTypes.Core.Dict].ok(self._loaded_plugins.copy())
+        return FlextResult[FlextTypes.Dict].ok(self._loaded_plugins.copy())
 
 
 __all__ = [

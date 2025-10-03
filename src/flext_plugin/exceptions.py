@@ -39,66 +39,553 @@ class FlextPluginExceptions(FlextExceptions):
         PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
     # Base plugin exception classes as nested classes
-    class PluginBaseError(Exception):
-        """Base exception for all plugin domain errors."""
+    class PluginBaseError(FlextExceptions.BaseError):
+        """Base exception for all plugin domain errors extending FlextExceptions.BaseError."""
 
         @override
         def __init__(
             self,
             message: str,
+            *,
             plugin_id: str | None = None,
-            **_kwargs: object,
+            **kwargs: object,
         ) -> None:
-            """Initialize the instance."""
-            # Store error_code for later use if needed
-            self.error_code = "PLUGIN_PROCESSING_ERROR"
-            super().__init__(message)
+            """Initialize plugin error with context using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier that caused the error
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Store plugin_id before extracting common kwargs
             self.plugin_id = plugin_id
 
-        @override
-        def __str__(self) -> str:
-            """Format exception with error code prefix."""
-            message = super().__str__()
-            return f"[{self.error_code}] {message}"
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "PLUGIN_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class DiscoveryError(PluginBaseError):
         """Plugin discovery errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize discovery error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_DISCOVERY_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class LoadingError(PluginBaseError):
         """Plugin loading errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize loading error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_LOADING_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class ExecutionError(PluginBaseError):
         """Plugin execution errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize execution error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_EXECUTION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class PluginConfigurationError(PluginBaseError):
         """Plugin configuration errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize configuration error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_CONFIGURATION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class PluginValidationError(PluginBaseError):
         """Plugin validation errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize validation error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_VALIDATION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class LifecycleError(PluginBaseError):
         """Plugin lifecycle management errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize lifecycle error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_LIFECYCLE_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class DependencyError(PluginBaseError):
         """Plugin dependency resolution errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize dependency error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_DEPENDENCY_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class RegistryError(PluginBaseError):
         """Plugin registry operation errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize registry error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_REGISTRY_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class HotReloadError(PluginBaseError):
         """Plugin hot reload errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize hot reload error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_HOT_RELOAD_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class SecurityError(PluginBaseError):
         """Plugin security validation errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize security error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_SECURITY_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class CompatibilityError(PluginBaseError):
         """Plugin compatibility errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize compatibility error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_COMPATIBILITY_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class MetadataError(PluginBaseError):
         """Plugin metadata validation errors."""
 
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize metadata error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_METADATA_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class PlatformError(PluginBaseError):
         """Plugin platform integration errors."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize platform error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with plugin-specific fields
+            context = self._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_PLATFORM_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     # Domain-specific operation exceptions
     class DiscoveryOperationError(DiscoveryError):

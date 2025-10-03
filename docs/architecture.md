@@ -53,7 +53,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str
     plugin_version: str
     status: PluginStatus
-    config: Dict[str, object]
+    config: FlextTypes.Dict
 
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""

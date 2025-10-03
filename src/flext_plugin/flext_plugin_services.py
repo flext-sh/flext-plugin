@@ -10,15 +10,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar, override
+from typing import override
 
 from flext_core import (
     FlextContainer,
     FlextExceptions,
+    FlextLogger,
     FlextResult,
     FlextService,
     FlextTypes,
 )
+from pydantic import ConfigDict
 
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.ports import (
@@ -49,7 +51,11 @@ class FlextPluginServices(FlextService[object]):
         """
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
+        model_config = ConfigDict(
+            validate_assignment=True,
+            arbitrary_types_allowed=True,
+            use_enum_values=True,
+        )
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin management service with dependency injection container."""
@@ -63,19 +69,20 @@ class FlextPluginServices(FlextService[object]):
             # Initialize Pydantic model with container field
             super().__init__(**kwargs)
             object.__setattr__(self, "container", container)
+            object.__setattr__(self, "_logger", FlextLogger(__name__))
             object.__setattr__(self, "_discovery_port", None)
             object.__setattr__(self, "_loader_port", None)
             object.__setattr__(self, "_manager_port", None)
 
         @override
-        def execute(self: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
 
         @property
-        def discovery_port(self: object) -> FlextPluginDiscoveryPort:
+        def discovery_port(self) -> FlextPluginDiscoveryPort:
             """Get plugin discovery port."""
             discovery_port = getattr(self, "_discovery_port", None)
             if discovery_port is None:
@@ -94,7 +101,7 @@ class FlextPluginServices(FlextService[object]):
             raise FlextExceptions.BaseError(msg)
 
         @property
-        def loader_port(self: object) -> FlextPluginLoaderPort:
+        def loader_port(self) -> FlextPluginLoaderPort:
             """Get plugin loader port."""
             loader_port = getattr(self, "_loader_port", None)
             if loader_port is None:
@@ -111,7 +118,7 @@ class FlextPluginServices(FlextService[object]):
             raise FlextExceptions.BaseError(msg)
 
         @property
-        def manager_port(self: object) -> FlextPluginManagerPort:
+        def manager_port(self) -> FlextPluginManagerPort:
             """Get plugin manager port."""
             manager_port = getattr(self, "_manager_port", None)
             if manager_port is None:
@@ -146,11 +153,11 @@ class FlextPluginServices(FlextService[object]):
                 if not plugin.is_valid():
                     return FlextResult[bool].fail("Invalid plugin")
                 # Validate plugin first
-                validation_result: FlextResult[object] = (
+                validation_result: FlextResult[bool] = (
                     self.discovery_port.validate_plugin(plugin)
                 )
                 validation_data: bool = (
-                    validation_result.data
+                    bool(validation_result.data)
                     if validation_result.data is not None
                     else False
                 )
@@ -260,7 +267,11 @@ class FlextPluginServices(FlextService[object]):
         """Specialized service for plugin discovery and validation operations."""
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
+        model_config = ConfigDict(
+            validate_assignment=True,
+            arbitrary_types_allowed=True,
+            use_enum_values=True,
+        )
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin discovery service with dependency injection container."""
@@ -276,16 +287,17 @@ class FlextPluginServices(FlextService[object]):
             object.__setattr__(self, "container", container)
             # Store private attributes
             object.__setattr__(self, "_discovery_port", None)
+            object.__setattr__(self, "_logger", FlextLogger(__name__))
 
         @override
-        def execute(self: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
             )
 
         @property
-        def discovery_port(self: object) -> FlextPluginDiscoveryPort:
+        def discovery_port(self) -> FlextPluginDiscoveryPort:
             """Get plugin discovery port."""
             discovery_port = getattr(self, "_discovery_port", None)
             if discovery_port is None:
@@ -313,8 +325,22 @@ class FlextPluginServices(FlextService[object]):
                     return FlextResult[list[FlextPluginEntity]].fail(
                         "Directory path is required",
                     )
-                return self.discovery_port.discover_plugins(directory_path)
+                self._logger.info(
+                    "Scanning directory for plugins",
+                    extra={"directory": directory_path},
+                )
+                result = self.discovery_port.discover_plugins(directory_path)
+                if result.success:
+                    self._logger.info(
+                        "Directory scan completed",
+                        extra={"plugin_count": len(result.data)},
+                    )
+                return result
             except (RuntimeError, ValueError, TypeError) as e:
+                self._logger.error(
+                    "Failed to scan directory",
+                    extra={"error": str(e), "directory": directory_path},
+                )
                 return FlextResult[list[FlextPluginEntity]].fail(
                     f"Failed to scan directory: {e}",
                 )
@@ -340,7 +366,11 @@ class FlextPluginServices(FlextService[object]):
         """Simple plugin registry service for legacy compatibility."""
 
         container: FlextContainer
-        model_config: ClassVar = {"arbitrary_types_allowed": "True", "frozen": "False"}
+        model_config = ConfigDict(
+            validate_assignment=True,
+            arbitrary_types_allowed=True,
+            use_enum_values=True,
+        )
 
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin registry service."""
@@ -358,7 +388,7 @@ class FlextPluginServices(FlextService[object]):
             object.__setattr__(self, "_plugins", {})
 
         @override
-        def execute(self: object) -> FlextResult[object]:
+        def execute(self) -> FlextResult[object]:
             """Execute service operation (required by FlextService)."""
             return FlextResult[object].fail(
                 "Use specific service methods instead of execute",
@@ -394,7 +424,7 @@ class FlextPluginServices(FlextService[object]):
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             return plugins.get(plugin_name)
 
-        def get_plugin_count(self: object) -> int:
+        def get_plugin_count(self) -> int:
             """Return number of registered plugins."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             return len(plugins)
@@ -402,7 +432,7 @@ class FlextPluginServices(FlextService[object]):
         def list_plugins(
             self,
             plugin_type: object | None = None,
-        ) -> FlextTypes.Core.List:
+        ) -> FlextTypes.List:
             """List plugin metadata optionally filtered by type."""
             plugins: dict[str, FlextPluginEntity] = getattr(self, "_plugins", {})
             if plugin_type is None:

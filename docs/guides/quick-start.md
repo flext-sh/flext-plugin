@@ -181,7 +181,7 @@ class GreetingPlugin(FlextPlugin):
         # Setup any resources here
         return FlextResult[None].ok(data=True)
 
-    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active

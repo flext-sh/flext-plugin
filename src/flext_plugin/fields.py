@@ -105,7 +105,7 @@ PluginRuntimeDataField = Annotated[
 
 # List Fields
 PluginTagsField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(
         default_factory=list,
         max_length=20,
@@ -115,7 +115,7 @@ PluginTagsField = Annotated[
 ]
 
 PluginDependenciesField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(
         default_factory=list,
         max_length=50,
@@ -125,7 +125,7 @@ PluginDependenciesField = Annotated[
 ]
 
 PluginKeywordsField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(
         default_factory=list,
         max_length=30,
@@ -135,7 +135,7 @@ PluginKeywordsField = Annotated[
 ]
 
 PluginMaintainersField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(
         default_factory=list,
         max_length=10,
@@ -145,12 +145,12 @@ PluginMaintainersField = Annotated[
 ]
 
 PluginErrorsField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(default_factory=list, description="List of error messages"),
 ]
 
 PluginsAffectedField = Annotated[
-    FlextTypes.Core.StringList,
+    FlextTypes.StringList,
     Field(default_factory=list, description="List of affected plugin names"),
 ]
 

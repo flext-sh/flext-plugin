@@ -27,7 +27,7 @@ from flext_plugin import (
 )
 
 
-def create_database_plugin_config() -> FlextTypes.Core.Dict:
+def create_database_plugin_config() -> FlextTypes.Dict:
     """Create configuration for a database plugin."""
     return {
         "database": {
@@ -57,7 +57,7 @@ def create_database_plugin_config() -> FlextTypes.Core.Dict:
     }
 
 
-def create_ldap_plugin_config() -> FlextTypes.Core.Dict:
+def create_ldap_plugin_config() -> FlextTypes.Dict:
     """Create configuration for an LDAP plugin."""
     return {
         "ldap": {
@@ -100,7 +100,7 @@ def main() -> None:
         },
     )
 
-    cast("FlextTypes.Core.Dict", db_config["database"])
+    cast("FlextTypes.Dict", db_config["database"])
 
     # 2. Create LDAP plugin with service configuration
     ldap_config = create_ldap_plugin_config()
@@ -117,7 +117,7 @@ def main() -> None:
         },
     )
 
-    cast("FlextTypes.Core.Dict", ldap_config["ldap"])
+    cast("FlextTypes.Dict", ldap_config["ldap"])
 
     # 3. Create standalone plugin configuration entity
     standalone_config = create_flext_plugin_config(

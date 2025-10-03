@@ -193,7 +193,7 @@ class TestPluginDiscoveryReal:
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
-            METADATA: ClassVar[FlextTypes.Core.Headers] = {
+            METADATA: ClassVar[FlextTypes.StringDict] = {
                 "name": "valid-plugin",
                 "version": "1.0.0",
             }
@@ -207,7 +207,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.Core.Dict:
+            def execute(self) -> FlextTypes.Dict:
                 return {"status": "success"}
 
         # Register plugin
@@ -233,7 +233,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.Core.Dict:
+            def execute(self) -> FlextTypes.Dict:
                 return {"status": "success"}
 
         # Register plugin (should use class name)
@@ -568,7 +568,7 @@ class ExtraPlugin:
 
         # Register manual plugin
         class ManualPlugin:
-            METADATA: ClassVar[FlextTypes.Core.Headers] = {
+            METADATA: ClassVar[FlextTypes.StringDict] = {
                 "name": "manual-plugin",
                 "version": "3.0.0",
             }
@@ -582,7 +582,7 @@ class ExtraPlugin:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.Core.Headers:
+            def execute(self) -> FlextTypes.StringDict:
                 return {"source": "manual"}
 
         discovery.register_plugin(ManualPlugin)

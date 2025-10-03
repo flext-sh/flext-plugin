@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Final
 
-from flext_core import FlextConstants
+from flext_core import FlextConstants, FlextTypes
 
 
 class FlextPluginConstants:
@@ -37,7 +37,7 @@ class FlextPluginConstants:
         DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
 
         # Plugin-specific discovery paths
-        DEFAULT_PLUGIN_PATHS: ClassVar[list[str]] = [
+        DEFAULT_PLUGIN_PATHS: ClassVar[FlextTypes.StringList] = [
             "/opt/flext/plugins",
             "~/.flext/plugins",
             "./plugins",
@@ -140,7 +140,12 @@ class FlextPluginConstants:
     class Security:
         """Plugin security-related constants."""
 
-        SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        SECURITY_LEVELS: Final[FlextTypes.StringList] = [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL",
+        ]
         DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
 
         # Use FlextConstants for security-related timeouts

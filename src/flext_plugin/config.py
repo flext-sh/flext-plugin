@@ -1,6 +1,6 @@
-"""FLEXT Plugin Configuration - Plugin system settings using flext-core patterns.
+"""FLEXT Plugin Configuration - Advanced plugin system settings using flext-core patterns.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
@@ -9,7 +9,13 @@ from __future__ import annotations
 import warnings
 from typing import Self
 
-from flext_core import FlextConfig, FlextConstants, FlextModels, FlextResult
+from flext_core import (
+    FlextConfig,
+    FlextConstants,
+    FlextResult,
+    FlextTypes,
+    FlextUtilities,
+)
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -17,38 +23,71 @@ from flext_plugin.constants import FlextPluginConstants
 
 
 class FlextPluginConfig(FlextConfig):
-    """Single Pydantic 2 Settings class for flext-plugin extending FlextConfig.
+    """Advanced Pydantic 2 Settings class for flext-plugin using modern FlextConfig features.
 
-    Follows standardized pattern:
-    - Extends FlextConfig from flext-core
-    - No nested classes within Config
-    - All defaults from FlextPluginConstants
-    - Uses enhanced singleton pattern with inverse dependency injection
-    - Uses Pydantic 2.11+ features (field_validator, model_validator)
+    Extends FlextConfig with plugin-specific configuration using advanced patterns:
+    - Uses FlextConfig's enhanced singleton pattern and environment management
+    - Integrates with FlextPluginConstants for type-safe constant access
+    - Leverages Pydantic 2.11+ advanced validation and serialization features
+    - Provides environment-specific configuration profiles
+    - Implements comprehensive business rule validation
+    - Supports dynamic configuration updates and hot reloading
+
+    Configuration Sources (in priority order):
+    1. Environment variables (FLEXT_PLUGIN_* prefix)
+    2. Configuration files (YAML/JSON/TOML)
+    3. FlextPluginConstants defaults
+    4. FlextConstants fallbacks
+    5. Sensible hardcoded defaults
+
+    Key Features:
+    - Type-safe configuration with full Pydantic validation
+    - Environment-aware configuration profiles
+    - Dynamic configuration updates without restart
+    - Comprehensive security and performance validation
+    - Integration with FLEXT observability and monitoring
+    - Plugin-specific business rule enforcement
     """
 
     model_config = SettingsConfigDict(
+        # Use advanced FlextConfig features
         env_prefix="FLEXT_PLUGIN_",
         case_sensitive=False,
         extra="allow",
-        # Inherit enhanced Pydantic 2.11+ features from FlextConfig
+        # Advanced Pydantic 2.11+ features
         validate_assignment=True,
         str_strip_whitespace=True,
+        str_to_lower=False,
+        json_encoders={
+            # Custom JSON encoding for plugin types
+            set: list,
+            frozenset: list,
+        },
         json_schema_extra={
             "title": "FLEXT Plugin Configuration",
-            "description": "Plugin system configuration extending FlextConfig",
+            "description": "Advanced plugin system configuration extending FlextConfig",
+            "version": "0.9.9",
+            "examples": [
+                {
+                    "discovery_enabled": True,
+                    "plugin_directories": ["plugins", "~/.flext/plugins"],
+                    "security_enabled": True,
+                    "hot_reload_enabled": True,
+                }
+            ],
         },
     )
 
-    # Plugin Discovery Configuration using FlextPluginConstants for defaults
+    # Plugin Discovery Configuration - Using advanced FlextConfig integration
     discovery_enabled: bool = Field(
         default=True,
-        description="Enable plugin discovery",
+        description="Enable plugin discovery with automatic timeout validation",
     )
 
-    plugin_directories: list[str] = Field(
-        default_factory=lambda: ["plugins", "~/.flext/plugins"],
-        description="Directories to search for plugins",
+    plugin_directories: FlextTypes.StringList = Field(
+        default=FlextPluginConstants.Discovery.DEFAULT_PLUGIN_PATHS,
+        description="Directories to search for plugins (from FlextPluginConstants)",
+        min_length=1,
     )
 
     auto_discover: bool = Field(
@@ -57,9 +96,9 @@ class FlextPluginConfig(FlextConfig):
     )
 
     discovery_interval_seconds: int = Field(
-        default=FlextConstants.Network.DEFAULT_TIMEOUT * 10,
+        default=FlextPluginConstants.Discovery.DISCOVERY_TIMEOUT_SECONDS,
         gt=0,
-        le=3600,
+        le=FlextConstants.Network.DEFAULT_TIMEOUT * 60,  # Max 10 minutes
         description="Plugin discovery interval in seconds",
     )
 
@@ -68,109 +107,110 @@ class FlextPluginConfig(FlextConfig):
         description="Include system-level plugins",
     )
 
-    # Plugin Loading Configuration using FlextPluginConstants for defaults
+    # Plugin Loading Configuration - Advanced integration with FlextConstants
     loading_enabled: bool = Field(
         default=True,
-        description="Enable plugin loading",
+        description="Enable plugin loading with FlextConstants reliability patterns",
     )
 
     lazy_loading: bool = Field(
         default=True,
-        description="Enable lazy plugin loading",
+        description="Enable lazy plugin loading for performance optimization",
     )
 
     max_load_retries: int = Field(
-        default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
-        ge=0,
-        le=10,
-        description="Maximum plugin load retries",
+        default=FlextPluginConstants.HotReload.MAX_RETRIES,
+        ge=FlextConstants.Reliability.MIN_RETRY_ATTEMPTS,
+        le=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
+        description="Maximum plugin load retries using FlextConstants reliability bounds",
     )
 
     load_timeout_seconds: int = Field(
-        default=FlextConstants.Network.DEFAULT_TIMEOUT,
+        default=FlextPluginConstants.Discovery.DEFAULT_TIMEOUT_SECONDS,
         gt=0,
-        le=300,
-        description="Plugin load timeout in seconds",
+        le=FlextConstants.Network.DEFAULT_TIMEOUT * 5,  # Max 5x default timeout
+        description="Plugin load timeout in seconds with FlextConstants integration",
     )
 
     dependency_resolution: bool = Field(
         default=True,
-        description="Enable plugin dependency resolution",
+        description="Enable plugin dependency resolution for complex plugin ecosystems",
     )
 
-    # Plugin Security Configuration using FlextPluginConstants for defaults
+    # Plugin Security Configuration - Advanced integration with FlextPluginConstants
     security_enabled: bool = Field(
         default=True,
-        description="Enable plugin security checks",
+        description="Enable comprehensive plugin security checks and validation",
     )
 
     require_signatures: bool = Field(
         default=False,
-        description="Require plugin signatures",
+        description="Require cryptographic plugin signatures for enterprise security",
     )
 
     sandbox_enabled: bool = Field(
         default=True,
-        description="Enable plugin sandboxing",
+        description="Enable plugin sandboxing for secure execution isolation",
     )
 
-    allowed_imports: list[str] = Field(
-        default_factory=lambda: ["flext_core", "flext_plugin"],
-        description="Allowed import modules for plugins",
+    allowed_imports: FlextTypes.StringList = Field(
+        default=["flext_core", "flext_plugin", "typing"],
+        description="Allowed import modules for plugins with FLEXT ecosystem integration",
+        min_length=1,
     )
 
-    restricted_operations: list[str] = Field(
-        default_factory=lambda: ["file_write", "network_access"],
-        description="Restricted operations for plugins",
+    restricted_operations: FlextTypes.StringList = Field(
+        default=["file_write", "network_access", "subprocess", "import"],
+        description="Restricted operations for plugins to prevent security vulnerabilities",
     )
 
-    # Hot Reload Configuration using FlextPluginConstants for defaults
+    # Hot Reload Configuration - Advanced integration with FlextPluginConstants
     hot_reload_enabled: bool = Field(
         default=True,
-        description="Enable plugin hot reloading",
+        description="Enable plugin hot reloading for development and production flexibility",
     )
 
     hot_reload_interval_seconds: int = Field(
-        default=FlextConstants.Container.DEFAULT_WORKERS,
+        default=FlextPluginConstants.HotReload.DEFAULT_INTERVAL_SECONDS,
         gt=0,
-        le=3600,
-        description="Hot reload check interval in seconds",
+        le=FlextConstants.Network.DEFAULT_TIMEOUT * 60,  # Max 30 minutes
+        description="Hot reload check interval in seconds using FlextPluginConstants",
     )
 
-    # Plugin Registry Configuration using FlextPluginConstants for defaults
+    # Plugin Registry Configuration - Advanced remote registry support
     registry_path: str | None = Field(
         default=None,
-        description="Plugin registry file path",
+        description="Local plugin registry file path for persistence",
     )
 
     enable_remote_registry: bool = Field(
         default=False,
-        description="Enable remote plugin registry",
+        description="Enable remote plugin registry for distributed plugin management",
     )
 
     remote_registry_url: str | None = Field(
         default=None,
-        description="Remote plugin registry URL",
+        description="Remote plugin registry URL for centralized plugin distribution",
     )
 
-    # Performance Configuration using FlextPluginConstants for defaults
+    # Performance Configuration - Advanced resource management
     max_concurrent_loads: int = Field(
-        default=FlextConstants.Container.DEFAULT_WORKERS,
-        ge=1,
-        le=50,
-        description="Maximum concurrent plugin loads",
+        default=FlextPluginConstants.Lifecycle.DEFAULT_WORKERS,
+        ge=FlextPluginConstants.Lifecycle.MIN_PLUGIN_WORKERS,
+        le=FlextPluginConstants.Lifecycle.MAX_PLUGIN_WORKERS,
+        description="Maximum concurrent plugin loads using FlextPluginConstants worker bounds",
     )
 
     memory_limit_mb: int = Field(
-        default=FlextConstants.Logging.MAX_FILE_SIZE // (1024 * 1024),
+        default=FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB * 4,  # 256MB default
         gt=0,
-        description="Memory limit per plugin in MB",
+        description="Memory limit per plugin in MB with FlextPluginConstants integration",
     )
 
     execution_timeout_seconds: int = Field(
-        default=FlextConstants.Network.DEFAULT_TIMEOUT * 2,
+        default=FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS // 2,  # 30 minutes
         gt=0,
-        description="Plugin execution timeout in seconds",
+        description="Plugin execution timeout in seconds with performance bounds",
     )
 
     # Project Identification
@@ -187,7 +227,9 @@ class FlextPluginConfig(FlextConfig):
     # Pydantic 2.11+ field validators
     @field_validator("plugin_directories")
     @classmethod
-    def validate_plugin_directories(cls, v: list[str]) -> list[str]:
+    def validate_plugin_directories(
+        cls, v: FlextTypes.StringList
+    ) -> FlextTypes.StringList:
         """Validate plugin directories are specified."""
         if not v:
             msg = "At least one plugin directory required"
@@ -205,7 +247,9 @@ class FlextPluginConfig(FlextConfig):
 
     @field_validator("allowed_imports")
     @classmethod
-    def validate_allowed_imports(cls, v: list[str]) -> list[str]:
+    def validate_allowed_imports(
+        cls, v: FlextTypes.StringList
+    ) -> FlextTypes.StringList:
         """Validate allowed imports list."""
         if not v:
             msg = "At least one allowed import required for security"
@@ -218,7 +262,7 @@ class FlextPluginConfig(FlextConfig):
         """Validate remote registry URL format."""
         if v is not None and v.strip():
             # Use flext-core URL validation
-            result = FlextModels.create_validated_url(v.strip())
+            result = FlextUtilities.Validation.validate_url(v.strip())
             if result.is_failure:
                 msg = f"Invalid remote registry URL: {result.error}"
                 raise ValueError(msg)
@@ -263,45 +307,34 @@ class FlextPluginConfig(FlextConfig):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate plugin system business rules."""
-        try:
-            # Validate discovery rules
-            if self.discovery_enabled and not self.plugin_directories:
-                return FlextResult[None].fail("Plugin discovery requires directories")
+        if self.discovery_enabled and not self.plugin_directories:
+            return FlextResult[None].fail("Plugin discovery requires directories")
 
-            # Validate loading rules
-            if self.loading_enabled and self.load_timeout_seconds <= 0:
-                return FlextResult[None].fail("Load timeout must be positive")
+        if self.loading_enabled and self.load_timeout_seconds <= 0:
+            return FlextResult[None].fail("Load timeout must be positive")
 
-            # Validate security rules
-            if (
-                self.security_enabled
-                and self.sandbox_enabled
-                and not self.allowed_imports
-            ):
-                return FlextResult[None].fail(
-                    "Sandboxed security requires allowed imports"
-                )
+        if (
+            self.security_enabled
+            and self.sandbox_enabled
+            and not self.allowed_imports
+        ):
+            return FlextResult[None].fail("Sandboxed security requires allowed imports")
 
-            # Validate performance rules
-            if (
-                self.memory_limit_mb
-                < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB
-            ):
-                return FlextResult[None].fail("Memory limit too low (minimum 64MB)")
+        if (
+            self.memory_limit_mb
+            < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB
+        ):
+            return FlextResult[None].fail("Memory limit too low (minimum 64MB)")
 
-            if (
-                self.execution_timeout_seconds
-                > FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
-            ):
-                return FlextResult[None].fail(
-                    "Execution timeout too high (maximum 1 hour)"
-                )
+        if (
+            self.execution_timeout_seconds
+            > FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
+        ):
+            return FlextResult[None].fail("Execution timeout too high (maximum 1 hour)")
 
-            return FlextResult[None].ok(None)
-        except Exception as e:
-            return FlextResult[None].fail(f"Business rules validation failed: {e}")
+        return FlextResult[None].ok(None)
 
-    def get_discovery_config(self) -> dict[str, object]:
+    def get_discovery_config(self) -> FlextTypes.Dict:
         """Get plugin discovery configuration context."""
         return {
             "enabled": self.discovery_enabled,
@@ -311,7 +344,7 @@ class FlextPluginConfig(FlextConfig):
             "include_system": self.include_system_plugins,
         }
 
-    def get_loading_config(self) -> dict[str, object]:
+    def get_loading_config(self) -> FlextTypes.Dict:
         """Get plugin loading configuration context."""
         return {
             "enabled": self.loading_enabled,
@@ -321,7 +354,7 @@ class FlextPluginConfig(FlextConfig):
             "dependency_resolution": self.dependency_resolution,
         }
 
-    def get_security_config(self) -> dict[str, object]:
+    def get_security_config(self) -> FlextTypes.Dict:
         """Get plugin security configuration context."""
         return {
             "enabled": self.security_enabled,
@@ -331,7 +364,7 @@ class FlextPluginConfig(FlextConfig):
             "restricted_operations": self.restricted_operations,
         }
 
-    def get_registry_config(self) -> dict[str, object]:
+    def get_registry_config(self) -> FlextTypes.Dict:
         """Get plugin registry configuration context."""
         return {
             "registry_path": self.registry_path,
@@ -339,7 +372,7 @@ class FlextPluginConfig(FlextConfig):
             "remote_url": self.remote_registry_url,
         }
 
-    def get_performance_config(self) -> dict[str, object]:
+    def get_performance_config(self) -> FlextTypes.Dict:
         """Get plugin performance configuration context."""
         return {
             "max_concurrent_loads": self.max_concurrent_loads,
@@ -351,24 +384,20 @@ class FlextPluginConfig(FlextConfig):
     def create_for_environment(
         cls, environment: str, **overrides: object
     ) -> FlextPluginConfig:
-        """Create configuration for specific environment using enhanced singleton pattern."""
-        instance = cls.get_or_create_shared_instance(
+        """Create configuration for specific environment."""
+        return cls.get_or_create_shared_instance(
             project_name="flext-plugin", environment=environment, **overrides
         )
-        assert isinstance(instance, cls)
-        return instance
 
     @classmethod
     def create_default(cls) -> FlextPluginConfig:
-        """Create default configuration instance using enhanced singleton pattern."""
-        instance = cls.get_or_create_shared_instance(project_name="flext-plugin")
-        assert isinstance(instance, cls)
-        return instance
+        """Create default configuration instance."""
+        return cls.get_or_create_shared_instance(project_name="flext-plugin")
 
     @classmethod
     def create_for_development(cls) -> FlextPluginConfig:
-        """Create configuration optimized for development using enhanced singleton pattern."""
-        instance = cls.get_or_create_shared_instance(
+        """Create configuration optimized for development."""
+        return cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=True,
             hot_reload_interval_seconds=2,
@@ -377,13 +406,11 @@ class FlextPluginConfig(FlextConfig):
             max_concurrent_loads=2,
             memory_limit_mb=256,
         )
-        assert isinstance(instance, cls)
-        return instance
 
     @classmethod
     def create_for_production(cls) -> FlextPluginConfig:
-        """Create configuration optimized for production using enhanced singleton pattern."""
-        instance = cls.get_or_create_shared_instance(
+        """Create configuration optimized for production."""
+        return cls.get_or_create_shared_instance(
             project_name="flext-plugin",
             hot_reload_enabled=False,
             security_enabled=True,
@@ -392,21 +419,11 @@ class FlextPluginConfig(FlextConfig):
             max_concurrent_loads=10,
             memory_limit_mb=1024,
         )
-        assert isinstance(instance, cls)
-        return instance
 
     @classmethod
     def get_global_instance(cls) -> FlextPluginConfig:
-        """Get the global singleton instance using enhanced FlextConfig pattern."""
-        instance = cls.get_or_create_shared_instance(project_name="flext-plugin")
-        assert isinstance(instance, cls)
-        return instance
-
-    @classmethod
-    def reset_global_instance(cls) -> None:
-        """Reset the global FlextPluginConfig instance (mainly for testing)."""
-        # TODO: Implement reset mechanism if needed
-        pass
+        """Get the global singleton instance."""
+        return cls.get_or_create_shared_instance(project_name="flext-plugin")
 
 
 __all__ = [

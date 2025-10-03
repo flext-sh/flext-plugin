@@ -38,6 +38,119 @@ class FlextPluginConfigParams:
     timeout_seconds: int = 30
 
 
+class FlextPluginConfig(FlextModels.Entity):
+    """Plugin configuration entity for managing plugin settings and parameters."""
+
+    # Pydantic fields
+    plugin_name: str = Field(
+        default="",
+        description="Name of the plugin this config belongs to",
+    )
+    config_data: FlextPluginTypes.Core.ConfigDict = Field(
+        default_factory=dict,
+        description="Plugin configuration data",
+    )
+    enabled: bool = Field(default=True, description="Whether plugin is enabled")
+    settings: FlextPluginTypes.Core.SettingsDict = Field(
+        default_factory=dict,
+        description="Plugin settings",
+    )
+    dependencies: FlextPluginTypes.Core.StringList = Field(
+        default_factory=list,
+        description="Plugin dependencies",
+    )
+    priority: int = Field(default=100, description="Plugin execution priority")
+    max_memory_mb: int = Field(default=512, description="Maximum memory usage in MB")
+    max_cpu_percent: int = Field(default=50, description="Maximum CPU usage percentage")
+    timeout_seconds: int = Field(default=30, description="Plugin execution timeout")
+    created_at: datetime = Field(
+        default_factory=datetime.now,
+        description="Configuration creation timestamp",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        description="Configuration last update timestamp",
+    )
+
+    @classmethod
+    def create(
+        cls,
+        *,
+        plugin_name: str,
+        entity_id: str | None = None,
+        params: FlextPluginConfigParams | None = None,
+        **kwargs: object,
+    ) -> FlextPluginConfig:
+        """Create plugin config entity with proper validation."""
+        entity_id or FlextUtilities.Generators.generate_entity_id()
+
+        # Use params if provided, otherwise create from individual parameters
+        if params is not None:
+            p = params
+        else:
+            p = FlextPluginConfigParams()
+            p.plugin_name = plugin_name
+            p.config_data = cast(
+                "FlextPluginTypes.Core.ConfigDict | None",
+                kwargs.get("config_data"),
+            )
+            p.created_at = cast("str | None", kwargs.get("created_at"))
+            p.updated_at = cast("str | None", kwargs.get("updated_at"))
+            p.enabled = cast("bool", kwargs.get("enabled", True))
+            p.settings = cast(
+                "FlextPluginTypes.Core.SettingsDict | None",
+                kwargs.get("settings"),
+            )
+            p.dependencies = cast(
+                "FlextPluginTypes.Core.StringList | None",
+                kwargs.get("dependencies"),
+            )
+            p.priority = cast("int", kwargs.get("priority", 100))
+            p.max_memory_mb = cast("int", kwargs.get("max_memory_mb", 512))
+            p.max_cpu_percent = cast("int", kwargs.get("max_cpu_percent", 50))
+            p.timeout_seconds = cast("int", kwargs.get("timeout_seconds", 30))
+
+        # Create instance data
+        instance_data: FlextPluginTypes.Core.PluginDict = {
+            "id": "final_id",
+            "version": kwargs.get("version", 1),
+            "metadata": kwargs.get("entity_metadata", {}),
+            "plugin_name": p.plugin_name,
+            "config_data": p.config_data or {},
+            "enabled": p.enabled,
+            "settings": p.settings or {},
+            "dependencies": p.dependencies or [],
+            "priority": p.priority,
+            "max_memory_mb": p.max_memory_mb,
+            "max_cpu_percent": p.max_cpu_percent,
+            "timeout_seconds": p.timeout_seconds,
+            "created_at": p.created_at or datetime.now(),
+            "updated_at": p.updated_at,
+        }
+
+        return cls.model_validate(instance_data)
+
+    def is_valid(self) -> bool:
+        """Validate plugin config entity state."""
+        return bool(self.plugin_name)
+
+    def update_timestamp(self) -> None:
+        """Update the updated_at timestamp."""
+        setattr(self, "updated_at", datetime.now())
+
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate domain rules for plugin config entity."""
+        if not self.plugin_name or not self.plugin_name.strip():
+            return FlextResult[None].fail("Plugin name is required and cannot be empty")
+        if self.max_memory_mb <= 0:
+            return FlextResult[None].fail("Maximum memory must be positive")
+        if self.max_cpu_percent < 0 or self.max_cpu_percent > 100:
+            return FlextResult[None].fail("CPU percentage must be between 0 and 100")
+        if self.timeout_seconds <= 0:
+            return FlextResult[None].fail("Timeout must be positive")
+        return FlextResult[None].ok(None)
+
+
 class FlextPluginMetadataParams:
     """Parameter Object pattern for FlextPluginMetadata initialization - SOLID Single Responsibility."""
 
@@ -67,7 +180,7 @@ class FlextPluginRegistryParams:
     requires_authentication: bool = False
     api_key: str = ""
     verify_signatures: bool = False
-    trusted_publishers: FlextTypes.Core.StringList | None = None
+    trusted_publishers: FlextTypes.StringList | None = None
 
 
 class FlextPluginEntity(FlextModels.Entity):
@@ -362,11 +475,11 @@ class FlextPluginMetadata(FlextModels.Entity):
         default="",
         description="Name of the plugin this metadata belongs to",
     )
-    tags: FlextTypes.Core.StringList = Field(
+    tags: FlextTypes.StringList = Field(
         default_factory=list,
         description="Plugin tags for categorization",
     )
-    categories: FlextTypes.Core.StringList = Field(
+    categories: FlextTypes.StringList = Field(
         default_factory=list,
         description="Plugin categories",
     )
@@ -414,13 +527,13 @@ class FlextPluginMetadata(FlextModels.Entity):
         else:
             p = FlextPluginMetadataParams()
             p.plugin_name = cast("str", kwargs.get("plugin_name", name))
-            p.metadata = cast("FlextTypes.Core.Dict | None", kwargs.get("metadata"))
+            p.metadata = cast("FlextTypes.Dict | None", kwargs.get("metadata"))
             p.name = name
             p.entry_point = entry_point
             p.plugin_type = kwargs.get("plugin_type", "")
             p.description = cast("str", kwargs.get("description", ""))
             p.dependencies = cast(
-                "FlextTypes.Core.StringList | None",
+                "FlextTypes.StringList | None",
                 kwargs.get("dependencies"),
             )
             p.trusted = cast("bool", kwargs.get("trusted", False))
@@ -541,7 +654,7 @@ class FlextPluginRegistry(FlextModels.Entity):
         default=False,
         description="Whether to verify signatures",
     )
-    trusted_publishers: FlextTypes.Core.StringList = Field(
+    trusted_publishers: FlextTypes.StringList = Field(
         default_factory=list,
         description="List of trusted publishers",
     )
@@ -581,7 +694,7 @@ class FlextPluginRegistry(FlextModels.Entity):
             p.api_key = cast("str", kwargs.get("api_key", ""))
             p.verify_signatures = cast("bool", kwargs.get("verify_signatures", False))
             p.trusted_publishers = cast(
-                "FlextTypes.Core.StringList | None",
+                "FlextTypes.StringList | None",
                 kwargs.get("trusted_publishers"),
             )
 
@@ -817,7 +930,7 @@ class FlextPluginExecution(FlextModels.Entity):
     def memory_usage_mb(self) -> float:
         """Get memory usage in MB from resource tracking."""
         resource_usage = cast(
-            "FlextTypes.Core.Dict",
+            "FlextTypes.Dict",
             self.output_data.get("resource_usage", {}),
         )
         memory_value = resource_usage.get("memory_mb", 0.0)
@@ -841,7 +954,7 @@ class FlextPluginExecution(FlextModels.Entity):
     def cpu_time_ms(self) -> float:
         """Get CPU time in milliseconds from resource tracking."""
         resource_usage = cast(
-            "FlextTypes.Core.Dict",
+            "FlextTypes.Dict",
             self.output_data.get("resource_usage", {}),
         )
         cpu_value = resource_usage.get("cpu_time_ms", 0.0)
@@ -947,6 +1060,7 @@ PluginRegistry = FlextPluginRegistry
 
 __all__ = [
     "FlextPlugin",
+    "FlextPluginConfig",
     "FlextPluginConfigParams",
     "FlextPluginEntity",
     "FlextPluginExecution",

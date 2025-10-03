@@ -422,7 +422,7 @@ from flext_core import FlextResult
 def create_singer_tap_plugin(
     name: str,
     version: str,
-    tap_config: FlextTypes.Core.Dict
+    tap_config: FlextTypes.Dict
 ) -> FlextResult[FlextPlugin]:
     """Create Singer tap plugin with validation."""
     try:
@@ -711,7 +711,7 @@ class FlextPlugin(FlextModels.Entity):
             "timestamp": self.last_executed.isoformat()
         })
 
-    def get_health_status(self) -> Dict[str, object]:
+    def get_health_status(self) -> FlextTypes.Dict:
         """Get plugin health metrics."""
         if self.execution_count == 0:
             success_rate = 0.0
@@ -802,7 +802,7 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
         """Get all currently active plugins."""
         return [p for p in self.plugins.values() if p.status == PluginStatus.ACTIVE]
 
-    def get_registry_health(self) -> Dict[str, object]:
+    def get_registry_health(self) -> FlextTypes.Dict:
         """Get overall registry health metrics."""
         total_plugins = len(self.plugins)
         active_plugins = len(self.get_active_plugins())
@@ -890,7 +890,7 @@ class FlextPluginConfig(FlextModels.Value):
     behavior but doesn't change plugin identity.
     """
 
-    config_data: Dict[str, object]
+    config_data: FlextTypes.Dict
     schema_version: str = "0.9.9"
     environment: str = "production"
 
@@ -913,7 +913,7 @@ class FlextPluginConfig(FlextModels.Value):
         """Check if configuration contains specific key."""
         return key in self.config_data
 
-    def with_override(self, overrides: Dict[str, object]) -> 'FlextPluginConfig':
+    def with_override(self, overrides: FlextTypes.Dict) -> 'FlextPluginConfig':
         """Create new config with overridden values."""
         new_config_data = {**self.config_data, **overrides}
         return FlextPluginConfig(
@@ -945,9 +945,9 @@ from typing import Optional, Dict
 class LazyPluginLoader:
     """Lazy loading pattern for plugin resources."""
 
-    def __init__(self, plugin_config: Dict[str, object]):
+    def __init__(self, plugin_config: FlextTypes.Dict):
         self.plugin_config = plugin_config
-        self._loaded_modules: Dict[str, object] = {}
+        self._loaded_modules: FlextTypes.Dict = {}
 
     @cached_property
     def plugin_module(self) -> FlextResult[object]:
@@ -1021,7 +1021,7 @@ class PluginCache:
     def __init__(self, max_size: int = 1000, ttl: int = 3600):
         self.max_size = max_size
         self.ttl = ttl
-        self._cache: Dict[str, Dict[str, object]] = {}
+        self._cache: Dict[str, FlextTypes.Dict] = {}
 
     def cache_plugin_result(
         self,
@@ -1081,7 +1081,7 @@ class PluginCache:
 
         return cache_entry["data"]
 
-    def _cache_result(self, cache_key: str, data: object, metadata: Dict[str, object]) -> None:
+    def _cache_result(self, cache_key: str, data: object, metadata: FlextTypes.Dict) -> None:
         """Cache result with metadata."""
         import time
 
@@ -1103,7 +1103,7 @@ plugin_cache = PluginCache()
     cache_key_func=lambda plugin_id, config: f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}",
     invalidate_on_plugin_change=True
 )
-def execute_plugin_cached(plugin_id: str, config: Dict[str, object]) -> FlextResult[object]:
+def execute_plugin_cached(plugin_id: str, config: FlextTypes.Dict) -> FlextResult[object]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass
@@ -1128,7 +1128,7 @@ class PluginInterface(Protocol):
         """Initialize plugin resources."""
         ...
 
-    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Execute plugin with typed input/output."""
         ...
 
@@ -1142,8 +1142,8 @@ U = TypeVar('U')
 
 def process_plugin_data(
     plugin: PluginInterface,
-    data: Dict[str, object],
-    transformer: Callable[[Dict[str, object]], T],
+    data: FlextTypes.Dict,
+    transformer: Callable[[FlextTypes.Dict], T],
     validator: Callable[[T], FlextResult[U]]
 ) -> FlextResult[U]:
     """Process plugin data with complete type safety."""
@@ -1339,8 +1339,8 @@ class DataProcessorPlugin(FlextPlugin):
 
     def execute(
         self,
-        data: Dict[str, object]
-    ) -> FlextResult[Dict[str, object]]:
+        data: FlextTypes.Dict
+    ) -> FlextResult[FlextTypes.Dict]:
         """
         Execute data processing pipeline on input data.
 
@@ -1364,7 +1364,7 @@ class DataProcessorPlugin(FlextPlugin):
                  - "metadata": Additional processing metadata (optional)
 
         Returns:
-            FlextResult[Dict[str, object]]: Processing results containing:
+            FlextResult[FlextTypes.Dict]: Processing results containing:
                 - "processed_data": Transformed data in requested format
                 - "statistics": Processing metrics (records, errors, timing)
                 - "metadata": Output metadata with schema information
@@ -1460,7 +1460,7 @@ from flext_plugin.core.types import PluginType
 from flext_core import FlextResult
 
 # Oracle WMS plugin (flext-oracle-wms project)
-def create_oracle_wms_plugin(config: Dict[str, object]) -> FlextResult[FlextPlugin]:
+def create_oracle_wms_plugin(config: FlextTypes.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
     return FlextResult[None].ok(create_flext_plugin(
         name="oracle-wms-connector",
@@ -1474,7 +1474,7 @@ def create_oracle_wms_plugin(config: Dict[str, object]) -> FlextResult[FlextPlug
     ))
 
 # Singer tap plugin (flext-tap-oracle project)
-def create_oracle_tap_plugin(tap_config: Dict[str, object]) -> FlextResult[FlextPlugin]:
+def create_oracle_tap_plugin(tap_config: FlextTypes.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle Singer tap plugin."""
     return FlextResult[None].ok(create_flext_plugin(
         name=f"tap-oracle-{tap_config.get('schema', 'default')}",

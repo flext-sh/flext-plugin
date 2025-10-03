@@ -37,7 +37,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, config: Optional[Dict[str, object]] = None, **kwargs):
+    def __init__(self, config: Optional[FlextTypes.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -100,7 +100,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return FlextResult[None].fail(error_msg)
 
-    def execute(self, data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -108,7 +108,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            FlextResult[Dict[str, object]]: Processing results or error
+            FlextResult[FlextTypes.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -200,7 +200,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: Dict[str, object]) -> FlextResult[bool]:
+    def _validate_input_data(self, data: FlextTypes.Dict) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -214,7 +214,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: Dict[str, object]) -> Dict[str, object]:
+    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -283,7 +283,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Public utility methods
 
-    def get_statistics(self) -> Dict[str, object]:
+    def get_statistics(self) -> FlextTypes.Dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 

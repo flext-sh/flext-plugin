@@ -6,7 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 from typing import cast
@@ -38,12 +40,12 @@ create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
 create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
-def _run(
-    cmd_list: FlextTypes.Core.StringList,
+async def _run(
+    cmd_list: FlextTypes.StringList,
     cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
-    process = create_subprocess_exec(
+    process = await asyncio.create_subprocess_exec(
         *cmd_list,
         cwd=cwd,
         stdout=subprocess.PIPE,
@@ -62,7 +64,7 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    rc, out, err = run(
+    rc, out, err = asyncio.run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -122,7 +124,7 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = run(
+    rc, out, err = asyncio.run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -228,12 +230,12 @@ def test_plugin_configuration_example_functionality() -> None:
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
     routes = cast(
-        "FlextTypes.Core.Dict",
+        "FlextTypes.Dict",
         standalone_config.config_data.get("routes", {}),
     )
     assert len(routes) == 2
     middleware = cast(
-        "FlextTypes.Core.StringList",
+        "FlextTypes.StringList",
         standalone_config.config_data.get("middleware", []),
     )
     assert "cors" in middleware
@@ -386,7 +388,7 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = run(
+    rc, out, err = asyncio.run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -508,7 +510,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    rc, out, err = run(
+    rc, out, err = asyncio.run(
         _run(
             [sys.executable, str(example_path), "--test-connections"],
             cwd=str(Path(__file__).parent.parent),
