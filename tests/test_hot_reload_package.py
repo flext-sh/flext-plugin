@@ -30,8 +30,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from flext_core import FlextTypes
-
 from flext_plugin import (
     HotReloadManager,
     PluginState,
@@ -42,6 +40,8 @@ from flext_plugin import (
     WatchEvent,
     WatchEventType,
 )
+
+from flext_core import FlextTypes
 
 
 class TestPluginStateReal:

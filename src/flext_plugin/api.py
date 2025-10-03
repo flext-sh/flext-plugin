@@ -20,7 +20,6 @@ from flext_core import (
     FlextResult,
     FlextService,
 )
-
 from flext_plugin.flext_plugin_platform import FlextPluginPlatform
 
 
@@ -106,6 +105,7 @@ class FlextPlugin(FlextService[None]):
         container: Optional FlextContainer instance for dependency injection.
                   If None, uses the global container with all required services
                   for plugin management operations.
+
     """
 
     @override
@@ -131,6 +131,7 @@ class FlextPlugin(FlextService[None]):
             container: Optional FlextContainer instance for dependency injection.
                       If None, a new default container will be created and configured
                       with all required services for plugin management operations.
+
         """
         super().__init__()
         self._container = container or FlextContainer()
@@ -151,53 +152,30 @@ class FlextPlugin(FlextService[None]):
         """Execute facade initialization (required by FlextService)."""
         return FlextResult[None].ok(None)
 
-    # Delegate all operations to the platform with FLEXT ecosystem integration
+    # Smart delegation: Use __getattr__ for platform methods while maintaining explicit control
+    def __getattr__(self, name: str) -> object:
+        """Delegate attribute access to platform for seamless API extension."""
+        if hasattr(self._platform, name):
+            attr = getattr(self._platform, name)
+            if callable(attr):
+                # Bind the method to the platform instance
+                return attr.__get__(self._platform, type(self._platform))
+            return attr
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    # Explicit facade methods for core operations (maintaining ABI stability)
     def discover_plugins(self, path: str) -> FlextResult[list]:
-        """Discover plugins in the given path."""
+        """Discover plugins in the given path with ecosystem integration."""
         return self._platform.discover_plugins(path)
 
     def load_plugin(self, plugin) -> FlextResult[bool]:
-        """Load a plugin."""
+        """Load a plugin with full lifecycle management."""
         return self._platform.load_plugin(plugin)
 
-    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Unload a plugin."""
-        return self._platform.unload_plugin(plugin_name)
-
-    def install_plugin(self, plugin_path: str) -> FlextResult:
-        """Install a plugin from the given path."""
-        return self._platform.install_plugin(plugin_path)
-
-    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Uninstall a plugin."""
-        return self._platform.uninstall_plugin(plugin_name)
-
-    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Enable a plugin."""
-        return self._platform.enable_plugin(plugin_name)
-
-    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Disable a plugin."""
-        return self._platform.disable_plugin(plugin_name)
-
-    def get_plugin_config(self, plugin_name: str) -> FlextResult:
-        """Get configuration for a plugin."""
-        return self._platform.get_plugin_config(plugin_name)
-
-    def update_plugin_config(self, plugin_name: str, config) -> FlextResult[bool]:
-        """Update configuration for a plugin."""
-        return self._platform.update_plugin_config(plugin_name, config)
-
-    def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
-        """Check if a plugin is loaded."""
-        return self._platform.is_plugin_loaded(plugin_name)
-
-    def scan_directory(self, directory_path: str) -> FlextResult[list]:
-        """Scan directory for plugins."""
-        return self._platform.scan_directory(directory_path)
-
     def validate_plugin(self, plugin) -> FlextResult[bool]:
-        """Validate plugin integrity."""
+        """Validate plugin integrity and security."""
         return self._platform.validate_plugin(plugin)
 
 

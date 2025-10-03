@@ -13,9 +13,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
-from flext_core import FlextTypes
 from pydantic import Field
 
+from flext_core import FlextTypes
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 

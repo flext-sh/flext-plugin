@@ -10,7 +10,6 @@ from __future__ import annotations
 from typing import override
 
 from flext_core import FlextHandlers, FlextModels, FlextResult
-
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.ports import FlextPluginLoaderPort
 

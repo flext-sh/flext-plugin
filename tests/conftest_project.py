@@ -16,8 +16,6 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer, FlextTypes
-
 from flext_plugin import (
     FlextPluginEntity,
     PluginType,
@@ -25,6 +23,8 @@ from flext_plugin import (
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
+
+from flext_core import FlextContainer, FlextTypes
 
 
 # Test environment setup

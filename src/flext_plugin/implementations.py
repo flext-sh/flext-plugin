@@ -18,7 +18,6 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-
 from flext_plugin.entities import FlextPluginEntity
 
 

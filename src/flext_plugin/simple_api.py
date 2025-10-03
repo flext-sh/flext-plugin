@@ -15,8 +15,9 @@ import contextlib
 import uuid
 from datetime import UTC, datetime
 
-from flext_core import FlextTypes
-
+from flext_core import (
+    FlextTypes,
+)
 from flext_plugin.entities import (
     FlextPlugin,
     FlextPluginConfig,
@@ -34,8 +35,15 @@ class FlextPluginSimpleApi:
     wrappers around the domain entities with sensible defaults and simplified
     parameter interfaces for common plugin creation scenarios.
 
+    Integrates flext-core components:
+    - FlextLogger for structured logging
+    - FlextResult for consistent error handling
+    - FlextTypes for type safety
+
     All methods are static and can be used without instantiating the class.
     """
+
+    _logger = FlextLogger(__name__)
 
     @staticmethod
     def create_flext_plugin(
@@ -74,6 +82,7 @@ class FlextPluginSimpleApi:
 
         Returns:
             New FlextPluginConfig entity
+
         """
         return FlextPluginConfig.create(
             plugin_name=plugin_name,
@@ -99,6 +108,7 @@ class FlextPluginSimpleApi:
 
         Returns:
             New FlextPluginMetadata entity
+
         """
         metadata = metadata or {}
         metadata["created_at"] = datetime.now(UTC)
@@ -126,6 +136,7 @@ class FlextPluginSimpleApi:
 
         Returns:
             New FlextPluginRegistry entity
+
         """
         return FlextPluginRegistry.create(
             name=name,
@@ -135,45 +146,39 @@ class FlextPluginSimpleApi:
         )
 
     @staticmethod
-    def create_plugin_from_dict(plugin_data: FlextTypes.Dict) -> FlextPlugin:
+    def create_plugin_from_dict(
+        plugin_data: FlextTypes.Dict,
+    ) -> FlextResult[FlextPlugin]:
         """Create a FlextPlugin entity from dictionary data with comprehensive validation.
 
         Factory function that creates a FlextPlugin entity from dictionary input,
         providing comprehensive validation and type conversion. This function is
         particularly useful for creating plugins from external data sources such
         as configuration files, API responses, or serialized data.
-        """
-        # Helper function for validation
-        def _handle_value_error(error: str) -> None:
-            """Handle value error by raising appropriate exception."""
-            raise ValueError(error)
 
+        Returns:
+            FlextResult containing the created plugin or error details.
+
+        """
         try:
             # Extract required fields with validation
             name_obj = plugin_data.get("name", "")
             if not name_obj:
-                msg = "Plugin name is required"
-                _handle_value_error(msg)
-            name = str(name_obj)
+                return FlextResult[FlextPlugin].fail("Plugin name is required")
 
+            name = str(name_obj)
             version_obj = plugin_data.get("version", "")
             if not version_obj:
-                msg = "Plugin version is required"
-                _handle_value_error(msg)
+                return FlextResult[FlextPlugin].fail("Plugin version is required")
+
             version = str(version_obj)
 
-            # Extract optional fields
-            str(plugin_data.get("description", ""))
-            str(plugin_data.get("author", ""))
-            plugin_data.get("dependencies", [])
-            plugin_data.get("metadata", {})
-
-            # Handle status conversion
+            # Validate status if provided
             status_str = plugin_data.get("status", "inactive")
             with contextlib.suppress(ValueError):
                 PluginStatus(str(status_str))
 
-            return FlextPluginSimpleApi.create_flext_plugin(
+            plugin = FlextPluginSimpleApi.create_flext_plugin(
                 name=name,
                 version=version,
                 config={
@@ -185,15 +190,26 @@ class FlextPluginSimpleApi:
                 },
             )
 
-        except (RuntimeError, ValueError, TypeError) as e:
+            FlextPluginSimpleApi._logger.info(
+                "Plugin created from dictionary",
+                extra={"plugin_name": name, "version": version},
+            )
+
+            return FlextResult[FlextPlugin].ok(plugin)
+
+        except Exception as e:
             error_msg = f"Failed to create plugin from dictionary: {e}"
-            raise ValueError(error_msg) from e
+            FlextPluginSimpleApi._logger.error(
+                "Plugin creation failed",
+                extra={"error": error_msg, "data_keys": list(plugin_data.keys())},
+            )
+            return FlextResult[FlextPlugin].fail(error_msg)
 
     @staticmethod
     def create_plugin_config_from_dict(
         plugin_name: str,
         config_dict: FlextTypes.Dict,
-    ) -> FlextPluginConfig:
+    ) -> FlextResult[FlextPluginConfig]:
         """Create a FlextPluginConfig from dictionary data.
 
         Args:
@@ -201,19 +217,32 @@ class FlextPluginSimpleApi:
             config_dict: Dictionary containing configuration data
 
         Returns:
-            New FlextPluginConfig entity
+            FlextResult containing the new config entity or error details.
 
-        Raises:
-            ValueError: If plugin name is empty
         """
         if not plugin_name:
-            msg = "Plugin name is required"
-            raise ValueError(msg)
+            return FlextResult[FlextPluginConfig].fail("Plugin name is required")
 
-        return FlextPluginSimpleApi.create_flext_plugin_config(
-            plugin_name=plugin_name,
-            config_data=config_dict,
-        )
+        try:
+            config = FlextPluginSimpleApi.create_flext_plugin_config(
+                plugin_name=plugin_name,
+                config_data=config_dict,
+            )
+
+            FlextPluginSimpleApi._logger.info(
+                "Plugin config created from dictionary",
+                extra={"plugin_name": plugin_name},
+            )
+
+            return FlextResult[FlextPluginConfig].ok(config)
+
+        except Exception as e:
+            error_msg = f"Failed to create plugin config: {e}"
+            FlextPluginSimpleApi._logger.error(
+                "Plugin config creation failed",
+                extra={"plugin_name": plugin_name, "error": error_msg},
+            )
+            return FlextResult[FlextPluginConfig].fail(error_msg)
 
 
 __all__ = [

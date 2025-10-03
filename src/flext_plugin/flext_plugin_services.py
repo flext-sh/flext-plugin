@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import override
 
+from pydantic import ConfigDict
+
 from flext_core import (
     FlextContainer,
     FlextExceptions,
@@ -20,8 +22,6 @@ from flext_core import (
     FlextService,
     FlextTypes,
 )
-from pydantic import ConfigDict
-
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.ports import (
     FlextPluginDiscoveryPort,

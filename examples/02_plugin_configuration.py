@@ -17,14 +17,14 @@ from __future__ import annotations
 import sys
 from typing import cast
 
-from flext_core import FlextTypes
-
 from flext_plugin import (
     PluginType,
     create_flext_plugin,
     create_flext_plugin_config,
     create_flext_plugin_metadata,
 )
+
+from flext_core import FlextTypes
 
 
 def create_database_plugin_config() -> FlextTypes.Dict:

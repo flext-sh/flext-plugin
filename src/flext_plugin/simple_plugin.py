@@ -15,16 +15,26 @@ from __future__ import annotations
 import importlib
 from typing import override
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import (
+    FlextLogger,
+    FlextResult,
+    FlextService,
+    FlextTypes,
+)
 
 
-class Plugin:
+class Plugin(FlextService[None]):
     """Lightweight plugin base class with essential lifecycle management.
 
     Simplified plugin implementation providing basic lifecycle management,
     activation/deactivation capabilities, and integration with FLEXT patterns.
     This class serves as a lightweight alternative to full domain entities
     while maintaining compatibility with the broader plugin ecosystem.
+
+    Extends FlextService and integrates flext-core components:
+    - FlextService for consistent service behavior
+    - FlextLogger for structured logging
+    - FlextResult for type-safe error handling
 
     The Plugin class provides essential functionality for plugin development
     without the complexity of full domain modeling, making it suitable for
@@ -33,6 +43,7 @@ class Plugin:
     Key Features:
       - Basic lifecycle management (activate/deactivate)
       - FlextResult integration for consistent error handling
+      - FlextLogger for structured plugin operation logging
       - Extensible design for custom plugin implementations
       - Compatibility with FLEXT plugin management system
       - Minimal resource footprint and complexity
@@ -47,8 +58,7 @@ class Plugin:
 
     Example:
       >>> class DataProcessorPlugin(Plugin):
-      ...     @override
-     def execute(self, data):
+      ...     def execute(self, data):
       ...         if not self.active:
       ...             return FlextResult[None].fail("Plugin not active")
       ...         # Process data
@@ -64,24 +74,40 @@ class Plugin:
     @override
     def __init__(self, name: str) -> None:
         """Initialize plugin with a name."""
+        super().__init__()
         self.name = name
         self.active = False
+        self._logger = FlextLogger(f"{__name__}.{name}")
 
-    def activate(self: object) -> FlextResult[None]:
-        """Activate plugin."""
+    def activate(self) -> FlextResult[None]:
+        """Activate plugin with logging and validation."""
         try:
+            if self.active:
+                return FlextResult[None].fail("Plugin is already active")
+
             self.active = True
+            self._logger.info("Plugin activated successfully")
             return FlextResult[None].ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[None].fail(f"Plugin activation failed: {e}")
 
-    def deactivate(self: object) -> FlextResult[None]:
-        """Deactivate plugin."""
+        except Exception as e:
+            error_msg = f"Plugin activation failed: {e}"
+            self._logger.error("Plugin activation error", extra={"error": error_msg})
+            return FlextResult[None].fail(error_msg)
+
+    def deactivate(self) -> FlextResult[None]:
+        """Deactivate plugin with logging and validation."""
         try:
+            if not self.active:
+                return FlextResult[None].fail("Plugin is not active")
+
             self.active = False
+            self._logger.info("Plugin deactivated successfully")
             return FlextResult[None].ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[None].fail(f"Plugin deactivation failed: {e}")
+
+        except Exception as e:
+            error_msg = f"Plugin deactivation failed: {e}"
+            self._logger.error("Plugin deactivation error", extra={"error": error_msg})
+            return FlextResult[None].fail(error_msg)
 
 
 class PluginRegistry:
@@ -118,7 +144,9 @@ class PluginRegistry:
         return list(self.plugins.keys())
 
     @staticmethod
-    def load_plugin(module_name: str, class_name: str = "Plugin") -> FlextResult[Plugin]:
+    def load_plugin(
+        module_name: str, class_name: str = "Plugin"
+    ) -> FlextResult[Plugin]:
         """Load a plugin from module."""
         try:
             module = importlib.import_module(module_name)

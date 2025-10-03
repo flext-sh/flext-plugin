@@ -10,7 +10,6 @@ import hashlib
 import importlib
 import importlib.util
 import json
-from flext_core import FlextTypes
 import re
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -19,10 +18,10 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextResult, FlextUtilities
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 from flext_plugin.models import PluginMetadata
 
 

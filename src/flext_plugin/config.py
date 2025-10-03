@@ -9,6 +9,9 @@ from __future__ import annotations
 import warnings
 from typing import Self
 
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import SettingsConfigDict
+
 from flext_core import (
     FlextConfig,
     FlextConstants,
@@ -16,9 +19,6 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from pydantic import Field, field_validator, model_validator
-from pydantic_settings import SettingsConfigDict
-
 from flext_plugin.constants import FlextPluginConstants
 
 
@@ -202,13 +202,15 @@ class FlextPluginConfig(FlextConfig):
     )
 
     memory_limit_mb: int = Field(
-        default=FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB * 4,  # 256MB default
+        default=FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB
+        * 4,  # 256MB default
         gt=0,
         description="Memory limit per plugin in MB with FlextPluginConstants integration",
     )
 
     execution_timeout_seconds: int = Field(
-        default=FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS // 2,  # 30 minutes
+        default=FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
+        // 2,  # 30 minutes
         gt=0,
         description="Plugin execution timeout in seconds with performance bounds",
     )
@@ -313,11 +315,7 @@ class FlextPluginConfig(FlextConfig):
         if self.loading_enabled and self.load_timeout_seconds <= 0:
             return FlextResult[None].fail("Load timeout must be positive")
 
-        if (
-            self.security_enabled
-            and self.sandbox_enabled
-            and not self.allowed_imports
-        ):
+        if self.security_enabled and self.sandbox_enabled and not self.allowed_imports:
             return FlextResult[None].fail("Sandboxed security requires allowed imports")
 
         if (

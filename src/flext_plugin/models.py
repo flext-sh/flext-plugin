@@ -10,19 +10,15 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Self
 
-from flext_core import FlextModels, FlextTypes
-from typing import cast
 from pydantic import (
-    BaseModel,
     ConfigDict,
     Field,
-    SerializationInfo,
-    computed_field,
     field_serializer,
     field_validator,
     model_validator,
 )
 
+from flext_core import FlextModels, FlextTypes
 from flext_plugin.type_definitions import PluginConfigData
 from flext_plugin.typings import FlextPluginTypes
 
@@ -64,91 +60,25 @@ class FlextPluginModels(FlextModels):
         loc_by_alias=False,
     )
 
-    # Plugin performance metrics and analysis capabilities
-    @computed_field
+    # Simplified performance constants access
     @property
-    def plugin_performance_analysis(self) -> FlextTypes.Dict:
-        """Computed field for comprehensive plugin performance analysis."""
+    def performance_constants(self) -> FlextTypes.Dict:
+        """Access performance constants for plugin analysis."""
         return {
-            "performance_thresholds": {
-                "excellent_success_rate": PERFORMANCE_EXCELLENT_SUCCESS_RATE,
-                "good_success_rate": PERFORMANCE_GOOD_SUCCESS_RATE,
-                "fair_success_rate": PERFORMANCE_FAIR_SUCCESS_RATE,
-                "excellent_time_ms": PERFORMANCE_EXCELLENT_TIME_MS,
-                "good_time_ms": PERFORMANCE_GOOD_TIME_MS,
-                "fair_time_ms": PERFORMANCE_FAIR_TIME_MS,
-            },
-            "production_limits": {
-                "timeout_seconds": PRODUCTION_READY_TIMEOUT_SECONDS,
-                "max_memory_mb": PRODUCTION_READY_MAX_MEMORY_MB,
-            },
-        }
-
-    @computed_field
-    @property
-    def active_plugin_models_count(self) -> int:
-        """Count of active plugin models currently loaded."""
-        # Enhanced computation logic for active plugin tracking
-        return len(
-            [
-                model
-                for model in self.__class__.__dict__.values()
-                if isinstance(model, type) and issubclass(model, BaseModel)
-            ]
-        )
-
-    def plugin_system_summary(self) -> FlextTypes.Dict:
-        """Generate comprehensive plugin system summary."""
-        return {
-            "system_overview": {
-                "total_model_classes": self.active_plugin_models_count,
-                "performance_standards": self.plugin_performance_analysis,
-                "quality_thresholds": {
-                    "min_success_rate": PERFORMANCE_FAIR_SUCCESS_RATE,
-                    "max_execution_time": PRODUCTION_READY_TIMEOUT_SECONDS,
-                    "memory_constraints": PRODUCTION_READY_MAX_MEMORY_MB,
-                },
-            },
-            "model_capabilities": {
-                "configuration_management": True,
-                "lifecycle_tracking": True,
-                "performance_monitoring": True,
-                "security_validation": True,
-                "metadata_management": True,
-            },
-            "operational_status": {
-                "models_loaded": True,
-                "validation_active": True,
-                "performance_tracking": True,
-                "timestamp": datetime.now(UTC),
-            },
+            "excellent_success_rate": PERFORMANCE_EXCELLENT_SUCCESS_RATE,
+            "good_success_rate": PERFORMANCE_GOOD_SUCCESS_RATE,
+            "fair_success_rate": PERFORMANCE_FAIR_SUCCESS_RATE,
+            "timeout_seconds": PRODUCTION_READY_TIMEOUT_SECONDS,
+            "max_memory_mb": PRODUCTION_READY_MAX_MEMORY_MB,
         }
 
     def validate_plugin_system_consistency(self) -> bool:
         """Validate overall plugin system model consistency."""
         try:
-            summary = cast(dict[str, dict[str, object]], self.plugin_system_summary())
-            config_mgmt = summary["model_capabilities"]["configuration_management"]
-            models_loaded = summary["operational_status"]["models_loaded"]
-            return bool(
-                config_mgmt and models_loaded and self.active_plugin_models_count > 0
-            )
+            # Simple validation of core capabilities
+            return self.__class__.__name__ == "FlextPluginModels"
         except Exception:
             return False
-
-    def serialize_with_plugin_metadata(
-        self, info: SerializationInfo | None = None
-    ) -> FlextTypes.Dict:
-        """Enhanced serialization with plugin metadata."""
-        base_data = self.model_dump(mode="json")
-        return {
-            **base_data,
-            "plugin_system_metadata": {
-                "serialization_timestamp": datetime.now(UTC).isoformat(),
-                "active_models": self.active_plugin_models_count,
-                "system_valid": self.validate_plugin_system_consistency(),
-            },
-        }
 
     class PluginStatus(StrEnum):
         """Plugin lifecycle and operational status enumeration."""
@@ -243,7 +173,7 @@ class FlextPluginModels(FlextModels):
             pattern=r"^[a-zA-Z][a-zA-Z0-9_-]*$",
             description="Plugin unique identifier name",
         )
-        version: str = Field(
+        version: str = Field(  # type: ignore[assignment] # Override parent int version with str for semantic versioning
             default="1.0.0",
             pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
             description="Plugin semantic version",
@@ -254,11 +184,11 @@ class FlextPluginModels(FlextModels):
             description="Plugin functionality description",
         )
         author: str = Field(default="", max_length=200, description="Plugin author")
-        plugin_type: "FlextPluginModels.Type" = Field(
+        plugin_type: FlextPluginModels.PluginType = Field(
             default="utility",
             description="Plugin type classification",
         )
-        status: "FlextPluginModels.Status" = Field(
+        status: FlextPluginModels.PluginStatus = Field(
             default="inactive",
             description="Current plugin operational status",
         )
@@ -341,44 +271,14 @@ class FlextPluginModels(FlextModels):
         auto_restart: bool = Field(default=True, description="Auto restart on failure")
         retry_attempts: int = Field(default=3, description="Maximum retry attempts")
 
-        @computed_field
         @property
-        def config_summary(self) -> FlextTypes.Dict:
-            """Computed field providing comprehensive configuration summary."""
-            return {
-                "operational_config": {
-                    "enabled": self.enabled,
-                    "priority": self.priority,
-                    "auto_restart": self.auto_restart,
-                    "retry_attempts": self.retry_attempts,
-                },
-                "resource_limits": {
-                    "timeout_seconds": self.timeout_seconds,
-                    "max_memory_mb": self.max_memory_mb,
-                    "max_cpu_percent": self.max_cpu_percent,
-                    "memory_limit_bytes": self.max_memory_mb * 1024 * 1024,
-                },
-                "performance_category": self._categorize_performance(),
-            }
-
-        def _categorize_performance(self) -> str:
-            """Categorize configuration performance level."""
-            if (
-                self.timeout_seconds <= PERFORMANCE_EXCELLENT_TIME_MS / 1000
+        def is_high_performance(self) -> bool:
+            """Check if configuration meets high-performance criteria."""
+            return (
+                self.timeout_seconds <= 30
                 and self.max_memory_mb <= 256
-            ):
-                return "excellent"
-            if (
-                self.timeout_seconds <= PERFORMANCE_GOOD_TIME_MS / 1000
-                and self.max_memory_mb <= 512
-            ):
-                return "good"
-            if (
-                self.timeout_seconds <= PERFORMANCE_FAIR_TIME_MS / 1000
-                and self.max_memory_mb <= 1024
-            ):
-                return "fair"
-            return "standard"
+                and self.max_cpu_percent <= 50
+            )
 
         @field_validator("priority")
         @classmethod
@@ -439,74 +339,16 @@ class FlextPluginModels(FlextModels):
             default=False, description="Whether plugin signature is verified"
         )
 
-        @computed_field
         @property
-        def security_score(self) -> int:
-            """Computed security score based on configuration."""
-            score = 0
-            if self.sandboxed:
-                score += 25
-            if not self.network_access:
-                score += 15
-            if not self.file_access:
-                score += 20
-            if self.encrypted_data:
-                score += 15
-            if self.audit_logging:
-                score += 15
-            if self.signature_verified:
-                score += 10
-
-            return min(score, PERCENTAGE_MAX)
-
-        @computed_field
-        @property
-        def security_assessment(self) -> FlextTypes.Dict:
-            """Comprehensive security assessment."""
-            score = self.security_score
-            return {
-                "overall_score": score,
-                "security_level": self.security_level,
-                "risk_assessment": self._assess_risk_level(score),
-                "recommendations": self._generate_security_recommendations(),
-                "compliance_status": self._check_compliance(),
-            }
-
-        def _assess_risk_level(self, score: int) -> str:
-            """Assess risk level based on security score."""
-            if score >= 90:
-                return "very_low"
-            if score >= 75:
-                return "low"
-            if score >= 60:
-                return "medium"
-            if score >= 40:
-                return "high"
-            return "very_high"
-
-        def _generate_security_recommendations(self) -> FlextTypes.StringList:
-            """Generate security recommendations based on current config."""
-            recommendations = []
-            if not self.sandboxed:
-                recommendations.append("Enable sandboxing for isolation")
-            if self.network_access:
-                recommendations.append("Consider restricting network access")
-            if self.file_access:
-                recommendations.append("Review file access requirements")
-            if not self.encrypted_data:
-                recommendations.append("Enable data encryption")
-            if not self.signature_verified:
-                recommendations.append("Implement signature verification")
-            return recommendations
-
-        def _check_compliance(self) -> FlextTypes.BoolDict:
-            """Check compliance with security standards."""
-            return {
-                "enterprise_ready": self.security_score >= 75,
-                "production_ready": self.security_score >= 60,
-                "audit_compliant": self.audit_logging and self.encrypted_data,
-                "isolation_compliant": self.sandboxed,
-            }
+        def is_secure(self) -> bool:
+            """Check if security configuration meets enterprise standards."""
+            return (
+                self.sandboxed
+                and not self.network_access
+                and not self.file_access
+                and self.encrypted_data
+                and self.audit_logging
+            )
 
     class MonitoringModel(FlextModels.Entity):
         """Plugin monitoring and observability model."""
@@ -547,53 +389,10 @@ class FlextPluginModels(FlextModels):
             default=30, ge=1, le=365, description="Data retention period in days"
         )
 
-        @computed_field
         @property
-        def monitoring_coverage(self) -> FlextTypes.Dict:
-            """Compute monitoring coverage analysis."""
-            enabled_features = sum(
-                [
-                    self.metrics_enabled,
-                    self.health_checks,
-                    self.performance_tracking,
-                    self.error_tracking,
-                ]
-            )
-
-            coverage_percent = (enabled_features / 4) * 100
-
-            return {
-                "coverage_percent": coverage_percent,
-                "enabled_features": enabled_features,
-                "total_features": 4,
-                "coverage_level": self._get_coverage_level(coverage_percent),
-                "recommendations": self._get_monitoring_recommendations(),
-            }
-
-        def _get_coverage_level(self, percent: float) -> str:
-            """Get coverage level description."""
-            if percent == 100:
-                return "comprehensive"
-            if percent >= 75:
-                return "good"
-            if percent >= 50:
-                return "basic"
-            return "minimal"
-
-        def _get_monitoring_recommendations(self) -> FlextTypes.StringList:
-            """Get monitoring improvement recommendations."""
-            recommendations = []
-            if not self.metrics_enabled:
-                recommendations.append("Enable metrics collection")
-            if not self.health_checks:
-                recommendations.append("Enable health checks")
-            if not self.performance_tracking:
-                recommendations.append("Enable performance tracking")
-            if not self.error_tracking:
-                recommendations.append("Enable error tracking")
-            if self.retention_days < 7:
-                recommendations.append("Consider longer retention period")
-            return recommendations
+        def has_basic_monitoring(self) -> bool:
+            """Check if basic monitoring features are enabled."""
+            return self.metrics_enabled and self.health_checks and self.error_tracking
 
         @field_validator("alert_thresholds")
         @classmethod

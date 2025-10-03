@@ -23,6 +23,8 @@ try:
 except ImportError:
     PATH_AVAILABLE = False
 
+from pydantic import Field
+
 from flext_core import (
     FlextLogger,
     FlextModels,
@@ -30,8 +32,6 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-from pydantic import Field
-
 from flext_plugin.models import PluginType
 
 

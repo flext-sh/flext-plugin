@@ -14,13 +14,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from asyncio import create_task, get_event_loop, run
 import tempfile
+from asyncio import create_task, get_event_loop, run
 from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
-
 from flext_plugin.discovery import PluginDiscovery
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.loader import PluginLoader

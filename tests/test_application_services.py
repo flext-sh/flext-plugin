@@ -19,8 +19,6 @@ import pytest
 
 # Import anyio.path for file operations
 from anyio import Path as AnyioPath
-from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
-
 from flext_plugin import (
     FlextPluginConfig,
     FlextPluginDiscoveryService,
@@ -33,6 +31,8 @@ from flext_plugin import (
     RealPluginLoaderAdapter,
     RealPluginManagerAdapter,
 )
+
+from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
 
 
 class PluginInterface(Protocol):

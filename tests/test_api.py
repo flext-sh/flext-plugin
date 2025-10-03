@@ -10,8 +10,6 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextTypes
-
 from flext_plugin import (
     FlextPlugin,
     FlextPluginConfig,
@@ -28,6 +26,8 @@ from flext_plugin import (
     create_plugin_metadata,
     create_plugin_registry,
 )
+
+from flext_core import FlextTypes
 
 
 class TestCreateFlextPlugin:

@@ -10,6 +10,7 @@ import sys
 from typing import override
 
 from flext_cli import FlextCli, FlextCliCommands
+
 from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
 
 # Initialize logger

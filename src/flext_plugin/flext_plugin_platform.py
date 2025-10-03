@@ -20,7 +20,6 @@ from flext_core import (
     FlextResult,
     FlextService,
 )
-
 from flext_plugin.entities import FlextPluginConfig, FlextPluginEntity
 from flext_plugin.flext_plugin_services import (
     FlextPluginDiscoveryService,

@@ -13,8 +13,6 @@ import sys
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextTypes
-
 from flext_plugin import (
     PluginStatus,
     PluginType,
@@ -22,6 +20,8 @@ from flext_plugin import (
     create_flext_plugin_config,
     create_flext_plugin_metadata,
 )
+
+from flext_core import FlextTypes
 
 # Load examples from examples directory
 examples_path = Path(__file__).parent.parent / "examples"

@@ -16,9 +16,9 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
-from flext_core import FlextTypes
-
 from flext_plugin import PluginDiscovery, PluginType
+
+from flext_core import FlextTypes
 
 
 class TestPluginDiscoveryReal:
