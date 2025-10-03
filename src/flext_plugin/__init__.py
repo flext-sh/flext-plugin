@@ -25,6 +25,11 @@ from flext_plugin.exceptions import FlextPluginError, FlextPluginExceptions
 from flext_plugin.flext_plugin_platform import FlextPluginPlatform
 from flext_plugin.flext_plugin_services import FlextPluginService, FlextPluginDiscoveryService
 from flext_plugin.models import PluginStatus, PluginType, FlextPluginModels
+from flext_plugin.real_adapters import (
+    RealPluginDiscoveryAdapter,
+    RealPluginLoaderAdapter,
+    RealPluginManagerAdapter,
+)
 from flext_plugin.simple_api import FlextPluginSimpleApi
 
 PROJECT_VERSION: Final[FlextPluginVersion] = VERSION

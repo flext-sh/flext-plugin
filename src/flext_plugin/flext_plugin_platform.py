@@ -40,7 +40,6 @@ class FlextPluginPlatform(FlextService[None]):
     - FlextBus: Event emission for plugin lifecycle events
     - FlextContainer: Dependency injection and service management
     - FlextContext: Operation context tracking and correlation
-    - FlextCqrs: CQRS pattern for plugin operations and queries
     - FlextDispatcher: Message routing and command coordination
     - FlextProcessors: Processing utilities for plugin workflows
     - FlextRegistry: Component registration and discovery
@@ -148,7 +147,6 @@ class FlextPluginPlatform(FlextService[None]):
         # Complete FLEXT ecosystem integration
         self._bus = FlextBus()
         self._context = FlextContext()
-        self._cqrs = FlextCqrs()
         self._dispatcher = FlextDispatcher()
         self._processors = FlextProcessors()
         self._registry = FlextRegistry(dispatcher=self._dispatcher)
