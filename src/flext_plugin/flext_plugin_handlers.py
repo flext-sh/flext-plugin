@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextHandlers, FlextResult
+from flext_core import FlextHandlers, FlextModels, FlextResult
 
 from flext_plugin.entities import FlextPluginEntity
 from flext_plugin.ports import FlextPluginLoaderPort
@@ -23,7 +23,15 @@ class FlextPluginHandler(
     @override
     def __init__(self, plugin_service: FlextPluginLoaderPort | None = None) -> None:
         """Initialize handler with optional plugin service."""
-        super().__init__()
+        # Create default handler config
+        config = FlextModels.CqrsConfig.Handler(
+            handler_name="FlextPluginHandler",
+            handler_type="command",
+            enable_validation=True,
+            enable_metrics=True,
+            timeout_seconds=30.0,
+        )
+        super().__init__(config=config)
         self._plugin_service = plugin_service
 
 

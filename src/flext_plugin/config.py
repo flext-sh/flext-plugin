@@ -120,7 +120,7 @@ class FlextPluginConfig(FlextConfig):
 
     max_load_retries: int = Field(
         default=FlextPluginConstants.HotReload.MAX_RETRIES,
-        ge=FlextConstants.Reliability.MIN_RETRY_ATTEMPTS,
+        ge=0,  # Minimum retry attempts
         le=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
         description="Maximum plugin load retries using FlextConstants reliability bounds",
     )
@@ -385,20 +385,21 @@ class FlextPluginConfig(FlextConfig):
         cls, environment: str, **overrides: object
     ) -> FlextPluginConfig:
         """Create configuration for specific environment."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-plugin", environment=environment, **overrides
+        return cls(  # Create instance directly instead of using deprecated method
+            **cls.get_or_create_shared_instance(
+                project_name="flext-plugin", environment=environment, **overrides
+            ).model_dump()
         )
 
     @classmethod
     def create_default(cls) -> FlextPluginConfig:
         """Create default configuration instance."""
-        return cls.get_or_create_shared_instance(project_name="flext-plugin")
+        return cls()
 
     @classmethod
     def create_for_development(cls) -> FlextPluginConfig:
         """Create configuration optimized for development."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-plugin",
+        return cls(
             hot_reload_enabled=True,
             hot_reload_interval_seconds=2,
             security_enabled=False,
@@ -410,8 +411,7 @@ class FlextPluginConfig(FlextConfig):
     @classmethod
     def create_for_production(cls) -> FlextPluginConfig:
         """Create configuration optimized for production."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-plugin",
+        return cls(
             hot_reload_enabled=False,
             security_enabled=True,
             sandbox_enabled=True,
@@ -423,7 +423,7 @@ class FlextPluginConfig(FlextConfig):
     @classmethod
     def get_global_instance(cls) -> FlextPluginConfig:
         """Get the global singleton instance."""
-        return cls.get_or_create_shared_instance(project_name="flext-plugin")
+        return cls()
 
 
 __all__ = [

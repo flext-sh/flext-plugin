@@ -267,6 +267,7 @@ class FlextPluginServices(FlextService[object]):
         """Specialized service for plugin discovery and validation operations."""
 
         container: FlextContainer
+        _logger: FlextLogger
         model_config = ConfigDict(
             validate_assignment=True,
             arbitrary_types_allowed=True,

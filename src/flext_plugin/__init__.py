@@ -69,6 +69,11 @@ __all__ = [
     "PluginStatus",
     "PluginType",
 
+    # Adapters
+    "RealPluginDiscoveryAdapter",
+    "RealPluginLoaderAdapter",
+    "RealPluginManagerAdapter",
+
     # Configuration and constants
     "FlextPluginConfig",
     "FlextPluginConstants",
