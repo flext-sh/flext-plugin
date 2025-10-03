@@ -332,96 +332,59 @@ class FlextPluginConfig(FlextConfig):
 
         return FlextResult[None].ok(None)
 
-    def get_discovery_config(self) -> FlextTypes.Dict:
-        """Get plugin discovery configuration context."""
+    @property
+    def config_sections(self) -> FlextTypes.Dict:
+        """Get all configuration sections as a dictionary."""
         return {
-            "enabled": self.discovery_enabled,
-            "directories": self.plugin_directories,
-            "auto_discover": self.auto_discover,
-            "interval_seconds": self.discovery_interval_seconds,
-            "include_system": self.include_system_plugins,
-        }
-
-    def get_loading_config(self) -> FlextTypes.Dict:
-        """Get plugin loading configuration context."""
-        return {
-            "enabled": self.loading_enabled,
-            "lazy_loading": self.lazy_loading,
-            "max_retries": self.max_load_retries,
-            "timeout_seconds": self.load_timeout_seconds,
-            "dependency_resolution": self.dependency_resolution,
-        }
-
-    def get_security_config(self) -> FlextTypes.Dict:
-        """Get plugin security configuration context."""
-        return {
-            "enabled": self.security_enabled,
-            "require_signatures": self.require_signatures,
-            "sandbox_enabled": self.sandbox_enabled,
-            "allowed_imports": self.allowed_imports,
-            "restricted_operations": self.restricted_operations,
-        }
-
-    def get_registry_config(self) -> FlextTypes.Dict:
-        """Get plugin registry configuration context."""
-        return {
-            "registry_path": self.registry_path,
-            "enable_remote": self.enable_remote_registry,
-            "remote_url": self.remote_registry_url,
-        }
-
-    def get_performance_config(self) -> FlextTypes.Dict:
-        """Get plugin performance configuration context."""
-        return {
-            "max_concurrent_loads": self.max_concurrent_loads,
-            "memory_limit_mb": self.memory_limit_mb,
-            "execution_timeout_seconds": self.execution_timeout_seconds,
+            "discovery": {
+                "enabled": self.discovery_enabled,
+                "directories": self.plugin_directories,
+                "auto_discover": self.auto_discover,
+                "interval_seconds": self.discovery_interval_seconds,
+            },
+            "loading": {
+                "enabled": self.loading_enabled,
+                "lazy_loading": self.lazy_loading,
+                "max_retries": self.max_load_retries,
+                "timeout_seconds": self.load_timeout_seconds,
+            },
+            "security": {
+                "enabled": self.security_enabled,
+                "sandbox_enabled": self.sandbox_enabled,
+                "allowed_imports": self.allowed_imports,
+            },
+            "performance": {
+                "max_concurrent_loads": self.max_concurrent_loads,
+                "memory_limit_mb": self.memory_limit_mb,
+                "execution_timeout_seconds": self.execution_timeout_seconds,
+            },
         }
 
     @classmethod
-    def create_for_environment(
-        cls, environment: str, **overrides: object
+    def for_environment(
+        cls, environment: str = "default", **overrides: object
     ) -> FlextPluginConfig:
         """Create configuration for specific environment."""
-        return cls(  # Create instance directly instead of using deprecated method
-            **cls.get_or_create_shared_instance(
-                project_name="flext-plugin", environment=environment, **overrides
-            ).model_dump()
-        )
+        base_config = {
+            "development": {
+                "hot_reload_enabled": True,
+                "hot_reload_interval_seconds": 2,
+                "security_enabled": False,
+                "sandbox_enabled": False,
+                "max_concurrent_loads": 2,
+                "memory_limit_mb": 256,
+            },
+            "production": {
+                "hot_reload_enabled": False,
+                "security_enabled": True,
+                "sandbox_enabled": True,
+                "require_signatures": True,
+                "max_concurrent_loads": 10,
+                "memory_limit_mb": 1024,
+            },
+        }.get(environment, {})
 
-    @classmethod
-    def create_default(cls) -> FlextPluginConfig:
-        """Create default configuration instance."""
-        return cls()
-
-    @classmethod
-    def create_for_development(cls) -> FlextPluginConfig:
-        """Create configuration optimized for development."""
-        return cls(
-            hot_reload_enabled=True,
-            hot_reload_interval_seconds=2,
-            security_enabled=False,
-            sandbox_enabled=False,
-            max_concurrent_loads=2,
-            memory_limit_mb=256,
-        )
-
-    @classmethod
-    def create_for_production(cls) -> FlextPluginConfig:
-        """Create configuration optimized for production."""
-        return cls(
-            hot_reload_enabled=False,
-            security_enabled=True,
-            sandbox_enabled=True,
-            require_signatures=True,
-            max_concurrent_loads=10,
-            memory_limit_mb=1024,
-        )
-
-    @classmethod
-    def get_global_instance(cls) -> FlextPluginConfig:
-        """Get the global singleton instance."""
-        return cls()
+        return cls(**{**base_config, **overrides})
 
 
 __all__ = [

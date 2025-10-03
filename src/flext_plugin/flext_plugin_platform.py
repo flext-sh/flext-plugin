@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import override
 
+from pydantic import Field
 from flext_core import (
     FlextBus,
     FlextContainer,
@@ -100,6 +101,10 @@ class FlextPluginPlatform(FlextService[None]):
       meaningful error messages and recovery suggestions.
     """
 
+    container: FlextContainer = Field(
+        default_factory=FlextContainer
+    )  # Dependency injection container
+
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize plugin management platform with complete FLEXT ecosystem integration.
@@ -139,7 +144,8 @@ class FlextPluginPlatform(FlextService[None]):
 
         """
         super().__init__()
-        self.container = container or FlextContainer()
+        if container is not None:
+            self.container = container
         self._logger = FlextLogger(__name__)
 
         # Complete FLEXT ecosystem integration

@@ -110,30 +110,64 @@ class Plugin(FlextService[None]):
             return FlextResult[None].fail(error_msg)
 
 
-class PluginRegistry:
-    """Simple plugin registry."""
+class PluginRegistry(FlextService[None]):
+    """Simple plugin registry with flext-core integration.
+
+    Lightweight plugin registry providing basic registration, unregistration,
+    and lookup capabilities with consistent flext-core error handling and logging.
+    """
 
     @override
-    def __init__(self: object) -> None:
+    def __init__(self) -> None:
         """Initialize empty plugin registry."""
+        super().__init__()
         self.plugins: dict[str, Plugin] = {}
+        self._logger = FlextLogger(__name__)
 
     def register(self, plugin: Plugin) -> FlextResult[None]:
-        """Register a plugin."""
+        """Register a plugin with validation and logging."""
         try:
+            if plugin.name in self.plugins:
+                return FlextResult[None].fail(
+                    f"Plugin '{plugin.name}' is already registered"
+                )
+
+            if not plugin.name:
+                return FlextResult[None].fail("Plugin name cannot be empty")
+
             self.plugins[plugin.name] = plugin
+            self._logger.info(
+                "Plugin registered successfully", extra={"plugin_name": plugin.name}
+            )
             return FlextResult[None].ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[None].fail(f"Plugin registration failed: {e}")
+
+        except Exception as e:
+            error_msg = f"Plugin registration failed: {e}"
+            self._logger.error("Plugin registration error", extra={"error": error_msg})
+            return FlextResult[None].fail(error_msg)
 
     def unregister(self, name: str) -> FlextResult[None]:
-        """Unregister a plugin."""
+        """Unregister a plugin with validation and logging."""
         try:
-            if name in self.plugins:
-                del self.plugins[name]
+            if not name:
+                return FlextResult[None].fail("Plugin name cannot be empty")
+
+            if name not in self.plugins:
+                return FlextResult[None].fail(f"Plugin '{name}' is not registered")
+
+            del self.plugins[name]
+            self._logger.info(
+                "Plugin unregistered successfully", extra={"plugin_name": name}
+            )
             return FlextResult[None].ok(None)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[None].fail(f"Plugin unregistration failed: {e}")
+
+        except Exception as e:
+            error_msg = f"Plugin unregistration failed: {e}"
+            self._logger.error(
+                "Plugin unregistration error",
+                extra={"error": error_msg, "plugin_name": name},
+            )
+            return FlextResult[None].fail(error_msg)
 
     def get(self, name: str) -> Plugin | None:
         """Get a plugin by name."""
@@ -147,20 +181,50 @@ class PluginRegistry:
     def load_plugin(
         module_name: str, class_name: str = "Plugin"
     ) -> FlextResult[Plugin]:
-        """Load a plugin from module."""
+        """Load a plugin from module with comprehensive error handling."""
+        logger = FlextLogger(__name__)
+
         try:
+            logger.info(
+                "Loading plugin from module",
+                extra={"module_name": module_name, "class_name": class_name},
+            )
+
             module = importlib.import_module(module_name)
             plugin_class = getattr(module, class_name)
+
+            if not issubclass(plugin_class, Plugin):
+                error_msg = f"Class '{class_name}' does not inherit from Plugin"
+                logger.error("Invalid plugin class", extra={"error": error_msg})
+                return FlextResult[Plugin].fail(error_msg)
+
             plugin = plugin_class()
+            logger.info(
+                "Plugin loaded successfully", extra={"plugin_name": plugin.name}
+            )
             return FlextResult[Plugin].ok(plugin)
+
         except ImportError as e:
-            return FlextResult[Plugin].fail(f"Module import failed: {e}")
+            error_msg = f"Module import failed: {e}"
+            logger.error(
+                "Plugin import error", extra={"error": error_msg, "module": module_name}
+            )
+            return FlextResult[Plugin].fail(error_msg)
+
         except AttributeError as e:
-            return FlextResult[Plugin].fail(f"Plugin class not found: {e}")
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
+            error_msg = (
+                f"Plugin class '{class_name}' not found in module '{module_name}': {e}"
+            )
+            logger.error("Plugin class not found", extra={"error": error_msg})
+            return FlextResult[Plugin].fail(error_msg)
+
         except Exception as e:
-            return FlextResult[Plugin].fail(f"Plugin loading failed: {e}")
+            error_msg = f"Plugin loading failed: {e}"
+            logger.error(
+                "Plugin loading error",
+                extra={"error": error_msg, "module": module_name, "class": class_name},
+            )
+            return FlextResult[Plugin].fail(error_msg)
 
     @staticmethod
     def create_registry() -> PluginRegistry:
