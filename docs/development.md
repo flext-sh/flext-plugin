@@ -127,13 +127,13 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    def execute(self, data: dict) -> FlextResult[dict]:
+    def execute(self, data: dict) -> FlextResult[FlextTypes.Dict]:
         """Plugin business logic"""
         try:
             # Process data
-            return FlextResult[dict].ok(processed_data)
+            return FlextResult[FlextTypes.Dict].ok(processed_data)
         except Exception as e:
-            return FlextResult[dict].fail(str(e))
+            return FlextResult[FlextTypes.Dict].fail(str(e))
 ```
 
 ### Hot Reload Development

@@ -89,7 +89,7 @@ class FlextPluginPlatform(FlextService[None]):
       >>> # Configuration management
       >>> config_result: FlextResult[object] = platform.get_plugin_config("my-plugin")
       >>> if config_result.success:
-      ...     config: dict[str, object] = config_result.value
+      ...     config: FlextTypes.Dict = config_result.value
       ...     # Modify configuration and update
       ...     update_result: FlextResult[object] = platform.update_plugin_config(
       ...         "my-plugin", config

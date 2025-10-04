@@ -24,6 +24,7 @@ class FlextPluginHandler(
         """Initialize handler with optional plugin service."""
         # Create default handler config
         config = FlextModels.CqrsConfig.Handler(
+            handler_id="flext_plugin_handler",
             handler_name="FlextPluginHandler",
             handler_type="command",
             enable_validation=True,

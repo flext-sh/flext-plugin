@@ -51,17 +51,17 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self: object) -> FlextResult[None]:
+    def start(self) -> FlextResult[None]:
         """Start the discovery service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self: object) -> FlextResult[None]:
+    def stop(self) -> FlextResult[None]:
         """Stop the discovery service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
+    def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Dict].ok(
             {
@@ -70,19 +70,19 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
             },
         )
 
-    def execute(self: object) -> FlextResult[object]:
+    def execute(self) -> FlextResult[object]:
         """Execute the main domain operation."""
         return self.__call__()
 
-    def is_valid(self: object) -> bool:
+    def is_valid(self) -> bool:
         """Check if the domain service is in a valid state."""
         return self._started and self.discovery is not None
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate business rules for the domain service."""
         return FlextResult[None].ok(None)
 
-    def validate_config(self: object) -> FlextResult[None]:
+    def validate_config(self) -> FlextResult[None]:
         """Validate service configuration."""
         return FlextResult[None].ok(None)
 
@@ -90,7 +90,7 @@ class RealPluginDiscoveryAdapter(FlextPluginDiscoveryPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Dict:
+    def get_service_info(self) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginDiscoveryAdapter",
@@ -198,17 +198,17 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self: object) -> FlextResult[None]:
+    def start(self) -> FlextResult[None]:
         """Start the loader service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self: object) -> FlextResult[None]:
+    def stop(self) -> FlextResult[None]:
         """Stop the loader service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
+    def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Dict].ok(
             {
@@ -217,19 +217,19 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
             },
         )
 
-    def execute(self: object) -> FlextResult[object]:
+    def execute(self) -> FlextResult[object]:
         """Execute the main domain operation."""
         return self.__call__()
 
-    def is_valid(self: object) -> bool:
+    def is_valid(self) -> bool:
         """Check if the domain service is in a valid state."""
         return self._started and self.loader is not None
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate business rules for the domain service."""
         return FlextResult[None].ok(None)
 
-    def validate_config(self: object) -> FlextResult[None]:
+    def validate_config(self) -> FlextResult[None]:
         """Validate service configuration."""
         return FlextResult[None].ok(None)
 
@@ -237,7 +237,7 @@ class RealPluginLoaderAdapter(FlextPluginLoaderPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Dict:
+    def get_service_info(self) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginLoaderAdapter",
@@ -332,17 +332,17 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         """Callable interface for service invocation."""
         return FlextResult[None].ok(None)
 
-    def start(self: object) -> FlextResult[None]:
+    def start(self) -> FlextResult[None]:
         """Start the manager service."""
         self._started = True
         return FlextResult[None].ok(None)
 
-    def stop(self: object) -> FlextResult[None]:
+    def stop(self) -> FlextResult[None]:
         """Stop the manager service."""
         self._started = False
         return FlextResult[None].ok(None)
 
-    def health_check(self: object) -> FlextResult[FlextTypes.Dict]:
+    def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Perform health check."""
         return FlextResult[FlextTypes.Dict].ok(
             {
@@ -351,19 +351,19 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
             },
         )
 
-    def execute(self: object) -> FlextResult[object]:
+    def execute(self) -> FlextResult[object]:
         """Execute the main domain operation."""
         return self.__call__()
 
-    def is_valid(self: object) -> bool:
+    def is_valid(self) -> bool:
         """Check if the domain service is in a valid state."""
         return self._started and self.loader is not None and self.discovery is not None
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate business rules for the domain service."""
         return FlextResult[None].ok(None)
 
-    def validate_config(self: object) -> FlextResult[None]:
+    def validate_config(self) -> FlextResult[None]:
         """Validate service configuration."""
         return FlextResult[None].ok(None)
 
@@ -371,7 +371,7 @@ class RealPluginManagerAdapter(FlextPluginManagerPort):
         """Execute operation using OperationExecutionRequest model."""
         return FlextResult[object].ok(operation)
 
-    def get_service_info(self: object) -> FlextTypes.Dict:
+    def get_service_info(self) -> FlextTypes.Dict:
         """Get service information and metadata."""
         return {
             "service_name": "RealPluginManagerAdapter",

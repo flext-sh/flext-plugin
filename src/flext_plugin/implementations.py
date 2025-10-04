@@ -373,7 +373,7 @@ class ConcreteTransformPlugin(ConcretePlugin):
         return FlextResult[Mapping[str, object]].ok(self._schema)
 
 
-class LoggerAdapter:
+class LoggerAdapter(FlextProtocols.Infrastructure.LoggerProtocol):
     """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
     @override

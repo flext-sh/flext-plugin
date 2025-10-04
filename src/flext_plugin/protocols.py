@@ -5,39 +5,27 @@ from typing import Protocol, runtime_checkable
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 
-class FlextPluginProtocols:
-    """Unified plugin protocols following FLEXT domain extension pattern.
+class FlextPluginProtocols(FlextProtocols):
+    """Unified plugin protocols extending FlextProtocols with domain functionality.
 
-    This class consolidates plugin management protocols while explicitly
-    re-exporting foundation protocols for backward compatibility and clean access.
+    Extends FlextProtocols to inherit foundation protocols while adding plugin-specific
+    protocols in the Plugin namespace. Maintains full inheritance hierarchy and
+    provides clean namespace access.
 
     Architecture:
-        - RE-EXPORTS: Foundation protocols from flext-core for unified access
+        - INHERITS: All foundation protocols from FlextProtocols
         - EXTENDS: Plugin-specific protocols in Plugin namespace
-        - MAINTAINS: Zero breaking changes through explicit re-export pattern
+        - MAINTAINS: Zero breaking changes through inheritance pattern
 
     Usage:
         from flext_plugin.protocols import FlextPluginProtocols
 
-        # Foundation access (re-exported)
+        # Foundation access (inherited)
         FlextPluginProtocols.Foundation.ResultProtocol
 
         # Plugin-specific access
         FlextPluginProtocols.Plugin.DiscoveryProtocol
     """
-
-    # =========================================================================
-    # FOUNDATION PROTOCOL RE-EXPORTS (from flext-core)
-    # =========================================================================
-    # Explicitly re-export foundation protocols for unified access.
-    # This maintains backward compatibility while providing clean namespace access.
-
-    Foundation = FlextProtocols.Foundation
-    Domain = FlextProtocols.Domain
-    Application = FlextProtocols.Application
-    Infrastructure = FlextProtocols.Infrastructure
-    Extensions = FlextProtocols.Extensions
-    Commands = FlextProtocols.Commands
 
     # =========================================================================
     # PLUGIN-SPECIFIC PROTOCOLS

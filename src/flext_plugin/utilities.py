@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import hashlib
-import importlib
 import importlib.util
 import json
 import re

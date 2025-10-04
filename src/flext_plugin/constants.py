@@ -11,23 +11,27 @@ from typing import ClassVar, Final
 from flext_core import FlextConstants, FlextTypes
 
 
-class FlextPluginConstants:
-    """Plugin system-specific constants following FLEXT single-class pattern.
+class FlextPluginConstants(FlextConstants):
+    """Plugin system-specific constants extending FlextConstants with domain functionality.
 
-    Inherits from FlextConstants for universal constants, defines only
-    plugin-specific constants using nested namespace classes.
+    Extends FlextConstants to inherit universal constants while adding plugin-specific
+    constants using nested namespace classes. Maintains full inheritance hierarchy.
 
     Usage:
         ```python
         from flext_plugin import FlextPluginConstants
 
-        timeout = FlextPluginConstants.Discovery.DEFAULT_TIMEOUT_SECONDS
+        # Inherited from FlextConstants
+        timeout = FlextPluginConstants.Defaults.TIMEOUT
+
+        # Plugin-specific constants
+        plugin_timeout = FlextPluginConstants.Discovery.DEFAULT_TIMEOUT_SECONDS
         plugin_type = FlextPluginConstants.Types.TAP
+        error_msg = FlextPluginConstants.PluginMessages.PLUGIN_NOT_FOUND
+        security_level = FlextPluginConstants.PluginSecurity.DEFAULT_SECURITY_LEVEL
+        success_rate = FlextPluginConstants.PluginPerformance.EXCELLENT_SUCCESS_RATE
         ```
     """
-
-    # Project metadata (Final attributes inherited from FlextConstants)
-    # CONSTANTS_VERSION, PROJECT_PREFIX, PROJECT_NAME inherited from FlextConstants
 
     class Discovery:
         """Plugin discovery and loading configuration."""
@@ -121,7 +125,7 @@ class FlextPluginConstants:
         DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
         DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
 
-    class Messages:
+    class PluginMessages:
         """Plugin-specific error and status messages."""
 
         PLUGIN_NOT_FOUND: Final[str] = "Plugin '{plugin_name}' not found"
@@ -137,7 +141,7 @@ class FlextPluginConstants:
             "Plugin '{plugin_name}' activated successfully"
         )
 
-    class Security:
+    class PluginSecurity:
         """Plugin security-related constants."""
 
         SECURITY_LEVELS: Final[FlextTypes.StringList] = [
@@ -151,8 +155,29 @@ class FlextPluginConstants:
         # Use FlextConstants for security-related timeouts
         SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
 
-    class Performance:
+    class PluginPerformance:
         """Plugin performance and resource limits."""
+
+        # Percentage constants
+        PERCENTAGE_MAX: Final[int] = 100
+        PERCENTAGE_MIN: Final[int] = 0
+
+        # Success rate thresholds
+        EXCELLENT_SUCCESS_RATE: Final[float] = 95.0
+        GOOD_SUCCESS_RATE: Final[float] = 90.0
+        FAIR_SUCCESS_RATE: Final[float] = 80.0
+
+        # Time thresholds in milliseconds
+        EXCELLENT_TIME_MS: Final[int] = 1000
+        GOOD_TIME_MS: Final[int] = 2000
+        FAIR_TIME_MS: Final[int] = 5000
+
+        # Execution time conversion
+        EXECUTION_TIME_SCALE_MS_TO_S: Final[int] = 1000
+
+        # Production ready limits
+        PRODUCTION_READY_TIMEOUT_SECONDS: Final[int] = 300
+        PRODUCTION_READY_MAX_MEMORY_MB: Final[int] = 1024
 
         # Concurrent loading thresholds
         MAX_CONCURRENT_LOADS_WARNING_THRESHOLD: Final[int] = 20

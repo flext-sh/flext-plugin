@@ -17,23 +17,12 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextModels, FlextTypes
+from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.type_definitions import PluginConfigData
 from flext_plugin.typings import FlextPluginTypes
-
-# Constants for plugin performance thresholds and validation
-PERCENTAGE_MAX: int = 100
-PERCENTAGE_MIN: int = 0
-PERFORMANCE_EXCELLENT_SUCCESS_RATE: float = 95.0
-PERFORMANCE_GOOD_SUCCESS_RATE: float = 90.0
-PERFORMANCE_FAIR_SUCCESS_RATE: float = 80.0
-PERFORMANCE_EXCELLENT_TIME_MS: int = 1000
-PERFORMANCE_GOOD_TIME_MS: int = 2000
-PERFORMANCE_FAIR_TIME_MS: int = 5000
-EXECUTION_TIME_SCALE_MS_TO_S: int = 1000
-PRODUCTION_READY_TIMEOUT_SECONDS: int = 300
-PRODUCTION_READY_MAX_MEMORY_MB: int = 1024
 
 
 class FlextPluginModels(FlextModels):
@@ -65,11 +54,11 @@ class FlextPluginModels(FlextModels):
     def performance_constants(self) -> FlextTypes.Dict:
         """Access performance constants for plugin analysis."""
         return {
-            "excellent_success_rate": PERFORMANCE_EXCELLENT_SUCCESS_RATE,
-            "good_success_rate": PERFORMANCE_GOOD_SUCCESS_RATE,
-            "fair_success_rate": PERFORMANCE_FAIR_SUCCESS_RATE,
-            "timeout_seconds": PRODUCTION_READY_TIMEOUT_SECONDS,
-            "max_memory_mb": PRODUCTION_READY_MAX_MEMORY_MB,
+            "excellent_success_rate": FlextPluginConstants.Performance.EXCELLENT_SUCCESS_RATE,
+            "good_success_rate": FlextPluginConstants.Performance.GOOD_SUCCESS_RATE,
+            "fair_success_rate": FlextPluginConstants.Performance.FAIR_SUCCESS_RATE,
+            "timeout_seconds": FlextPluginConstants.Performance.PRODUCTION_READY_TIMEOUT_SECONDS,
+            "max_memory_mb": FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB,
         }
 
     def validate_plugin_system_consistency(self) -> bool:
@@ -173,7 +162,7 @@ class FlextPluginModels(FlextModels):
             pattern=r"^[a-zA-Z][a-zA-Z0-9_-]*$",
             description="Plugin unique identifier name",
         )
-        version: str = Field(  # type: ignore[assignment] # Override parent int version with str for semantic versioning
+        plugin_version: str = Field(
             default="1.0.0",
             pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
             description="Plugin semantic version",
@@ -184,12 +173,12 @@ class FlextPluginModels(FlextModels):
             description="Plugin functionality description",
         )
         author: str = Field(default="", max_length=200, description="Plugin author")
-        plugin_type: FlextPluginModels.PluginType = Field(
-            default="utility",
+        plugin_type: "FlextPluginModels.PluginType" = Field(
+            default=FlextPluginModels.PluginType.UTILITY,
             description="Plugin type classification",
         )
-        status: FlextPluginModels.PluginStatus = Field(
-            default="inactive",
+        status: "FlextPluginModels.PluginStatus" = Field(
+            default=FlextPluginModels.PluginStatus.INACTIVE,
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")
@@ -210,7 +199,10 @@ class FlextPluginModels(FlextModels):
         @model_validator(mode="after")
         def validate_plugin_consistency(self) -> Self:
             """Validate plugin model consistency and constraints."""
-            if self.status == self.PluginStatus.ACTIVE and not self.enabled:
+            if (
+                self.status == FlextPluginModels.PluginStatus.ACTIVE
+                and not self.enabled
+            ):
                 error_msg = "Plugin cannot be ACTIVE when disabled"
                 raise ValueError(error_msg)
 
@@ -252,7 +244,7 @@ class FlextPluginModels(FlextModels):
     class ConfigModel(FlextModels.BaseConfig):
         """Plugin configuration model with comprehensive settings."""
 
-        model_config = ConfigDict(
+        model_config = SettingsConfigDict(
             validate_assignment=True,
             use_enum_values=True,
             extra="forbid",
@@ -264,7 +256,10 @@ class FlextPluginModels(FlextModels):
         settings: FlextPluginTypes.Core.SettingsDict = Field(
             default_factory=dict, description="Plugin settings"
         )
-        priority: int = Field(default=PERCENTAGE_MAX, description="Plugin priority")
+        priority: int = Field(
+            default=FlextPluginConstants.Performance.PERCENTAGE_MAX,
+            description="Plugin priority",
+        )
         timeout_seconds: int = Field(default=60, description="Plugin execution timeout")
         max_memory_mb: int = Field(default=512, description="Maximum memory usage")
         max_cpu_percent: int = Field(default=50, description="Maximum CPU usage")
@@ -284,10 +279,12 @@ class FlextPluginModels(FlextModels):
         @classmethod
         def validate_priority_range(cls, value: int) -> int:
             """Validate priority is within acceptable range."""
-            if not PERCENTAGE_MIN <= value <= PERCENTAGE_MAX:
-                error_msg = (
-                    f"Priority must be between {PERCENTAGE_MIN} and {PERCENTAGE_MAX}"
-                )
+            if (
+                not FlextPluginConstants.Performance.PERCENTAGE_MIN
+                <= value
+                <= FlextPluginConstants.Performance.PERCENTAGE_MAX
+            ):
+                error_msg = f"Priority must be between {FlextPluginConstants.Performance.PERCENTAGE_MIN} and {FlextPluginConstants.Performance.PERCENTAGE_MAX}"
                 raise ValueError(error_msg)
             return value
 
@@ -295,8 +292,8 @@ class FlextPluginModels(FlextModels):
         @classmethod
         def validate_memory_limits(cls, value: int) -> int:
             """Validate memory limits are reasonable."""
-            if value > PRODUCTION_READY_MAX_MEMORY_MB:
-                error_msg = f"Memory limit exceeds production maximum: {PRODUCTION_READY_MAX_MEMORY_MB}MB"
+            if value > FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB:
+                error_msg = f"Memory limit exceeds production maximum: {FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB}MB"
                 raise ValueError(error_msg)
             if value < 64:
                 error_msg = "Memory limit too low (minimum 64MB)"
