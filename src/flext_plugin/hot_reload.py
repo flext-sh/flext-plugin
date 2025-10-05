@@ -27,7 +27,6 @@ from watchdog.observers.api import BaseObserver
 
 # Hot reload functionality - anyio dependency handled at runtime
 from flext_core import (
-    FlextExceptions,
     FlextLogger,
     FlextModels,
     FlextResult,
@@ -413,6 +412,7 @@ class HotReloadManager(FlextModels.Entity):
         if observer is None:
             msg = "Observer not initialized"
             from flext_plugin.exceptions import FlextPluginExceptions
+
             raise FlextPluginExceptions.ProcessingError(msg)
         handler = HotReloadManager.PluginFileHandler(self._on_plugin_file_changed)
         observer.schedule(handler, self.plugin_directory, recursive=True)

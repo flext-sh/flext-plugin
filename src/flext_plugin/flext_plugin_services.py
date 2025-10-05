@@ -56,6 +56,12 @@ class FlextPluginServices(FlextService[object]):
             use_enum_values=True,
         )
 
+        # Logger field with default factory
+        _logger: FlextLogger = Field(
+            default_factory=lambda: FlextLogger(__name__),
+            exclude=True,  # Don't include in serialization
+        )
+
         def __init__(self, **kwargs: object) -> None:
             """Initialize plugin management service with dependency injection container."""
             # Extract container from kwargs or create default
