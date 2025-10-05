@@ -19,6 +19,64 @@ from flext_core import FlextExceptions
 class FlextPluginExceptions(FlextExceptions):
     """Single CONSOLIDATED class containing ALL plugin exceptions."""
 
+    @classmethod
+    def _extract_common_kwargs(
+        cls, kwargs: dict[str, object]
+    ) -> tuple[dict[str, object], str | None, str | None]:
+        """Extract common kwargs for error initialization.
+
+        Args:
+            kwargs: Raw kwargs dictionary
+
+        Returns:
+            Tuple of (base_context, correlation_id, error_code)
+        """
+        # Extract known parameters
+        context_raw = kwargs.get("context", {})
+        correlation_id_raw = kwargs.get("correlation_id")
+        error_code_raw = kwargs.get("error_code")
+
+        # Ensure correlation_id and error_code are strings or None
+        correlation_id = (
+            str(correlation_id_raw) if correlation_id_raw is not None else None
+        )
+        error_code = str(error_code_raw) if error_code_raw is not None else None
+
+        # Remove extracted parameters from kwargs to avoid duplication
+        remaining_kwargs = {
+            k: v
+            for k, v in kwargs.items()
+            if k not in {"context", "correlation_id", "error_code"}
+        }
+
+        # Build context dict, ensuring it's always dict[str, object]
+        if isinstance(context_raw, dict):
+            context: dict[str, object] = dict(context_raw)
+            if remaining_kwargs:
+                context.update(remaining_kwargs)
+        else:
+            # If context is not a dict, start with empty dict and add remaining kwargs
+            context = dict(remaining_kwargs)
+
+        return context, correlation_id, error_code
+
+    @classmethod
+    def _build_context(
+        cls, base_context: dict[str, object], **additional_fields: object
+    ) -> dict[str, object]:
+        """Build error context dictionary with additional fields.
+
+        Args:
+            base_context: Base context dictionary
+            **additional_fields: Additional fields to include
+
+        Returns:
+            Complete context dictionary
+        """
+        context = dict(base_context)  # Create a copy
+        context.update(additional_fields)
+        return context
+
     class PluginErrorCodes(Enum):
         """Error codes for plugin domain operations."""
 
@@ -62,12 +120,12 @@ class FlextPluginExceptions(FlextExceptions):
             self.plugin_id = plugin_id
 
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -100,12 +158,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -139,12 +197,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -178,12 +236,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -217,12 +275,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -256,12 +314,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -295,12 +353,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -334,12 +392,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -373,12 +431,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -412,12 +470,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -451,12 +509,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -490,12 +548,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -529,12 +587,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -568,12 +626,12 @@ class FlextPluginExceptions(FlextExceptions):
 
             """
             # Extract common parameters using helper
-            base_context, correlation_id, error_code = self._extract_common_kwargs(
-                kwargs
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
             )
 
             # Build context with plugin-specific fields
-            context = self._build_context(
+            context = FlextPluginExceptions._build_context(
                 base_context,
                 plugin_id=plugin_id,
             )
@@ -605,6 +663,45 @@ class FlextPluginExceptions(FlextExceptions):
 
     class HotReloadOperationError(HotReloadError):
         """Plugin hot reload operation specific errors."""
+
+    class ProcessingError(FlextExceptions.BaseError):
+        """Plugin processing operation errors extending FlextExceptions.BaseError."""
+
+        @override
+        def __init__(
+            self,
+            message: str,
+            *,
+            plugin_id: str | None = None,
+            **kwargs: object,
+        ) -> None:
+            """Initialize processing error using helpers.
+
+            Args:
+                message: Error message
+                plugin_id: Plugin identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = (
+                FlextPluginExceptions._extract_common_kwargs(kwargs)
+            )
+
+            # Build context with plugin-specific fields
+            context = FlextPluginExceptions._build_context(
+                base_context,
+                plugin_id=plugin_id,
+            )
+
+            # Call parent with specific error code
+            super().__init__(
+                message,
+                plugin_id=plugin_id,
+                code=error_code or "PLUGIN_PROCESSING_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
 
 # Backward compatibility aliases - property-based exports

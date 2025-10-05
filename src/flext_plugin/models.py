@@ -54,11 +54,11 @@ class FlextPluginModels(FlextModels):
     def performance_constants(self) -> FlextTypes.Dict:
         """Access performance constants for plugin analysis."""
         return {
-            "excellent_success_rate": FlextPluginConstants.Performance.EXCELLENT_SUCCESS_RATE,
-            "good_success_rate": FlextPluginConstants.Performance.GOOD_SUCCESS_RATE,
-            "fair_success_rate": FlextPluginConstants.Performance.FAIR_SUCCESS_RATE,
-            "timeout_seconds": FlextPluginConstants.Performance.PRODUCTION_READY_TIMEOUT_SECONDS,
-            "max_memory_mb": FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB,
+            "excellent_success_rate": FlextPluginConstants.PluginPerformance.EXCELLENT_SUCCESS_RATE,
+            "good_success_rate": FlextPluginConstants.PluginPerformance.GOOD_SUCCESS_RATE,
+            "fair_success_rate": FlextPluginConstants.PluginPerformance.FAIR_SUCCESS_RATE,
+            "timeout_seconds": FlextPluginConstants.PluginPerformance.PRODUCTION_READY_TIMEOUT_SECONDS,
+            "max_memory_mb": FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB,
         }
 
     def validate_plugin_system_consistency(self) -> bool:
@@ -173,12 +173,12 @@ class FlextPluginModels(FlextModels):
             description="Plugin functionality description",
         )
         author: str = Field(default="", max_length=200, description="Plugin author")
-        plugin_type: "FlextPluginModels.PluginType" = Field(
-            default=FlextPluginModels.PluginType.UTILITY,
+        plugin_type: "PluginType" = Field(
+            default_factory=lambda: PluginType.UTILITY,
             description="Plugin type classification",
         )
-        status: "FlextPluginModels.PluginStatus" = Field(
-            default=FlextPluginModels.PluginStatus.INACTIVE,
+        status: "PluginStatus" = Field(
+            default_factory=lambda: PluginStatus.INACTIVE,
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")
@@ -199,10 +199,7 @@ class FlextPluginModels(FlextModels):
         @model_validator(mode="after")
         def validate_plugin_consistency(self) -> Self:
             """Validate plugin model consistency and constraints."""
-            if (
-                self.status == FlextPluginModels.PluginStatus.ACTIVE
-                and not self.enabled
-            ):
+            if self.status == PluginStatus.ACTIVE and not self.enabled:
                 error_msg = "Plugin cannot be ACTIVE when disabled"
                 raise ValueError(error_msg)
 
@@ -257,7 +254,7 @@ class FlextPluginModels(FlextModels):
             default_factory=dict, description="Plugin settings"
         )
         priority: int = Field(
-            default=FlextPluginConstants.Performance.PERCENTAGE_MAX,
+            default=FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX,
             description="Plugin priority",
         )
         timeout_seconds: int = Field(default=60, description="Plugin execution timeout")
@@ -280,11 +277,11 @@ class FlextPluginModels(FlextModels):
         def validate_priority_range(cls, value: int) -> int:
             """Validate priority is within acceptable range."""
             if (
-                not FlextPluginConstants.Performance.PERCENTAGE_MIN
+                not FlextPluginConstants.PluginPerformance.PERCENTAGE_MIN
                 <= value
-                <= FlextPluginConstants.Performance.PERCENTAGE_MAX
+                <= FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX
             ):
-                error_msg = f"Priority must be between {FlextPluginConstants.Performance.PERCENTAGE_MIN} and {FlextPluginConstants.Performance.PERCENTAGE_MAX}"
+                error_msg = f"Priority must be between {FlextPluginConstants.PluginPerformance.PERCENTAGE_MIN} and {FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX}"
                 raise ValueError(error_msg)
             return value
 
@@ -292,8 +289,11 @@ class FlextPluginModels(FlextModels):
         @classmethod
         def validate_memory_limits(cls, value: int) -> int:
             """Validate memory limits are reasonable."""
-            if value > FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB:
-                error_msg = f"Memory limit exceeds production maximum: {FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB}MB"
+            if (
+                value
+                > FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB
+            ):
+                error_msg = f"Memory limit exceeds production maximum: {FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB}MB"
                 raise ValueError(error_msg)
             if value < 64:
                 error_msg = "Memory limit too low (minimum 64MB)"

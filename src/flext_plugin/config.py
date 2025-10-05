@@ -202,14 +202,14 @@ class FlextPluginConfig(FlextConfig):
     )
 
     memory_limit_mb: int = Field(
-        default=FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB
+        default=FlextPluginConstants.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB
         * 4,  # 256MB default
         gt=0,
         description="Memory limit per plugin in MB with FlextPluginConstants integration",
     )
 
     execution_timeout_seconds: int = Field(
-        default=FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
+        default=FlextPluginConstants.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
         // 2,  # 30 minutes
         gt=0,
         description="Plugin execution timeout in seconds with performance bounds",
@@ -297,7 +297,7 @@ class FlextPluginConfig(FlextConfig):
         # Validate performance configuration
         if (
             self.max_concurrent_loads
-            > FlextPluginConstants.Performance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
+            > FlextPluginConstants.PluginPerformance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
         ):
             warnings.warn(
                 f"High concurrent loads ({self.max_concurrent_loads}) may impact performance",
@@ -320,13 +320,13 @@ class FlextPluginConfig(FlextConfig):
 
         if (
             self.memory_limit_mb
-            < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB
+            < FlextPluginConstants.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB
         ):
             return FlextResult[None].fail("Memory limit too low (minimum 64MB)")
 
         if (
             self.execution_timeout_seconds
-            > FlextPluginConstants.Performance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
+            > FlextPluginConstants.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
         ):
             return FlextResult[None].fail("Execution timeout too high (maximum 1 hour)")
 
@@ -384,7 +384,9 @@ class FlextPluginConfig(FlextConfig):
             },
         }.get(environment, {})
 
-        return cls(**{**base_config, **overrides})
+        # Create config instance - cast to ensure correct type
+        config_instance = cast(FlextPluginConfig, cls(**{**base_config, **overrides}))
+        return config_instance
 
 
 __all__ = [

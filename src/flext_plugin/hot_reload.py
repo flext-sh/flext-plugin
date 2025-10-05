@@ -412,7 +412,8 @@ class HotReloadManager(FlextModels.Entity):
         observer = self.observer
         if observer is None:
             msg = "Observer not initialized"
-            raise FlextExceptions.ProcessingError(msg)
+            from flext_plugin.exceptions import FlextPluginExceptions
+            raise FlextPluginExceptions.ProcessingError(msg)
         handler = HotReloadManager.PluginFileHandler(self._on_plugin_file_changed)
         observer.schedule(handler, self.plugin_directory, recursive=True)
         observer.start()
