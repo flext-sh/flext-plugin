@@ -90,10 +90,26 @@ class FlextPluginConstants(FlextConstants):
 
         # Literal types for plugin types
         PluginTypeLiteral = Literal[
-            "tap", "target", "transform", "extension", "service", "middleware",
-            "transformer", "api", "database", "notification", "authentication",
-            "authorization", "utility", "tool", "handler", "processor", "core",
-            "addon", "theme", "language"
+            "tap",
+            "target",
+            "transform",
+            "extension",
+            "service",
+            "middleware",
+            "transformer",
+            "api",
+            "database",
+            "notification",
+            "authentication",
+            "authorization",
+            "utility",
+            "tool",
+            "handler",
+            "processor",
+            "core",
+            "addon",
+            "theme",
+            "language",
         ]
 
         # Type values
@@ -136,8 +152,16 @@ class FlextPluginConstants(FlextConstants):
 
         # Literal types for plugin status
         PluginStatusLiteral = Literal[
-            "unknown", "discovered", "loaded", "active", "inactive", "loading",
-            "error", "disabled", "healthy", "unhealthy"
+            "unknown",
+            "discovered",
+            "loaded",
+            "active",
+            "inactive",
+            "loading",
+            "error",
+            "disabled",
+            "healthy",
+            "unhealthy",
         ]
 
         # Use FlextConstants for worker configuration
@@ -187,8 +211,16 @@ class FlextPluginConstants(FlextConstants):
         SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
 
         # Allowed and blocked imports
-        DEFAULT_ALLOWED_IMPORTS: Final[FlextTypes.StringList] = ["flext_core", "flext_plugin"]
-        DEFAULT_BLOCKED_IMPORTS: Final[FlextTypes.StringList] = ["os", "sys", "subprocess", "importlib"]
+        DEFAULT_ALLOWED_IMPORTS: Final[FlextTypes.StringList] = [
+            "flext_core",
+            "flext_plugin",
+        ]
+        DEFAULT_BLOCKED_IMPORTS: Final[FlextTypes.StringList] = [
+            "os",
+            "sys",
+            "subprocess",
+            "importlib",
+        ]
 
     class PluginPerformance:
         """Plugin performance and resource limits."""
@@ -267,10 +299,10 @@ class FlextPluginConstants(FlextConstants):
         # Log levels
         LOG_LEVELS: Final[FlextTypes.StringList] = [
             "DEBUG",
-            "INFO", 
+            "INFO",
             "WARNING",
             "ERROR",
-            "CRITICAL"
+            "CRITICAL",
         ]
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
 
@@ -341,22 +373,40 @@ class FlextPluginConstants(FlextConstants):
         # Validation messages
         TOO_MANY_DEPENDENCIES: Final[str] = "Too many dependencies (max 50)"
         INVALID_DEPENDENCY_FORMAT: Final[str] = "Invalid dependency name format: {dep}"
-        PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED: Final[str] = "Plugin cannot be ACTIVE when disabled"
+        PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED: Final[str] = (
+            "Plugin cannot be ACTIVE when disabled"
+        )
         PLUGIN_CANNOT_DEPEND_ON_ITSELF: Final[str] = "Plugin cannot depend on itself"
-        PRIORITY_MUST_BE_BETWEEN_0_AND_100: Final[str] = "Priority must be between 0 and 100"
-        MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM: Final[str] = "Memory limit exceeds production maximum: 1024MB"
+        PRIORITY_MUST_BE_BETWEEN_0_AND_100: Final[str] = (
+            "Priority must be between 0 and 100"
+        )
+        MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM: Final[str] = (
+            "Memory limit exceeds production maximum: 1024MB"
+        )
         MEMORY_LIMIT_TOO_LOW: Final[str] = "Memory limit too low (minimum 64MB)"
         INVALID_SECURITY_LEVEL: Final[str] = "Invalid security level: {level}"
-        MISSING_REQUIRED_THRESHOLDS: Final[str] = "Missing required thresholds: {missing}"
-        PERCENTAGE_THRESHOLD_MUST_BE_0_100: Final[str] = "Percentage threshold {key} must be 0-100"
+        MISSING_REQUIRED_THRESHOLDS: Final[str] = (
+            "Missing required thresholds: {missing}"
+        )
+        PERCENTAGE_THRESHOLD_MUST_BE_0_100: Final[str] = (
+            "Percentage threshold {key} must be 0-100"
+        )
         THRESHOLD_CANNOT_BE_NEGATIVE: Final[str] = "Threshold {key} cannot be negative"
         INVALID_LOG_LEVEL: Final[str] = "Invalid log level: {level}"
-        RETENTION_DAYS_MUST_BE_BETWEEN_1_AND_365: Final[str] = "Retention days must be between 1 and 365"
-        AT_LEAST_ONE_PLUGIN_PATH_MUST_BE_SPECIFIED: Final[str] = "At least one plugin path must be specified"
+        RETENTION_DAYS_MUST_BE_BETWEEN_1_AND_365: Final[str] = (
+            "Retention days must be between 1 and 365"
+        )
+        AT_LEAST_ONE_PLUGIN_PATH_MUST_BE_SPECIFIED: Final[str] = (
+            "At least one plugin path must be specified"
+        )
         TIMEOUT_MUST_BE_POSITIVE: Final[str] = "Timeout must be positive"
         WATCH_INTERVAL_MUST_BE_POSITIVE: Final[str] = "Watch interval must be positive"
-        DEBOUNCE_TIME_CANNOT_BE_NEGATIVE: Final[str] = "Debounce time cannot be negative"
-        CPU_PERCENTAGE_MUST_BE_BETWEEN_0_AND_100: Final[str] = "CPU percentage must be between 0 and 100"
+        DEBOUNCE_TIME_CANNOT_BE_NEGATIVE: Final[str] = (
+            "Debounce time cannot be negative"
+        )
+        CPU_PERCENTAGE_MUST_BE_BETWEEN_0_AND_100: Final[str] = (
+            "CPU percentage must be between 0 and 100"
+        )
         SYNC_INTERVAL_MUST_BE_POSITIVE: Final[str] = "Sync interval must be positive"
 
 

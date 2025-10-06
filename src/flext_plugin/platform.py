@@ -8,14 +8,14 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import FlextContainer, FlextResult, FlextService
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginPlatform:
+class FlextPluginPlatform(FlextService[FlextResult]):
     """Main plugin platform facade providing unified plugin management.
 
     This is the primary entry point for all plugin operations in the FLEXT ecosystem.
@@ -56,9 +56,10 @@ class FlextPluginPlatform:
             container: FLEXT dependency injection container
             config: Optional plugin configuration (uses defaults if not provided)
         """
-        self.container = container
-        self.config = config or FlextPluginConfig()
-        self.logger = FlextLogger(__name__)
+        super().__init__(container=container, config=config or FlextPluginConfig())
+
+        # Type annotation for proper type checking
+        self.config: FlextPluginConfig
 
         # Initialize internal state
         self._plugins: Dict[str, FlextPluginEntities.Plugin] = {}
@@ -88,7 +89,7 @@ class FlextPluginPlatform:
             if not self._discovery:
                 return FlextResult.fail("Plugin discovery not initialized")
 
-            discovery_result = await self._discovery.discover_plugins(paths)
+            discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
                 return FlextResult.fail(f"Discovery failed: {discovery_result.error}")
 
@@ -97,8 +98,8 @@ class FlextPluginPlatform:
 
             for plugin_data in plugins_data:
                 plugin = FlextPluginEntities.Plugin.create(
-                    name=plugin_data["name"],
-                    plugin_version=plugin_data.get("version", "1.0.0"),
+                    name=str(plugin_data["name"]),
+                    plugin_version=str(plugin_data.get("version", "1.0.0")),
                     config=plugin_data,
                 )
 
@@ -135,14 +136,14 @@ class FlextPluginPlatform:
             if not self._loader:
                 return FlextResult.fail("Plugin loader not initialized")
 
-            load_result = await self._loader.load_plugin(plugin_path)
+            load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
                 return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
 
             plugin_data = load_result.value
             plugin = FlextPluginEntities.Plugin.create(
-                name=plugin_data["name"],
-                plugin_version=plugin_data.get("version", "1.0.0"),
+                name=str(plugin_data["name"]),
+                plugin_version=str(plugin_data.get("version", "1.0.0")),
                 config=plugin_data,
             )
 
@@ -196,16 +197,14 @@ class FlextPluginPlatform:
             self._executions[execution.execution_id] = execution
 
             # Execute plugin
-            execution_context = FlextPluginTypes.Execution.ExecutionContext(
-                plugin_id=plugin_name,
-                execution_id=execution.execution_id,
-                input_data=context,
-                timeout_seconds=self.config.security.max_execution_time,
-            )
+            execution_context: FlextPluginTypes.Execution.ExecutionContext = {
+                "plugin_id": plugin_name,
+                "execution_id": execution.execution_id,
+                "input_data": context,
+                "timeout_seconds": self.config.security.max_execution_time,
+            }
 
-            exec_result = await self._executor.execute_plugin(
-                plugin_name, execution_context
-            )
+            exec_result = self._executor.execute_plugin(plugin_name, execution_context)
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
@@ -268,9 +267,9 @@ class FlextPluginPlatform:
         try:
             # Unregister from internal registry
             unregister_result = self._registry.unregister_plugin(plugin_name)
-            if unregister_result.is_failure:
+            if not unregister_result:
                 return FlextResult.fail(
-                    f"Unregistration failed: {unregister_result.error}"
+                    f"Unregistration failed: plugin '{plugin_name}' not found in registry"
                 )
 
             # Remove from platform plugins
@@ -340,7 +339,7 @@ class FlextPluginPlatform:
             if not self._hot_reload:
                 return FlextResult.fail("Hot reload not initialized")
 
-            start_result = await self._hot_reload.start_watching(paths)
+            start_result = self._hot_reload.start_watching(paths)
             if start_result.is_failure:
                 return FlextResult.fail(
                     f"Hot reload start failed: {start_result.error}"
@@ -363,7 +362,7 @@ class FlextPluginPlatform:
             if not self._hot_reload:
                 return FlextResult.fail("Hot reload not initialized")
 
-            stop_result = await self._hot_reload.stop_watching()
+            stop_result = self._hot_reload.stop_watching()
             if stop_result.is_failure:
                 return FlextResult.fail(f"Hot reload stop failed: {stop_result.error}")
 
@@ -393,9 +392,9 @@ class FlextPluginPlatform:
             else False,
             "monitoring_enabled": self._monitoring is not None,
             "config": {
-                "discovery_paths": self.config.get_plugin_paths(),
-                "security_enabled": self.config.is_security_enabled(),
-                "monitoring_enabled": self.config.is_monitoring_enabled(),
+                "discovery_paths": self.config.discovery.plugin_paths,
+                "security_enabled": self.config.security.enable_sandboxing,
+                "monitoring_enabled": self._monitoring is not None,
             },
         }
 

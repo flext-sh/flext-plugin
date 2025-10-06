@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextService
 from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginService:
+class FlextPluginService(FlextService[FlextResult]):
     """Main plugin service orchestrating plugin operations.
 
     This service provides high-level operations for plugin management,
@@ -56,6 +56,7 @@ class FlextPluginService:
             registry: Plugin registry implementation
             monitoring: Plugin monitoring implementation
         """
+        super().__init__()
         self.logger = FlextLogger(__name__)
 
         # Store protocol implementations
@@ -70,7 +71,7 @@ class FlextPluginService:
         self._plugins: Dict[str, FlextPluginEntities.Plugin] = {}
         self._executions: Dict[str, FlextPluginEntities.Execution] = {}
 
-    async def discover_and_register_plugins(
+    def discover_and_register_plugins(
         self, paths: List[str]
     ) -> FlextResult[List[FlextPluginEntities.Plugin]]:
         """Discover plugins and register them in the service.
@@ -86,7 +87,7 @@ class FlextPluginService:
                 return FlextResult.fail("Plugin discovery not available")
 
             # Discover plugins
-            discovery_result = await self._discovery.discover_plugins(paths)
+            discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
                 return FlextResult.fail(f"Discovery failed: {discovery_result.error}")
 
@@ -96,8 +97,8 @@ class FlextPluginService:
             for plugin_data in plugins_data:
                 # Create plugin entity
                 plugin = FlextPluginEntities.Plugin.create(
-                    name=plugin_data["name"],
-                    plugin_version=plugin_data.get("version", "1.0.0"),
+                    name=str(plugin_data["name"]),
+                    plugin_version=str(plugin_data.get("version", "1.0.0")),
                     config=plugin_data,
                 )
 
@@ -142,9 +143,7 @@ class FlextPluginService:
             self.logger.exception("Plugin discovery and registration failed")
             return FlextResult.fail(f"Service error: {str(e)}")
 
-    async def load_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginEntities.Plugin]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -158,14 +157,14 @@ class FlextPluginService:
                 return FlextResult.fail("Plugin loader not available")
 
             # Load plugin
-            load_result = await self._loader.load_plugin(plugin_path)
+            load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
                 return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
 
             plugin_data = load_result.value
             plugin = FlextPluginEntities.Plugin.create(
-                name=plugin_data["name"],
-                plugin_version=plugin_data.get("version", "1.0.0"),
+                name=str(plugin_data["name"]),
+                plugin_version=str(plugin_data.get("version", "1.0.0")),
                 config=plugin_data,
             )
 
@@ -206,7 +205,7 @@ class FlextPluginService:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return FlextResult.fail(f"Loading error: {str(e)}")
 
-    async def execute_plugin(
+    def execute_plugin(
         self,
         plugin_name: str,
         context: Dict[str, Any],
