@@ -136,11 +136,14 @@ def main() -> None:
         },
     )
 
-    standalone_config.config_data.get("routes", {})
+    standalone_config.config_data.get("routes", {}) if hasattr(
+        standalone_config, "config_data"
+    ) else {}
 
     # 4. Create plugin metadata
     create_flext_plugin_metadata(
         plugin_name="data-processor",
+        version="1.0.0",
         metadata={
             "tags": ["etl", "transform", "batch"],
             "categories": ["data-processing", "transformation"],

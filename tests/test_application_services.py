@@ -17,12 +17,10 @@ from typing import Protocol, cast
 
 import pytest
 
-# Import anyio.path for file operations
 from anyio import Path as AnyioPath
 from flext_plugin import (
-    FlextPluginConfig,
     FlextPluginDiscoveryService,
-    FlextPluginEntity,
+    FlextPluginEntities,
     FlextPluginService,
     PluginDiscovery,
     PluginLoader,
@@ -409,9 +407,9 @@ class TestFlextPluginServiceWithRealAdapters:
         assert isinstance(result.data, list)
         assert len(result.data) == 4  # Our 4 real plugin files
 
-        # Verify plugins are real FlextPluginEntity objects
+        # Verify plugins are real FlextPluginEntities.Entity objects
         for plugin in result.data:
-            assert isinstance(plugin, FlextPluginEntity)
+            assert isinstance(plugin, FlextPluginEntities.Entity)
             assert plugin.name in {
                 "tap_database",
                 "target_warehouse",
@@ -466,7 +464,7 @@ class TestFlextPluginServiceWithRealAdapters:
 
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
         assert install_result.is_success
-        assert isinstance(install_result.data, FlextPluginEntity)
+        assert isinstance(install_result.data, FlextPluginEntities.Entity)
         assert install_result.data.name == "tap_database"
 
     def test_is_plugin_loaded_with_real_adapters(
@@ -632,7 +630,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
         # Create REAL plugin entity that corresponds to actual file
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="tap_database",  # Corresponds to our real plugin file
             plugin_version="1.0.0",
             description="Database tap plugin for testing",
@@ -674,7 +672,7 @@ class TestFlextPluginServiceReal:
         ]
 
         for plugin_type in plugin_types:
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=f"real-plugin-{plugin_type.value}",
                 plugin_version="1.0.0",
                 plugin_type=plugin_type,
@@ -825,7 +823,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        config = FlextPluginConfig.create(plugin_name="test")
+        config = FlextPluginEntities.Config.create(plugin_name="test")
         result = service.update_plugin_config("", config)
         assert not result.is_success
         assert "Plugin name is required" in str(result.error)
@@ -836,7 +834,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test update_plugin_config with invalid config fails."""
         # Create config and make it invalid using object.__setattr__ to bypass validation
-        config = FlextPluginConfig.create(plugin_name="test-plugin")
+        config = FlextPluginEntities.Config.create(plugin_name="test-plugin")
         # Directly set to empty to bypass Pydantic validation
         setattr(config, "plugin_name", "")
         result = service.update_plugin_config("test-plugin", config)
@@ -848,7 +846,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
-        config = FlextPluginConfig.create(plugin_name="real-test-plugin")
+        config = FlextPluginEntities.Config.create(plugin_name="real-test-plugin")
         result = service.update_plugin_config("real-test-plugin", config)
 
         # Check for expected infrastructure failures - these are acceptable
@@ -1004,7 +1002,7 @@ class TestFlextPluginDiscoveryServiceReal:
     ) -> None:
         """Test validate_plugin_integrity with plugin based on REAL files."""
         # Create plugin entity based on our real plugin file
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="tap_database",  # Corresponds to actual file tap_database.py
             plugin_version="1.0.0",
             description="Real database tap plugin",

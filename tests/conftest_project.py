@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 from flext_plugin import (
-    FlextPluginEntity,
+    FlextPluginEntities,
     PluginType,
     RealPluginDiscoveryAdapter,
     RealPluginLoaderAdapter,
@@ -203,9 +203,9 @@ def real_container_with_adapters(real_plugin_directory: Path) -> FlextContainer:
 
 
 @pytest.fixture
-def real_plugin_entity() -> FlextPluginEntity:
-    """Create REAL FlextPluginEntity for testing."""
-    return FlextPluginEntity.create(
+def real_plugin_entity() -> FlextPluginEntities.Entity:
+    """Create REAL FlextPluginEntities.Entity for testing."""
+    return FlextPluginEntities.Entity.create(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
@@ -277,9 +277,9 @@ def pytest_configure(config: pytest.Config) -> None:
 
 # REAL Plugin Entity fixtures
 @pytest.fixture
-def real_tap_plugin() -> FlextPluginEntity:
+def real_tap_plugin() -> FlextPluginEntities.Entity:
     """Create REAL tap plugin entity."""
-    return FlextPluginEntity.create(
+    return FlextPluginEntities.Entity.create(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
@@ -288,9 +288,9 @@ def real_tap_plugin() -> FlextPluginEntity:
 
 
 @pytest.fixture
-def real_target_plugin() -> FlextPluginEntity:
+def real_target_plugin() -> FlextPluginEntities.Entity:
     """Create REAL target plugin entity."""
-    return FlextPluginEntity.create(
+    return FlextPluginEntities.Entity.create(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
@@ -299,9 +299,9 @@ def real_target_plugin() -> FlextPluginEntity:
 
 
 @pytest.fixture
-def real_processor_plugin() -> FlextPluginEntity:
+def real_processor_plugin() -> FlextPluginEntities.Entity:
     """Create REAL processor plugin entity."""
-    return FlextPluginEntity.create(
+    return FlextPluginEntities.Entity.create(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",

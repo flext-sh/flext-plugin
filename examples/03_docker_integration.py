@@ -50,10 +50,11 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.PluginModel, dict
     # Use domain library patterns - create plugin model directly
     postgres_plugin = FlextPluginModels.PluginModel(
         name="docker-postgres-connector",
-        version="1.0.0",
+        plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author="FLEXT Team",
         plugin_type=FlextPluginModels.PluginType.DATABASE,
+        status=FlextPluginModels.PluginStatus.DISCOVERED,
         dependencies=["psycopg2-binary"],
         enabled=True,
     )
@@ -79,10 +80,11 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     # Use domain library patterns - create plugin model directly
     redis_plugin = FlextPluginModels.PluginModel(
         name="docker-redis-cache",
-        version="1.0.0",
+        plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author="FLEXT Team",
         plugin_type=FlextPluginModels.PluginType.DATABASE,
+        status=FlextPluginModels.PluginStatus.DISCOVERED,
         dependencies=["redis"],
         enabled=True,
     )
@@ -108,10 +110,11 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     # Use domain library patterns - create plugin model directly
     ldap_plugin = FlextPluginModels.PluginModel(
         name="docker-ldap-directory",
-        version="1.0.0",
+        plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author="FLEXT Team",
         plugin_type=FlextPluginModels.PluginType.AUTHENTICATION,
+        status=FlextPluginModels.PluginStatus.DISCOVERED,
         dependencies=["ldap3"],
         enabled=True,
     )
@@ -119,7 +122,7 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     return ldap_plugin, ldap_config
 
 
-async def test_connections() -> bool:
+def test_connections() -> bool:
     """Test connectivity to all Docker services."""
     print("🔍 Testing Docker service connectivity...")
 

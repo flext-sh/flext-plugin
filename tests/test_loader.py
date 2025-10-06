@@ -5,7 +5,7 @@ using REAL plugin components without ANY mocks.
 
 Testing Strategy ONLY:
     - PluginLoader: REAL plugin loading system with actual initialization
-    - FlextPluginEntity: REAL plugin entities with actual business logic
+    - FlextPluginEntities.Entity: REAL plugin entities with actual business logic
     - Validation: REAL business rules and error handling
     - Integration: REAL component integration and state management
 
@@ -23,7 +23,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_plugin import FlextPluginEntity, PluginLoader, PluginStatus, PluginType
+from flext_plugin import FlextPluginEntities, PluginLoader, PluginStatus, PluginType
 
 
 class TestPluginLoaderReal:
@@ -57,11 +57,11 @@ class TestPluginLoaderReal:
 
 
 class TestFlextPluginEntityReal:
-    """REAL test suite for FlextPluginEntity functionality."""
+    """REAL test suite for FlextPluginEntities.Entity functionality."""
 
     def test_plugin_entity_creation_with_real_data(self) -> None:
-        """Test creating REAL FlextPluginEntity with actual data."""
-        plugin = FlextPluginEntity.create(
+        """Test creating REAL FlextPluginEntities.Entity with actual data."""
+        plugin = FlextPluginEntities.Entity.create(
             name="real-test-plugin",
             plugin_version="1.0.0",
             description="A test plugin for validation",
@@ -70,12 +70,12 @@ class TestFlextPluginEntityReal:
 
         assert plugin.name == "real-test-plugin"
         assert plugin.plugin_version == "1.0.0"
-        # Note: FlextPluginEntity might have default values for some fields
+        # Note: FlextPluginEntities.Entity might have default values for some fields
         assert plugin.validate_business_rules().success
 
     def test_plugin_entity_business_rules_validation(self) -> None:
         """Test REAL business rules validation."""
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="validation-test-plugin",
             plugin_version="2.0.0",
             description="Plugin for validation testing",
@@ -88,7 +88,7 @@ class TestFlextPluginEntityReal:
         """Test that REAL validation fails with empty name."""
 
         def _should_fail_validation() -> None:
-            FlextPluginEntity.create(
+            FlextPluginEntities.Entity.create(
                 name="",  # Empty name should fail validation
                 plugin_version="1.0.0",
             )
@@ -107,7 +107,7 @@ class TestFlextPluginEntityReal:
         ]
 
         for name, plugin_type in plugin_types:
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=name,
                 plugin_version="1.0.0",
                 plugin_type=plugin_type,
@@ -120,7 +120,7 @@ class TestFlextPluginEntityReal:
 
     def test_plugin_entity_with_status_management(self) -> None:
         """Test REAL plugin entity with status management."""
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="status-test-plugin",
             plugin_version="1.0.0",
             status=PluginStatus.ACTIVE,
@@ -133,7 +133,7 @@ class TestFlextPluginEntityReal:
 
     def test_plugin_entity_with_comprehensive_metadata(self) -> None:
         """Test REAL plugin entity with comprehensive metadata."""
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="comprehensive-plugin",
             plugin_version="3.2.1",
             description="A comprehensive plugin with full metadata",
@@ -144,13 +144,13 @@ class TestFlextPluginEntityReal:
 
         assert plugin.name == "comprehensive-plugin"
         assert plugin.plugin_version == "3.2.1"
-        # Note: FlextPluginEntity might have default behavior for some fields
+        # Note: FlextPluginEntities.Entity might have default behavior for some fields
         assert plugin.plugin_type in [ptype.value for ptype in PluginType]
         assert plugin.validate_business_rules().success
 
 
 class TestPluginLoaderIntegration:
-    """REAL integration tests for PluginLoader with FlextPluginEntity."""
+    """REAL integration tests for PluginLoader with FlextPluginEntities.Entity."""
 
     def test_plugin_loader_with_multiple_plugins(self) -> None:
         """Test REAL plugin loader with multiple plugin entities."""
@@ -159,7 +159,7 @@ class TestPluginLoaderIntegration:
         # Create multiple plugins
         plugins = []
         for i in range(3):
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=f"integration-plugin-{i}",
                 plugin_version=f"{i + 1}.0.0",
                 description=f"Integration test plugin {i}",
@@ -193,7 +193,7 @@ class TestPluginLoaderIntegration:
         # Create plugins with different configurations
         plugins = []
         for i in range(4):
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=f"lifecycle-plugin-{i}",
                 plugin_version="1.0.0",
             )
@@ -212,7 +212,7 @@ class TestPluginLoaderEdgeCases:
 
     def test_plugin_entity_with_minimal_configuration(self) -> None:
         """Test REAL plugin entity with minimal configuration."""
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="minimal-plugin",
             plugin_version="1.0.0",
         )
@@ -224,7 +224,7 @@ class TestPluginLoaderEdgeCases:
     def test_plugin_entity_with_unicode_names(self) -> None:
         """Test REAL plugin entity with Unicode names."""
         unicode_name = "测试插件-тест-プラグイン"
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name=unicode_name,
             plugin_version="1.0.0",
         )
@@ -250,7 +250,7 @@ class TestPluginLoaderEdgeCases:
         # Create various plugins
         plugins = []
         for i in range(5):
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=f"scenario-plugin-{i}",
                 plugin_version=f"{i + 1}.0.0",
                 description=f"Scenario plugin {i} for comprehensive testing",
@@ -282,7 +282,7 @@ class TestPluginLoaderEdgeCases:
         ]
 
         for version in version_formats:
-            plugin = FlextPluginEntity.create(
+            plugin = FlextPluginEntities.Entity.create(
                 name=f"version-test-{version.replace('.', '-').replace('-', '_')}",
                 plugin_version=version,
             )

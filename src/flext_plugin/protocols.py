@@ -1,255 +1,292 @@
-"""Plugin protocols for FLEXT ecosystem."""
+"""FLEXT Plugin Protocols - Plugin system protocol definitions.
 
-from typing import Protocol, runtime_checkable
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
-from flext_core import FlextProtocols, FlextResult, FlextTypes
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Protocol
+
+from flext_core import FlextResult
+from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginProtocols(FlextProtocols):
-    """Unified plugin protocols extending FlextProtocols with domain functionality.
+class FlextPluginProtocols:
+    """Plugin system protocol definitions for dependency injection and testing.
 
-    Extends FlextProtocols to inherit foundation protocols while adding plugin-specific
-    protocols in the Plugin namespace. Maintains full inheritance hierarchy and
-    provides clean namespace access.
-
-    Architecture:
-        - INHERITS: All foundation protocols from FlextProtocols
-        - EXTENDS: Plugin-specific protocols in Plugin namespace
-        - MAINTAINS: Zero breaking changes through inheritance pattern
-
-    Usage:
-        from flext_plugin.protocols import FlextPluginProtocols
-
-        # Foundation access (inherited)
-        FlextPluginProtocols.Foundation.ResultProtocol
-
-        # Plugin-specific access
-        FlextPluginProtocols.Plugin.DiscoveryProtocol
+    Defines abstract interfaces that concrete implementations must follow,
+    enabling clean architecture and testability through dependency inversion.
+    This class contains all protocols as nested classes following the
+    [Project][Module] pattern.
     """
 
-    # =========================================================================
-    # PLUGIN-SPECIFIC PROTOCOLS
-    # =========================================================================
-    # Domain-specific protocols for plugin discovery, loading, registry,
-    # execution, validation, hot-reload, and management operations.
+    class PluginLoader(Protocol):
+        """Protocol for plugin loading implementations."""
 
-    class Plugin:
-        """Plugin domain-specific protocols.
+        def load_plugin(
+            self, plugin_path: str
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+            """Load a plugin from the given path."""
+            ...
 
-        Provides protocols for plugin discovery, loading, registration,
-        execution, validation, hot-reload, and lifecycle management.
-        """
+        def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Unload a plugin by name."""
+            ...
 
-        @runtime_checkable
-        class DiscoveryProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin discovery operations."""
+        def is_plugin_loaded(self, plugin_name: str) -> bool:
+            """Check if a plugin is currently loaded."""
+            ...
 
-            def discover_plugins(self, path: str) -> FlextResult[FlextTypes.List]:
-                """Discover plugins in the given path."""
-                ...
+        def get_loaded_plugins(self) -> List[str]:
+            """Get list of currently loaded plugin names."""
+            ...
 
-            def validate_plugin(self, plugin: object) -> FlextResult[bool]:
-                """Validate a plugin."""
-                ...
+    class PluginDiscovery(Protocol):
+        """Protocol for plugin discovery implementations."""
 
-            def scan_directory(
-                self,
-                directory: str,
-                *,
-                recursive: bool = True,
-                pattern: str | None = None,
-            ) -> FlextResult[FlextTypes.StringList]:
-                """Scan directory for plugin files."""
-                ...
+        def discover_plugins(
+            self, paths: FlextPluginTypes.Core.StringList
+        ) -> FlextResult[FlextPluginTypes.Core.PluginList]:
+            """Discover plugins in the given paths."""
+            ...
 
-            def filter_plugins(
-                self, plugins: FlextTypes.List, criteria: FlextTypes.Dict
-            ) -> FlextResult[FlextTypes.List]:
-                """Filter plugins by criteria."""
-                ...
+        def discover_plugin(
+            self, plugin_path: str
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+            """Discover a single plugin at the given path."""
+            ...
 
-        @runtime_checkable
-        class LoaderProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin loading operations."""
+        def validate_plugin(
+            self, plugin_data: FlextPluginTypes.Core.PluginDict
+        ) -> FlextResult[bool]:
+            """Validate discovered plugin data."""
+            ...
 
-            def load_plugin(self, plugin_path: str) -> FlextResult[object]:
-                """Load plugin from path."""
-                ...
+    class PluginRegistry(Protocol):
+        """Protocol for plugin registry implementations."""
 
-            def unload_plugin(self, plugin: object) -> FlextResult[bool]:
-                """Unload a plugin."""
-                ...
+        def register_plugin(
+            self, plugin: FlextPluginTypes.Core.PluginEntity
+        ) -> FlextResult[bool]:
+            """Register a plugin in the registry."""
+            ...
 
-            def reload_plugin(self, plugin: object) -> FlextResult[object]:
-                """Reload a plugin."""
-                ...
+        def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Unregister a plugin from the registry."""
+            ...
 
-            def get_plugin_info(self, plugin: object) -> FlextResult[FlextTypes.Dict]:
-                """Get plugin information."""
-                ...
+        def get_plugin(
+            self, plugin_name: str
+        ) -> FlextResult[Optional[FlextPluginTypes.Core.PluginEntity]]:
+            """Get a plugin by name."""
+            ...
 
-            def validate_plugin_dependencies(self, plugin: object) -> FlextResult[bool]:
-                """Validate plugin dependencies."""
-                ...
+        def list_plugins(self) -> FlextResult[FlextPluginTypes.Core.PluginList]:
+            """List all registered plugins."""
+            ...
 
-        @runtime_checkable
-        class RegistryProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin registry operations."""
+        def is_plugin_registered(self, plugin_name: str) -> bool:
+            """Check if a plugin is registered."""
+            ...
 
-            def register_plugin(
-                self, plugin: object, *, name: str | None = None
-            ) -> FlextResult[str]:
-                """Register a plugin."""
-                ...
+    class PluginExecution(Protocol):
+        """Protocol for plugin execution implementations."""
 
-            def unregister_plugin(self, plugin_id: str) -> FlextResult[bool]:
-                """Unregister a plugin."""
-                ...
+        def execute_plugin(
+            self,
+            plugin_name: str,
+            context: FlextPluginTypes.Execution.ExecutionContext,
+        ) -> FlextResult[FlextPluginTypes.Execution.ExecutionResult]:
+            """Execute a plugin with the given context."""
+            ...
 
-            def get_plugin(self, plugin_id: str) -> FlextResult[object]:
-                """Get plugin by ID."""
-                ...
+        def stop_execution(self, execution_id: str) -> FlextResult[bool]:
+            """Stop a running execution."""
+            ...
 
-            def list_plugins(self) -> FlextResult[list[FlextTypes.Dict]]:
-                """List all registered plugins."""
-                ...
+        def get_execution_status(self, execution_id: str) -> FlextResult[str]:
+            """Get the status of a running execution."""
+            ...
 
-            def find_plugins(
-                self,
-                *,
-                name: str | None = None,
-                category: str | None = None,
-                version: str | None = None,
-            ) -> FlextResult[FlextTypes.List]:
-                """Find plugins by criteria."""
-                ...
+        def list_running_executions(self) -> List[str]:
+            """List all currently running execution IDs."""
+            ...
 
-        @runtime_checkable
-        class ExecutorProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin execution operations."""
+    class PluginSecurity(Protocol):
+        """Protocol for plugin security implementations."""
 
-            def execute_plugin(
-                self,
-                plugin: object,
-                method: str,
-                *,
-                args: FlextTypes.List | None = None,
-                kwargs: FlextTypes.Dict | None = None,
-            ) -> FlextResult[object]:
-                """Execute plugin method."""
-                ...
+        def validate_plugin(
+            self, plugin: FlextPluginTypes.Core.PluginEntity
+        ) -> FlextResult[bool]:
+            """Validate a plugin for security compliance."""
+            ...
 
-            def get_execution_context(
-                self, plugin: object
-            ) -> FlextResult[FlextTypes.Dict]:
-                """Get plugin execution context."""
-                ...
+        def check_permissions(
+            self, plugin_name: str, permissions: FlextPluginTypes.Core.StringList
+        ) -> FlextResult[bool]:
+            """Check if a plugin has the required permissions."""
+            ...
 
-            def set_execution_timeout(
-                self, plugin: object, timeout: float
-            ) -> FlextResult[bool]:
-                """Set execution timeout for plugin."""
-                ...
+        def scan_plugin_security(self, plugin_path: str) -> FlextResult[Dict[str, Any]]:
+            """Perform security scan on a plugin."""
+            ...
 
-        @runtime_checkable
-        class ValidatorProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin validation operations."""
+        def get_security_level(self, plugin_name: str) -> FlextResult[str]:
+            """Get the security level of a plugin."""
+            ...
 
-            def validate_plugin_structure(self, plugin: object) -> FlextResult[bool]:
-                """Validate plugin structure."""
-                ...
+    class PluginHotReload(Protocol):
+        """Protocol for plugin hot reload implementations."""
 
-            def validate_plugin_metadata(self, plugin: object) -> FlextResult[bool]:
-                """Validate plugin metadata."""
-                ...
+        def start_watching(
+            self, paths: FlextPluginTypes.Core.StringList
+        ) -> FlextResult[bool]:
+            """Start watching the given paths for changes."""
+            ...
 
-            def validate_plugin_interface(
-                self, plugin: object, interface: type
-            ) -> FlextResult[bool]:
-                """Validate plugin implements required interface."""
-                ...
+        def stop_watching(self) -> FlextResult[bool]:
+            """Stop watching for changes."""
+            ...
 
-            def validate_plugin_configuration(
-                self, plugin: object, config: FlextTypes.Dict
-            ) -> FlextResult[bool]:
-                """Validate plugin configuration."""
-                ...
+        def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Reload a specific plugin."""
+            ...
 
-        @runtime_checkable
-        class HotReloadProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin hot reload operations."""
+        def is_watching(self) -> bool:
+            """Check if hot reload is currently watching for changes."""
+            ...
 
-            def enable_hot_reload(
-                self, plugin: object, *, watch_path: str | None = None
-            ) -> FlextResult[bool]:
-                """Enable hot reload for plugin."""
-                ...
+        def get_watched_paths(self) -> List[str]:
+            """Get list of currently watched paths."""
+            ...
 
-            def disable_hot_reload(self, plugin: object) -> FlextResult[bool]:
-                """Disable hot reload for plugin."""
-                ...
+    class PluginMonitoring(Protocol):
+        """Protocol for plugin monitoring implementations."""
 
-            def reload_on_change(
-                self, plugin: object, file_path: str
-            ) -> FlextResult[object]:
-                """Reload plugin when file changes."""
-                ...
+        def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+            """Start monitoring a plugin."""
+            ...
 
-            def get_watch_status(self, plugin: object) -> FlextResult[FlextTypes.Dict]:
-                """Get plugin watch status."""
-                ...
+        def stop_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+            """Stop monitoring a plugin."""
+            ...
 
-        @runtime_checkable
-        class ManagerProtocol(FlextProtocols.Domain.Service, Protocol):
-            """Protocol for plugin management operations."""
+        def get_plugin_metrics(
+            self, plugin_name: str
+        ) -> FlextResult[FlextPluginTypes.Performance.Metrics]:
+            """Get metrics for a plugin."""
+            ...
 
-            def initialize_plugin_system(
-                self, config: FlextTypes.Dict
-            ) -> FlextResult[bool]:
-                """Initialize plugin system."""
-                ...
+        def get_plugin_health(self, plugin_name: str) -> FlextResult[Dict[str, Any]]:
+            """Get health status for a plugin."""
+            ...
 
-            def shutdown_plugin_system(self) -> FlextResult[bool]:
-                """Shutdown plugin system."""
-                ...
+        def is_monitoring(self, plugin_name: str) -> bool:
+            """Check if a plugin is being monitored."""
+            ...
 
-            def get_system_status(self) -> FlextResult[FlextTypes.Dict]:
-                """Get plugin system status."""
-                ...
+    class PluginConfiguration(Protocol):
+        """Protocol for plugin configuration implementations."""
 
-            def configure_plugin(
-                self, plugin: object, config: FlextTypes.Dict
-            ) -> FlextResult[bool]:
-                """Configure a plugin."""
-                ...
+        def load_config(
+            self, plugin_name: str
+        ) -> FlextResult[FlextPluginTypes.Core.ConfigDict]:
+            """Load configuration for a plugin."""
+            ...
 
-            def get_plugin_statistics(self) -> FlextResult[FlextTypes.Dict]:
-                """Get plugin system statistics."""
-                ...
+        def save_config(
+            self, plugin_name: str, config: FlextPluginTypes.Core.ConfigDict
+        ) -> FlextResult[bool]:
+            """Save configuration for a plugin."""
+            ...
 
-    # =========================================================================
-    # BACKWARD COMPATIBILITY ALIASES
-    # =========================================================================
-    # Maintain existing attribute names for zero breaking changes.
+        def validate_config(
+            self, config: FlextPluginTypes.Core.ConfigDict
+        ) -> FlextResult[bool]:
+            """Validate plugin configuration."""
+            ...
 
-    DiscoveryProtocol = Plugin.DiscoveryProtocol
-    LoaderProtocol = Plugin.LoaderProtocol
-    RegistryProtocol = Plugin.RegistryProtocol
-    ExecutorProtocol = Plugin.ExecutorProtocol
-    ValidatorProtocol = Plugin.ValidatorProtocol
-    HotReloadProtocol = Plugin.HotReloadProtocol
-    ManagerProtocol = Plugin.ManagerProtocol
+        def get_default_config(
+            self, plugin_type: str
+        ) -> FlextResult[FlextPluginTypes.Core.ConfigDict]:
+            """Get default configuration for a plugin type."""
+            ...
 
-    # Additional convenience aliases
-    PluginDiscoveryProtocol = Plugin.DiscoveryProtocol
-    PluginLoaderProtocol = Plugin.LoaderProtocol
-    PluginRegistryProtocol = Plugin.RegistryProtocol
-    PluginExecutorProtocol = Plugin.ExecutorProtocol
-    PluginValidatorProtocol = Plugin.ValidatorProtocol
-    PluginHotReloadProtocol = Plugin.HotReloadProtocol
-    PluginManagerProtocol = Plugin.ManagerProtocol
+    class PluginLifecycle(Protocol):
+        """Protocol for plugin lifecycle management implementations."""
+
+        def initialize_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Initialize a plugin."""
+            ...
+
+        def activate_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Activate a plugin."""
+            ...
+
+        def deactivate_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Deactivate a plugin."""
+            ...
+
+        def destroy_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Destroy a plugin."""
+            ...
+
+        def get_plugin_status(self, plugin_name: str) -> FlextResult[str]:
+            """Get the current status of a plugin."""
+            ...
+
+        def list_plugin_statuses(self) -> FlextResult[Dict[str, str]]:
+            """Get status of all plugins."""
+            ...
+
+    class PluginValidation(Protocol):
+        """Protocol for plugin validation implementations."""
+
+        def validate_plugin_structure(
+            self, plugin_data: FlextPluginTypes.Core.PluginDict
+        ) -> FlextResult[bool]:
+            """Validate plugin data structure."""
+            ...
+
+        def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
+            """Validate plugin dependencies."""
+            ...
+
+        def validate_plugin_permissions(self, plugin_name: str) -> FlextResult[bool]:
+            """Validate plugin permissions."""
+            ...
+
+        def validate_plugin_compatibility(self, plugin_name: str) -> FlextResult[bool]:
+            """Validate plugin compatibility with platform."""
+            ...
+
+    class PluginStorage(Protocol):
+        """Protocol for plugin storage implementations."""
+
+        def store_plugin(
+            self, plugin_data: FlextPluginTypes.Core.PluginDict
+        ) -> FlextResult[bool]:
+            """Store plugin data."""
+            ...
+
+        def retrieve_plugin(
+            self, plugin_name: str
+        ) -> FlextResult[Optional[FlextPluginTypes.Core.PluginDict]]:
+            """Retrieve plugin data."""
+            ...
+
+        def delete_plugin(self, plugin_name: str) -> FlextResult[bool]:
+            """Delete plugin data."""
+            ...
+
+        def list_stored_plugins(self) -> FlextResult[List[str]]:
+            """List all stored plugin names."""
+            ...
+
+        def plugin_exists(self, plugin_name: str) -> bool:
+            """Check if plugin data exists."""
+            ...
 
 
-__all__ = [
-    "FlextPluginProtocols",
-]
+__all__ = ["FlextPluginProtocols"]

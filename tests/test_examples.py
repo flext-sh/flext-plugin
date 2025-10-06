@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import importlib.util
 import subprocess
 import sys
@@ -40,12 +39,12 @@ create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
 create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
-async def _run(
+def _run(
     cmd_list: FlextTypes.StringList,
     cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
-    process = await asyncio.create_subprocess_exec(
+    process = subprocess.Popen(
         *cmd_list,
         cwd=cwd,
         stdout=subprocess.PIPE,
@@ -64,18 +63,18 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    rc, out, err = asyncio.run(
-        _run(
-            [sys.executable, str(example_path)],
-            cwd=str(Path(__file__).parent.parent),
-        ),
+    result = subprocess.run(
+        [sys.executable, str(example_path)],
+        cwd=str(Path(__file__).parent.parent),
+        capture_output=True,
+        text=True,
     )
 
     # Verify successful execution
-    assert rc == 0, f"Example failed with error: {err}"
+    assert result.returncode == 0, f"Example failed with error: {result.stderr}"
 
     # Verify expected output content
-    output = out
+    output = result.stdout
     assert "FLEXT Plugin Basic Example" in output
     assert "Plugin created: example-plugin" in output
     assert "Version: 1.0.0" in output
@@ -124,18 +123,20 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = asyncio.run(
-        _run(
-            [sys.executable, str(example_path)],
-            cwd=str(Path(__file__).parent.parent),
-        ),
+    result = subprocess.run(
+        [sys.executable, str(example_path)],
+        cwd=str(Path(__file__).parent.parent),
+        capture_output=True,
+        text=True,
     )
 
     # Verify successful execution
-    assert rc == 0, f"Configuration example failed with error: {err}"
+    assert result.returncode == 0, (
+        f"Configuration example failed with error: {result.stderr}"
+    )
 
     # Verify expected output content
-    output = out
+    output = result.stdout
     assert "FLEXT Plugin Configuration Example" in output
     assert "Database plugin: postgres-connector v2.1.0" in output
     assert "LDAP plugin: ldap-directory v1.5.0" in output
@@ -388,7 +389,7 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    rc, out, err = asyncio.run(
+    result = subprocess.run(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -396,10 +397,12 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Verify successful execution
-    assert rc == 0, f"Docker integration example failed with error: {err}"
+    assert result.returncode == 0, (
+        f"Docker integration example failed with error: {result.stderr}"
+    )
 
     # Verify expected output content
-    output = out
+    output = result.stdout
     assert "FLEXT Plugin Docker Integration Example" in output
     assert "Creating Docker PostgreSQL plugin" in output
     assert "Creating Docker Redis plugin" in output
@@ -510,18 +513,20 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    rc, out, err = asyncio.run(
-        _run(
-            [sys.executable, str(example_path), "--test-connections"],
-            cwd=str(Path(__file__).parent.parent),
-        ),
+    result = subprocess.run(
+        [sys.executable, str(example_path), "--test-connections"],
+        cwd=str(Path(__file__).parent.parent),
+        capture_output=True,
+        text=True,
     )
 
     # Verify successful execution
-    assert rc == 0, f"Docker integration example with connections failed: {err}"
+    assert result.returncode == 0, (
+        f"Docker integration example with connections failed: {result.stderr}"
+    )
 
     # Verify connection testing output appears
-    output = out
+    output = result.stdout
     assert "Service Connectivity Check" in output
     # Should show either Available or Unavailable (not Skipped)
     assert ("Available" in output) or ("Unavailable" in output)

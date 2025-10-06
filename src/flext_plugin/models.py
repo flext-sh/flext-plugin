@@ -1,6 +1,7 @@
-"""Models for plugin operations.
+"""FLEXT Plugin Models - Plugin system data models.
 
-This module provides data models for plugin operations.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -19,10 +20,9 @@ from pydantic import (
 )
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextModels, FlextTypes
+from flext_core import FlextModels
 from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.type_definitions import PluginConfigData
-from flext_plugin.typings import FlextPluginTypes
+from flext_plugin.types import FlextPluginTypes
 
 
 class FlextPluginModels(FlextModels):
@@ -49,39 +49,19 @@ class FlextPluginModels(FlextModels):
         loc_by_alias=False,
     )
 
-    # Simplified performance constants access
-    @property
-    def performance_constants(self) -> FlextTypes.Dict:
-        """Access performance constants for plugin analysis."""
-        return {
-            "excellent_success_rate": FlextPluginConstants.PluginPerformance.EXCELLENT_SUCCESS_RATE,
-            "good_success_rate": FlextPluginConstants.PluginPerformance.GOOD_SUCCESS_RATE,
-            "fair_success_rate": FlextPluginConstants.PluginPerformance.FAIR_SUCCESS_RATE,
-            "timeout_seconds": FlextPluginConstants.PluginPerformance.PRODUCTION_READY_TIMEOUT_SECONDS,
-            "max_memory_mb": FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB,
-        }
-
-    def validate_plugin_system_consistency(self) -> bool:
-        """Validate overall plugin system model consistency."""
-        try:
-            # Simple validation of core capabilities
-            return self.__class__.__name__ == "FlextPluginModels"
-        except Exception:
-            return False
-
     class PluginStatus(StrEnum):
         """Plugin lifecycle and operational status enumeration."""
 
-        UNKNOWN = "unknown"
-        DISCOVERED = "discovered"
-        LOADED = "loaded"
-        ACTIVE = "active"
-        INACTIVE = "inactive"
-        LOADING = "loading"
-        ERROR = "error"
-        DISABLED = "disabled"
-        HEALTHY = "healthy"
-        UNHEALTHY = "unhealthy"
+        UNKNOWN = FlextPluginConstants.Lifecycle.STATUS_UNKNOWN
+        DISCOVERED = FlextPluginConstants.Lifecycle.STATUS_DISCOVERED
+        LOADED = FlextPluginConstants.Lifecycle.STATUS_LOADED
+        ACTIVE = FlextPluginConstants.Lifecycle.STATUS_ACTIVE
+        INACTIVE = FlextPluginConstants.Lifecycle.STATUS_INACTIVE
+        LOADING = FlextPluginConstants.Lifecycle.STATUS_LOADING
+        ERROR = FlextPluginConstants.Lifecycle.STATUS_ERROR
+        DISABLED = FlextPluginConstants.Lifecycle.STATUS_DISABLED
+        HEALTHY = FlextPluginConstants.Lifecycle.STATUS_HEALTHY
+        UNHEALTHY = FlextPluginConstants.Lifecycle.STATUS_UNHEALTHY
 
         @classmethod
         def get_operational_statuses(cls) -> list[Self]:
@@ -105,34 +85,34 @@ class FlextPluginModels(FlextModels):
         """Plugin type classification for platform organization."""
 
         # Singer ETL Types
-        TAP = "tap"
-        TARGET = "target"
-        TRANSFORM = "transform"
+        TAP = FlextPluginConstants.Types.TYPE_TAP
+        TARGET = FlextPluginConstants.Types.TYPE_TARGET
+        TRANSFORM = FlextPluginConstants.Types.TYPE_TRANSFORM
 
         # Architecture Types
-        EXTENSION = "extension"
-        SERVICE = "service"
-        MIDDLEWARE = "middleware"
-        TRANSFORMER = "transformer"
+        EXTENSION = FlextPluginConstants.Types.TYPE_EXTENSION
+        SERVICE = FlextPluginConstants.Types.TYPE_SERVICE
+        MIDDLEWARE = FlextPluginConstants.Types.TYPE_MIDDLEWARE
+        TRANSFORMER = FlextPluginConstants.Types.TYPE_TRANSFORMER
 
         # Integration Types
-        API = "api"
-        DATABASE = "database"
-        NOTIFICATION = "notification"
-        AUTHENTICATION = "authentication"
-        AUTHORIZATION = "authorization"
+        API = FlextPluginConstants.Types.TYPE_API
+        DATABASE = FlextPluginConstants.Types.TYPE_DATABASE
+        NOTIFICATION = FlextPluginConstants.Types.TYPE_NOTIFICATION
+        AUTHENTICATION = FlextPluginConstants.Types.TYPE_AUTHENTICATION
+        AUTHORIZATION = FlextPluginConstants.Types.TYPE_AUTHORIZATION
 
         # Utility Types
-        UTILITY = "utility"
-        TOOL = "tool"
-        HANDLER = "handler"
-        PROCESSOR = "processor"
+        UTILITY = FlextPluginConstants.Types.TYPE_UTILITY
+        TOOL = FlextPluginConstants.Types.TYPE_TOOL
+        HANDLER = FlextPluginConstants.Types.TYPE_HANDLER
+        PROCESSOR = FlextPluginConstants.Types.TYPE_PROCESSOR
 
         # Additional Types
-        CORE = "core"
-        ADDON = "addon"
-        THEME = "theme"
-        LANGUAGE = "language"
+        CORE = FlextPluginConstants.Types.TYPE_CORE
+        ADDON = FlextPluginConstants.Types.TYPE_ADDON
+        THEME = FlextPluginConstants.Types.TYPE_THEME
+        LANGUAGE = FlextPluginConstants.Types.TYPE_LANGUAGE
 
         @classmethod
         def get_etl_types(cls) -> list[Self]:
@@ -157,35 +137,37 @@ class FlextPluginModels(FlextModels):
 
         name: str = Field(
             ...,
-            min_length=1,
-            max_length=100,
-            pattern=r"^[a-zA-Z][a-zA-Z0-9_-]*$",
+            min_length=FlextPluginConstants.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=FlextPluginConstants.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            pattern=FlextPluginConstants.PluginValidation.PLUGIN_NAME_PATTERN,
             description="Plugin unique identifier name",
         )
         plugin_version: str = Field(
             default="1.0.0",
-            pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
+            pattern=FlextPluginConstants.PluginValidation.VERSION_PATTERN,
             description="Plugin semantic version",
         )
         description: str = Field(
             default="",
-            max_length=1000,
+            max_length=FlextPluginConstants.PluginValidation.MAX_DESCRIPTION_LENGTH,
             description="Plugin functionality description",
         )
-        author: str = Field(default="", max_length=200, description="Plugin author")
-        plugin_type: "PluginType" = Field(
-            default_factory=lambda: PluginType.UTILITY,
+        author: str = Field(
+            default="",
+            max_length=FlextPluginConstants.PluginValidation.MAX_AUTHOR_LENGTH,
+            description="Plugin author",
+        )
+        plugin_type: "FlextPluginModels.PluginType" = Field(
             description="Plugin type classification",
         )
-        status: "PluginStatus" = Field(
-            default_factory=lambda: PluginStatus.INACTIVE,
+        status: "FlextPluginModels.PluginStatus" = Field(
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")
-        dependencies: FlextTypes.StringList = Field(
+        dependencies: FlextPluginTypes.Core.StringList = Field(
             default_factory=list, description="Required plugin dependencies"
         )
-        tags: FlextTypes.StringList = Field(
+        tags: FlextPluginTypes.Core.StringList = Field(
             default_factory=list, description="Plugin categorization tags"
         )
         created_at: datetime = Field(
@@ -199,12 +181,17 @@ class FlextPluginModels(FlextModels):
         @model_validator(mode="after")
         def validate_plugin_consistency(self) -> Self:
             """Validate plugin model consistency and constraints."""
-            if self.status == PluginStatus.ACTIVE and not self.enabled:
-                error_msg = "Plugin cannot be ACTIVE when disabled"
+            if (
+                self.status == FlextPluginModels.PluginStatus.ACTIVE
+                and not self.enabled
+            ):
+                error_msg = FlextPluginConstants.PluginMessages.PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED
                 raise ValueError(error_msg)
 
             if self.name in self.dependencies:
-                error_msg = "Plugin cannot depend on itself"
+                error_msg = (
+                    FlextPluginConstants.PluginMessages.PLUGIN_CANNOT_DEPEND_ON_ITSELF
+                )
                 raise ValueError(error_msg)
 
             return self
@@ -212,24 +199,28 @@ class FlextPluginModels(FlextModels):
         @field_validator("dependencies")
         @classmethod
         def validate_dependencies_format(
-            cls, value: FlextTypes.StringList
-        ) -> FlextTypes.StringList:
+            cls, value: FlextPluginTypes.Core.StringList
+        ) -> FlextPluginTypes.Core.StringList:
             """Validate dependency format and constraints."""
-            if len(value) > 50:
-                error_msg = "Too many dependencies (max 50)"
+            if len(value) > FlextPluginConstants.PluginValidation.MAX_DEPENDENCIES:
+                error_msg = FlextPluginConstants.PluginMessages.TOO_MANY_DEPENDENCIES
                 raise ValueError(error_msg)
 
             for dep in value:
-                if not re.match(r"^[a-zA-Z][a-zA-Z0-9_-]*$", dep):
-                    error_msg = f"Invalid dependency name format: {dep}"
+                if not re.match(
+                    FlextPluginConstants.PluginValidation.PLUGIN_NAME_PATTERN, dep
+                ):
+                    error_msg = FlextPluginConstants.PluginMessages.INVALID_DEPENDENCY_FORMAT.format(
+                        dep=dep
+                    )
                     raise ValueError(error_msg)
 
             return value
 
         @field_serializer("dependencies", when_used="json")
         def serialize_dependencies_with_validation(
-            self, value: FlextTypes.StringList
-        ) -> FlextTypes.Dict:
+            self, value: FlextPluginTypes.Core.StringList
+        ) -> FlextPluginTypes.Core.PluginDict:
             """Field serializer for dependencies with validation metadata."""
             return {
                 "dependencies": value,
@@ -254,7 +245,7 @@ class FlextPluginModels(FlextModels):
             default_factory=dict, description="Plugin settings"
         )
         priority: int = Field(
-            default=FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX,
+            default=100,
             description="Plugin priority",
         )
         timeout_seconds: int = Field(default=60, description="Plugin execution timeout")
@@ -277,11 +268,11 @@ class FlextPluginModels(FlextModels):
         def validate_priority_range(cls, value: int) -> int:
             """Validate priority is within acceptable range."""
             if (
-                not FlextPluginConstants.PluginPerformance.PERCENTAGE_MIN
+                not FlextPluginConstants.PluginValidation.MIN_PRIORITY
                 <= value
-                <= FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX
+                <= FlextPluginConstants.PluginValidation.MAX_PRIORITY
             ):
-                error_msg = f"Priority must be between {FlextPluginConstants.PluginPerformance.PERCENTAGE_MIN} and {FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX}"
+                error_msg = FlextPluginConstants.PluginMessages.PRIORITY_MUST_BE_BETWEEN_0_AND_100
                 raise ValueError(error_msg)
             return value
 
@@ -289,14 +280,11 @@ class FlextPluginModels(FlextModels):
         @classmethod
         def validate_memory_limits(cls, value: int) -> int:
             """Validate memory limits are reasonable."""
-            if (
-                value
-                > FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB
-            ):
-                error_msg = f"Memory limit exceeds production maximum: {FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB}MB"
+            if value > FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB:
+                error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM
                 raise ValueError(error_msg)
-            if value < 64:
-                error_msg = "Memory limit too low (minimum 64MB)"
+            if value < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB:
+                error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_TOO_LOW
                 raise ValueError(error_msg)
             return value
 
@@ -310,11 +298,11 @@ class FlextPluginModels(FlextModels):
         )
 
         security_level: str = Field(
-            default="medium",
-            pattern=r"^(low|medium|high|critical)$",
+            default=FlextPluginConstants.PluginSecurity.SECURITY_MEDIUM,
+            pattern=FlextPluginConstants.PluginValidation.SECURITY_LEVEL_PATTERN,
             description="Plugin security clearance level",
         )
-        permissions: FlextTypes.StringList = Field(
+        permissions: FlextPluginTypes.Core.StringList = Field(
             default_factory=list, description="Required security permissions"
         )
         sandboxed: bool = Field(
@@ -369,21 +357,24 @@ class FlextPluginModels(FlextModels):
             default=True, description="Whether errors are tracked"
         )
         log_level: str = Field(
-            default="INFO",
-            pattern=r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
+            default=FlextPluginConstants.Monitoring.DEFAULT_LOG_LEVEL,
+            pattern=FlextPluginConstants.PluginValidation.LOG_LEVEL_PATTERN,
             description="Logging level for plugin",
         )
-        alert_thresholds: FlextTypes.FloatDict = Field(
+        alert_thresholds: FlextPluginTypes.Core.FloatDict = Field(
             default_factory=lambda: {
-                "cpu_percent": 80.0,
-                "memory_percent": 85.0,
-                "error_rate": 5.0,
-                "response_time_ms": 5000.0,
+                "cpu_percent": FlextPluginConstants.Monitoring.DEFAULT_CPU_THRESHOLD,
+                "memory_percent": FlextPluginConstants.Monitoring.DEFAULT_MEMORY_THRESHOLD,
+                "error_rate": FlextPluginConstants.Monitoring.DEFAULT_ERROR_RATE_THRESHOLD,
+                "response_time_ms": FlextPluginConstants.Monitoring.DEFAULT_RESPONSE_TIME_THRESHOLD,
             },
             description="Alert threshold configuration",
         )
         retention_days: int = Field(
-            default=30, ge=1, le=365, description="Data retention period in days"
+            default=FlextPluginConstants.Monitoring.DEFAULT_RETENTION_DAYS,
+            ge=FlextPluginConstants.Monitoring.MIN_RETENTION_DAYS,
+            le=FlextPluginConstants.Monitoring.MAX_RETENTION_DAYS,
+            description="Data retention period in days",
         )
 
         @property
@@ -394,8 +385,8 @@ class FlextPluginModels(FlextModels):
         @field_validator("alert_thresholds")
         @classmethod
         def validate_alert_thresholds(
-            cls, value: FlextTypes.FloatDict
-        ) -> FlextTypes.FloatDict:
+            cls, value: FlextPluginTypes.Core.FloatDict
+        ) -> FlextPluginTypes.Core.FloatDict:
             """Validate alert threshold values."""
             required_thresholds = {
                 "cpu_percent",
@@ -405,20 +396,25 @@ class FlextPluginModels(FlextModels):
             }
             missing = required_thresholds - set(value.keys())
             if missing:
-                error_msg = f"Missing required thresholds: {missing}"
+                error_msg = FlextPluginConstants.PluginMessages.MISSING_REQUIRED_THRESHOLDS.format(
+                    missing=missing
+                )
                 raise ValueError(error_msg)
 
             for key, threshold in value.items():
                 if key.endswith("_percent") and not 0 <= threshold <= 100:
-                    error_msg = f"Percentage threshold {key} must be 0-100"
+                    error_msg = FlextPluginConstants.PluginMessages.PERCENTAGE_THRESHOLD_MUST_BE_0_100.format(
+                        key=key
+                    )
                     raise ValueError(error_msg)
                 if threshold < 0:
-                    error_msg = f"Threshold {key} cannot be negative"
+                    error_msg = FlextPluginConstants.PluginMessages.THRESHOLD_CANNOT_BE_NEGATIVE.format(
+                        key=key
+                    )
                     raise ValueError(error_msg)
 
             return value
 
-    # Models from flext_plugin_models.py for backward compatibility
     class MetadataModel(FlextModels.Entity):
         """Plugin metadata model."""
 
@@ -446,11 +442,11 @@ class FlextPluginModels(FlextModels):
             description="Plugin documentation URL",
         )
         license: str | None = Field(default=None, description="Plugin license")
-        keywords: FlextTypes.StringList = Field(
+        keywords: FlextPluginTypes.Core.StringList = Field(
             default_factory=list,
             description="Plugin keywords",
         )
-        maintainers: FlextTypes.StringList = Field(
+        maintainers: FlextPluginTypes.Core.StringList = Field(
             default_factory=list,
             description="Plugin maintainers",
         )
@@ -473,11 +469,11 @@ class FlextPluginModels(FlextModels):
 
         plugin_id: str = Field(..., description="Plugin identifier")
         execution_id: str = Field(..., description="Unique execution identifier")
-        input_data: dict[str, PluginConfigData] = Field(
+        input_data: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
             default_factory=dict,
             description="Input data for execution",
         )
-        context: dict[str, PluginConfigData] = Field(
+        context: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
             default_factory=dict,
             description="Execution context data",
         )
@@ -499,7 +495,7 @@ class FlextPluginModels(FlextModels):
         )
 
         success: bool = Field(default=False, description="Whether execution succeeded")
-        data: PluginConfigData = Field(
+        data: FlextPluginTypes.Core.AnyDict = Field(
             default=None,
             description="Execution output data",
         )
@@ -534,7 +530,7 @@ class FlextPluginModels(FlextModels):
 
         operation: str = Field(..., description="Operation name")
         success: bool = Field(default=False, description="Whether operation succeeded")
-        plugins_affected: FlextTypes.StringList = Field(
+        plugins_affected: FlextPluginTypes.Core.StringList = Field(
             default_factory=list,
             description="List of affected plugin names",
         )
@@ -542,11 +538,11 @@ class FlextPluginModels(FlextModels):
             default=0.0,
             description="Operation execution time in milliseconds",
         )
-        details: dict[str, PluginConfigData] = Field(
+        details: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
             default_factory=dict,
             description="Additional operation details",
         )
-        errors: FlextTypes.StringList = Field(
+        errors: FlextPluginTypes.Core.StringList = Field(
             default_factory=list,
             description="List of error messages",
         )
@@ -556,14 +552,7 @@ class FlextPluginModels(FlextModels):
         )
 
 
-# Export core enums for __init__.py compatibility
-PluginStatus = FlextPluginModels.PluginStatus
-PluginType = FlextPluginModels.PluginType
-
 __all__ = [
     # Main unified class
     "FlextPluginModels",
-    # Core enums for compatibility
-    "PluginStatus",
-    "PluginType",
 ]

@@ -63,7 +63,7 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 ├─────────────────────────────────────────────────────────────────┤
 │ FlextPluginService | FlextPluginDiscoveryService               │
 ├─────────────────────────────────────────────────────────────────┤
-│ FlextPluginEntity | FlextPluginConfig | FlextPluginMetadata     │
+│ FlextPluginEntities.Entity | FlextPluginEntities.Config | FlextPluginEntities.Metadata     │
 ├─────────────────────────────────────────────────────────────────┤
 │ PluginDiscovery | HotReload | RealAdapters                     │
 └─────────────────────────────────────────────────────────────────┘

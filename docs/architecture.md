@@ -27,7 +27,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 ├─────────────────────────────────────────────────────────────────┤
 │                   DOMAIN LAYER                                  │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  FlextPlugin    │  │ FlextPluginConfig│  │PluginRegistry   │  │
+│  │  FlextPlugin    │  │ FlextPluginEntities.Config│  │PluginRegistry   │  │
 │  │   (Entity)      │  │    (Entity)     │  │   (Entity)      │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
 ├─────────────────────────────────────────────────────────────────┤
@@ -62,15 +62,15 @@ class FlextPlugin(FlextModels.Entity):
         """Domain validation logic"""
 ```
 
-#### FlextPluginConfig
+#### FlextPluginEntities.Config
 
 ```python
-class FlextPluginConfig(FlextModels.Entity):
+class FlextPluginEntities.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
     version: str
     dependencies: List[str]
-    metadata: FlextPluginMetadata
+    metadata: FlextPluginEntities.Metadata
 
     class Config:
         frozen = True  # Immutable value object
@@ -96,10 +96,10 @@ class FlextPluginPlatform:
         self.container = container or FlextContainer()
         self._setup_services()
 
-    def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
+    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -146,7 +146,7 @@ class WatchdogHotReload:
 All operations return `FlextResult[T]` for railway-oriented programming:
 
 ```python
-def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
     try:
         # Plugin loading logic
         return FlextResult[bool].ok(True)

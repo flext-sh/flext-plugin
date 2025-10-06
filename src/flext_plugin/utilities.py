@@ -21,7 +21,8 @@ from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextResult, FlextTypes, FlextUtilities
-from flext_plugin.models import PluginMetadata
+from flext_plugin.entities import PluginMetadata
+from flext_plugin.typings import FlextPluginTypes
 
 
 class FlextPluginUtilities(FlextUtilities):
@@ -51,13 +52,13 @@ class FlextPluginUtilities(FlextUtilities):
     class PluginDiscovery:
         """Plugin discovery and validation utilities."""
 
-        PLUGIN_FILE_EXTENSIONS: ClassVar[FlextTypes.StringList] = [
+        PLUGIN_FILE_EXTENSIONS: ClassVar[FlextPluginTypes.Core.StringList] = [
             ".py",
             ".yaml",
             ".yml",
             ".json",
         ]
-        PLUGIN_MANIFEST_FILES: ClassVar[FlextTypes.StringList] = [
+        PLUGIN_MANIFEST_FILES: ClassVar[FlextPluginTypes.Core.StringList] = [
             "plugin.yaml",
             "plugin.yml",
             "plugin.json",
@@ -192,7 +193,7 @@ class FlextPluginUtilities(FlextUtilities):
                         r'__version__\s*=\s*["\']([^"\']+)["\']', content
                     )
                     if version_match:
-                        metadata.version = version_match.group(1)
+                        setattr(metadata, "plugin_version", version_match.group(1))
 
                     # Extract description from docstring
                     doc_match = re.search(r'"""([^"]+)"""', content)
@@ -262,7 +263,7 @@ class FlextPluginUtilities(FlextUtilities):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return FlextResult[FlextTypes.Dict].ok(watcher_config)
+                return FlextResult[FlextTypes.Dict].ok(dict(watcher_config))
             except Exception as e:
                 return FlextResult[FlextTypes.Dict].fail(
                     f"File watcher creation failed: {e}"
@@ -271,7 +272,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def detect_file_changes(
             watcher_config: FlextTypes.Dict,
-        ) -> FlextResult[FlextTypes.StringList]:
+        ) -> FlextResult[FlextPluginTypes.Core.StringList]:
             """Detect file changes in watched directory.
 
             Args:
@@ -282,8 +283,10 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                watch_path = Path(watcher_config["watch_path"])
+                watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified = watcher_config.get("last_modified", {})
+                if not isinstance(last_modified, dict):
+                    last_modified = {}
                 changed_files = []
 
                 for file_path in watch_path.rglob("*"):
@@ -303,9 +306,9 @@ class FlextPluginUtilities(FlextUtilities):
                             last_modified[file_key] = current_mtime
 
                 watcher_config["last_modified"] = last_modified
-                return FlextResult[FlextTypes.StringList].ok(changed_files)
+                return FlextResult[FlextPluginTypes.Core.StringList].ok(changed_files)
             except Exception as e:
-                return FlextResult[FlextTypes.StringList].fail(
+                return FlextResult[FlextPluginTypes.Core.StringList].fail(
                     f"File change detection failed: {e}"
                 )
 
@@ -350,7 +353,7 @@ class FlextPluginUtilities(FlextUtilities):
     class SecurityValidation:
         """Plugin security validation and sandboxing utilities."""
 
-        ALLOWED_IMPORTS: ClassVar[FlextTypes.StringList] = [
+        ALLOWED_IMPORTS: ClassVar[FlextPluginTypes.Core.StringList] = [
             "flext_core",
             "flext_api",
             "flext_observability",
@@ -361,7 +364,7 @@ class FlextPluginUtilities(FlextUtilities):
             "typing",
             "pydantic",
         ]
-        DANGEROUS_OPERATIONS: ClassVar[FlextTypes.StringList] = [
+        DANGEROUS_OPERATIONS: ClassVar[FlextPluginTypes.Core.StringList] = [
             "exec",
             "eval",
             "__import__",
@@ -386,7 +389,7 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                security_report = {
+                security_report: dict[str, object] = {
                     "safe": True,
                     "violations": [],
                     "warnings": [],
@@ -399,9 +402,11 @@ class FlextPluginUtilities(FlextUtilities):
                 ) in FlextPluginUtilities.SecurityValidation.DANGEROUS_OPERATIONS:
                     if dangerous_op in plugin_content:
                         security_report["safe"] = False
-                        security_report["violations"].append(
-                            f"Dangerous operation detected: {dangerous_op}"
-                        )
+                        violations = security_report["violations"]
+                        if isinstance(violations, list):
+                            violations.append(
+                                f"Dangerous operation detected: {dangerous_op}"
+                            )
 
                 # Check imports
                 import_pattern = r"(?:from\s+(\w+)|import\s+(\w+))"
@@ -412,22 +417,22 @@ class FlextPluginUtilities(FlextUtilities):
                         allowed in module_name
                         for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
                     ):
-                        security_report["warnings"].append(
-                            f"Potentially unsafe import: {module_name}"
-                        )
+                        warnings = security_report["warnings"]
+                        if isinstance(warnings, list):
+                            warnings.append(f"Potentially unsafe import: {module_name}")
 
                 # Basic code analysis
                 if "network" in plugin_content.lower() or "socket" in plugin_content:
-                    security_report["warnings"].append(
-                        "Plugin may perform network operations"
-                    )
+                    warnings = security_report["warnings"]
+                    if isinstance(warnings, list):
+                        warnings.append("Plugin may perform network operations")
 
                 if "file" in plugin_content.lower() or "write" in plugin_content:
-                    security_report["warnings"].append(
-                        "Plugin may perform file operations"
-                    )
+                    warnings = security_report["warnings"]
+                    if isinstance(warnings, list):
+                        warnings.append("Plugin may perform file operations")
 
-                return FlextResult[FlextTypes.Dict].ok(security_report)
+                return FlextResult[FlextTypes.Dict].ok(dict(security_report))
             except Exception as e:
                 return FlextResult[FlextTypes.Dict].fail(
                     f"Security validation failed: {e}"
@@ -459,7 +464,7 @@ class FlextPluginUtilities(FlextUtilities):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return FlextResult[FlextTypes.Dict].ok(sandbox_config)
+                return FlextResult[FlextTypes.Dict].ok(dict(sandbox_config))
             except Exception as e:
                 return FlextResult[FlextTypes.Dict].fail(
                     f"Sandbox configuration creation failed: {e}"
@@ -571,7 +576,7 @@ class FlextPluginUtilities(FlextUtilities):
                 # Validate plugin name
                 name_validation = (
                     FlextPluginUtilities.PluginDiscovery.validate_plugin_name(
-                        config["name"]
+                        str(config["name"])
                     )
                 )
                 if name_validation.is_failure:
@@ -579,7 +584,7 @@ class FlextPluginUtilities(FlextUtilities):
 
                 # Validate version format
                 version_pattern = r"^\d+\.\d+\.\d+$"
-                if not re.match(version_pattern, config["version"]):
+                if not re.match(version_pattern, str(config["version"])):
                     return FlextResult[None].fail(
                         f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)"
                     )
@@ -612,8 +617,16 @@ class FlextPluginUtilities(FlextUtilities):
                         and isinstance(merged_config[key], dict)
                     ):
                         # Recursively merge nested dictionaries
+                        base_config: dict[str, object] = (
+                            dict(merged_config[key])
+                            if isinstance(merged_config[key], dict)
+                            else {}
+                        )
+                        override_value: dict[str, object] = (
+                            dict(value) if isinstance(value, dict) else {}
+                        )
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
-                            merged_config[key], value
+                            base_config, override_value
                         )
                         if nested_merge.is_success:
                             merged_config[key] = nested_merge.unwrap()
@@ -635,7 +648,7 @@ class FlextPluginUtilities(FlextUtilities):
 
         DEFAULT_TIMEOUT_SECONDS: ClassVar[int] = 300
         MAX_RETRY_ATTEMPTS: ClassVar[int] = 3
-        EXECUTION_LOG_LEVELS: ClassVar[FlextTypes.StringList] = [
+        EXECUTION_LOG_LEVELS: ClassVar[FlextPluginTypes.Core.StringList] = [
             "DEBUG",
             "INFO",
             "WARNING",
@@ -726,7 +739,8 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def validate_plugin_interface(
-            plugin_module: ModuleType, required_functions: FlextTypes.StringList
+            plugin_module: ModuleType,
+            required_functions: FlextPluginTypes.Core.StringList,
         ) -> FlextResult[None]:
             """Validate that plugin module implements required interface.
 
@@ -798,7 +812,7 @@ class FlextPluginUtilities(FlextUtilities):
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return FlextResult[FlextTypes.Dict].ok(registry)
+                    return FlextResult[FlextTypes.Dict].ok(dict(registry))
 
                 # Check file size
                 file_size_mb = path.stat().st_size / (1024 * 1024)
@@ -879,18 +893,20 @@ class FlextPluginUtilities(FlextUtilities):
 
                 plugin_info = {
                     "name": plugin_metadata.name,
-                    "version": plugin_metadata.version,
+                    "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
                     "description": plugin_metadata.description,
-                    "author": plugin_metadata.author,
+                    "author": getattr(plugin_metadata, "author", ""),
                     "plugin_type": plugin_metadata.plugin_type,
                     "entry_point": plugin_metadata.entry_point,
                     "dependencies": plugin_metadata.dependencies,
                     "registered_at": datetime.now(UTC).isoformat(),
                     "status": "registered",
-                    "metadata": plugin_metadata.metadata or {},
+                    "metadata": getattr(plugin_metadata, "metadata", {}),
                 }
 
-                registry["plugins"][plugin_metadata.name] = plugin_info
+                plugins = registry["plugins"]
+                if isinstance(plugins, dict):
+                    plugins[plugin_metadata.name] = plugin_info
 
                 return FlextResult[FlextTypes.Dict].ok(registry)
             except Exception as e:
@@ -930,7 +946,7 @@ class FlextPluginUtilities(FlextUtilities):
     @classmethod
     def validate_model_config(cls, v: SettingsConfigDict) -> SettingsConfigDict:
         """Validate model configuration."""
-        if not isinstance(v, SettingsConfigDict):
+        if not isinstance(v, dict):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
         return v

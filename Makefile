@@ -248,11 +248,42 @@ pre-commit: ## Run pre-commit hooks
 # =============================================================================
 
 .PHONY: clean
-clean: ## Clean build artifacts
-	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ htmlcov/ .coverage .mypy_cache/ .pyrefly_cache/ .ruff_cache/
-	rm -rf $(FLEXT_PLUGIN_CACHE_DIR)/ plugins/ plugin_cache/ dev_plugins/
+clean: ## Clean build artifacts.PHONY: clean
+clean: ## Clean build artifacts and cruft
+	@echo "🧹 Cleaning $(PROJECT_NAME) - removing build artifacts, cache files, and cruft..."
+
+	# Build artifacts
+	rm -rf build/ dist/ *.egg-info/
+
+	# Test artifacts
+	rm -rf .pytest_cache/ htmlcov/ .coverage .coverage.* coverage.xml
+
+	# Python cache directories
+	rm -rf .mypy_cache/ .pyrefly_cache/ .ruff_cache/
+
+	# Python bytecode
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type f -name "*.pyo" -delete 2>/dev/null || true
+
+	# Temporary files
+	find . -type f -name "*.tmp" -delete 2>/dev/null || true
+	find . -type f -name "*.temp" -delete 2>/dev/null || true
+	find . -type f -name ".DS_Store" -delete 2>/dev/null || true
+
+	# Log files
+	find . -type f -name "*.log" -delete 2>/dev/null || true
+
+	# Editor files
+	find . -type f -name ".vscode/settings.json" -delete 2>/dev/null || true
+	find . -type f -name ".idea/" -type d -exec rm -rf {} + 2>/dev/null || true
+
+	
+	# Plugin-specific files
+	rm -rf plugins/ plugin-registry.json
+	rm -rf data/ output/ temp/
+
+	@echo "✅ $(PROJECT_NAME) cleanup complete"
 
 .PHONY: clean-all
 clean-all: clean ## Deep clean including venv

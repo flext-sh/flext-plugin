@@ -133,8 +133,8 @@ class FlextPluginExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "PLUGIN_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -172,8 +172,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_DISCOVERY_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_DISCOVERY_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -211,8 +211,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_LOADING_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_LOADING_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -250,8 +250,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_EXECUTION_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_EXECUTION_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -289,8 +289,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_CONFIGURATION_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_CONFIGURATION_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -328,8 +328,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_VALIDATION_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_VALIDATION_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -367,8 +367,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_LIFECYCLE_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_LIFECYCLE_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -406,8 +406,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_DEPENDENCY_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_DEPENDENCY_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -445,8 +445,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_REGISTRY_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_REGISTRY_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -484,8 +484,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_HOT_RELOAD_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_HOT_RELOAD_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -523,8 +523,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_SECURITY_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_SECURITY_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -562,8 +562,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_COMPATIBILITY_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_COMPATIBILITY_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -601,8 +601,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_METADATA_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_METADATA_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -640,8 +640,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_PLATFORM_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_PLATFORM_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 
@@ -698,8 +698,8 @@ class FlextPluginExceptions(FlextExceptions):
             super().__init__(
                 message,
                 plugin_id=plugin_id,
-                code=error_code or "PLUGIN_PROCESSING_ERROR",
-                context=context,
+                error_code=error_code or "PLUGIN_PROCESSING_ERROR",
+                metadata=context,
                 correlation_id=correlation_id,
             )
 

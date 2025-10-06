@@ -17,10 +17,8 @@ from typing import cast
 import pytest
 from flext_plugin import (
     FlextPlugin,
-    FlextPluginConfig,
+    FlextPluginEntities,
     FlextPluginExecution,
-    FlextPluginMetadata,
-    FlextPluginRegistry,
     PluginStatus,
     PluginType,
 )
@@ -55,13 +53,13 @@ class TestFlextPlugin:
       - Pydantic field validation and constraints
       - Business logic method behavior
       - Entity state transitions
-      - Integration with FlextPluginMetadata and FlextPluginConfig
+      - Integration with FlextPluginEntities.Metadata and FlextPluginEntities.Config
       - Error scenarios and exception handling
     """
 
-    def create_test_metadata(self) -> FlextPluginMetadata:
+    def create_test_metadata(self) -> FlextPluginEntities.Metadata:
         """Create test plugin metadata."""
-        return FlextPluginMetadata(
+        return FlextPluginEntities.Metadata(
             id=cast("FlextModels", "test-metadata-id"),  # Proper type casting
             plugin_name="test-plugin",
             name="test-plugin",  # Required field
@@ -199,11 +197,11 @@ class TestFlextPlugin:
 
 
 class TestFlextPluginConfig:
-    """Test FlextPluginConfig entity functionality."""
+    """Test FlextPluginEntities.Config entity functionality."""
 
     def test_configuration_creation(self) -> None:
-        """Test creating FlextPluginConfig."""
-        config = FlextPluginConfig.create(
+        """Test creating FlextPluginEntities.Config."""
+        config = FlextPluginEntities.Config.create(
             plugin_name="test-plugin",
             config_data={
                 "enabled": True,
@@ -226,8 +224,8 @@ class TestFlextPluginConfig:
         assert config.config_data.get("dependencies") == ["dep1", "dep2"]
 
     def test_configuration_defaults(self) -> None:
-        """Test FlextPluginConfig default values."""
-        config = FlextPluginConfig.create(plugin_name="test-plugin")
+        """Test FlextPluginEntities.Config default values."""
+        config = FlextPluginEntities.Config.create(plugin_name="test-plugin")
 
         if not (config.enabled):
             msg = f"Expected True, got {config.enabled}"
@@ -242,7 +240,7 @@ class TestFlextPluginConfig:
 
     def test_configuration_resource_limits(self) -> None:
         """Test configuration resource limits."""
-        config = FlextPluginConfig.create(
+        config = FlextPluginEntities.Config.create(
             plugin_name="test-plugin",
             max_memory_mb=800,
             max_cpu_percent=75,
@@ -358,11 +356,11 @@ class TestFlextPluginExecution:
 
 
 class TestFlextPluginRegistryEntity:
-    """Test FlextPluginRegistry domain entity functionality."""
+    """Test FlextPluginEntities.Registry domain entity functionality."""
 
     def test_registry_creation(self) -> None:
-        """Test creating FlextPluginRegistry entity."""
-        registry = FlextPluginRegistry.create(
+        """Test creating FlextPluginEntities.Registry entity."""
+        registry = FlextPluginEntities.Registry.create(
             name="test-registry",
             registry_url="https://plugins.example.com",
         )
@@ -382,7 +380,7 @@ class TestFlextPluginRegistryEntity:
     def test_registry_availability(self) -> None:
         """Test registry availability check."""
         # Enabled registry with URL should be available
-        enabled_registry = FlextPluginRegistry.create(
+        enabled_registry = FlextPluginEntities.Registry.create(
             name="enabled",
             registry_url="https://plugins.example.com",
             is_enabled=True,
@@ -392,7 +390,7 @@ class TestFlextPluginRegistryEntity:
             raise AssertionError(msg)
 
         # Disabled registry should not be available
-        disabled_registry = FlextPluginRegistry.create(
+        disabled_registry = FlextPluginEntities.Registry.create(
             name="disabled",
             registry_url="https://plugins.example.com",
             is_enabled=False,
@@ -405,7 +403,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_sync_recording(self) -> None:
         """Test recording sync attempts."""
-        registry = FlextPluginRegistry.create(
+        registry = FlextPluginEntities.Registry.create(
             name="test",
             registry_url="https://example.com",
         )
@@ -425,7 +423,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_authentication_settings(self) -> None:
         """Test registry authentication configuration."""
-        registry = FlextPluginRegistry.create(
+        registry = FlextPluginEntities.Registry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             requires_authentication=True,
@@ -443,7 +441,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_security_settings(self) -> None:
         """Test registry security configuration."""
-        registry = FlextPluginRegistry.create(
+        registry = FlextPluginEntities.Registry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             verify_signatures=True,
@@ -462,11 +460,11 @@ class TestFlextPluginRegistryEntity:
 
 
 class TestFlextPluginMetadata:
-    """Test FlextPluginMetadata functionality."""
+    """Test FlextPluginEntities.Metadata functionality."""
 
     def test_metadata_creation(self) -> None:
-        """Test creating FlextPluginMetadata."""
-        metadata = FlextPluginMetadata.create(
+        """Test creating FlextPluginEntities.Metadata."""
+        metadata = FlextPluginEntities.Metadata.create(
             name="test-plugin",
             entry_point="test.entry:main",
             plugin_type=PluginType.TAP,
@@ -486,8 +484,8 @@ class TestFlextPluginMetadata:
         assert "pydantic" in metadata.dependencies
 
     def test_metadata_defaults(self) -> None:
-        """Test FlextPluginMetadata default values."""
-        metadata = FlextPluginMetadata.create(
+        """Test FlextPluginEntities.Metadata default values."""
+        metadata = FlextPluginEntities.Metadata.create(
             name="minimal-plugin",
             entry_point="minimal.entry:main",
             plugin_type=PluginType.UTILITY,
@@ -507,10 +505,10 @@ class TestFlextPluginMetadata:
         assert metadata.repository is None
 
     def test_metadata_validation(self) -> None:
-        """Test FlextPluginMetadata validation."""
+        """Test FlextPluginEntities.Metadata validation."""
         # Test empty name fails
         with pytest.raises(ValidationError):
-            FlextPluginMetadata(
+            FlextPluginEntities.Metadata(
                 id=cast("FlextModels", "meta-123"),
                 name="",
                 entry_point="test.entry:main",
@@ -519,7 +517,7 @@ class TestFlextPluginMetadata:
 
         # Test empty entry point fails
         with pytest.raises(ValidationError):
-            FlextPluginMetadata(
+            FlextPluginEntities.Metadata(
                 id=cast("FlextModels", "meta-123"),
                 name="test-plugin",
                 entry_point="",

@@ -11,10 +11,10 @@ from typing import override
 
 import pytest
 from flext_plugin import (
-    FlextPluginEntity,
+    FlextPluginEntities,
     FlextPluginEventHandler,
     FlextPluginHandler,
-    FlextPluginLoaderPort,
+    FlextPluginsEntities,
     FlextPluginRegistrationHandler,
     PluginLoader,
 )
@@ -22,16 +22,16 @@ from flext_plugin import (
 from flext_core import FlextResult, FlextTypes
 
 
-class TestPluginLoaderAdapter(FlextPluginLoaderPort):
-    """Real test adapter that implements FlextPluginLoaderPort using actual PluginLoader."""
+class TestPluginLoaderAdapter(FlextPluginsEntities.Loader):
+    """Real test adapter that implements FlextPluginsEntities.Loader using actual PluginLoader."""
 
     def __init__(self) -> None:
         """Initialize the adapter with a real PluginLoader."""
         self._loader = PluginLoader(security_enabled=False)
-        self._loaded_plugins: dict[str, FlextPluginEntity] = {}
+        self._loaded_plugins: dict[str, FlextPluginEntities.Entity] = {}
 
     @override
-    def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Load a plugin entity using the real PluginLoader."""
         try:
             # For testing, we simulate the loading by storing the plugin
@@ -60,7 +60,7 @@ class TestPluginLoaderAdapter(FlextPluginLoaderPort):
         except Exception as e:
             return FlextResult[bool].fail(f"Failed to check plugin {plugin_name}: {e}")
 
-    def get_loaded_plugin(self, plugin_name: str) -> FlextPluginEntity | None:
+    def get_loaded_plugin(self, plugin_name: str) -> FlextPluginEntities.Entity | None:
         """Get a loaded plugin by name (helper for testing)."""
         return self._loaded_plugins.get(plugin_name)
 
@@ -127,7 +127,9 @@ class TestFlextPluginRegistrationHandler:
         handler = FlextPluginRegistrationHandler()
 
         # Create real plugin entity
-        plugin = FlextPluginEntity.create(name="test-plugin", plugin_version="1.0.0")
+        plugin = FlextPluginEntities.Entity.create(
+            name="test-plugin", plugin_version="1.0.0"
+        )
 
         # Should fail because no service is configured
         result: FlextResult[bool] = handler.handle_register_plugin(plugin)
@@ -143,7 +145,7 @@ class TestFlextPluginRegistrationHandler:
 
         # Test that Pydantic validation prevents creating plugin with empty name
         def _should_fail_validation() -> None:
-            FlextPluginEntity.create(
+            FlextPluginEntities.Entity.create(
                 name="",  # Empty name should fail Pydantic validation
                 plugin_version="1.0.0",
             )
@@ -158,7 +160,7 @@ class TestFlextPluginRegistrationHandler:
 
         # Test that Pydantic validation prevents creating plugin with empty version
         def _should_fail_validation() -> None:
-            FlextPluginEntity.create(
+            FlextPluginEntities.Entity.create(
                 name="test-plugin",
                 plugin_version="",  # Empty version should fail Pydantic validation
             )
@@ -174,7 +176,7 @@ class TestFlextPluginRegistrationHandler:
         handler = FlextPluginRegistrationHandler(plugin_service=plugin_loader)
 
         # Create valid plugin entity
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="valid-test-plugin",
             plugin_version="1.0.0",
         )
@@ -244,7 +246,7 @@ class TestFlextPluginEventHandler:
         handler = FlextPluginEventHandler()
 
         # Create real plugin entity
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="loaded-test-plugin",
             plugin_version="1.0.0",
         )
@@ -259,7 +261,7 @@ class TestFlextPluginEventHandler:
 
         # Test that Pydantic validation prevents creating plugin with empty name
         def _should_fail_validation() -> None:
-            FlextPluginEntity.create(
+            FlextPluginEntities.Entity.create(
                 name="",  # Empty name should fail Pydantic validation
                 plugin_version="1.0.0",
             )
@@ -325,7 +327,7 @@ class LifecyclePlugin:
         event_handler = FlextPluginEventHandler()
 
         # Create real plugin entity
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="lifecycle-plugin",
             plugin_version="1.0.0",
         )
@@ -355,7 +357,7 @@ class LifecyclePlugin:
         handler = FlextPluginEventHandler()
 
         # Test normal case
-        plugin = FlextPluginEntity.create(
+        plugin = FlextPluginEntities.Entity.create(
             name="error-test-plugin",
             plugin_version="1.0.0",
         )
@@ -367,7 +369,7 @@ class LifecyclePlugin:
         # Test entity creation validation at Pydantic level
         # Empty name should fail at entity creation, not handler level
         def _should_fail_validation() -> None:
-            FlextPluginEntity.create(
+            FlextPluginEntities.Entity.create(
                 name="",  # This should fail Pydantic validation
                 plugin_version="1.0.0",
             )
@@ -379,7 +381,7 @@ class LifecyclePlugin:
 
         # Test valid entity but check if handler validates properly
         # Create plugin with valid name then test handler logic
-        valid_plugin = FlextPluginEntity.create(
+        valid_plugin = FlextPluginEntities.Entity.create(
             name="valid-plugin",
             plugin_version="1.0.0",
         )

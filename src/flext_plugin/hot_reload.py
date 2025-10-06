@@ -1,9 +1,4 @@
-"""FLEXT Plugin Hot Reload System - File system monitoring and plugin reloading.
-
-This module implements the infrastructure layer hot-reload functionality,
-providing file system monitoring, automatic plugin reloading, and development
-workflow optimization. The system integrates with watchdog for reliable
-file system event detection and provides seamless plugin development experience.
+"""FLEXT Plugin Hot Reload - Plugin hot reload and file monitoring.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,570 +6,442 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import importlib
-import sys
-from asyncio import create_task
-from collections.abc import Callable
-from datetime import UTC, datetime
-from enum import Enum
+import asyncio
 from pathlib import Path
-from typing import Protocol, cast
+from typing import Any, Callable, Dict, List, Optional, Set
 
-from pydantic import ConfigDict
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
-from watchdog.observers.api import BaseObserver
-
-# Hot reload functionality - anyio dependency handled at runtime
-from flext_core import (
-    FlextLogger,
-    FlextModels,
-    FlextResult,
-    FlextTypes,
-    FlextUtilities,
-)
-from flext_plugin.discovery import PluginDiscovery
-from flext_plugin.loader import PluginLoader
+from flext_core import FlextLogger, FlextResult
 
 
-class HotReloadManager(FlextModels.Entity):
-    """Plugin hot reload manager with file watching capabilities."""
+class FlextPluginHotReload:
+    """Plugin hot reload service for real-time plugin updates.
 
-    plugin_directory: str
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    This class provides comprehensive hot reload functionality including
+    file monitoring, automatic reloading, and change detection.
 
-    # Nested classes for hot reload functionality
-    class StatefulPlugin(Protocol):
-        """Protocol for plugins that support state management."""
+    Usage:
+        ```python
+        from flext_plugin import FlextPluginHotReload
 
-        def get_state(self) -> FlextTypes.Dict:
-            """Get plugin state as dictionary."""
-            ...
+        # Initialize hot reload service
+        hot_reload = FlextPluginHotReload()
 
-        def cleanup(self) -> None:
-            """Cleanup plugin resources."""
-            ...
+        # Start monitoring
+        result = await hot_reload.start_watching(["./plugins"])
+        if result.success:
+            print("Hot reload monitoring started")
 
-    class WatchEventType(Enum):
-        """File system watch event types."""
+        # Stop monitoring
+        await hot_reload.stop_watching()
+        ```
+    """
 
-        CREATED = "created"
-        MODIFIED = "modified"
-        DELETED = "deleted"
-        MOVED = "moved"
+    def __init__(
+        self,
+        watch_interval: float = 2.0,
+        debounce_ms: int = 500,
+        max_retries: int = 3,
+    ) -> None:
+        """Initialize the hot reload service.
 
-    class WatchEvent:
-        """File system watch event data."""
+        Args:
+            watch_interval: File watching interval in seconds
+            debounce_ms: Debounce time in milliseconds
+            max_retries: Maximum retry attempts for failed reloads
+        """
+        self.logger = FlextLogger(__name__)
+        self.watch_interval = watch_interval
+        self.debounce_ms = debounce_ms
+        self.max_retries = max_retries
 
-        def __init__(
-            self,
-            event_type: HotReloadManager.WatchEventType,
-            path: Path,
-            timestamp: datetime | None = None,
-        ) -> None:
-            """Initialize watch event.
+        # Internal state
+        self._is_watching = False
+        self._watched_paths: Set[Path] = set()
+        self._file_timestamps: Dict[Path, float] = {}
+        self._reload_callbacks: List[Callable[[str], Any]] = []
+        self._watch_task: Optional[asyncio.Task] = None
+        self._reload_history: List[Dict[str, Any]] = []
 
-            Args:
-                event_type: Type of file system event
-                path: Path to the affected file
-                timestamp: When the event occurred
+    async def start_watching(self, paths: List[str]) -> FlextResult[bool]:
+        """Start watching the given paths for changes.
 
-            """
-            self.event_type = event_type
-            self.path = path
-            self.timestamp = timestamp or datetime.now(UTC)
+        Args:
+            paths: List of paths to monitor for changes
 
-    class PluginState:
-        """Plugin state data model for hot-reload operations."""
+        Returns:
+            FlextResult indicating success or failure
+        """
+        try:
+            if self._is_watching:
+                return FlextResult.fail("Hot reload is already watching")
 
-        def __init__(
-            self,
-            plugin_id: str,
-            plugin_version: str,
-            state_data: FlextTypes.Dict | None = None,
-            metadata: FlextTypes.Dict | None = None,
-            saved_at: datetime | None = None,
-        ) -> None:
-            """Initialize plugin state.
+            # Convert paths to Path objects
+            watched_paths = set()
+            for path_str in paths:
+                path_obj = Path(path_str).expanduser().resolve()
+                if path_obj.exists():
+                    watched_paths.add(path_obj)
+                else:
+                    self.logger.warning(f"Watched path does not exist: {path_str}")
 
-            Args:
-                plugin_id: Unique plugin identifier
-                plugin_version: Plugin version string
-                state_data: Plugin state dictionary
-                metadata: Additional metadata
-                saved_at: When state was saved
+            if not watched_paths:
+                return FlextResult.fail("No valid paths to watch")
 
-            """
-            self.plugin_id = plugin_id
-            self.plugin_version = plugin_version
-            self.state_data = state_data or {}
-            self.metadata = metadata or {}
-            self.saved_at = saved_at or datetime.now(UTC)
+            self._watched_paths = watched_paths
+            self._is_watching = True
 
-    class ReloadEvent:
-        """Plugin reload event data."""
+            # Start the watch task
+            self._watch_task = asyncio.create_task(self._watch_loop())
 
-        def __init__(
-            self,
-            event_type: str,
-            plugin_id: str,
-            plugin_path: Path | None = None,
-            *,
-            success: bool = False,
-            error: str | None = None,
-        ) -> None:
-            """Initialize reload event.
-
-            Args:
-                event_type: Type of reload event
-                plugin_id: Plugin identifier
-                plugin_path: Path to plugin file
-                success: Whether reload was successful
-                error: Error message if failed
-
-            """
-            self.event_type = event_type
-            self.plugin_id = plugin_id
-            self.plugin_path = plugin_path
-            self.success = success
-            self.error = error
-
-    class PluginWatcher:
-        """File system watcher for plugin directories."""
-
-        def __init__(self, watch_directories: list[Path]) -> None:
-            """Initialize plugin watcher.
-
-            Args:
-                watch_directories: List of directories to watch
-
-            """
-            self.watch_directories = watch_directories
-            self._observer: BaseObserver | None = None
-
-        def get_watched_files(self) -> list[Path]:
-            """Get list of watched files.
-
-            Returns:
-                List of watched file paths
-
-            """
-            watched_files: list[Path] = []
-            for directory in self.watch_directories:
-                if directory.exists():
-                    watched_files.extend(directory.glob("**/*.py"))
-            return watched_files
-
-    class StateManager:
-        """Plugin state management system."""
-
-        def __init__(self, state_directory: Path) -> None:
-            """Initialize state manager.
-
-            Args:
-                state_directory: Directory for state storage
-
-            """
-            self.state_directory = state_directory
-            self._snapshots: list[FlextTypes.Dict] = []
-            self.enable_persistence = True
-
-            # Create state directory if it doesn't exist
-            self.state_directory.mkdir(parents=True, exist_ok=True)
-
-        def save_plugin_state(
-            self, plugin: HotReloadManager.StatefulPlugin | object
-        ) -> HotReloadManager.PluginState:
-            """Save plugin state.
-
-            Args:
-                plugin: Plugin instance to save state for
-
-            Returns:
-                Plugin state object
-
-            """
-            # Check if plugin has get_state method
-            if hasattr(plugin, "get_state") and callable(getattr(plugin, "get_state")):
-                state_data: FlextTypes.Dict = plugin.get_state()
-            else:
-                # Plugin doesn't have get_state method, return empty state
-                state_data = {}
-
-            plugin_id = getattr(plugin, "name", "unknown")
-            plugin_version = getattr(plugin, "version", "1.0.0")
-
-            return HotReloadManager.PluginState(
-                plugin_id=plugin_id,
-                plugin_version=plugin_version,
-                state_data=state_data,
+            self.logger.info(
+                f"Started hot reload monitoring for {len(watched_paths)} paths"
             )
+            return FlextResult.ok(True)
 
-        def create_snapshot(self, _description: str = "") -> str:
-            """Create a new snapshot.
+        except Exception as e:
+            self.logger.exception("Failed to start hot reload watching")
+            return FlextResult.fail(f"Start watching error: {str(e)}")
 
-            Args:
-                description: Optional snapshot description
+    async def stop_watching(self) -> FlextResult[bool]:
+        """Stop watching for changes.
 
-            Returns:
-                Snapshot identifier.
-
-            """
-            return f"snapshot_{datetime.now(UTC).isoformat()}"
-
-        def list_snapshots(self) -> list[FlextTypes.Dict]:
-            """List available snapshots.
-
-            Returns:
-                List of snapshot information
-
-            """
-            return []
-
-    class RollbackManager:
-        """Plugin rollback management system."""
-
-        def __init__(self, state_manager: HotReloadManager.StateManager) -> None:
-            """Initialize rollback manager.
-
-            Args:
-                state_manager: State manager instance
-
-            """
-            self.state_manager = state_manager
-            self._rollback_history: dict[str, list[FlextTypes.Dict]] = {}
-
-        def create_rollback_point(
-            self,
-            _description: str = "",
-            _plugin_id: str = "",
-        ) -> str:
-            """Create a new rollback point.
-
-            Args:
-                description: Optional rollback description
-                plugin_id: Optional plugin identifier
-
-            Returns:
-                Rollback point identifier.
-
-            """
-            return f"rollback_{datetime.now(UTC).isoformat()}"
-
-        def get_rollback_history(self, _plugin_id: str) -> object | None:
-            """Get rollback history for plugin.
-
-            Args:
-                plugin_id: Plugin identifier
-            Returns:
-                Rollback history or None
-
-            """
-            return None
-
-    class PluginFileHandler(FileSystemEventHandler):
-        """File system event handler for plugin file monitoring and change detection.
-
-        Event handler that monitors plugin file changes and triggers reload
-        operations through callback mechanisms. Provides filtered event handling
-        to focus on relevant plugin file modifications while ignoring temporary
-        files and non-plugin changes.
+        Returns:
+            FlextResult indicating success or failure
         """
+        try:
+            if not self._is_watching:
+                return FlextResult.fail("Hot reload is not watching")
 
-        def __init__(self, reload_callback: Callable[[Path], None]) -> None:
-            """Initialize file system event handler with reload callback.
+            self._is_watching = False
 
-            Args:
-                reload_callback: Function to call when plugin files are modified.
-                               Must accept a single Path parameter representing
-                               the modified plugin file path.
+            # Cancel the watch task
+            if self._watch_task and not self._watch_task.done():
+                self._watch_task.cancel()
+                try:
+                    await self._watch_task
+                except asyncio.CancelledError:
+                    pass
 
-            """
-            super().__init__()
-            self.reload_callback = reload_callback
+            self._watch_task = None
+            self._watched_paths.clear()
+            self._file_timestamps.clear()
 
-        def on_modified(self, event: FileSystemEvent) -> None:
-            """Handle file modification events.
+            self.logger.info("Stopped hot reload monitoring")
+            return FlextResult.ok(True)
 
-            Args:
-                event: The file system event that occurred.
+        except Exception as e:
+            self.logger.exception("Failed to stop hot reload watching")
+            return FlextResult.fail(f"Stop watching error: {str(e)}")
 
-            """
-            if event.is_directory:
-                return
-            # Fix type issue with event.src_path - ensure it's a string
-            src_path = event.src_path
-            if isinstance(src_path, bytes):
-                src_path = src_path.decode("utf-8")
-            path = Path(src_path)
-            if path.suffix == ".py" and not path.name.startswith("__"):
-                self.reload_callback(path)
-
-    # Private attributes initialized in model_post_init
-    _loaded_plugins: FlextTypes.Dict
-
-    @classmethod
-    def create(cls, *, plugin_directory: str, **kwargs: object) -> HotReloadManager:
-        """Create hot reload manager instance with proper validation."""
-        str(
-            kwargs.get("id", FlextUtilities.Generators.generate_entity_id()),
-        )
-        cast("int", kwargs.get("version", 1))
-        cast("FlextTypes.Dict", kwargs.get("metadata", {}))
-        # Create instance using Pydantic model_validate to bypass __init__
-        instance_data: FlextTypes.Dict = {
-            "id": "entity_id",
-            "version": "version",
-            "metadata": "metadata",
-            "plugin_directory": "plugin_directory",
-        }
-        return cls.model_validate(instance_data)
-        # model_post_init is called automatically by Pydantic
-
-    # Removed __init__ - use create() class method instead
-    @property
-    def discovery(self: object) -> PluginDiscovery | None:
-        """Get plugin discovery instance."""
-        return getattr(self, "_discovery", None)
-
-    @property
-    def loader(self: object) -> PluginLoader | None:
-        """Get plugin loader instance."""
-        return getattr(self, "_loader", None)
-
-    @property
-    def observer(self: object) -> BaseObserver | None:
-        """Get file system observer instance."""
-        return getattr(self, "_observer", None)
-
-    @property
-    def loaded_plugins(self: object) -> FlextTypes.Dict:
-        """Get loaded plugins dictionary."""
-        return getattr(self, "_loaded_plugins", {})
-
-    @property
-    def plugin_manager(self: object) -> object | None:
-        """Get plugin manager instance."""
-        return getattr(self, "_plugin_manager", None)
-
-    @property
-    def state_manager(self) -> HotReloadManager.StateManager:
-        """Get state manager instance, creating it if needed."""
-        state_dir = Path(self.plugin_directory) / ".flext_state"
-        return HotReloadManager.StateManager(state_directory=state_dir)
-
-    @property
-    def rollback_manager(self) -> HotReloadManager.RollbackManager:
-        """Get rollback manager instance, creating it if needed."""
-        state_mgr = self.state_manager  # This will create state manager if needed
-        return HotReloadManager.RollbackManager(state_manager=state_mgr)
-
-    @property
-    def watcher(self) -> HotReloadManager.PluginWatcher:
-        """Get plugin watcher instance, creating it if needed."""
-        watch_dirs = [Path(self.plugin_directory)]
-        return HotReloadManager.PluginWatcher(watch_directories=watch_dirs)
-
-    def validate_business_rules(self) -> FlextResult[None]:
-        """Validate domain rules for hot reload manager."""
-        if not self.plugin_directory:
-            return FlextResult[None].fail("Plugin directory cannot be empty")
-        return FlextResult[None].ok(None)
-
-    def model_post_init(self, __context: object, /) -> None:
-        """Initialize model after creation.
+    async def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Reload a specific plugin.
 
         Args:
-            __context: Pydantic context.
+            plugin_name: Name of the plugin to reload
 
         Returns:
-            object: Description of return value.
-
+            FlextResult indicating success or failure
         """
-        # Create simplified discovery to avoid abstract class instantiation
-        setattr(self, "_discovery", None)  # We'll create this on-demand
-        setattr(self, "_loader", PluginLoader())
-        setattr(self, "_observer", Observer())
-        setattr(self, "_loaded_plugins", {})
-        # Pre-initialize lazy properties to avoid attribute errors
-        setattr(self, "_state_manager", None)
-        setattr(self, "_rollback_manager", None)
-        setattr(self, "_watcher", None)
-
-    def start_watching(self) -> None:
-        """Start watching for plugin file changes.
-
-        Raises:
-            RuntimeError: If observer is not initialized.
-
-        """
-        observer = self.observer
-        if observer is None:
-            msg = "Observer not initialized"
-            from flext_plugin.exceptions import FlextPluginExceptions
-
-            raise FlextPluginExceptions.ProcessingError(msg)
-        handler = HotReloadManager.PluginFileHandler(self._on_plugin_file_changed)
-        observer.schedule(handler, self.plugin_directory, recursive=True)
-        observer.start()
-        # Initial plugin scan and load
-        self._initial_plugin_load()
-
-    def stop_watching(self) -> None:
-        """Stop watching for plugin file changes."""
-        observer = self.observer
-        if observer and observer.is_alive():
-            observer.stop()
-            observer.join()
-
-    def _initial_plugin_load(self) -> None:
-        """Perform initial plugin loading."""
         try:
-            # Simplified plugin discovery - scan directory for .py files
-            plugin_dir = Path(self.plugin_directory)
+            # Find the plugin file
+            plugin_path = None
+            for watched_path in self._watched_paths:
+                if watched_path.is_file() and watched_path.stem == plugin_name:
+                    plugin_path = watched_path
+                    break
+                elif watched_path.is_dir():
+                    plugin_file = watched_path / f"{plugin_name}.py"
+                    if plugin_file.exists():
+                        plugin_path = plugin_file
+                        break
 
-            # Use -safe path operations
-            # Use synchronous file operations for plugin discovery
-            if not plugin_dir.exists():
-                return
+            if not plugin_path:
+                return FlextResult.fail(f"Plugin file not found: {plugin_name}")
 
-            py_files = [f for f in plugin_dir.iterdir() if f.name.endswith(".py")]
+            # Trigger reload callbacks
+            for callback in self._reload_callbacks:
+                try:
+                    if asyncio.iscoroutinefunction(callback):
+                        await callback(plugin_name)
+                    else:
+                        callback(plugin_name)
+                except Exception:
+                    self.logger.exception(f"Reload callback failed for {plugin_name}")
 
-            for py_file in py_files:
-                if not py_file.name.startswith("__"):
-                    self._load_plugin(py_file)
-        except (OSError, RuntimeError, ValueError, KeyError) as e:
-            # Log plugin discovery error and continue
-            logger = FlextLogger(__name__)
-            logger.warning(f"Plugin discovery failed during hot reload: {e}")
-            # Continue hot reload process despite discovery failure
+            # Record reload in history
+            reload_record = {
+                "plugin_name": plugin_name,
+                "plugin_path": str(plugin_path),
+                "timestamp": self._get_current_timestamp(),
+                "success": True,
+            }
+            self._reload_history.append(reload_record)
 
-    def _on_plugin_file_changed(self, file_path: Path) -> None:
-        """Handle plugin file change events."""
-        task = create_task(self._async_reload_plugin(file_path))
-        task.add_done_callback(lambda _: None)  # Prevent dangling task warning
+            self.logger.info(f"Reloaded plugin: {plugin_name}")
+            return FlextResult.ok(True)
 
-    async def _async_reload_plugin(self, file_path: Path) -> None:
-        """Reload a specific plugin."""
-        try:
-            plugin_name = file_path.stem
-            # Unload existing plugin
-            if plugin_name in self.loaded_plugins:
-                self._unload_plugin(plugin_name)
-            # Reload plugin module
-            if plugin_name in sys.modules:
-                importlib.reload(sys.modules[plugin_name])
-            # Load updated plugin
-            self._load_plugin(file_path)
-        except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
-            # Log plugin reload error and continue hot-reload process
-            logger = FlextLogger(__name__)
-            logger.warning(f"Plugin reload failed for {file_path}: {e}")
+        except Exception as e:
+            self.logger.exception(f"Failed to reload plugin {plugin_name}")
+            return FlextResult.fail(f"Reload error: {str(e)}")
 
-    def _load_plugin(self, file_path: Path) -> None:
-        """Load a plugin from file path."""
-        try:
-            plugin_name = file_path.stem
-            loader = self.loader
-            if loader:
-                plugin_instance = loader.load_plugin(file_path)
-                loaded_plugins: FlextTypes.Dict = getattr(self, "_loaded_plugins", {})
-                loaded_plugins[plugin_name] = plugin_instance
-        except (OSError, RuntimeError, ValueError, ImportError, AttributeError) as e:
-            # Log plugin loading error and continue hot-reload process
-            logger = FlextLogger(__name__)
-            logger.warning(f"Plugin loading failed for {file_path}: {e}")
-
-    def _unload_plugin(self, plugin_name: str) -> None:
-        """Unload a specific plugin."""
-        try:
-            loaded_plugins: FlextTypes.Dict = getattr(self, "_loaded_plugins", {})
-            if plugin_name in loaded_plugins:
-                plugin = loaded_plugins[plugin_name]
-                # Call plugin cleanup if available:
-                if hasattr(plugin, "cleanup"):
-                    plugin.cleanup()
-                del loaded_plugins[plugin_name]
-        except (RuntimeError, ValueError, AttributeError, KeyError) as e:
-            # Log plugin unload error and continue hot-reload process
-            logger = FlextLogger(__name__)
-            logger.warning(f"Plugin unload failed for {plugin_name}: {e}")
-
-    def get_loaded_plugins(self) -> FlextTypes.Dict:
-        """Get a copy of currently loaded plugins.
+    def is_watching(self) -> bool:
+        """Check if hot reload is currently watching for changes.
 
         Returns:
-            Dictionary of loaded plugins keyed by plugin name.
-
+            True if watching, False otherwise
         """
-        return dict(self.loaded_plugins)
+        return self._is_watching
 
-    def reload_plugin(self, plugin_id: str) -> ReloadEvent:
-        """Reload a specific plugin by ID.
+    def get_watched_paths(self) -> List[str]:
+        """Get list of currently watched paths.
+
+        Returns:
+            List of watched path strings
+        """
+        return [str(path) for path in self._watched_paths]
+
+    def add_reload_callback(self, callback: Callable[[str], Any]) -> None:
+        """Add a callback to be executed when a plugin is reloaded.
 
         Args:
-            plugin_id: The plugin identifier to reload
-        Returns:
-            ReloadEvent with success/failure information
+            callback: Callback function to execute on reload
+        """
+        self._reload_callbacks.append(callback)
 
+    def remove_reload_callback(self, callback: Callable[[str], Any]) -> bool:
+        """Remove a reload callback.
+
+        Args:
+            callback: Callback function to remove
+
+        Returns:
+            True if callback was removed, False if not found
         """
         try:
-            # Try to reload via plugin manager if available
-            plugin_manager = getattr(self, "plugin_manager", None)
-            if plugin_manager and hasattr(plugin_manager, "reload_plugin"):
-                result: FlextResult[object] = plugin_manager.reload_plugin(plugin_id)
-                return HotReloadManager.ReloadEvent(
-                    event_type="plugin_reload",
-                    plugin_id=plugin_id,
-                    success=bool(result),
+            self._reload_callbacks.remove(callback)
+            return True
+        except ValueError:
+            return False
+
+    def get_reload_history(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get reload history.
+
+        Args:
+            limit: Maximum number of history entries to return
+
+        Returns:
+            List of reload history records
+        """
+        return self._reload_history[-limit:] if limit > 0 else self._reload_history
+
+    def clear_reload_history(self) -> int:
+        """Clear reload history.
+
+        Returns:
+            Number of history entries cleared
+        """
+        count = len(self._reload_history)
+        self._reload_history.clear()
+        self.logger.info(f"Cleared {count} reload history entries")
+        return count
+
+    async def _watch_loop(self) -> None:
+        """Main file watching loop."""
+        try:
+            while self._is_watching:
+                await self._check_for_changes()
+                await asyncio.sleep(self.watch_interval)
+        except asyncio.CancelledError:
+            self.logger.debug("Watch loop cancelled")
+        except Exception:
+            self.logger.exception("Error in watch loop")
+
+    async def _check_for_changes(self) -> None:
+        """Check for file changes in watched paths."""
+        try:
+            changed_files = []
+
+            for watched_path in self._watched_paths:
+                if watched_path.is_file():
+                    # Single file
+                    if self._has_file_changed(watched_path):
+                        changed_files.append(watched_path)
+                elif watched_path.is_dir():
+                    # Directory - check all Python files
+                    for py_file in watched_path.rglob("*.py"):
+                        if self._has_file_changed(py_file):
+                            changed_files.append(py_file)
+
+            # Process changed files
+            for changed_file in changed_files:
+                await self._handle_file_change(changed_file)
+
+        except Exception:
+            self.logger.exception("Error checking for file changes")
+
+    def _has_file_changed(self, file_path: Path) -> bool:
+        """Check if a file has changed since last check.
+
+        Args:
+            file_path: Path to the file to check
+
+        Returns:
+            True if file has changed, False otherwise
+        """
+        try:
+            if not file_path.exists():
+                return False
+
+            current_mtime = file_path.stat().st_mtime
+            last_mtime = self._file_timestamps.get(file_path, 0)
+
+            if current_mtime > last_mtime:
+                self._file_timestamps[file_path] = current_mtime
+                return True
+
+            return False
+
+        except Exception as e:
+            self.logger.debug(f"Error checking file change for {file_path}: {e}")
+            return False
+
+    async def _handle_file_change(self, file_path: Path) -> None:
+        """Handle a file change event.
+
+        Args:
+            file_path: Path to the changed file
+        """
+        try:
+            # Extract plugin name from file path
+            plugin_name = file_path.stem
+
+            # Apply debounce
+            await asyncio.sleep(self.debounce_ms / 1000.0)
+
+            # Check if file still exists and has changed
+            if not file_path.exists():
+                return
+
+            current_mtime = file_path.stat().st_mtime
+            if self._file_timestamps.get(file_path, 0) >= current_mtime:
+                return
+
+            # Reload the plugin
+            reload_result = await self.reload_plugin(plugin_name)
+            if reload_result.is_success:
+                self.logger.info(f"Hot reloaded plugin from file change: {file_path}")
+            else:
+                self.logger.warning(
+                    f"Failed to hot reload plugin: {reload_result.error}"
                 )
 
-            # Fallback implementation: unload the plugin (cleanup and remove)
-            self._unload_plugin(plugin_id)
+        except Exception:
+            self.logger.exception(f"Error handling file change for {file_path}")
 
-            return HotReloadManager.ReloadEvent(
-                event_type="plugin_reload",
-                plugin_id=plugin_id,
-                success=True,
-            )
-        except Exception as e:
-            return HotReloadManager.ReloadEvent(
-                event_type="plugin_reload",
-                plugin_id=plugin_id,
-                success=False,
-                error=str(e),
-            )
-
-    def reload_all_plugins(self) -> list[HotReloadManager.ReloadEvent]:
-        """Reload all currently loaded plugins.
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp as ISO string.
 
         Returns:
-            List of ReloadEvent results for each plugin
-
+            Current timestamp as ISO string
         """
-        reload_events: list[HotReloadManager.ReloadEvent] = []
-        loaded_plugins = self.loaded_plugins
+        from datetime import datetime, UTC
 
-        # Create a copy of plugin IDs to avoid "dictionary changed size during iteration"
-        plugin_ids = list(loaded_plugins.keys())
+        return datetime.now(UTC).isoformat()
 
-        for plugin_id in plugin_ids:
-            reload_event = self.reload_plugin(plugin_id)
-            reload_events.append(reload_event)
+    def get_hot_reload_status(self) -> Dict[str, Any]:
+        """Get the current status of the hot reload service.
 
-        return reload_events
+        Returns:
+            Dictionary containing hot reload status information
+        """
+        return {
+            "is_watching": self._is_watching,
+            "watched_paths": self.get_watched_paths(),
+            "watch_interval": self.watch_interval,
+            "debounce_ms": self.debounce_ms,
+            "max_retries": self.max_retries,
+            "total_reloads": len(self._reload_history),
+            "recent_reloads": len(
+                [r for r in self._reload_history if r.get("success", False)]
+            ),
+            "callback_count": len(self._reload_callbacks),
+        }
 
-    def _handle_plugin_change(self, watch_event: HotReloadManager.WatchEvent) -> None:
-        """Handle plugin file change events.
+    async def force_reload_all(self) -> FlextResult[Dict[str, bool]]:
+        """Force reload all plugins in watched paths.
+
+        Returns:
+            FlextResult containing reload results for each plugin
+        """
+        try:
+            if not self._is_watching:
+                return FlextResult.fail("Hot reload is not watching")
+
+            reload_results = {}
+
+            for watched_path in self._watched_paths:
+                if watched_path.is_file() and watched_path.suffix == ".py":
+                    plugin_name = watched_path.stem
+                    result = await self.reload_plugin(plugin_name)
+                    reload_results[plugin_name] = result.is_success
+                elif watched_path.is_dir():
+                    for py_file in watched_path.rglob("*.py"):
+                        plugin_name = py_file.stem
+                        result = await self.reload_plugin(plugin_name)
+                        reload_results[plugin_name] = result.is_success
+
+            self.logger.info(f"Force reloaded {len(reload_results)} plugins")
+            return FlextResult.ok(reload_results)
+
+        except Exception as e:
+            self.logger.exception("Failed to force reload all plugins")
+            return FlextResult.fail(f"Force reload error: {str(e)}")
+
+    async def add_watch_path(self, path: str) -> FlextResult[bool]:
+        """Add a new path to watch.
 
         Args:
-            watch_event: The file system watch event
+            path: Path to add to watch list
 
+        Returns:
+            FlextResult indicating success or failure
         """
-        # Extract plugin ID from path
-        plugin_id = watch_event.path.stem
-        # Trigger plugin reload
-        self.reload_plugin(plugin_id)
+        try:
+            path_obj = Path(path).expanduser().resolve()
+            if not path_obj.exists():
+                return FlextResult.fail(f"Path does not exist: {path}")
+
+            self._watched_paths.add(path_obj)
+            self.logger.info(f"Added watch path: {path}")
+            return FlextResult.ok(True)
+
+        except Exception as e:
+            self.logger.exception(f"Failed to add watch path: {path}")
+            return FlextResult.fail(f"Add watch path error: {str(e)}")
+
+    async def remove_watch_path(self, path: str) -> FlextResult[bool]:
+        """Remove a path from watch list.
+
+        Args:
+            path: Path to remove from watch list
+
+        Returns:
+            FlextResult indicating success or failure
+        """
+        try:
+            path_obj = Path(path).expanduser().resolve()
+            if path_obj in self._watched_paths:
+                self._watched_paths.remove(path_obj)
+                # Remove from timestamps
+                self._file_timestamps.pop(path_obj, None)
+                self.logger.info(f"Removed watch path: {path}")
+                return FlextResult.ok(True)
+            else:
+                return FlextResult.fail(f"Path not being watched: {path}")
+
+        except Exception as e:
+            self.logger.exception(f"Failed to remove watch path: {path}")
+            return FlextResult.fail(f"Remove watch path error: {str(e)}")
 
 
-# Direct access only - no convenience functions or compatibility wrappers
+__all__ = ["FlextPluginHotReload"]

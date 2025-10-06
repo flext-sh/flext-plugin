@@ -152,7 +152,7 @@ All examples follow Clean Architecture patterns:
 
 Examples demonstrate DDD concepts:
 
-- **Entities**: `FlextPlugin`, `FlextPluginConfig`, `FlextPluginMetadata`
+- **Entities**: `FlextPlugin`, `FlextPluginEntities.Config`, `FlextPluginEntities.Metadata`
 - **Value Objects**: Plugin types, status enums, configuration objects
 - **Domain Services**: Validation and lifecycle management
 - **Repositories**: Plugin registry patterns

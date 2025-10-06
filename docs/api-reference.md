@@ -18,7 +18,7 @@ class FlextPluginPlatform:
         """Initialize platform with dependency injection container"""
 
     # Plugin Lifecycle
-    def load_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Load a plugin into the system"""
 
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -31,7 +31,7 @@ class FlextPluginPlatform:
         """Disable an active plugin"""
 
     # Plugin Management
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntity]:
+    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Entity]:
         """Install a plugin from file system path"""
 
     def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -41,17 +41,17 @@ class FlextPluginPlatform:
         """Check if plugin is currently loaded"""
 
     # Discovery
-    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPluginEntity]]:
+    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def validate_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-    def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginConfig]:
+    def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginEntities.Config]:
         """Get plugin configuration"""
 
-    def update_plugin_config(self, plugin_name: str, config: FlextPluginConfig) -> FlextResult[bool]:
+    def update_plugin_config(self, plugin_name: str, config: FlextPluginEntities.Config) -> FlextResult[bool]:
         """Update plugin configuration"""
 ```
 
@@ -68,7 +68,7 @@ class FlextPlugin(FlextModels.Entity):
     plugin_version: str                 # Plugin version
     status: PluginStatus               # Current lifecycle status
     config: FlextTypes.Dict             # Plugin configuration
-    metadata: FlextPluginMetadata      # Plugin metadata
+    metadata: FlextPluginEntities.Metadata      # Plugin metadata
 
     # Business Methods
     def activate(self) -> bool:
@@ -81,12 +81,12 @@ class FlextPlugin(FlextModels.Entity):
         """Validate plugin business rules"""
 ```
 
-### FlextPluginConfig (Entity)
+### FlextPluginEntities.Config (Entity)
 
 Plugin configuration entity.
 
 ```python
-class FlextPluginConfig(FlextModels.Entity):
+class FlextPluginEntities.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
 
     name: str                          # Plugin name
@@ -94,7 +94,7 @@ class FlextPluginConfig(FlextModels.Entity):
     description: str                   # Plugin description
     author: str                        # Plugin author
     dependencies: List[str]            # Plugin dependencies
-    metadata: FlextPluginMetadata      # Additional metadata
+    metadata: FlextPluginEntities.Metadata      # Additional metadata
 
     def validate_business_rules(self) -> FlextResult[bool]:
         """Validate configuration business rules"""
@@ -141,7 +141,7 @@ def create_flext_plugin(
     config: FlextTypes.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs
-) -> FlextPluginEntity:
+) -> FlextPluginEntities.Entity:
     """Create a new plugin entity"""
 ```
 
@@ -164,10 +164,10 @@ def create_flext_plugin_platform(
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
-    def scan_directory(self, path: str) -> FlextResult[list[FlextPluginEntity]]:
+    def scan_directory(self, path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin_integrity(self, plugin: FlextPluginEntity) -> FlextResult[bool]:
+    def validate_plugin_integrity(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Validate plugin integrity"""
 ```
 
