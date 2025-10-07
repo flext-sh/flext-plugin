@@ -15,6 +15,7 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from flext_core import FlextProtocols, FlextResult
+
 from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.typings import FlextPluginTypes
 

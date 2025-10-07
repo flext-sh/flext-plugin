@@ -15,6 +15,9 @@ from datetime import UTC, datetime
 from typing import cast
 
 import pytest
+from flext_core import FlextModels
+from pydantic import ValidationError
+
 from flext_plugin import (
     FlextPlugin,
     FlextPluginEntities,
@@ -22,9 +25,6 @@ from flext_plugin import (
     PluginStatus,
     PluginType,
 )
-from pydantic import ValidationError
-
-from flext_core import FlextModels
 
 # Constants
 EXPECTED_BULK_SIZE = 2

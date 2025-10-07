@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Self
 
+from flext_core import FlextModels
 from pydantic import (
     ConfigDict,
     Field,
@@ -20,7 +21,6 @@ from pydantic import (
 )
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextModels
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.types import FlextPluginTypes
 
@@ -157,10 +157,10 @@ class FlextPluginModels(FlextModels):
             max_length=FlextPluginConstants.PluginValidation.MAX_AUTHOR_LENGTH,
             description="Plugin author",
         )
-        plugin_type: "FlextPluginModels.PluginType" = Field(
+        plugin_type: FlextPluginModels.PluginType = Field(
             description="Plugin type classification",
         )
-        status: "FlextPluginModels.PluginStatus" = Field(
+        status: FlextPluginModels.PluginStatus = Field(
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")

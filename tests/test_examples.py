@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from typing import cast
 
+from flext_core import FlextTypes
+
 from flext_plugin import (
     PluginStatus,
     PluginType,
@@ -19,8 +21,6 @@ from flext_plugin import (
     create_flext_plugin_config,
     create_flext_plugin_metadata,
 )
-
-from flext_core import FlextTypes
 
 # Load examples from examples directory
 examples_path = Path(__file__).parent.parent / "examples"
@@ -63,7 +63,7 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    result = subprocess.run(
+    result = FlextUtilities.run_external_command(
         [sys.executable, str(example_path)],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,
@@ -123,7 +123,7 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = subprocess.run(
+    result = FlextUtilities.run_external_command(
         [sys.executable, str(example_path)],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,
@@ -389,7 +389,7 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = subprocess.run(
+    result = FlextUtilities.run_external_command(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -513,7 +513,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    result = subprocess.run(
+    result = FlextUtilities.run_external_command(
         [sys.executable, str(example_path), "--test-connections"],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,

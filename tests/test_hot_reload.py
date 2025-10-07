@@ -40,8 +40,9 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from flext_plugin import HotReloadManager, PluginFileHandler, create_hot_reload_manager
 from watchdog.events import DirModifiedEvent, FileModifiedEvent
+
+from flext_plugin import HotReloadManager, PluginFileHandler, create_hot_reload_manager
 
 
 class TestPluginFileHandler:

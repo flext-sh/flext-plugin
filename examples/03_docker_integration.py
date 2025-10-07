@@ -180,15 +180,15 @@ def main() -> None:
         )
 
     print("\n🏗️  Creating Docker PostgreSQL plugin...")
-    postgres_plugin, postgres_config = create_docker_postgres_plugin()
+    postgres_plugin, _postgres_config = create_docker_postgres_plugin()
     print(f"  ✅ PostgreSQL plugin created: {postgres_plugin.name}")
 
     print("\n🏗️  Creating Docker Redis plugin...")
-    redis_plugin, redis_config = create_docker_redis_plugin()
+    redis_plugin, _redis_config = create_docker_redis_plugin()
     print(f"  ✅ Redis plugin created: {redis_plugin.name}")
 
     print("\n🏗️  Creating Docker LDAP plugin...")
-    ldap_plugin, ldap_config = create_docker_ldap_plugin()
+    ldap_plugin, _ldap_config = create_docker_ldap_plugin()
     print(f"  ✅ LDAP plugin created: {ldap_plugin.name}")
 
     print("\n🔍 Validating plugin configurations...")

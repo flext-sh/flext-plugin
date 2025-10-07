@@ -4,8 +4,9 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 
 from flext_plugin.models import FlextPluginModels, PluginStatus, PluginType
 
@@ -13,12 +14,12 @@ from flext_plugin.models import FlextPluginModels, PluginStatus, PluginType
 class TestFlextPluginModels:
     """Test cases for FlextPluginModels."""
 
-    def test_models_initialization(self):
+    def test_models_initialization(self) -> None:
         """Test that models can be initialized."""
         models = FlextPluginModels()
         assert models is not None
 
-    def test_plugin_status_enum(self):
+    def test_plugin_status_enum(self) -> None:
         """Test PluginStatus enum values and methods."""
         # Test enum values
         assert PluginStatus.UNKNOWN == "unknown"
@@ -49,7 +50,7 @@ class TestFlextPluginModels:
         assert PluginStatus.ERROR.is_error_state()
         assert not PluginStatus.ACTIVE.is_error_state()
 
-    def test_plugin_type_enum(self):
+    def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values and methods."""
         # Test ETL types
         assert PluginType.TAP == "tap"
@@ -99,7 +100,7 @@ class TestFlextPluginModels:
         assert PluginType.EXTENSION.is_architectural_plugin()
         assert not PluginType.TAP.is_architectural_plugin()
 
-    def test_plugin_model_creation(self):
+    def test_plugin_model_creation(self) -> None:
         """Test PluginModel creation and validation."""
         # Test valid plugin creation
         plugin = FlextPluginModels.PluginModel(
@@ -118,7 +119,7 @@ class TestFlextPluginModels:
         assert plugin.tags == []
         assert isinstance(plugin.created_at, datetime)
 
-    def test_plugin_model_validation(self):
+    def test_plugin_model_validation(self) -> None:
         """Test PluginModel validation rules."""
         # Test valid plugin
         plugin = FlextPluginModels.PluginModel(
@@ -147,7 +148,7 @@ class TestFlextPluginModels:
                 status=PluginStatus.INACTIVE,
             )
 
-    def test_plugin_model_consistency_validation(self):
+    def test_plugin_model_consistency_validation(self) -> None:
         """Test PluginModel consistency validation."""
         # Test active plugin cannot be disabled
         with pytest.raises(ValueError):
@@ -169,7 +170,7 @@ class TestFlextPluginModels:
                 dependencies=["test-plugin"],  # Cannot depend on itself
             )
 
-    def test_config_model_creation(self):
+    def test_config_model_creation(self) -> None:
         """Test ConfigModel creation and validation."""
         config = FlextPluginModels.ConfigModel(
             enabled=True,
@@ -187,7 +188,7 @@ class TestFlextPluginModels:
         assert config.auto_restart is True
         assert config.retry_attempts == 3
 
-    def test_config_model_validation(self):
+    def test_config_model_validation(self) -> None:
         """Test ConfigModel validation rules."""
         # Test valid config
         config = FlextPluginModels.ConfigModel(priority=50)
@@ -215,7 +216,7 @@ class TestFlextPluginModels:
         with pytest.raises(ValueError):
             FlextPluginModels.ConfigModel(max_memory_mb=32)  # Below minimum
 
-    def test_security_model_creation(self):
+    def test_security_model_creation(self) -> None:
         """Test SecurityModel creation and validation."""
         security = FlextPluginModels.SecurityModel(
             security_level="high",
@@ -237,7 +238,7 @@ class TestFlextPluginModels:
         assert security.audit_logging is True
         assert security.signature_verified is True
 
-    def test_security_model_validation(self):
+    def test_security_model_validation(self) -> None:
         """Test SecurityModel validation rules."""
         # Test secure configuration
         security = FlextPluginModels.SecurityModel(
@@ -263,7 +264,7 @@ class TestFlextPluginModels:
         with pytest.raises(ValueError):
             FlextPluginModels.SecurityModel(security_level="invalid")
 
-    def test_monitoring_model_creation(self):
+    def test_monitoring_model_creation(self) -> None:
         """Test MonitoringModel creation and validation."""
         monitoring = FlextPluginModels.MonitoringModel(
             metrics_enabled=True,
@@ -281,7 +282,7 @@ class TestFlextPluginModels:
         assert monitoring.log_level == "INFO"
         assert monitoring.retention_days == 30
 
-    def test_monitoring_model_validation(self):
+    def test_monitoring_model_validation(self) -> None:
         """Test MonitoringModel validation rules."""
         # Test basic monitoring check
         monitoring = FlextPluginModels.MonitoringModel(
@@ -306,7 +307,7 @@ class TestFlextPluginModels:
         with pytest.raises(ValueError):
             FlextPluginModels.MonitoringModel(retention_days=400)
 
-    def test_alert_thresholds_validation(self):
+    def test_alert_thresholds_validation(self) -> None:
         """Test alert thresholds validation."""
         # Test valid thresholds
         monitoring = FlextPluginModels.MonitoringModel(
@@ -350,7 +351,7 @@ class TestFlextPluginModels:
                 }
             )
 
-    def test_metadata_model_creation(self):
+    def test_metadata_model_creation(self) -> None:
         """Test MetadataModel creation and validation."""
         metadata = FlextPluginModels.MetadataModel(
             plugin_id="test-plugin-123",
@@ -375,7 +376,7 @@ class TestFlextPluginModels:
         assert metadata.python_version == "3.13"
         assert isinstance(metadata.created_at, datetime)
 
-    def test_execution_context_model_creation(self):
+    def test_execution_context_model_creation(self) -> None:
         """Test ExecutionContextModel creation and validation."""
         context = FlextPluginModels.ExecutionContextModel(
             plugin_id="test-plugin-123",
@@ -392,7 +393,7 @@ class TestFlextPluginModels:
         assert context.timeout_seconds == 30
         assert isinstance(context.started_at, datetime)
 
-    def test_execution_result_model_creation(self):
+    def test_execution_result_model_creation(self) -> None:
         """Test ExecutionResultModel creation and validation."""
         result = FlextPluginModels.ExecutionResultModel(
             success=True,
@@ -412,7 +413,7 @@ class TestFlextPluginModels:
         assert result.duration_ms == 1500.0
         assert result.is_failure() is False
 
-    def test_execution_result_model_failure(self):
+    def test_execution_result_model_failure(self) -> None:
         """Test ExecutionResultModel failure case."""
         result = FlextPluginModels.ExecutionResultModel(
             success=False,
@@ -427,7 +428,7 @@ class TestFlextPluginModels:
         assert result.error == "Plugin execution failed"
         assert result.is_failure() is True
 
-    def test_manager_result_model_creation(self):
+    def test_manager_result_model_creation(self) -> None:
         """Test ManagerResultModel creation and validation."""
         result = FlextPluginModels.ManagerResultModel(
             operation="load_plugins",

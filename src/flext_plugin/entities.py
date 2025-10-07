@@ -9,8 +9,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import cast, override
 
-from pydantic import Field, field_validator
-
 from flext_core import (
     FlextLogger,
     FlextModels,
@@ -18,6 +16,8 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+from pydantic import Field, field_validator
+
 from flext_plugin.models import PluginStatus, PluginType
 from flext_plugin.types import FlextPluginTypes
 
@@ -35,14 +35,12 @@ class FlextPluginEntities:
 
         # Create plugin entity
         plugin = FlextPluginEntities.Plugin.create(
-            name="my-plugin",
-            plugin_version="1.0.0"
+            name="my-plugin", plugin_version="1.0.0"
         )
 
         # Create plugin config
         config = FlextPluginEntities.Config.create(
-            plugin_name="my-plugin",
-            config_data={"setting": "value"}
+            plugin_name="my-plugin", config_data={"setting": "value"}
         )
         ```
     """
@@ -205,6 +203,7 @@ class FlextPluginEntities:
 
             Returns:
                 FlextPluginEntities.Plugin: Validated plugin entity
+
             """
             # Generate ID if not provided
             entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()

@@ -57,23 +57,23 @@ __version_info__: tuple[int | str, ...] = VERSION.version_info
 
 # Main API exports
 __all__ = [
+    "PROJECT_VERSION",
+    # Version information
+    "VERSION",
     # Core API
     "FlextPluginApi",
-    "FlextPluginPlatform",
+    "FlextPluginConfig",
     # Core classes following [Project][Module] pattern
     "FlextPluginConstants",
-    "FlextPluginTypes",
-    "FlextPluginModels",
-    "FlextPluginConfig",
     "FlextPluginEntities",
-    "FlextPluginProtocols",
-    "FlextPluginService",
     "FlextPluginHandlers",
     "FlextPluginHotReload",
     "FlextPluginLoader",
-    # Version information
-    "VERSION",
-    "PROJECT_VERSION",
+    "FlextPluginModels",
+    "FlextPluginPlatform",
+    "FlextPluginProtocols",
+    "FlextPluginService",
+    "FlextPluginTypes",
     "__version__",
     "__version_info__",
 ]

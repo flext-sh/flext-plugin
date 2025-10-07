@@ -7,8 +7,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+import contextlib
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -48,6 +50,7 @@ class FlextPluginHotReload:
             watch_interval: File watching interval in seconds
             debounce_ms: Debounce time in milliseconds
             max_retries: Maximum retry attempts for failed reloads
+
         """
         self.logger = FlextLogger(__name__)
         self.watch_interval = watch_interval
@@ -56,13 +59,13 @@ class FlextPluginHotReload:
 
         # Internal state
         self._is_watching = False
-        self._watched_paths: Set[Path] = set()
-        self._file_timestamps: Dict[Path, float] = {}
-        self._reload_callbacks: List[Callable[[str], Any]] = []
-        self._watch_task: Optional[asyncio.Task] = None
-        self._reload_history: List[Dict[str, Any]] = []
+        self._watched_paths: set[Path] = set()
+        self._file_timestamps: dict[Path, float] = {}
+        self._reload_callbacks: list[Callable[[str], Any]] = []
+        self._watch_task: asyncio.Task | None = None
+        self._reload_history: list[dict[str, Any]] = []
 
-    async def start_watching(self, paths: List[str]) -> FlextResult[bool]:
+    async def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
 
         Args:
@@ -70,6 +73,7 @@ class FlextPluginHotReload:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             if self._is_watching:
@@ -100,13 +104,14 @@ class FlextPluginHotReload:
 
         except Exception as e:
             self.logger.exception("Failed to start hot reload watching")
-            return FlextResult.fail(f"Start watching error: {str(e)}")
+            return FlextResult.fail(f"Start watching error: {e!s}")
 
     async def stop_watching(self) -> FlextResult[bool]:
         """Stop watching for changes.
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             if not self._is_watching:
@@ -117,10 +122,8 @@ class FlextPluginHotReload:
             # Cancel the watch task
             if self._watch_task and not self._watch_task.done():
                 self._watch_task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await self._watch_task
-                except asyncio.CancelledError:
-                    pass
 
             self._watch_task = None
             self._watched_paths.clear()
@@ -131,7 +134,7 @@ class FlextPluginHotReload:
 
         except Exception as e:
             self.logger.exception("Failed to stop hot reload watching")
-            return FlextResult.fail(f"Stop watching error: {str(e)}")
+            return FlextResult.fail(f"Stop watching error: {e!s}")
 
     async def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Reload a specific plugin.
@@ -141,6 +144,7 @@ class FlextPluginHotReload:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             # Find the plugin file
@@ -149,7 +153,7 @@ class FlextPluginHotReload:
                 if watched_path.is_file() and watched_path.stem == plugin_name:
                     plugin_path = watched_path
                     break
-                elif watched_path.is_dir():
+                if watched_path.is_dir():
                     plugin_file = watched_path / f"{plugin_name}.py"
                     if plugin_file.exists():
                         plugin_path = plugin_file
@@ -182,21 +186,23 @@ class FlextPluginHotReload:
 
         except Exception as e:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
-            return FlextResult.fail(f"Reload error: {str(e)}")
+            return FlextResult.fail(f"Reload error: {e!s}")
 
     def is_watching(self) -> bool:
         """Check if hot reload is currently watching for changes.
 
         Returns:
             True if watching, False otherwise
+
         """
         return self._is_watching
 
-    def get_watched_paths(self) -> List[str]:
+    def get_watched_paths(self) -> list[str]:
         """Get list of currently watched paths.
 
         Returns:
             List of watched path strings
+
         """
         return [str(path) for path in self._watched_paths]
 
@@ -205,6 +211,7 @@ class FlextPluginHotReload:
 
         Args:
             callback: Callback function to execute on reload
+
         """
         self._reload_callbacks.append(callback)
 
@@ -216,6 +223,7 @@ class FlextPluginHotReload:
 
         Returns:
             True if callback was removed, False if not found
+
         """
         try:
             self._reload_callbacks.remove(callback)
@@ -223,7 +231,7 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def get_reload_history(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_reload_history(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get reload history.
 
         Args:
@@ -231,6 +239,7 @@ class FlextPluginHotReload:
 
         Returns:
             List of reload history records
+
         """
         return self._reload_history[-limit:] if limit > 0 else self._reload_history
 
@@ -239,6 +248,7 @@ class FlextPluginHotReload:
 
         Returns:
             Number of history entries cleared
+
         """
         count = len(self._reload_history)
         self._reload_history.clear()
@@ -268,9 +278,11 @@ class FlextPluginHotReload:
                         changed_files.append(watched_path)
                 elif watched_path.is_dir():
                     # Directory - check all Python files
-                    for py_file in watched_path.rglob("*.py"):
-                        if self._has_file_changed(py_file):
-                            changed_files.append(py_file)
+                    changed_files.extend(
+                        py_file
+                        for py_file in watched_path.rglob("*.py")
+                        if self._has_file_changed(py_file)
+                    )
 
             # Process changed files
             for changed_file in changed_files:
@@ -287,6 +299,7 @@ class FlextPluginHotReload:
 
         Returns:
             True if file has changed, False otherwise
+
         """
         try:
             if not file_path.exists():
@@ -310,6 +323,7 @@ class FlextPluginHotReload:
 
         Args:
             file_path: Path to the changed file
+
         """
         try:
             # Extract plugin name from file path
@@ -343,16 +357,18 @@ class FlextPluginHotReload:
 
         Returns:
             Current timestamp as ISO string
+
         """
-        from datetime import datetime, UTC
+        from datetime import UTC, datetime
 
         return datetime.now(UTC).isoformat()
 
-    def get_hot_reload_status(self) -> Dict[str, Any]:
+    def get_hot_reload_status(self) -> dict[str, Any]:
         """Get the current status of the hot reload service.
 
         Returns:
             Dictionary containing hot reload status information
+
         """
         return {
             "is_watching": self._is_watching,
@@ -361,17 +377,18 @@ class FlextPluginHotReload:
             "debounce_ms": self.debounce_ms,
             "max_retries": self.max_retries,
             "total_reloads": len(self._reload_history),
-            "recent_reloads": len(
-                [r for r in self._reload_history if r.get("success", False)]
-            ),
+            "recent_reloads": len([
+                r for r in self._reload_history if r.get("success", False)
+            ]),
             "callback_count": len(self._reload_callbacks),
         }
 
-    async def force_reload_all(self) -> FlextResult[Dict[str, bool]]:
+    async def force_reload_all(self) -> FlextResult[dict[str, bool]]:
         """Force reload all plugins in watched paths.
 
         Returns:
             FlextResult containing reload results for each plugin
+
         """
         try:
             if not self._is_watching:
@@ -395,7 +412,7 @@ class FlextPluginHotReload:
 
         except Exception as e:
             self.logger.exception("Failed to force reload all plugins")
-            return FlextResult.fail(f"Force reload error: {str(e)}")
+            return FlextResult.fail(f"Force reload error: {e!s}")
 
     async def add_watch_path(self, path: str) -> FlextResult[bool]:
         """Add a new path to watch.
@@ -405,6 +422,7 @@ class FlextPluginHotReload:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             path_obj = Path(path).expanduser().resolve()
@@ -417,7 +435,7 @@ class FlextPluginHotReload:
 
         except Exception as e:
             self.logger.exception(f"Failed to add watch path: {path}")
-            return FlextResult.fail(f"Add watch path error: {str(e)}")
+            return FlextResult.fail(f"Add watch path error: {e!s}")
 
     async def remove_watch_path(self, path: str) -> FlextResult[bool]:
         """Remove a path from watch list.
@@ -427,6 +445,7 @@ class FlextPluginHotReload:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             path_obj = Path(path).expanduser().resolve()
@@ -436,12 +455,11 @@ class FlextPluginHotReload:
                 self._file_timestamps.pop(path_obj, None)
                 self.logger.info(f"Removed watch path: {path}")
                 return FlextResult.ok(True)
-            else:
-                return FlextResult.fail(f"Path not being watched: {path}")
+            return FlextResult.fail(f"Path not being watched: {path}")
 
         except Exception as e:
             self.logger.exception(f"Failed to remove watch path: {path}")
-            return FlextResult.fail(f"Remove watch path error: {str(e)}")
+            return FlextResult.fail(f"Remove watch path error: {e!s}")
 
 
 __all__ = ["FlextPluginHotReload"]

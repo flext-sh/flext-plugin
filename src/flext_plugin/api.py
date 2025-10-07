@@ -6,9 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from flext_core import FlextContainer, FlextLogger, FlextResult
+
 from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.discovery import FlextPluginDiscovery
@@ -49,14 +50,15 @@ class FlextPluginApi:
 
     def __init__(
         self,
-        container: Optional[FlextContainer] = None,
-        config: Optional[FlextPluginConfig] = None,
+        container: FlextContainer | None = None,
+        config: FlextPluginConfig | None = None,
     ) -> None:
         """Initialize the plugin API.
 
         Args:
             container: FLEXT dependency injection container
             config: Optional plugin configuration
+
         """
         self.logger = FlextLogger(__name__)
         self.container = container or FlextContainer()
@@ -75,8 +77,8 @@ class FlextPluginApi:
         self._handlers.register_default_handlers()
 
     def discover_plugins(
-        self, paths: List[str]
-    ) -> FlextResult[List[FlextPluginEntities.Plugin]]:
+        self, paths: list[str]
+    ) -> FlextResult[list[FlextPluginEntities.Plugin]]:
         """Discover plugins in the specified paths.
 
         Args:
@@ -84,6 +86,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult containing list of discovered plugins
+
         """
         try:
             # Use discovery service
@@ -127,7 +130,7 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
-            return FlextResult.fail(f"Discovery error: {str(e)}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Plugin]:
         """Load a single plugin from the specified path.
@@ -137,6 +140,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult containing the loaded plugin
+
         """
         try:
             # Use loader service
@@ -173,13 +177,13 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
-            return FlextResult.fail(f"Loading error: {str(e)}")
+            return FlextResult.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Dict[str, Any],
-        execution_id: Optional[str] = None,
+        context: dict[str, Any],
+        execution_id: str | None = None,
     ) -> FlextResult[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
 
@@ -190,6 +194,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult containing the execution result
+
         """
         try:
             # Use platform for execution
@@ -214,7 +219,7 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
-            return FlextResult.fail(f"Execution error: {str(e)}")
+            return FlextResult.fail(f"Execution error: {e!s}")
 
     def register_plugin(self, plugin: FlextPluginEntities.Plugin) -> FlextResult[bool]:
         """Register a plugin in the platform.
@@ -224,6 +229,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             # Use platform for registration
@@ -242,7 +248,7 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception(f"Failed to register plugin '{plugin.name}'")
-            return FlextResult.fail(f"Registration error: {str(e)}")
+            return FlextResult.fail(f"Registration error: {e!s}")
 
     def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister a plugin from the platform.
@@ -252,6 +258,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             # Use platform for unregistration
@@ -269,9 +276,9 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception(f"Failed to unregister plugin '{plugin_name}'")
-            return FlextResult.fail(f"Unregistration error: {str(e)}")
+            return FlextResult.fail(f"Unregistration error: {e!s}")
 
-    def start_hot_reload(self, paths: List[str]) -> FlextResult[bool]:
+    def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
         """Start hot reload monitoring for the specified paths.
 
         Args:
@@ -279,6 +286,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             # Use hot reload service
@@ -291,22 +299,23 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception("Failed to start hot reload")
-            return FlextResult.fail(f"Hot reload error: {str(e)}")
+            return FlextResult.fail(f"Hot reload error: {e!s}")
 
     def stop_hot_reload(self) -> FlextResult[bool]:
         """Stop hot reload monitoring.
 
         Returns:
             FlextResult indicating success or failure
+
         """
         try:
             return self._hot_reload.stop_watching()
 
         except Exception as e:
             self.logger.exception("Failed to stop hot reload")
-            return FlextResult.fail(f"Hot reload error: {str(e)}")
+            return FlextResult.fail(f"Hot reload error: {e!s}")
 
-    def get_plugin(self, plugin_name: str) -> Optional[FlextPluginEntities.Plugin]:
+    def get_plugin(self, plugin_name: str) -> FlextPluginEntities.Plugin | None:
         """Get a plugin by name.
 
         Args:
@@ -314,18 +323,20 @@ class FlextPluginApi:
 
         Returns:
             Plugin entity if found, None otherwise
+
         """
         return self._platform.get_plugin(plugin_name)
 
-    def list_plugins(self) -> List[FlextPluginEntities.Plugin]:
+    def list_plugins(self) -> list[FlextPluginEntities.Plugin]:
         """List all registered plugins.
 
         Returns:
             List of all registered plugin entities
+
         """
         return self._platform.list_plugins()
 
-    def get_plugin_status(self, plugin_name: str) -> Optional[str]:
+    def get_plugin_status(self, plugin_name: str) -> str | None:
         """Get the status of a specific plugin.
 
         Args:
@@ -333,6 +344,7 @@ class FlextPluginApi:
 
         Returns:
             Plugin status if found, None otherwise
+
         """
         return self._platform.get_plugin_status(plugin_name)
 
@@ -344,22 +356,25 @@ class FlextPluginApi:
 
         Returns:
             True if plugin is active, False otherwise
+
         """
         return self._platform.is_plugin_active(plugin_name)
 
-    def get_platform_status(self) -> Dict[str, Any]:
+    def get_platform_status(self) -> dict[str, Any]:
         """Get the current status of the plugin platform.
 
         Returns:
             Dictionary containing platform status information
+
         """
         return self._platform.get_platform_status()
 
-    def get_api_status(self) -> Dict[str, Any]:
+    def get_api_status(self) -> dict[str, Any]:
         """Get the current status of the plugin API.
 
         Returns:
             Dictionary containing API status information
+
         """
         platform_status = self.get_platform_status()
         handler_status = self._handlers.get_handler_status()
@@ -381,6 +396,7 @@ class FlextPluginApi:
 
         Args:
             plugin_name: Name of the plugin being reloaded
+
         """
         try:
             # Trigger reload event
@@ -402,16 +418,17 @@ class FlextPluginApi:
 
         Returns:
             Current timestamp as ISO string
+
         """
-        from datetime import datetime, UTC
+        from datetime import UTC, datetime
 
         return datetime.now(UTC).isoformat()
 
     # Convenience methods for common operations
 
     def discover_and_register_plugins(
-        self, paths: List[str]
-    ) -> FlextResult[List[FlextPluginEntities.Plugin]]:
+        self, paths: list[str]
+    ) -> FlextResult[list[FlextPluginEntities.Plugin]]:
         """Discover plugins and register them in the platform.
 
         Args:
@@ -419,6 +436,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult containing list of registered plugins
+
         """
         try:
             # Discover plugins
@@ -446,13 +464,13 @@ class FlextPluginApi:
 
         except Exception as e:
             self.logger.exception("Failed to discover and register plugins")
-            return FlextResult.fail(f"Discover and register error: {str(e)}")
+            return FlextResult.fail(f"Discover and register error: {e!s}")
 
     def execute_plugin_sync(
         self,
         plugin_name: str,
-        context: Dict[str, Any],
-        timeout: Optional[float] = None,
+        context: dict[str, Any],
+        timeout: float | None = None,
     ) -> FlextResult[Any]:
         """Execute a plugin synchronously and return the result.
 
@@ -463,6 +481,7 @@ class FlextPluginApi:
 
         Returns:
             FlextResult containing the execution result data
+
         """
         try:
             # Execute plugin
@@ -480,9 +499,9 @@ class FlextPluginApi:
             self.logger.exception(
                 f"Failed to execute plugin synchronously: {plugin_name}"
             )
-            return FlextResult.fail(f"Sync execution error: {str(e)}")
+            return FlextResult.fail(f"Sync execution error: {e!s}")
 
-    def get_plugin_info(self, plugin_name: str) -> Optional[Dict[str, Any]]:
+    def get_plugin_info(self, plugin_name: str) -> dict[str, Any] | None:
         """Get detailed information about a plugin.
 
         Args:
@@ -490,6 +509,7 @@ class FlextPluginApi:
 
         Returns:
             Plugin information dictionary if found, None otherwise
+
         """
         plugin = self.get_plugin(plugin_name)
         if not plugin:
@@ -510,7 +530,7 @@ class FlextPluginApi:
             "error_count": plugin.error_count,
         }
 
-    def get_execution_history(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_execution_history(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get execution history from the platform.
 
         Args:
@@ -518,6 +538,7 @@ class FlextPluginApi:
 
         Returns:
             List of execution history records
+
         """
         executions = self._platform.list_executions()
         if limit > 0:
@@ -537,7 +558,7 @@ class FlextPluginApi:
             for exec in executions
         ]
 
-    def get_reload_history(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_reload_history(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get hot reload history.
 
         Args:
@@ -545,12 +566,13 @@ class FlextPluginApi:
 
         Returns:
             List of reload history records
+
         """
         return self._hot_reload.get_reload_history(limit)
 
     def get_event_history(
-        self, event_type: Optional[str] = None, limit: int = 100
-    ) -> List[Dict[str, Any]]:
+        self, event_type: str | None = None, limit: int = 100
+    ) -> list[dict[str, Any]]:
         """Get event history from handlers.
 
         Args:
@@ -559,6 +581,7 @@ class FlextPluginApi:
 
         Returns:
             List of event history records
+
         """
         return self._handlers.get_event_history(event_type, limit)
 

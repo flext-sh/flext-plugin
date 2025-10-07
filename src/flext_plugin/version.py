@@ -29,6 +29,7 @@ class FlextPluginVersion(NamedTuple):
 
         Returns:
             FlextPluginVersion instance
+
         """
         # Parse version string (e.g., "0.9.9")
         parts = version_string.split(".")
@@ -70,4 +71,4 @@ class FlextPluginVersion(NamedTuple):
 # Current version
 VERSION: Final[FlextPluginVersion] = FlextPluginVersion.parse_version("0.9.9")
 
-__all__ = ["FlextPluginVersion", "VERSION"]
+__all__ = ["VERSION", "FlextPluginVersion"]

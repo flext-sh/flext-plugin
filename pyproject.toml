@@ -185,7 +185,10 @@
         develop = true
         path    = "../flext-observability"
 
-[tool.ruff.lint.isort]
-    known-first-party = [
-        "flext_plugin",
-    ]
+	[tool.ruff]
+		extend = "../ruff-shared.toml"
+
+    [tool.ruff.lint.isort]
+        known-first-party = [
+            "flext_plugin",
+        ]

@@ -30,6 +30,7 @@ class FlextPluginExceptions(FlextExceptions):
 
         Returns:
             Tuple of (base_context, correlation_id, error_code)
+
         """
         # Extract known parameters
         context_raw = kwargs.get("context", {})
@@ -72,6 +73,7 @@ class FlextPluginExceptions(FlextExceptions):
 
         Returns:
             Complete context dictionary
+
         """
         context = dict(base_context)  # Create a copy
         context.update(additional_fields)

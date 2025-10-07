@@ -10,16 +10,16 @@ from pathlib import Path
 from typing import override
 
 import pytest
+from flext_core import FlextResult, FlextTypes
+
 from flext_plugin import (
     FlextPluginEntities,
     FlextPluginEventHandler,
     FlextPluginHandler,
-    FlextPluginsEntities,
     FlextPluginRegistrationHandler,
+    FlextPluginsEntities,
     PluginLoader,
 )
-
-from flext_core import FlextResult, FlextTypes
 
 
 class TestPluginLoaderAdapter(FlextPluginsEntities.Loader):

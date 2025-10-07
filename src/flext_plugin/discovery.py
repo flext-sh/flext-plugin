@@ -9,9 +9,9 @@ from __future__ import annotations
 import importlib
 import os
 from pathlib import Path
-from typing import List, Optional
 
 from flext_core import FlextLogger, FlextResult
+
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
@@ -39,14 +39,15 @@ class FlextPluginDiscovery:
 
     def __init__(
         self,
-        file_discovery: Optional[FlextPluginProtocols.PluginDiscovery] = None,
-        entry_point_discovery: Optional[FlextPluginProtocols.PluginDiscovery] = None,
+        file_discovery: FlextPluginProtocols.PluginDiscovery | None = None,
+        entry_point_discovery: FlextPluginProtocols.PluginDiscovery | None = None,
     ) -> None:
         """Initialize the plugin discovery service.
 
         Args:
             file_discovery: File system discovery implementation
             entry_point_discovery: Entry point discovery implementation
+
         """
         self.logger = FlextLogger(__name__)
         self._file_discovery = file_discovery or self.FileSystemDiscovery()
@@ -55,8 +56,8 @@ class FlextPluginDiscovery:
         )
 
     async def discover_plugins(
-        self, paths: List[str]
-    ) -> FlextResult[List[FlextPluginTypes.Core.PluginDict]]:
+        self, paths: list[str]
+    ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
         """Discover plugins using multiple discovery strategies.
 
         Args:
@@ -64,6 +65,7 @@ class FlextPluginDiscovery:
 
         Returns:
             FlextResult containing list of discovered plugins
+
         """
         try:
             all_plugins = []
@@ -94,7 +96,7 @@ class FlextPluginDiscovery:
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
-            return FlextResult.fail(f"Discovery error: {str(e)}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     async def discover_plugin(
         self, plugin_path: str
@@ -106,6 +108,7 @@ class FlextPluginDiscovery:
 
         Returns:
             FlextResult containing plugin data
+
         """
         try:
             path_obj = Path(plugin_path).expanduser().resolve()
@@ -127,7 +130,7 @@ class FlextPluginDiscovery:
 
         except Exception as e:
             self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-            return FlextResult.fail(f"Discovery error: {str(e)}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     async def validate_plugin(
         self, plugin_data: FlextPluginTypes.Core.PluginDict
@@ -139,6 +142,7 @@ class FlextPluginDiscovery:
 
         Returns:
             FlextResult indicating validation success or failure
+
         """
         try:
             # Validate required fields
@@ -162,7 +166,7 @@ class FlextPluginDiscovery:
 
         except Exception as e:
             self.logger.exception("Plugin validation failed")
-            return FlextResult.fail(f"Validation error: {str(e)}")
+            return FlextResult.fail(f"Validation error: {e!s}")
 
     def _is_valid_plugin_name(self, name: str) -> bool:
         """Check if plugin name follows valid format.
@@ -172,6 +176,7 @@ class FlextPluginDiscovery:
 
         Returns:
             True if name is valid, False otherwise
+
         """
         import re
 
@@ -186,6 +191,7 @@ class FlextPluginDiscovery:
 
         Returns:
             True if version is valid, False otherwise
+
         """
         import re
 
@@ -200,8 +206,8 @@ class FlextPluginDiscovery:
             self.logger = FlextLogger(__name__)
 
         async def discover_plugins(
-            self, paths: List[str]
-        ) -> FlextResult[List[FlextPluginTypes.Core.PluginDict]]:
+            self, paths: list[str]
+        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins in file system paths.
 
             Args:
@@ -209,6 +215,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult containing list of discovered plugins
+
             """
             try:
                 discovered_plugins = []
@@ -236,7 +243,7 @@ class FlextPluginDiscovery:
 
             except Exception as e:
                 self.logger.exception("File system discovery failed")
-                return FlextResult.fail(f"File discovery error: {str(e)}")
+                return FlextResult.fail(f"File discovery error: {e!s}")
 
         async def discover_plugin(
             self, plugin_path: str
@@ -248,6 +255,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult containing plugin data
+
             """
             try:
                 path_obj = Path(plugin_path).expanduser().resolve()
@@ -266,7 +274,7 @@ class FlextPluginDiscovery:
 
             except Exception as e:
                 self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-                return FlextResult.fail(f"File discovery error: {str(e)}")
+                return FlextResult.fail(f"File discovery error: {e!s}")
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
@@ -278,6 +286,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult indicating validation success or failure
+
             """
             try:
                 # Check if plugin file exists and is readable
@@ -300,11 +309,11 @@ class FlextPluginDiscovery:
 
             except Exception as e:
                 self.logger.exception("File plugin validation failed")
-                return FlextResult.fail(f"File validation error: {str(e)}")
+                return FlextResult.fail(f"File validation error: {e!s}")
 
         async def _discover_single_file(
             self, path: Path
-        ) -> Optional[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextPluginTypes.Core.PluginDict | None:
             """Discover a single plugin file.
 
             Args:
@@ -312,6 +321,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 Plugin data if discovered, None otherwise
+
             """
             try:
                 if path.suffix != ".py":
@@ -324,7 +334,7 @@ class FlextPluginDiscovery:
                 version = await self._extract_version_from_file(path)
 
                 # Basic plugin data
-                plugin_data = {
+                return {
                     "name": plugin_name,
                     "version": version,
                     "path": str(path),
@@ -332,15 +342,13 @@ class FlextPluginDiscovery:
                     "discovery_method": "file_system",
                 }
 
-                return plugin_data
-
             except Exception:
                 self.logger.exception(f"Failed to discover single file: {path}")
                 return None
 
         async def _discover_directory(
             self, path: Path
-        ) -> List[FlextPluginTypes.Core.PluginDict]:
+        ) -> list[FlextPluginTypes.Core.PluginDict]:
             """Discover plugins in a directory.
 
             Args:
@@ -348,6 +356,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 List of discovered plugin data
+
             """
             try:
                 discovered_plugins = []
@@ -380,9 +389,10 @@ class FlextPluginDiscovery:
 
             Returns:
                 Version string (defaults to "1.0.0" if not found)
+
             """
             try:
-                with open(path, "r", encoding="utf-8") as f:
+                with Path(path).open(encoding="utf-8") as f:
                     content = f.read()
 
                 # Look for version patterns
@@ -413,8 +423,8 @@ class FlextPluginDiscovery:
             self.logger = FlextLogger(__name__)
 
         async def discover_plugins(
-            self, paths: List[str]
-        ) -> FlextResult[List[FlextPluginTypes.Core.PluginDict]]:
+            self, paths: list[str]
+        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
             Args:
@@ -422,6 +432,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult containing list of discovered plugins
+
             """
             try:
                 discovered_plugins = []
@@ -452,7 +463,7 @@ class FlextPluginDiscovery:
 
             except Exception as e:
                 self.logger.exception("Entry point discovery failed")
-                return FlextResult.fail(f"Entry point discovery error: {str(e)}")
+                return FlextResult.fail(f"Entry point discovery error: {e!s}")
 
         async def discover_plugin(
             self, plugin_path: str
@@ -464,6 +475,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult containing plugin data
+
             """
             try:
                 # For entry points, we search by name
@@ -499,7 +511,7 @@ class FlextPluginDiscovery:
                 self.logger.exception(
                     f"Failed to discover entry point plugin: {plugin_path}"
                 )
-                return FlextResult.fail(f"Entry point discovery error: {str(e)}")
+                return FlextResult.fail(f"Entry point discovery error: {e!s}")
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
@@ -511,6 +523,7 @@ class FlextPluginDiscovery:
 
             Returns:
                 FlextResult indicating validation success or failure
+
             """
             try:
                 # Check if entry point is valid
@@ -538,7 +551,7 @@ class FlextPluginDiscovery:
 
             except Exception as e:
                 self.logger.exception("Entry point plugin validation failed")
-                return FlextResult.fail(f"Entry point validation error: {str(e)}")
+                return FlextResult.fail(f"Entry point validation error: {e!s}")
 
 
 __all__ = ["FlextPluginDiscovery"]

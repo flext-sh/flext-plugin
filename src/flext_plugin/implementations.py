@@ -20,6 +20,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
+
 from flext_plugin.entities import FlextPluginEntities
 
 
@@ -664,15 +665,15 @@ ConcretePluginLoader = FlextPluginImplementations.ConcretePluginLoader
 
 
 __all__ = [
-    # CONSOLIDATED class (FLEXT pattern)
-    "FlextPluginImplementations",
+    "ConcreteDataPlugin",
+    "ConcreteExecutablePlugin",
     # Backward compatibility exports
     "ConcretePlugin",
-    "ConcreteExecutablePlugin",
-    "ConcreteDataPlugin",
-    "ConcreteTransformPlugin",
-    "LoggerAdapter",
     "ConcretePluginContext",
-    "ConcretePluginRegistry",
     "ConcretePluginLoader",
+    "ConcretePluginRegistry",
+    "ConcreteTransformPlugin",
+    # CONSOLIDATED class (FLEXT pattern)
+    "FlextPluginImplementations",
+    "LoggerAdapter",
 ]

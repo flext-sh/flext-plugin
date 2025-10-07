@@ -4,18 +4,18 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from flext_plugin.types import FlextPluginTypes, FlextPluginProtocols
+from flext_plugin.types import FlextPluginProtocols, FlextPluginTypes
 
 
 class TestFlextPluginTypes:
     """Test cases for FlextPluginTypes."""
 
-    def test_types_initialization(self):
+    def test_types_initialization(self) -> None:
         """Test that types can be initialized."""
         types = FlextPluginTypes()
         assert types is not None
 
-    def test_core_types(self):
+    def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
         assert FlextPluginTypes.Core.StringList == list[str]
@@ -41,7 +41,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Core.InputDict == dict[str, object]
         assert FlextPluginTypes.Core.OutputDict == dict[str, object]
 
-    def test_lifecycle_types(self):
+    def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Lifecycle.PluginStatus is str
@@ -83,7 +83,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Lifecycle.TYPE_THEME == "theme"
         assert FlextPluginTypes.Lifecycle.TYPE_LANGUAGE == "language"
 
-    def test_security_types(self):
+    def test_security_types(self) -> None:
         """Test security type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Security.SecurityLevel is str
@@ -102,7 +102,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Security.PERMISSION_DATABASE == "database"
         assert FlextPluginTypes.Security.PERMISSION_EXTERNAL_API == "external_api"
 
-    def test_performance_types(self):
+    def test_performance_types(self) -> None:
         """Test performance type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Performance.Metrics == dict[str, object]
@@ -119,7 +119,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Performance.GOOD_TIME_MS == 2000
         assert FlextPluginTypes.Performance.FAIR_TIME_MS == 5000
 
-    def test_discovery_types(self):
+    def test_discovery_types(self) -> None:
         """Test discovery type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Discovery.DiscoveryPath is str
@@ -132,7 +132,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Discovery.METHOD_ENTRY_POINTS == "entry_points"
         assert FlextPluginTypes.Discovery.METHOD_PACKAGE_SCAN == "package_scan"
 
-    def test_execution_types(self):
+    def test_execution_types(self) -> None:
         """Test execution type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Execution.ExecutionContext == dict[str, object]
@@ -147,7 +147,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Execution.STATE_FAILED == "failed"
         assert FlextPluginTypes.Execution.STATE_CANCELLED == "cancelled"
 
-    def test_registry_types(self):
+    def test_registry_types(self) -> None:
         """Test registry type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Registry.RegistryConfig == dict[str, object]
@@ -159,7 +159,7 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Registry.TYPE_REMOTE == "remote"
         assert FlextPluginTypes.Registry.TYPE_HYBRID == "hybrid"
 
-    def test_hot_reload_types(self):
+    def test_hot_reload_types(self) -> None:
         """Test hot reload type definitions."""
         # Test type aliases
         assert FlextPluginTypes.HotReload.WatchConfig == dict[str, object]
@@ -176,53 +176,53 @@ class TestFlextPluginTypes:
 class TestFlextPluginProtocols:
     """Test cases for FlextPluginProtocols."""
 
-    def test_protocols_initialization(self):
+    def test_protocols_initialization(self) -> None:
         """Test that protocols can be initialized."""
         protocols = FlextPluginProtocols()
         assert protocols is not None
 
-    def test_plugin_loader_protocol(self):
+    def test_plugin_loader_protocol(self) -> None:
         """Test PluginLoader protocol definition."""
         # This test ensures the protocol is properly defined
         # In practice, you would test with actual implementations
         assert hasattr(FlextPluginProtocols.PluginLoader, "__annotations__")
 
-    def test_plugin_discovery_protocol(self):
+    def test_plugin_discovery_protocol(self) -> None:
         """Test PluginDiscovery protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginDiscovery, "__annotations__")
 
-    def test_plugin_registry_protocol(self):
+    def test_plugin_registry_protocol(self) -> None:
         """Test PluginRegistry protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginRegistry, "__annotations__")
 
-    def test_plugin_execution_protocol(self):
+    def test_plugin_execution_protocol(self) -> None:
         """Test PluginExecution protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginExecution, "__annotations__")
 
-    def test_plugin_security_protocol(self):
+    def test_plugin_security_protocol(self) -> None:
         """Test PluginSecurity protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginSecurity, "__annotations__")
 
-    def test_plugin_hot_reload_protocol(self):
+    def test_plugin_hot_reload_protocol(self) -> None:
         """Test PluginHotReload protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginHotReload, "__annotations__")
 
-    def test_plugin_monitoring_protocol(self):
+    def test_plugin_monitoring_protocol(self) -> None:
         """Test PluginMonitoring protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginMonitoring, "__annotations__")
 
-    def test_plugin_configuration_protocol(self):
+    def test_plugin_configuration_protocol(self) -> None:
         """Test PluginConfiguration protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginConfiguration, "__annotations__")
 
-    def test_plugin_lifecycle_protocol(self):
+    def test_plugin_lifecycle_protocol(self) -> None:
         """Test PluginLifecycle protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginLifecycle, "__annotations__")
 
-    def test_plugin_validation_protocol(self):
+    def test_plugin_validation_protocol(self) -> None:
         """Test PluginValidation protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginValidation, "__annotations__")
 
-    def test_plugin_storage_protocol(self):
+    def test_plugin_storage_protocol(self) -> None:
         """Test PluginStorage protocol definition."""
         assert hasattr(FlextPluginProtocols.PluginStorage, "__annotations__")

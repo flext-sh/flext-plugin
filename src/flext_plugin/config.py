@@ -6,12 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from flext_core import FlextConfig
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig
 from flext_plugin.constants import FlextPluginConstants
 
 
@@ -47,7 +47,7 @@ class FlextPluginConfig(FlextConfig):
     class Discovery:
         """Plugin discovery configuration settings."""
 
-        plugin_paths: List[str] = Field(
+        plugin_paths: list[str] = Field(
             default_factory=lambda: FlextPluginConstants.Discovery.DEFAULT_PLUGIN_PATHS,
             description="Paths to search for plugins",
         )
@@ -67,7 +67,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Search subdirectories recursively",
         )
-        file_extensions: List[str] = Field(
+        file_extensions: list[str] = Field(
             default_factory=lambda: [
                 FlextPluginConstants.Files.PYTHON_EXTENSION,
                 FlextPluginConstants.Files.YAML_CONFIG_EXTENSION,
@@ -79,7 +79,7 @@ class FlextPluginConfig(FlextConfig):
 
         @field_validator("plugin_paths")
         @classmethod
-        def validate_plugin_paths(cls, v: List[str]) -> List[str]:
+        def validate_plugin_paths(cls, v: list[str]) -> list[str]:
             """Validate plugin paths are not empty."""
             if not v:
                 raise ValueError(
@@ -112,11 +112,11 @@ class FlextPluginConfig(FlextConfig):
             default=False,
             description="Require signature verification for plugins",
         )
-        allowed_imports: List[str] = Field(
+        allowed_imports: list[str] = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_ALLOWED_IMPORTS,
             description="Allowed import modules for plugins",
         )
-        blocked_imports: List[str] = Field(
+        blocked_imports: list[str] = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_BLOCKED_IMPORTS,
             description="Blocked import modules for plugins",
         )
@@ -164,7 +164,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Enable resource usage monitoring",
         )
-        performance_thresholds: Dict[str, float] = Field(
+        performance_thresholds: dict[str, float] = Field(
             default_factory=lambda: {
                 "excellent_success_rate": FlextPluginConstants.PluginPerformance.EXCELLENT_SUCCESS_RATE,
                 "good_success_rate": FlextPluginConstants.PluginPerformance.GOOD_SUCCESS_RATE,
@@ -223,7 +223,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Enable rollback on reload failure",
         )
-        watch_paths: List[str] = Field(
+        watch_paths: list[str] = Field(
             default_factory=list,
             description="Additional paths to watch for changes",
         )
@@ -313,7 +313,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Enable plugin registry functionality",
         )
-        registry_url: Optional[str] = Field(
+        registry_url: str | None = Field(
             default=None,
             description="Remote registry URL",
         )
@@ -321,7 +321,7 @@ class FlextPluginConfig(FlextConfig):
             default=False,
             description="Require authentication for registry access",
         )
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=None,
             description="API key for registry authentication",
         )
@@ -329,7 +329,7 @@ class FlextPluginConfig(FlextConfig):
             default=False,
             description="Verify plugin signatures",
         )
-        trusted_publishers: List[str] = Field(
+        trusted_publishers: list[str] = Field(
             default_factory=list,
             description="List of trusted plugin publishers",
         )
@@ -356,7 +356,7 @@ class FlextPluginConfig(FlextConfig):
     monitoring: Monitoring = Field(default_factory=Monitoring)
     registry: Registry = Field(default_factory=Registry)
 
-    def get_plugin_paths(self) -> List[str]:
+    def get_plugin_paths(self) -> list[str]:
         """Get all configured plugin paths."""
         return self.discovery.plugin_paths
 
@@ -375,7 +375,7 @@ class FlextPluginConfig(FlextConfig):
             or self.monitoring.performance_tracking
         )
 
-    def get_performance_limits(self) -> Dict[str, Any]:
+    def get_performance_limits(self) -> dict[str, Any]:
         """Get performance limit configuration."""
         return {
             "max_memory_mb": self.performance.max_memory_mb,

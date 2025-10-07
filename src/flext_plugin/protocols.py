@@ -6,9 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Protocol
 
 from flext_core import FlextResult
+
 from flext_plugin.types import FlextPluginTypes
 
 
@@ -38,7 +39,7 @@ class FlextPluginProtocols:
             """Check if a plugin is currently loaded."""
             ...
 
-        def get_loaded_plugins(self) -> List[str]:
+        def get_loaded_plugins(self) -> list[str]:
             """Get list of currently loaded plugin names."""
             ...
 
@@ -78,7 +79,7 @@ class FlextPluginProtocols:
 
         def get_plugin(
             self, plugin_name: str
-        ) -> FlextResult[Optional[FlextPluginTypes.Core.PluginEntity]]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginEntity | None]:
             """Get a plugin by name."""
             ...
 
@@ -109,7 +110,7 @@ class FlextPluginProtocols:
             """Get the status of a running execution."""
             ...
 
-        def list_running_executions(self) -> List[str]:
+        def list_running_executions(self) -> list[str]:
             """List all currently running execution IDs."""
             ...
 
@@ -128,7 +129,7 @@ class FlextPluginProtocols:
             """Check if a plugin has the required permissions."""
             ...
 
-        def scan_plugin_security(self, plugin_path: str) -> FlextResult[Dict[str, Any]]:
+        def scan_plugin_security(self, plugin_path: str) -> FlextResult[dict[str, Any]]:
             """Perform security scan on a plugin."""
             ...
 
@@ -157,7 +158,7 @@ class FlextPluginProtocols:
             """Check if hot reload is currently watching for changes."""
             ...
 
-        def get_watched_paths(self) -> List[str]:
+        def get_watched_paths(self) -> list[str]:
             """Get list of currently watched paths."""
             ...
 
@@ -178,7 +179,7 @@ class FlextPluginProtocols:
             """Get metrics for a plugin."""
             ...
 
-        def get_plugin_health(self, plugin_name: str) -> FlextResult[Dict[str, Any]]:
+        def get_plugin_health(self, plugin_name: str) -> FlextResult[dict[str, Any]]:
             """Get health status for a plugin."""
             ...
 
@@ -236,7 +237,7 @@ class FlextPluginProtocols:
             """Get the current status of a plugin."""
             ...
 
-        def list_plugin_statuses(self) -> FlextResult[Dict[str, str]]:
+        def list_plugin_statuses(self) -> FlextResult[dict[str, str]]:
             """Get status of all plugins."""
             ...
 
@@ -272,7 +273,7 @@ class FlextPluginProtocols:
 
         def retrieve_plugin(
             self, plugin_name: str
-        ) -> FlextResult[Optional[FlextPluginTypes.Core.PluginDict]]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict | None]:
             """Retrieve plugin data."""
             ...
 
@@ -280,7 +281,7 @@ class FlextPluginProtocols:
             """Delete plugin data."""
             ...
 
-        def list_stored_plugins(self) -> FlextResult[List[str]]:
+        def list_stored_plugins(self) -> FlextResult[list[str]]:
             """List all stored plugin names."""
             ...
 
