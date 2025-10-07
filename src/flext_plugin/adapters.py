@@ -9,7 +9,6 @@ from __future__ import annotations
 import importlib
 import sys
 from pathlib import Path
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -40,7 +39,7 @@ class FlextPluginAdapters:
     def __init__(self) -> None:
         """Initialize the plugin adapters."""
         self.logger = FlextLogger(__name__)
-        self._adapters: dict[str, Any] = {}
+        self._adapters: dict[str, object] = {}
 
     def get_discovery_adapter(self) -> FlextPluginProtocols.PluginDiscovery:
         """Get the plugin discovery adapter.
@@ -276,7 +275,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize the dynamic loader adapter."""
             self.logger = FlextLogger(__name__)
-            self._loaded_plugins: dict[str, Any] = {}
+            self._loaded_plugins: dict[str, object] = {}
 
         async def load_plugin(
             self, plugin_path: str
@@ -380,7 +379,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize the plugin executor adapter."""
             self.logger = FlextLogger(__name__)
-            self._running_executions: dict[str, Any] = {}
+            self._running_executions: dict[str, object] = {}
 
         async def execute_plugin(
             self,
@@ -527,7 +526,7 @@ class FlextPluginAdapters:
 
         async def scan_plugin_security(
             self, plugin_path: str
-        ) -> FlextResult[dict[str, Any]]:
+        ) -> FlextResult[dict[str, object]]:
             """Perform security scan on a plugin.
 
             Args:
@@ -690,7 +689,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize the plugin monitoring adapter."""
             self.logger = FlextLogger(__name__)
-            self._monitored_plugins: dict[str, dict[str, Any]] = {}
+            self._monitored_plugins: dict[str, dict[str, object]] = {}
 
         async def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
             """Start monitoring a plugin.
@@ -764,7 +763,7 @@ class FlextPluginAdapters:
 
         async def get_plugin_health(
             self, plugin_name: str
-        ) -> FlextResult[dict[str, Any]]:
+        ) -> FlextResult[dict[str, object]]:
             """Get health status for a plugin.
 
             Args:

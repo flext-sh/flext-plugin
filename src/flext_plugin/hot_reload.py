@@ -10,7 +10,6 @@ import asyncio
 import contextlib
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -61,9 +60,9 @@ class FlextPluginHotReload:
         self._is_watching = False
         self._watched_paths: set[Path] = set()
         self._file_timestamps: dict[Path, float] = {}
-        self._reload_callbacks: list[Callable[[str], Any]] = []
+        self._reload_callbacks: list[Callable[[str], object]] = []
         self._watch_task: asyncio.Task | None = None
-        self._reload_history: list[dict[str, Any]] = []
+        self._reload_history: list[dict[str, object]] = []
 
     async def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
@@ -206,7 +205,7 @@ class FlextPluginHotReload:
         """
         return [str(path) for path in self._watched_paths]
 
-    def add_reload_callback(self, callback: Callable[[str], Any]) -> None:
+    def add_reload_callback(self, callback: Callable[[str], object]) -> None:
         """Add a callback to be executed when a plugin is reloaded.
 
         Args:
@@ -215,7 +214,7 @@ class FlextPluginHotReload:
         """
         self._reload_callbacks.append(callback)
 
-    def remove_reload_callback(self, callback: Callable[[str], Any]) -> bool:
+    def remove_reload_callback(self, callback: Callable[[str], object]) -> bool:
         """Remove a reload callback.
 
         Args:
@@ -231,7 +230,7 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def get_reload_history(self, limit: int = 100) -> list[dict[str, Any]]:
+    def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:
         """Get reload history.
 
         Args:
@@ -363,7 +362,7 @@ class FlextPluginHotReload:
 
         return datetime.now(UTC).isoformat()
 
-    def get_hot_reload_status(self) -> dict[str, Any]:
+    def get_hot_reload_status(self) -> dict[str, object]:
         """Get the current status of the hot reload service.
 
         Returns:

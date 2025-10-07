@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import operator
 from collections.abc import Callable
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -38,13 +37,13 @@ class FlextPluginHandlers:
     def __init__(self) -> None:
         """Initialize the plugin handlers."""
         self.logger = FlextLogger(__name__)
-        self._handlers: dict[str, list[Callable[..., Any]]] = {}
-        self._event_history: list[dict[str, Any]] = []
+        self._handlers: dict[str, list[Callable[..., object]]] = {}
+        self._event_history: list[dict[str, object]] = []
 
     def register_handler(
         self,
         event_type: str,
-        handler: Callable[..., Any],
+        handler: Callable[..., object],
         priority: int = 0,
     ) -> FlextResult[bool]:
         """Register an event handler for a specific event type.
@@ -84,7 +83,7 @@ class FlextPluginHandlers:
     def unregister_handler(
         self,
         event_type: str,
-        handler: Callable[..., Any],
+        handler: Callable[..., object],
     ) -> FlextResult[bool]:
         """Unregister an event handler.
 
@@ -123,8 +122,8 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: dict[str, Any],
-    ) -> FlextResult[list[Any]]:
+        event_data: dict[str, object],
+    ) -> FlextResult[list[object]]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -172,9 +171,9 @@ class FlextPluginHandlers:
 
     async def _execute_handler(
         self,
-        handler: Callable[..., Any],
-        event_data: dict[str, Any],
-    ) -> Any:
+        handler: Callable[..., object],
+        event_data: dict[str, object],
+    ) -> object:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -194,7 +193,7 @@ class FlextPluginHandlers:
             self.logger.exception("Handler execution failed")
             raise
 
-    def _is_async_function(self, func: Callable[..., Any]) -> bool:
+    def _is_async_function(self, func: Callable[..., object]) -> bool:
         """Check if a function is async.
 
         Args:
@@ -221,7 +220,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[str, object]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -278,8 +277,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: dict[str, Any],
-    ) -> dict[str, Any]:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin discovered event.
 
         Args:
@@ -295,8 +294,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: dict[str, Any],
-    ) -> dict[str, Any]:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin loaded event.
 
         Args:
@@ -312,8 +311,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: dict[str, Any],
-    ) -> dict[str, Any]:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin executed event.
 
         Args:
@@ -339,8 +338,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: dict[str, Any],
-    ) -> dict[str, Any]:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin error event.
 
         Args:
@@ -362,8 +361,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: dict[str, Any],
-    ) -> dict[str, Any]:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin unloaded event.
 
         Args:
@@ -406,7 +405,7 @@ class FlextPluginHandlers:
             self.logger.exception("Failed to register default handlers")
             return FlextResult.fail(f"Default handler registration error: {e!s}")
 
-    def get_handler_status(self) -> dict[str, Any]:
+    def get_handler_status(self) -> dict[str, object]:
         """Get the current status of the event handlers.
 
         Returns:

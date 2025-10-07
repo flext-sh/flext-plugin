@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextLogger, FlextResult, FlextService
 
 from flext_plugin.entities import FlextPluginEntities
@@ -212,7 +210,7 @@ class FlextPluginService(FlextService[FlextResult]):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, Any],
+        context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
@@ -396,7 +394,9 @@ class FlextPluginService(FlextService[FlextResult]):
             self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
             return FlextResult.fail(f"Metrics error: {e!s}")
 
-    async def get_plugin_health(self, plugin_name: str) -> FlextResult[dict[str, Any]]:
+    async def get_plugin_health(
+        self, plugin_name: str
+    ) -> FlextResult[dict[str, object]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -423,7 +423,7 @@ class FlextPluginService(FlextService[FlextResult]):
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return FlextResult.fail(f"Health check error: {e!s}")
 
-    def get_service_status(self) -> dict[str, Any]:
+    def get_service_status(self) -> dict[str, object]:
         """Get the current status of the plugin service.
 
         Returns:

@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
 from flext_plugin.adapters import FlextPluginAdapters
@@ -182,7 +180,7 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, Any],
+        context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
@@ -360,7 +358,7 @@ class FlextPluginApi:
         """
         return self._platform.is_plugin_active(plugin_name)
 
-    def get_platform_status(self) -> dict[str, Any]:
+    def get_platform_status(self) -> dict[str, object]:
         """Get the current status of the plugin platform.
 
         Returns:
@@ -369,7 +367,7 @@ class FlextPluginApi:
         """
         return self._platform.get_platform_status()
 
-    def get_api_status(self) -> dict[str, Any]:
+    def get_api_status(self) -> dict[str, object]:
         """Get the current status of the plugin API.
 
         Returns:
@@ -469,9 +467,9 @@ class FlextPluginApi:
     def execute_plugin_sync(
         self,
         plugin_name: str,
-        context: dict[str, Any],
+        context: dict[str, object],
         timeout: float | None = None,
-    ) -> FlextResult[Any]:
+    ) -> FlextResult[object]:
         """Execute a plugin synchronously and return the result.
 
         Args:
@@ -501,7 +499,7 @@ class FlextPluginApi:
             )
             return FlextResult.fail(f"Sync execution error: {e!s}")
 
-    def get_plugin_info(self, plugin_name: str) -> dict[str, Any] | None:
+    def get_plugin_info(self, plugin_name: str) -> dict[str, object] | None:
         """Get detailed information about a plugin.
 
         Args:
@@ -530,7 +528,7 @@ class FlextPluginApi:
             "error_count": plugin.error_count,
         }
 
-    def get_execution_history(self, limit: int = 100) -> list[dict[str, Any]]:
+    def get_execution_history(self, limit: int = 100) -> list[dict[str, object]]:
         """Get execution history from the platform.
 
         Args:
@@ -558,7 +556,7 @@ class FlextPluginApi:
             for exec in executions
         ]
 
-    def get_reload_history(self, limit: int = 100) -> list[dict[str, Any]]:
+    def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:
         """Get hot reload history.
 
         Args:
@@ -572,7 +570,7 @@ class FlextPluginApi:
 
     def get_event_history(
         self, event_type: str | None = None, limit: int = 100
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[str, object]]:
         """Get event history from handlers.
 
         Args:

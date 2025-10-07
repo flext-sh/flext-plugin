@@ -9,7 +9,6 @@ from __future__ import annotations
 import importlib
 import sys
 from pathlib import Path
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -40,7 +39,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, Any] = {}
+        self._loaded_plugins: dict[str, object] = {}
         self._plugin_metadata: dict[str, FlextPluginTypes.Core.PluginDict] = {}
 
     async def load_plugin(
@@ -363,7 +362,7 @@ class FlextPluginLoader:
 
         return datetime.now(UTC).isoformat()
 
-    def get_loader_status(self) -> dict[str, Any]:
+    def get_loader_status(self) -> dict[str, object]:
         """Get the current status of the plugin loader.
 
         Returns:
@@ -417,7 +416,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    async def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, Any]]:
+    async def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:

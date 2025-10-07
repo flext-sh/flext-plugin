@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextContainer, FlextResult, FlextService
 
 from flext_plugin.config import FlextPluginConfig
@@ -166,7 +164,7 @@ class FlextPluginPlatform(FlextService[FlextResult]):
     async def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, Any],
+        context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
@@ -383,7 +381,7 @@ class FlextPluginPlatform(FlextService[FlextResult]):
             self.logger.exception("Failed to stop hot reload")
             return FlextResult.fail(f"Hot reload error: {e!s}")
 
-    def get_platform_status(self) -> dict[str, Any]:
+    def get_platform_status(self) -> dict[str, object]:
         """Get the current status of the plugin platform.
 
         Returns:

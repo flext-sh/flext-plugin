@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import Protocol
 
 from flext_core import FlextResult
 
@@ -129,7 +129,9 @@ class FlextPluginProtocols:
             """Check if a plugin has the required permissions."""
             ...
 
-        def scan_plugin_security(self, plugin_path: str) -> FlextResult[dict[str, Any]]:
+        def scan_plugin_security(
+            self, plugin_path: str
+        ) -> FlextResult[dict[str, object]]:
             """Perform security scan on a plugin."""
             ...
 
@@ -179,7 +181,7 @@ class FlextPluginProtocols:
             """Get metrics for a plugin."""
             ...
 
-        def get_plugin_health(self, plugin_name: str) -> FlextResult[dict[str, Any]]:
+        def get_plugin_health(self, plugin_name: str) -> FlextResult[dict[str, object]]:
             """Get health status for a plugin."""
             ...
 

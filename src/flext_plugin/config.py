@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextConfig
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -375,7 +373,7 @@ class FlextPluginConfig(FlextConfig):
             or self.monitoring.performance_tracking
         )
 
-    def get_performance_limits(self) -> dict[str, Any]:
+    def get_performance_limits(self) -> dict[str, object]:
         """Get performance limit configuration."""
         return {
             "max_memory_mb": self.performance.max_memory_mb,
