@@ -21,6 +21,8 @@ from flext_plugin.typings import FlextPluginTypes
 
 
 class FlextPluginPorts:
+    """Domain port interfaces for plugin operations."""
+
     class Discovery(FlextProtocols.Domain.Service):
         """Domain port interface for plugin discovery and validation operations."""
 

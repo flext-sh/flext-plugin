@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import cast, override
 
 from flext_core import (
@@ -109,7 +109,7 @@ class FlextPluginEntities:
                 "max_memory_mb": kwargs.get("max_memory_mb", 512),
                 "max_cpu_percent": kwargs.get("max_cpu_percent", 50),
                 "timeout_seconds": kwargs.get("timeout_seconds", 30),
-                "created_at": kwargs.get("created_at", datetime.now()),
+                "created_at": kwargs.get("created_at", datetime.now(UTC)),
                 "updated_at": kwargs.get("updated_at"),
             }
 
@@ -121,7 +121,7 @@ class FlextPluginEntities:
 
         def update_timestamp(self) -> None:
             """Update the updated_at timestamp."""
-            setattr(self, "updated_at", datetime.now())
+            setattr(self, "updated_at", datetime.now(UTC))
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin config entity."""
@@ -131,7 +131,11 @@ class FlextPluginEntities:
                 )
             if self.max_memory_mb <= 0:
                 return FlextResult[None].fail("Maximum memory must be positive")
-            if self.max_cpu_percent < 0 or self.max_cpu_percent > 100:
+            if (
+                self.max_cpu_percent < 0
+                or self.max_cpu_percent
+                > FlextPluginConstants.PluginConfig.CPU_PERCENTAGE_MAX
+            ):
                 return FlextResult[None].fail(
                     "CPU percentage must be between 0 and 100"
                 )

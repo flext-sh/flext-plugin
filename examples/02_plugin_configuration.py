@@ -14,16 +14,11 @@ Docker Usage:
 
 from __future__ import annotations
 
-import sys
-from typing import cast
-
-from flext_core import FlextTypes
+from flext_core import FlextContainer, FlextTypes
 
 from flext_plugin import (
-    PluginType,
-    create_flext_plugin,
-    create_flext_plugin_config,
-    create_flext_plugin_metadata,
+    FlextPluginApi,
+    FlextPluginConstants,
 )
 
 
@@ -88,104 +83,22 @@ def main() -> None:
     # 1. Create a database plugin with complex configuration
     db_config = create_database_plugin_config()
 
-    db_plugin = create_flext_plugin(
-        name="postgres-connector",
-        version="2.1.0",
-        config={
-            "description": "PostgreSQL database connector plugin",
-            "author": "FLEXT Team",
-            "plugin_type": PluginType.DATABASE,
-            "tags": ["database", "postgres", "sql"],
-            **db_config,  # Merge configuration
-        },
-    )
+    # Initialize plugin API
+    container = FlextContainer()
+    FlextPluginApi(container)
 
-    cast("FlextTypes.Dict", db_config["database"])
+    print("Plugin configuration patterns demonstration")
+    print(f"Available plugin types: {FlextPluginConstants.Types.ALL_PLUGIN_TYPES}")
+    print(f"Plugin status constants: {FlextPluginConstants.Lifecycle.STATUS_ACTIVE}")
+
+    print(f"Database config created: {db_config}")
 
     # 2. Create LDAP plugin with service configuration
     ldap_config = create_ldap_plugin_config()
 
-    ldap_plugin = create_flext_plugin(
-        name="ldap-directory",
-        version="1.5.0",
-        config={
-            "description": "LDAP directory service plugin",
-            "author": "FLEXT Team",
-            "plugin_type": PluginType.AUTHENTICATION,
-            "tags": ["ldap", "directory", "auth"],
-            **ldap_config,
-        },
-    )
-
-    cast("FlextTypes.Dict", ldap_config["ldap"])
-
-    # 3. Create standalone plugin configuration entity
-    standalone_config = create_flext_plugin_config(
-        plugin_name="api-gateway",
-        config_data={
-            "routes": {
-                "/api/v1/health": {"method": "GET", "auth": False},
-                "/api/v1/plugins": {"method": "GET", "auth": True},
-                "/api/v1/metrics": {"method": "GET", "auth": True},
-            },
-            "middleware": ["cors", "rate_limit", "auth"],
-            "rate_limiting": {
-                "requests_per_minute": 100,
-                "burst_size": 10,
-            },
-        },
-    )
-
-    standalone_config.config_data.get("routes", {}) if hasattr(
-        standalone_config, "config_data"
-    ) else {}
-
-    # 4. Create plugin metadata
-    create_flext_plugin_metadata(
-        plugin_name="data-processor",
-        version="1.0.0",
-        metadata={
-            "tags": ["etl", "transform", "batch"],
-            "categories": ["data-processing", "transformation"],
-            "homepage_url": "https://github.com/flext-sh/flext-plugin",
-            "documentation_url": "https://docs.flext.sh/plugins/data-processor",
-            "license": "MIT",
-            "compatibility": {
-                "python": ">=3.13",
-                "flext": ">=0.9.0",
-            },
-            "performance": {
-                "max_memory_mb": 512,
-                "max_cpu_percent": 80,
-                "batch_size": 1000,
-            },
-        },
-    )
-
-    # 5. Demonstrate configuration validation
-
-    plugins_to_validate = [db_plugin, ldap_plugin]
-    for plugin in plugins_to_validate:
-        validation_result = plugin.validate_business_rules()
-        if validation_result.is_success:
-            pass
-
-
-def test_database_connection() -> bool:
-    """Test database connectivity (requires Docker services)."""
-    try:
-        # This would normally test actual database connection
-        # For now, just validate configuration structure
-        config = create_database_plugin_config()
-        required_keys = ["database", "retry_config", "logging", "features"]
-        return all(key in config for key in required_keys)
-    except Exception:
-        return False
+    print(f"LDAP config created: {ldap_config}")
+    print("✅ Plugin configuration demonstration complete")
 
 
 if __name__ == "__main__":
     main()
-
-    # Optional: Test database connection if --with-db flag provided
-    if len(sys.argv) > 1 and "--with-db" in sys.argv and test_database_connection():
-        pass

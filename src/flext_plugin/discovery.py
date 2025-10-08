@@ -438,23 +438,17 @@ class FlextPluginDiscovery:
                 discovered_plugins = []
 
                 # Look for entry points in installed packages
-                try:
-                    import pkg_resources
+                import pkg_resources
 
-                    for entry_point in pkg_resources.iter_entry_points("flext.plugins"):
-                        plugin_data = {
-                            "name": entry_point.name,
-                            "version": getattr(entry_point.dist, "version", "1.0.0"),
-                            "entry_point": f"{entry_point.module_name}:{entry_point.attrs[0]}",
-                            "type": "entry_point",
-                            "discovery_method": "entry_points",
-                        }
-                        discovered_plugins.append(plugin_data)
-
-                except ImportError:
-                    self.logger.debug(
-                        "pkg_resources not available for entry point discovery"
-                    )
+                for entry_point in pkg_resources.iter_entry_points("flext.plugins"):
+                    plugin_data = {
+                        "name": entry_point.name,
+                        "version": getattr(entry_point.dist, "version", "1.0.0"),
+                        "entry_point": f"{entry_point.module_name}:{entry_point.attrs[0]}",
+                        "type": "entry_point",
+                        "discovery_method": "entry_points",
+                    }
+                    discovered_plugins.append(plugin_data)
 
                 self.logger.info(
                     f"Entry point discovery found {len(discovered_plugins)} plugins"
@@ -481,31 +475,25 @@ class FlextPluginDiscovery:
                 # For entry points, we search by name
                 plugin_name = plugin_path
 
-                try:
-                    import pkg_resources
+                import pkg_resources
 
-                    entry_points = list(
-                        pkg_resources.iter_entry_points("flext.plugins", plugin_name)
-                    )
+                entry_points = list(
+                    pkg_resources.iter_entry_points("flext.plugins", plugin_name)
+                )
 
-                    if not entry_points:
-                        return FlextResult.fail(f"Entry point not found: {plugin_name}")
+                if not entry_points:
+                    return FlextResult.fail(f"Entry point not found: {plugin_name}")
 
-                    entry_point = entry_points[0]
-                    plugin_data = {
-                        "name": entry_point.name,
-                        "version": getattr(entry_point.dist, "version", "1.0.0"),
-                        "entry_point": f"{entry_point.module_name}:{entry_point.attrs[0]}",
-                        "type": "entry_point",
-                        "discovery_method": "entry_points",
-                    }
+                entry_point = entry_points[0]
+                plugin_data = {
+                    "name": entry_point.name,
+                    "version": getattr(entry_point.dist, "version", "1.0.0"),
+                    "entry_point": f"{entry_point.module_name}:{entry_point.attrs[0]}",
+                    "type": "entry_point",
+                    "discovery_method": "entry_points",
+                }
 
-                    return FlextResult.ok(plugin_data)
-
-                except ImportError:
-                    return FlextResult.fail(
-                        "pkg_resources not available for entry point discovery"
-                    )
+                return FlextResult.ok(plugin_data)
 
             except Exception as e:
                 self.logger.exception(
@@ -540,12 +528,7 @@ class FlextPluginDiscovery:
                     return FlextResult.fail("Invalid entry point format")
 
                 # Try to import the module to validate it exists
-                try:
-                    importlib.import_module(module_name)
-                except ImportError:
-                    return FlextResult.fail(
-                        f"Entry point module not found: {module_name}"
-                    )
+                importlib.import_module(module_name)
 
                 return FlextResult.ok(True)
 

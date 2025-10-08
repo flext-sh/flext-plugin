@@ -468,7 +468,7 @@ class FlextPluginApi:
         self,
         plugin_name: str,
         context: dict[str, object],
-        timeout: float | None = None,
+        _timeout: float | None = None,
     ) -> FlextResult[object]:
         """Execute a plugin synchronously and return the result.
 
@@ -553,7 +553,7 @@ class FlextPluginApi:
                 "end_time": exec.end_time,
                 "error": exec.error,
             }
-            for exec in executions
+            for execution in executions
         ]
 
     def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:

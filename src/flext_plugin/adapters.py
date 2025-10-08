@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import importlib
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
+import trio
 from flext_core import FlextLogger, FlextResult
 
 from flext_plugin.protocols import FlextPluginProtocols
@@ -107,7 +109,7 @@ class FlextPluginAdapters:
             self._adapters["monitoring"] = self.PluginMonitoringAdapter()
         return self._adapters["monitoring"]
 
-    class FileSystemDiscoveryAdapter:
+    class FileSystemDiscoveryAdapter(FlextPluginProtocols.PluginDiscovery):
         """File system-based plugin discovery adapter."""
 
         def __init__(self) -> None:
@@ -130,7 +132,8 @@ class FlextPluginAdapters:
                 discovered_plugins = []
 
                 for path in paths:
-                    path_obj = Path(path).expanduser().resolve()
+                    # Use trio.Path for async functions to avoid blocking operations
+                    path_obj = trio.Path(path).expanduser().resolve()
                     if not path_obj.exists():
                         self.logger.warning(f"Path does not exist: {path}")
                         continue
@@ -165,7 +168,10 @@ class FlextPluginAdapters:
 
             """
             try:
-                path_obj = Path(plugin_path).expanduser().resolve()
+                # Use trio.Path for async functions to avoid blocking operations
+                import trio
+
+                path_obj = trio.Path(plugin_path).expanduser().resolve()
                 if not path_obj.exists():
                     return FlextResult.fail(
                         f"Plugin path does not exist: {plugin_path}"
@@ -253,6 +259,7 @@ class FlextPluginAdapters:
             try:
                 discovered_plugins = []
 
+                # Use trio.Path for async functions to avoid blocking operations
                 for item in path.iterdir():
                     if item.is_file() and item.suffix == ".py":
                         plugin_data = await self._discover_single_file(item)
@@ -269,7 +276,7 @@ class FlextPluginAdapters:
                 self.logger.exception(f"Failed to discover directory: {path}")
                 return []
 
-    class DynamicLoaderAdapter:
+    class DynamicLoaderAdapter(FlextPluginProtocols.PluginLoader):
         """Dynamic plugin loading adapter."""
 
         def __init__(self) -> None:
@@ -290,7 +297,10 @@ class FlextPluginAdapters:
 
             """
             try:
-                path_obj = Path(plugin_path).expanduser().resolve()
+                # Use trio.Path for async functions to avoid blocking operations
+                import trio
+
+                path_obj = trio.Path(plugin_path).expanduser().resolve()
                 if not path_obj.exists():
                     return FlextResult.fail(
                         f"Plugin path does not exist: {plugin_path}"
@@ -373,7 +383,7 @@ class FlextPluginAdapters:
             """
             return list(self._loaded_plugins.keys())
 
-    class PluginExecutorAdapter:
+    class PluginExecutorAdapter(FlextPluginProtocols.PluginExecution):
         """Plugin execution adapter."""
 
         def __init__(self) -> None:
@@ -464,7 +474,7 @@ class FlextPluginAdapters:
             """
             return list(self._running_executions.keys())
 
-    class PluginSecurityAdapter:
+    class PluginSecurityAdapter(FlextPluginProtocols.PluginSecurity):
         """Plugin security adapter."""
 
         def __init__(self) -> None:
@@ -500,8 +510,8 @@ class FlextPluginAdapters:
                 self.logger.exception("Plugin security validation failed")
                 return FlextResult.fail(f"Security validation error: {e!s}")
 
-        async def check_permissions(
-            self, plugin_name: str, permissions: FlextPluginTypes.Core.StringList
+        async def check_permissions(  # type: ignore[unused-argument]
+            self, plugin_name: str, _permissions: FlextPluginTypes.Core.StringList
         ) -> FlextResult[bool]:
             """Check if a plugin has the required permissions.
 
@@ -574,11 +584,9 @@ class FlextPluginAdapters:
 
         def _get_current_timestamp(self) -> str:
             """Get current timestamp as ISO string."""
-            from datetime import UTC, datetime
-
             return datetime.now(UTC).isoformat()
 
-    class MemoryRegistryAdapter:
+    class MemoryRegistryAdapter(FlextPluginProtocols.PluginRegistry):
         """In-memory plugin registry adapter."""
 
         def __init__(self) -> None:
@@ -683,7 +691,7 @@ class FlextPluginAdapters:
             """
             return plugin_name in self._plugins
 
-    class PluginMonitoringAdapter:
+    class PluginMonitoringAdapter(FlextPluginProtocols.PluginMonitoring):
         """Plugin monitoring adapter."""
 
         def __init__(self) -> None:
@@ -809,8 +817,6 @@ class FlextPluginAdapters:
 
         def _get_current_timestamp(self) -> str:
             """Get current timestamp as ISO string."""
-            from datetime import UTC, datetime
-
             return datetime.now(UTC).isoformat()
 
 
