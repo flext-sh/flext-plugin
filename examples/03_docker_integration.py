@@ -176,7 +176,7 @@ def main() -> None:
             sys.exit(1)
     else:
         print(
-            "ℹ️  Skipping connection tests. Use --test-connections to test Docker services."
+            "INFO  Skipping connection tests. Use --test-connections to test Docker services."
         )
 
     print("\n🏗️  Creating Docker PostgreSQL plugin...")
