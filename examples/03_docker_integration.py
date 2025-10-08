@@ -173,7 +173,7 @@ def main() -> None:
     # Test connections if requested
     if args.test_connections:
         print("\nTesting Docker service connectivity...")
-        services_available = asyncio.run(test_connections())  # type: ignore[arg-type]
+        services_available = asyncio.run(test_connections())
         if not services_available:
             sys.exit(1)
     else:

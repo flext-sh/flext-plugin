@@ -127,7 +127,7 @@ class FlextPluginConfig(FlextConfig):
             description="Allow file system access for plugins",
         )
         max_execution_time: int = Field(
-            default=FlextPluginConstants.PluginPerformance.PRODUCTION_READY_TIMEOUT_SECONDS,
+            default=FlextPluginConstants.PluginPerformance.READY_TIMEOUT_SECONDS,
             description="Maximum execution time in seconds",
         )
 
@@ -147,7 +147,7 @@ class FlextPluginConfig(FlextConfig):
         """Plugin performance configuration settings."""
 
         max_memory_mb: int = Field(
-            default=FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB,
+            default=FlextPluginConstants.PluginPerformance.READY_MAX_MEMORY_MB,
             description="Maximum memory usage in MB",
         )
         max_cpu_percent: int = Field(
@@ -179,12 +179,9 @@ class FlextPluginConfig(FlextConfig):
                 raise ValueError(
                     FlextPluginConstants.PluginMessages.MEMORY_LIMIT_TOO_LOW
                 )
-            if (
-                v
-                > FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB
-            ):
+            if v > FlextPluginConstants.PluginPerformance.READY_MAX_MEMORY_MB:
                 raise ValueError(
-                    FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM
+                    FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_MAXIMUM
                 )
             return v
 

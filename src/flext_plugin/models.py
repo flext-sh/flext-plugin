@@ -280,8 +280,10 @@ class FlextPluginModels(FlextModels):
         @classmethod
         def validate_memory_limits(cls, value: int) -> int:
             """Validate memory limits are reasonable."""
-            if value > FlextPluginConstants.Performance.PRODUCTION_READY_MAX_MEMORY_MB:
-                error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM
+            if value > FlextPluginConstants.Performance.READY_MAX_MEMORY_MB:
+                error_msg = (
+                    FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_MAXIMUM
+                )
                 raise ValueError(error_msg)
             if value < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB:
                 error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_TOO_LOW

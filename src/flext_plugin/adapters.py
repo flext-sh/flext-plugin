@@ -169,7 +169,6 @@ class FlextPluginAdapters:
             """
             try:
                 # Use trio.Path for async functions to avoid blocking operations
-                import trio
 
                 path_obj = trio.Path(plugin_path).expanduser().resolve()
                 if not path_obj.exists():
@@ -260,14 +259,15 @@ class FlextPluginAdapters:
                 discovered_plugins = []
 
                 # Use trio.Path for async functions to avoid blocking operations
-                for item in path.iterdir():
+                trio_path = trio.Path(path)
+                for item in trio_path.iterdir():
                     if item.is_file() and item.suffix == ".py":
                         plugin_data = await self._discover_single_file(item)
                         if plugin_data:
                             discovered_plugins.append(plugin_data)
                     elif item.is_dir() and not item.name.startswith("__"):
                         # Recursively discover in subdirectories
-                        sub_plugins = await self._discover_directory(item)
+                        sub_plugins = await self._discover_directory(Path(item))
                         discovered_plugins.extend(sub_plugins)
 
                 return discovered_plugins
@@ -298,7 +298,6 @@ class FlextPluginAdapters:
             """
             try:
                 # Use trio.Path for async functions to avoid blocking operations
-                import trio
 
                 path_obj = trio.Path(plugin_path).expanduser().resolve()
                 if not path_obj.exists():
@@ -510,7 +509,7 @@ class FlextPluginAdapters:
                 self.logger.exception("Plugin security validation failed")
                 return FlextResult.fail(f"Security validation error: {e!s}")
 
-        async def check_permissions(  # type: ignore[unused-argument]
+        async def check_permissions(
             self, plugin_name: str, _permissions: FlextPluginTypes.Core.StringList
         ) -> FlextResult[bool]:
             """Check if a plugin has the required permissions.

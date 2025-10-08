@@ -83,10 +83,8 @@ class TestFlextPluginConstants:
         assert (
             FlextPluginConstants.PluginPerformance.EXECUTION_TIME_SCALE_MS_TO_S == 1000
         )
-        assert (
-            FlextPluginConstants.PluginPerformance.PRODUCTION_READY_TIMEOUT_SECONDS > 0
-        )
-        assert FlextPluginConstants.PluginPerformance.PRODUCTION_READY_MAX_MEMORY_MB > 0
+        assert FlextPluginConstants.PluginPerformance.READY_TIMEOUT_SECONDS > 0
+        assert FlextPluginConstants.PluginPerformance.READY_MAX_MEMORY_MB > 0
         assert (
             FlextPluginConstants.PluginPerformance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
             > 0

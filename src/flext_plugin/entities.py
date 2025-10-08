@@ -18,6 +18,7 @@ from flext_core import (
 )
 from pydantic import Field, field_validator
 
+from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.models import PluginStatus, PluginType
 from flext_plugin.types import FlextPluginTypes
 

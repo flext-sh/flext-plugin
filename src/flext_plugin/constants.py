@@ -243,8 +243,8 @@ class FlextPluginConstants(FlextConstants):
         EXECUTION_TIME_SCALE_MS_TO_S: Final[int] = 1000
 
         # Production ready limits
-        PRODUCTION_READY_TIMEOUT_SECONDS: Final[int] = 300
-        PRODUCTION_READY_MAX_MEMORY_MB: Final[int] = 1024
+        READY_TIMEOUT_SECONDS: Final[int] = 300
+        READY_MAX_MEMORY_MB: Final[int] = 1024
 
         # Concurrent loading thresholds
         MAX_CONCURRENT_LOADS_WARNING_THRESHOLD: Final[int] = 20
@@ -256,7 +256,7 @@ class FlextPluginConstants(FlextConstants):
         MAXIMUM_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600  # 1 hour
 
         # Default performance values
-        DEFAULT_MAX_CPU_PERCENT: Final[int] = 50
+        DEFAULT_MAX_CPU_PERCENT: Final[int] = 50  # Alias for compatibility
         DEFAULT_MAX_CONCURRENT_PLUGINS: Final[int] = 10
 
     class Execution:
@@ -380,7 +380,7 @@ class FlextPluginConstants(FlextConstants):
         PRIORITY_MUST_BE_BETWEEN_0_AND_100: Final[str] = (
             "Priority must be between 0 and 100"
         )
-        MEMORY_LIMIT_EXCEEDS_PRODUCTION_MAXIMUM: Final[str] = (
+        MEMORY_LIMIT_EXCEEDS_MAXIMUM: Final[str] = (
             "Memory limit exceeds production maximum: 1024MB"
         )
         MEMORY_LIMIT_TOO_LOW: Final[str] = "Memory limit too low (minimum 64MB)"
