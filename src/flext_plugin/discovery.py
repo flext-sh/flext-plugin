@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import importlib
 import os
+import re
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+import pkg_resources
+from flext_core import FlextConstants, FlextLogger, FlextResult
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -178,10 +180,13 @@ class FlextPluginDiscovery:
             True if name is valid, False otherwise
 
         """
-        import re
-
         pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-        return bool(re.match(pattern, name)) and 3 <= len(name) <= 100
+        return (
+            bool(re.match(pattern, name))
+            and FlextConstants.Validation.MIN_NAME_LENGTH
+            <= len(name)
+            <= FlextConstants.Validation.MAX_NAME_LENGTH
+        )
 
     def _is_valid_version(self, version: str) -> bool:
         """Check if version follows semantic versioning format.
@@ -193,8 +198,6 @@ class FlextPluginDiscovery:
             True if version is valid, False otherwise
 
         """
-        import re
-
         pattern = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
         return bool(re.match(pattern, version))
 
@@ -396,8 +399,6 @@ class FlextPluginDiscovery:
                     content = f.read()
 
                 # Look for version patterns
-                import re
-
                 version_patterns = [
                     r'__version__\s*=\s*["\']([^"\']+)["\']',
                     r'version\s*=\s*["\']([^"\']+)["\']',
@@ -423,7 +424,8 @@ class FlextPluginDiscovery:
             self.logger = FlextLogger(__name__)
 
         async def discover_plugins(
-            self, paths: list[str]
+            self,
+            paths: list[str],  # noqa: ARG002
         ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
@@ -438,8 +440,6 @@ class FlextPluginDiscovery:
                 discovered_plugins = []
 
                 # Look for entry points in installed packages
-                import pkg_resources
-
                 for entry_point in pkg_resources.iter_entry_points("flext.plugins"):
                     plugin_data = {
                         "name": entry_point.name,
@@ -474,8 +474,6 @@ class FlextPluginDiscovery:
             try:
                 # For entry points, we search by name
                 plugin_name = plugin_path
-
-                import pkg_resources
 
                 entry_points = list(
                     pkg_resources.iter_entry_points("flext.plugins", plugin_name)

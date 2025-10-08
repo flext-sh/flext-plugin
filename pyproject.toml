@@ -24,7 +24,6 @@
     ]
     description = "FLEXT Plugin - Plugin System for FLEXT Platform"
     keywords = [
-        "",
         "architecture",
         "enterprise",
         "extensions",
@@ -130,6 +129,7 @@
         "htmlcov",
         "node_modules",
         "reports",
+            "tests",
         "vendor",
         "venv",
     ]

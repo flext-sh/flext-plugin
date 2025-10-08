@@ -45,7 +45,7 @@ python examples/02_plugin_configuration.py
 
 ```bash
 # Optional: Start PostgreSQL for enhanced testing
-cd /home/marlonsc/flext/docker
+cd ..docker
 docker-compose up -d postgres
 python examples/02_plugin_configuration.py --with-db
 ```
@@ -77,7 +77,7 @@ python examples/03_docker_integration.py --test-connections
 
 ```bash
 # Start all required services
-cd /home/marlonsc/flext/docker
+cd ..docker
 docker-compose up -d postgres redis openldap
 
 # Verify services are running
@@ -91,7 +91,7 @@ python examples/03_docker_integration.py --test-connections
 
 ### Docker Service Mapping
 
-All examples use configurations that are compatible with the FLEXT Docker development environment at `/home/marlonsc/flext/docker/docker-compose.yml`:
+All examples use configurations that are compatible with the FLEXT Docker development environment at `..docker/docker-compose.yml`:
 
 | Service    | Docker Container | Host Port | Plugin Configuration                                                |
 | ---------- | ---------------- | --------- | ------------------------------------------------------------------- |
@@ -209,7 +209,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 ```bash
 # Check service status
-cd /home/marlonsc/flext/docker
+cd ..docker
 docker-compose ps
 
 # Start required services
@@ -232,7 +232,7 @@ For issues with examples:
 1. Check test suite: `python -m pytest tests/test_examples.py -v`
 2. Verify Docker services: `docker-compose ps`
 3. Review main project documentation: `../README.md` and `../CLAUDE.md`
-4. Check integration with workspace: `/home/marlonsc/flext/README.md`
+4. Check integration with workspace: `..README.md`
 
 ---
 

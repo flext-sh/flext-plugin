@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Self
 
-from flext_core import FlextModels
+from flext_core import FlextConstants, FlextModels
 from pydantic import (
     ConfigDict,
     Field,
@@ -258,9 +258,12 @@ class FlextPluginModels(FlextModels):
         def is_high_performance(self) -> bool:
             """Check if configuration meets high-performance criteria."""
             return (
-                self.timeout_seconds <= 30
-                and self.max_memory_mb <= 256
-                and self.max_cpu_percent <= 50
+                self.timeout_seconds <= FlextConstants.Performance.DEFAULT_TIMEOUT_LIMIT
+                and self.max_memory_mb
+                <= FlextConstants.Performance.MEMORY_CACHE_MAX_SIZE
+                // 1048576  # Convert bytes to MB
+                and self.max_cpu_percent
+                <= FlextConstants.Performance.CPU_THRESHOLD_PERCENT
             )
 
         @field_validator("priority")
@@ -404,7 +407,10 @@ class FlextPluginModels(FlextModels):
                 raise ValueError(error_msg)
 
             for key, threshold in value.items():
-                if key.endswith("_percent") and not 0 <= threshold <= 100:
+                if (
+                    key.endswith("_percent")
+                    and not 0 <= threshold <= FlextConstants.Validation.MAX_PERCENTAGE
+                ):
                     error_msg = FlextPluginConstants.PluginMessages.PERCENTAGE_THRESHOLD_MUST_BE_0_100.format(
                         key=key
                     )

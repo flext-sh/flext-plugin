@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
@@ -358,8 +359,6 @@ class FlextPluginLoader:
             Current timestamp as ISO string
 
         """
-        from datetime import UTC, datetime
-
         return datetime.now(UTC).isoformat()
 
     def get_loader_status(self) -> dict[str, object]:

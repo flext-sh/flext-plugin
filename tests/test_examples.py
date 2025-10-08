@@ -274,7 +274,7 @@ def test_plugin_configuration_docker_compatibility() -> None:
     # Import the functionality directly
 
     # Test Docker-compatible database configuration
-    # These settings match /home/marlonsc/flext/docker/docker-compose.yml
+    # These settings match ..docker/docker-compose.yml
     docker_db_config = {
         "database": {
             "host": "localhost",  # Would be flext-postgres in Docker network

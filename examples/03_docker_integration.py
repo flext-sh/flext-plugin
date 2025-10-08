@@ -146,9 +146,7 @@ def test_connections() -> bool:
         print(
             "\n⚠️  Some services are not available. Make sure Docker services are running:"
         )
-        print(
-            "   cd /home/marlonsc/flext/docker && docker-compose up -d postgres redis openldap"
-        )
+        print("   cd ..docker && docker-compose up -d postgres redis openldap")
         return False
 
     print("✅ All Docker services are available!")

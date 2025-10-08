@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
@@ -358,8 +359,6 @@ class FlextPluginHotReload:
             Current timestamp as ISO string
 
         """
-        from datetime import UTC, datetime
-
         return datetime.now(UTC).isoformat()
 
     def get_hot_reload_status(self) -> dict[str, object]:
