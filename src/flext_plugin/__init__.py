@@ -33,6 +33,8 @@ Usage:
 
 from __future__ import annotations
 
+from flext_plugin.__version__ import __version__, __version_info__
+
 from typing import Final
 
 from flext_plugin.api import FlextPluginApi

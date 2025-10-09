@@ -425,7 +425,7 @@ class FlextPluginDiscovery:
 
         async def discover_plugins(
             self,
-            paths: list[str],  # noqa: ARG002
+            paths: list[str],
         ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
