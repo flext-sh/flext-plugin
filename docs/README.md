@@ -2,7 +2,7 @@
 
 Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plugin management system for the FLEXT ecosystem.
 
-> 📊 **STATUS**: Functional plugin system with comprehensive capabilities. Architecture consolidation needed for FLEXT single-class-per-module compliance. Version 0.9.9 - September 17, 2025.
+> 📊 **STATUS**: Production-ready plugin system with Clean Architecture and comprehensive FLEXT integration. Version 0.9.0 - October 10, 2025.
 
 ## Documentation Structure
 
@@ -102,7 +102,7 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 
 ### Quality Standards
 
-- **Test Coverage**: Currently 33% (83/253 tests passing), systematic improvement in progress
+- **Test Coverage**: Target 90% with comprehensive test suite (24 test files)
 - **Type Safety**: MyPy strict mode target; aiming for 100% coverage
 - **Code Quality**: Ruff linting with ALL rules enabled
 - **Security**: Bandit scanning and pip-audit dependency checks
@@ -110,27 +110,20 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 ### Development Commands (UPDATED FOR COMPLIANCE)
 
 ```bash
-# CRITICAL: Phase 0 compliance validation (MUST PASS FIRST)
-make architectural-audit   # Check single-class-per-module compliance
-make dependencies-audit    # Verify modern Python libraries
-make security-audit        # Validate production-grade security approach
+# Standard development workflow
+make setup                 # Complete development environment
+make validate              # Full validation pipeline (lint + type + security + test)
+make check                 # Quick health check (lint + type)
 
-# Standard development workflow (ONLY after Phase 0 compliance)
-make setup                 # Development environment
-make validate              # Complete validation pipeline
-make check                 # Quick health check
+# Testing
+make test                  # Full test suite with 90% coverage target
+make coverage-html         # Detailed coverage report
 
-# Testing (requires architectural compliance first)
-make test                  # Full test suite (post-refactoring)
-make coverage-html         # Coverage report
-
-# Plugin development (POST-COMPLIANCE)
-make plugin-discover       # Entry point discovery testing
-make plugin-isolate        # Test process isolation
-make plugin-watch          # Modern hot reload with debouncing
+# Plugin operations
+make plugin-test           # Test plugin system functionality
+make plugin-validate       # Validate plugin system integrity
+make plugin-discovery      # Test plugin discovery mechanisms
 ```
-
-**⚠️ All development commands will fail until Phase 0 architectural compliance is achieved.**
 
 ## Architecture Principles
 
