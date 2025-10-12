@@ -109,6 +109,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 ### Interface Layer Components
 
 #### **FlextPluginApi** (Facade Component)
+
 - **Purpose**: Unified API facade providing single entry point for all plugin operations
 - **Responsibilities**:
   - Orchestrate complex plugin operations across multiple components
@@ -123,6 +124,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Application services, event handlers, platform facade
 
 #### **FlextPluginPlatform** (Platform Component)
+
 - **Purpose**: Main platform facade implementing protocol-based architecture
 - **Responsibilities**:
   - Provide protocol-driven plugin management
@@ -137,6 +139,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Domain protocols, infrastructure adapters
 
 #### **CLI Interface** (Interface Adapter)
+
 - **Purpose**: Command-line interface for plugin management operations
 - **Responsibilities**:
   - Parse command-line arguments and options
@@ -149,6 +152,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 ### Application Layer Components
 
 #### **Plugin Services** (Application Services)
+
 - **Purpose**: Application services implementing plugin business use cases
 - **Responsibilities**:
   - Orchestrate plugin operations according to business rules
@@ -162,6 +166,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Domain entities, infrastructure adapters
 
 #### **Discovery Service** (Application Service)
+
 - **Purpose**: Orchestrate plugin discovery across multiple sources and mechanisms
 - **Responsibilities**:
   - Coordinate file-based and entry points discovery
@@ -176,6 +181,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: File discovery adapter, security validation
 
 #### **Event Handlers** (Application Service)
+
 - **Purpose**: Event handling and notification system for plugin lifecycle events
 - **Responsibilities**:
   - Define plugin lifecycle events (discovered, loaded, executed, failed)
@@ -192,6 +198,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 ### Domain Layer Components
 
 #### **Plugin Entities** (Domain Entities)
+
 - **Purpose**: Core domain entities representing plugin system business concepts
 - **Responsibilities**:
   - Encapsulate plugin business rules and invariants
@@ -206,6 +213,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Domain types, constants, data models
 
 #### **Domain Protocols** (Domain Interfaces)
+
 - **Purpose**: Structural typing interfaces defining component contracts
 - **Responsibilities**:
   - Define abstract interfaces for plugin operations
@@ -220,6 +228,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Domain types for type annotations
 
 #### **Domain Types** (Type System)
+
 - **Purpose**: Type definitions and aliases for domain-specific types
 - **Responsibilities**:
   - Provide type safety across domain layer
@@ -234,6 +243,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Python typing module, domain constants
 
 #### **Domain Constants** (Domain Configuration)
+
 - **Purpose**: Domain constants, enumerations, and configuration values
 - **Responsibilities**:
   - Define plugin status enumerations
@@ -250,6 +260,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 ### Infrastructure Layer Components
 
 #### **File Discovery** (Infrastructure Adapter)
+
 - **Purpose**: File system-based plugin discovery implementation
 - **Responsibilities**:
   - Scan directories for plugin files
@@ -264,6 +275,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: File system APIs, plugin metadata parsers
 
 #### **Plugin Loader** (Infrastructure Adapter)
+
 - **Purpose**: Dynamic plugin loading and initialization
 - **Responsibilities**:
   - Load plugin modules dynamically
@@ -278,6 +290,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Python import system, dependency injection
 
 #### **Hot Reload Manager** (Infrastructure Adapter)
+
 - **Purpose**: File system monitoring and hot reload functionality
 - **Responsibilities**:
   - Monitor plugin directories for changes
@@ -292,6 +305,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Watchdog library, file system APIs
 
 #### **External Adapters** (Infrastructure Adapters)
+
 - **Purpose**: Adapters for external systems and integrations
 - **Responsibilities**:
   - Provide clean interfaces to external dependencies
@@ -308,6 +322,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 ### Data Layer Components
 
 #### **Configuration Manager** (Data Component)
+
 - **Purpose**: Plugin configuration management and validation
 - **Responsibilities**:
   - Load and validate plugin configurations
@@ -322,6 +337,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Pydantic, configuration file parsers
 
 #### **Data Models** (Data Component)
+
 - **Purpose**: Data validation models and schemas for the plugin system
 - **Responsibilities**:
   - Define data structures for plugin operations
@@ -336,6 +352,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Dependencies**: Pydantic v2, domain types
 
 #### **Error Hierarchy** (Data Component)
+
 - **Purpose**: Domain-specific exception hierarchy and error handling
 - **Responsibilities**:
   - Define plugin-specific exception types
@@ -370,6 +387,7 @@ Data Layer
 ### Key Component Interactions
 
 #### **API → Platform → Services**
+
 ```python
 # API facade delegates to platform
 api = FlextPluginApi()
@@ -383,6 +401,7 @@ result = service.discover_plugins(paths)  # Business logic
 ```
 
 #### **Services → Entities → Protocols**
+
 ```python
 # Services operate on domain entities
 service = FlextPluginService()
@@ -396,6 +415,7 @@ protocol = FlextPluginProtocols.Plugin  # Domain contract
 ```
 
 #### **Infrastructure → Adapters → External Systems**
+
 ```python
 # Infrastructure uses adapters for external access
 loader = FlextPluginLoader()
@@ -412,21 +432,25 @@ content = adapter.read_file(path)  # External system access
 ### Performance Characteristics
 
 #### **Interface Components**
+
 - **API Response Time**: < 10ms for metadata operations
 - **Platform Coordination**: < 50ms for simple operations
 - **CLI Command Latency**: < 200ms for typical commands
 
 #### **Application Components**
+
 - **Service Orchestration**: < 100ms for discovery operations
 - **Event Processing**: < 5ms per event
 - **Business Rule Validation**: < 1ms per validation
 
 #### **Domain Components**
+
 - **Entity Creation**: < 0.1ms per entity
 - **Business Rule Evaluation**: < 0.5ms per rule set
 - **Type Validation**: < 0.2ms per validation
 
 #### **Infrastructure Components**
+
 - **File Discovery**: < 100ms for 1000 files
 - **Plugin Loading**: < 50ms per plugin
 - **Hot Reload Detection**: < 10ms change detection
@@ -434,12 +458,14 @@ content = adapter.read_file(path)  # External system access
 ### Reliability Characteristics
 
 #### **Error Handling**
+
 - **FlextCore.Result Coverage**: 100% of public APIs return FlextCore.Result[T]
 - **Exception Boundaries**: Infrastructure exceptions converted to domain errors
 - **Graceful Degradation**: System continues operating with partial failures
 - **Recovery Mechanisms**: Automatic retry for transient failures
 
 #### **State Consistency**
+
 - **Entity Invariants**: Business rules enforced on all state changes
 - **Transaction Boundaries**: Clear transaction scopes for data operations
 - **Rollback Support**: Ability to rollback failed operations
@@ -448,12 +474,14 @@ content = adapter.read_file(path)  # External system access
 ### Maintainability Characteristics
 
 #### **Code Organization**
+
 - **Single Responsibility**: Each component has one primary responsibility
 - **Dependency Injection**: Clean separation through DI container
 - **Interface Segregation**: Small, focused interfaces
 - **Type Safety**: 100% type coverage with advanced Python typing
 
 #### **Testing Support**
+
 - **Unit Testable**: Each layer independently testable
 - **Mock-Friendly**: Protocol-based design enables easy mocking
 - **Integration Testable**: Clear component boundaries for integration testing
@@ -464,16 +492,19 @@ content = adapter.read_file(path)  # External system access
 ## 🧪 Component Testing Strategy
 
 ### Unit Testing (Domain + Application Layers)
+
 - **Domain Entities**: Business rule validation, entity behavior
 - **Application Services**: Workflow orchestration, error handling
 - **Domain Protocols**: Interface compliance, type safety
 
 ### Integration Testing (Component Interactions)
+
 - **API ↔ Platform**: Facade pattern integration
 - **Services ↔ Entities**: Domain operation integration
 - **Adapters ↔ External Systems**: Infrastructure integration
 
 ### End-to-End Testing (Full Workflows)
+
 - **Plugin Lifecycle**: Discovery → Loading → Execution → Cleanup
 - **Error Scenarios**: Failure handling and recovery
 - **Performance Testing**: Load testing and benchmarking
@@ -485,12 +516,14 @@ content = adapter.read_file(path)  # External system access
 ### Component Lifecycle
 
 #### **Development Phase**
+
 1. Define component interface (protocol)
 2. Implement component with tests
 3. Integrate with dependent components
 4. Performance and security validation
 
 #### **Maintenance Phase**
+
 1. Monitor component metrics and health
 2. Handle bug fixes and improvements
 3. Plan component evolution and refactoring
@@ -499,6 +532,7 @@ content = adapter.read_file(path)  # External system access
 ### Component Refactoring Guidelines
 
 #### **Adding New Components**
+
 1. Identify responsibility gap in existing architecture
 2. Define component interface and contracts
 3. Implement component following architectural patterns
@@ -506,6 +540,7 @@ content = adapter.read_file(path)  # External system access
 5. Add comprehensive tests and documentation
 
 #### **Modifying Existing Components**
+
 1. Assess impact on dependent components
 2. Maintain backward compatibility where possible
 3. Update component interfaces and contracts
@@ -513,6 +548,7 @@ content = adapter.read_file(path)  # External system access
 5. Update tests and documentation
 
 #### **Removing Components**
+
 1. Identify all dependent components and usages
 2. Create migration plan for dependent code
 3. Implement deprecation warnings

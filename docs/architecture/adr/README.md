@@ -9,6 +9,7 @@
 Architecture Decision Records (ADRs) document the **architectural decisions** made during the development of FLEXT Plugin. Each ADR captures the context, decision, and consequences of significant architectural choices.
 
 ### ADR Purpose
+
 - **Document Decisions**: Record the reasoning behind architectural choices
 - **Provide Context**: Explain the problem and constraints that influenced decisions
 - **Share Knowledge**: Enable team members to understand historical decisions
@@ -20,31 +21,31 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 
 ### Core Architecture Decisions
 
-| ADR | Title | Status | Date | Category |
-|-----|-------|--------|------|----------|
-| [ADR-001](adr-001-clean-architecture.md) | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
-| [ADR-002](adr-002-domain-driven-design.md) | Implement Domain-Driven Design | ✅ Accepted | 2025-01-20 | Architecture |
-| [ADR-003](adr-003-plugin-discovery.md) | Plugin Discovery Mechanism | ✅ Accepted | 2025-02-01 | Discovery |
-| [ADR-004](adr-004-security-model.md) | Plugin Security and Isolation | ✅ Accepted | 2025-02-15 | Security |
-| [ADR-005](adr-005-flext-integration.md) | FLEXT Ecosystem Integration | ✅ Accepted | 2025-03-01 | Integration |
+| ADR                                        | Title                            | Status      | Date       | Category     |
+| ------------------------------------------ | -------------------------------- | ----------- | ---------- | ------------ |
+| [ADR-001](adr-001-clean-architecture.md)   | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
+| [ADR-002](adr-002-domain-driven-design.md) | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
+| [ADR-003](adr-003-plugin-discovery.md)     | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
+| [ADR-004](adr-004-security-model.md)       | Plugin Security and Isolation    | ✅ Accepted | 2025-02-15 | Security     |
+| [ADR-005](adr-005-flext-integration.md)    | FLEXT Ecosystem Integration      | ✅ Accepted | 2025-03-01 | Integration  |
 
 ### Implementation Decisions
 
-| ADR | Title | Status | Date | Category |
-|-----|-------|--------|------|----------|
+| ADR                                       | Title                           | Status      | Date       | Category       |
+| ----------------------------------------- | ------------------------------- | ----------- | ---------- | -------------- |
 | [ADR-006](adr-006-single-class-module.md) | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
-| [ADR-007](adr-007-railway-pattern.md) | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
-| [ADR-008](adr-008-hot-reload.md) | Hot Reload Implementation | ✅ Accepted | 2025-04-15 | Implementation |
-| [ADR-009](adr-009-cli-architecture.md) | CLI Architecture and Design | ✅ Accepted | 2025-05-01 | Implementation |
-| [ADR-010](adr-010-testing-strategy.md) | Testing Strategy and Framework | ✅ Accepted | 2025-05-15 | Testing |
+| [ADR-007](adr-007-railway-pattern.md)     | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
+| [ADR-008](adr-008-hot-reload.md)          | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
+| [ADR-009](adr-009-cli-architecture.md)    | CLI Architecture and Design     | ✅ Accepted | 2025-05-01 | Implementation |
+| [ADR-010](adr-010-testing-strategy.md)    | Testing Strategy and Framework  | ✅ Accepted | 2025-05-15 | Testing        |
 
 ### Future Decisions (Proposed)
 
-| ADR | Title | Status | Date | Category |
-|-----|-------|--------|------|----------|
-| [ADR-011](adr-011-entry-points.md) | Entry Points Discovery | 🔄 Proposed | 2025-11-01 | Discovery |
-| [ADR-012](adr-012-plugin-marketplace.md) | Plugin Marketplace Architecture | 📋 Draft | 2025-12-01 | Integration |
-| [ADR-013](adr-013-enterprise-security.md) | Enterprise Security Framework | 📋 Draft | 2026-01-01 | Security |
+| ADR                                       | Title                           | Status      | Date       | Category    |
+| ----------------------------------------- | ------------------------------- | ----------- | ---------- | ----------- |
+| [ADR-011](adr-011-entry-points.md)        | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
+| [ADR-012](adr-012-plugin-marketplace.md)  | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
+| [ADR-013](adr-013-enterprise-security.md) | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
 
 ---
 
@@ -58,24 +59,31 @@ All ADRs follow a standardized template for consistency and completeness.
 # ADR-[NUMBER]: [TITLE]
 
 ## Status
+
 [Proposed | Accepted | Rejected | Deprecated | Superseded]
 
 ## Context
+
 [Describe the problem or situation that led to this decision]
 
 ## Decision
+
 [Clearly state the decision that was made]
 
 ## Consequences
+
 [Describe the positive and negative consequences of this decision]
 
 ## Alternatives Considered
+
 [List other options that were considered and why they were rejected]
 
 ## Related ADRs
+
 [Reference to related architectural decisions]
 
 ## Notes
+
 [Any additional information or implementation details]
 ```
 
@@ -115,31 +123,37 @@ Rejected   Deprecated → Superseded
 ## 🏷️ ADR Categories
 
 ### Architecture Category
+
 - Overall system architecture patterns
 - Layer organization and boundaries
 - Design principles and patterns
 
 ### Implementation Category
+
 - Specific technology choices
 - Implementation patterns and practices
 - Code organization decisions
 
 ### Integration Category
+
 - External system integrations
 - API design decisions
 - Protocol and communication choices
 
 ### Security Category
+
 - Security architecture decisions
 - Authentication and authorization
 - Data protection and privacy
 
 ### Performance Category
+
 - Performance optimization decisions
 - Scalability and concurrency choices
 - Caching and optimization strategies
 
 ### Testing Category
+
 - Testing strategy and framework decisions
 - Test organization and coverage goals
 - Quality assurance approaches
@@ -151,24 +165,28 @@ Rejected   Deprecated → Superseded
 ### Writing Effective ADRs
 
 #### **Clear Context**
+
 - Explain the problem clearly and completely
 - Include relevant background information
 - Mention constraints and requirements
 - Identify stakeholders and their concerns
 
 #### **Structured Decision**
+
 - State the decision clearly and unambiguously
 - Explain the rationale for the decision
 - Document trade-offs and implications
 - Reference supporting data or analysis
 
 #### **Comprehensive Consequences**
+
 - List positive consequences (benefits)
 - List negative consequences (drawbacks)
 - Consider short-term and long-term impacts
 - Identify risks and mitigation strategies
 
 #### **Alternative Analysis**
+
 - Document other options considered
 - Explain why alternatives were rejected
 - Compare trade-offs between options
@@ -177,18 +195,21 @@ Rejected   Deprecated → Superseded
 ### Maintaining ADRs
 
 #### **Regular Review**
+
 - Review ADRs during architecture refactoring
 - Update status when decisions change
 - Mark deprecated decisions appropriately
 - Create superseding ADRs for changes
 
 #### **Cross-Referencing**
+
 - Reference related ADRs in each document
 - Maintain dependency relationships
 - Update references when ADRs are superseded
 - Create ADR maps for complex decision networks
 
 #### **Implementation Tracking**
+
 - Link ADRs to implementation tickets
 - Track implementation progress
 - Document any deviations from decisions
@@ -260,17 +281,20 @@ make adr-export
 ## 🔗 Related Documentation
 
 ### Architecture Documentation
+
 - **[System Context](context.md)** - System in its environment
 - **[Container Architecture](containers.md)** - Technology stack and deployment
 - **[Component Architecture](components.md)** - Module structure and relationships
 - **[Data Architecture](data.md)** - Data models and persistence
 
 ### Implementation Documentation
+
 - **[Implementation Guide](implementation.md)** - Development patterns and practices
 - **[API Reference](api.md)** - Public API documentation
 - **[Migration Guide](migration.md)** - Version migration strategies
 
 ### Quality and Security
+
 - **[Security Architecture](security.md)** - Security design and controls
 - **[Quality Attributes](quality.md)** - Performance, scalability, reliability
 - **[Testing Strategy](testing.md)** - Testing approach and framework

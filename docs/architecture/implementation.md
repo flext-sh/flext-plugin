@@ -23,6 +23,7 @@ This guide provides practical implementation guidance for developing with the FL
 ### Clean Architecture Layer Implementation
 
 #### **Domain Layer Implementation**
+
 ```python
 # flext_plugin/entities.py - Domain entities with business rules
 from flext_core import FlextCore
@@ -96,6 +97,7 @@ class FlextPluginEntities:
 ```
 
 #### **Application Layer Implementation**
+
 ```python
 # flext_plugin/services.py - Application services
 from flext_core import FlextCore
@@ -179,6 +181,7 @@ class FlextPluginServices:
 ```
 
 #### **Infrastructure Layer Implementation**
+
 ```python
 # flext_plugin/discovery.py - Infrastructure adapters
 from flext_core import FlextCore
@@ -272,6 +275,7 @@ class FlextPluginDiscovery:
 ### Protocol-Based Architecture Implementation
 
 #### **Protocol Definitions**
+
 ```python
 # flext_plugin/protocols.py - Structural typing protocols
 from typing import Protocol, List, Dict, Any, Optional
@@ -335,6 +339,7 @@ class FlextPluginProtocols:
 ```
 
 #### **Protocol Implementation**
+
 ```python
 # Example protocol implementation
 from flext_plugin.protocols import FlextPluginProtocols
@@ -353,6 +358,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 ### Railway Pattern Implementation
 
 #### **FlextCore.Result[T] Error Handling**
+
 ```python
 # Railway pattern throughout the system
 from flext_core import FlextCore
@@ -407,6 +413,7 @@ async def _load_plugins(
 ### Unit Testing Patterns
 
 #### **Domain Entity Testing**
+
 ```python
 # tests/unit/test_entities.py
 import pytest
@@ -471,6 +478,7 @@ class TestPluginEntity:
 ```
 
 #### **Application Service Testing**
+
 ```python
 # tests/unit/test_services.py
 import pytest
@@ -545,6 +553,7 @@ class TestPluginServices:
 ### Integration Testing Patterns
 
 #### **End-to-End Plugin Lifecycle Testing**
+
 ```python
 # tests/integration/test_plugin_lifecycle.py
 import pytest
@@ -641,6 +650,7 @@ def create_plugin():
 ### Code Organization Patterns
 
 #### **Module Structure Template**
+
 ```python
 # Template for FLEXT single-class-per-module pattern
 """
@@ -740,6 +750,7 @@ __all__ = ["FlextPlugin[ModuleName]"]
 ### Error Handling Patterns
 
 #### **Railway Pattern Throughout**
+
 ```python
 # Railway pattern for complex operations
 async def complex_operation(
@@ -779,6 +790,7 @@ def _handle_error(
 ### Configuration Management
 
 #### **Pydantic Configuration Pattern**
+
 ```python
 # flext_plugin/config.py
 from pydantic import BaseModel, Field, validator
@@ -856,6 +868,7 @@ class FlextPluginConfig:
 ### Container Configuration
 
 #### **Docker Deployment**
+
 ```dockerfile
 # Dockerfile for FLEXT Plugin system
 FROM python:3.13-slim
@@ -895,6 +908,7 @@ CMD ["python", "-m", "flext_plugin.cli", "--help"]
 ```
 
 #### **Kubernetes Deployment**
+
 ```yaml
 # k8s/deployment.yaml
 apiVersion: apps/v1
@@ -914,41 +928,41 @@ spec:
         app: flext-plugin
     spec:
       containers:
-      - name: flext-plugin
-        image: flext/flext-plugin:0.9.0
-        ports:
-        - containerPort: 8000
-          name: api
-        env:
-        - name: PYTHONPATH
-          value: "/app/src"
-        - name: FLEXT_PLUGIN_SECURITY_LEVEL
-          value: "HIGH"
-        - name: FLEXT_PLUGIN_MAX_CONCURRENT_PLUGINS
-          value: "100"
-        volumeMounts:
-        - name: plugin-storage
-          mountPath: /app/plugins
-        - name: cache-storage
-          mountPath: /app/cache
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: flext-plugin
+          image: flext/flext-plugin:0.9.0
+          ports:
+            - containerPort: 8000
+              name: api
+          env:
+            - name: PYTHONPATH
+              value: "/app/src"
+            - name: FLEXT_PLUGIN_SECURITY_LEVEL
+              value: "HIGH"
+            - name: FLEXT_PLUGIN_MAX_CONCURRENT_PLUGINS
+              value: "100"
+          volumeMounts:
+            - name: plugin-storage
+              mountPath: /app/plugins
+            - name: cache-storage
+              mountPath: /app/cache
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-      - name: plugin-storage
-        persistentVolumeClaim:
-          claimName: flext-plugin-storage
-      - name: cache-storage
-        emptyDir: {}
+        - name: plugin-storage
+          persistentVolumeClaim:
+            claimName: flext-plugin-storage
+        - name: cache-storage
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -958,15 +972,16 @@ spec:
   selector:
     app: flext-plugin
   ports:
-  - name: api
-    port: 8000
-    targetPort: 8000
+    - name: api
+      port: 8000
+      targetPort: 8000
   type: ClusterIP
 ```
 
 ### Monitoring and Observability
 
 #### **Health Checks Implementation**
+
 ```python
 # flext_plugin/health.py
 from flext_core import FlextCore
@@ -1076,6 +1091,7 @@ class FlextPluginHealth:
 ### Caching Strategies
 
 #### **Multi-Level Caching**
+
 ```python
 # flext_plugin/cache.py
 from typing import Dict, Any, Optional
@@ -1132,6 +1148,7 @@ class FlextPluginCache:
 ### Asynchronous Processing
 
 #### **Concurrent Plugin Operations**
+
 ```python
 # flext_plugin/executor.py
 import asyncio
@@ -1237,18 +1254,21 @@ class FlextPluginExecutor:
 ### Code Quality Standards
 
 #### **Type Safety First**
+
 - Use Python 3.13+ advanced typing features
 - 100% type coverage for all public APIs
 - Pydantic models for data validation
 - Protocol-based dependency injection
 
 #### **Error Handling Patterns**
+
 - Railway pattern (FlextCore.Result[T]) throughout
 - Structured error messages with context
 - Comprehensive exception logging
 - Graceful degradation for non-critical failures
 
 #### **Testing Standards**
+
 - Unit tests for domain logic and utilities
 - Integration tests for component interactions
 - End-to-end tests for complete workflows
@@ -1257,12 +1277,14 @@ class FlextPluginExecutor:
 ### Performance Optimization
 
 #### **Caching Strategy**
+
 - Multi-level caching (memory + file + database)
 - TTL-based expiration with configurable policies
 - Cache invalidation on data changes
 - Performance monitoring and metrics
 
 #### **Resource Management**
+
 - Connection pooling for external services
 - Resource limits per plugin execution
 - Automatic cleanup of temporary resources
@@ -1271,12 +1293,14 @@ class FlextPluginExecutor:
 ### Security Implementation
 
 #### **Defense in Depth**
+
 - Input validation at all entry points
 - Sandboxing for plugin execution
 - Audit logging for all operations
 - Access control with role-based permissions
 
 #### **Secure Coding Practices**
+
 - No dynamic code execution without validation
 - Secure deserialization practices
 - Cryptographic verification of plugin integrity

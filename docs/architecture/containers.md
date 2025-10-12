@@ -9,6 +9,7 @@
 FLEXT Plugin operates as a **Python library package** with **optional CLI components**, designed for deployment across multiple container environments. The system provides plugin management capabilities to FLEXT ecosystem applications while maintaining clean separation between core functionality and optional interfaces.
 
 ### Architecture Principles
+
 - **Library-First Design**: Core functionality as importable Python package
 - **Optional CLI**: Command-line interface as separate optional component
 - **Container Agnostic**: Deployable in any Python environment (Docker, Podman, Kubernetes, bare metal)
@@ -85,6 +86,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 ### Core Containers
 
 #### **FLEXT Plugin Core** (Primary Container)
+
 - **Technology**: Python 3.13+ Library Package
 - **Purpose**: Core plugin management functionality
 - **Responsibilities**:
@@ -100,6 +102,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 - **Deployment**: Deployed as Python package in consuming applications
 
 #### **FLEXT Plugin CLI** (Optional Container)
+
 - **Technology**: Python CLI Application (Click framework)
 - **Purpose**: Command-line interface for plugin management
 - **Responsibilities**:
@@ -115,6 +118,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 - **Status**: Implementation complete but disabled (dependency issues)
 
 #### **FLEXT Plugin API** (Planned Container)
+
 - **Technology**: Python REST API (FastAPI/Flask)
 - **Purpose**: REST API for plugin operations
 - **Responsibilities**:
@@ -132,6 +136,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 ### Data Containers
 
 #### **Plugin Registry** (Data Store)
+
 - **Technology**: File System / SQLite / PostgreSQL
 - **Purpose**: Persistent storage for plugin metadata and state
 - **Responsibilities**:
@@ -146,6 +151,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
   - Security validation results and certificates
 
 #### **Plugin Cache** (Cache Store)
+
 - **Technology**: File System Cache
 - **Purpose**: Performance optimization for plugin operations
 - **Responsibilities**:
@@ -166,6 +172,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 ### Internal Communication
 
 #### **Core ↔ CLI Communication**
+
 ```python
 # CLI imports and uses Core APIs
 from flext_plugin import FlextPluginApi
@@ -175,6 +182,7 @@ result = api.discover_plugins(["./plugins"])
 ```
 
 #### **Core ↔ API Communication** (Planned)
+
 ```python
 # REST API delegates to Core
 from flext_plugin import FlextPluginPlatform
@@ -186,27 +194,30 @@ platform = FlextPluginPlatform()
 ### External Communication
 
 #### **FLEXT Ecosystem Integration**
-| Container | External System | Protocol | Purpose |
-|-----------|----------------|----------|---------|
-| Core | flext-core | Direct Import | Foundation patterns and utilities |
-| Core | flext-observability | Direct Import | Monitoring and metrics collection |
-| CLI | flext-cli | Optional Import | CLI framework integration |
-| Core | FlexCore | HTTP/gRPC | Plugin proxy and Go bridge |
-| Core | FLEXT Service | HTTP/REST | Service mesh integration |
+
+| Container | External System     | Protocol        | Purpose                           |
+| --------- | ------------------- | --------------- | --------------------------------- |
+| Core      | flext-core          | Direct Import   | Foundation patterns and utilities |
+| Core      | flext-observability | Direct Import   | Monitoring and metrics collection |
+| CLI       | flext-cli           | Optional Import | CLI framework integration         |
+| Core      | FlexCore            | HTTP/gRPC       | Plugin proxy and Go bridge        |
+| Core      | FLEXT Service       | HTTP/REST       | Service mesh integration          |
 
 #### **Plugin Distribution**
-| Container | External System | Protocol | Purpose |
-|-----------|----------------|----------|---------|
-| Core | PyPI | HTTPS/API | Plugin package discovery and installation |
-| Core | GitHub | HTTPS/Git | Source code repositories and releases |
-| CLI | PyPI | CLI/API | Plugin package management commands |
+
+| Container | External System | Protocol  | Purpose                                   |
+| --------- | --------------- | --------- | ----------------------------------------- |
+| Core      | PyPI            | HTTPS/API | Plugin package discovery and installation |
+| Core      | GitHub          | HTTPS/Git | Source code repositories and releases     |
+| CLI       | PyPI            | CLI/API   | Plugin package management commands        |
 
 #### **Deployment Integration**
-| Container | External System | Protocol | Purpose |
-|-----------|----------------|----------|---------|
-| All | Docker Registry | Docker API | Container image distribution |
-| All | Kubernetes | kubectl/API | Orchestration and deployment |
-| Core | File System | POSIX | Local plugin storage and caching |
+
+| Container | External System | Protocol    | Purpose                          |
+| --------- | --------------- | ----------- | -------------------------------- |
+| All       | Docker Registry | Docker API  | Container image distribution     |
+| All       | Kubernetes      | kubectl/API | Orchestration and deployment     |
+| Core      | File System     | POSIX       | Local plugin storage and caching |
 
 ---
 
@@ -215,18 +226,21 @@ platform = FlextPluginPlatform()
 ### Technology Stack
 
 #### **Core Runtime**
+
 - **Python Version**: 3.13+ (exclusive, modern typing features)
 - **Framework**: Custom library with FLEXT ecosystem patterns
 - **Architecture**: Clean Architecture + Domain-Driven Design
 - **Concurrency**: AsyncIO for non-blocking operations
 
 #### **Optional Components**
+
 - **CLI Framework**: Click 8.2+ (industry standard Python CLI)
 - **Web Framework**: FastAPI/Flask (planned for REST API)
 - **Rich Terminal**: Rich library for CLI formatting
 - **Tabulate**: Table formatting for CLI output
 
 #### **Data Storage**
+
 - **Primary**: File system for portability and simplicity
 - **Cache**: In-memory + file system for performance
 - **Optional**: SQLite/PostgreSQL for enterprise deployments
@@ -234,6 +248,7 @@ platform = FlextPluginPlatform()
 ### Deployment Patterns
 
 #### **Library Deployment** (Primary)
+
 ```dockerfile
 # FLEXT Plugin as library dependency
 FROM python:3.13-slim
@@ -244,6 +259,7 @@ RUN pip install flext-plugin
 ```
 
 #### **CLI Deployment** (Optional)
+
 ```dockerfile
 # FLEXT Plugin CLI container
 FROM python:3.13-slim
@@ -252,6 +268,7 @@ ENTRYPOINT ["flext-plugin"]
 ```
 
 #### **API Deployment** (Planned)
+
 ```dockerfile
 # FLEXT Plugin API microservice
 FROM python:3.13-slim
@@ -263,18 +280,21 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Environment Configurations
 
 #### **Development Environment**
+
 - **Dependencies**: All dev dependencies installed
 - **Debugging**: Full debug logging enabled
 - **Hot Reload**: File watching for development
 - **Testing**: All test frameworks available
 
 #### **Production Environment**
+
 - **Dependencies**: Minimal runtime dependencies only
 - **Security**: Sandboxing and validation enabled
 - **Monitoring**: Full observability integration
 - **Performance**: Optimized for production workloads
 
 #### **CI/CD Environment**
+
 - **Testing**: Full test suite execution
 - **Quality Gates**: Linting, type checking, security scanning
 - **Packaging**: Build and publish packages
@@ -287,6 +307,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Performance Characteristics
 
 #### **FLEXT Plugin Core**
+
 - **Startup Time**: < 500ms (library import time)
 - **Plugin Discovery**: < 100ms for 100 plugins
 - **Plugin Loading**: < 50ms per plugin
@@ -294,12 +315,14 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Concurrent Operations**: Support for 100+ concurrent plugins
 
 #### **FLEXT Plugin CLI**
+
 - **Command Latency**: < 200ms for typical operations
 - **Batch Operations**: < 5 seconds for 100 plugins
 - **Memory Usage**: < 100MB for CLI operations
 - **Disk I/O**: Minimal, primarily for plugin management
 
 #### **Plugin Registry**
+
 - **Read Performance**: < 10ms for plugin metadata
 - **Write Performance**: < 50ms for state updates
 - **Storage Efficiency**: < 1KB per plugin metadata
@@ -308,12 +331,14 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Reliability Characteristics
 
 #### **Fault Tolerance**
+
 - **Plugin Failures**: Isolated, don't crash host application
 - **Network Issues**: Graceful degradation for external services
 - **Disk Space**: Continue operation with reduced caching
 - **Memory Pressure**: Automatic cleanup and resource management
 
 #### **Data Durability**
+
 - **Plugin Metadata**: Persistent across restarts
 - **Execution State**: Recoverable after failures
 - **Cache Consistency**: Automatic cache invalidation
@@ -322,12 +347,14 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Security Characteristics
 
 #### **Container Security**
+
 - **Process Isolation**: Plugins run in separate processes
 - **Resource Limits**: CPU and memory restrictions per plugin
 - **Network Access**: Configurable network permissions
 - **File System**: Restricted file system access
 
 #### **Data Protection**
+
 - **Configuration Security**: Encrypted sensitive plugin data
 - **Audit Logging**: Complete audit trail for plugin operations
 - **Access Control**: Role-based plugin execution permissions
@@ -340,6 +367,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Lifecycle Management
 
 #### **Startup Sequence**
+
 1. **Core Initialization**: Load FLEXT dependencies and configuration
 2. **Registry Setup**: Initialize plugin registry and cache
 3. **Discovery Phase**: Scan for available plugins
@@ -347,6 +375,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 5. **Ready State**: Accept plugin operations
 
 #### **Shutdown Sequence**
+
 1. **Operation Drain**: Complete in-flight plugin operations
 2. **State Persistence**: Save plugin state and metrics
 3. **Resource Cleanup**: Release resources and connections
@@ -355,12 +384,14 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Monitoring and Observability
 
 #### **Health Checks**
+
 - **Core Health**: Plugin system operational status
 - **Registry Health**: Data store accessibility
 - **Plugin Health**: Individual plugin operational status
 - **Resource Health**: Memory, CPU, disk usage within limits
 
 #### **Metrics Collection**
+
 - **Plugin Metrics**: Load times, execution counts, error rates
 - **System Metrics**: Memory usage, CPU utilization, I/O operations
 - **Performance Metrics**: Response times, throughput, latency
@@ -369,12 +400,14 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Scaling and Performance
 
 #### **Horizontal Scaling**
+
 - **Stateless Design**: Core containers can be scaled horizontally
 - **Shared Registry**: Centralized plugin registry for coordination
 - **Load Balancing**: Distribute plugin operations across instances
 - **Session Affinity**: Maintain plugin context within sessions
 
 #### **Vertical Scaling**
+
 - **Resource Allocation**: Configurable memory and CPU limits
 - **Plugin Isolation**: Per-plugin resource quotas
 - **Caching Strategy**: Optimize for available memory
@@ -385,18 +418,21 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ## 🧪 Testing Strategy by Container
 
 ### Unit Testing
+
 - **Core**: 15+ unit test files covering all modules
 - **CLI**: 3+ unit test files for CLI components
 - **API**: Planned unit tests for REST endpoints
 - **Coverage Target**: 90%+ for all containers
 
 ### Integration Testing
+
 - **Container Interactions**: Core ↔ CLI ↔ API integration
 - **External Systems**: FLEXT ecosystem integration testing
 - **Data Persistence**: Registry and cache testing
 - **End-to-End**: Complete plugin lifecycle testing
 
 ### Performance Testing
+
 - **Load Testing**: Concurrent plugin operations
 - **Stress Testing**: Resource limit testing
 - **Scalability Testing**: Multi-container deployments
@@ -407,6 +443,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ## 📋 Container Interface Contracts
 
 ### FLEXT Plugin Core API
+
 ```python
 # Primary interface for all plugin operations
 from flext_plugin import FlextPluginApi
@@ -417,6 +454,7 @@ result = await api.execute_plugin("plugin-name", context)
 ```
 
 ### FLEXT Plugin CLI Interface
+
 ```bash
 # Command-line interface (when enabled)
 flext-plugin discover ./plugins
@@ -425,6 +463,7 @@ flext-plugin list --format=json
 ```
 
 ### FLEXT Plugin API Interface (Planned)
+
 ```bash
 # REST API endpoints (planned)
 GET /api/v1/plugins

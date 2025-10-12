@@ -10,15 +10,15 @@ This architecture documentation follows a comprehensive framework combining **C4
 
 ### 🎯 Documentation Levels
 
-| Level | Framework | Purpose | Audience |
-|-------|-----------|---------|----------|
-| **1. Context** | C4 Model | System in its environment | Business stakeholders, product managers |
-| **2. Containers** | C4 Model | High-level technology choices | Architects, developers |
-| **3. Components** | C4 Model | Component relationships | Developers, QA engineers |
-| **4. Code** | C4 Model | Code structure and relationships | Developers |
-| **5. Decisions** | ADRs | Architectural decisions and rationale | All stakeholders |
-| **6. Requirements** | Arc42 | System requirements and constraints | Architects, developers |
-| **7. Risks** | Arc42 | Technical risks and mitigation | Architects, product owners |
+| Level               | Framework | Purpose                               | Audience                                |
+| ------------------- | --------- | ------------------------------------- | --------------------------------------- |
+| **1. Context**      | C4 Model  | System in its environment             | Business stakeholders, product managers |
+| **2. Containers**   | C4 Model  | High-level technology choices         | Architects, developers                  |
+| **3. Components**   | C4 Model  | Component relationships               | Developers, QA engineers                |
+| **4. Code**         | C4 Model  | Code structure and relationships      | Developers                              |
+| **5. Decisions**    | ADRs      | Architectural decisions and rationale | All stakeholders                        |
+| **6. Requirements** | Arc42     | System requirements and constraints   | Architects, developers                  |
+| **7. Risks**        | Arc42     | Technical risks and mitigation        | Architects, product owners              |
 
 ---
 
@@ -26,42 +26,42 @@ This architecture documentation follows a comprehensive framework combining **C4
 
 ### Core Architecture Documentation
 
-| Document | Framework | Status | Description |
-|----------|-----------|--------|-------------|
-| **[System Context](context.md)** | C4 Level 1 | ✅ Complete | System in FLEXT ecosystem |
-| **[Container Architecture](containers.md)** | C4 Level 2 | ✅ Complete | Technology stack and deployment |
-| **[Component Architecture](components.md)** | C4 Level 3 | ✅ Complete | Module structure and relationships |
-| **[Code Architecture](code.md)** | C4 Level 4 | ✅ Complete | Class and interface design |
-| **[Data Architecture](data.md)** | Custom | ✅ Complete | Data models and persistence |
-| **[Security Architecture](security.md)** | Custom | ✅ Complete | Security design and controls |
-| **[Quality Attributes](quality.md)** | Arc42 | ✅ Complete | Performance, scalability, reliability |
+| Document                                    | Framework  | Status      | Description                           |
+| ------------------------------------------- | ---------- | ----------- | ------------------------------------- |
+| **[System Context](context.md)**            | C4 Level 1 | ✅ Complete | System in FLEXT ecosystem             |
+| **[Container Architecture](containers.md)** | C4 Level 2 | ✅ Complete | Technology stack and deployment       |
+| **[Component Architecture](components.md)** | C4 Level 3 | ✅ Complete | Module structure and relationships    |
+| **[Code Architecture](code.md)**            | C4 Level 4 | ✅ Complete | Class and interface design            |
+| **[Data Architecture](data.md)**            | Custom     | ✅ Complete | Data models and persistence           |
+| **[Security Architecture](security.md)**    | Custom     | ✅ Complete | Security design and controls          |
+| **[Quality Attributes](quality.md)**        | Arc42      | ✅ Complete | Performance, scalability, reliability |
 
 ### Decision Documentation
 
-| Document | Framework | Status | Description |
-|----------|-----------|--------|-------------|
-| **[ADR Index](adr/README.md)** | ADR | ✅ Complete | All architectural decisions |
-| **[ADR Template](adr/adr-template.md)** | ADR | ✅ Complete | ADR creation template |
-| **[Decision Log](adr/decision-log.md)** | ADR | ✅ Complete | Chronological decision history |
+| Document                                | Framework | Status      | Description                    |
+| --------------------------------------- | --------- | ----------- | ------------------------------ |
+| **[ADR Index](adr/README.md)**          | ADR       | ✅ Complete | All architectural decisions    |
+| **[ADR Template](adr/adr-template.md)** | ADR       | ✅ Complete | ADR creation template          |
+| **[Decision Log](adr/decision-log.md)** | ADR       | ✅ Complete | Chronological decision history |
 
 ### Implementation Documentation
 
-| Document | Framework | Status | Description |
-|----------|-----------|--------|-------------|
-| **[Implementation Guide](implementation.md)** | Custom | ✅ Complete | Development patterns and practices |
-| **[API Reference](api.md)** | Custom | ✅ Complete | Public API documentation |
-| **[Migration Guide](migration.md)** | Custom | ✅ Complete | Version migration strategies |
+| Document                                      | Framework | Status      | Description                        |
+| --------------------------------------------- | --------- | ----------- | ---------------------------------- |
+| **[Implementation Guide](implementation.md)** | Custom    | ✅ Complete | Development patterns and practices |
+| **[API Reference](api.md)**                   | Custom    | ✅ Complete | Public API documentation           |
+| **[Migration Guide](migration.md)**           | Custom    | ✅ Complete | Version migration strategies       |
 
 ### Diagrams and Visualizations
 
-| Diagram | Format | Tool | Description |
-|---------|--------|------|-------------|
-| **[System Context](diagrams/system-context.puml)** | PlantUML | PlantUML | C4 Context diagram |
-| **[Container Diagram](diagrams/container-diagram.puml)** | PlantUML | PlantUML | C4 Container diagram |
-| **[Component Diagram](diagrams/component-diagram.puml)** | PlantUML | PlantUML | C4 Component diagram |
-| **[Data Flow](diagrams/data-flow.puml)** | PlantUML | PlantUML | Data processing flows |
-| **[Security Architecture](diagrams/security-architecture.puml)** | PlantUML | PlantUML | Security boundaries |
-| **[Deployment Architecture](diagrams/deployment.puml)** | PlantUML | PlantUML | Infrastructure view |
+| Diagram                                                          | Format   | Tool     | Description           |
+| ---------------------------------------------------------------- | -------- | -------- | --------------------- |
+| **[System Context](diagrams/system-context.puml)**               | PlantUML | PlantUML | C4 Context diagram    |
+| **[Container Diagram](diagrams/container-diagram.puml)**         | PlantUML | PlantUML | C4 Container diagram  |
+| **[Component Diagram](diagrams/component-diagram.puml)**         | PlantUML | PlantUML | C4 Component diagram  |
+| **[Data Flow](diagrams/data-flow.puml)**                         | PlantUML | PlantUML | Data processing flows |
+| **[Security Architecture](diagrams/security-architecture.puml)** | PlantUML | PlantUML | Security boundaries   |
+| **[Deployment Architecture](diagrams/deployment.puml)**          | PlantUML | PlantUML | Infrastructure view   |
 
 ---
 
@@ -125,6 +125,7 @@ Alternatives: [Other options considered]
 ## 📊 Architecture Metrics
 
 ### System Overview
+
 - **Lines of Code**: 9,767 across 20 modules
 - **Test Coverage**: Target 90% (24 test files)
 - **Architecture Pattern**: Clean Architecture + DDD
@@ -132,6 +133,7 @@ Alternatives: [Other options considered]
 - **Deployment**: Library package with optional CLI
 
 ### Quality Attributes
+
 - **Maintainability**: High (Clean Architecture, single responsibility)
 - **Testability**: High (dependency injection, protocols)
 - **Performance**: Medium (memory-bound for large LDIF files)
@@ -139,6 +141,7 @@ Alternatives: [Other options considered]
 - **Scalability**: Medium (single-threaded, horizontal scaling possible)
 
 ### Technical Debt
+
 - **Test Failures**: Some integration tests failing
 - **CLI Disabled**: Implementation exists but disabled due to dependencies
 - **Entry Points**: File-based discovery only (entry points planned)
@@ -149,6 +152,7 @@ Alternatives: [Other options considered]
 ## 🚀 Architecture Evolution
 
 ### Version 0.9.0 (Current)
+
 - ✅ Production-ready plugin system
 - ✅ Clean Architecture implementation
 - ✅ FLEXT ecosystem integration
@@ -156,12 +160,14 @@ Alternatives: [Other options considered]
 - ✅ Hot reload capabilities
 
 ### Version 0.10.0 (Next)
+
 - 🔄 Entry points discovery (setuptools integration)
 - 🔄 CLI integration (enable command-line interface)
 - 🔄 Test coverage completion (90% target)
 - 🔄 Security framework (plugin sandboxing)
 
 ### Version 1.0.0 (Future)
+
 - 📋 Plugin marketplace (registry integration)
 - 📋 Advanced monitoring (comprehensive metrics)
 - 📋 Multi-format discovery (entry points + file-based)
@@ -172,6 +178,7 @@ Alternatives: [Other options considered]
 ## 🛠️ Documentation Tools and Workflow
 
 ### Generation Tools
+
 ```bash
 # PlantUML diagrams
 plantuml diagrams/*.puml
@@ -184,12 +191,14 @@ make architecture-audit
 ```
 
 ### Maintenance Workflow
+
 1. **Code Changes**: Update relevant architecture docs
 2. **New Decisions**: Create ADR for architectural changes
 3. **Diagrams**: Regenerate after structural changes
 4. **Reviews**: Architecture docs reviewed with code changes
 
 ### Quality Gates
+
 - ✅ Architecture docs synchronized with implementation
 - ✅ Diagrams accurate and up-to-date
 - ✅ ADRs complete for all major decisions
@@ -202,21 +211,25 @@ make architecture-audit
 ### For Different Audiences
 
 **Business Stakeholders**:
+
 1. Start with [System Context](context.md)
 2. Review [Quality Attributes](quality.md)
 3. Check [Architecture Decisions](adr/README.md)
 
 **Architects**:
+
 1. [System Context](context.md) → [Container Architecture](containers.md)
 2. [Component Architecture](components.md) → [Data Architecture](data.md)
 3. [Security Architecture](security.md) → [Quality Attributes](quality.md)
 
 **Developers**:
+
 1. [Component Architecture](components.md) → [Code Architecture](code.md)
 2. [API Reference](api.md) → [Implementation Guide](implementation.md)
 3. [Architecture Decisions](adr/README.md) for design rationale
 
 **QA Engineers**:
+
 1. [Component Architecture](components.md) → [Quality Attributes](quality.md)
 2. [Security Architecture](security.md) → [Data Architecture](data.md)
 
@@ -225,6 +238,7 @@ make architecture-audit
 ## 🤝 Contributing to Architecture Documentation
 
 ### Documentation Standards
+
 - Follow C4 Model structure for diagrams
 - Use ADR template for new decisions
 - Maintain diagram consistency (colors, shapes, naming)
@@ -232,12 +246,14 @@ make architecture-audit
 - Review architecture docs in PRs
 
 ### Tools and Templates
+
 - **PlantUML**: For all diagrams (templates in `diagrams/templates/`)
 - **ADR Template**: `adr/adr-template.md`
 - **Markdown Linting**: `make docs-lint`
 - **Link Validation**: `make docs-validate`
 
 ### Review Process
+
 1. Architecture changes require ADR
 2. Diagrams updated with structural changes
 3. Cross-references validated
