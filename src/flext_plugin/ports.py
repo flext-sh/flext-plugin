@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextCore
 
 from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.typings import FlextPluginTypes
@@ -23,121 +23,123 @@ from flext_plugin.typings import FlextPluginTypes
 class FlextPluginPorts:
     """Domain port interfaces for plugin operations."""
 
-    class Discovery(FlextProtocols.Domain.Service):
+    class Discovery(FlextCore.Protocols.Domain.Service):
         """Domain port interface for plugin discovery and validation operations."""
 
         @abstractmethod
         def discover_plugins(
             self, path: str
-        ) -> FlextResult[list[FlextPluginEntities.Entity]]:
+        ) -> FlextCore.Result[list[FlextPluginEntities.Entity]]:
             """Discover plugins in the given path.
 
             Args:
                 path: Path to search for plugins
             Returns:
-                FlextResult containing list of discovered plugins
+                FlextCore.Result containing list of discovered plugins
 
             """
 
         @abstractmethod
         def validate_plugin(
             self, plugin: FlextPluginEntities.Entity
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Validate a plugin.
 
             Args:
                 plugin: Plugin to validate
             Returns:
-                FlextResult indicating if plugin is valid
+                FlextCore.Result indicating if plugin is valid
 
             """
 
-    class Loader(FlextProtocols.Domain.Service):
+    class Loader(FlextCore.Protocols.Domain.Service):
         """Domain port interface for plugin loading and memory management operations."""
 
         @abstractmethod
-        def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
+        def load_plugin(
+            self, plugin: FlextPluginEntities.Entity
+        ) -> FlextCore.Result[bool]:
             """Load a plugin.
 
             Args:
                 plugin: Plugin to load
             Returns:
-                FlextResult indicating if loading was successful
+                FlextCore.Result indicating if loading was successful
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def unload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Unload a plugin.
 
             Args:
                 plugin_name: Name of plugin to unload
             Returns:
-                FlextResult indicating if unloading was successful
+                FlextCore.Result indicating if unloading was successful
 
             """
 
         @abstractmethod
-        def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
+        def is_plugin_loaded(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Check if a plugin is loaded.
 
             Args:
                 plugin_name: Name of plugin to check
             Returns:
-                FlextResult indicating if plugin is loaded
+                FlextCore.Result indicating if plugin is loaded
 
             """
 
-    class Manager(FlextProtocols.Domain.Service):
+    class Manager(FlextCore.Protocols.Domain.Service):
         """Domain port interface for comprehensive plugin management and configuration."""
 
         @abstractmethod
         def install_plugin(
             self, plugin_path: str
-        ) -> FlextResult[FlextPluginEntities.Entity]:
+        ) -> FlextCore.Result[FlextPluginEntities.Entity]:
             """Install a plugin from the given path.
 
             Args:
                 plugin_path: Path to plugin to install
             Returns:
-                FlextResult containing installed plugin
+                FlextCore.Result containing installed plugin
 
             """
 
         @abstractmethod
-        def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def uninstall_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Uninstall a plugin.
 
             Args:
                 plugin_name: Name of plugin to uninstall
             Returns:
-                FlextResult indicating if uninstallation was successful
+                FlextCore.Result indicating if uninstallation was successful
 
             """
 
         @abstractmethod
-        def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def enable_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Enable a plugin.
 
             Args:
                 plugin_name: Name of plugin to enable
             Returns:
-                FlextResult indicating if enabling was successful
+                FlextCore.Result indicating if enabling was successful
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def disable_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Disable a plugin.
 
             Args:
                 plugin_name: Name of plugin to disable
             Returns:
-                FlextResult indicating if disabling was successful
+                FlextCore.Result indicating if disabling was successful
 
             """
             ...
@@ -146,13 +148,13 @@ class FlextPluginPorts:
         @abstractmethod
         def get_plugin_config(
             self, plugin_name: str
-        ) -> FlextResult[FlextPluginEntities.Config]:
+        ) -> FlextCore.Result[FlextPluginEntities.Config]:
             """Get configuration for a plugin.
 
             Args:
                 plugin_name: Name of plugin to get config for
             Returns:
-                FlextResult containing plugin configuration
+                FlextCore.Result containing plugin configuration
 
             """
             ...
@@ -163,45 +165,45 @@ class FlextPluginPorts:
             self,
             plugin_name: str,
             config: FlextPluginEntities.Config,
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Update configuration for a plugin.
 
             Args:
                 plugin_name: Name of plugin to update config for
                 config: New plugin configuration
             Returns:
-                FlextResult indicating if update was successful
+                FlextCore.Result indicating if update was successful
 
             """
             ...
             # Abstract method - implemented by adapters
 
-    class Registry(FlextProtocols.Domain.Service):
+    class Registry(FlextCore.Protocols.Domain.Service):
         """Domain port interface for plugin registry operations."""
 
         @abstractmethod
-        def register_registry(self, registry: str) -> FlextResult[bool]:
+        def register_registry(self, registry: str) -> FlextCore.Result[bool]:
             """Register a plugin registry.
 
             Args:
                 registry: Registry URL or identifier to register
 
             Returns:
-                FlextResult indicating if registration was successful
+                FlextCore.Result indicating if registration was successful
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def sync_registry(self, registry_name: str) -> FlextResult[bool]:
+        def sync_registry(self, registry_name: str) -> FlextCore.Result[bool]:
             """Synchronize with a plugin registry.
 
             Args:
                 registry_name: Name of registry to sync
 
             Returns:
-                FlextResult indicating if sync was successful
+                FlextCore.Result indicating if sync was successful
 
             """
             ...
@@ -212,7 +214,7 @@ class FlextPluginPorts:
             self,
             registry: str,
             query: str,
-        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
+        ) -> FlextCore.Result[list[FlextPluginTypes.Core.PluginDict]]:
             """Search for plugins in a specific registry.
 
             Args:
@@ -220,14 +222,16 @@ class FlextPluginPorts:
                 query: Search query string
 
             Returns:
-                FlextResult containing list of plugin search results
+                FlextCore.Result containing list of plugin search results
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def download_plugin(self, plugin_id: str, registry: str) -> FlextResult[str]:
+        def download_plugin(
+            self, plugin_id: str, registry: str
+        ) -> FlextCore.Result[str]:
             """Download a plugin from a registry.
 
             Args:
@@ -235,52 +239,52 @@ class FlextPluginPorts:
                 registry: Registry to download from
 
             Returns:
-                FlextResult containing path to downloaded plugin
+                FlextCore.Result containing path to downloaded plugin
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def verify_plugin_signature(self, plugin_path: str) -> FlextResult[bool]:
+        def verify_plugin_signature(self, plugin_path: str) -> FlextCore.Result[bool]:
             """Verify a plugin's digital signature.
 
             Args:
                 plugin_path: Path to plugin to verify
 
             Returns:
-                FlextResult indicating if signature is valid
+                FlextCore.Result indicating if signature is valid
 
             """
             ...
             # Abstract method - implemented by adapters
 
-    class HotReload(FlextProtocols.Domain.Service):
+    class HotReload(FlextCore.Protocols.Domain.Service):
         """Domain port interface for plugin hot reload operations."""
 
         @abstractmethod
         def start_watching(
             self,
             watch_paths: FlextPluginTypes.Core.StringList,
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Start watching for plugin file changes.
 
             Args:
                 watch_paths: List of paths to watch for changes
 
             Returns:
-                FlextResult indicating if watching was started successfully
+                FlextCore.Result indicating if watching was started successfully
 
             """
             ...
             # Abstract method - implemented by adapters
 
         @abstractmethod
-        def stop_watching(self: object) -> FlextResult[bool]:
+        def stop_watching(self: object) -> FlextCore.Result[bool]:
             """Stop watching for plugin file changes.
 
             Returns:
-                FlextResult indicating if watching was stopped successfully
+                FlextCore.Result indicating if watching was stopped successfully
 
             """
             ...
@@ -289,14 +293,14 @@ class FlextPluginPorts:
         @abstractmethod
         def reload_plugin(
             self, plugin: FlextPluginEntities.Entity
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Reload a specific plugin.
 
             Args:
                 plugin: Plugin entity to reload
 
             Returns:
-                FlextResult indicating if reload was successful
+                FlextCore.Result indicating if reload was successful
 
             """
             ...
@@ -306,14 +310,14 @@ class FlextPluginPorts:
         def backup_plugin_state(
             self,
             plugin_name: str,
-        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
             """Backup plugin state before reload.
 
             Args:
                 plugin_name: Name of plugin to backup
 
             Returns:
-                FlextResult containing backed up state data
+                FlextCore.Result containing backed up state data
 
             """
             ...
@@ -324,7 +328,7 @@ class FlextPluginPorts:
             self,
             plugin_name: str,
             state: FlextPluginTypes.Core.PluginDict,
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Restore plugin state after reload.
 
             Args:
@@ -332,7 +336,7 @@ class FlextPluginPorts:
                 state: State data to restore
 
             Returns:
-                FlextResult indicating if restoration was successful
+                FlextCore.Result indicating if restoration was successful
 
             """
             ...

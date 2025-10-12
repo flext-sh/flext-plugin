@@ -406,7 +406,7 @@ class TestFlextPluginModels:
 
         assert result.success is True
         assert result.data == {"output": "result"}
-        assert result.error == ""
+        assert not result.error
         assert result.plugin_name == "test-plugin"
         assert result.execution_time == 1.5
         assert result.execution_id == "exec-456"

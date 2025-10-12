@@ -80,7 +80,7 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 
 ### Foundation Libraries
 
-- **flext-core**: Base patterns, FlextResult, dependency injection container
+- **flext-core**: Base patterns, FlextCore.Result, dependency injection container
 - **flext-observability**: Monitoring, metrics, tracing, health checks
 
 ### Singer Ecosystem (15 Projects)

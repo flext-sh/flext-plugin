@@ -33,7 +33,7 @@ python -c "import flext_plugin; print('Setup successful')"
 
 ### FLEXT-Core Compliance
 
-- **FlextResult<T>**: All operations must return FlextResult
+- **FlextCore.Result<T>**: All operations must return FlextCore.Result
 - **Single Class Per Module**: Each module has one main class with nested helpers
 - **Clean Architecture**: Proper layer separation
 - **Type Safety**: 100% MyPy compliance
@@ -69,10 +69,10 @@ All modules follow the FLEXT single-class-per-module pattern:
 class FlextPluginEntities:
     """Unified plugin entities following FLEXT standards"""
 
-    class Plugin(FlextModels.Entity):
+    class Plugin(FlextCore.Models.Entity):
         """Main plugin entity with business rules"""
 
-    class Config(FlextModels.Entity):
+    class Config(FlextCore.Models.Entity):
         """Plugin configuration with validation"""
 
     class _ValidationHelper:
@@ -109,7 +109,7 @@ pytest -m "not slow"   # Skip slow tests
 
 - Use real dependencies over mocks when possible
 - Follow AAA pattern (Arrange, Act, Assert)
-- Test FlextResult success and failure paths
+- Test FlextCore.Result success and failure paths
 - Maintain 85% minimum coverage
 
 ---
@@ -130,13 +130,13 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    def execute(self, data: dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Plugin business logic"""
         try:
             # Process data
-            return FlextResult[FlextTypes.Dict].ok(processed_data)
+            return FlextCore.Result[FlextCore.Types.Dict].ok(processed_data)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(str(e))
+            return FlextCore.Result[FlextCore.Types.Dict].fail(str(e))
 ```
 
 ### Hot Reload Development

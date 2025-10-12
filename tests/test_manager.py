@@ -59,7 +59,7 @@ class TestSimplePluginRegistryComprehensive:
 
 
 class TestPluginManagerResultComprehensive:
-    """REAL test PluginManagerResult (FlextResult[str]) functionality."""
+    """REAL test PluginManagerResult (FlextCore.Result[str]) functionality."""
 
     def test_plugin_manager_result_success(self) -> None:
         """Test PluginManagerResult success creation."""

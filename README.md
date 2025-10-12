@@ -17,12 +17,12 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 1. **Plugin Lifecycle Management** - Discovery, loading, activation, deactivation, and hot-reload
 2. **Entry Points & File Discovery** - Dual discovery mechanisms for maximum flexibility
 3. **Security & Validation** - Plugin sandboxing and comprehensive validation framework
-4. **FLEXT Integration** - Complete FlextResult, FlextContainer, FlextModels patterns
+4. **FLEXT Integration** - Complete FlextCore.Result, FlextCore.Container, FlextCore.Models patterns
 5. **Singer/Meltano Support** - Foundation for data pipeline plugin ecosystem
 
 ### **Integration Points**
 
-- **flext-core** → FlextResult, FlextContainer, FlextModels, FlextUtilities, FlextLogger
+- **flext-core** → FlextCore.Result, FlextCore.Container, FlextCore.Models, FlextCore.Utilities, FlextCore.Logger
 - **flext-cli** → Command-line plugin management (implemented, disabled in **init**.py)
 - **watchdog** → File system monitoring for hot-reload capabilities
 - **Singer Projects** → Plugin framework for data pipeline taps and targets
@@ -37,10 +37,10 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 
 | Pattern             | Status      | Description                     |
 | ------------------- | ----------- | ------------------------------- |
-| **FlextResult<T>**  | 🟢 Complete | Operations return FlextResult   |
-| **FlextService**    | 🟢 Complete | FlextPluginService inheritance  |
-| **FlextContainer**  | 🟢 Complete | Dependency injection throughout |
-| **Domain Patterns** | 🟢 Complete | FlextModels.Entity inheritance  |
+| **FlextCore.Result<T>**  | 🟢 Complete | Operations return FlextCore.Result   |
+| **FlextCore.Service**    | 🟢 Complete | FlextPluginService inheritance  |
+| **FlextCore.Container**  | 🟢 Complete | Dependency injection throughout |
+| **Domain Patterns** | 🟢 Complete | FlextCore.Models.Entity inheritance  |
 
 > **Status**: 🟢 Production Ready · 0.9.0 Release | 🟢 Complete Implementation | 🟢 Enterprise Grade
 
@@ -51,7 +51,7 @@ flext-plugin provides plugin management infrastructure for dynamic component loa
 - **Public API**: 19 exports in `__init__.py` providing comprehensive interface
 - **Test Infrastructure**: 24 test files with unit, integration, and e2e coverage
 - **Architecture**: Clean Architecture with domain/application/infrastructure separation
-- **FLEXT Patterns**: Complete integration with FlextResult, FlextContainer, FlextModels
+- **FLEXT Patterns**: Complete integration with FlextCore.Result, FlextCore.Container, FlextCore.Models
 
 ### **Architecture Diagram**
 
@@ -91,10 +91,10 @@ python -c "import flext_plugin; print(f'Version: {flext_plugin.__version__}')"
 
 ```python
 from flext_plugin import FlextPluginPlatform
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
 # Initialize platform
-container = FlextContainer()
+container = FlextCore.Container()
 platform = FlextPluginPlatform(container)
 
 # Discover plugins (file-based only currently)
@@ -163,7 +163,7 @@ pytest tests/e2e/             # End-to-end tests only
 - **Coverage**: 90% minimum target with real plugin operations
 - **Type Safety**: Complete MyPy compliance across 23 modules
 - **Security**: File-based discovery (sandboxing framework planned)
-- **FLEXT-Core Compliance**: Complete FlextResult/Container/Models patterns
+- **FLEXT-Core Compliance**: Complete FlextCore.Result/Container/Models patterns
 - **Architecture**: Clean Architecture with 114 classes requiring consolidation
 - **Hot Reload**: Real-time plugin monitoring with watchdog integration
 
@@ -226,7 +226,7 @@ This project follows FLEXT ecosystem development standards:
 2. **Quality Gates**: 90% test coverage target, zero lint errors, type safety
 3. **Architecture**: Clean Architecture with domain/application/infrastructure layers
 4. **Modern Patterns**: File-based discovery, hot reload, security validation
-5. **Integration**: Complete FLEXT-core pattern usage with FlextResult throughout
+5. **Integration**: Complete FLEXT-core pattern usage with FlextCore.Result throughout
 
 See [CLAUDE.md](CLAUDE.md) for technical development guidance.
 

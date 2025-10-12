@@ -1,11 +1,11 @@
 """FLEXT Plugin Types - Domain-specific plugin system type definitions.
 
-This module provides plugin system-specific type definitions extending FlextTypes.
+This module provides plugin system-specific type definitions extending FlextCore.Types.
 Follows FLEXT standards:
 - Domain-specific complex types only
 - No simple aliases to primitive types
 - Python 3.13+ syntax
-- Extends FlextTypes properly
+- Extends FlextCore.Types properly
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -15,18 +15,18 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextCore
 
 # Plugin-specific TypeVars
-TPluginResult = TypeVar("TPluginResult", bound=FlextResult)
+TPluginResult = TypeVar("TPluginResult", bound=FlextCore.Result)
 
 # =============================================================================
 # PLUGIN-SPECIFIC TYPE VARIABLES - Domain-specific TypeVars for plugin operations
 # =============================================================================
 
 
-class FlextPluginTypes(FlextTypes):
-    """Plugin system-specific type definitions extending FlextTypes.
+class FlextPluginTypes(FlextCore.Types):
+    """Plugin system-specific type definitions extending FlextCore.Types.
 
     Domain-specific type system for plugin management operations.
     Contains ONLY complex plugin-specific types, no simple aliases.
@@ -34,46 +34,46 @@ class FlextPluginTypes(FlextTypes):
     """
 
     # =========================================================================
-    # CORE TYPES - Essential Plugin types extending FlextTypes
+    # CORE TYPES - Essential Plugin types extending FlextCore.Types
     # =========================================================================
 
-    class Core(FlextTypes.Core):
+    class Core(FlextCore.Types.Core):
         """Core Plugin system types for plugin management operations.
 
         Essential domain-specific types for plugin management operations.
-        Replaces generic FlextTypes.Dict with semantic plugin types.
+        Replaces generic FlextCore.Types.Dict with semantic plugin types.
         """
 
         # String collections
-        type StringList = list[str]
+        type StringList = FlextCore.Types.StringList
         type StringSet = set[str]
         type StringDict = dict[str, str]
 
         # Numeric collections
-        type IntList = list[int]
-        type FloatList = list[float]
+        type IntList = FlextCore.Types.IntList
+        type FloatList = FlextCore.Types.FloatList
         type IntDict = dict[str, int]
         type FloatDict = dict[str, float]
 
         # Mixed collections
-        type AnyList = list[object]
-        type AnyDict = dict[str, object]
+        type AnyList = FlextCore.Types.List
+        type AnyDict = FlextCore.Types.Dict
 
         # Plugin-specific collections
-        type PluginList = list[dict[str, object]]
-        type PluginDict = dict[str, object]
-        type ConfigDict = dict[str, object]
-        type SettingsDict = dict[str, object]
-        type MetadataDict = dict[str, object]
-        type InputDict = dict[str, object]
-        type OutputDict = dict[str, object]
+        type PluginList = list[FlextCore.Types.Dict]
+        type PluginDict = FlextCore.Types.Dict
+        type ConfigDict = FlextCore.Types.Dict
+        type SettingsDict = FlextCore.Types.Dict
+        type MetadataDict = FlextCore.Types.Dict
+        type InputDict = FlextCore.Types.Dict
+        type OutputDict = FlextCore.Types.Dict
 
         # Plugin entity types
-        type PluginEntity = dict[str, object]
-        type PluginConfig = dict[str, object]
-        type PluginMetadata = dict[str, object]
-        type PluginRegistry = dict[str, object]
-        type PluginExecution = dict[str, object]
+        type PluginEntity = FlextCore.Types.Dict
+        type PluginConfig = FlextCore.Types.Dict
+        type PluginMetadata = FlextCore.Types.Dict
+        type PluginRegistry = FlextCore.Types.Dict
+        type PluginExecution = FlextCore.Types.Dict
 
     class Lifecycle:
         """Plugin lifecycle and status types."""
@@ -88,43 +88,43 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = dict[str, object]
+        type SecurityConfig = FlextCore.Types.Dict
 
     class Performance:
         """Plugin performance and monitoring types."""
 
-        type Metrics = dict[str, object]
-        type PerformanceData = dict[str, object]
-        type ResourceUsage = dict[str, object]
+        type Metrics = FlextCore.Types.Dict
+        type PerformanceData = FlextCore.Types.Dict
+        type ResourceUsage = FlextCore.Types.Dict
 
     class Discovery:
         """Plugin discovery and loading types."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = dict[str, object]
+        type DiscoveryResult = FlextCore.Types.Dict
         type PluginLoader = object
         type EntryPoint = str
 
     class Execution:
         """Plugin execution and runtime types."""
 
-        type ExecutionContext = dict[str, object]
-        type ExecutionResult = dict[str, object]
+        type ExecutionContext = FlextCore.Types.Dict
+        type ExecutionResult = FlextCore.Types.Dict
         type ExecutionError = str
-        type ResourceLimits = dict[str, object]
+        type ResourceLimits = FlextCore.Types.Dict
 
     class Registry:
         """Plugin registry and management types."""
 
-        type RegistryConfig = dict[str, object]
-        type RegistryEntry = dict[str, object]
-        type RegistrySync = dict[str, object]
+        type RegistryConfig = FlextCore.Types.Dict
+        type RegistryEntry = FlextCore.Types.Dict
+        type RegistrySync = FlextCore.Types.Dict
 
     class HotReload:
         """Plugin hot reload and monitoring types."""
 
-        type WatchConfig = dict[str, object]
-        type ReloadEvent = dict[str, object]
+        type WatchConfig = FlextCore.Types.Dict
+        type ReloadEvent = FlextCore.Types.Dict
         type FileWatcher = object
 
 

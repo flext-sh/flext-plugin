@@ -11,14 +11,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import argparse
-import asyncio
 import socket
 import sys
 
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
 from flext_plugin import (
     FlextPluginApi,
+    FlextPluginConstants,
     FlextPluginModels,
 )
 
@@ -55,8 +55,8 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.PluginModel, dict
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginModels.PluginType.DATABASE,
-        status=FlextPluginModels.PluginStatus.DISCOVERED,
+        plugin_type=FlextPluginConstants.Types.TYPE_DATABASE,
+        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
         dependencies=["psycopg2-binary"],
         enabled=True,
     )
@@ -85,8 +85,8 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginModels.PluginType.DATABASE,
-        status=FlextPluginModels.PluginStatus.DISCOVERED,
+        plugin_type=FlextPluginConstants.Types.TYPE_DATABASE,
+        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
         dependencies=["redis"],
         enabled=True,
     )
@@ -115,8 +115,8 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginModels.PluginType.AUTHENTICATION,
-        status=FlextPluginModels.PluginStatus.DISCOVERED,
+        plugin_type=FlextPluginConstants.Types.TYPE_AUTHENTICATION,
+        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
         dependencies=["ldap3"],
         enabled=True,
     )
@@ -171,7 +171,7 @@ def main() -> None:
     # Test connections if requested
     if args.test_connections:
         print("\nTesting Docker service connectivity...")
-        services_available = asyncio.run(test_connections())
+        services_available = test_connections()
         if not services_available:
             sys.exit(1)
     else:
@@ -194,7 +194,7 @@ def main() -> None:
     print("\n🔍 Validating plugin configurations...")
 
     # Use FlextPluginApi for validation (domain library pattern)
-    container = FlextContainer()
+    container = FlextCore.Container()
     FlextPluginApi(container)
 
     # Validate PostgreSQL plugin configuration

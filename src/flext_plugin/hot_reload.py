@@ -12,7 +12,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextCore
 
 
 class FlextPluginHotReload:
@@ -52,7 +52,7 @@ class FlextPluginHotReload:
             max_retries: Maximum retry attempts for failed reloads
 
         """
-        self.logger = FlextLogger(__name__)
+        self.logger = FlextCore.Logger(__name__)
         self.watch_interval = watch_interval
         self.debounce_ms = debounce_ms
         self.max_retries = max_retries
@@ -63,33 +63,47 @@ class FlextPluginHotReload:
         self._file_timestamps: dict[Path, float] = {}
         self._reload_callbacks: list[Callable[[str], object]] = []
         self._watch_task: asyncio.Task | None = None
-        self._reload_history: list[dict[str, object]] = []
+        self._reload_history: list[FlextCore.Types.Dict] = []
 
-    async def start_watching(self, paths: list[str]) -> FlextResult[bool]:
+    def _resolve_watch_path(self, path_str: str) -> Path:
+        """Resolve and validate a watch path synchronously.
+
+        Args:
+            path_str: Path string to resolve
+
+        Returns:
+            Resolved Path object
+
+        """
+        return Path(path_str).expanduser().resolve()
+
+    async def start_watching(
+        self, paths: FlextCore.Types.StringList
+    ) -> FlextCore.Result[bool]:
         """Start watching the given paths for changes.
 
         Args:
             paths: List of paths to monitor for changes
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             if self._is_watching:
-                return FlextResult.fail("Hot reload is already watching")
+                return FlextCore.Result.fail("Hot reload is already watching")
 
             # Convert paths to Path objects
             watched_paths = set()
             for path_str in paths:
-                path_obj = Path(path_str).expanduser().resolve()
+                path_obj = self._resolve_watch_path(path_str)
                 if path_obj.exists():
                     watched_paths.add(path_obj)
                 else:
                     self.logger.warning(f"Watched path does not exist: {path_str}")
 
             if not watched_paths:
-                return FlextResult.fail("No valid paths to watch")
+                return FlextCore.Result.fail("No valid paths to watch")
 
             self._watched_paths = watched_paths
             self._is_watching = True
@@ -100,22 +114,22 @@ class FlextPluginHotReload:
             self.logger.info(
                 f"Started hot reload monitoring for {len(watched_paths)} paths"
             )
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to start hot reload watching")
-            return FlextResult.fail(f"Start watching error: {e!s}")
+            return FlextCore.Result.fail(f"Start watching error: {e!s}")
 
-    async def stop_watching(self) -> FlextResult[bool]:
+    async def stop_watching(self) -> FlextCore.Result[bool]:
         """Stop watching for changes.
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             if not self._is_watching:
-                return FlextResult.fail("Hot reload is not watching")
+                return FlextCore.Result.fail("Hot reload is not watching")
 
             self._is_watching = False
 
@@ -130,20 +144,20 @@ class FlextPluginHotReload:
             self._file_timestamps.clear()
 
             self.logger.info("Stopped hot reload monitoring")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to stop hot reload watching")
-            return FlextResult.fail(f"Stop watching error: {e!s}")
+            return FlextCore.Result.fail(f"Stop watching error: {e!s}")
 
-    async def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def reload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
         """Reload a specific plugin.
 
         Args:
             plugin_name: Name of the plugin to reload
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
@@ -160,7 +174,7 @@ class FlextPluginHotReload:
                         break
 
             if not plugin_path:
-                return FlextResult.fail(f"Plugin file not found: {plugin_name}")
+                return FlextCore.Result.fail(f"Plugin file not found: {plugin_name}")
 
             # Trigger reload callbacks
             for callback in self._reload_callbacks:
@@ -182,11 +196,11 @@ class FlextPluginHotReload:
             self._reload_history.append(reload_record)
 
             self.logger.info(f"Reloaded plugin: {plugin_name}")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
-            return FlextResult.fail(f"Reload error: {e!s}")
+            return FlextCore.Result.fail(f"Reload error: {e!s}")
 
     def is_watching(self) -> bool:
         """Check if hot reload is currently watching for changes.
@@ -197,7 +211,7 @@ class FlextPluginHotReload:
         """
         return self._is_watching
 
-    def get_watched_paths(self) -> list[str]:
+    def get_watched_paths(self) -> FlextCore.Types.StringList:
         """Get list of currently watched paths.
 
         Returns:
@@ -231,7 +245,7 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:
+    def get_reload_history(self, limit: int = 100) -> list[FlextCore.Types.Dict]:
         """Get reload history.
 
         Args:
@@ -332,11 +346,15 @@ class FlextPluginHotReload:
             # Apply debounce
             await asyncio.sleep(self.debounce_ms / 1000.0)
 
-            # Check if file still exists and has changed
-            if not file_path.exists():
+            # Check if file still exists and has changed (run in thread pool)
+            loop = asyncio.get_event_loop()
+            file_exists = await loop.run_in_executor(None, file_path.exists)
+            if not file_exists:
                 return
 
-            current_mtime = file_path.stat().st_mtime
+            current_mtime = await loop.run_in_executor(
+                None, lambda: file_path.stat().st_mtime
+            )
             if self._file_timestamps.get(file_path, 0) >= current_mtime:
                 return
 
@@ -361,7 +379,7 @@ class FlextPluginHotReload:
         """
         return datetime.now(UTC).isoformat()
 
-    def get_hot_reload_status(self) -> dict[str, object]:
+    def get_hot_reload_status(self) -> FlextCore.Types.Dict:
         """Get the current status of the hot reload service.
 
         Returns:
@@ -381,16 +399,16 @@ class FlextPluginHotReload:
             "callback_count": len(self._reload_callbacks),
         }
 
-    async def force_reload_all(self) -> FlextResult[dict[str, bool]]:
+    async def force_reload_all(self) -> FlextCore.Result[dict[str, bool]]:
         """Force reload all plugins in watched paths.
 
         Returns:
-            FlextResult containing reload results for each plugin
+            FlextCore.Result containing reload results for each plugin
 
         """
         try:
             if not self._is_watching:
-                return FlextResult.fail("Hot reload is not watching")
+                return FlextCore.Result.fail("Hot reload is not watching")
 
             reload_results = {}
 
@@ -406,58 +424,69 @@ class FlextPluginHotReload:
                         reload_results[plugin_name] = result.is_success
 
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return FlextResult.ok(reload_results)
+            return FlextCore.Result.ok(reload_results)
 
         except Exception as e:
             self.logger.exception("Failed to force reload all plugins")
-            return FlextResult.fail(f"Force reload error: {e!s}")
+            return FlextCore.Result.fail(f"Force reload error: {e!s}")
 
-    async def add_watch_path(self, path: str) -> FlextResult[bool]:
+    async def add_watch_path(self, path: str) -> FlextCore.Result[bool]:
         """Add a new path to watch.
 
         Args:
             path: Path to add to watch list
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
-            path_obj = Path(path).expanduser().resolve()
-            if not path_obj.exists():
-                return FlextResult.fail(f"Path does not exist: {path}")
+            # Run pathlib operations in thread pool
+            loop = asyncio.get_event_loop()
+            path_obj = await loop.run_in_executor(
+                None, lambda: Path(path).expanduser().resolve()
+            )
+            path_exists = await loop.run_in_executor(None, path_obj.exists)
+
+            if not path_exists:
+                return FlextCore.Result.fail(f"Path does not exist: {path}")
 
             self._watched_paths.add(path_obj)
             self.logger.info(f"Added watch path: {path}")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to add watch path: {path}")
-            return FlextResult.fail(f"Add watch path error: {e!s}")
+            return FlextCore.Result.fail(f"Add watch path error: {e!s}")
 
-    async def remove_watch_path(self, path: str) -> FlextResult[bool]:
+    async def remove_watch_path(self, path: str) -> FlextCore.Result[bool]:
         """Remove a path from watch list.
 
         Args:
             path: Path to remove from watch list
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
-            path_obj = Path(path).expanduser().resolve()
+            # Run pathlib operations in thread pool
+            loop = asyncio.get_event_loop()
+            path_obj = await loop.run_in_executor(
+                None, lambda: Path(path).expanduser().resolve()
+            )
+
             if path_obj in self._watched_paths:
                 self._watched_paths.remove(path_obj)
                 # Remove from timestamps
                 self._file_timestamps.pop(path_obj, None)
                 self.logger.info(f"Removed watch path: {path}")
-                return FlextResult.ok(True)
-            return FlextResult.fail(f"Path not being watched: {path}")
+                return FlextCore.Result.ok(True)
+            return FlextCore.Result.fail(f"Path not being watched: {path}")
 
         except Exception as e:
             self.logger.exception(f"Failed to remove watch path: {path}")
-            return FlextResult.fail(f"Remove watch path error: {e!s}")
+            return FlextCore.Result.fail(f"Remove watch path error: {e!s}")
 
 
 __all__ = ["FlextPluginHotReload"]

@@ -1,0 +1,57 @@
+@startuml Container Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container Diagram - FLEXT Plugin System
+
+Person(developer, "Plugin Developer", "Creates plugins and tests functionality")
+Person(operator, "System Operator", "Deploys FLEXT applications with plugins")
+
+System_Boundary(flext_plugin_system, "FLEXT Plugin System") {
+
+    Container(flext_plugin_core, "FLEXT Plugin Core", "Python Library", "Plugin lifecycle management: discovery, loading, execution, validation, hot-reload")
+    Container(flext_plugin_cli, "FLEXT Plugin CLI", "Python CLI Application", "Command-line interface for plugin management (optional, currently disabled)")
+    Container(flext_plugin_api, "FLEXT Plugin API", "Python REST API", "REST API for plugin operations (planned for future release)")
+
+    ContainerDb(plugin_registry, "Plugin Registry", "File System / SQLite", "Plugin metadata storage: configurations, versions, dependencies, execution history")
+    ContainerDb(plugin_cache, "Plugin Cache", "File System", "Compiled plugins, execution artifacts, performance optimizations")
+
+    Container(security_validator, "Security Validator", "Python Service", "Plugin security validation: sandboxing, integrity checks, permission validation")
+    Container(monitoring_service, "Monitoring Service", "Python Service", "Plugin metrics collection, health monitoring, performance tracking")
+}
+
+System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: FlextCore.Result[T], FlextCore.Container, FlextCore.Models, FlextCore.Logger")
+System_Ext(flext_observability, "FLEXT Observability", "Python Library", "Metrics collection, distributed tracing, health checks")
+
+System_Ext(pypi, "PyPI", "Package Repository", "Plugin package distribution and dependency management")
+System_Ext(github, "GitHub", "Git Repository", "Plugin source code hosting and CI/CD pipelines")
+
+System_Ext(flexcore, "FlexCore", "Go Container", "Runtime container with Go ↔ Python plugin bridge")
+System_Ext(flext_service, "FLEXT Service", "Go/Python Service", "Data platform with plugin execution support")
+
+Rel(developer, flext_plugin_cli, "Develops plugins using", "CLI development tools")
+Rel(developer, flext_plugin_core, "Imports and uses", "Python library APIs")
+Rel(operator, flext_plugin_cli, "Manages plugins via", "CLI deployment commands")
+Rel(operator, flext_plugin_api, "Manages plugins via", "REST API (planned)")
+
+Rel(flext_plugin_core, flext_core, "Depends on", "Core patterns and utilities")
+Rel(flext_plugin_core, flext_observability, "Integrates with", "Monitoring and observability")
+
+Rel(flext_plugin_cli, flext_plugin_core, "Uses", "Core plugin functionality")
+Rel(flext_plugin_api, flext_plugin_core, "Uses", "Core plugin functionality")
+
+Rel(flext_plugin_core, plugin_registry, "Reads/Writes", "Plugin metadata and state")
+Rel(flext_plugin_core, plugin_cache, "Reads/Writes", "Plugin artifacts and cache")
+
+Rel(flext_plugin_core, security_validator, "Validates plugins with", "Security and integrity checks")
+Rel(flext_plugin_core, monitoring_service, "Reports metrics to", "Performance and health monitoring")
+
+Rel(security_validator, flext_observability, "Integrates with", "Security event logging")
+Rel(monitoring_service, flext_observability, "Sends metrics to", "Centralized monitoring")
+
+Rel(flext_plugin_core, pypi, "Discovers plugins from", "Package metadata and dependencies")
+Rel(flext_plugin_core, github, "Downloads plugins from", "Source repositories")
+
+Rel(flext_plugin_core, flexcore, "Communicates with", "Plugin execution bridge")
+Rel(flext_plugin_core, flext_service, "Integrates with", "Service mesh and data platform")
+
+@enduml

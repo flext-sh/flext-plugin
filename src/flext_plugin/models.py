@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import re
 from datetime import UTC, datetime
-from enum import StrEnum
 from typing import Self
 
-from flext_core import FlextConstants, FlextModels
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
     field_serializer,
@@ -22,11 +22,12 @@ from pydantic import (
 from pydantic_settings import SettingsConfigDict
 
 from flext_plugin.constants import FlextPluginConstants
+from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginModels(FlextModels):
-    """Comprehensive models for plugin system operations extending FlextModels.
+class FlextPluginModels(FlextCore.Models):
+    """Comprehensive models for plugin system operations extending FlextCore.Models.
 
     Provides standardized models for all plugin domain entities including:
     - Plugin lifecycle and management
@@ -35,7 +36,7 @@ class FlextPluginModels(FlextModels):
     - Plugin registry and discovery
     - Plugin security and validation
 
-    All nested classes inherit FlextModels validation and patterns.
+    All nested classes inherit FlextCore.Models validation and patterns.
     """
 
     model_config = ConfigDict(
@@ -49,90 +50,7 @@ class FlextPluginModels(FlextModels):
         loc_by_alias=False,
     )
 
-    class PluginStatus(StrEnum):
-        """Plugin lifecycle and operational status enumeration."""
-
-        UNKNOWN = FlextPluginConstants.Lifecycle.STATUS_UNKNOWN
-        DISCOVERED = FlextPluginConstants.Lifecycle.STATUS_DISCOVERED
-        LOADED = FlextPluginConstants.Lifecycle.STATUS_LOADED
-        ACTIVE = FlextPluginConstants.Lifecycle.STATUS_ACTIVE
-        INACTIVE = FlextPluginConstants.Lifecycle.STATUS_INACTIVE
-        LOADING = FlextPluginConstants.Lifecycle.STATUS_LOADING
-        ERROR = FlextPluginConstants.Lifecycle.STATUS_ERROR
-        DISABLED = FlextPluginConstants.Lifecycle.STATUS_DISABLED
-        HEALTHY = FlextPluginConstants.Lifecycle.STATUS_HEALTHY
-        UNHEALTHY = FlextPluginConstants.Lifecycle.STATUS_UNHEALTHY
-
-        @classmethod
-        def get_operational_statuses(cls) -> list[Self]:
-            """Get statuses representing operational states."""
-            return [cls.ACTIVE, cls.HEALTHY, cls.LOADED]
-
-        @classmethod
-        def get_error_statuses(cls) -> list[Self]:
-            """Get statuses representing error states."""
-            return [cls.ERROR, cls.UNHEALTHY, cls.DISABLED]
-
-        def is_operational(self) -> bool:
-            """Check if status represents operational state."""
-            return self in self.get_operational_statuses()
-
-        def is_error_state(self) -> bool:
-            """Check if status represents error state."""
-            return self in self.get_error_statuses()
-
-    class PluginType(StrEnum):
-        """Plugin type classification for platform organization."""
-
-        # Singer ETL Types
-        TAP = FlextPluginConstants.Types.TYPE_TAP
-        TARGET = FlextPluginConstants.Types.TYPE_TARGET
-        TRANSFORM = FlextPluginConstants.Types.TYPE_TRANSFORM
-
-        # Architecture Types
-        EXTENSION = FlextPluginConstants.Types.TYPE_EXTENSION
-        SERVICE = FlextPluginConstants.Types.TYPE_SERVICE
-        MIDDLEWARE = FlextPluginConstants.Types.TYPE_MIDDLEWARE
-        TRANSFORMER = FlextPluginConstants.Types.TYPE_TRANSFORMER
-
-        # Integration Types
-        API = FlextPluginConstants.Types.TYPE_API
-        DATABASE = FlextPluginConstants.Types.TYPE_DATABASE
-        NOTIFICATION = FlextPluginConstants.Types.TYPE_NOTIFICATION
-        AUTHENTICATION = FlextPluginConstants.Types.TYPE_AUTHENTICATION
-        AUTHORIZATION = FlextPluginConstants.Types.TYPE_AUTHORIZATION
-
-        # Utility Types
-        UTILITY = FlextPluginConstants.Types.TYPE_UTILITY
-        TOOL = FlextPluginConstants.Types.TYPE_TOOL
-        HANDLER = FlextPluginConstants.Types.TYPE_HANDLER
-        PROCESSOR = FlextPluginConstants.Types.TYPE_PROCESSOR
-
-        # Additional Types
-        CORE = FlextPluginConstants.Types.TYPE_CORE
-        ADDON = FlextPluginConstants.Types.TYPE_ADDON
-        THEME = FlextPluginConstants.Types.TYPE_THEME
-        LANGUAGE = FlextPluginConstants.Types.TYPE_LANGUAGE
-
-        @classmethod
-        def get_etl_types(cls) -> list[Self]:
-            """Get ETL-related plugin types."""
-            return [cls.TAP, cls.TARGET, cls.TRANSFORM]
-
-        @classmethod
-        def get_architectural_types(cls) -> list[Self]:
-            """Get architectural plugin types."""
-            return [cls.EXTENSION, cls.SERVICE, cls.MIDDLEWARE, cls.TRANSFORMER]
-
-        def is_etl_plugin(self) -> bool:
-            """Check if this is an ETL plugin type."""
-            return self in self.get_etl_types()
-
-        def is_architectural_plugin(self) -> bool:
-            """Check if this is an architectural plugin type."""
-            return self in self.get_architectural_types()
-
-    class PluginModel(FlextModels.Entity):
+    class PluginModel(FlextCore.Models.Entity):
         """Core plugin entity model with comprehensive validation."""
 
         name: str = Field(
@@ -157,10 +75,10 @@ class FlextPluginModels(FlextModels):
             max_length=FlextPluginConstants.PluginValidation.MAX_AUTHOR_LENGTH,
             description="Plugin author",
         )
-        plugin_type: FlextPluginModels.PluginType = Field(
+        plugin_type: FlextPluginEntities.PluginType = Field(
             description="Plugin type classification",
         )
-        status: FlextPluginModels.PluginStatus = Field(
+        status: FlextPluginEntities.PluginStatus = Field(
             description="Current plugin operational status",
         )
         enabled: bool = Field(default=True, description="Plugin enabled state")
@@ -182,7 +100,7 @@ class FlextPluginModels(FlextModels):
         def validate_plugin_consistency(self) -> Self:
             """Validate plugin model consistency and constraints."""
             if (
-                self.status == FlextPluginModels.PluginStatus.ACTIVE
+                self.status == FlextPluginEntities.PluginStatus.ACTIVE
                 and not self.enabled
             ):
                 error_msg = FlextPluginConstants.PluginMessages.PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED
@@ -229,7 +147,7 @@ class FlextPluginModels(FlextModels):
                 "validated_at": datetime.now(UTC).isoformat(),
             }
 
-    class ConfigModel(FlextModels.BaseConfig):
+    class ConfigModel(BaseModel):
         """Plugin configuration model with comprehensive settings."""
 
         model_config = SettingsConfigDict(
@@ -253,18 +171,6 @@ class FlextPluginModels(FlextModels):
         max_cpu_percent: int = Field(default=50, description="Maximum CPU usage")
         auto_restart: bool = Field(default=True, description="Auto restart on failure")
         retry_attempts: int = Field(default=3, description="Maximum retry attempts")
-
-        @property
-        def is_high_performance(self) -> bool:
-            """Check if configuration meets high-performance criteria."""
-            return (
-                self.timeout_seconds <= FlextConstants.Performance.DEFAULT_TIMEOUT_LIMIT
-                and self.max_memory_mb
-                <= FlextConstants.Performance.MEMORY_CACHE_MAX_SIZE
-                // 1048576  # Convert bytes to MB
-                and self.max_cpu_percent
-                <= FlextConstants.Performance.CPU_THRESHOLD_PERCENT
-            )
 
         @field_validator("priority")
         @classmethod
@@ -293,7 +199,7 @@ class FlextPluginModels(FlextModels):
                 raise ValueError(error_msg)
             return value
 
-    class SecurityModel(FlextModels.Entity):
+    class SecurityModel(FlextCore.Models.Entity):
         """Plugin security model with enterprise-grade validation."""
 
         model_config = ConfigDict(
@@ -340,7 +246,7 @@ class FlextPluginModels(FlextModels):
                 and self.audit_logging
             )
 
-    class MonitoringModel(FlextModels.Entity):
+    class MonitoringModel(FlextCore.Models.Entity):
         """Plugin monitoring and observability model."""
 
         model_config = ConfigDict(
@@ -409,7 +315,9 @@ class FlextPluginModels(FlextModels):
             for key, threshold in value.items():
                 if (
                     key.endswith("_percent")
-                    and not 0 <= threshold <= FlextConstants.Validation.MAX_PERCENTAGE
+                    and not 0
+                    <= threshold
+                    <= FlextCore.Constants.Validation.MAX_PERCENTAGE
                 ):
                     error_msg = FlextPluginConstants.PluginMessages.PERCENTAGE_THRESHOLD_MUST_BE_0_100.format(
                         key=key
@@ -423,7 +331,7 @@ class FlextPluginModels(FlextModels):
 
             return value
 
-    class MetadataModel(FlextModels.Entity):
+    class MetadataModel(FlextCore.Models.Entity):
         """Plugin metadata model."""
 
         model_config = ConfigDict(
@@ -467,7 +375,7 @@ class FlextPluginModels(FlextModels):
             description="Required Python version",
         )
 
-    class ExecutionContextModel(FlextModels.Entity):
+    class ExecutionContextModel(FlextCore.Models.Entity):
         """Plugin execution context model."""
 
         model_config = ConfigDict(
@@ -494,7 +402,7 @@ class FlextPluginModels(FlextModels):
             description="Execution start timestamp",
         )
 
-    class ExecutionResultModel(FlextModels.Entity):
+    class ExecutionResultModel(FlextCore.Models.Entity):
         """Plugin execution result model."""
 
         model_config = ConfigDict(
@@ -528,7 +436,7 @@ class FlextPluginModels(FlextModels):
             """Return True if execution failed."""
             return not self.success
 
-    class ManagerResultModel(FlextModels.Entity):
+    class ManagerResultModel(FlextCore.Models.Entity):
         """Plugin manager operation result model."""
 
         model_config = ConfigDict(

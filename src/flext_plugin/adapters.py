@@ -6,13 +6,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
 import importlib
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-import trio
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextCore
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -40,8 +40,8 @@ class FlextPluginAdapters:
 
     def __init__(self) -> None:
         """Initialize the plugin adapters."""
-        self.logger = FlextLogger(__name__)
-        self._adapters: dict[str, object] = {}
+        self.logger = FlextCore.Logger(__name__)
+        self._adapters: FlextCore.Types.Dict = {}
 
     def get_discovery_adapter(self) -> FlextPluginProtocols.PluginDiscovery:
         """Get the plugin discovery adapter.
@@ -114,26 +114,37 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the file system discovery adapter."""
-            self.logger = FlextLogger(__name__)
+            self.logger = FlextCore.Logger(__name__)
+
+        def _resolve_plugin_path(self, path: str) -> Path:
+            """Resolve and validate a plugin path synchronously.
+
+            Args:
+                path: Path to resolve
+
+            Returns:
+                Resolved Path object
+
+            """
+            return Path(path).expanduser().resolve()
 
         async def discover_plugins(
             self, paths: FlextPluginTypes.Core.StringList
-        ) -> FlextResult[FlextPluginTypes.Core.PluginList]:
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginList]:
             """Discover plugins in the given paths.
 
             Args:
                 paths: List of paths to search for plugins
 
             Returns:
-                FlextResult containing list of discovered plugins
+                FlextCore.Result containing list of discovered plugins
 
             """
             try:
                 discovered_plugins = []
 
                 for path in paths:
-                    # Use trio.Path for async functions to avoid blocking operations
-                    path_obj = trio.Path(path).expanduser().resolve()
+                    path_obj = self._resolve_plugin_path(path)
                     if not path_obj.exists():
                         self.logger.warning(f"Path does not exist: {path}")
                         continue
@@ -149,68 +160,66 @@ class FlextPluginAdapters:
                         discovered_plugins.extend(plugins)
 
                 self.logger.info(f"Discovered {len(discovered_plugins)} plugins")
-                return FlextResult.ok(discovered_plugins)
+                return FlextCore.Result.ok(discovered_plugins)
 
             except Exception as e:
                 self.logger.exception("Plugin discovery failed")
-                return FlextResult.fail(f"Discovery error: {e!s}")
+                return FlextCore.Result.fail(f"Discovery error: {e!s}")
 
         async def discover_plugin(
             self, plugin_path: str
-        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
             """Discover a single plugin at the given path.
 
             Args:
                 plugin_path: Path to the plugin
 
             Returns:
-                FlextResult containing plugin data
+                FlextCore.Result containing plugin data
 
             """
             try:
-                # Use trio.Path for async functions to avoid blocking operations
-
-                path_obj = trio.Path(plugin_path).expanduser().resolve()
+                path_obj = self._resolve_plugin_path(plugin_path)
                 if not path_obj.exists():
-                    return FlextResult.fail(
+                    return FlextCore.Result.fail(
                         f"Plugin path does not exist: {plugin_path}"
                     )
 
                 plugin_data = await self._discover_single_file(path_obj)
                 if not plugin_data:
-                    return FlextResult.fail(
+                    return FlextCore.Result.fail(
                         f"Failed to discover plugin at: {plugin_path}"
                     )
 
-                return FlextResult.ok(plugin_data)
+                return FlextCore.Result.ok(plugin_data)
 
             except Exception as e:
                 self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-                return FlextResult.fail(f"Discovery error: {e!s}")
+                return FlextCore.Result.fail(f"Discovery error: {e!s}")
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Validate discovered plugin data.
 
             Args:
                 plugin_data: Plugin data to validate
 
             Returns:
-                FlextResult indicating validation success or failure
+                FlextCore.Result indicating validation success or failure
 
             """
             try:
                 required_fields = ["name", "version"]
                 for field in required_fields:
                     if field not in plugin_data:
-                        return FlextResult.fail(f"Missing required field: {field}")
+                        return FlextCore.Result.fail(f"Missing required field: {field}")
 
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception("Plugin validation failed")
-                return FlextResult.fail(f"Validation error: {e!s}")
+                return FlextCore.Result.fail(f"Validation error: {e!s}")
 
         async def _discover_single_file(
             self, path: Path
@@ -258,9 +267,11 @@ class FlextPluginAdapters:
             try:
                 discovered_plugins = []
 
-                # Use trio.Path for async functions to avoid blocking operations
-                trio_path = trio.Path(path)
-                for item in trio_path.iterdir():
+                # Run pathlib operations in thread pool
+                loop = asyncio.get_event_loop()
+                items = await loop.run_in_executor(None, list, path.iterdir())
+
+                for item in items:
                     if item.is_file() and item.suffix == ".py":
                         plugin_data = await self._discover_single_file(item)
                         if plugin_data:
@@ -281,27 +292,25 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the dynamic loader adapter."""
-            self.logger = FlextLogger(__name__)
-            self._loaded_plugins: dict[str, object] = {}
+            self.logger = FlextCore.Logger(__name__)
+            self._loaded_plugins: FlextCore.Types.Dict = {}
 
         async def load_plugin(
             self, plugin_path: str
-        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
             """Load a plugin from the given path.
 
             Args:
                 plugin_path: Path to the plugin to load
 
             Returns:
-                FlextResult containing loaded plugin data
+                FlextCore.Result containing loaded plugin data
 
             """
             try:
-                # Use trio.Path for async functions to avoid blocking operations
-
-                path_obj = trio.Path(plugin_path).expanduser().resolve()
+                path_obj = self._resolve_plugin_path(plugin_path)
                 if not path_obj.exists():
-                    return FlextResult.fail(
+                    return FlextCore.Result.fail(
                         f"Plugin path does not exist: {plugin_path}"
                     )
 
@@ -316,7 +325,7 @@ class FlextPluginAdapters:
                     module = importlib.import_module(module_name)
                     self._loaded_plugins[module_name] = module
                 except Exception as e:
-                    return FlextResult.fail(f"Failed to import module: {e!s}")
+                    return FlextCore.Result.fail(f"Failed to import module: {e!s}")
 
                 # Extract plugin information
                 plugin_data = {
@@ -327,25 +336,25 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Loaded plugin: {module_name}")
-                return FlextResult.ok(plugin_data)
+                return FlextCore.Result.ok(plugin_data)
 
             except Exception as e:
                 self.logger.exception(f"Failed to load plugin from {plugin_path}")
-                return FlextResult.fail(f"Loading error: {e!s}")
+                return FlextCore.Result.fail(f"Loading error: {e!s}")
 
-        async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        async def unload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Unload a plugin by name.
 
             Args:
                 plugin_name: Name of the plugin to unload
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
                 if plugin_name not in self._loaded_plugins:
-                    return FlextResult.fail(f"Plugin not loaded: {plugin_name}")
+                    return FlextCore.Result.fail(f"Plugin not loaded: {plugin_name}")
 
                 # Remove from loaded plugins
                 del self._loaded_plugins[plugin_name]
@@ -355,11 +364,11 @@ class FlextPluginAdapters:
                     del sys.modules[plugin_name]
 
                 self.logger.info(f"Unloaded plugin: {plugin_name}")
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception(f"Failed to unload plugin {plugin_name}")
-                return FlextResult.fail(f"Unloading error: {e!s}")
+                return FlextCore.Result.fail(f"Unloading error: {e!s}")
 
         def is_plugin_loaded(self, plugin_name: str) -> bool:
             """Check if a plugin is currently loaded.
@@ -373,7 +382,7 @@ class FlextPluginAdapters:
             """
             return plugin_name in self._loaded_plugins
 
-        def get_loaded_plugins(self) -> list[str]:
+        def get_loaded_plugins(self) -> FlextCore.Types.StringList:
             """Get list of currently loaded plugin names.
 
             Returns:
@@ -387,14 +396,14 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin executor adapter."""
-            self.logger = FlextLogger(__name__)
-            self._running_executions: dict[str, object] = {}
+            self.logger = FlextCore.Logger(__name__)
+            self._running_executions: FlextCore.Types.Dict = {}
 
         async def execute_plugin(
             self,
             plugin_name: str,
             context: FlextPluginTypes.Execution.ExecutionContext,
-        ) -> FlextResult[FlextPluginTypes.Execution.ExecutionResult]:
+        ) -> FlextCore.Result[FlextPluginTypes.Execution.ExecutionResult]:
             """Execute a plugin with the given context.
 
             Args:
@@ -402,7 +411,7 @@ class FlextPluginAdapters:
                 context: Execution context
 
             Returns:
-                FlextResult containing execution result
+                FlextCore.Result containing execution result
 
             """
             try:
@@ -418,53 +427,55 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Executed plugin: {plugin_name}")
-                return FlextResult.ok(execution_result)
+                return FlextCore.Result.ok(execution_result)
 
             except Exception as e:
                 self.logger.exception(f"Failed to execute plugin {plugin_name}")
-                return FlextResult.fail(f"Execution error: {e!s}")
+                return FlextCore.Result.fail(f"Execution error: {e!s}")
 
-        async def stop_execution(self, execution_id: str) -> FlextResult[bool]:
+        async def stop_execution(self, execution_id: str) -> FlextCore.Result[bool]:
             """Stop a running execution.
 
             Args:
                 execution_id: ID of the execution to stop
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
                 if execution_id in self._running_executions:
                     del self._running_executions[execution_id]
                     self.logger.info(f"Stopped execution: {execution_id}")
-                    return FlextResult.ok(True)
-                return FlextResult.fail(f"Execution not found: {execution_id}")
+                    return FlextCore.Result.ok(True)
+                return FlextCore.Result.fail(f"Execution not found: {execution_id}")
 
             except Exception as e:
                 self.logger.exception(f"Failed to stop execution {execution_id}")
-                return FlextResult.fail(f"Stop execution error: {e!s}")
+                return FlextCore.Result.fail(f"Stop execution error: {e!s}")
 
-        async def get_execution_status(self, execution_id: str) -> FlextResult[str]:
+        async def get_execution_status(
+            self, execution_id: str
+        ) -> FlextCore.Result[str]:
             """Get the status of a running execution.
 
             Args:
                 execution_id: ID of the execution
 
             Returns:
-                FlextResult containing execution status
+                FlextCore.Result containing execution status
 
             """
             try:
                 if execution_id in self._running_executions:
-                    return FlextResult.ok("running")
-                return FlextResult.ok("completed")
+                    return FlextCore.Result.ok("running")
+                return FlextCore.Result.ok("completed")
 
             except Exception as e:
                 self.logger.exception(f"Failed to get execution status {execution_id}")
-                return FlextResult.fail(f"Status check error: {e!s}")
+                return FlextCore.Result.fail(f"Status check error: {e!s}")
 
-        def list_running_executions(self) -> list[str]:
+        def list_running_executions(self) -> FlextCore.Types.StringList:
             """List all currently running execution IDs.
 
             Returns:
@@ -478,40 +489,40 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin security adapter."""
-            self.logger = FlextLogger(__name__)
+            self.logger = FlextCore.Logger(__name__)
 
         async def validate_plugin(
             self, plugin: FlextPluginTypes.Core.PluginEntity
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Validate a plugin for security compliance.
 
             Args:
                 plugin: Plugin entity to validate
 
             Returns:
-                FlextResult indicating validation success or failure
+                FlextCore.Result indicating validation success or failure
 
             """
             try:
                 # Basic security validation
                 if not plugin.get("name"):
-                    return FlextResult.fail("Plugin name is required")
+                    return FlextCore.Result.fail("Plugin name is required")
 
                 if not plugin.get("version"):
-                    return FlextResult.fail("Plugin version is required")
+                    return FlextCore.Result.fail("Plugin version is required")
 
                 self.logger.info(
                     f"Security validation passed for plugin: {plugin.get('name')}"
                 )
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception("Plugin security validation failed")
-                return FlextResult.fail(f"Security validation error: {e!s}")
+                return FlextCore.Result.fail(f"Security validation error: {e!s}")
 
         async def check_permissions(
             self, plugin_name: str, _permissions: FlextPluginTypes.Core.StringList
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Check if a plugin has the required permissions.
 
             Args:
@@ -519,30 +530,30 @@ class FlextPluginAdapters:
                 permissions: List of required permissions
 
             Returns:
-                FlextResult indicating permission check result
+                FlextCore.Result indicating permission check result
 
             """
             try:
                 # Basic permission check (always allow for now)
                 self.logger.info(f"Permission check passed for plugin: {plugin_name}")
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception(
                     f"Permission check failed for plugin {plugin_name}"
                 )
-                return FlextResult.fail(f"Permission check error: {e!s}")
+                return FlextCore.Result.fail(f"Permission check error: {e!s}")
 
         async def scan_plugin_security(
             self, plugin_path: str
-        ) -> FlextResult[dict[str, object]]:
+        ) -> FlextCore.Result[FlextCore.Types.Dict]:
             """Perform security scan on a plugin.
 
             Args:
                 plugin_path: Path to the plugin
 
             Returns:
-                FlextResult containing security scan results
+                FlextCore.Result containing security scan results
 
             """
             try:
@@ -555,31 +566,31 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Security scan completed for: {plugin_path}")
-                return FlextResult.ok(scan_results)
+                return FlextCore.Result.ok(scan_results)
 
             except Exception as e:
                 self.logger.exception(f"Security scan failed for {plugin_path}")
-                return FlextResult.fail(f"Security scan error: {e!s}")
+                return FlextCore.Result.fail(f"Security scan error: {e!s}")
 
-        async def get_security_level(self, plugin_name: str) -> FlextResult[str]:
+        async def get_security_level(self, plugin_name: str) -> FlextCore.Result[str]:
             """Get the security level of a plugin.
 
             Args:
                 plugin_name: Name of the plugin
 
             Returns:
-                FlextResult containing security level
+                FlextCore.Result containing security level
 
             """
             try:
                 # Default security level
                 security_level = "medium"
                 self.logger.info(f"Security level for {plugin_name}: {security_level}")
-                return FlextResult.ok(security_level)
+                return FlextCore.Result.ok(security_level)
 
             except Exception as e:
                 self.logger.exception(f"Failed to get security level for {plugin_name}")
-                return FlextResult.fail(f"Security level error: {e!s}")
+                return FlextCore.Result.fail(f"Security level error: {e!s}")
 
         def _get_current_timestamp(self) -> str:
             """Get current timestamp as ISO string."""
@@ -590,93 +601,99 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the memory registry adapter."""
-            self.logger = FlextLogger(__name__)
+            self.logger = FlextCore.Logger(__name__)
             self._plugins: dict[str, FlextPluginTypes.Core.PluginEntity] = {}
 
         async def register_plugin(
             self, plugin: FlextPluginTypes.Core.PluginEntity
-        ) -> FlextResult[bool]:
+        ) -> FlextCore.Result[bool]:
             """Register a plugin in the registry.
 
             Args:
                 plugin: Plugin entity to register
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
                 plugin_name = plugin.get("name")
                 if not plugin_name:
-                    return FlextResult.fail("Plugin name is required")
+                    return FlextCore.Result.fail("Plugin name is required")
 
                 if plugin_name in self._plugins:
-                    return FlextResult.fail(f"Plugin already registered: {plugin_name}")
+                    return FlextCore.Result.fail(
+                        f"Plugin already registered: {plugin_name}"
+                    )
 
                 self._plugins[plugin_name] = plugin
                 self.logger.info(f"Registered plugin: {plugin_name}")
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception(f"Failed to register plugin: {plugin}")
-                return FlextResult.fail(f"Registration error: {e!s}")
+                return FlextCore.Result.fail(f"Registration error: {e!s}")
 
-        async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        async def unregister_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Unregister a plugin from the registry.
 
             Args:
                 plugin_name: Name of the plugin to unregister
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
                 if plugin_name not in self._plugins:
-                    return FlextResult.fail(f"Plugin not registered: {plugin_name}")
+                    return FlextCore.Result.fail(
+                        f"Plugin not registered: {plugin_name}"
+                    )
 
                 del self._plugins[plugin_name]
                 self.logger.info(f"Unregistered plugin: {plugin_name}")
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception(f"Failed to unregister plugin {plugin_name}")
-                return FlextResult.fail(f"Unregistration error: {e!s}")
+                return FlextCore.Result.fail(f"Unregistration error: {e!s}")
 
         async def get_plugin(
             self, plugin_name: str
-        ) -> FlextResult[FlextPluginTypes.Core.PluginEntity | None]:
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginEntity | None]:
             """Get a plugin by name.
 
             Args:
                 plugin_name: Name of the plugin
 
             Returns:
-                FlextResult containing plugin entity if found
+                FlextCore.Result containing plugin entity if found
 
             """
             try:
                 plugin = self._plugins.get(plugin_name)
-                return FlextResult.ok(plugin)
+                return FlextCore.Result.ok(plugin)
 
             except Exception as e:
                 self.logger.exception(f"Failed to get plugin {plugin_name}")
-                return FlextResult.fail(f"Get plugin error: {e!s}")
+                return FlextCore.Result.fail(f"Get plugin error: {e!s}")
 
-        async def list_plugins(self) -> FlextResult[FlextPluginTypes.Core.PluginList]:
+        async def list_plugins(
+            self,
+        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginList]:
             """List all registered plugins.
 
             Returns:
-                FlextResult containing list of plugin entities
+                FlextCore.Result containing list of plugin entities
 
             """
             try:
                 plugins = list(self._plugins.values())
-                return FlextResult.ok(plugins)
+                return FlextCore.Result.ok(plugins)
 
             except Exception as e:
                 self.logger.exception("Failed to list plugins")
-                return FlextResult.fail(f"List plugins error: {e!s}")
+                return FlextCore.Result.fail(f"List plugins error: {e!s}")
 
         def is_plugin_registered(self, plugin_name: str) -> bool:
             """Check if a plugin is registered.
@@ -695,17 +712,17 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin monitoring adapter."""
-            self.logger = FlextLogger(__name__)
-            self._monitored_plugins: dict[str, dict[str, object]] = {}
+            self.logger = FlextCore.Logger(__name__)
+            self._monitored_plugins: dict[str, FlextCore.Types.Dict] = {}
 
-        async def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+        async def start_monitoring(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Start monitoring a plugin.
 
             Args:
                 plugin_name: Name of the plugin to monitor
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
@@ -716,73 +733,75 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Started monitoring plugin: {plugin_name}")
-                return FlextResult.ok(True)
+                return FlextCore.Result.ok(True)
 
             except Exception as e:
                 self.logger.exception(f"Failed to start monitoring {plugin_name}")
-                return FlextResult.fail(f"Start monitoring error: {e!s}")
+                return FlextCore.Result.fail(f"Start monitoring error: {e!s}")
 
-        async def stop_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+        async def stop_monitoring(self, plugin_name: str) -> FlextCore.Result[bool]:
             """Stop monitoring a plugin.
 
             Args:
                 plugin_name: Name of the plugin to stop monitoring
 
             Returns:
-                FlextResult indicating success or failure
+                FlextCore.Result indicating success or failure
 
             """
             try:
                 if plugin_name in self._monitored_plugins:
                     del self._monitored_plugins[plugin_name]
                     self.logger.info(f"Stopped monitoring plugin: {plugin_name}")
-                    return FlextResult.ok(True)
-                return FlextResult.fail(f"Plugin not being monitored: {plugin_name}")
+                    return FlextCore.Result.ok(True)
+                return FlextCore.Result.fail(
+                    f"Plugin not being monitored: {plugin_name}"
+                )
 
             except Exception as e:
                 self.logger.exception(f"Failed to stop monitoring {plugin_name}")
-                return FlextResult.fail(f"Stop monitoring error: {e!s}")
+                return FlextCore.Result.fail(f"Stop monitoring error: {e!s}")
 
         async def get_plugin_metrics(
             self, plugin_name: str
-        ) -> FlextResult[FlextPluginTypes.Performance.Metrics]:
+        ) -> FlextCore.Result[FlextPluginTypes.Performance.Metrics]:
             """Get metrics for a plugin.
 
             Args:
                 plugin_name: Name of the plugin
 
             Returns:
-                FlextResult containing plugin metrics
+                FlextCore.Result containing plugin metrics
 
             """
             try:
                 if plugin_name not in self._monitored_plugins:
-                    return FlextResult.fail(
+                    return FlextCore.Result.fail(
                         f"Plugin not being monitored: {plugin_name}"
                     )
 
                 metrics = self._monitored_plugins[plugin_name]["metrics"]
-                return FlextResult.ok(metrics)
+                return FlextCore.Result.ok(metrics)
 
             except Exception as e:
                 self.logger.exception(f"Failed to get metrics for {plugin_name}")
-                return FlextResult.fail(f"Get metrics error: {e!s}")
+                return FlextCore.Result.fail(f"Get metrics error: {e!s}")
 
         async def get_plugin_health(
             self, plugin_name: str
-        ) -> FlextResult[dict[str, object]]:
+        ) -> FlextCore.Result[FlextCore.Types.Dict]:
             """Get health status for a plugin.
 
             Args:
                 plugin_name: Name of the plugin
 
             Returns:
-                FlextResult containing plugin health information
+                FlextCore.Result containing plugin health information
 
             """
             try:
                 if plugin_name not in self._monitored_plugins:
-                    return FlextResult.fail(
+                    return FlextCore.Result.fail(
                         f"Plugin not being monitored: {plugin_name}"
                     )
 
@@ -796,11 +815,11 @@ class FlextPluginAdapters:
                     ],
                 }
 
-                return FlextResult.ok(health_info)
+                return FlextCore.Result.ok(health_info)
 
             except Exception as e:
                 self.logger.exception(f"Failed to get health for {plugin_name}")
-                return FlextResult.fail(f"Get health error: {e!s}")
+                return FlextCore.Result.fail(f"Get health error: {e!s}")
 
         def is_monitoring(self, plugin_name: str) -> bool:
             """Check if a plugin is being monitored.

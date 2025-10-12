@@ -13,16 +13,16 @@ from __future__ import annotations
 from enum import Enum
 from typing import override
 
-from flext_core import FlextExceptions
+from flext_core import FlextCore
 
 
-class FlextPluginExceptions(FlextExceptions):
+class FlextPluginExceptions(FlextCore.Exceptions):
     """Single CONSOLIDATED class containing ALL plugin exceptions."""
 
     @classmethod
     def _extract_common_kwargs(
-        cls, kwargs: dict[str, object]
-    ) -> tuple[dict[str, object], str | None, str | None]:
+        cls, kwargs: FlextCore.Types.Dict
+    ) -> tuple[FlextCore.Types.Dict, str | None, str | None]:
         """Extract common kwargs for error initialization.
 
         Args:
@@ -50,9 +50,9 @@ class FlextPluginExceptions(FlextExceptions):
             if k not in {"context", "correlation_id", "error_code"}
         }
 
-        # Build context dict, ensuring it's always dict[str, object]
+        # Build context dict, ensuring it's always FlextCore.Types.Dict
         if isinstance(context_raw, dict):
-            context: dict[str, object] = dict(context_raw)
+            context: FlextCore.Types.Dict = dict(context_raw)
             if remaining_kwargs:
                 context.update(remaining_kwargs)
         else:
@@ -63,8 +63,8 @@ class FlextPluginExceptions(FlextExceptions):
 
     @classmethod
     def _build_context(
-        cls, base_context: dict[str, object], **additional_fields: object
-    ) -> dict[str, object]:
+        cls, base_context: FlextCore.Types.Dict, **additional_fields: object
+    ) -> FlextCore.Types.Dict:
         """Build error context dictionary with additional fields.
 
         Args:
@@ -99,8 +99,8 @@ class FlextPluginExceptions(FlextExceptions):
         PLUGIN_PLATFORM_ERROR = "PLUGIN_PLATFORM_ERROR"
 
     # Base plugin exception classes as nested classes
-    class PluginBaseError(FlextExceptions.BaseError):
-        """Base exception for all plugin domain errors extending FlextExceptions.BaseError."""
+    class PluginBaseError(FlextCore.Exceptions.BaseError):
+        """Base exception for all plugin domain errors extending FlextCore.Exceptions.BaseError."""
 
         @override
         def __init__(
@@ -666,8 +666,8 @@ class FlextPluginExceptions(FlextExceptions):
     class HotReloadOperationError(HotReloadError):
         """Plugin hot reload operation specific errors."""
 
-    class ProcessingError(FlextExceptions.BaseError):
-        """Plugin processing operation errors extending FlextExceptions.BaseError."""
+    class ProcessingError(FlextCore.Exceptions.BaseError):
+        """Plugin processing operation errors extending FlextCore.Exceptions.BaseError."""
 
         @override
         def __init__(

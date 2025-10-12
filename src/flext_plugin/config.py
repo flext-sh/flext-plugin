@@ -6,15 +6,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConfig
+from flext_core import FlextCore
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_plugin.constants import FlextPluginConstants
 
 
-class FlextPluginConfig(FlextConfig):
-    """Plugin system configuration management extending FlextConfig.
+class FlextPluginConfig(FlextCore.Config):
+    """Plugin system configuration management extending FlextCore.Config.
 
     Provides comprehensive configuration management for all plugin system operations
     including discovery, loading, execution, security, and monitoring settings.
@@ -45,7 +45,7 @@ class FlextPluginConfig(FlextConfig):
     class Discovery:
         """Plugin discovery configuration settings."""
 
-        plugin_paths: list[str] = Field(
+        plugin_paths: FlextCore.Types.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Discovery.DEFAULT_PLUGIN_PATHS,
             description="Paths to search for plugins",
         )
@@ -65,7 +65,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Search subdirectories recursively",
         )
-        file_extensions: list[str] = Field(
+        file_extensions: FlextCore.Types.StringList = Field(
             default_factory=lambda: [
                 FlextPluginConstants.Files.PYTHON_EXTENSION,
                 FlextPluginConstants.Files.YAML_CONFIG_EXTENSION,
@@ -77,7 +77,9 @@ class FlextPluginConfig(FlextConfig):
 
         @field_validator("plugin_paths")
         @classmethod
-        def validate_plugin_paths(cls, v: list[str]) -> list[str]:
+        def validate_plugin_paths(
+            cls, v: FlextCore.Types.StringList
+        ) -> FlextCore.Types.StringList:
             """Validate plugin paths are not empty."""
             if not v:
                 raise ValueError(
@@ -110,11 +112,11 @@ class FlextPluginConfig(FlextConfig):
             default=False,
             description="Require signature verification for plugins",
         )
-        allowed_imports: list[str] = Field(
+        allowed_imports: FlextCore.Types.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_ALLOWED_IMPORTS,
             description="Allowed import modules for plugins",
         )
-        blocked_imports: list[str] = Field(
+        blocked_imports: FlextCore.Types.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_BLOCKED_IMPORTS,
             description="Blocked import modules for plugins",
         )
@@ -151,11 +153,11 @@ class FlextPluginConfig(FlextConfig):
             description="Maximum memory usage in MB",
         )
         max_cpu_percent: int = Field(
-            default=FlextPluginConstants.Performance.DEFAULT_MAX_CPU_PERCENT,
+            default=FlextPluginConstants.PluginPerformance.DEFAULT_MAX_CPU_PERCENT,
             description="Maximum CPU usage percentage",
         )
         max_concurrent_plugins: int = Field(
-            default=FlextPluginConstants.Performance.DEFAULT_MAX_CONCURRENT_PLUGINS,
+            default=FlextPluginConstants.PluginPerformance.DEFAULT_MAX_CONCURRENT_PLUGINS,
             description="Maximum number of concurrent plugins",
         )
         enable_resource_monitoring: bool = Field(
@@ -189,7 +191,11 @@ class FlextPluginConfig(FlextConfig):
         @classmethod
         def validate_cpu_percent(cls, v: int) -> int:
             """Validate CPU percentage is valid."""
-            if not 0 <= v <= 100:
+            if (
+                not FlextPluginConstants.PluginPerformance.PERCENTAGE_MIN
+                <= v
+                <= FlextPluginConstants.PluginPerformance.PERCENTAGE_MAX
+            ):
                 raise ValueError(
                     FlextPluginConstants.PluginMessages.CPU_PERCENTAGE_MUST_BE_BETWEEN_0_AND_100
                 )
@@ -218,7 +224,7 @@ class FlextPluginConfig(FlextConfig):
             default=True,
             description="Enable rollback on reload failure",
         )
-        watch_paths: list[str] = Field(
+        watch_paths: FlextCore.Types.StringList = Field(
             default_factory=list,
             description="Additional paths to watch for changes",
         )
@@ -324,7 +330,7 @@ class FlextPluginConfig(FlextConfig):
             default=False,
             description="Verify plugin signatures",
         )
-        trusted_publishers: list[str] = Field(
+        trusted_publishers: FlextCore.Types.StringList = Field(
             default_factory=list,
             description="List of trusted plugin publishers",
         )
@@ -351,7 +357,7 @@ class FlextPluginConfig(FlextConfig):
     monitoring: Monitoring = Field(default_factory=Monitoring)
     registry: Registry = Field(default_factory=Registry)
 
-    def get_plugin_paths(self) -> list[str]:
+    def get_plugin_paths(self) -> FlextCore.Types.StringList:
         """Get all configured plugin paths."""
         return self.discovery.plugin_paths
 
@@ -370,7 +376,7 @@ class FlextPluginConfig(FlextConfig):
             or self.monitoring.performance_tracking
         )
 
-    def get_performance_limits(self) -> dict[str, object]:
+    def get_performance_limits(self) -> FlextCore.Types.Dict:
         """Get performance limit configuration."""
         return {
             "max_memory_mb": self.performance.max_memory_mb,

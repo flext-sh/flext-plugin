@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextTypes, FlextUtilities
+from flext_core import FlextCore
 
 from flext_plugin import (
     PluginStatus,
@@ -40,7 +40,7 @@ create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
 def _run(
-    cmd_list: FlextTypes.StringList,
+    cmd_list: FlextCore.Types.StringList,
     cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
@@ -63,7 +63,7 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    result = FlextUtilities.run_external_command(
+    result = FlextCore.Utilities.run_external_command(
         [sys.executable, str(example_path)],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,
@@ -123,7 +123,7 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = FlextUtilities.run_external_command(
+    result = FlextCore.Utilities.run_external_command(
         [sys.executable, str(example_path)],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,
@@ -231,12 +231,12 @@ def test_plugin_configuration_example_functionality() -> None:
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
     routes = cast(
-        "FlextTypes.Dict",
+        "FlextCore.Types.Dict",
         standalone_config.config_data.get("routes", {}),
     )
     assert len(routes) == 2
     middleware = cast(
-        "FlextTypes.StringList",
+        "FlextCore.Types.StringList",
         standalone_config.config_data.get("middleware", []),
     )
     assert "cors" in middleware
@@ -389,7 +389,7 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = FlextUtilities.run_external_command(
+    result = FlextCore.Utilities.run_external_command(
         _run(
             [sys.executable, str(example_path)],
             cwd=str(Path(__file__).parent.parent),
@@ -513,7 +513,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    result = FlextUtilities.run_external_command(
+    result = FlextCore.Utilities.run_external_command(
         [sys.executable, str(example_path), "--test-connections"],
         cwd=str(Path(__file__).parent.parent),
         capture_output=True,

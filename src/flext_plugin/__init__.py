@@ -14,10 +14,10 @@ This module provides comprehensive plugin management capabilities including:
 Usage:
     ```python
     from flext_plugin import FlextPluginApi
-    from flext_core import FlextContainer
+    from flext_core import FlextCore
 
     # Initialize plugin system
-    container = FlextContainer()
+    container = FlextCore.Container()
     api = FlextPluginApi(container)
 
     # Discover and load plugins
@@ -52,9 +52,6 @@ from flext_plugin.version import VERSION, FlextPluginVersion
 
 # Version information
 PROJECT_VERSION: Final[FlextPluginVersion] = VERSION
-
-__version__: str = VERSION.version
-__version_info__: tuple[int | str, ...] = VERSION.version_info
 
 # Main API exports
 __all__ = [

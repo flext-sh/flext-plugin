@@ -66,7 +66,7 @@ make plugin-validate       # Validate plugin system
 ```python
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextResult
+from flext_core import FlextCore
 
 class MyPlugin(FlextPlugin):
     def __init__(self, **kwargs):
@@ -77,17 +77,17 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> FlextCore.Result[bool]:
         # Setup plugin resources
-        return FlextResult[None].ok(data=True)
+        return FlextCore.Result[None].ok(data=True)
 
-    def execute(self, data) -> FlextResult:
+    def execute(self, data) -> FlextCore.Result:
         # Core plugin logic
-        return FlextResult[None].ok({"processed": True})
+        return FlextCore.Result[None].ok({"processed": True})
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> FlextCore.Result[bool]:
         # Cleanup resources
-        return FlextResult[None].ok(data=True)
+        return FlextCore.Result[None].ok(data=True)
 ```
 
 ### Development Workflow

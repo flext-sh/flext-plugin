@@ -1,0 +1,67 @@
+@startuml Component Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram - FLEXT Plugin System
+
+Container(flext_plugin_core, "FLEXT Plugin Core", "Python Library")
+
+Boundary(api_boundary, "API Layer") {
+    Component(api, "FlextPluginApi", "Python Class", "Unified API facade for all plugin operations")
+    Component(platform, "FlextPluginPlatform", "Python Class", "Main platform with protocol-based architecture")
+}
+
+Boundary(application_boundary, "Application Layer") {
+    Component(services, "FlextPluginService", "Python Class", "Application services for plugin operations")
+    Component(handlers, "FlextPluginHandlers", "Python Class", "Event handling and notifications")
+    Component(discovery_svc, "FlextPluginDiscoveryService", "Python Class", "Plugin discovery orchestration")
+}
+
+Boundary(domain_boundary, "Domain Layer") {
+    Component(entities, "FlextPluginEntities", "Python Class", "Domain entities: Plugin, Execution, Registry")
+    Component(protocols, "FlextPluginProtocols", "Python Module", "Structural typing for plugin interfaces")
+    Component(types, "FlextPluginTypes", "Python Module", "Type definitions and aliases")
+    Component(constants, "FlextPluginConstants", "Python Module", "Domain constants and enumerations")
+}
+
+Boundary(infrastructure_boundary, "Infrastructure Layer") {
+    Component(discovery, "FlextPluginDiscovery", "Python Class", "File-based plugin discovery")
+    Component(loader, "FlextPluginLoader", "Python Class", "Plugin loading and initialization")
+    Component(hot_reload, "FlextPluginHotReload", "Python Class", "File watching and hot reload")
+    Component(adapters, "FlextPluginAdapters", "Python Class", "External system adapters")
+    Component(utilities, "FlextPluginUtilities", "Python Module", "Helper functions and utilities")
+}
+
+Boundary(data_boundary, "Data Layer") {
+    Component(config, "FlextPluginConfig", "Python Class", "Configuration management")
+    Component(models, "FlextPluginModels", "Python Class", "Pydantic data models")
+    Component(exceptions, "FlextPluginExceptions", "Python Module", "Exception hierarchy")
+}
+
+Rel(api, platform, "Uses", "Platform facade")
+Rel(api, services, "Orchestrates", "Application services")
+Rel(api, handlers, "Triggers", "Events and notifications")
+
+Rel(platform, discovery_svc, "Uses", "Discovery orchestration")
+Rel(platform, entities, "Manages", "Domain entities")
+Rel(platform, protocols, "Implements", "Plugin protocols")
+
+Rel(services, entities, "Operates on", "Domain objects")
+Rel(services, handlers, "Publishes", "Domain events")
+
+Rel(discovery_svc, discovery, "Delegates to", "Discovery implementation")
+Rel(discovery_svc, entities, "Creates", "Plugin entities")
+
+Rel(entities, types, "Uses", "Type definitions")
+Rel(entities, constants, "References", "Domain constants")
+Rel(entities, models, "Validated by", "Pydantic models")
+
+Rel(discovery, utilities, "Uses", "File operations")
+Rel(loader, utilities, "Uses", "Import utilities")
+Rel(hot_reload, utilities, "Uses", "File watching")
+
+Rel(adapters, protocols, "Implements", "Infrastructure interfaces")
+
+Rel(config, models, "Uses", "Configuration models")
+Rel(exceptions, types, "Uses", "Exception types")
+
+@enduml

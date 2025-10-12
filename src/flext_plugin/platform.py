@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextResult, FlextService
+from flext_core import FlextCore
 
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.entities import FlextPluginEntities
@@ -14,7 +14,7 @@ from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginPlatform(FlextService[FlextResult]):
+class FlextPluginPlatform(FlextCore.Service[FlextCore.Result]):
     """Main plugin platform facade providing unified plugin management.
 
     This is the primary entry point for all plugin operations in the FLEXT ecosystem.
@@ -24,10 +24,10 @@ class FlextPluginPlatform(FlextService[FlextResult]):
     Usage:
         ```python
         from flext_plugin import FlextPluginPlatform
-        from flext_core import FlextContainer
+        from flext_core import FlextCore
 
         # Initialize platform
-        container = FlextContainer()
+        container = FlextCore.Container()
         platform = FlextPluginPlatform(container)
 
         # Discover and load plugins
@@ -43,17 +43,15 @@ class FlextPluginPlatform(FlextService[FlextResult]):
 
     def __init__(
         self,
-        container: FlextContainer,
-        config: FlextPluginConfig | None = None,
+        container: FlextCore.Container,
     ) -> None:
         """Initialize the plugin platform.
 
         Args:
             container: FLEXT dependency injection container
-            config: Optional plugin configuration (uses defaults if not provided)
 
         """
-        super().__init__(container=container, config=config or FlextPluginConfig())
+        super().__init__(container=container, config=FlextPluginConfig())
 
         # Type annotation for proper type checking
         self.config: FlextPluginConfig
@@ -72,24 +70,26 @@ class FlextPluginPlatform(FlextService[FlextResult]):
         self._monitoring: FlextPluginProtocols.PluginMonitoring | None = None
 
     async def discover_plugins(
-        self, paths: list[str]
-    ) -> FlextResult[list[FlextPluginEntities.Plugin]]:
+        self, paths: FlextCore.Types.StringList
+    ) -> FlextCore.Result[list[FlextPluginEntities.Plugin]]:
         """Discover plugins in the specified paths.
 
         Args:
             paths: List of paths to search for plugins
 
         Returns:
-            FlextResult containing list of discovered plugins
+            FlextCore.Result containing list of discovered plugins
 
         """
         try:
             if not self._discovery:
-                return FlextResult.fail("Plugin discovery not initialized")
+                return FlextCore.Result.fail("Plugin discovery not initialized")
 
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
-                return FlextResult.fail(f"Discovery failed: {discovery_result.error}")
+                return FlextCore.Result.fail(
+                    f"Discovery failed: {discovery_result.error}"
+                )
 
             plugins_data = discovery_result.value
             plugins = []
@@ -113,31 +113,33 @@ class FlextPluginPlatform(FlextService[FlextResult]):
                 self._plugins[plugin.name] = plugin
 
             self.logger.info(f"Discovered {len(plugins)} plugins")
-            return FlextResult.ok(plugins)
+            return FlextCore.Result.ok(plugins)
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
-            return FlextResult.fail(f"Discovery error: {e!s}")
+            return FlextCore.Result.fail(f"Discovery error: {e!s}")
 
     async def load_plugin(
         self, plugin_path: str
-    ) -> FlextResult[FlextPluginEntities.Plugin]:
+    ) -> FlextCore.Result[FlextPluginEntities.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
             plugin_path: Path to the plugin to load
 
         Returns:
-            FlextResult containing the loaded plugin
+            FlextCore.Result containing the loaded plugin
 
         """
         try:
             if not self._loader:
-                return FlextResult.fail("Plugin loader not initialized")
+                return FlextCore.Result.fail("Plugin loader not initialized")
 
             load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
-                return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
+                return FlextCore.Result.fail(
+                    f"Plugin loading failed: {load_result.error}"
+                )
 
             plugin_data = load_result.value
             plugin = FlextPluginEntities.Plugin.create(
@@ -149,24 +151,24 @@ class FlextPluginPlatform(FlextService[FlextResult]):
             # Validate plugin
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Plugin validation failed: {validation_result.error}"
                 )
 
             self._plugins[plugin.name] = plugin
             self.logger.info(f"Loaded plugin: {plugin.name}")
-            return FlextResult.ok(plugin)
+            return FlextCore.Result.ok(plugin)
 
         except Exception as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
-            return FlextResult.fail(f"Loading error: {e!s}")
+            return FlextCore.Result.fail(f"Loading error: {e!s}")
 
     async def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, object],
+        context: FlextCore.Types.Dict,
         execution_id: str | None = None,
-    ) -> FlextResult[FlextPluginEntities.Execution]:
+    ) -> FlextCore.Result[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -175,15 +177,15 @@ class FlextPluginPlatform(FlextService[FlextResult]):
             execution_id: Optional execution ID (generated if not provided)
 
         Returns:
-            FlextResult containing the execution result
+            FlextCore.Result containing the execution result
 
         """
         try:
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return FlextCore.Result.fail(f"Plugin '{plugin_name}' not found")
 
             if not self._executor:
-                return FlextResult.fail("Plugin executor not initialized")
+                return FlextCore.Result.fail("Plugin executor not initialized")
 
             # Create execution entity
             execution = FlextPluginEntities.Execution.create(
@@ -208,69 +210,71 @@ class FlextPluginPlatform(FlextService[FlextResult]):
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
-                return FlextResult.fail(f"Execution failed: {exec_result.error}")
+                return FlextCore.Result.fail(f"Execution failed: {exec_result.error}")
 
             # Mark execution as completed
             execution.mark_completed(success=True)
             execution.result = exec_result.value
 
             self.logger.info(f"Executed plugin '{plugin_name}' successfully")
-            return FlextResult.ok(execution)
+            return FlextCore.Result.ok(execution)
 
         except Exception as e:
             self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
-            return FlextResult.fail(f"Execution error: {e!s}")
+            return FlextCore.Result.fail(f"Execution error: {e!s}")
 
     async def register_plugin(
         self, plugin: FlextPluginEntities.Plugin
-    ) -> FlextResult[bool]:
+    ) -> FlextCore.Result[bool]:
         """Register a plugin in the platform registry.
 
         Args:
             plugin: Plugin entity to register
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             # Validate plugin
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Plugin validation failed: {validation_result.error}"
                 )
 
             # Register in internal registry
             register_result = self._registry.register(plugin)
             if register_result.is_failure:
-                return FlextResult.fail(f"Registration failed: {register_result.error}")
+                return FlextCore.Result.fail(
+                    f"Registration failed: {register_result.error}"
+                )
 
             # Store in platform plugins
             self._plugins[plugin.name] = plugin
 
             self.logger.info(f"Registered plugin: {plugin.name}")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to register plugin '{plugin.name}'")
-            return FlextResult.fail(f"Registration error: {e!s}")
+            return FlextCore.Result.fail(f"Registration error: {e!s}")
 
-    async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def unregister_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
         """Unregister a plugin from the platform.
 
         Args:
             plugin_name: Name of the plugin to unregister
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             # Unregister from internal registry
             unregister_result = self._registry.unregister_plugin(plugin_name)
             if not unregister_result:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Unregistration failed: plugin '{plugin_name}' not found in registry"
                 )
 
@@ -279,11 +283,11 @@ class FlextPluginPlatform(FlextService[FlextResult]):
                 del self._plugins[plugin_name]
 
             self.logger.info(f"Unregistered plugin: {plugin_name}")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to unregister plugin '{plugin_name}'")
-            return FlextResult.fail(f"Unregistration error: {e!s}")
+            return FlextCore.Result.fail(f"Unregistration error: {e!s}")
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntities.Plugin | None:
         """Get a plugin by name.
@@ -332,56 +336,60 @@ class FlextPluginPlatform(FlextService[FlextResult]):
         plugin = self.get_plugin(plugin_name)
         return plugin.is_active() if plugin else False
 
-    async def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
+    async def start_hot_reload(
+        self, paths: FlextCore.Types.StringList
+    ) -> FlextCore.Result[bool]:
         """Start hot reload monitoring for the specified paths.
 
         Args:
             paths: List of paths to monitor for changes
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             if not self._hot_reload:
-                return FlextResult.fail("Hot reload not initialized")
+                return FlextCore.Result.fail("Hot reload not initialized")
 
             start_result = self._hot_reload.start_watching(paths)
             if start_result.is_failure:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Hot reload start failed: {start_result.error}"
                 )
 
             self.logger.info(f"Started hot reload monitoring for {len(paths)} paths")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to start hot reload")
-            return FlextResult.fail(f"Hot reload error: {e!s}")
+            return FlextCore.Result.fail(f"Hot reload error: {e!s}")
 
-    async def stop_hot_reload(self) -> FlextResult[bool]:
+    async def stop_hot_reload(self) -> FlextCore.Result[bool]:
         """Stop hot reload monitoring.
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             if not self._hot_reload:
-                return FlextResult.fail("Hot reload not initialized")
+                return FlextCore.Result.fail("Hot reload not initialized")
 
             stop_result = self._hot_reload.stop_watching()
             if stop_result.is_failure:
-                return FlextResult.fail(f"Hot reload stop failed: {stop_result.error}")
+                return FlextCore.Result.fail(
+                    f"Hot reload stop failed: {stop_result.error}"
+                )
 
             self.logger.info("Stopped hot reload monitoring")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to stop hot reload")
-            return FlextResult.fail(f"Hot reload error: {e!s}")
+            return FlextCore.Result.fail(f"Hot reload error: {e!s}")
 
-    def get_platform_status(self) -> dict[str, object]:
+    def get_platform_status(self) -> FlextCore.Types.Dict:
         """Get the current status of the plugin platform.
 
         Returns:

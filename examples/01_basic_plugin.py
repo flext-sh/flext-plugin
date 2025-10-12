@@ -10,7 +10,7 @@ Usage:
 
 from __future__ import annotations
 
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
 from flext_plugin import FlextPluginApi, FlextPluginConstants
 
@@ -18,7 +18,7 @@ from flext_plugin import FlextPluginApi, FlextPluginConstants
 def main() -> None:
     """Demonstrate basic plugin creation and usage."""
     # Initialize the plugin API
-    container = FlextContainer()
+    container = FlextCore.Container()
     FlextPluginApi(container)
 
     # Discover plugins (this would normally scan directories)

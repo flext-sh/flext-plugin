@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import override
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextCore
 
 from flext_plugin import (
     Plugin,
@@ -26,7 +26,7 @@ class TestPlugin:
     """Comprehensive test suite for Plugin base class functionality.
 
     Tests the lightweight plugin base class with essential lifecycle management,
-    activation/deactivation capabilities, and FlextResult integration patterns.
+    activation/deactivation capabilities, and FlextCore.Result integration patterns.
     """
 
     @pytest.fixture
@@ -185,10 +185,10 @@ class TestPluginRegistry:
                 # Override the plugins dict to raise exception on assignment
                 self.plugins = {}
 
-            def register(self, _plugin: Plugin) -> FlextResult[None]:
+            def register(self, _plugin: Plugin) -> FlextCore.Result[None]:
                 """Override register to always fail."""
                 msg = "Registration failed"
-                return FlextResult[None].fail(msg)
+                return FlextCore.Result[None].fail(msg)
 
         registry = FailingRegistry()
         plugin = Plugin("test-plugin")
@@ -236,7 +236,7 @@ class TestPluginRegistry:
                 """Initialize the instance."""
                 super().__init__()
 
-            def unregister(self, _name: str) -> FlextResult[None]:
+            def unregister(self, _name: str) -> FlextCore.Result[None]:
                 """Override unregister to always fail."""
                 msg = "Unregistration failed"
                 raise ValueError(msg)
@@ -564,7 +564,7 @@ class Plugin(Plugin):
             module_file.write_text('''
 """REAL test plugin module with type error."""
 
-from flext_core import FlextResult
+from flext_core import FlextCore
 
 class Plugin(Plugin):
     """REAL plugin implementation with type error."""

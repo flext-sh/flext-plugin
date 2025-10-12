@@ -1,0 +1,50 @@
+@startuml System Context Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram - FLEXT Plugin
+
+Person(developer, "Plugin Developer", "Creates and tests plugins using FLEXT Plugin APIs")
+Person(architect, "FLEXT Architect", "Designs plugin architectures and integration patterns")
+Person(operator, "System Operator", "Deploys and manages FLEXT applications with plugins")
+
+System(flext_plugin, "FLEXT Plugin System", "Enterprise plugin management and lifecycle system providing discovery, loading, execution, and hot-reload capabilities")
+
+System_Ext(flext_core, "FLEXT Core", "Foundation library with FlextCore.Result, FlextCore.Container, FlextCore.Models, and core patterns")
+System_Ext(flext_observability, "FLEXT Observability", "Monitoring, metrics, tracing, health checks for plugin operations")
+
+System_Ext(flext_cli, "FLEXT CLI", "Command-line interface for plugin management (optional dependency)")
+System_Ext(flext_api, "FLEXT API", "REST API services with plugin endpoints")
+
+System_Ext(flext_ldap, "FLEXT LDAP", "LDAP operations for directory-based plugins")
+System_Ext(flext_ldif, "FLEXT LDIF", "LDIF processing for directory data plugins")
+System_Ext(flext_auth, "FLEXT Auth", "Authentication plugins and strategies")
+System_Ext(flext_web, "FLEXT Web", "Web interface with plugin management")
+
+System_Ext(flexcore, "FlexCore", "Go runtime container with plugin proxy adapters")
+System_Ext(flext_service, "FLEXT Service", "Data platform service with Python bridge")
+
+System_Ext(pypi, "PyPI", "Python Package Index for plugin package distribution")
+System_Ext(github, "GitHub", "Repository hosting and CI/CD for plugin development")
+
+Rel(developer, flext_plugin, "Develops plugins using", "Python APIs, CLI tools")
+Rel(architect, flext_plugin, "Designs architectures with", "Plugin patterns, APIs")
+Rel(operator, flext_plugin, "Deploys applications using", "Plugin lifecycle management")
+
+Rel(flext_plugin, flext_core, "Depends on (mandatory)", "FlextCore.Result[T], FlextCore.Container, FlextCore.Models")
+Rel(flext_plugin, flext_observability, "Integrates with (mandatory)", "Metrics, tracing, health checks")
+
+Rel(flext_plugin, flext_cli, "Integrates with (optional)", "Command-line plugin management")
+Rel(flext_plugin, flext_api, "Enables plugins for", "REST API extensions")
+
+Rel(flext_plugin, flext_ldap, "Supports plugins for", "LDAP directory operations")
+Rel(flext_plugin, flext_ldif, "Supports plugins for", "LDIF data processing")
+Rel(flext_plugin, flext_auth, "Supports plugins for", "Authentication strategies")
+Rel(flext_plugin, flext_web, "Supports plugins for", "Web interface extensions")
+
+Rel(flext_plugin, flexcore, "Communicates with", "Go ↔ Python plugin bridge")
+Rel(flext_plugin, flext_service, "Integrates with", "Service mesh, data platform")
+
+Rel(flext_plugin, pypi, "Distributes plugins via", "Package installation")
+Rel(flext_plugin, github, "Hosts development on", "Version control, CI/CD")
+
+@enduml

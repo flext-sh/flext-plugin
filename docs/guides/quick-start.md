@@ -157,7 +157,7 @@ Create `custom_plugin.py`:
 ```python
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextResult
+from flext_core import FlextCore
 from typing import Dict
 
 class GreetingPlugin(FlextPlugin):
@@ -175,18 +175,18 @@ class GreetingPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> FlextCore.Result[bool]:
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return FlextResult[None].ok(data=True)
+        return FlextCore.Result[None].ok(data=True)
 
-    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: FlextCore.Types.Dict) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[None].fail("Plugin not active")
+                return FlextCore.Result[None].fail("Plugin not active")
 
             # Extract name from input
             name = data.get("name", "World")
@@ -211,15 +211,15 @@ class GreetingPlugin(FlextPlugin):
                 "version": self.plugin_version
             }
 
-            return FlextResult[None].ok(result)
+            return FlextCore.Result[None].ok(result)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Execution failed: {e}")
+            return FlextCore.Result[None].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> FlextCore.Result[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return FlextResult[None].ok(data=True)
+        return FlextCore.Result[None].ok(data=True)
 
 # Usage example
 def demo_custom_plugin():

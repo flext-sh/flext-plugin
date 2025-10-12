@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from typing import cast
 
 import pytest
-from flext_core import FlextModels
+from flext_core import FlextCore
 from pydantic import ValidationError
 
 from flext_plugin import (
@@ -60,14 +60,14 @@ class TestFlextPlugin:
     def create_test_metadata(self) -> FlextPluginEntities.Metadata:
         """Create test plugin metadata."""
         return FlextPluginEntities.Metadata(
-            id=cast("FlextModels", "test-metadata-id"),  # Proper type casting
+            id=cast("FlextCore.Models", "test-metadata-id"),  # Proper type casting
             plugin_name="test-plugin",
             name="test-plugin",  # Required field
             entry_point="test.entry:main",  # Required field
             plugin_type=PluginType.TAP.value,  # Convert enum to value
             description="Test plugin",
             metadata=cast(
-                "FlextModels",
+                "FlextCore.Models",
                 {
                     "author": "Test Author",
                     "license": "MIT",
@@ -94,7 +94,7 @@ class TestFlextPlugin:
             raise AssertionError(msg)
         # Note: metadata is not directly accessible as a property on FlextPlugin
         # assert plugin.metadata == metadata  # Removed this assertion
-        # FlextModels uses use_enum_values=True, so status is stored as string
+        # FlextCore.Models uses use_enum_values=True, so status is stored as string
         if plugin.status != PluginStatus.INACTIVE.value:
             msg = f"Expected {PluginStatus.INACTIVE.value}, got {plugin.status}"
             raise AssertionError(
@@ -263,7 +263,7 @@ class TestFlextPluginExecution:
         """Test creating FlextPluginExecution."""
         datetime.now(UTC)
         execution = FlextPluginExecution(
-            id=cast("FlextModels", "exec-123"),
+            id=cast("FlextCore.Models", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
             input_data={"test": "input"},
@@ -288,7 +288,7 @@ class TestFlextPluginExecution:
     def test_execution_lifecycle(self) -> None:
         """Test execution lifecycle management."""
         execution = FlextPluginExecution(
-            id=cast("FlextModels", "exec-123"),
+            id=cast("FlextCore.Models", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -321,7 +321,7 @@ class TestFlextPluginExecution:
     def test_execution_failure(self) -> None:
         """Test failed plugin execution."""
         execution = FlextPluginExecution(
-            id=cast("FlextModels", "exec-123"),
+            id=cast("FlextCore.Models", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -342,7 +342,7 @@ class TestFlextPluginExecution:
     def test_execution_resource_tracking(self) -> None:
         """Test execution resource usage tracking."""
         execution = FlextPluginExecution(
-            id=cast("FlextModels", "exec-123"),
+            id=cast("FlextCore.Models", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
         )
@@ -509,7 +509,7 @@ class TestFlextPluginMetadata:
         # Test empty name fails
         with pytest.raises(ValidationError):
             FlextPluginEntities.Metadata(
-                id=cast("FlextModels", "meta-123"),
+                id=cast("FlextCore.Models", "meta-123"),
                 name="",
                 entry_point="test.entry:main",
                 plugin_type=PluginType.TAP,
@@ -518,7 +518,7 @@ class TestFlextPluginMetadata:
         # Test empty entry point fails
         with pytest.raises(ValidationError):
             FlextPluginEntities.Metadata(
-                id=cast("FlextModels", "meta-123"),
+                id=cast("FlextCore.Models", "meta-123"),
                 name="test-plugin",
                 entry_point="",
                 plugin_type=PluginType.TAP,

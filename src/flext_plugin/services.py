@@ -6,14 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextService
+from flext_core import FlextCore
 
 from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginService(FlextService[FlextResult]):
+class FlextPluginService(FlextCore.Service[FlextCore.Result]):
     """Main plugin service orchestrating plugin operations.
 
     This service provides high-level operations for plugin management,
@@ -23,10 +23,10 @@ class FlextPluginService(FlextService[FlextResult]):
     Usage:
         ```python
         from flext_plugin import FlextPluginService
-        from flext_core import FlextContainer
+        from flext_core import FlextCore
 
         # Initialize service
-        container = FlextContainer()
+        container = FlextCore.Container()
         service = FlextPluginService(container)
 
         # Discover plugins
@@ -71,25 +71,27 @@ class FlextPluginService(FlextService[FlextResult]):
         self._executions: dict[str, FlextPluginEntities.Execution] = {}
 
     def discover_and_register_plugins(
-        self, paths: list[str]
-    ) -> FlextResult[list[FlextPluginEntities.Plugin]]:
+        self, paths: FlextCore.Types.StringList
+    ) -> FlextCore.Result[list[FlextPluginEntities.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
             paths: List of paths to search for plugins
 
         Returns:
-            FlextResult containing list of registered plugins
+            FlextCore.Result containing list of registered plugins
 
         """
         try:
             if not self._discovery:
-                return FlextResult.fail("Plugin discovery not available")
+                return FlextCore.Result.fail("Plugin discovery not available")
 
             # Discover plugins
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
-                return FlextResult.fail(f"Discovery failed: {discovery_result.error}")
+                return FlextCore.Result.fail(
+                    f"Discovery failed: {discovery_result.error}"
+                )
 
             plugins_data = discovery_result.value
             registered_plugins = []
@@ -141,30 +143,34 @@ class FlextPluginService(FlextService[FlextResult]):
                     pass
 
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
-            return FlextResult.ok(registered_plugins)
+            return FlextCore.Result.ok(registered_plugins)
 
         except Exception as e:
             self.logger.exception("Plugin discovery and registration failed")
-            return FlextResult.fail(f"Service error: {e!s}")
+            return FlextCore.Result.fail(f"Service error: {e!s}")
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Plugin]:
+    def load_plugin(
+        self, plugin_path: str
+    ) -> FlextCore.Result[FlextPluginEntities.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
             plugin_path: Path to the plugin to load
 
         Returns:
-            FlextResult containing the loaded plugin
+            FlextCore.Result containing the loaded plugin
 
         """
         try:
             if not self._loader:
-                return FlextResult.fail("Plugin loader not available")
+                return FlextCore.Result.fail("Plugin loader not available")
 
             # Load plugin
             load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
-                return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
+                return FlextCore.Result.fail(
+                    f"Plugin loading failed: {load_result.error}"
+                )
 
             plugin_data = load_result.value
             plugin = FlextPluginEntities.Plugin.create(
@@ -176,7 +182,7 @@ class FlextPluginService(FlextService[FlextResult]):
             # Validate plugin
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Plugin validation failed: {validation_result.error}"
                 )
 
@@ -184,7 +190,7 @@ class FlextPluginService(FlextService[FlextResult]):
             if self._security:
                 # Note: Async security validation not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return FlextCore.Result.fail(
                 #         f"Security validation failed: {security_result.error}"
                 #     )
                 pass
@@ -193,7 +199,7 @@ class FlextPluginService(FlextService[FlextResult]):
             if self._registry:
                 # Note: Async registry registration not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return FlextCore.Result.fail(
                 #         f"Registration failed: {register_result.error}"
                 #     )
                 pass
@@ -208,18 +214,18 @@ class FlextPluginService(FlextService[FlextResult]):
                 pass
 
             self.logger.info(f"Loaded plugin: {plugin.name}")
-            return FlextResult.ok(plugin)
+            return FlextCore.Result.ok(plugin)
 
         except Exception as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
-            return FlextResult.fail(f"Loading error: {e!s}")
+            return FlextCore.Result.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, object],
+        context: FlextCore.Types.Dict,
         execution_id: str | None = None,
-    ) -> FlextResult[FlextPluginEntities.Execution]:
+    ) -> FlextCore.Result[FlextPluginEntities.Execution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -228,15 +234,15 @@ class FlextPluginService(FlextService[FlextResult]):
             execution_id: Optional execution ID (generated if not provided)
 
         Returns:
-            FlextResult containing the execution result
+            FlextCore.Result containing the execution result
 
         """
         try:
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return FlextCore.Result.fail(f"Plugin '{plugin_name}' not found")
 
             if not self._executor:
-                return FlextResult.fail("Plugin executor not available")
+                return FlextCore.Result.fail("Plugin executor not available")
 
             plugin = self._plugins[plugin_name]
 
@@ -261,13 +267,13 @@ class FlextPluginService(FlextService[FlextResult]):
             # Note: Async executor execution not supported in sync context
             # Sync-only operations maintained per FLEXT requirements
             # )
-            exec_result = FlextResult.ok({
+            exec_result = FlextCore.Result.ok({
                 "status": "executed"
             })  # Mock success for sync interface
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
-                return FlextResult.fail(f"Execution failed: {exec_result.error}")
+                return FlextCore.Result.fail(f"Execution failed: {exec_result.error}")
 
             # Mark execution as completed
             execution.mark_completed(success=True)
@@ -279,25 +285,25 @@ class FlextPluginService(FlextService[FlextResult]):
             )
 
             self.logger.info(f"Executed plugin '{plugin_name}' successfully")
-            return FlextResult.ok(execution)
+            return FlextCore.Result.ok(execution)
 
         except Exception as e:
             self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
-            return FlextResult.fail(f"Execution error: {e!s}")
+            return FlextCore.Result.fail(f"Execution error: {e!s}")
 
-    async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def unload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
         """Unload a plugin from the service.
 
         Args:
             plugin_name: Name of the plugin to unload
 
         Returns:
-            FlextResult indicating success or failure
+            FlextCore.Result indicating success or failure
 
         """
         try:
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return FlextCore.Result.fail(f"Plugin '{plugin_name}' not found")
 
             # Stop monitoring
             if self._monitoring:
@@ -309,7 +315,7 @@ class FlextPluginService(FlextService[FlextResult]):
             if self._registry:
                 # Note: Async registry unregistration not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return FlextCore.Result.fail(
                 #         f"Unregistration failed: {unregister_result.error}"
                 #     )
                 pass
@@ -318,18 +324,18 @@ class FlextPluginService(FlextService[FlextResult]):
             if self._loader:
                 # Note: Async loader unload not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(f"Unloading failed: {unload_result.error}")
+                #     return FlextCore.Result.fail(f"Unloading failed: {unload_result.error}")
                 pass
 
             # Remove from service
             del self._plugins[plugin_name]
 
             self.logger.info(f"Unloaded plugin: {plugin_name}")
-            return FlextResult.ok(True)
+            return FlextCore.Result.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
-            return FlextResult.fail(f"Unloading error: {e!s}")
+            return FlextCore.Result.fail(f"Unloading error: {e!s}")
 
     def get_plugin(self, plugin_name: str) -> FlextPluginEntities.Plugin | None:
         """Get a plugin by name.
@@ -379,65 +385,67 @@ class FlextPluginService(FlextService[FlextResult]):
 
     async def get_plugin_metrics(
         self, plugin_name: str
-    ) -> FlextResult[FlextPluginTypes.Performance.Metrics]:
+    ) -> FlextCore.Result[FlextPluginTypes.Performance.Metrics]:
         """Get metrics for a specific plugin.
 
         Args:
             plugin_name: Name of the plugin
 
         Returns:
-            FlextResult containing plugin metrics
+            FlextCore.Result containing plugin metrics
 
         """
         try:
             if not self._monitoring:
-                return FlextResult.fail("Plugin monitoring not available")
+                return FlextCore.Result.fail("Plugin monitoring not available")
 
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return FlextCore.Result.fail(f"Plugin '{plugin_name}' not found")
 
             metrics_result = await self._monitoring.get_plugin_metrics(plugin_name)
             if metrics_result.is_failure:
-                return FlextResult.fail(
+                return FlextCore.Result.fail(
                     f"Metrics retrieval failed: {metrics_result.error}"
                 )
 
-            return FlextResult.ok(metrics_result.value)
+            return FlextCore.Result.ok(metrics_result.value)
 
         except Exception as e:
             self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
-            return FlextResult.fail(f"Metrics error: {e!s}")
+            return FlextCore.Result.fail(f"Metrics error: {e!s}")
 
     async def get_plugin_health(
         self, plugin_name: str
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Get health status for a specific plugin.
 
         Args:
             plugin_name: Name of the plugin
 
         Returns:
-            FlextResult containing plugin health information
+            FlextCore.Result containing plugin health information
 
         """
         try:
             if not self._monitoring:
-                return FlextResult.fail("Plugin monitoring not available")
+                return FlextCore.Result.fail("Plugin monitoring not available")
 
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return FlextCore.Result.fail(f"Plugin '{plugin_name}' not found")
 
             health_result = await self._monitoring.get_plugin_health(plugin_name)
             if health_result.is_failure:
-                return FlextResult.fail(f"Health check failed: {health_result.error}")
+                return FlextCore.Result.fail(
+                    f"Health check failed: {health_result.error}"
+                )
 
-            return FlextResult.ok(health_result.value)
+            return FlextCore.Result.ok(health_result.value)
 
         except Exception as e:
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
-            return FlextResult.fail(f"Health check error: {e!s}")
+            return FlextCore.Result.fail(f"Health check error: {e!s}")
 
-    def get_service_status(self) -> dict[str, object]:
+    def get_service_status(self) -> FlextCore.Types.Dict:
         """Get the current status of the plugin service.
 
         Returns:
