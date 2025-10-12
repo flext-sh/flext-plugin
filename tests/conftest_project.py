@@ -20,10 +20,6 @@ from flext_core import FlextCore
 
 from flext_plugin import (
     FlextPluginEntities,
-    PluginType,
-    RealPluginDiscoveryAdapter,
-    RealPluginLoaderAdapter,
-    RealPluginManagerAdapter,
 )
 
 
@@ -203,34 +199,34 @@ def real_container_with_adapters(real_plugin_directory: Path) -> FlextCore.Conta
 
 
 @pytest.fixture
-def real_plugin_entity() -> FlextPluginEntities.Entity:
-    """Create REAL FlextPluginEntities.Entity for testing."""
-    return FlextPluginEntities.Entity.create(
+def real_plugin_entity() -> FlextPluginEntities.Plugin:
+    """Create REAL FlextPluginEntities.Plugin for testing."""
+    return FlextPluginEntities.Plugin.create(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
-        plugin_type=PluginType.UTILITY,
+        plugin_type=FlextPluginEntities.PluginType.UTILITY,
     )
 
 
 # REAL Discovery fixtures
 @pytest.fixture
-def real_discovery_adapter(real_plugin_directory: Path) -> RealPluginDiscoveryAdapter:
-    """Create REAL discovery adapter with plugin directory."""
-    return RealPluginDiscoveryAdapter(str(real_plugin_directory))
+def real_discovery_adapter() -> FlextPluginAdapters.FileSystemDiscoveryAdapter:
+    """Create REAL discovery adapter."""
+    return FlextPluginAdapters.FileSystemDiscoveryAdapter()
 
 
 # REAL Loader fixtures
 @pytest.fixture
-def real_loader_adapter(real_plugin_directory: Path) -> RealPluginLoaderAdapter:
-    """Create REAL loader adapter with plugin directory."""
-    return RealPluginLoaderAdapter(str(real_plugin_directory))
+def real_loader_adapter() -> FlextPluginAdapters.DynamicLoaderAdapter:
+    """Create REAL loader adapter."""
+    return FlextPluginAdapters.DynamicLoaderAdapter()
 
 
 @pytest.fixture
-def real_manager_adapter(real_plugin_directory: Path) -> RealPluginManagerAdapter:
-    """Create REAL manager adapter with plugin directory."""
-    return RealPluginManagerAdapter(str(real_plugin_directory))
+def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
+    """Create REAL manager adapter."""
+    return FlextPluginAdapters.PluginExecutorAdapter()
 
 
 # REAL Configuration fixtures
