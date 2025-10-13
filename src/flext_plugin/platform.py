@@ -85,7 +85,7 @@ class FlextPluginPlatform(FlextCore.Service[FlextCore.Result]):
             if not self._discovery:
                 return FlextCore.Result.fail("Plugin discovery not initialized")
 
-            discovery_result = self._discovery.discover_plugins(paths)
+            discovery_result = await self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
                 return FlextCore.Result.fail(
                     f"Discovery failed: {discovery_result.error}"
@@ -135,7 +135,7 @@ class FlextPluginPlatform(FlextCore.Service[FlextCore.Result]):
             if not self._loader:
                 return FlextCore.Result.fail("Plugin loader not initialized")
 
-            load_result = self._loader.load_plugin(plugin_path)
+            load_result = await self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
                 return FlextCore.Result.fail(
                     f"Plugin loading failed: {load_result.error}"
@@ -206,7 +206,9 @@ class FlextPluginPlatform(FlextCore.Service[FlextCore.Result]):
                 "timeout_seconds": self.config.security.max_execution_time,
             }
 
-            exec_result = self._executor.execute_plugin(plugin_name, execution_context)
+            exec_result = await self._executor.execute_plugin(
+                plugin_name, execution_context
+            )
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
@@ -272,8 +274,8 @@ class FlextPluginPlatform(FlextCore.Service[FlextCore.Result]):
         """
         try:
             # Unregister from internal registry
-            unregister_result = self._registry.unregister_plugin(plugin_name)
-            if not unregister_result:
+            unregister_result = await self._registry.unregister_plugin(plugin_name)
+            if unregister_result.is_failure:
                 return FlextCore.Result.fail(
                     f"Unregistration failed: plugin '{plugin_name}' not found in registry"
                 )

@@ -36,6 +36,7 @@ from __future__ import annotations
 from typing import Final
 
 from flext_plugin.__version__ import __version__, __version_info__
+from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin.api import FlextPluginApi
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.constants import FlextPluginConstants
@@ -58,6 +59,7 @@ __all__ = [
     "PROJECT_VERSION",
     # Version information
     "VERSION",
+    "FlextPluginAdapters",
     # Core API
     "FlextPluginApi",
     "FlextPluginConfig",

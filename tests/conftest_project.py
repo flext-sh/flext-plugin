@@ -21,6 +21,7 @@ from flext_core import FlextCore
 from flext_plugin import (
     FlextPluginEntities,
 )
+from flext_plugin.adapters import FlextPluginAdapters
 
 
 # Test environment setup
@@ -186,10 +187,9 @@ def real_container_with_adapters(real_plugin_directory: Path) -> FlextCore.Conta
     container = FlextCore.Container()
 
     # Register REAL implementations
-    plugin_dir_str = str(real_plugin_directory)
-    discovery_adapter = RealPluginDiscoveryAdapter(plugin_dir_str)
-    loader_adapter = RealPluginLoaderAdapter(plugin_dir_str)
-    manager_adapter = RealPluginManagerAdapter(plugin_dir_str)
+    discovery_adapter = FlextPluginAdapters.FileSystemDiscoveryAdapter()
+    loader_adapter = FlextPluginAdapters.DynamicLoaderAdapter()
+    manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
 
     container.register("plugin_discovery_port", discovery_adapter)
     container.register("plugin_loader_port", loader_adapter)
@@ -273,35 +273,35 @@ def pytest_configure(config: pytest.Config) -> None:
 
 # REAL Plugin Entity fixtures
 @pytest.fixture
-def real_tap_plugin() -> FlextPluginEntities.Entity:
+def real_tap_plugin() -> FlextPluginEntities.Plugin:
     """Create REAL tap plugin entity."""
-    return FlextPluginEntities.Entity.create(
+    return FlextPluginEntities.Plugin.create(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
-        plugin_type=PluginType.TAP,
+        plugin_type=FlextPluginEntities.PluginType.TAP,
     )
 
 
 @pytest.fixture
-def real_target_plugin() -> FlextPluginEntities.Entity:
+def real_target_plugin() -> FlextPluginEntities.Plugin:
     """Create REAL target plugin entity."""
-    return FlextPluginEntities.Entity.create(
+    return FlextPluginEntities.Plugin.create(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
-        plugin_type=PluginType.TARGET,
+        plugin_type=FlextPluginEntities.PluginType.TARGET,
     )
 
 
 @pytest.fixture
-def real_processor_plugin() -> FlextPluginEntities.Entity:
+def real_processor_plugin() -> FlextPluginEntities.Plugin:
     """Create REAL processor plugin entity."""
-    return FlextPluginEntities.Entity.create(
+    return FlextPluginEntities.Plugin.create(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",
-        plugin_type=PluginType.PROCESSOR,
+        plugin_type=FlextPluginEntities.PluginType.PROCESSOR,
     )
 
 

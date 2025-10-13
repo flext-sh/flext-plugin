@@ -11,11 +11,20 @@ import importlib
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from flext_core import FlextCore
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
+
+# Type aliases for adapter protocol types
+DiscoveryAdapter = FlextPluginProtocols.PluginDiscovery
+LoaderAdapter = FlextPluginProtocols.PluginLoader
+ExecutionAdapter = FlextPluginProtocols.PluginExecution
+SecurityAdapter = FlextPluginProtocols.PluginSecurity
+RegistryAdapter = FlextPluginProtocols.PluginRegistry
+MonitoringAdapter = FlextPluginProtocols.PluginMonitoring
 
 
 class FlextPluginAdapters:
@@ -41,7 +50,12 @@ class FlextPluginAdapters:
     def __init__(self) -> None:
         """Initialize the plugin adapters."""
         self.logger = FlextCore.Logger(__name__)
-        self._adapters: FlextCore.Types.Dict = {}
+        self._discovery_adapter: DiscoveryAdapter | None = None
+        self._loader_adapter: LoaderAdapter | None = None
+        self._executor_adapter: ExecutionAdapter | None = None
+        self._security_adapter: SecurityAdapter | None = None
+        self._registry_adapter: RegistryAdapter | None = None
+        self._monitoring_adapter: MonitoringAdapter | None = None
 
     def get_discovery_adapter(self) -> FlextPluginProtocols.PluginDiscovery:
         """Get the plugin discovery adapter.
@@ -50,9 +64,9 @@ class FlextPluginAdapters:
             Plugin discovery adapter implementation
 
         """
-        if "discovery" not in self._adapters:
-            self._adapters["discovery"] = self.FileSystemDiscoveryAdapter()
-        return self._adapters["discovery"]
+        if self._discovery_adapter is None:
+            self._discovery_adapter = self.FileSystemDiscoveryAdapter()
+        return self._discovery_adapter
 
     def get_loader_adapter(self) -> FlextPluginProtocols.PluginLoader:
         """Get the plugin loader adapter.
@@ -61,9 +75,9 @@ class FlextPluginAdapters:
             Plugin loader adapter implementation
 
         """
-        if "loader" not in self._adapters:
-            self._adapters["loader"] = self.DynamicLoaderAdapter()
-        return self._adapters["loader"]
+        if self._loader_adapter is None:
+            self._loader_adapter = self.DynamicLoaderAdapter()
+        return self._loader_adapter
 
     def get_executor_adapter(self) -> FlextPluginProtocols.PluginExecution:
         """Get the plugin executor adapter.
@@ -72,9 +86,9 @@ class FlextPluginAdapters:
             Plugin executor adapter implementation
 
         """
-        if "executor" not in self._adapters:
-            self._adapters["executor"] = self.PluginExecutorAdapter()
-        return self._adapters["executor"]
+        if self._executor_adapter is None:
+            self._executor_adapter = self.PluginExecutorAdapter()
+        return self._executor_adapter
 
     def get_security_adapter(self) -> FlextPluginProtocols.PluginSecurity:
         """Get the plugin security adapter.
@@ -83,9 +97,9 @@ class FlextPluginAdapters:
             Plugin security adapter implementation
 
         """
-        if "security" not in self._adapters:
-            self._adapters["security"] = self.PluginSecurityAdapter()
-        return self._adapters["security"]
+        if self._security_adapter is None:
+            self._security_adapter = self.PluginSecurityAdapter()
+        return self._security_adapter
 
     def get_registry_adapter(self) -> FlextPluginProtocols.PluginRegistry:
         """Get the plugin registry adapter.
@@ -94,9 +108,9 @@ class FlextPluginAdapters:
             Plugin registry adapter implementation
 
         """
-        if "registry" not in self._adapters:
-            self._adapters["registry"] = self.MemoryRegistryAdapter()
-        return self._adapters["registry"]
+        if self._registry_adapter is None:
+            self._registry_adapter = self.MemoryRegistryAdapter()
+        return self._registry_adapter
 
     def get_monitoring_adapter(self) -> FlextPluginProtocols.PluginMonitoring:
         """Get the plugin monitoring adapter.
@@ -105,9 +119,9 @@ class FlextPluginAdapters:
             Plugin monitoring adapter implementation
 
         """
-        if "monitoring" not in self._adapters:
-            self._adapters["monitoring"] = self.PluginMonitoringAdapter()
-        return self._adapters["monitoring"]
+        if self._monitoring_adapter is None:
+            self._monitoring_adapter = self.PluginMonitoringAdapter()
+        return self._monitoring_adapter
 
     class FileSystemDiscoveryAdapter(FlextPluginProtocols.PluginDiscovery):
         """File system-based plugin discovery adapter."""
@@ -294,6 +308,18 @@ class FlextPluginAdapters:
             """Initialize the dynamic loader adapter."""
             self.logger = FlextCore.Logger(__name__)
             self._loaded_plugins: FlextCore.Types.Dict = {}
+
+        def _resolve_plugin_path(self, path: str) -> Path:
+            """Resolve and validate a plugin path synchronously.
+
+            Args:
+                path: Path to resolve
+
+            Returns:
+                Resolved Path object
+
+            """
+            return Path(path).expanduser().resolve()
 
         async def load_plugin(
             self, plugin_path: str
@@ -521,7 +547,7 @@ class FlextPluginAdapters:
                 return FlextCore.Result.fail(f"Security validation error: {e!s}")
 
         async def check_permissions(
-            self, plugin_name: str, _permissions: FlextPluginTypes.Core.StringList
+            self, plugin_name: str, permissions: FlextPluginTypes.Core.StringList
         ) -> FlextCore.Result[bool]:
             """Check if a plugin has the required permissions.
 
@@ -566,7 +592,7 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Security scan completed for: {plugin_path}")
-                return FlextCore.Result.ok(scan_results)
+                return FlextCore.Result.ok(cast("FlextCore.Types.Dict", scan_results))
 
             except Exception as e:
                 self.logger.exception(f"Security scan failed for {plugin_path}")
@@ -617,7 +643,7 @@ class FlextPluginAdapters:
 
             """
             try:
-                plugin_name = plugin.get("name")
+                plugin_name = str(plugin.get("name", ""))
                 if not plugin_name:
                     return FlextCore.Result.fail("Plugin name is required")
 
@@ -626,7 +652,7 @@ class FlextPluginAdapters:
                         f"Plugin already registered: {plugin_name}"
                     )
 
-                self._plugins[plugin_name] = plugin
+                self._plugins[plugin_name] = {str(k): v for k, v in plugin.items()}
                 self.logger.info(f"Registered plugin: {plugin_name}")
                 return FlextCore.Result.ok(True)
 
@@ -781,7 +807,7 @@ class FlextPluginAdapters:
                     )
 
                 metrics = self._monitored_plugins[plugin_name]["metrics"]
-                return FlextCore.Result.ok(metrics)
+                return FlextCore.Result.ok(cast("FlextCore.Types.Dict", metrics))
 
             except Exception as e:
                 self.logger.exception(f"Failed to get metrics for {plugin_name}")

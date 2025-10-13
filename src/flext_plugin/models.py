@@ -189,12 +189,12 @@ class FlextPluginModels(FlextCore.Models):
         @classmethod
         def validate_memory_limits(cls, value: int) -> int:
             """Validate memory limits are reasonable."""
-            if value > FlextPluginConstants.Performance.READY_MAX_MEMORY_MB:
+            if value > FlextPluginConstants.PluginPerformance.READY_MAX_MEMORY_MB:
                 error_msg = (
                     FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_MAXIMUM
                 )
                 raise ValueError(error_msg)
-            if value < FlextPluginConstants.Performance.MINIMUM_MEMORY_LIMIT_MB:
+            if value < FlextPluginConstants.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB:
                 error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_TOO_LOW
                 raise ValueError(error_msg)
             return value
@@ -412,7 +412,7 @@ class FlextPluginModels(FlextCore.Models):
 
         success: bool = Field(default=False, description="Whether execution succeeded")
         data: FlextPluginTypes.Core.AnyDict = Field(
-            default=None,
+            default_factory=dict,
             description="Execution output data",
         )
         error: str = Field(default="", description="Error message if execution failed")
