@@ -1130,13 +1130,13 @@ class FlextPluginCache:
 
             self.memory_cache[key] = {
                 "value": value,
-                "timestamp": datetime.now(),
+                "timestamp": datetime.now(UTC),
                 "ttl": timedelta(seconds=self.ttl_seconds)
             }
 
     def _is_expired(self, entry: Dict[str, object]) -> bool:
         """Check if cache entry is expired."""
-        return datetime.now() > entry["timestamp"] + entry["ttl"]
+        return datetime.now(UTC) > entry["timestamp"] + entry["ttl"]
 
     def _evict_lru(self) -> None:
         """Evict least recently used items."""
