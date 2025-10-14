@@ -632,12 +632,12 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     ):
                         # Recursively merge nested dictionaries
                         base_config: FlextCore.Types.Dict = (
-                            dict(merged_config[key])
+                            dict[str, object](merged_config[key])
                             if isinstance(merged_config[key], dict)
                             else {}
                         )
                         override_value: FlextCore.Types.Dict = (
-                            dict(value) if isinstance(value, dict) else {}
+                            dict[str, object](value) if isinstance(value, dict) else {}
                         )
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_config, override_value

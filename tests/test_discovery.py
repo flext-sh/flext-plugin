@@ -270,7 +270,7 @@ class TestPluginDiscoveryReal:
 
         result = discovery.discover_all()
 
-        # Should return empty dict for empty directories
+        # Should return empty dict[str, object] for empty directories
         assert isinstance(result, dict)
         assert len(result) == 0
 

@@ -278,7 +278,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default: object = None) -> object:
         """Get configuration value with fallback."""
-        # Access configuration from the config dict passed during initialization
+        # Access configuration from the config dict[str, object] passed during initialization
         return getattr(self, '_config', {}).get(key, default)
 
     # Public utility methods

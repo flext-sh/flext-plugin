@@ -289,7 +289,7 @@ class FlextPluginEntities:
                 name: Plugin name (required)
                 plugin_version: Plugin version (required)
                 entity_id: Unique entity identifier
-                config: Configuration dict containing description, author, etc.
+                config: Configuration dict[str, object] containing description, author, etc.
                 **kwargs: Additional arguments for testing convenience
 
             Returns:
@@ -844,7 +844,7 @@ class FlextPluginEntities:
             cpu_time_ms: float = 0.0,
         ) -> None:
             """Update resource usage tracking."""
-            current_output = dict(self.output_data)
+            current_output = dict[str, object](self.output_data)
             current_output.update(
                 {
                     "resource_usage": {

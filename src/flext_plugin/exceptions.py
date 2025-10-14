@@ -52,12 +52,12 @@ class FlextPluginExceptions(FlextCore.Exceptions):
 
         # Build context dict, ensuring it's always FlextCore.Types.Dict
         if isinstance(context_raw, dict):
-            context: FlextCore.Types.Dict = dict(context_raw)
+            context: FlextCore.Types.Dict = dict[str, object](context_raw)
             if remaining_kwargs:
                 context.update(remaining_kwargs)
         else:
-            # If context is not a dict, start with empty dict and add remaining kwargs
-            context = dict(remaining_kwargs)
+            # If context is not a dict, start with empty dict[str, object] and add remaining kwargs
+            context = dict[str, object](remaining_kwargs)
 
         return context, correlation_id, error_code
 
@@ -75,7 +75,7 @@ class FlextPluginExceptions(FlextCore.Exceptions):
             Complete context dictionary
 
         """
-        context = dict(base_context)  # Create a copy
+        context = dict[str, object](base_context)  # Create a copy
         context.update(additional_fields)
         return context
 

@@ -392,7 +392,7 @@ class PluginConfig(BaseModel):
 
 ```python
 # Schema evolution and data migration
-def migrate_plugin_data(old_data: dict, target_version: str) -> dict:
+def migrate_plugin_data(old_data: dict, target_version: str) -> dict[str, object]:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
     pass

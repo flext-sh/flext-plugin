@@ -222,7 +222,7 @@ class TestHotReloadManager:
         assert isinstance(loaded_plugins, dict)
         # Should be empty initially
         assert len(loaded_plugins) == 0
-        # Modifying returned dict shouldn't affect internal state
+        # Modifying returned dict[str, object] shouldn't affect internal state
         loaded_plugins["test"] = "value"
         assert "test" not in manager.get_loaded_plugins()
 

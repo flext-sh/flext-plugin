@@ -370,7 +370,7 @@ class FlextPluginImplementations:
                         "Input data must be a dictionary"
                     )
                 # Apply transformation based on schema
-                transformed: FlextCore.Types.Dict = dict(
+                transformed: FlextCore.Types.Dict = dict[str, object](
                     cast("FlextCore.Types.Dict", data)
                 )
                 transformed["_transformed_by"] = self._name
@@ -482,7 +482,7 @@ class FlextPluginImplementations:
 
         def get_config(self) -> FlextCore.Types.Dict:
             """Get configuration for plugin."""
-            return dict(self._config)
+            return dict[str, object](self._config)
 
         def get_logger(self) -> FlextCore.Protocols.Infrastructure.LoggerProtocol:
             """Get logger instance for plugin."""

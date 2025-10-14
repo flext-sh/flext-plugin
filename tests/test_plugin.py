@@ -182,7 +182,7 @@ class TestPluginRegistry:
             def __init__(self) -> None:
                 """Initialize the instance."""
                 super().__init__()
-                # Override the plugins dict to raise exception on assignment
+                # Override the plugins dict[str, object] to raise exception on assignment
                 self.plugins = {}
 
             def register(self, _plugin: Plugin) -> FlextCore.Result[None]:
@@ -244,7 +244,7 @@ class TestPluginRegistry:
         registry = FailingUnregisterRegistry()
         plugin = Plugin("test-plugin")
 
-        # Add plugin to the dict directly
+        # Add plugin to the dict[str, object] directly
         registry.plugins["test-plugin"] = plugin
 
         result = registry.unregister("test-plugin")
