@@ -84,7 +84,7 @@ All ADRs follow a standardized template for consistency and completeness.
 
 ## Notes
 
-[Any additional information or implementation details]
+[object additional information or implementation details]
 ```
 
 ---

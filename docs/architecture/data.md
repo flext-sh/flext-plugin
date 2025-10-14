@@ -61,13 +61,13 @@ class Execution {
     +start_time: datetime
     +end_time: datetime
     +execution_time: float
-    +result: Any
+    +result: object
     +error: str
     +context: ExecutionContext
 }
 
 class ExecutionContext {
-    +input_data: Dict[str, Any]
+    +input_data: Dict[str, object]
     +environment: Dict[str, str]
     +user_id: str
     +correlation_id: str
@@ -376,13 +376,13 @@ Retired --> Archived: Retirement archival
 ```python
 # Pydantic data models with validation
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 class PluginConfig(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r'^\d+\.\d+\.\d+$')
     dependencies: FlextCore.Types.StringList = Field(default_factory=list)
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: Dict[str, object] = Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model

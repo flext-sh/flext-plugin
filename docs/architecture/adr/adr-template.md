@@ -147,7 +147,7 @@
 
 ## Notes
 
-[Any additional information, implementation details, or future considerations]
+[object additional information, implementation details, or future considerations]
 
 ## Decision Log
 
