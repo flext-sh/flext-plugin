@@ -14,13 +14,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TypeVar
+from flext_core import FlextTypes
 
-from flext_core import FlextResult, FlextTypes
-
-# Plugin-specific TypeVars
-TPluginResult = TypeVar("TPluginResult", bound=FlextResult)
-
+#
 # =============================================================================
 # PLUGIN-SPECIFIC TYPE VARIABLES - Domain-specific TypeVars for plugin operations
 # =============================================================================
@@ -135,5 +131,4 @@ class FlextPluginTypes(FlextTypes):
 
 __all__ = [
     "FlextPluginTypes",
-    "TPluginResult",
 ]

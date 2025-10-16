@@ -353,7 +353,7 @@ class FlextPluginHotReload:
 
             current_mtime = await loop.run_in_executor(
                 None,
-                lambda: file_path.stat().st_mtime,  # noqa: ASYNC240
+                lambda: file_path.stat().st_mtime,
             )
             if self._file_timestamps.get(file_path, 0) >= current_mtime:
                 return
@@ -393,9 +393,9 @@ class FlextPluginHotReload:
             "debounce_ms": self.debounce_ms,
             "max_retries": self.max_retries,
             "total_reloads": len(self._reload_history),
-            "recent_reloads": len(
-                [r for r in self._reload_history if r.get("success", False)]
-            ),
+            "recent_reloads": len([
+                r for r in self._reload_history if r.get("success", False)
+            ]),
             "callback_count": len(self._reload_callbacks),
         }
 
@@ -445,7 +445,7 @@ class FlextPluginHotReload:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
+                lambda: Path(path).expanduser().resolve(),
             )
             path_exists = await loop.run_in_executor(None, path_obj.exists)
 
@@ -475,7 +475,7 @@ class FlextPluginHotReload:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
+                lambda: Path(path).expanduser().resolve(),
             )
 
             if path_obj in self._watched_paths:

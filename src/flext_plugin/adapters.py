@@ -284,7 +284,7 @@ class FlextPluginAdapters:
 
                 # Run pathlib operations in thread pool
                 loop = asyncio.get_event_loop()
-                items = await loop.run_in_executor(None, list, path.iterdir())  # noqa: ASYNC240
+                items = await loop.run_in_executor(None, list, path.iterdir())
 
                 for item in items:
                     if item.is_file() and item.suffix == ".py":
@@ -548,7 +548,7 @@ class FlextPluginAdapters:
         async def check_permissions(
             self,
             plugin_name: str,
-            permissions: FlextPluginTypes.Core.StringList,  # noqa: ARG002
+            permissions: FlextPluginTypes.Core.StringList,
         ) -> FlextResult[bool]:
             """Check if a plugin has the required permissions.
 

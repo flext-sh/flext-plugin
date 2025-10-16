@@ -412,9 +412,9 @@ class FlextPluginPlatform(FlextService[FlextResult]):
             "total_plugins": len(self._plugins),
             "active_plugins": len([p for p in self._plugins.values() if p.is_active()]),
             "total_executions": len(self._executions),
-            "running_executions": len(
-                [e for e in self._executions.values() if e.is_running]
-            ),
+            "running_executions": len([
+                e for e in self._executions.values() if e.is_running
+            ]),
             "hot_reload_enabled": self._hot_reload is not None
             and self._hot_reload.is_watching()
             if self._hot_reload

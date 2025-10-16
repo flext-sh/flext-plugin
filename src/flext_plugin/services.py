@@ -281,9 +281,9 @@ class FlextPluginService(FlextService[FlextResult]):
             # Note: Async executor execution not supported in sync context
             # Sync-only operations maintained per FLEXT requirements
             # )
-            exec_result = FlextResult.ok(
-                {"status": "executed"}
-            )  # Mock success for sync interface
+            exec_result = FlextResult.ok({
+                "status": "executed"
+            })  # Mock success for sync interface
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
@@ -466,9 +466,9 @@ class FlextPluginService(FlextService[FlextResult]):
             "total_plugins": len(self._plugins),
             "active_plugins": len([p for p in self._plugins.values() if p.is_active()]),
             "total_executions": len(self._executions),
-            "running_executions": len(
-                [e for e in self._executions.values() if e.is_running]
-            ),
+            "running_executions": len([
+                e for e in self._executions.values() if e.is_running
+            ]),
             "monitoring_enabled": self._monitoring is not None,
             "discovery_available": self._discovery is not None,
             "loader_available": self._loader is not None,

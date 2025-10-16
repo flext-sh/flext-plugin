@@ -62,7 +62,7 @@ class FlextPluginLoader:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(plugin_path).expanduser().resolve(),  # noqa: ASYNC240
+                lambda: Path(plugin_path).expanduser().resolve(),
             )
             path_exists = await loop.run_in_executor(None, path_obj.exists)
 

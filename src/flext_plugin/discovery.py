@@ -393,7 +393,7 @@ class FlextPluginDiscovery:
 
                 # Run pathlib operations in thread pool
                 loop = asyncio.get_event_loop()
-                items = await loop.run_in_executor(None, list, path.iterdir())  # noqa: ASYNC240
+                items = await loop.run_in_executor(None, list, path.iterdir())
 
                 for item in items:
                     if (
@@ -457,7 +457,7 @@ class FlextPluginDiscovery:
 
         async def discover_plugins(
             self,
-            paths: FlextTypes.StringList,  # noqa: ARG002
+            paths: FlextTypes.StringList,
         ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
