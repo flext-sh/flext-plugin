@@ -7,7 +7,7 @@ Real Functionality Testing Strategy:
     - Use actual FlextPlugin objects created via factory functions
     - Test real handler methods with actual business logic validation
     - Test real error scenarios with genuine edge cases
-    - Validate actual FlextCore.Result patterns with REAL services
+    - Validate actual FlextResult patterns with REAL services
 
 Handler Testing:
     - FlextPluginHandler: Base class initialization and service injection
@@ -16,7 +16,7 @@ Handler Testing:
 
 Integration Testing:
     - Real plugin entities with proper validation
-    - Actual FlextCore.Result success/failure patterns
+    - Actual FlextResult success/failure patterns
     - Business logic validation with edge cases
     - Error handling with genuine exception scenarios
 

@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Self, cast
 
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextModels, FlextResult, FlextTypes, FlextUtilities
 from pydantic import Field, field_validator
 
 from flext_plugin.config import FlextPluginConfig
@@ -125,7 +125,7 @@ class FlextPluginEntities:
             """Check if this is an architectural plugin type."""
             return self in self.get_architectural_types()
 
-    class Config(FlextCore.Models.Entity):
+    class Config(FlextModels.Entity):
         """Plugin configuration entity for managing plugin settings and parameters."""
 
         # Pydantic fields
@@ -173,7 +173,7 @@ class FlextPluginEntities:
             **kwargs: object,
         ) -> FlextPluginEntities.Config:
             """Create plugin config entity with proper validation."""
-            entity_id = entity_id or FlextCore.Utilities.Generators.generate_entity_id()
+            entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
 
             # Create instance data
             instance_data: FlextPluginTypes.Core.PluginDict = {
@@ -209,27 +209,27 @@ class FlextPluginEntities:
             """Update the updated_at timestamp."""
             setattr(self, "updated_at", datetime.now(UTC))
 
-        def validate_business_rules(self) -> FlextCore.Result[None]:
+        def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin config entity."""
             if not self.plugin_name or not self.plugin_name.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin name is required and cannot be empty"
                 )
             if self.max_memory_mb <= 0:
-                return FlextCore.Result[None].fail("Maximum memory must be positive")
+                return FlextResult[None].fail("Maximum memory must be positive")
             if (
                 self.max_cpu_percent < 0
                 or self.max_cpu_percent
                 > FlextPluginConstants.Performance.MAX_CPU_PERCENTAGE
             ):
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "CPU percentage must be between 0 and 100"
                 )
             if self.timeout_seconds <= 0:
-                return FlextCore.Result[None].fail("Timeout must be positive")
-            return FlextCore.Result[None].ok(None)
+                return FlextResult[None].fail("Timeout must be positive")
+            return FlextResult[None].ok(None)
 
-    class Plugin(FlextCore.Models.Entity):
+    class Plugin(FlextModels.Entity):
         """Rich plugin domain entity with comprehensive business logic and lifecycle management.
 
         Core domain entity representing a plugin within the FLEXT ecosystem.
@@ -298,7 +298,7 @@ class FlextPluginEntities:
 
             """
             # Generate ID if not provided
-            entity_id = entity_id or FlextCore.Utilities.Generators.generate_entity_id()
+            entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
 
             # Extract config values
             config = config or {}
@@ -377,7 +377,7 @@ class FlextPluginEntities:
             setattr(
                 self,
                 "_last_execution",
-                FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                FlextUtilities.Generators.generate_iso_timestamp(),
             )
 
             if not success:
@@ -392,23 +392,23 @@ class FlextPluginEntities:
             setattr(
                 self,
                 "_last_error_time",
-                FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                FlextUtilities.Generators.generate_iso_timestamp(),
             )
             setattr(self, "status", FlextPluginEntities.PluginStatus.UNHEALTHY)
 
-        def validate_business_rules(self) -> FlextCore.Result[None]:
+        def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin entity."""
             if not self.name or not self.name.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin name is required and cannot be empty"
                 )
             if not self.plugin_version or not self.plugin_version.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin version is required and cannot be empty",
                 )
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
 
-    class Metadata(FlextCore.Models.Entity):
+    class Metadata(FlextModels.Entity):
         """Plugin metadata entity containing additional plugin information."""
 
         # Pydantic fields for the entity
@@ -416,11 +416,11 @@ class FlextPluginEntities:
             default="",
             description="Name of the plugin this metadata belongs to",
         )
-        tags: FlextCore.Types.StringList = Field(
+        tags: FlextTypes.StringList = Field(
             default_factory=list,
             description="Plugin tags for categorization",
         )
-        categories: FlextCore.Types.StringList = Field(
+        categories: FlextTypes.StringList = Field(
             default_factory=list,
             description="Plugin categories",
         )
@@ -465,7 +465,7 @@ class FlextPluginEntities:
             **kwargs: object,
         ) -> FlextPluginEntities.Metadata:
             """Create plugin metadata entity with proper validation."""
-            entity_id = entity_id or FlextCore.Utilities.Generators.generate_entity_id()
+            entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
 
             # Create instance data
             instance_data: FlextPluginTypes.Core.PluginDict = {
@@ -513,23 +513,23 @@ class FlextPluginEntities:
             """Validate plugin metadata entity state."""
             return bool(self.plugin_name)
 
-        def validate_business_rules(self) -> FlextCore.Result[None]:
+        def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin metadata entity."""
             if not self.plugin_name or not self.plugin_name.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin name is required and cannot be empty"
                 )
             if not self.name or not self.name.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin name field is required and cannot be empty",
                 )
             if not self.entry_point or not self.entry_point.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Plugin entry point is required and cannot be empty",
                 )
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
 
-    class Registry(FlextCore.Models.Entity):
+    class Registry(FlextModels.Entity):
         """Plugin registry entity managing registered plugins."""
 
         # Pydantic fields
@@ -566,7 +566,7 @@ class FlextPluginEntities:
             default=False,
             description="Whether to verify signatures",
         )
-        trusted_publishers: FlextCore.Types.StringList = Field(
+        trusted_publishers: FlextTypes.StringList = Field(
             default_factory=list,
             description="List of trusted publishers",
         )
@@ -580,7 +580,7 @@ class FlextPluginEntities:
             **kwargs: object,
         ) -> FlextPluginEntities.Registry:
             """Create plugin registry entity with proper validation."""
-            entity_id = entity_id or FlextCore.Utilities.Generators.generate_entity_id()
+            entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
 
             # Create instance data
             instance_data: FlextPluginTypes.Core.PluginDict = {
@@ -614,7 +614,7 @@ class FlextPluginEntities:
             setattr(
                 self,
                 "last_sync",
-                FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                FlextUtilities.Generators.generate_iso_timestamp(),
             )
 
             if success and plugin_count is not None:
@@ -633,15 +633,11 @@ class FlextPluginEntities:
                 return True
             return False
 
-        def register(
-            self, plugin: FlextPluginEntities.Plugin
-        ) -> FlextCore.Result[None]:
-            """Register a plugin in the registry with FlextCore.Result return type."""
+        def register(self, plugin: FlextPluginEntities.Plugin) -> FlextResult[None]:
+            """Register a plugin in the registry with FlextResult return type."""
             if self.register_plugin(plugin):
-                return FlextCore.Result[None].ok(None)
-            return FlextCore.Result[None].fail(
-                f"Failed to register plugin {plugin.name}"
-            )
+                return FlextResult[None].ok(None)
+            return FlextResult[None].fail(f"Failed to register plugin {plugin.name}")
 
         def unregister_plugin(self, plugin_name: str) -> bool:
             """Unregister a plugin from the registry."""
@@ -658,15 +654,15 @@ class FlextPluginEntities:
             """List all registered plugins."""
             return list(self.plugins.values())
 
-        def validate_business_rules(self) -> FlextCore.Result[None]:
+        def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin registry entity."""
             if not self.name or not self.name.strip():
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "Registry name is required and cannot be empty",
                 )
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
 
-    class Execution(FlextCore.Models.Entity):
+    class Execution(FlextModels.Entity):
         """Plugin execution entity for tracking plugin executions."""
 
         # Pydantic fields
@@ -683,7 +679,7 @@ class FlextPluginEntities:
             description="Execution identifier",
         )
         start_time: str = Field(
-            default_factory=FlextCore.Utilities.Generators.generate_iso_timestamp,
+            default_factory=FlextUtilities.Generators.generate_iso_timestamp,
             description="Execution start time",
         )
         end_time: datetime | None = Field(
@@ -716,7 +712,7 @@ class FlextPluginEntities:
             **kwargs: object,
         ) -> FlextPluginEntities.Execution:
             """Create plugin execution entity with proper validation."""
-            final_id = entity_id or FlextCore.Utilities.Generators.generate_entity_id()
+            final_id = entity_id or FlextUtilities.Generators.generate_entity_id()
             execution_config = execution_config or {}
 
             # Create instance data with all required fields including base entity fields
@@ -729,7 +725,7 @@ class FlextPluginEntities:
                 "execution_id": kwargs.get("execution_id", final_id),
                 "start_time": execution_config.get(
                     "start_time",
-                    FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                    FlextUtilities.Generators.generate_iso_timestamp(),
                 ),
                 "end_time": execution_config.get("end_time"),
                 "status": execution_config.get("status", "pending"),
@@ -760,7 +756,7 @@ class FlextPluginEntities:
         def memory_usage_mb(self) -> float:
             """Get memory usage in MB from resource tracking."""
             resource_usage = cast(
-                "FlextCore.Types.Dict",
+                "FlextTypes.Dict",
                 self.output_data.get("resource_usage", {}),
             )
             memory_value = resource_usage.get("memory_mb", 0.0)
@@ -770,7 +766,7 @@ class FlextPluginEntities:
                 try:
                     return float(memory_value)
                 except ValueError as e:
-                    logger = FlextCore.Logger(__name__)
+                    logger = FlextLogger(__name__)
                     logger.exception(
                         f"Invalid memory value '{memory_value}' for plugin execution",
                     )
@@ -782,7 +778,7 @@ class FlextPluginEntities:
         def cpu_time_ms(self) -> float:
             """Get CPU time in milliseconds from resource tracking."""
             resource_usage = cast(
-                "FlextCore.Types.Dict",
+                "FlextTypes.Dict",
                 self.output_data.get("resource_usage", {}),
             )
             cpu_value = resource_usage.get("cpu_time_ms", 0.0)
@@ -792,7 +788,7 @@ class FlextPluginEntities:
                 try:
                     return float(cpu_value)
                 except ValueError as e:
-                    logger = FlextCore.Logger(__name__)
+                    logger = FlextLogger(__name__)
                     logger.exception(
                         f"Invalid CPU time value '{cpu_value}' for plugin execution",
                     )
@@ -816,7 +812,7 @@ class FlextPluginEntities:
             setattr(
                 self,
                 "start_time",
-                FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                FlextUtilities.Generators.generate_iso_timestamp(),
             )
 
         def mark_completed(
@@ -829,7 +825,7 @@ class FlextPluginEntities:
             setattr(
                 self,
                 "end_time",
-                FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                FlextUtilities.Generators.generate_iso_timestamp(),
             )
             if success:
                 setattr(self, "status", "completed")
@@ -852,18 +848,18 @@ class FlextPluginEntities:
                         "memory_mb": memory_mb,
                         "cpu_time_ms": cpu_time_ms,
                         "timestamp": str(
-                            FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                            FlextUtilities.Generators.generate_iso_timestamp(),
                         ),
                     },
                 },
             )
             setattr(self, "output_data", current_output)
 
-        def validate_business_rules(self) -> FlextCore.Result[None]:
+        def validate_business_rules(self) -> FlextResult[None]:
             """Validate domain rules for plugin execution entity."""
             if not self.plugin_name:
-                return FlextCore.Result[None].fail("Plugin name is required")
-            return FlextCore.Result[None].ok(None)
+                return FlextResult[None].fail("Plugin name is required")
+            return FlextResult[None].ok(None)
 
 
 __all__ = ["FlextPluginEntities"]

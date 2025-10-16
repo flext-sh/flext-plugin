@@ -11,7 +11,7 @@ import re
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextModels
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -27,8 +27,8 @@ from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginModels(FlextCore.Models):
-    """Comprehensive models for plugin system operations extending FlextCore.Models.
+class FlextPluginModels(FlextModels):
+    """Comprehensive models for plugin system operations extending FlextModels.
 
     Provides standardized models for all plugin domain entities including:
     - Plugin lifecycle and management
@@ -37,7 +37,7 @@ class FlextPluginModels(FlextCore.Models):
     - Plugin registry and discovery
     - Plugin security and validation
 
-    All nested classes inherit FlextCore.Models validation and patterns.
+    All nested classes inherit FlextModels validation and patterns.
     """
 
     model_config = ConfigDict(
@@ -51,7 +51,7 @@ class FlextPluginModels(FlextCore.Models):
         loc_by_alias=False,
     )
 
-    class PluginModel(FlextCore.Models.Entity):
+    class PluginModel(FlextModels.Entity):
         """Core plugin entity model with comprehensive validation."""
 
         name: str = Field(
@@ -200,7 +200,7 @@ class FlextPluginModels(FlextCore.Models):
                 raise ValueError(error_msg)
             return value
 
-    class SecurityModel(FlextCore.Models.Entity):
+    class SecurityModel(FlextModels.Entity):
         """Plugin security model with enterprise-grade validation."""
 
         model_config = ConfigDict(
@@ -247,7 +247,7 @@ class FlextPluginModels(FlextCore.Models):
                 and self.audit_logging
             )
 
-    class MonitoringModel(FlextCore.Models.Entity):
+    class MonitoringModel(FlextModels.Entity):
         """Plugin monitoring and observability model."""
 
         model_config = ConfigDict(
@@ -316,9 +316,7 @@ class FlextPluginModels(FlextCore.Models):
             for key, threshold in value.items():
                 if (
                     key.endswith("_percent")
-                    and not 0
-                    <= threshold
-                    <= FlextCore.Constants.Validation.MAX_PERCENTAGE
+                    and not 0 <= threshold <= FlextConstants.Validation.MAX_PERCENTAGE
                 ):
                     error_msg = FlextPluginConstants.PluginMessages.PERCENTAGE_THRESHOLD_MUST_BE_0_100.format(
                         key=key
@@ -332,7 +330,7 @@ class FlextPluginModels(FlextCore.Models):
 
             return value
 
-    class MetadataModel(FlextCore.Models.Entity):
+    class MetadataModel(FlextModels.Entity):
         """Plugin metadata model."""
 
         model_config = ConfigDict(
@@ -376,7 +374,7 @@ class FlextPluginModels(FlextCore.Models):
             description="Required Python version",
         )
 
-    class ExecutionContextModel(FlextCore.Models.Entity):
+    class ExecutionContextModel(FlextModels.Entity):
         """Plugin execution context model."""
 
         model_config = ConfigDict(
@@ -403,7 +401,7 @@ class FlextPluginModels(FlextCore.Models):
             description="Execution start timestamp",
         )
 
-    class ExecutionResultModel(FlextCore.Models.Entity):
+    class ExecutionResultModel(FlextModels.Entity):
         """Plugin execution result model."""
 
         model_config = ConfigDict(
@@ -437,7 +435,7 @@ class FlextPluginModels(FlextCore.Models):
             """Return True if execution failed."""
             return not self.success
 
-    class ManagerResultModel(FlextCore.Models.Entity):
+    class ManagerResultModel(FlextModels.Entity):
         """Plugin manager operation result model."""
 
         model_config = ConfigDict(

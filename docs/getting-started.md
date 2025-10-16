@@ -35,7 +35,7 @@ flext-plugin integrates with these FLEXT ecosystem components:
 
 ```bash
 # Core dependencies (automatically installed)
-flext-core>=0.9.9        # Foundation patterns and FlextCore.Result
+flext-core>=0.9.9        # Foundation patterns and FlextResult
 flext-observability>=0.9.9  # Monitoring and observability
 ```
 
@@ -47,7 +47,26 @@ flext-observability>=0.9.9  # Monitoring and observability
 
 ```python
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Create plugin platform
 platform = FlextPluginPlatform()

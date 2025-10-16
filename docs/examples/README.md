@@ -188,7 +188,26 @@ echo "# Modified at $(date)" >> demo_plugin.py
 ```python
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from typing import Dict
 
 class ExamplePlugin(FlextPlugin):
@@ -206,42 +225,42 @@ class ExamplePlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextCore.Result[bool]:
+    def initialize(self) -> FlextResult[bool]:
         """Initialize plugin resources."""
         try:
             # Setup plugin resources
             self._setup_resources()
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Initialization failed: {e}")
+            return FlextResult[None].fail(f"Initialization failed: {e}")
 
-    def execute(self, data: FlextCore.Types.Dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextCore.Result[None].fail("Plugin not active")
+                return FlextResult[None].fail("Plugin not active")
 
             # Process data
             result = self._process_data(data)
-            return FlextCore.Result[None].ok(result)
+            return FlextResult[None].ok(result)
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Execution failed: {e}")
+            return FlextResult[None].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> FlextCore.Result[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Cleanup failed: {e}")
+            return FlextResult[None].fail(f"Cleanup failed: {e}")
 
     def _setup_resources(self):
         """Setup plugin-specific resources."""
         pass
 
-    def _process_data(self, data: FlextCore.Types.Dict) -> FlextCore.Types.Dict:
+    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
 
@@ -353,7 +372,7 @@ class TestExamplePlugin:
 
 ### 1. Error Handling
 
-All examples demonstrate proper error handling using `FlextCore.Result` pattern:
+All examples demonstrate proper error handling using `FlextResult` pattern:
 
 ```python
 try:
@@ -365,7 +384,7 @@ try:
         return None
 except Exception as e:
     logger.error(f"Unexpected error: {e}")
-    return FlextCore.Result[None].fail(f"Unexpected error: {e}")
+    return FlextResult[None].fail(f"Unexpected error: {e}")
 ```
 
 ### 2. Resource Management
@@ -373,7 +392,7 @@ except Exception as e:
 Proper resource cleanup in plugin lifecycle:
 
 ```python
-def cleanup(self) -> FlextCore.Result[bool]:
+def cleanup(self) -> FlextResult[bool]:
     """Cleanup with error handling."""
     try:
         if hasattr(self, '_connection') and self._connection:
@@ -383,9 +402,9 @@ def cleanup(self) -> FlextCore.Result[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return FlextCore.Result[None].ok(data=True)
+        return FlextResult[None].ok(data=True)
     except Exception as e:
-        return FlextCore.Result[None].fail(f"Cleanup failed: {e}")
+        return FlextResult[None].fail(f"Cleanup failed: {e}")
 ```
 
 ### 3. Type Safety
@@ -394,12 +413,31 @@ All examples use proper type hints:
 
 ```python
 from typing import Dict, List, Optional
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 def process_data(
     self,
-    data: FlextCore.Types.Dict
-) -> FlextCore.Result[FlextCore.Types.Dict]:
+    data: FlextTypes.Dict
+) -> FlextResult[FlextTypes.Dict]:
     """Type-safe data processing."""
     pass
 ```
@@ -450,7 +488,7 @@ Comprehensive test coverage for all plugin functionality:
 - **85% Test Coverage**: Comprehensive test suites
 - **Type Safety**: Full type annotation coverage
 - **Documentation**: Clear README with usage instructions
-- **Error Handling**: Proper FlextCore.Result pattern usage
+- **Error Handling**: Proper FlextResult pattern usage
 - **Resource Management**: Clean initialization and cleanup
 
 ---

@@ -18,7 +18,7 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -26,8 +26,8 @@ from flext_plugin.entities import PluginMetadata
 from flext_plugin.typings import FlextPluginTypes
 
 
-class FlextPluginUtilities(FlextCore.Utilities):
-    """Plugin management utilities extending FlextCore.Utilities with nested classes.
+class FlextPluginUtilities(FlextUtilities):
+    """Plugin management utilities extending FlextUtilities with nested classes.
 
     Provides comprehensive plugin management capabilities with nested classes for:
     - Plugin discovery and validation
@@ -71,20 +71,20 @@ class FlextPluginUtilities(FlextCore.Utilities):
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> FlextCore.Result[list[PluginMetadata]]:
+        ) -> FlextResult[list[PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
                 directory: Directory to search for plugins
 
             Returns:
-                FlextCore.Result containing list of discovered plugin metadata
+                FlextResult containing list of discovered plugin metadata
 
             """
             try:
                 search_path = Path(directory)
                 if not search_path.exists():
-                    return FlextCore.Result[list[PluginMetadata]].fail(
+                    return FlextResult[list[PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}"
                     )
 
@@ -107,26 +107,26 @@ class FlextPluginUtilities(FlextCore.Utilities):
                             if metadata_result.is_success:
                                 plugins.append(metadata_result.unwrap())
 
-                return FlextCore.Result[list[PluginMetadata]].ok(plugins)
+                return FlextResult[list[PluginMetadata]].ok(plugins)
             except Exception as e:
-                return FlextCore.Result[list[PluginMetadata]].fail(
+                return FlextResult[list[PluginMetadata]].fail(
                     f"Plugin discovery failed: {e}"
                 )
 
         @staticmethod
-        def validate_plugin_file(plugin_path: Path) -> FlextCore.Result[None]:
+        def validate_plugin_file(plugin_path: Path) -> FlextResult[None]:
             """Validate plugin file structure and safety.
 
             Args:
                 plugin_path: Path to the plugin file
 
             Returns:
-                FlextCore.Result indicating validation success or failure
+                FlextResult indicating validation success or failure
 
             """
             try:
                 if not plugin_path.exists():
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Plugin file does not exist: {plugin_path}"
                     )
 
@@ -136,7 +136,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     file_size_mb
                     > FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB
                 ):
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB}MB"
                     )
 
@@ -152,27 +152,25 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     ]
                     for pattern in dangerous_patterns:
                         if pattern in content:
-                            return FlextCore.Result[None].fail(
+                            return FlextResult[None].fail(
                                 f"Plugin contains potentially dangerous code: {pattern}"
                             )
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(
-                    f"Plugin file validation failed: {e}"
-                )
+                return FlextResult[None].fail(f"Plugin file validation failed: {e}")
 
         @staticmethod
         def extract_plugin_metadata(
             plugin_path: Path,
-        ) -> FlextCore.Result[PluginMetadata]:
+        ) -> FlextResult[PluginMetadata]:
             """Extract metadata from plugin file.
 
             Args:
                 plugin_path: Path to the plugin file
 
             Returns:
-                FlextCore.Result containing plugin metadata
+                FlextResult containing plugin metadata
 
             """
             try:
@@ -203,30 +201,30 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     if doc_match:
                         metadata.description = doc_match.group(1).strip()
 
-                return FlextCore.Result[PluginMetadata].ok(metadata)
+                return FlextResult[PluginMetadata].ok(metadata)
             except Exception as e:
-                return FlextCore.Result[PluginMetadata].fail(
+                return FlextResult[PluginMetadata].fail(
                     f"Metadata extraction failed: {e}"
                 )
 
         @staticmethod
-        def validate_plugin_name(name: str) -> FlextCore.Result[None]:
+        def validate_plugin_name(name: str) -> FlextResult[None]:
             """Validate plugin name follows naming conventions.
 
             Args:
                 name: Plugin name to validate
 
             Returns:
-                FlextCore.Result indicating validation success or failure
+                FlextResult indicating validation success or failure
 
             """
             if not re.match(
                 FlextPluginUtilities.PluginDiscovery.PLUGIN_NAME_PATTERN, name
             ):
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores."
                 )
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
 
     class HotReloadManager:
         """Hot reload management utilities."""
@@ -239,7 +237,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
         def create_file_watcher(
             watch_path: Path | str,
             callback_function: Callable[..., object] | None = None,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Create file system watcher for plugin hot reload.
 
             Args:
@@ -247,13 +245,13 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 callback_function: Function to call on file changes
 
             Returns:
-                FlextCore.Result containing watcher configuration
+                FlextResult containing watcher configuration
 
             """
             try:
                 path = Path(watch_path)
                 if not path.exists():
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Watch path does not exist: {path}"
                     )
 
@@ -266,23 +264,23 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(dict(watcher_config))
+                return FlextResult[FlextTypes.Dict].ok(dict(watcher_config))
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"File watcher creation failed: {e}"
                 )
 
         @staticmethod
         def detect_file_changes(
-            watcher_config: FlextCore.Types.Dict,
-        ) -> FlextCore.Result[FlextPluginTypes.Core.StringList]:
+            watcher_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextPluginTypes.Core.StringList]:
             """Detect file changes in watched directory.
 
             Args:
                 watcher_config: Watcher configuration from create_file_watcher
 
             Returns:
-                FlextCore.Result containing list of changed files
+                FlextResult containing list of changed files
 
             """
             try:
@@ -309,23 +307,21 @@ class FlextPluginUtilities(FlextCore.Utilities):
                             last_modified[file_key] = current_mtime
 
                 watcher_config["last_modified"] = last_modified
-                return FlextCore.Result[FlextPluginTypes.Core.StringList].ok(
-                    changed_files
-                )
+                return FlextResult[FlextPluginTypes.Core.StringList].ok(changed_files)
             except Exception as e:
-                return FlextCore.Result[FlextPluginTypes.Core.StringList].fail(
+                return FlextResult[FlextPluginTypes.Core.StringList].fail(
                     f"File change detection failed: {e}"
                 )
 
         @staticmethod
-        def validate_reload_safety(plugin_path: Path) -> FlextCore.Result[None]:
+        def validate_reload_safety(plugin_path: Path) -> FlextResult[None]:
             """Validate that plugin can be safely reloaded.
 
             Args:
                 plugin_path: Path to plugin being reloaded
 
             Returns:
-                FlextCore.Result indicating reload safety
+                FlextResult indicating reload safety
 
             """
             try:
@@ -336,7 +332,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     )
                 )
                 if validation_result.is_failure:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Plugin validation failed: {validation_result.error}"
                     )
 
@@ -347,15 +343,13 @@ class FlextPluginUtilities(FlextCore.Utilities):
                         content = plugin_path.read_text(encoding="utf-8")
                         compile(content, str(plugin_path), "exec")
                     except SyntaxError as e:
-                        return FlextCore.Result[None].fail(
+                        return FlextResult[None].fail(
                             f"Python syntax error in plugin: {e}"
                         )
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(
-                    f"Reload safety validation failed: {e}"
-                )
+                return FlextResult[None].fail(f"Reload safety validation failed: {e}")
 
     class SecurityValidation:
         """Plugin security validation and sandboxing utilities."""
@@ -385,18 +379,18 @@ class FlextPluginUtilities(FlextCore.Utilities):
         @staticmethod
         def validate_plugin_security(
             plugin_content: str,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate plugin security before execution.
 
             Args:
                 plugin_content: Plugin source code content
 
             Returns:
-                FlextCore.Result containing security validation results
+                FlextResult containing security validation results
 
             """
             try:
-                security_report: FlextCore.Types.Dict = {
+                security_report: FlextTypes.Dict = {
                     "safe": True,
                     "violations": [],
                     "warnings": [],
@@ -439,23 +433,23 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     if isinstance(warnings, list):
                         warnings.append("Plugin may perform file operations")
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(dict(security_report))
+                return FlextResult[FlextTypes.Dict].ok(dict(security_report))
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Security validation failed: {e}"
                 )
 
         @staticmethod
         def create_sandbox_config(
             plugin_name: str,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Create sandbox configuration for plugin execution.
 
             Args:
                 plugin_name: Name of the plugin to sandbox
 
             Returns:
-                FlextCore.Result containing sandbox configuration
+                FlextResult containing sandbox configuration
 
             """
             try:
@@ -473,21 +467,21 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(dict(sandbox_config))
+                return FlextResult[FlextTypes.Dict].ok(dict(sandbox_config))
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Sandbox configuration creation failed: {e}"
                 )
 
         @staticmethod
-        def calculate_plugin_hash(plugin_content: str) -> FlextCore.Result[str]:
+        def calculate_plugin_hash(plugin_content: str) -> FlextResult[str]:
             """Calculate secure hash of plugin content for integrity verification.
 
             Args:
                 plugin_content: Plugin source code content
 
             Returns:
-                FlextCore.Result containing SHA-256 hash of plugin content
+                FlextResult containing SHA-256 hash of plugin content
 
             """
             try:
@@ -495,11 +489,9 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 hash_object = hashlib.sha256(content_bytes)
                 plugin_hash = hash_object.hexdigest()
 
-                return FlextCore.Result[str].ok(plugin_hash)
+                return FlextResult[str].ok(plugin_hash)
             except Exception as e:
-                return FlextCore.Result[str].fail(
-                    f"Plugin hash calculation failed: {e}"
-                )
+                return FlextResult[str].fail(f"Plugin hash calculation failed: {e}")
 
     class ConfigurationManager:
         """Plugin configuration management utilities."""
@@ -511,20 +503,20 @@ class FlextPluginUtilities(FlextCore.Utilities):
         @staticmethod
         def load_plugin_config(
             config_path: Path | str,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Load plugin configuration from file.
 
             Args:
                 config_path: Path to plugin configuration file
 
             Returns:
-                FlextCore.Result containing plugin configuration
+                FlextResult containing plugin configuration
 
             """
             try:
                 path = Path(config_path)
                 if not path.exists():
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Configuration file not found: {path}"
                     )
 
@@ -534,7 +526,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     file_size_kb
                     > FlextPluginUtilities.ConfigurationManager.MAX_CONFIG_SIZE_KB
                 ):
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Configuration file too large: {file_size_kb:.1f}KB"
                     )
 
@@ -545,7 +537,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 elif path.suffix == ".json":
                     config = json.loads(content)
                 else:
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Unsupported configuration format: {path.suffix}"
                     )
 
@@ -555,34 +547,34 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     and config.get("schema_version")
                     != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
                 ):
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Unsupported configuration schema version: {config.get('schema_version')}"
                     )
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(config)
+                return FlextResult[FlextTypes.Dict].ok(config)
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Configuration loading failed: {e}"
                 )
 
         @staticmethod
         def validate_plugin_config(
-            config: FlextCore.Types.Dict,
-        ) -> FlextCore.Result[None]:
+            config: FlextTypes.Dict,
+        ) -> FlextResult[None]:
             """Validate plugin configuration structure and values.
 
             Args:
                 config: Plugin configuration to validate
 
             Returns:
-                FlextCore.Result indicating validation success or failure
+                FlextResult indicating validation success or failure
 
             """
             try:
                 required_fields = ["name", "version", "description", "entry_point"]
                 for field in required_fields:
                     if field not in config:
-                        return FlextCore.Result[None].fail(
+                        return FlextResult[None].fail(
                             f"Missing required configuration field: {field}"
                         )
 
@@ -593,25 +585,23 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     )
                 )
                 if name_validation.is_failure:
-                    return FlextCore.Result[None].fail(name_validation.error)
+                    return FlextResult[None].fail(name_validation.error)
 
                 # Validate version format
                 version_pattern = r"^\d+\.\d+\.\d+$"
                 if not re.match(version_pattern, str(config["version"])):
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)"
                     )
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(
-                    f"Configuration validation failed: {e}"
-                )
+                return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
         @staticmethod
         def merge_plugin_configs(
-            base_config: FlextCore.Types.Dict, override_config: FlextCore.Types.Dict
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+            base_config: FlextTypes.Dict, override_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Merge plugin configurations with override precedence.
 
             Args:
@@ -619,7 +609,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 override_config: Configuration values to override
 
             Returns:
-                FlextCore.Result containing merged configuration
+                FlextResult containing merged configuration
 
             """
             try:
@@ -632,12 +622,12 @@ class FlextPluginUtilities(FlextCore.Utilities):
                         and isinstance(merged_config[key], dict)
                     ):
                         # Recursively merge nested dictionaries
-                        base_config: FlextCore.Types.Dict = (
+                        base_config: FlextTypes.Dict = (
                             dict[str, object](merged_config[key])
                             if isinstance(merged_config[key], dict)
                             else {}
                         )
-                        override_value: FlextCore.Types.Dict = (
+                        override_value: FlextTypes.Dict = (
                             dict[str, object](value) if isinstance(value, dict) else {}
                         )
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
@@ -646,15 +636,15 @@ class FlextPluginUtilities(FlextCore.Utilities):
                         if nested_merge.is_success:
                             merged_config[key] = nested_merge.unwrap()
                         else:
-                            return FlextCore.Result[FlextCore.Types.Dict].fail(
+                            return FlextResult[FlextTypes.Dict].fail(
                                 f"Failed to merge nested config for key '{key}': {nested_merge.error}"
                             )
                     else:
                         merged_config[key] = value
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(merged_config)
+                return FlextResult[FlextTypes.Dict].ok(merged_config)
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Configuration merge failed: {e}"
                 )
 
@@ -675,9 +665,9 @@ class FlextPluginUtilities(FlextCore.Utilities):
         def execute_plugin_function(
             plugin_module: ModuleType,
             function_name: str,
-            args: FlextCore.Types.List | None = None,
-            kwargs: FlextCore.Types.Dict | None = None,
-        ) -> FlextCore.Result[object]:
+            args: FlextTypes.List | None = None,
+            kwargs: FlextTypes.Dict | None = None,
+        ) -> FlextResult[object]:
             """Execute a specific function within a plugin module.
 
             Args:
@@ -687,18 +677,18 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 kwargs: Keyword arguments for function
 
             Returns:
-                FlextCore.Result containing function execution result
+                FlextResult containing function execution result
 
             """
             try:
                 if not hasattr(plugin_module, function_name):
-                    return FlextCore.Result[object].fail(
+                    return FlextResult[object].fail(
                         f"Function '{function_name}' not found in plugin module"
                     )
 
                 plugin_function = getattr(plugin_module, function_name)
                 if not callable(plugin_function):
-                    return FlextCore.Result[object].fail(
+                    return FlextResult[object].fail(
                         f"'{function_name}' is not callable"
                     )
 
@@ -707,48 +697,48 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 execution_kwargs = kwargs or {}
 
                 result = plugin_function(*execution_args, **execution_kwargs)
-                return FlextCore.Result[object].ok(result)
+                return FlextResult[object].ok(result)
             except Exception as e:
-                return FlextCore.Result[object].fail(
+                return FlextResult[object].fail(
                     f"Plugin function execution failed: {e}"
                 )
 
         @staticmethod
-        def load_plugin_module(plugin_path: Path | str) -> FlextCore.Result[ModuleType]:
+        def load_plugin_module(plugin_path: Path | str) -> FlextResult[ModuleType]:
             """Load plugin module from file path.
 
             Args:
                 plugin_path: Path to plugin Python file
 
             Returns:
-                FlextCore.Result containing loaded plugin module
+                FlextResult containing loaded plugin module
 
             """
             try:
                 path = Path(plugin_path)
                 if not path.exists():
-                    return FlextCore.Result[ModuleType].fail(
+                    return FlextResult[ModuleType].fail(
                         f"Plugin file not found: {path}"
                     )
 
                 if path.suffix != ".py":
-                    return FlextCore.Result[ModuleType].fail(
+                    return FlextResult[ModuleType].fail(
                         f"Only Python plugins are supported: {path}"
                     )
 
                 # Load module using importlib
                 spec = importlib.util.spec_from_file_location(path.stem, path)
                 if spec is None or spec.loader is None:
-                    return FlextCore.Result[ModuleType].fail(
+                    return FlextResult[ModuleType].fail(
                         f"Failed to create module spec for: {path}"
                     )
 
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                return FlextCore.Result[ModuleType].ok(module)
+                return FlextResult[ModuleType].ok(module)
             except Exception as e:
-                return FlextCore.Result[ModuleType].fail(
+                return FlextResult[ModuleType].fail(
                     f"Plugin module loading failed: {e}"
                 )
 
@@ -756,7 +746,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
         def validate_plugin_interface(
             plugin_module: ModuleType,
             required_functions: FlextPluginTypes.Core.StringList,
-        ) -> FlextCore.Result[None]:
+        ) -> FlextResult[None]:
             """Validate that plugin module implements required interface.
 
             Args:
@@ -764,7 +754,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 required_functions: List of required function names
 
             Returns:
-                FlextCore.Result indicating interface validation success or failure
+                FlextResult indicating interface validation success or failure
 
             """
             try:
@@ -775,7 +765,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 ]
 
                 if missing_functions:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Plugin missing required functions: {missing_functions}"
                     )
 
@@ -787,13 +777,13 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 ]
 
                 if non_callable:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         f"Plugin attributes not callable: {non_callable}"
                     )
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     f"Plugin interface validation failed: {e}"
                 )
 
@@ -807,14 +797,14 @@ class FlextPluginUtilities(FlextCore.Utilities):
         @staticmethod
         def load_plugin_registry(
             registry_path: Path | str,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Load plugin registry from file.
 
             Args:
                 registry_path: Path to plugin registry file
 
             Returns:
-                FlextCore.Result containing plugin registry data
+                FlextResult containing plugin registry data
 
             """
             try:
@@ -827,7 +817,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return FlextCore.Result[FlextCore.Types.Dict].ok(dict(registry))
+                    return FlextResult[FlextTypes.Dict].ok(dict(registry))
 
                 # Check file size
                 file_size_mb = path.stat().st_size / (1024 * 1024)
@@ -835,23 +825,23 @@ class FlextPluginUtilities(FlextCore.Utilities):
                     file_size_mb
                     > FlextPluginUtilities.RegistryOperations.MAX_REGISTRY_SIZE_MB
                 ):
-                    return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    return FlextResult[FlextTypes.Dict].fail(
                         f"Registry file too large: {file_size_mb:.1f}MB"
                     )
 
                 content = path.read_text(encoding="utf-8")
                 registry = json.loads(content)
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(registry)
+                return FlextResult[FlextTypes.Dict].ok(registry)
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Registry loading failed: {e}"
                 )
 
         @staticmethod
         def save_plugin_registry(
-            registry: FlextCore.Types.Dict, registry_path: Path | str
-        ) -> FlextCore.Result[None]:
+            registry: FlextTypes.Dict, registry_path: Path | str
+        ) -> FlextResult[None]:
             """Save plugin registry to file with backup.
 
             Args:
@@ -859,7 +849,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 registry_path: Path to save registry file
 
             Returns:
-                FlextCore.Result indicating save success or failure
+                FlextResult indicating save success or failure
 
             """
             try:
@@ -883,15 +873,15 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 # Save registry
                 path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(f"Registry save failed: {e}")
+                return FlextResult[None].fail(f"Registry save failed: {e}")
 
         @staticmethod
         def register_plugin(
-            registry: FlextCore.Types.Dict,
+            registry: FlextTypes.Dict,
             plugin_metadata: PluginMetadata,
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Register plugin in registry.
 
             Args:
@@ -899,7 +889,7 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 plugin_metadata: Metadata of plugin to register
 
             Returns:
-                FlextCore.Result containing updated registry
+                FlextResult containing updated registry
 
             """
             try:
@@ -923,23 +913,23 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 if isinstance(plugins, dict):
                     plugins[plugin_metadata.name] = plugin_info
 
-                return FlextCore.Result[FlextCore.Types.Dict].ok(registry)
+                return FlextResult[FlextTypes.Dict].ok(registry)
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Plugin registration failed: {e}"
                 )
 
         @staticmethod
         def cleanup_registry_backups(
             registry_directory: Path,
-        ) -> FlextCore.Result[None]:
+        ) -> FlextResult[None]:
             """Clean up old registry backup files.
 
             Args:
                 registry_directory: Directory containing registry backups
 
             Returns:
-                FlextCore.Result indicating cleanup success or failure
+                FlextResult indicating cleanup success or failure
 
             """
             try:
@@ -954,11 +944,9 @@ class FlextPluginUtilities(FlextCore.Utilities):
                 ]:
                     backup_file.unlink()
 
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
             except Exception as e:
-                return FlextCore.Result[None].fail(
-                    f"Registry backup cleanup failed: {e}"
-                )
+                return FlextResult[None].fail(f"Registry backup cleanup failed: {e}")
 
     # Pydantic 2.11+ field validators
     @field_validator("model_config")

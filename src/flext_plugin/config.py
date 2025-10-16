@@ -7,15 +7,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import FlextConfig, FlextTypes
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_plugin.constants import FlextPluginConstants
 
 
-class FlextPluginConfig(FlextCore.Config):
-    """Plugin system configuration management extending FlextCore.Config.
+class FlextPluginConfig(FlextConfig):
+    """Plugin system configuration management extending FlextConfig.
 
     Provides comprehensive configuration management for all plugin system operations
     including discovery, loading, execution, security, and monitoring settings.
@@ -46,7 +46,7 @@ class FlextPluginConfig(FlextCore.Config):
     class Discovery:
         """Plugin discovery configuration settings."""
 
-        plugin_paths: FlextCore.Types.StringList = Field(
+        plugin_paths: FlextTypes.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Discovery.DEFAULT_PLUGIN_PATHS,
             description="Paths to search for plugins",
         )
@@ -66,7 +66,7 @@ class FlextPluginConfig(FlextCore.Config):
             default=True,
             description="Search subdirectories recursively",
         )
-        file_extensions: FlextCore.Types.StringList = Field(
+        file_extensions: FlextTypes.StringList = Field(
             default_factory=lambda: [
                 FlextPluginConstants.Files.PYTHON_EXTENSION,
                 FlextPluginConstants.Files.YAML_CONFIG_EXTENSION,
@@ -79,8 +79,8 @@ class FlextPluginConfig(FlextCore.Config):
         @field_validator("plugin_paths")
         @classmethod
         def validate_plugin_paths(
-            cls, v: FlextCore.Types.StringList
-        ) -> FlextCore.Types.StringList:
+            cls, v: FlextTypes.StringList
+        ) -> FlextTypes.StringList:
             """Validate plugin paths are not empty."""
             if not v:
                 raise ValueError(
@@ -113,11 +113,11 @@ class FlextPluginConfig(FlextCore.Config):
             default=False,
             description="Require signature verification for plugins",
         )
-        allowed_imports: FlextCore.Types.StringList = Field(
+        allowed_imports: FlextTypes.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_ALLOWED_IMPORTS,
             description="Allowed import modules for plugins",
         )
-        blocked_imports: FlextCore.Types.StringList = Field(
+        blocked_imports: FlextTypes.StringList = Field(
             default_factory=lambda: FlextPluginConstants.Security.DEFAULT_BLOCKED_IMPORTS,
             description="Blocked import modules for plugins",
         )
@@ -225,7 +225,7 @@ class FlextPluginConfig(FlextCore.Config):
             default=True,
             description="Enable rollback on reload failure",
         )
-        watch_paths: FlextCore.Types.StringList = Field(
+        watch_paths: FlextTypes.StringList = Field(
             default_factory=list,
             description="Additional paths to watch for changes",
         )
@@ -331,7 +331,7 @@ class FlextPluginConfig(FlextCore.Config):
             default=False,
             description="Verify plugin signatures",
         )
-        trusted_publishers: FlextCore.Types.StringList = Field(
+        trusted_publishers: FlextTypes.StringList = Field(
             default_factory=list,
             description="List of trusted plugin publishers",
         )
@@ -358,7 +358,7 @@ class FlextPluginConfig(FlextCore.Config):
     monitoring: Monitoring = Field(default_factory=Monitoring)
     registry: Registry = Field(default_factory=Registry)
 
-    def get_plugin_paths(self) -> FlextCore.Types.StringList:
+    def get_plugin_paths(self) -> FlextTypes.StringList:
         """Get all configured plugin paths."""
         return self.discovery.plugin_paths
 
@@ -377,7 +377,7 @@ class FlextPluginConfig(FlextCore.Config):
             or self.monitoring.performance_tracking
         )
 
-    def get_performance_limits(self) -> FlextCore.Types.Dict:
+    def get_performance_limits(self) -> FlextTypes.Dict:
         """Get performance limit configuration."""
         return {
             "max_memory_mb": self.performance.max_memory_mb,

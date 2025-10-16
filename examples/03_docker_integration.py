@@ -14,7 +14,7 @@ import argparse
 import socket
 import sys
 
-from flext_core import FlextCore
+from flext_core import FlextContainer
 
 from flext_plugin import (
     FlextPluginApi,
@@ -194,7 +194,7 @@ def main() -> None:
     print("\n🔍 Validating plugin configurations...")
 
     # Use FlextPluginApi for validation (domain library pattern)
-    container = FlextCore.Container()
+    container = FlextContainer()
     FlextPluginApi(container)
 
     # Validate PostgreSQL plugin configuration

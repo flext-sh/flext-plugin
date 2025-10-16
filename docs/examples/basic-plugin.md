@@ -9,7 +9,7 @@ The basic plugin example shows:
 - Creating a custom plugin class
 - Implementing plugin lifecycle methods
 - Handling configuration and metadata
-- Error handling with FlextCore.Result pattern
+- Error handling with FlextResult pattern
 - Integration with the plugin platform
 - Comprehensive testing
 
@@ -21,7 +21,26 @@ The basic plugin example shows:
 # basic_plugin.py
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from typing import Dict, Optional
 
 import json
@@ -37,7 +56,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, config: Optional[FlextCore.Types.Dict] = None, **kwargs):
+    def __init__(self, config: Optional[FlextTypes.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -68,12 +87,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
         }
         self._is_initialized = False
 
-    def initialize(self) -> FlextCore.Result[bool]:
+    def initialize(self) -> FlextResult[bool]:
         """
         Initialize plugin resources and validate configuration.
 
         Returns:
-            FlextCore.Result[bool]: Success/failure of initialization
+            FlextResult[bool]: Success/failure of initialization
         """
         try:
             logger.info(f"Initializing plugin: {self.name}")
@@ -93,14 +112,14 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextCore.Result[None].fail(error_msg)
+            return FlextResult[None].fail(error_msg)
 
-    def execute(self, data: FlextCore.Types.Dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -108,15 +127,15 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            FlextCore.Result[FlextCore.Types.Dict]: Processing results or error
+            FlextResult[FlextTypes.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
             if not self._is_initialized:
-                return FlextCore.Result[None].fail("Plugin not initialized")
+                return FlextResult[None].fail("Plugin not initialized")
 
             if self.status != PluginStatus.ACTIVE:
-                return FlextCore.Result[None].fail("Plugin not active")
+                return FlextResult[None].fail("Plugin not active")
 
             # Validate input data
             validation_result = self._validate_input_data(data)
@@ -147,20 +166,20 @@ class BasicDataProcessorPlugin(FlextPlugin):
             }
 
             logger.info(f"Successfully processed data in plugin {self.name}")
-            return FlextCore.Result[None].ok(result)
+            return FlextResult[None].ok(result)
 
         except Exception as e:
             self._processing_stats["total_errors"] += 1
             error_msg: str = f"Execution failed in plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextCore.Result[None].fail(error_msg)
+            return FlextResult[None].fail(error_msg)
 
-    def cleanup(self) -> FlextCore.Result[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         """
         Cleanup plugin resources and save final state.
 
         Returns:
-            FlextCore.Result[bool]: Success/failure of cleanup
+            FlextResult[bool]: Success/failure of cleanup
         """
         try:
             logger.info(f"Cleaning up plugin: {self.name}")
@@ -175,46 +194,46 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextCore.Result[None].fail(error_msg)
+            return FlextResult[None].fail(error_msg)
 
     # Plugin-specific helper methods
 
-    def _validate_configuration(self) -> FlextCore.Result[bool]:
+    def _validate_configuration(self) -> FlextResult[bool]:
         """Validate plugin configuration."""
         try:
             batch_size = self._get_config_value("batch_size", 100)
             if not isinstance(batch_size, int) or batch_size <= 0:
-                return FlextCore.Result[None].fail("batch_size must be a positive integer")
+                return FlextResult[None].fail("batch_size must be a positive integer")
 
             timeout = self._get_config_value("timeout_seconds", 30)
             if not isinstance(timeout, int) or timeout <= 0:
-                return FlextCore.Result[None].fail("timeout_seconds must be a positive integer")
+                return FlextResult[None].fail("timeout_seconds must be a positive integer")
 
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Configuration validation failed: {e}")
+            return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: FlextCore.Types.Dict) -> FlextCore.Result[bool]:
+    def _validate_input_data(self, data: FlextTypes.Dict) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
-                return FlextCore.Result[None].fail("Input data must be a dictionary")
+                return FlextResult[None].fail("Input data must be a dictionary")
 
             if "payload" not in data:
-                return FlextCore.Result[None].fail("Input data must contain 'payload' key")
+                return FlextResult[None].fail("Input data must contain 'payload' key")
 
-            return FlextCore.Result[None].ok(data=True)
+            return FlextResult[None].ok(data=True)
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Input validation failed: {e}")
+            return FlextResult[None].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: FlextCore.Types.Dict) -> FlextCore.Types.Dict:
+    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -283,7 +302,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Public utility methods
 
-    def get_statistics(self) -> FlextCore.Types.Dict:
+    def get_statistics(self) -> FlextTypes.Dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 
@@ -841,7 +860,7 @@ Processed Data:
 
 - Clean separation of concerns with initialization, execution, and cleanup
 - Configuration management with validation
-- Error handling using FlextCore.Result pattern
+- Error handling using FlextResult pattern
 - Statistics tracking for monitoring
 
 ### 2. Lifecycle Management

@@ -14,44 +14,44 @@ Main facade for all plugin operations.
 class FlextPluginPlatform:
     """Unified plugin management platform"""
 
-    def __init__(self, container: FlextCore.Container | None = None) -> None:
+    def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize platform with dependency injection container"""
 
     # Plugin Lifecycle
-    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextCore.Result[bool]:
+    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Load a plugin into the system"""
 
-    def unload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin from the system"""
 
-    def enable_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Enable an already loaded plugin"""
 
-    def disable_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Disable an active plugin"""
 
     # Plugin Management
-    def install_plugin(self, plugin_path: str) -> FlextCore.Result[FlextPluginEntities.Entity]:
+    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Entity]:
         """Install a plugin from file system path"""
 
-    def uninstall_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Uninstall a plugin completely"""
 
-    def is_plugin_loaded(self, plugin_name: str) -> FlextCore.Result[bool]:
+    def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
         """Check if plugin is currently loaded"""
 
     # Discovery
-    def scan_directory(self, directory_path: str) -> FlextCore.Result[list[FlextPluginEntities.Entity]]:
+    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextCore.Result[bool]:
+    def validate_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-    def get_plugin_config(self, plugin_name: str) -> FlextCore.Result[FlextPluginEntities.Config]:
+    def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginEntities.Config]:
         """Get plugin configuration"""
 
-    def update_plugin_config(self, plugin_name: str, config: FlextPluginEntities.Config) -> FlextCore.Result[bool]:
+    def update_plugin_config(self, plugin_name: str, config: FlextPluginEntities.Config) -> FlextResult[bool]:
         """Update plugin configuration"""
 ```
 
@@ -60,14 +60,14 @@ class FlextPluginPlatform:
 Core plugin domain entity.
 
 ```python
-class FlextPlugin(FlextCore.Models.Entity):
+class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
     # Properties
     name: str                           # Plugin identifier
     plugin_version: str                 # Plugin version
     status: PluginStatus               # Current lifecycle status
-    config: FlextCore.Types.Dict             # Plugin configuration
+    config: FlextTypes.Dict             # Plugin configuration
     metadata: FlextPluginEntities.Metadata      # Plugin metadata
 
     # Business Methods
@@ -77,7 +77,7 @@ class FlextPlugin(FlextCore.Models.Entity):
     def deactivate(self) -> bool:
         """Deactivate plugin"""
 
-    def validate_business_rules(self) -> FlextCore.Result[bool]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Validate plugin business rules"""
 ```
 
@@ -86,17 +86,17 @@ class FlextPlugin(FlextCore.Models.Entity):
 Plugin configuration entity.
 
 ```python
-class FlextPluginEntities.Config(FlextCore.Models.Entity):
+class FlextPluginEntities.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
 
     name: str                          # Plugin name
     version: str                       # Plugin version
     description: str                   # Plugin description
     author: str                        # Plugin author
-    dependencies: FlextCore.Types.StringList            # Plugin dependencies
+    dependencies: FlextTypes.StringList            # Plugin dependencies
     metadata: FlextPluginEntities.Metadata      # Additional metadata
 
-    def validate_business_rules(self) -> FlextCore.Result[bool]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Validate configuration business rules"""
 ```
 
@@ -138,7 +138,7 @@ class PluginType(str, Enum):
 def create_flext_plugin(
     name: str,
     version: str,
-    config: FlextCore.Types.Dict | None = None,
+    config: FlextTypes.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs
 ) -> FlextPluginEntities.Entity:
@@ -149,7 +149,7 @@ def create_flext_plugin(
 
 ```python
 def create_flext_plugin_platform(
-    config: FlextCore.Types.Dict | None = None
+    config: FlextTypes.Dict | None = None
 ) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
@@ -164,10 +164,10 @@ def create_flext_plugin_platform(
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
-    def scan_directory(self, path: str) -> FlextCore.Result[list[FlextPluginEntities.Entity]]:
+    def scan_directory(self, path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin_integrity(self, plugin: FlextPluginEntities.Entity) -> FlextCore.Result[bool]:
+    def validate_plugin_integrity(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Validate plugin integrity"""
 ```
 
@@ -187,7 +187,7 @@ FLEXT_PLUGIN_WATCH_INTERVAL=2         # Watch interval in seconds
 
 ## Error Handling
 
-All API methods return `FlextCore.Result[T]` for consistent error handling:
+All API methods return `FlextResult[T]` for consistent error handling:
 
 ```python
 result = platform.load_plugin(plugin)
@@ -223,20 +223,58 @@ class FlextPluginExecutionError(FlextPluginError):
 ### FLEXT-Core Integration
 
 ```python
-# Use FlextCore.Result for all operations
-from flext_core import FlextCore
+# Use FlextResult for all operations
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-def plugin_operation() -> FlextCore.Result[bool]:
+def plugin_operation() -> FlextResult[bool]:
     try:
         # Plugin operation
-        return FlextCore.Result[bool].ok(True)
+        return FlextResult[bool].ok(True)
     except Exception as e:
-        return FlextCore.Result[bool].fail(str(e))
+        return FlextResult[bool].fail(str(e))
 
 # Use dependency injection
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-container = FlextCore.Container()
+container = FlextContainer()
 platform = FlextPluginPlatform(container)
 ```
 

@@ -18,7 +18,7 @@ from typing import Protocol, cast
 
 import pytest
 from anyio import Path as AnyioPath
-from flext_core import FlextCore
+from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
 
 from flext_plugin import (
     FlextPluginDiscoveryService,
@@ -46,15 +46,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> FlextCore.Types.Dict: ...
+    def initialize(self) -> FlextTypes.Dict: ...
 
-    def execute(
-        self, data: FlextCore.Types.Dict | None = None
-    ) -> FlextCore.Types.Dict: ...
+    def execute(self, data: FlextTypes.Dict | None = None) -> FlextTypes.Dict: ...
 
-    def cleanup(self) -> FlextCore.Types.Dict: ...
+    def cleanup(self) -> FlextTypes.Dict: ...
 
-    def health_check(self) -> FlextCore.Types.Dict: ...
+    def health_check(self) -> FlextTypes.Dict: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
@@ -239,7 +237,7 @@ def real_plugin_discovery(temp_plugin_dir: Path) -> PluginDiscovery:
 @pytest.fixture
 def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     """Create FlextPluginService with REAL adapters instead of fallbacks."""
-    container = FlextCore.Container()
+    container = FlextContainer()
 
     # Register REAL implementations
     discovery_adapter = RealPluginDiscoveryAdapter(str(temp_plugin_dir))
@@ -258,7 +256,7 @@ def real_discovery_service_with_adapters(
     temp_plugin_dir: Path,
 ) -> FlextPluginDiscoveryService:
     """Create FlextPluginDiscoveryService with REAL adapters."""
-    container = FlextCore.Container()
+    container = FlextContainer()
 
     # Register REAL discovery implementation
     discovery_adapter = RealPluginDiscoveryAdapter(str(temp_plugin_dir))
@@ -504,22 +502,22 @@ class TestFlextPluginServiceReal:
         service = FlextPluginService()
         assert service is not None
         assert hasattr(service, "container")
-        assert isinstance(service.container, FlextCore.Container)
+        assert isinstance(service.container, FlextContainer)
 
         # Verify service inheritance
-        assert isinstance(service, FlextCore.Service)
+        assert isinstance(service, FlextService)
 
     def test_service_initialization_with_container_real(self) -> None:
         """Test REAL service initialization with provided container."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         service = FlextPluginService(container=container)
         assert service is not None
         assert service.container is container
-        assert isinstance(service, FlextCore.Service)
+        assert isinstance(service, FlextService)
 
     def test_service_inheritance_patterns(self, service: FlextPluginService) -> None:
         """Test REAL service inheritance patterns."""
-        assert isinstance(service, FlextCore.Service)
+        assert isinstance(service, FlextService)
 
         # Verify domain service capabilities
         assert hasattr(service, "container")
@@ -534,7 +532,7 @@ class TestFlextPluginServiceReal:
         assert result.is_failure
         assert "Use specific service methods instead of execute" in str(result.error)
 
-        # Verify FlextCore.Result pattern
+        # Verify FlextResult pattern
         assert hasattr(result, "success")
         assert hasattr(result, "error")
         assert hasattr(result, "data")
@@ -906,7 +904,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_discovery_service_initialization_with_container(self) -> None:
         """Test discovery service initialization with provided container."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         service = FlextPluginDiscoveryService(container=container)
         assert service is not None
         assert service.container is container
@@ -916,7 +914,7 @@ class TestFlextPluginDiscoveryServiceReal:
         discovery_service: FlextPluginDiscoveryService,
     ) -> None:
         """Test discovery service inherits correctly."""
-        assert isinstance(discovery_service, FlextCore.Service)
+        assert isinstance(discovery_service, FlextService)
 
     def test_execute_method_fails_as_expected(
         self,
@@ -969,7 +967,7 @@ class TestFlextPluginDiscoveryServiceReal:
         """Test scan_directory with REAL plugin files."""
         try:
             result = discovery_service.scan_directory(str(temp_plugin_dir))
-        except FlextCore.Exceptions.BaseError as e:
+        except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
             pytest.skip(f"Infrastructure not configured: {e}")
             return
@@ -1231,7 +1229,7 @@ class TestServicesIntegrationReal:
 
     def test_services_can_coexist_with_same_container(self) -> None:
         """Test that both services can be created with same container."""
-        container = FlextCore.Container()
+        container = FlextContainer()
 
         plugin_service = FlextPluginService(container=container)
         discovery_service = FlextPluginDiscoveryService(container=container)
@@ -1242,10 +1240,10 @@ class TestServicesIntegrationReal:
 
     def test_services_share_container_state_real(self) -> None:
         """Test services share REAL container state."""
-        container = FlextCore.Container()
+        container = FlextContainer()
 
         # Register a REAL service object in the container
-        test_service: FlextCore.Types.Dict = {
+        test_service: FlextTypes.Dict = {
             "name": "test_service",
             "config": {"enabled": True},
         }
@@ -1276,7 +1274,7 @@ class TestServicesIntegrationReal:
         temp_plugin_dir: Path,
     ) -> None:
         """Test services with REAL plugin directory containing actual files."""
-        container = FlextCore.Container()
+        container = FlextContainer()
 
         plugin_service = FlextPluginService(container=container)
         discovery_service = FlextPluginDiscoveryService(container=container)
@@ -1286,7 +1284,7 @@ class TestServicesIntegrationReal:
             plugin_discovery_result = plugin_service.discover_plugins(
                 str(temp_plugin_dir),
             )
-        except FlextCore.Exceptions.BaseError as e:
+        except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
             pytest.skip(f"Infrastructure not configured: {e}")
             return
@@ -1295,7 +1293,7 @@ class TestServicesIntegrationReal:
             service_discovery_result = discovery_service.scan_directory(
                 str(temp_plugin_dir),
             )
-        except FlextCore.Exceptions.BaseError as e:
+        except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
             pytest.skip(f"Infrastructure not configured: {e}")
             return
@@ -1414,7 +1412,7 @@ class TestServiceErrorHandling:
     ) -> None:
         """Test service port resolution with REAL plugin directory."""
         # Create container that will fall back to mock implementations
-        container = FlextCore.Container()
+        container = FlextContainer()
         service = FlextPluginService(container=container)
 
         # Operations should work with fallback implementations even with real files
@@ -1437,7 +1435,7 @@ class TestServiceErrorHandling:
 
     def test_discovery_service_handles_container_errors_gracefully_real(self) -> None:
         """Test discovery service handles container errors gracefully with REAL operations."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         discovery_service = FlextPluginDiscoveryService(container=container)
 
         # Operations should still work with fallback implementations

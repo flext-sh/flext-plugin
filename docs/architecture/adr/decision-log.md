@@ -71,7 +71,7 @@ This document provides a chronological record of all architectural decisions mad
 #### **2025-03-01: FLEXT Ecosystem Integration**
 
 - **Context**: Seamless integration with FLEXT core and ecosystem projects
-- **Decision**: Deep integration with FlextCore.Result, FlextCore.Container, FlextCore.Models
+- **Decision**: Deep integration with FlextResult, FlextContainer, FlextModels
 - **Rationale**: Maintains ecosystem consistency and interoperability
 - **Alternatives Considered**: Loose coupling, adapter-based integration
 - **Impact**: High - Affects all FLEXT ecosystem interactions
@@ -93,11 +93,11 @@ This document provides a chronological record of all architectural decisions mad
 #### **2025-04-01: Railway Pattern Implementation**
 
 - **Context**: Error handling consistency and composability
-- **Decision**: Implement Railway pattern using FlextCore.Result[T] throughout
+- **Decision**: Implement Railway pattern using FlextResult[T] throughout
 - **Rationale**: Functional error handling with composable operations
 - **Alternatives Considered**: Exception-based error handling, custom result types
 - **Impact**: Medium - Consistent error handling across all operations
-- **Implementation**: FlextCore.Result adoption in all APIs and services
+- **Implementation**: FlextResult adoption in all APIs and services
 - **Outcome**: Improved error handling consistency and debugging
 
 #### **2025-04-15: Hot Reload Implementation**

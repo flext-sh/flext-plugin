@@ -31,7 +31,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_plugin import (
     HotReloadManager,
@@ -82,7 +82,7 @@ class TestPluginStateReal:
 
     def test_plugin_state_with_complex_data(self) -> None:
         """Test REAL plugin state with complex nested data."""
-        complex_state: FlextCore.Types.Dict = {
+        complex_state: FlextTypes.Dict = {
             "configuration": {
                 "database": {"host": "localhost", "port": 5432},
                 "api": {"timeout": 30, "retry_count": 3},
@@ -317,7 +317,7 @@ class TestStateManagerReal:
                 self.version = "1.0.0"
                 self.config = {"enabled": True, "timeout": 30}
 
-            def get_state(self) -> FlextCore.Types.Dict:
+            def get_state(self) -> FlextTypes.Dict:
                 return {
                     "config": self.config,
                     "runtime": {"active": True, "connections": 2},
@@ -411,7 +411,7 @@ class TestRollbackManagerReal:
                 """Initialize the instance."""
                 self.name = "rollback-test-plugin"
                 self.version = "1.5.0"
-                self.state: FlextCore.Types.Dict = {"active": True, "data": [1, 2, 3]}
+                self.state: FlextTypes.Dict = {"active": True, "data": [1, 2, 3]}
 
         real_plugin = RealRollbackPlugin()
         description = "Before critical update - rollback point"

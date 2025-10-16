@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Never
 
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_plugin import FlextPluginHandlers
 
@@ -29,7 +29,7 @@ class TestFlextPluginHandlers:
         """Test registering event handlers."""
         handlers = FlextPluginHandlers()
 
-        def test_handler(event_data: FlextCore.Types.Dict) -> str:
+        def test_handler(event_data: FlextTypes.Dict) -> str:
             return f"processed: {event_data}"
 
         result = handlers.register_handler("test_event", test_handler)
@@ -46,7 +46,7 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def test_handler(event_data: FlextCore.Types.Dict) -> str:
+        def test_handler(event_data: FlextTypes.Dict) -> str:
             results.append(event_data)
             return "handled"
 
@@ -82,10 +82,10 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler_low(event_data: FlextCore.Types.Dict) -> None:
+        def handler_low(event_data: FlextTypes.Dict) -> None:
             results.append("low")
 
-        def handler_high(event_data: FlextCore.Types.Dict) -> None:
+        def handler_high(event_data: FlextTypes.Dict) -> None:
             results.append("high")
 
         # Register with different priorities (higher number = higher priority)
@@ -104,10 +104,10 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler1(event_data: FlextCore.Types.Dict) -> None:
+        def handler1(event_data: FlextTypes.Dict) -> None:
             results.append("handler1")
 
-        def handler2(event_data: FlextCore.Types.Dict) -> None:
+        def handler2(event_data: FlextTypes.Dict) -> None:
             results.append("handler2")
 
         handlers.register_handler("test_event", handler1)
@@ -144,11 +144,11 @@ class TestFlextPluginHandlers:
         """Test error handling in event handlers."""
         handlers = FlextPluginHandlers()
 
-        def failing_handler(event_data: FlextCore.Types.Dict) -> Never:
+        def failing_handler(event_data: FlextTypes.Dict) -> Never:
             msg = "Handler failed"
             raise ValueError(msg)
 
-        def working_handler(event_data: FlextCore.Types.Dict) -> str:
+        def working_handler(event_data: FlextTypes.Dict) -> str:
             return "success"
 
         handlers.register_handler("test", failing_handler)

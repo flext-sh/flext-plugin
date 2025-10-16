@@ -25,7 +25,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Single Responsibility**: Each component has one primary responsibility
 - **Dependency Inversion**: Components depend on abstractions, not concretions
 - **Interface Segregation**: Small, focused interfaces for better testability
-- **Railway Pattern**: FlextCore.Result[T] for composable error handling throughout
+- **Railway Pattern**: FlextResult[T] for composable error handling throughout
 
 ---
 
@@ -113,7 +113,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 - **Purpose**: Unified API facade providing single entry point for all plugin operations
 - **Responsibilities**:
   - Orchestrate complex plugin operations across multiple components
-  - Provide consistent error handling via FlextCore.Result[T]
+  - Provide consistent error handling via FlextResult[T]
   - Manage plugin lifecycle from discovery to execution
   - Coordinate between application and domain layers
 - **Key Methods**:
@@ -459,7 +459,7 @@ content = adapter.read_file(path)  # External system access
 
 #### **Error Handling**
 
-- **FlextCore.Result Coverage**: 100% of public APIs return FlextCore.Result[T]
+- **FlextResult Coverage**: 100% of public APIs return FlextResult[T]
 - **Exception Boundaries**: Infrastructure exceptions converted to domain errors
 - **Graceful Degradation**: System continues operating with partial failures
 - **Recovery Mechanisms**: Automatic retry for transient failures

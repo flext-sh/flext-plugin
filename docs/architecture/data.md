@@ -38,7 +38,7 @@ class Plugin {
 }
 
 class PluginConfig {
-    +dependencies: FlextCore.Types.StringList
+    +dependencies: FlextTypes.StringList
     +entry_points: Dict[str, str]
     +security_level: SecurityLevel
     +execution_limits: ExecutionLimits
@@ -46,12 +46,12 @@ class PluginConfig {
 }
 
 class PluginMetadata {
-    +capabilities: FlextCore.Types.StringList
-    +supported_platforms: FlextCore.Types.StringList
+    +capabilities: FlextTypes.StringList
+    +supported_platforms: FlextTypes.StringList
     +license: str
     +homepage: str
     +documentation: str
-    +tags: FlextCore.Types.StringList
+    +tags: FlextTypes.StringList
 }
 
 class Execution {
@@ -365,7 +365,7 @@ Retired --> Archived: Retirement archival
 
 #### **Data Processing**
 
-- **Railway Pattern**: FlextCore.Result[T] for composable data operations
+- **Railway Pattern**: FlextResult[T] for composable data operations
 - **Functional Programming**: Immutable data transformations
 - **Streaming Processing**: Memory-efficient large data handling
 
@@ -381,7 +381,7 @@ from typing import List, Dict, object
 class PluginConfig(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r'^\d+\.\d+\.\d+$')
-    dependencies: FlextCore.Types.StringList = Field(default_factory=list)
+    dependencies: FlextTypes.StringList = Field(default_factory=list)
     config: Dict[str, object] = Field(default_factory=dict)
 
     class Config:
@@ -402,13 +402,13 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> dict[str, object
 
 ```python
 # Runtime data validation
-def validate_plugin_config(config_data: dict) -> FlextCore.Result[PluginConfig]:
+def validate_plugin_config(config_data: dict) -> FlextResult[PluginConfig]:
     """Validate plugin configuration data."""
     try:
         config = PluginConfig(**config_data)
-        return FlextCore.Result.ok(config)
+        return FlextResult.ok(config)
     except ValidationError as e:
-        return FlextCore.Result.fail(f"Configuration validation failed: {e}")
+        return FlextResult.fail(f"Configuration validation failed: {e}")
 ```
 
 ---

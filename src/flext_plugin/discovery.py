@@ -14,7 +14,7 @@ import os
 import re
 from pathlib import Path
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextLogger, FlextResult, FlextTypes
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -53,7 +53,7 @@ class FlextPluginDiscovery:
             entry_point_discovery: Entry point discovery implementation
 
         """
-        self.logger = FlextCore.Logger(__name__)
+        self.logger = FlextLogger(__name__)
         self._file_discovery = file_discovery or self.FileSystemDiscovery()
         self._entry_point_discovery = (
             entry_point_discovery or self.EntryPointDiscovery()
@@ -85,15 +85,15 @@ class FlextPluginDiscovery:
             return f.read()
 
     async def discover_plugins(
-        self, paths: FlextCore.Types.StringList
-    ) -> FlextCore.Result[list[FlextPluginTypes.Core.PluginDict]]:
+        self, paths: FlextTypes.StringList
+    ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
         """Discover plugins using multiple discovery strategies.
 
         Args:
             paths: List of paths to search for plugins
 
         Returns:
-            FlextCore.Result containing list of discovered plugins
+            FlextResult containing list of discovered plugins
 
         """
         try:
@@ -121,22 +121,22 @@ class FlextPluginDiscovery:
                         discovered_plugins.add(plugin_name)
 
             self.logger.info(f"Discovered {len(all_plugins)} unique plugins")
-            return FlextCore.Result.ok(all_plugins)
+            return FlextResult.ok(all_plugins)
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
-            return FlextCore.Result.fail(f"Discovery error: {e!s}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     async def discover_plugin(
         self, plugin_path: str
-    ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
+    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
         """Discover a single plugin at the given path.
 
         Args:
             plugin_path: Path to the plugin
 
         Returns:
-            FlextCore.Result containing plugin data
+            FlextResult containing plugin data
 
         """
         try:
@@ -155,22 +155,22 @@ class FlextPluginDiscovery:
             if entry_point_result.is_success:
                 return entry_point_result
 
-            return FlextCore.Result.fail(f"Plugin not found at: {plugin_path}")
+            return FlextResult.fail(f"Plugin not found at: {plugin_path}")
 
         except Exception as e:
             self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-            return FlextCore.Result.fail(f"Discovery error: {e!s}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     async def validate_plugin(
         self, plugin_data: FlextPluginTypes.Core.PluginDict
-    ) -> FlextCore.Result[bool]:
+    ) -> FlextResult[bool]:
         """Validate discovered plugin data.
 
         Args:
             plugin_data: Plugin data to validate
 
         Returns:
-            FlextCore.Result indicating validation success or failure
+            FlextResult indicating validation success or failure
 
         """
         try:
@@ -178,26 +178,24 @@ class FlextPluginDiscovery:
             required_fields = ["name", "version"]
             for field in required_fields:
                 if field not in plugin_data:
-                    return FlextCore.Result.fail(f"Missing required field: {field}")
+                    return FlextResult.fail(f"Missing required field: {field}")
 
             # Validate plugin name format
             plugin_name = plugin_data["name"]
             if not self._is_valid_plugin_name(plugin_name):
-                return FlextCore.Result.fail(
-                    f"Invalid plugin name format: {plugin_name}"
-                )
+                return FlextResult.fail(f"Invalid plugin name format: {plugin_name}")
 
             # Validate version format
             version = plugin_data["version"]
             if not self._is_valid_version(version):
-                return FlextCore.Result.fail(f"Invalid version format: {version}")
+                return FlextResult.fail(f"Invalid version format: {version}")
 
             self.logger.debug(f"Plugin validation passed: {plugin_name}")
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception("Plugin validation failed")
-            return FlextCore.Result.fail(f"Validation error: {e!s}")
+            return FlextResult.fail(f"Validation error: {e!s}")
 
     def _is_valid_plugin_name(self, name: str) -> bool:
         """Check if plugin name follows valid format.
@@ -212,9 +210,9 @@ class FlextPluginDiscovery:
         pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
         return (
             bool(re.match(pattern, name))
-            and FlextCore.Constants.Validation.MIN_NAME_LENGTH
+            and FlextConstants.Validation.MIN_NAME_LENGTH
             <= len(name)
-            <= FlextCore.Constants.Validation.MAX_NAME_LENGTH
+            <= FlextConstants.Validation.MAX_NAME_LENGTH
         )
 
     def _is_valid_version(self, version: str) -> bool:
@@ -235,18 +233,18 @@ class FlextPluginDiscovery:
 
         def __init__(self) -> None:
             """Initialize file system discovery."""
-            self.logger = FlextCore.Logger(__name__)
+            self.logger = FlextLogger(__name__)
 
         async def discover_plugins(
-            self, paths: FlextCore.Types.StringList
-        ) -> FlextCore.Result[list[FlextPluginTypes.Core.PluginDict]]:
+            self, paths: FlextTypes.StringList
+        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins in file system paths.
 
             Args:
                 paths: List of paths to search
 
             Returns:
-                FlextCore.Result containing list of discovered plugins
+                FlextResult containing list of discovered plugins
 
             """
             try:
@@ -271,77 +269,77 @@ class FlextPluginDiscovery:
                 self.logger.info(
                     f"File system discovery found {len(discovered_plugins)} plugins"
                 )
-                return FlextCore.Result.ok(discovered_plugins)
+                return FlextResult.ok(discovered_plugins)
 
             except Exception as e:
                 self.logger.exception("File system discovery failed")
-                return FlextCore.Result.fail(f"File discovery error: {e!s}")
+                return FlextResult.fail(f"File discovery error: {e!s}")
 
         async def discover_plugin(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
             """Discover a single plugin file.
 
             Args:
                 plugin_path: Path to the plugin file
 
             Returns:
-                FlextCore.Result containing plugin data
+                FlextResult containing plugin data
 
             """
             try:
                 path_obj = self._resolve_plugin_path(plugin_path)
                 if not path_obj.exists():
-                    return FlextCore.Result.fail(
+                    return FlextResult.fail(
                         f"Plugin path does not exist: {plugin_path}"
                     )
 
                 plugin_data = await self._discover_single_file(path_obj)
                 if not plugin_data:
-                    return FlextCore.Result.fail(
+                    return FlextResult.fail(
                         f"Failed to discover plugin at: {plugin_path}"
                     )
 
-                return FlextCore.Result.ok(plugin_data)
+                return FlextResult.ok(plugin_data)
 
             except Exception as e:
                 self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-                return FlextCore.Result.fail(f"File discovery error: {e!s}")
+                return FlextResult.fail(f"File discovery error: {e!s}")
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate file-based plugin data.
 
             Args:
                 plugin_data: Plugin data to validate
 
             Returns:
-                FlextCore.Result indicating validation success or failure
+                FlextResult indicating validation success or failure
 
             """
             try:
                 # Check if plugin file exists and is readable
                 plugin_path = plugin_data.get("path")
                 if not plugin_path:
-                    return FlextCore.Result.fail("Plugin path is required")
+                    return FlextResult.fail("Plugin path is required")
 
                 path_obj = self._resolve_plugin_path(plugin_path)
                 if not path_obj.exists() or not path_obj.is_file():
-                    return FlextCore.Result.fail(
+                    return FlextResult.fail(
                         f"Plugin file does not exist: {plugin_path}"
                     )
 
                 if not os.access(path_obj, os.R_OK):
-                    return FlextCore.Result.fail(
+                    return FlextResult.fail(
                         f"Plugin file is not readable: {plugin_path}"
                     )
 
-                return FlextCore.Result.ok(True)
+                return FlextResult.ok(True)
 
             except Exception as e:
                 self.logger.exception("File plugin validation failed")
-                return FlextCore.Result.fail(f"File validation error: {e!s}")
+                return FlextResult.fail(f"File validation error: {e!s}")
 
         async def _discover_single_file(
             self, path: Path
@@ -395,7 +393,7 @@ class FlextPluginDiscovery:
 
                 # Run pathlib operations in thread pool
                 loop = asyncio.get_event_loop()
-                items = await loop.run_in_executor(None, list, path.iterdir())
+                items = await loop.run_in_executor(None, list, path.iterdir())  # noqa: ASYNC240
 
                 for item in items:
                     if (
@@ -455,19 +453,19 @@ class FlextPluginDiscovery:
 
         def __init__(self) -> None:
             """Initialize entry point discovery."""
-            self.logger = FlextCore.Logger(__name__)
+            self.logger = FlextLogger(__name__)
 
         async def discover_plugins(
             self,
-            paths: FlextCore.Types.StringList,
-        ) -> FlextCore.Result[list[FlextPluginTypes.Core.PluginDict]]:
+            paths: FlextTypes.StringList,  # noqa: ARG002
+        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
             Args:
                 paths: List of paths to search (not used for entry points)
 
             Returns:
-                FlextCore.Result containing list of discovered plugins
+                FlextResult containing list of discovered plugins
 
             """
             try:
@@ -489,22 +487,22 @@ class FlextPluginDiscovery:
                 self.logger.info(
                     f"Entry point discovery found {len(discovered_plugins)} plugins"
                 )
-                return FlextCore.Result.ok(discovered_plugins)
+                return FlextResult.ok(discovered_plugins)
 
             except Exception as e:
                 self.logger.exception("Entry point discovery failed")
-                return FlextCore.Result.fail(f"Entry point discovery error: {e!s}")
+                return FlextResult.fail(f"Entry point discovery error: {e!s}")
 
         async def discover_plugin(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
             """Discover a single plugin using entry points.
 
             Args:
                 plugin_path: Plugin identifier (not used for entry points)
 
             Returns:
-                FlextCore.Result containing plugin data
+                FlextResult containing plugin data
 
             """
             try:
@@ -518,9 +516,7 @@ class FlextPluginDiscovery:
                 )
 
                 if not entry_points:
-                    return FlextCore.Result.fail(
-                        f"Entry point not found: {plugin_name}"
-                    )
+                    return FlextResult.fail(f"Entry point not found: {plugin_name}")
 
                 entry_point = entry_points[0]
                 plugin_data = {
@@ -531,48 +527,48 @@ class FlextPluginDiscovery:
                     "discovery_method": "entry_points",
                 }
 
-                return FlextCore.Result.ok(plugin_data)
+                return FlextResult.ok(plugin_data)
 
             except Exception as e:
                 self.logger.exception(
                     f"Failed to discover entry point plugin: {plugin_path}"
                 )
-                return FlextCore.Result.fail(f"Entry point discovery error: {e!s}")
+                return FlextResult.fail(f"Entry point discovery error: {e!s}")
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate entry point-based plugin data.
 
             Args:
                 plugin_data: Plugin data to validate
 
             Returns:
-                FlextCore.Result indicating validation success or failure
+                FlextResult indicating validation success or failure
 
             """
             try:
                 # Check if entry point is valid
                 entry_point = plugin_data.get("entry_point")
                 if not entry_point:
-                    return FlextCore.Result.fail("Entry point is required")
+                    return FlextResult.fail("Entry point is required")
 
                 # Validate entry point format
                 if ":" not in entry_point:
-                    return FlextCore.Result.fail("Invalid entry point format")
+                    return FlextResult.fail("Invalid entry point format")
 
                 module_name, attr_name = entry_point.split(":", 1)
                 if not module_name or not attr_name:
-                    return FlextCore.Result.fail("Invalid entry point format")
+                    return FlextResult.fail("Invalid entry point format")
 
                 # Try to import the module to validate it exists
                 importlib.import_module(module_name)
 
-                return FlextCore.Result.ok(True)
+                return FlextResult.ok(True)
 
             except Exception as e:
                 self.logger.exception("Entry point plugin validation failed")
-                return FlextCore.Result.fail(f"Entry point validation error: {e!s}")
+                return FlextResult.fail(f"Entry point validation error: {e!s}")
 
 
 __all__ = ["FlextPluginDiscovery"]

@@ -66,7 +66,26 @@ make plugin-validate       # Validate plugin system
 ```python
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class MyPlugin(FlextPlugin):
     def __init__(self, **kwargs):
@@ -77,17 +96,17 @@ class MyPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextCore.Result[bool]:
+    def initialize(self) -> FlextResult[bool]:
         # Setup plugin resources
-        return FlextCore.Result[None].ok(data=True)
+        return FlextResult[None].ok(data=True)
 
-    def execute(self, data) -> FlextCore.Result:
+    def execute(self, data) -> FlextResult:
         # Core plugin logic
-        return FlextCore.Result[None].ok({"processed": True})
+        return FlextResult[None].ok({"processed": True})
 
-    def cleanup(self) -> FlextCore.Result[bool]:
+    def cleanup(self) -> FlextResult[bool]:
         # Cleanup resources
-        return FlextCore.Result[None].ok(data=True)
+        return FlextResult[None].ok(data=True)
 ```
 
 ### Development Workflow

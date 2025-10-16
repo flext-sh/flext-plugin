@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextTypes
 
 from flext_plugin.types import FlextPluginTypes
 
@@ -28,11 +28,11 @@ class FlextPluginProtocols:
 
         async def load_plugin(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
             """Load a plugin from the given path."""
             ...
 
-        async def unload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Unload a plugin by name."""
             ...
 
@@ -40,7 +40,7 @@ class FlextPluginProtocols:
             """Check if a plugin is currently loaded."""
             ...
 
-        def get_loaded_plugins(self) -> FlextCore.Types.StringList:
+        def get_loaded_plugins(self) -> FlextTypes.StringList:
             """Get list of currently loaded plugin names."""
             ...
 
@@ -49,19 +49,19 @@ class FlextPluginProtocols:
 
         async def discover_plugins(
             self, paths: FlextPluginTypes.Core.StringList
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginList]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginList]:
             """Discover plugins in the given paths."""
             ...
 
         async def discover_plugin(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
             """Discover a single plugin at the given path."""
             ...
 
         async def validate_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate discovered plugin data."""
             ...
 
@@ -70,23 +70,23 @@ class FlextPluginProtocols:
 
         async def register_plugin(
             self, plugin: FlextPluginTypes.Core.PluginEntity
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Register a plugin in the registry."""
             ...
 
-        async def unregister_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        async def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Unregister a plugin from the registry."""
             ...
 
         async def get_plugin(
             self, plugin_name: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginEntity | None]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginEntity | None]:
             """Get a plugin by name."""
             ...
 
         async def list_plugins(
             self,
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginList]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginList]:
             """List all registered plugins."""
             ...
 
@@ -101,21 +101,19 @@ class FlextPluginProtocols:
             self,
             plugin_name: str,
             context: FlextPluginTypes.Execution.ExecutionContext,
-        ) -> FlextCore.Result[FlextPluginTypes.Execution.ExecutionResult]:
+        ) -> FlextResult[FlextPluginTypes.Execution.ExecutionResult]:
             """Execute a plugin with the given context."""
             ...
 
-        async def stop_execution(self, execution_id: str) -> FlextCore.Result[bool]:
+        async def stop_execution(self, execution_id: str) -> FlextResult[bool]:
             """Stop a running execution."""
             ...
 
-        async def get_execution_status(
-            self, execution_id: str
-        ) -> FlextCore.Result[str]:
+        async def get_execution_status(self, execution_id: str) -> FlextResult[str]:
             """Get the status of a running execution."""
             ...
 
-        def list_running_executions(self) -> FlextCore.Types.StringList:
+        def list_running_executions(self) -> FlextTypes.StringList:
             """List all currently running execution IDs."""
             ...
 
@@ -124,23 +122,23 @@ class FlextPluginProtocols:
 
         async def validate_plugin(
             self, plugin: FlextPluginTypes.Core.PluginEntity
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate a plugin for security compliance."""
             ...
 
         async def check_permissions(
             self, plugin_name: str, permissions: FlextPluginTypes.Core.StringList
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Check if a plugin has the required permissions."""
             ...
 
         async def scan_plugin_security(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Perform security scan on a plugin."""
             ...
 
-        async def get_security_level(self, plugin_name: str) -> FlextCore.Result[str]:
+        async def get_security_level(self, plugin_name: str) -> FlextResult[str]:
             """Get the security level of a plugin."""
             ...
 
@@ -149,15 +147,15 @@ class FlextPluginProtocols:
 
         def start_watching(
             self, paths: FlextPluginTypes.Core.StringList
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Start watching the given paths for changes."""
             ...
 
-        def stop_watching(self) -> FlextCore.Result[bool]:
+        def stop_watching(self) -> FlextResult[bool]:
             """Stop watching for changes."""
             ...
 
-        def reload_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Reload a specific plugin."""
             ...
 
@@ -165,30 +163,30 @@ class FlextPluginProtocols:
             """Check if hot reload is currently watching for changes."""
             ...
 
-        def get_watched_paths(self) -> FlextCore.Types.StringList:
+        def get_watched_paths(self) -> FlextTypes.StringList:
             """Get list of currently watched paths."""
             ...
 
     class PluginMonitoring(Protocol):
         """Protocol for plugin monitoring implementations."""
 
-        async def start_monitoring(self, plugin_name: str) -> FlextCore.Result[bool]:
+        async def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
             """Start monitoring a plugin."""
             ...
 
-        async def stop_monitoring(self, plugin_name: str) -> FlextCore.Result[bool]:
+        async def stop_monitoring(self, plugin_name: str) -> FlextResult[bool]:
             """Stop monitoring a plugin."""
             ...
 
         async def get_plugin_metrics(
             self, plugin_name: str
-        ) -> FlextCore.Result[FlextPluginTypes.Performance.Metrics]:
+        ) -> FlextResult[FlextPluginTypes.Performance.Metrics]:
             """Get metrics for a plugin."""
             ...
 
         async def get_plugin_health(
             self, plugin_name: str
-        ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Get health status for a plugin."""
             ...
 
@@ -201,52 +199,52 @@ class FlextPluginProtocols:
 
         def load_config(
             self, plugin_name: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.ConfigDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.ConfigDict]:
             """Load configuration for a plugin."""
             ...
 
         def save_config(
             self, plugin_name: str, config: FlextPluginTypes.Core.ConfigDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Save configuration for a plugin."""
             ...
 
         def validate_config(
             self, config: FlextPluginTypes.Core.ConfigDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate plugin configuration."""
             ...
 
         def get_default_config(
             self, plugin_type: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.ConfigDict]:
+        ) -> FlextResult[FlextPluginTypes.Core.ConfigDict]:
             """Get default configuration for a plugin type."""
             ...
 
     class PluginLifecycle(Protocol):
         """Protocol for plugin lifecycle management implementations."""
 
-        def initialize_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def initialize_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Initialize a plugin."""
             ...
 
-        def activate_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def activate_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Activate a plugin."""
             ...
 
-        def deactivate_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def deactivate_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Deactivate a plugin."""
             ...
 
-        def destroy_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def destroy_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Destroy a plugin."""
             ...
 
-        def get_plugin_status(self, plugin_name: str) -> FlextCore.Result[str]:
+        def get_plugin_status(self, plugin_name: str) -> FlextResult[str]:
             """Get the current status of a plugin."""
             ...
 
-        def list_plugin_statuses(self) -> FlextCore.Result[dict[str, str]]:
+        def list_plugin_statuses(self) -> FlextResult[dict[str, str]]:
             """Get status of all plugins."""
             ...
 
@@ -255,25 +253,19 @@ class FlextPluginProtocols:
 
         def validate_plugin_structure(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate plugin data structure."""
             ...
 
-        def validate_plugin_dependencies(
-            self, plugin_name: str
-        ) -> FlextCore.Result[bool]:
+        def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
             """Validate plugin dependencies."""
             ...
 
-        def validate_plugin_permissions(
-            self, plugin_name: str
-        ) -> FlextCore.Result[bool]:
+        def validate_plugin_permissions(self, plugin_name: str) -> FlextResult[bool]:
             """Validate plugin permissions."""
             ...
 
-        def validate_plugin_compatibility(
-            self, plugin_name: str
-        ) -> FlextCore.Result[bool]:
+        def validate_plugin_compatibility(self, plugin_name: str) -> FlextResult[bool]:
             """Validate plugin compatibility with platform."""
             ...
 
@@ -282,21 +274,21 @@ class FlextPluginProtocols:
 
         def store_plugin(
             self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Store plugin data."""
             ...
 
         def retrieve_plugin(
             self, plugin_name: str
-        ) -> FlextCore.Result[FlextPluginTypes.Core.PluginDict | None]:
+        ) -> FlextResult[FlextPluginTypes.Core.PluginDict | None]:
             """Retrieve plugin data."""
             ...
 
-        def delete_plugin(self, plugin_name: str) -> FlextCore.Result[bool]:
+        def delete_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Delete plugin data."""
             ...
 
-        def list_stored_plugins(self) -> FlextCore.Result[FlextCore.Types.StringList]:
+        def list_stored_plugins(self) -> FlextResult[FlextTypes.StringList]:
             """List all stored plugin names."""
             ...
 

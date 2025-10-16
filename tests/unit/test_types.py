@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_plugin.types import FlextPluginProtocols, FlextPluginTypes
 
@@ -21,28 +21,28 @@ class TestFlextPluginTypes:
     def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
-        assert FlextPluginTypes.Core.StringList == FlextCore.Types.StringList
+        assert FlextPluginTypes.Core.StringList == FlextTypes.StringList
         assert FlextPluginTypes.Core.StringSet == set[str]
         assert FlextPluginTypes.Core.StringDict == dict[str, str]
 
         # Test numeric collections
-        assert FlextPluginTypes.Core.IntList == FlextCore.Types.IntList
-        assert FlextPluginTypes.Core.FloatList == FlextCore.Types.FloatList
+        assert FlextPluginTypes.Core.IntList == FlextTypes.IntList
+        assert FlextPluginTypes.Core.FloatList == FlextTypes.FloatList
         assert FlextPluginTypes.Core.IntDict == dict[str, int]
         assert FlextPluginTypes.Core.FloatDict == dict[str, float]
 
         # Test mixed collections
-        assert FlextPluginTypes.Core.AnyList == FlextCore.Types.List
-        assert FlextPluginTypes.Core.AnyDict == FlextCore.Types.Dict
+        assert FlextPluginTypes.Core.AnyList == FlextTypes.List
+        assert FlextPluginTypes.Core.AnyDict == FlextTypes.Dict
 
         # Test plugin-specific collections
-        assert FlextPluginTypes.Core.PluginList == list[FlextCore.Types.Dict]
-        assert FlextPluginTypes.Core.PluginDict == FlextCore.Types.Dict
-        assert FlextPluginTypes.Core.ConfigDict == FlextCore.Types.Dict
-        assert FlextPluginTypes.Core.SettingsDict == FlextCore.Types.Dict
-        assert FlextPluginTypes.Core.MetadataDict == FlextCore.Types.Dict
-        assert FlextPluginTypes.Core.InputDict == FlextCore.Types.Dict
-        assert FlextPluginTypes.Core.OutputDict == FlextCore.Types.Dict
+        assert FlextPluginTypes.Core.PluginList == list[FlextTypes.Dict]
+        assert FlextPluginTypes.Core.PluginDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.ConfigDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.SettingsDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.MetadataDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.InputDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.OutputDict == FlextTypes.Dict
 
     def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""
@@ -91,7 +91,7 @@ class TestFlextPluginTypes:
         # Test type aliases
         assert FlextPluginTypes.Security.SecurityLevel is str
         assert FlextPluginTypes.Security.Permission is str
-        assert FlextPluginTypes.Security.SecurityConfig is FlextCore.Types.Dict
+        assert FlextPluginTypes.Security.SecurityConfig is FlextTypes.Dict
 
         # Test security levels
         assert FlextPluginTypes.Security.SECURITY_LOW == "low"
@@ -108,9 +108,9 @@ class TestFlextPluginTypes:
     def test_performance_types(self) -> None:
         """Test performance type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Performance.Metrics == FlextCore.Types.Dict
-        assert FlextPluginTypes.Performance.PerformanceData == FlextCore.Types.Dict
-        assert FlextPluginTypes.Performance.ResourceUsage == FlextCore.Types.Dict
+        assert FlextPluginTypes.Performance.Metrics == FlextTypes.Dict
+        assert FlextPluginTypes.Performance.PerformanceData == FlextTypes.Dict
+        assert FlextPluginTypes.Performance.ResourceUsage == FlextTypes.Dict
 
         # Test performance thresholds
         assert FlextPluginTypes.Performance.EXCELLENT_SUCCESS_RATE == 95.0
@@ -126,7 +126,7 @@ class TestFlextPluginTypes:
         """Test discovery type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Discovery.DiscoveryPath is str
-        assert FlextPluginTypes.Discovery.DiscoveryResult is FlextCore.Types.Dict
+        assert FlextPluginTypes.Discovery.DiscoveryResult is FlextTypes.Dict
         assert FlextPluginTypes.Discovery.PluginLoader is object
         assert FlextPluginTypes.Discovery.EntryPoint is str
 
@@ -138,10 +138,10 @@ class TestFlextPluginTypes:
     def test_execution_types(self) -> None:
         """Test execution type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Execution.ExecutionContext == FlextCore.Types.Dict
-        assert FlextPluginTypes.Execution.ExecutionResult == FlextCore.Types.Dict
+        assert FlextPluginTypes.Execution.ExecutionContext == FlextTypes.Dict
+        assert FlextPluginTypes.Execution.ExecutionResult == FlextTypes.Dict
         assert FlextPluginTypes.Execution.ExecutionError is str
-        assert FlextPluginTypes.Execution.ResourceLimits == FlextCore.Types.Dict
+        assert FlextPluginTypes.Execution.ResourceLimits == FlextTypes.Dict
 
         # Test execution states
         assert FlextPluginTypes.Execution.STATE_PENDING == "pending"
@@ -153,9 +153,9 @@ class TestFlextPluginTypes:
     def test_registry_types(self) -> None:
         """Test registry type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Registry.RegistryConfig == FlextCore.Types.Dict
-        assert FlextPluginTypes.Registry.RegistryEntry == FlextCore.Types.Dict
-        assert FlextPluginTypes.Registry.RegistrySync == FlextCore.Types.Dict
+        assert FlextPluginTypes.Registry.RegistryConfig == FlextTypes.Dict
+        assert FlextPluginTypes.Registry.RegistryEntry == FlextTypes.Dict
+        assert FlextPluginTypes.Registry.RegistrySync == FlextTypes.Dict
 
         # Test registry types
         assert FlextPluginTypes.Registry.TYPE_LOCAL == "local"
@@ -165,8 +165,8 @@ class TestFlextPluginTypes:
     def test_hot_reload_types(self) -> None:
         """Test hot reload type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.HotReload.WatchConfig == FlextCore.Types.Dict
-        assert FlextPluginTypes.HotReload.ReloadEvent == FlextCore.Types.Dict
+        assert FlextPluginTypes.HotReload.WatchConfig == FlextTypes.Dict
+        assert FlextPluginTypes.HotReload.ReloadEvent == FlextTypes.Dict
         assert FlextPluginTypes.HotReload.FileWatcher is object
 
         # Test watch events

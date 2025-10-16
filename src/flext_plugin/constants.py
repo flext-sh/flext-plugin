@@ -9,20 +9,20 @@ from __future__ import annotations
 
 from typing import ClassVar, Final, Literal
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextTypes
 
 
-class FlextPluginConstants(FlextCore.Constants):
-    """Plugin system-specific constants extending FlextCore.Constants with domain functionality.
+class FlextPluginConstants(FlextConstants):
+    """Plugin system-specific constants extending FlextConstants with domain functionality.
 
-    Extends FlextCore.Constants to inherit universal constants while adding plugin-specific
+    Extends FlextConstants to inherit universal constants while adding plugin-specific
     constants using nested namespace classes. Maintains full inheritance hierarchy.
 
     Usage:
         ```python
         from flext_plugin import FlextPluginConstants
 
-        # Inherited from FlextCore.Constants
+        # Inherited from FlextConstants
         timeout = FlextPluginConstants.Defaults.TIMEOUT
 
         # Plugin-specific constants
@@ -37,14 +37,12 @@ class FlextPluginConstants(FlextCore.Constants):
     class Discovery:
         """Plugin discovery and loading configuration."""
 
-        # Use FlextCore.Constants for common timeouts where applicable
-        DEFAULT_TIMEOUT_SECONDS: Final[int] = (
-            FlextCore.Constants.Network.DEFAULT_TIMEOUT
-        )
+        # Use FlextConstants for common timeouts where applicable
+        DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
         DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
 
         # Plugin-specific discovery paths
-        DEFAULT_PLUGIN_PATHS: ClassVar[FlextCore.Types.StringList] = [
+        DEFAULT_PLUGIN_PATHS: ClassVar[FlextTypes.StringList] = [
             "/opt/flext/plugins",
             "~/.flext/plugins",
             "./plugins",
@@ -167,10 +165,10 @@ class FlextPluginConstants(FlextCore.Constants):
             "unhealthy",
         ]
 
-        # Use FlextCore.Constants for worker configuration
-        MAX_PLUGIN_WORKERS: Final[int] = FlextCore.Constants.Container.MAX_WORKERS
-        MIN_PLUGIN_WORKERS: Final[int] = FlextCore.Constants.Container.MIN_WORKERS
-        DEFAULT_WORKERS: Final[int] = FlextCore.Constants.Container.DEFAULT_WORKERS
+        # Use FlextConstants for worker configuration
+        MAX_PLUGIN_WORKERS: Final[int] = FlextConstants.Container.MAX_WORKERS
+        MIN_PLUGIN_WORKERS: Final[int] = FlextConstants.Container.MIN_WORKERS
+        DEFAULT_WORKERS: Final[int] = FlextConstants.Container.DEFAULT_WORKERS
 
         # Status values
         STATUS_UNKNOWN: Final[str] = "unknown"
@@ -187,7 +185,7 @@ class FlextPluginConstants(FlextCore.Constants):
     class PluginSecurity:
         """Plugin security and validation constants."""
 
-        SECURITY_LEVELS: Final[FlextCore.Types.StringList] = [
+        SECURITY_LEVELS: Final[FlextTypes.StringList] = [
             "LOW",
             "MEDIUM",
             "HIGH",
@@ -210,15 +208,15 @@ class FlextPluginConstants(FlextCore.Constants):
         PERMISSION_DATABASE: Final[str] = "database"
         PERMISSION_EXTERNAL_API: Final[str] = "external_api"
 
-        # Use FlextCore.Constants for security-related timeouts
-        SECURITY_SCAN_TIMEOUT: Final[int] = FlextCore.Constants.Network.DEFAULT_TIMEOUT
+        # Use FlextConstants for security-related timeouts
+        SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
 
         # Allowed and blocked imports
-        DEFAULT_ALLOWED_IMPORTS: Final[FlextCore.Types.StringList] = [
+        DEFAULT_ALLOWED_IMPORTS: Final[FlextTypes.StringList] = [
             "flext_core",
             "flext_plugin",
         ]
-        DEFAULT_BLOCKED_IMPORTS: Final[FlextCore.Types.StringList] = [
+        DEFAULT_BLOCKED_IMPORTS: Final[FlextTypes.StringList] = [
             "os",
             "sys",
             "subprocess",
@@ -288,7 +286,7 @@ class FlextPluginConstants(FlextCore.Constants):
 
         DEFAULT_INTERVAL_SECONDS: Final[int] = 2
         DEBOUNCE_MS: Final[int] = 500
-        MAX_RETRIES: Final[int] = FlextCore.Constants.Reliability.MAX_RETRY_ATTEMPTS
+        MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
 
         # Watch events
         EVENT_CREATED: Final[str] = "created"
@@ -300,7 +298,7 @@ class FlextPluginConstants(FlextCore.Constants):
         """Plugin monitoring and observability constants."""
 
         # Log levels
-        LOG_LEVELS: Final[FlextCore.Types.StringList] = [
+        LOG_LEVELS: Final[FlextTypes.StringList] = [
             "DEBUG",
             "INFO",
             "WARNING",
@@ -327,15 +325,15 @@ class FlextPluginConstants(FlextCore.Constants):
         """Plugin file extension and directory constants."""
 
         # Plugin file extensions
-        PYTHON_EXTENSION: Final[str] = FlextCore.Constants.Platform.EXT_PYTHON
-        YAML_CONFIG_EXTENSION: Final[str] = FlextCore.Constants.Platform.EXT_YAML
-        JSON_CONFIG_EXTENSION: Final[str] = FlextCore.Constants.Platform.EXT_JSON
-        TOML_CONFIG_EXTENSION: Final[str] = FlextCore.Constants.Platform.EXT_TOML
+        PYTHON_EXTENSION: Final[str] = FlextConstants.Platform.EXT_PYTHON
+        YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_YAML
+        JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_JSON
+        TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_TOML
 
         # Directory structure
         DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
         DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-        DEFAULT_CONFIG_DIR: Final[str] = FlextCore.Constants.Platform.DIR_CONFIG
+        DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
 
     class PluginValidation:
         """Plugin validation patterns and rules."""

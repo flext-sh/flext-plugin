@@ -48,28 +48,28 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 #### FlextPlugin
 
 ```python
-class FlextPlugin(FlextCore.Models.Entity):
+class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
     name: str
     plugin_version: str
     status: PluginStatus
-    config: FlextCore.Types.Dict
+    config: FlextTypes.Dict
 
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""
 
-    def validate_business_rules(self) -> FlextCore.Result[bool]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Domain validation logic"""
 ```
 
 #### FlextPluginEntities.Config
 
 ```python
-class FlextPluginEntities.Config(FlextCore.Models.Entity):
+class FlextPluginEntities.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
     version: str
-    dependencies: FlextCore.Types.StringList
+    dependencies: FlextTypes.StringList
     metadata: FlextPluginEntities.Metadata
 
     class Config:
@@ -92,14 +92,14 @@ Coordinates all plugin operations:
 class FlextPluginPlatform:
     """Main facade for plugin system"""
 
-    def __init__(self, container: FlextCore.Container | None = None):
-        self.container = container or FlextCore.Container()
+    def __init__(self, container: FlextContainer | None = None):
+        self.container = container or FlextContainer()
         self._setup_services()
 
-    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextCore.Result[bool]:
+    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> FlextCore.Result[list[FlextPluginEntities.Entity]]:
+    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -121,7 +121,7 @@ class FlextPluginPlatform:
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
-    def scan_directory(self, path: str) -> FlextCore.Result[list[PluginInfo]]:
+    def scan_directory(self, path: str) -> FlextResult[list[PluginInfo]]:
         """Scan directory for plugin files"""
 ```
 
@@ -141,22 +141,22 @@ class WatchdogHotReload:
 
 ### FLEXT-Core Integration
 
-#### FlextCore.Result Pattern
+#### FlextResult Pattern
 
-All operations return `FlextCore.Result[T]` for railway-oriented programming:
+All operations return `FlextResult[T]` for railway-oriented programming:
 
 ```python
-def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextCore.Result[bool]:
+def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
     try:
         # Plugin loading logic
-        return FlextCore.Result[bool].ok(True)
+        return FlextResult[bool].ok(True)
     except Exception as e:
-        return FlextCore.Result[bool].fail(f"Loading failed: {e}")
+        return FlextResult[bool].fail(f"Loading failed: {e}")
 ```
 
 #### Dependency Injection
 
-Uses FlextCore.Container for service management:
+Uses FlextContainer for service management:
 
 ```python
 def _setup_services(self) -> None:
@@ -198,7 +198,7 @@ All modules follow the FLEXT single-class-per-module standard with nested helper
 - ✅ **Domain-Driven Design**: Entities with business rules and validation
 - ✅ **FLEXT Compliance**: Single-class-per-module standard achieved across all modules
 - ✅ **Type Safety**: Complete MyPy compliance with Python 3.13+ features
-- ✅ **Railway Pattern**: FlextCore.Result[T] throughout for composable error handling
+- ✅ **Railway Pattern**: FlextResult[T] throughout for composable error handling
 
 ---
 

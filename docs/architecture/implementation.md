@@ -12,7 +12,7 @@ This guide provides practical implementation guidance for developing with the FL
 
 - **Clean Architecture First**: Domain-driven design with clear layer boundaries
 - **Type Safety**: 100% type annotations with Python 3.13+ features
-- **Railway Pattern**: FlextCore.Result[T] for composable error handling
+- **Railway Pattern**: FlextResult[T] for composable error handling
 - **Single Responsibility**: One class per module following FLEXT standards
 - **Test-Driven Development**: Comprehensive testing with high coverage targets
 
@@ -26,20 +26,39 @@ This guide provides practical implementation guidance for developing with the FL
 
 ```python
 # flext_plugin/entities.py - Domain entities with business rules
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from typing import List, Optional
 
 class FlextPluginEntities:
     """Domain entities following FLEXT single-class-per-module pattern."""
 
-    class Plugin(FlextCore.Models.Entity):
+    class Plugin(FlextModels.Entity):
         """Plugin domain entity with business rules."""
 
         def __init__(
             self,
             name: str,
             plugin_version: str,
-            config: FlextCore.Types.Dict,
+            config: FlextTypes.Dict,
         ) -> None:
             super().__init__()
             self.name = name
@@ -47,33 +66,33 @@ class FlextPluginEntities:
             self.config = config
             self._status = PluginStatus.INACTIVE
 
-        def validate_business_rules(self) -> FlextCore.Result[bool]:
+        def validate_business_rules(self) -> FlextResult[bool]:
             """Domain business rule validation."""
             if not self.name or not self.name.strip():
-                return FlextCore.Result.fail("Plugin name cannot be empty")
+                return FlextResult.fail("Plugin name cannot be empty")
 
             if not self.plugin_version:
-                return FlextCore.Result.fail("Plugin version is required")
+                return FlextResult.fail("Plugin version is required")
 
             # Additional business rules...
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
-        def activate(self) -> FlextCore.Result[bool]:
+        def activate(self) -> FlextResult[bool]:
             """Business logic for plugin activation."""
             validation = self.validate_business_rules()
             if validation.is_failure:
                 return validation
 
             self._status = PluginStatus.ACTIVE
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
-    class Execution(FlextCore.Models.Entity):
+    class Execution(FlextModels.Entity):
         """Plugin execution entity."""
 
         def __init__(
             self,
             plugin_name: str,
-            context: FlextCore.Types.Dict,
+            context: FlextTypes.Dict,
             execution_id: Optional[str] = None,
         ) -> None:
             super().__init__()
@@ -100,21 +119,40 @@ class FlextPluginEntities:
 
 ```python
 # flext_plugin/services.py - Application services
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_plugin.entities import FlextPluginEntities
 from typing import List, Protocol
 
 class FlextPluginServices:
     """Application services following Clean Architecture."""
 
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self.container = container
 
     async def discover_plugins(
         self,
-        paths: FlextCore.Types.StringList,
+        paths: FlextTypes.StringList,
         discovery_service: PluginDiscovery
-    ) -> FlextCore.Result[List[FlextPluginEntities.Plugin]]:
+    ) -> FlextResult[List[FlextPluginEntities.Plugin]]:
         """Application service orchestrating plugin discovery."""
 
         try:
@@ -144,17 +182,17 @@ class FlextPluginServices:
                         f"Plugin {plugin.name} validation failed: {validation.error}"
                     )
 
-            return FlextCore.Result.ok(plugins)
+            return FlextResult.ok(plugins)
 
         except Exception as e:
-            return FlextCore.Result.fail(f"Plugin discovery failed: {e!s}")
+            return FlextResult.fail(f"Plugin discovery failed: {e!s}")
 
     async def execute_plugin(
         self,
         plugin: FlextPluginEntities.Plugin,
-        context: FlextCore.Types.Dict,
+        context: FlextTypes.Dict,
         executor: PluginExecution
-    ) -> FlextCore.Result[FlextPluginEntities.Execution]:
+    ) -> FlextResult[FlextPluginEntities.Execution]:
         """Application service orchestrating plugin execution."""
 
         try:
@@ -174,17 +212,36 @@ class FlextPluginServices:
             else:
                 execution.mark_failed(execution_result.error)
 
-            return FlextCore.Result.ok(execution)
+            return FlextResult.ok(execution)
 
         except Exception as e:
-            return FlextCore.Result.fail(f"Plugin execution failed: {e!s}")
+            return FlextResult.fail(f"Plugin execution failed: {e!s}")
 ```
 
 #### **Infrastructure Layer Implementation**
 
 ```python
 # flext_plugin/discovery.py - Infrastructure adapters
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_plugin.protocols import FlextPluginProtocols
 import os
 from pathlib import Path
@@ -193,13 +250,13 @@ from typing import List, Dict, object
 class FlextPluginDiscovery:
     """Infrastructure adapter for file-based plugin discovery."""
 
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self.container = container
         self.logger = container.get("logger").unwrap()
 
     async def discover_plugins(
-        self, paths: FlextCore.Types.StringList
-    ) -> FlextCore.Result[List[Dict[str, object]]]:
+        self, paths: FlextTypes.StringList
+    ) -> FlextResult[List[Dict[str, object]]]:
         """Discover plugins from file system."""
 
         try:
@@ -228,11 +285,11 @@ class FlextPluginDiscovery:
                         continue
 
             self.logger.info(f"Discovered {len(discovered_plugins)} plugins")
-            return FlextCore.Result.ok(discovered_plugins)
+            return FlextResult.ok(discovered_plugins)
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
-            return FlextCore.Result.fail(f"Discovery error: {e!s}")
+            return FlextResult.fail(f"Discovery error: {e!s}")
 
     def _scan_plugin_files(self, path: Path) -> List[Path]:
         """Scan directory for plugin files."""
@@ -279,7 +336,26 @@ class FlextPluginDiscovery:
 ```python
 # flext_plugin/protocols.py - Structural typing protocols
 from typing import Protocol, List, Dict, object, Optional
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_plugin.entities import FlextPluginEntities
 
 class FlextPluginProtocols:
@@ -289,8 +365,8 @@ class FlextPluginProtocols:
         """Protocol for plugin discovery mechanisms."""
 
         async def discover_plugins(
-            self, paths: FlextCore.Types.StringList
-        ) -> FlextCore.Result[List[Dict[str, object]]]:
+            self, paths: FlextTypes.StringList
+        ) -> FlextResult[List[Dict[str, object]]]:
             """Discover plugins from specified paths."""
             ...
 
@@ -299,7 +375,7 @@ class FlextPluginProtocols:
 
         async def load_plugin(
             self, plugin_path: str
-        ) -> FlextCore.Result[FlextPluginEntities.Plugin]:
+        ) -> FlextResult[FlextPluginEntities.Plugin]:
             """Load plugin from specified path."""
             ...
 
@@ -310,7 +386,7 @@ class FlextPluginProtocols:
             self,
             plugin: FlextPluginEntities.Plugin,
             context: Dict[str, object]
-        ) -> FlextCore.Result[object]:
+        ) -> FlextResult[object]:
             """Execute plugin with given context."""
             ...
 
@@ -320,7 +396,7 @@ class FlextPluginProtocols:
         async def validate_plugin(
             self,
             plugin: FlextPluginEntities.Plugin
-        ) -> FlextCore.Result[bool]:
+        ) -> FlextResult[bool]:
             """Validate plugin security."""
             ...
 
@@ -328,12 +404,12 @@ class FlextPluginProtocols:
         """Protocol for plugin hot reload functionality."""
 
         async def start_watching(
-            self, paths: FlextCore.Types.StringList
-        ) -> FlextCore.Result[bool]:
+            self, paths: FlextTypes.StringList
+        ) -> FlextResult[bool]:
             """Start watching paths for plugin changes."""
             ...
 
-        async def stop_watching(self) -> FlextCore.Result[bool]:
+        async def stop_watching(self) -> FlextResult[bool]:
             """Stop watching for plugin changes."""
             ...
 ```
@@ -348,26 +424,45 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
     """Concrete implementation of plugin discovery protocol."""
 
     async def discover_plugins(
-        self, paths: FlextCore.Types.StringList
-    ) -> FlextCore.Result[List[Dict[str, object]]]:
+        self, paths: FlextTypes.StringList
+    ) -> FlextResult[List[Dict[str, object]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
-        return FlextCore.Result.ok([])
+        return FlextResult.ok([])
 ```
 
 ### Railway Pattern Implementation
 
-#### **FlextCore.Result[T] Error Handling**
+#### **FlextResult[T] Error Handling**
 
 ```python
 # Railway pattern throughout the system
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from typing import List
 
 async def process_plugins_workflow(
     self,
-    plugin_names: FlextCore.Types.StringList
-) -> FlextCore.Result[FlextCore.Types.List]:
+    plugin_names: FlextTypes.StringList
+) -> FlextResult[FlextTypes.List]:
     """Complete plugin processing workflow using railway pattern."""
 
     # Chain operations with automatic error propagation
@@ -380,21 +475,21 @@ async def process_plugins_workflow(
     )
 
 def _validate_plugin_names(
-    self, names: FlextCore.Types.StringList
-) -> FlextCore.Result[FlextCore.Types.StringList]:
+    self, names: FlextTypes.StringList
+) -> FlextResult[FlextTypes.StringList]:
     """Validate plugin names."""
     if not names:
-        return FlextCore.Result.fail("No plugin names provided")
+        return FlextResult.fail("No plugin names provided")
 
     invalid_names = [name for name in names if not self._is_valid_name(name)]
     if invalid_names:
-        return FlextCore.Result.fail(f"Invalid plugin names: {invalid_names}")
+        return FlextResult.fail(f"Invalid plugin names: {invalid_names}")
 
-    return FlextCore.Result.ok(names)
+    return FlextResult.ok(names)
 
 async def _load_plugins(
-    self, names: FlextCore.Types.StringList
-) -> FlextCore.Result[List[FlextPluginEntities.Plugin]]:
+    self, names: FlextTypes.StringList
+) -> FlextResult[List[FlextPluginEntities.Plugin]]:
     """Load plugins by name."""
     plugins = []
     for name in names:
@@ -403,7 +498,7 @@ async def _load_plugins(
             return plugin_result  # Early return on failure
         plugins.append(plugin_result.unwrap())
 
-    return FlextCore.Result.ok(plugins)
+    return FlextResult.ok(plugins)
 ```
 
 ---
@@ -505,7 +600,7 @@ class TestPluginServices:
         """Test successful plugin discovery."""
         # Mock discovery protocol
         mock_discovery = AsyncMock()
-        mock_discovery.discover_plugins.return_value = FlextCore.Result.ok([
+        mock_discovery.discover_plugins.return_value = FlextResult.ok([
             {
                 "name": "test-plugin",
                 "version": "1.0.0",
@@ -532,7 +627,7 @@ class TestPluginServices:
         """Test plugin discovery with validation failure."""
         # Mock discovery returning invalid plugin
         mock_discovery = AsyncMock()
-        mock_discovery.discover_plugins.return_value = FlextCore.Result.ok([
+        mock_discovery.discover_plugins.return_value = FlextResult.ok([
             {
                 "name": "",  # Invalid: empty name
                 "version": "1.0.0"
@@ -560,7 +655,26 @@ import pytest
 from pathlib import Path
 import tempfile
 from flext_plugin import FlextPluginPlatform
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class TestPluginLifecycle:
     """End-to-end plugin lifecycle testing."""
@@ -568,7 +682,7 @@ class TestPluginLifecycle:
     @pytest.fixture
     async def platform(self):
         """Real plugin platform instance."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         platform = FlextPluginPlatform(container)
         yield platform
         # Cleanup if needed
@@ -663,12 +777,52 @@ License: MIT
 """
 
 from __future__ import annotations
+from flext_core import FlextBus
+
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Standard imports
 from typing import TYPE_CHECKING
 
 # FLEXT ecosystem imports
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Local imports (after FLEXT imports)
 from flext_plugin.constants import FlextPluginConstants
@@ -685,7 +839,7 @@ class FlextPlugin[ModuleName]:
     Nested helper classes are used for complex internal structures.
     """
 
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         """Initialize module with dependency injection."""
         self.container = container
         self.logger = container.get("logger").unwrap()
@@ -695,7 +849,7 @@ class FlextPlugin[ModuleName]:
     async def public_method(
         self,
         param: FlextPluginTypes.SomeType
-    ) -> FlextCore.Result[FlextPluginEntities.SomeEntity]:
+    ) -> FlextResult[FlextPluginEntities.SomeEntity]:
         """Public method with comprehensive documentation."""
         try:
             # Validation
@@ -707,22 +861,22 @@ class FlextPlugin[ModuleName]:
             result = await self._execute_business_logic(param)
 
             # Return result
-            return FlextCore.Result.ok(result)
+            return FlextResult.ok(result)
 
         except Exception as e:
             self.logger.exception(f"Method execution failed: {param}")
-            return FlextCore.Result.fail(f"Execution error: {e!s}")
+            return FlextResult.fail(f"Execution error: {e!s}")
 
     # Private helper methods
     def _validate_param(
         self, param: FlextPluginTypes.SomeType
-    ) -> FlextCore.Result[FlextPluginTypes.SomeType]:
+    ) -> FlextResult[FlextPluginTypes.SomeType]:
         """Validate method parameters."""
         if not param:
-            return FlextCore.Result.fail("Parameter cannot be empty")
+            return FlextResult.fail("Parameter cannot be empty")
 
         # Additional validation logic...
-        return FlextCore.Result.ok(param)
+        return FlextResult.ok(param)
 
     async def _execute_business_logic(
         self, param: FlextPluginTypes.SomeType
@@ -735,9 +889,9 @@ class FlextPlugin[ModuleName]:
     class HelperClass:
         """Nested helper class for internal complexity."""
 
-        def helper_method(self) -> FlextCore.Result[str]:
+        def helper_method(self) -> FlextResult[str]:
             """Helper method implementation."""
-            return FlextCore.Result.ok("helper result")
+            return FlextResult.ok("helper result")
 
 # Module constants (if needed)
 DEFAULT_TIMEOUT: int = 30
@@ -756,7 +910,7 @@ __all__ = ["FlextPlugin[ModuleName]"]
 async def complex_operation(
     self,
     input_data: FlextPluginTypes.ComplexInput
-) -> FlextCore.Result[FlextPluginTypes.ComplexOutput]:
+) -> FlextResult[FlextPluginTypes.ComplexOutput]:
     """Complex operation using railway pattern."""
 
     return (
@@ -801,7 +955,7 @@ class FlextPluginConfig:
     """Plugin system configuration using Pydantic."""
 
     # Plugin discovery settings
-    plugin_paths: FlextCore.Types.StringList = Field(
+    plugin_paths: FlextTypes.StringList = Field(
         default_factory=lambda: [
             "./plugins",
             "~/.flext/plugins",
@@ -839,7 +993,7 @@ class FlextPluginConfig:
                 raise ValueError(f"Invalid plugin path format: {path}")
         return paths
 
-    def get_plugin_paths(self) -> FlextCore.Types.StringList:
+    def get_plugin_paths(self) -> FlextTypes.StringList:
         """Get resolved plugin paths."""
         import os
         from pathlib import Path
@@ -984,7 +1138,26 @@ spec:
 
 ```python
 # flext_plugin/health.py
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from typing import Dict, object
 
 class FlextPluginHealth:
@@ -993,7 +1166,7 @@ class FlextPluginHealth:
     def __init__(self, platform: FlextPluginPlatform):
         self.platform = platform
 
-    async def check_overall_health(self) -> FlextCore.Result[Dict[str, object]]:
+    async def check_overall_health(self) -> FlextResult[Dict[str, object]]:
         """Comprehensive health check."""
         try:
             health_status = {
@@ -1023,10 +1196,10 @@ class FlextPluginHealth:
             if not all_healthy:
                 health_status["status"] = "unhealthy"
 
-            return FlextCore.Result.ok(health_status)
+            return FlextResult.ok(health_status)
 
         except Exception as e:
-            return FlextCore.Result.fail(f"Health check failed: {e!s}")
+            return FlextResult.fail(f"Health check failed: {e!s}")
 
     async def _check_platform_health(self) -> Dict[str, object]:
         """Check platform operational health."""
@@ -1097,7 +1270,26 @@ class FlextPluginHealth:
 from typing import Dict, object, Optional
 import asyncio
 from datetime import datetime, timedelta
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class FlextPluginCache:
     """Multi-level caching for plugin system performance."""
@@ -1154,7 +1346,26 @@ class FlextPluginCache:
 import asyncio
 from typing import List, Dict, object
 from concurrent.futures import ThreadPoolExecutor
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_plugin.entities import FlextPluginEntities
 
 class FlextPluginExecutor:
@@ -1169,7 +1380,7 @@ class FlextPluginExecutor:
         self,
         plugins: List[FlextPluginEntities.Plugin],
         context: Dict[str, object]
-    ) -> FlextCore.Result[List[FlextPluginEntities.Execution]]:
+    ) -> FlextResult[List[FlextPluginEntities.Execution]]:
         """Execute multiple plugins concurrently with resource limits."""
 
         async def execute_single_plugin(plugin: FlextPluginEntities.Plugin):
@@ -1197,15 +1408,15 @@ class FlextPluginExecutor:
                 executions.append(result.unwrap())
 
         if errors:
-            return FlextCore.Result.fail(f"Execution errors: {errors}")
+            return FlextResult.fail(f"Execution errors: {errors}")
 
-        return FlextCore.Result.ok(executions)
+        return FlextResult.ok(executions)
 
     async def _execute_plugin_safe(
         self,
         plugin: FlextPluginEntities.Plugin,
         context: Dict[str, object]
-    ) -> FlextCore.Result[FlextPluginEntities.Execution]:
+    ) -> FlextResult[FlextPluginEntities.Execution]:
         """Execute single plugin with error isolation."""
         try:
             # Create execution entity
@@ -1226,7 +1437,7 @@ class FlextPluginExecutor:
             )
 
             execution.mark_completed(result)
-            return FlextCore.Result.ok(execution)
+            return FlextResult.ok(execution)
 
         except Exception as e:
             execution = FlextPluginEntities.Execution.create(
@@ -1234,7 +1445,7 @@ class FlextPluginExecutor:
                 context=context
             )
             execution.mark_failed(str(e))
-            return FlextCore.Result.ok(execution)  # Return failed execution, not error
+            return FlextResult.ok(execution)  # Return failed execution, not error
 
     def _execute_plugin_sync(
         self,
@@ -1262,7 +1473,7 @@ class FlextPluginExecutor:
 
 #### **Error Handling Patterns**
 
-- Railway pattern (FlextCore.Result[T]) throughout
+- Railway pattern (FlextResult[T]) throughout
 - Structured error messages with context
 - Comprehensive exception logging
 - Graceful degradation for non-critical failures

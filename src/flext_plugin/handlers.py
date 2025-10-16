@@ -11,7 +11,7 @@ import operator
 from collections.abc import Callable
 from datetime import UTC, datetime
 
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 
 class FlextPluginHandlers:
@@ -38,16 +38,16 @@ class FlextPluginHandlers:
 
     def __init__(self) -> None:
         """Initialize the plugin handlers."""
-        self.logger = FlextCore.Logger(__name__)
+        self.logger = FlextLogger(__name__)
         self._handlers: dict[str, list[Callable[..., object]]] = {}
-        self._event_history: list[FlextCore.Types.Dict] = []
+        self._event_history: list[FlextTypes.Dict] = []
 
     def register_handler(
         self,
         event_type: str,
         handler: Callable[..., object],
         priority: int = 0,
-    ) -> FlextCore.Result[bool]:
+    ) -> FlextResult[bool]:
         """Register an event handler for a specific event type.
 
         Args:
@@ -56,7 +56,7 @@ class FlextPluginHandlers:
             priority: Handler priority (higher numbers execute first)
 
         Returns:
-            FlextCore.Result indicating success or failure
+            FlextResult indicating success or failure
 
         """
         try:
@@ -76,17 +76,17 @@ class FlextPluginHandlers:
             )
 
             self.logger.debug(f"Registered handler for event type: {event_type}")
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to register handler for {event_type}")
-            return FlextCore.Result.fail(f"Handler registration error: {e!s}")
+            return FlextResult.fail(f"Handler registration error: {e!s}")
 
     def unregister_handler(
         self,
         event_type: str,
         handler: Callable[..., object],
-    ) -> FlextCore.Result[bool]:
+    ) -> FlextResult[bool]:
         """Unregister an event handler.
 
         Args:
@@ -94,12 +94,12 @@ class FlextPluginHandlers:
             handler: Handler function to unregister
 
         Returns:
-            FlextCore.Result indicating success or failure
+            FlextResult indicating success or failure
 
         """
         try:
             if event_type not in self._handlers:
-                return FlextCore.Result.fail(
+                return FlextResult.fail(
                     f"No handlers registered for event type: {event_type}"
                 )
 
@@ -110,22 +110,22 @@ class FlextPluginHandlers:
             ]
 
             if len(self._handlers[event_type]) == original_count:
-                return FlextCore.Result.fail(
+                return FlextResult.fail(
                     f"Handler not found for event type: {event_type}"
                 )
 
             self.logger.debug(f"Unregistered handler for event type: {event_type}")
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to unregister handler for {event_type}")
-            return FlextCore.Result.fail(f"Handler unregistration error: {e!s}")
+            return FlextResult.fail(f"Handler unregistration error: {e!s}")
 
     async def trigger_event(
         self,
         event_type: str,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Result[FlextCore.Types.List]:
+        event_data: FlextTypes.Dict,
+    ) -> FlextResult[FlextTypes.List]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -133,7 +133,7 @@ class FlextPluginHandlers:
             event_data: Data to pass to handlers
 
         Returns:
-            FlextCore.Result containing list of handler results
+            FlextResult containing list of handler results
 
         """
         try:
@@ -149,7 +149,7 @@ class FlextPluginHandlers:
                 self.logger.debug(
                     f"No handlers registered for event type: {event_type}"
                 )
-                return FlextCore.Result.ok([])
+                return FlextResult.ok([])
 
             # Execute handlers
             results = []
@@ -165,16 +165,16 @@ class FlextPluginHandlers:
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers"
             )
-            return FlextCore.Result.ok(results)
+            return FlextResult.ok(results)
 
         except Exception as e:
             self.logger.exception(f"Failed to trigger event {event_type}")
-            return FlextCore.Result.fail(f"Event triggering error: {e!s}")
+            return FlextResult.fail(f"Event triggering error: {e!s}")
 
     async def _execute_handler(
         self,
         handler: Callable[..., object],
-        event_data: FlextCore.Types.Dict,
+        event_data: FlextTypes.Dict,
     ) -> object:
         """Execute a single handler with proper error handling.
 
@@ -220,7 +220,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[FlextCore.Types.Dict]:
+    ) -> list[FlextTypes.Dict]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -277,8 +277,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        event_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Handle plugin discovered event.
 
         Args:
@@ -294,8 +294,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        event_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Handle plugin loaded event.
 
         Args:
@@ -311,8 +311,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        event_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Handle plugin executed event.
 
         Args:
@@ -338,8 +338,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        event_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Handle plugin error event.
 
         Args:
@@ -361,8 +361,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        event_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Handle plugin unloaded event.
 
         Args:
@@ -376,11 +376,11 @@ class FlextPluginHandlers:
         self.logger.info(f"Plugin unloaded: {plugin_name}")
         return {"success": True, "plugin_name": plugin_name}
 
-    def register_default_handlers(self) -> FlextCore.Result[bool]:
+    def register_default_handlers(self) -> FlextResult[bool]:
         """Register default event handlers for common plugin operations.
 
         Returns:
-            FlextCore.Result indicating success or failure
+            FlextResult indicating success or failure
 
         """
         try:
@@ -396,18 +396,16 @@ class FlextPluginHandlers:
             for event_type, handler in handlers_to_register:
                 result = self.register_handler(event_type, handler)
                 if result.is_failure:
-                    return FlextCore.Result.fail(
-                        f"Failed to register {event_type} handler"
-                    )
+                    return FlextResult.fail(f"Failed to register {event_type} handler")
 
             self.logger.info("Registered default event handlers")
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to register default handlers")
-            return FlextCore.Result.fail(f"Default handler registration error: {e!s}")
+            return FlextResult.fail(f"Default handler registration error: {e!s}")
 
-    def get_handler_status(self) -> FlextCore.Types.Dict:
+    def get_handler_status(self) -> FlextTypes.Dict:
         """Get the current status of the event handlers.
 
         Returns:

@@ -7,22 +7,22 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextService
 
 
 class TestDomainServiceExceptionCoverage:
-    """Targeted tests for FlextCore.Service exception handling coverage."""
+    """Targeted tests for FlextService exception handling coverage."""
 
     def test_is_valid_exception_handling_comprehensive(self) -> None:
         """Test is_valid method exception handling - covers lines 50-52."""
 
-        class ExceptionThrowingService(FlextCore.Service[str]):
+        class ExceptionThrowingService(FlextService[str]):
             """Service that throws exceptions in validate_business_rules."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 # This will raise an exception during is_valid check
                 msg = "Business rules validation failed unexpectedly"
                 raise RuntimeError(msg)
@@ -36,13 +36,13 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_various_error_types(self) -> None:
         """Test is_valid method handles different exception types."""
 
-        class ValueErrorService(FlextCore.Service[str]):
+        class ValueErrorService(FlextService[str]):
             """Service that throws ValueError in validate_business_rules."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "Invalid business rule configuration"
                 raise ValueError(msg)
 
@@ -50,13 +50,13 @@ class TestDomainServiceExceptionCoverage:
         result = service.is_valid()
         assert result is False
 
-        class TypeErrorService(FlextCore.Service[str]):
+        class TypeErrorService(FlextService[str]):
             """Service that throws TypeError in validate_business_rules."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "Type mismatch in business rules"
                 raise TypeError(msg)
 
@@ -67,16 +67,16 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_nested_method_calls(self) -> None:
         """Test is_valid exception handling with nested method failures."""
 
-        class NestedFailureService(FlextCore.Service[str]):
+        class NestedFailureService(FlextService[str]):
             """Service with nested failures in validate_business_rules."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 # Simulate a nested call that fails
                 self._nested_validation()
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
 
             def _nested_validation(self) -> None:
                 """Helper method that raises an exception."""
@@ -90,16 +90,16 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_pydantic_validation_errors(self) -> None:
         """Test is_valid handles Pydantic validation errors in business rules."""
 
-        class PydanticErrorService(FlextCore.Service[str]):
+        class PydanticErrorService(FlextService[str]):
             """Service that causes Pydantic errors in validate_business_rules."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 # Try to access a field that doesn't exist or cause Pydantic error
                 _ = self.nonexistent_field
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
 
         service = PydanticErrorService()
         result = service.is_valid()
@@ -108,13 +108,13 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_system_errors(self) -> None:
         """Test is_valid handles system-level exceptions."""
 
-        class SystemErrorService(FlextCore.Service[str]):
+        class SystemErrorService(FlextService[str]):
             """Service that throws system-level errors."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "System-level error during validation"
                 raise OSError(msg)
 
@@ -125,15 +125,15 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_with_mock_patch(self) -> None:
         """Test is_valid exception handling using mock to force exceptions."""
 
-        class MockableService(FlextCore.Service[str]):
+        class MockableService(FlextService[str]):
             """Service that simulates exception during validation."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 # This method will be replaced with mock that raises exception
-                return FlextCore.Result[None].ok(None)
+                return FlextResult[None].ok(None)
 
         # Create service but don't call methods yet - work around frozen constraint
         _service = MockableService()
@@ -142,7 +142,7 @@ class TestDomainServiceExceptionCoverage:
         # by creating a temporary method that raises
         error_message = "Mocked exception"
 
-        def mock_validate_that_raises() -> FlextCore.Result[None]:
+        def mock_validate_that_raises() -> FlextResult[None]:
             raise RuntimeError(error_message)
 
         # Temporarily replace the method to test exception handling
@@ -160,13 +160,13 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_handling_memory_error(self) -> None:
         """Test is_valid handles memory-related errors."""
 
-        class MemoryErrorService(FlextCore.Service[str]):
+        class MemoryErrorService(FlextService[str]):
             """Service that simulates memory errors."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "Out of memory during validation"
                 raise MemoryError(msg)
 
@@ -177,14 +177,14 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_success_path_still_works(self) -> None:
         """Verify is_valid success path still works after exception testing."""
 
-        class SuccessfulService(FlextCore.Service[str]):
+        class SuccessfulService(FlextService[str]):
             """Service with successful validation."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("success")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("success")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
-                return FlextCore.Result[None].ok(None)
+            def validate_business_rules(self) -> FlextResult[None]:
+                return FlextResult[None].ok(None)
 
         service = SuccessfulService()
         result = service.is_valid()
@@ -194,27 +194,27 @@ class TestDomainServiceExceptionCoverage:
         """Test difference between business rule failure and exception."""
 
         # Business rule failure (returns False from result)
-        class BusinessFailureService(FlextCore.Service[str]):
+        class BusinessFailureService(FlextService[str]):
             """Service with business rule failure."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
-                return FlextCore.Result[None].fail("Business rule failed")
+            def validate_business_rules(self) -> FlextResult[None]:
+                return FlextResult[None].fail("Business rule failed")
 
         business_service = BusinessFailureService()
         result = business_service.is_valid()
         assert result is False
 
         # Exception during validation (caught by exception handler)
-        class ExceptionService(FlextCore.Service[str]):
+        class ExceptionService(FlextService[str]):
             """Service with exception during validation."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "Validation threw exception"
                 raise ValueError(msg)
 
@@ -225,13 +225,13 @@ class TestDomainServiceExceptionCoverage:
     def test_is_valid_exception_coverage_with_keyboard_interrupt(self) -> None:
         """Test is_valid handles KeyboardInterrupt gracefully."""
 
-        class KeyboardInterruptService(FlextCore.Service[str]):
+        class KeyboardInterruptService(FlextService[str]):
             """Service that simulates KeyboardInterrupt."""
 
-            def execute(self) -> FlextCore.Result[str]:
-                return FlextCore.Result[str].ok("test")
+            def execute(self) -> FlextResult[str]:
+                return FlextResult[str].ok("test")
 
-            def validate_business_rules(self) -> FlextCore.Result[None]:
+            def validate_business_rules(self) -> FlextResult[None]:
                 msg = "User interrupted validation"
                 raise KeyboardInterrupt(msg)
 

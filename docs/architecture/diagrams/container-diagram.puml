@@ -19,7 +19,7 @@ System_Boundary(flext_plugin_system, "FLEXT Plugin System") {
     Container(monitoring_service, "Monitoring Service", "Python Service", "Plugin metrics collection, health monitoring, performance tracking")
 }
 
-System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: FlextCore.Result[T], FlextCore.Container, FlextCore.Models, FlextCore.Logger")
+System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: FlextResult[T], FlextContainer, FlextModels, FlextLogger")
 System_Ext(flext_observability, "FLEXT Observability", "Python Library", "Metrics collection, distributed tracing, health checks")
 
 System_Ext(pypi, "PyPI", "Package Repository", "Plugin package distribution and dependency management")

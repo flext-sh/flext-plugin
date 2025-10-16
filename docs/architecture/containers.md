@@ -38,7 +38,7 @@ System_Boundary(flext_plugin_system, "FLEXT Plugin System") {
     ContainerDb(plugin_cache, "Plugin Cache", "File System", "Compiled plugins and execution artifacts")
 }
 
-System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: FlextCore.Result, FlextCore.Container, FlextCore.Models")
+System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: FlextResult, FlextContainer, FlextModels")
 System_Ext(flext_observability, "FLEXT Observability", "Python Library", "Metrics, tracing, health checks")
 
 System_Ext(pypi, "PyPI", "Package Repository", "Plugin package distribution")
@@ -55,7 +55,7 @@ Rel(developer, flext_plugin_core, "Imports and uses", "Python API")
 Rel(operator, flext_plugin_cli, "Manages plugins via", "CLI commands")
 Rel(operator, flext_plugin_api, "Manages plugins via", "REST API (planned)")
 
-Rel(flext_plugin_core, flext_core, "Depends on", "FlextCore.Result[T], FlextCore.Container")
+Rel(flext_plugin_core, flext_core, "Depends on", "FlextResult[T], FlextContainer")
 Rel(flext_plugin_core, flext_observability, "Integrates with", "metrics, tracing")
 
 Rel(flext_plugin_cli, flext_plugin_core, "Uses", "Core plugin APIs")
