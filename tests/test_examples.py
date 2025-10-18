@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextTypes, FlextUtilities
+from flext_core import FlextUtilities
 
 from flext_plugin import (
     PluginStatus,
@@ -41,7 +41,7 @@ create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
 def _run(
-    cmd_list: FlextTypes.StringList,
+    cmd_list: list[str],
     cwd: str | None = None,
 ) -> tuple[int, str, str]:
     """Run a command and return (return_code, stdout, stderr)."""
@@ -232,12 +232,12 @@ def test_plugin_configuration_example_functionality() -> None:
     # Verify standalone configuration
     assert standalone_config.plugin_name == "test-api-gateway"
     routes = cast(
-        "FlextTypes.Dict",
+        "dict[str, object]",
         standalone_config.config_data.get("routes", {}),
     )
     assert len(routes) == 2
     middleware = cast(
-        "FlextTypes.StringList",
+        "list[str]",
         standalone_config.config_data.get("middleware", []),
     )
     assert "cors" in middleware

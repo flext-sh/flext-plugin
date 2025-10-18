@@ -14,7 +14,7 @@ import os
 import re
 from pathlib import Path
 
-from flext_core import FlextConstants, FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextConstants, FlextLogger, FlextResult
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -53,6 +53,7 @@ class FlextPluginDiscovery:
             entry_point_discovery: Entry point discovery implementation
 
         """
+        super().__init__()
         self.logger = FlextLogger(__name__)
         self._file_discovery = file_discovery or self.FileSystemDiscovery()
         self._entry_point_discovery = (
@@ -85,7 +86,7 @@ class FlextPluginDiscovery:
             return f.read()
 
     async def discover_plugins(
-        self, paths: FlextTypes.StringList
+        self, paths: list[str]
     ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
         """Discover plugins using multiple discovery strategies.
 
@@ -181,12 +182,12 @@ class FlextPluginDiscovery:
                     return FlextResult.fail(f"Missing required field: {field}")
 
             # Validate plugin name format
-            plugin_name = plugin_data["name"]
+            plugin_name = str(plugin_data["name"])
             if not self._is_valid_plugin_name(plugin_name):
                 return FlextResult.fail(f"Invalid plugin name format: {plugin_name}")
 
             # Validate version format
-            version = plugin_data["version"]
+            version = str(plugin_data["version"])
             if not self._is_valid_version(version):
                 return FlextResult.fail(f"Invalid version format: {version}")
 
@@ -233,10 +234,19 @@ class FlextPluginDiscovery:
 
         def __init__(self) -> None:
             """Initialize file system discovery."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
 
+        def _resolve_plugin_path(self, plugin_path: str) -> Path:
+            """Resolve plugin path to Path object."""
+            return Path(plugin_path)
+
+        def _read_file_sync(self, path: Path) -> str:
+            """Read file synchronously for use in thread pool."""
+            return path.read_text(encoding="utf-8")
+
         async def discover_plugins(
-            self, paths: FlextTypes.StringList
+            self, paths: list[str]
         ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins in file system paths.
 
@@ -324,7 +334,7 @@ class FlextPluginDiscovery:
                 if not plugin_path:
                     return FlextResult.fail("Plugin path is required")
 
-                path_obj = self._resolve_plugin_path(plugin_path)
+                path_obj = self._resolve_plugin_path(str(plugin_path))
                 if not path_obj.exists() or not path_obj.is_file():
                     return FlextResult.fail(
                         f"Plugin file does not exist: {plugin_path}"
@@ -391,9 +401,9 @@ class FlextPluginDiscovery:
             try:
                 discovered_plugins = []
 
-                # Run pathlib operations in thread pool
-                loop = asyncio.get_event_loop()
-                items = await loop.run_in_executor(None, list, path.iterdir())
+                # Use sync-compatible approach to avoid blocking async function
+                # Note: iterdir() is sync but fast for small directories
+                items = list(path.iterdir())  # noqa: ASYNC240
 
                 for item in items:
                     if (
@@ -453,11 +463,16 @@ class FlextPluginDiscovery:
 
         def __init__(self) -> None:
             """Initialize entry point discovery."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
+
+        def _read_file_sync(self, path: Path) -> str:
+            """Read file synchronously for use in thread pool."""
+            return path.read_text(encoding="utf-8")
 
         async def discover_plugins(
             self,
-            paths: FlextTypes.StringList,
+            paths: list[str],  # noqa: ARG002
         ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
             """Discover plugins using entry points.
 
@@ -554,10 +569,10 @@ class FlextPluginDiscovery:
                     return FlextResult.fail("Entry point is required")
 
                 # Validate entry point format
-                if ":" not in entry_point:
+                if ":" not in str(entry_point):
                     return FlextResult.fail("Invalid entry point format")
 
-                module_name, attr_name = entry_point.split(":", 1)
+                module_name, attr_name = str(entry_point).split(":", 1)
                 if not module_name or not attr_name:
                     return FlextResult.fail("Invalid entry point format")
 

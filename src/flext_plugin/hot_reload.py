@@ -13,7 +13,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 
 class FlextPluginHotReload:
@@ -53,6 +53,7 @@ class FlextPluginHotReload:
             max_retries: Maximum retry attempts for failed reloads
 
         """
+        super().__init__()
         self.logger = FlextLogger(__name__)
         self.watch_interval = watch_interval
         self.debounce_ms = debounce_ms
@@ -63,8 +64,8 @@ class FlextPluginHotReload:
         self._watched_paths: set[Path] = set()
         self._file_timestamps: dict[Path, float] = {}
         self._reload_callbacks: list[Callable[[str], object]] = []
-        self._watch_task: asyncio.Task | None = None
-        self._reload_history: list[FlextTypes.Dict] = []
+        self._watch_task: asyncio.Task[None] | None = None
+        self._reload_history: list[dict[str, object]] = []
 
     def _resolve_watch_path(self, path_str: str) -> Path:
         """Resolve and validate a watch path synchronously.
@@ -78,7 +79,7 @@ class FlextPluginHotReload:
         """
         return Path(path_str).expanduser().resolve()
 
-    async def start_watching(self, paths: FlextTypes.StringList) -> FlextResult[bool]:
+    async def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
 
         Args:
@@ -210,7 +211,7 @@ class FlextPluginHotReload:
         """
         return self._is_watching
 
-    def get_watched_paths(self) -> FlextTypes.StringList:
+    def get_watched_paths(self) -> list[str]:
         """Get list of currently watched paths.
 
         Returns:
@@ -244,7 +245,7 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def get_reload_history(self, limit: int = 100) -> list[FlextTypes.Dict]:
+    def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:
         """Get reload history.
 
         Args:
@@ -353,7 +354,7 @@ class FlextPluginHotReload:
 
             current_mtime = await loop.run_in_executor(
                 None,
-                lambda: file_path.stat().st_mtime,
+                lambda: file_path.stat().st_mtime,  # noqa: ASYNC240
             )
             if self._file_timestamps.get(file_path, 0) >= current_mtime:
                 return
@@ -379,7 +380,7 @@ class FlextPluginHotReload:
         """
         return datetime.now(UTC).isoformat()
 
-    def get_hot_reload_status(self) -> FlextTypes.Dict:
+    def get_hot_reload_status(self) -> dict[str, object]:
         """Get the current status of the hot reload service.
 
         Returns:
@@ -445,7 +446,7 @@ class FlextPluginHotReload:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(path).expanduser().resolve(),
+                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
             )
             path_exists = await loop.run_in_executor(None, path_obj.exists)
 
@@ -475,7 +476,7 @@ class FlextPluginHotReload:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(path).expanduser().resolve(),
+                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
             )
 
             if path_obj in self._watched_paths:

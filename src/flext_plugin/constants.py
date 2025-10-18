@@ -1,4 +1,4 @@
-"""FLEXT Plugin Constants - Plugin system constants.
+"""FLEXT Plugin Constants - Advanced constant definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -7,89 +7,58 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar, Final, Literal
+from typing import Final, Literal
 
-from flext_core import FlextConstants, FlextTypes
+from flext_core import FlextConstants
 
 
 class FlextPluginConstants(FlextConstants):
-    """Plugin system-specific constants extending FlextConstants with domain functionality.
+    """Advanced plugin constants with Python 3.13+ patterns."""
 
-    Extends FlextConstants to inherit universal constants while adding plugin-specific
-    constants using nested namespace classes. Maintains full inheritance hierarchy.
-
-    Usage:
-        ```python
-        from flext_plugin import FlextPluginConstants
-
-        # Inherited from FlextConstants
-        timeout = FlextPluginConstants.Defaults.TIMEOUT
-
-        # Plugin-specific constants
-        plugin_timeout = FlextPluginConstants.Discovery.DEFAULT_TIMEOUT_SECONDS
-        plugin_type = FlextPluginConstants.Types.TAP
-        error_msg = FlextPluginConstants.PluginMessages.PLUGIN_NOT_FOUND
-        security_level = FlextPluginConstants.PluginSecurity.DEFAULT_SECURITY_LEVEL
-        success_rate = FlextPluginConstants.PluginPerformance.EXCELLENT_SUCCESS_RATE
-        ```
-    """
-
+    # Discovery constants
     class Discovery:
-        """Plugin discovery and loading configuration."""
-
-        # Use FlextConstants for common timeouts where applicable
         DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
         DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
-
-        # Plugin-specific discovery paths
-        DEFAULT_PLUGIN_PATHS: ClassVar[FlextTypes.StringList] = [
+        DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
             "/opt/flext/plugins",
             "~/.flext/plugins",
             "./plugins",
         ]
-
-        # Discovery validation
         MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
         MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
         VALID_PLUGIN_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-
-        # Discovery methods
         METHOD_FILE_SYSTEM: Final[str] = "file_system"
         METHOD_ENTRY_POINTS: Final[str] = "entry_points"
         METHOD_PACKAGE_SCAN: Final[str] = "package_scan"
 
+    # Plugin types with frozensets
     class Types:
-        """Plugin type categorization constants."""
-
-        SINGER_PLUGIN_TYPES: ClassVar[Final[set[str]]] = {"TAP", "TARGET", "TRANSFORM"}
-        ARCHITECTURE_PLUGIN_TYPES: ClassVar[Final[set[str]]] = {
+        SINGER_PLUGIN_TYPES: Final = frozenset({"TAP", "TARGET", "TRANSFORM"})
+        ARCHITECTURE_PLUGIN_TYPES: Final = frozenset({
             "EXTENSION",
             "SERVICE",
             "MIDDLEWARE",
             "TRANSFORMER",
-        }
-        INTEGRATION_PLUGIN_TYPES: ClassVar[Final[set[str]]] = {
+        })
+        INTEGRATION_PLUGIN_TYPES: Final = frozenset({
             "API",
             "DATABASE",
             "NOTIFICATION",
             "AUTHENTICATION",
-        }
-        UTILITY_PLUGIN_TYPES: ClassVar[Final[set[str]]] = {
+        })
+        UTILITY_PLUGIN_TYPES: Final = frozenset({
             "UTILITY",
             "TOOL",
             "HANDLER",
             "PROCESSOR",
-        }
-
-        # All valid plugin types combined
-        ALL_PLUGIN_TYPES: ClassVar[Final[set[str]]] = (
+        })
+        ALL_PLUGIN_TYPES: Final = (
             SINGER_PLUGIN_TYPES
             | ARCHITECTURE_PLUGIN_TYPES
             | INTEGRATION_PLUGIN_TYPES
             | UTILITY_PLUGIN_TYPES
         )
 
-        # Literal types for plugin types
         PluginTypeLiteral = Literal[
             "tap",
             "target",
@@ -113,7 +82,7 @@ class FlextPluginConstants(FlextConstants):
             "language",
         ]
 
-        # Type values
+        # Type values as constants
         TYPE_TAP: Final[str] = "tap"
         TYPE_TARGET: Final[str] = "target"
         TYPE_TRANSFORM: Final[str] = "transform"
@@ -135,10 +104,9 @@ class FlextPluginConstants(FlextConstants):
         TYPE_THEME: Final[str] = "theme"
         TYPE_LANGUAGE: Final[str] = "language"
 
+    # Lifecycle constants
     class Lifecycle:
-        """Plugin lifecycle states and management."""
-
-        PLUGIN_LIFECYCLE_STATES: Final[set[str]] = {
+        PLUGIN_LIFECYCLE_STATES: Final[set[str]] = frozenset({
             "UNKNOWN",
             "DISCOVERED",
             "LOADED",
@@ -149,9 +117,8 @@ class FlextPluginConstants(FlextConstants):
             "DISABLED",
             "HEALTHY",
             "UNHEALTHY",
-        }
+        })
 
-        # Literal types for plugin status
         PluginStatusLiteral = Literal[
             "unknown",
             "discovered",
@@ -165,12 +132,10 @@ class FlextPluginConstants(FlextConstants):
             "unhealthy",
         ]
 
-        # Use FlextConstants for worker configuration
-        MAX_PLUGIN_WORKERS: Final[int] = FlextConstants.Container.MAX_WORKERS
-        MIN_PLUGIN_WORKERS: Final[int] = FlextConstants.Container.MIN_WORKERS
-        DEFAULT_WORKERS: Final[int] = FlextConstants.Container.DEFAULT_WORKERS
+        MAX_PLUGIN_WORKERS: Final[int] = 10
+        MIN_PLUGIN_WORKERS: Final[int] = 1
+        DEFAULT_WORKERS: Final[int] = 4
 
-        # Status values
         STATUS_UNKNOWN: Final[str] = "unknown"
         STATUS_DISCOVERED: Final[str] = "discovered"
         STATUS_LOADED: Final[str] = "loaded"
@@ -182,196 +147,124 @@ class FlextPluginConstants(FlextConstants):
         STATUS_HEALTHY: Final[str] = "healthy"
         STATUS_UNHEALTHY: Final[str] = "unhealthy"
 
+    # Security constants
     class PluginSecurity:
-        """Plugin security and validation constants."""
-
-        SECURITY_LEVELS: Final[FlextTypes.StringList] = [
-            "LOW",
-            "MEDIUM",
-            "HIGH",
-            "CRITICAL",
-        ]
+        SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
-
-        # Literal types for security levels
         SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
 
-        # Security levels
         SECURITY_LOW: Final[str] = "low"
         SECURITY_MEDIUM: Final[str] = "medium"
         SECURITY_HIGH: Final[str] = "high"
         SECURITY_CRITICAL: Final[str] = "critical"
 
-        # Permissions
         PERMISSION_NETWORK: Final[str] = "network"
         PERMISSION_FILESYSTEM: Final[str] = "filesystem"
         PERMISSION_DATABASE: Final[str] = "database"
         PERMISSION_EXTERNAL_API: Final[str] = "external_api"
 
-        # Use FlextConstants for security-related timeouts
         SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
-
-        # Allowed and blocked imports
-        DEFAULT_ALLOWED_IMPORTS: Final[FlextTypes.StringList] = [
-            "flext_core",
-            "flext_plugin",
-        ]
-        DEFAULT_BLOCKED_IMPORTS: Final[FlextTypes.StringList] = [
+        DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
+        DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
             "os",
             "sys",
             "subprocess",
             "importlib",
         ]
 
+    # Performance constants
     class PluginPerformance:
-        """Plugin performance and resource limits."""
-
-        # Percentage constants
         PERCENTAGE_MAX: Final[int] = 100
         PERCENTAGE_MIN: Final[int] = 0
-
-        # Success rate thresholds
         EXCELLENT_SUCCESS_RATE: Final[float] = 95.0
         GOOD_SUCCESS_RATE: Final[float] = 90.0
         FAIR_SUCCESS_RATE: Final[float] = 80.0
-
-        # Time thresholds in milliseconds
         EXCELLENT_TIME_MS: Final[int] = 1000
         GOOD_TIME_MS: Final[int] = 2000
         FAIR_TIME_MS: Final[int] = 5000
-
-        # Execution time conversion
         EXECUTION_TIME_SCALE_MS_TO_S: Final[int] = 1000
-
-        # Production ready limits
         READY_TIMEOUT_SECONDS: Final[int] = 300
         READY_MAX_MEMORY_MB: Final[int] = 1024
-
-        # Concurrent loading thresholds
         MAX_CONCURRENT_LOADS_WARNING_THRESHOLD: Final[int] = 20
-
-        # Memory limits
         MINIMUM_MEMORY_LIMIT_MB: Final[int] = 64
-
-        # Execution timeouts
-        MAXIMUM_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600  # 1 hour
-
-        # Default performance values
-        DEFAULT_MAX_CPU_PERCENT: Final[int] = 50  # Alias for compatibility
+        MAXIMUM_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600
+        DEFAULT_MAX_CPU_PERCENT: Final[int] = 50
         DEFAULT_MAX_CONCURRENT_PLUGINS: Final[int] = 10
 
+    # Execution constants
     class Execution:
-        """Plugin execution and runtime constants."""
-
-        # Execution states
         STATE_PENDING: Final[str] = "pending"
         STATE_RUNNING: Final[str] = "running"
         STATE_COMPLETED: Final[str] = "completed"
         STATE_FAILED: Final[str] = "failed"
         STATE_CANCELLED: Final[str] = "cancelled"
 
+    # Registry constants
     class Registry:
-        """Plugin registry and management constants."""
-
-        # Registry types
         TYPE_LOCAL: Final[str] = "local"
         TYPE_REMOTE: Final[str] = "remote"
         TYPE_HYBRID: Final[str] = "hybrid"
-
-        # Default registry settings
         DEFAULT_SYNC_INTERVAL: Final[int] = 3600
 
+    # Hot reload constants
     class HotReload:
-        """Hot reload configuration constants."""
-
         DEFAULT_INTERVAL_SECONDS: Final[int] = 2
         DEBOUNCE_MS: Final[int] = 500
         MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
-
-        # Watch events
         EVENT_CREATED: Final[str] = "created"
         EVENT_MODIFIED: Final[str] = "modified"
         EVENT_DELETED: Final[str] = "deleted"
         EVENT_MOVED: Final[str] = "moved"
 
+    # Monitoring constants
     class Monitoring:
-        """Plugin monitoring and observability constants."""
-
-        # Log levels
-        LOG_LEVELS: Final[FlextTypes.StringList] = [
-            "DEBUG",
-            "INFO",
-            "WARNING",
-            "ERROR",
-            "CRITICAL",
-        ]
+        LOG_LEVELS: Final[list[str]] = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-
-        # Literal types for log levels
         LogLevelLiteral = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
-        # Default monitoring settings
         DEFAULT_RETENTION_DAYS: Final[int] = 30
         MIN_RETENTION_DAYS: Final[int] = 1
         MAX_RETENTION_DAYS: Final[int] = 365
-
-        # Default alert thresholds
         DEFAULT_CPU_THRESHOLD: Final[float] = 80.0
         DEFAULT_MEMORY_THRESHOLD: Final[float] = 85.0
         DEFAULT_ERROR_RATE_THRESHOLD: Final[float] = 5.0
         DEFAULT_RESPONSE_TIME_THRESHOLD: Final[float] = 5000.0
 
+    # Files constants
     class Files:
-        """Plugin file extension and directory constants."""
-
-        # Plugin file extensions
         PYTHON_EXTENSION: Final[str] = FlextConstants.Platform.EXT_PYTHON
         YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_YAML
         JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_JSON
         TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_TOML
-
-        # Directory structure
         DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
         DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
         DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
 
+    # Validation constants
     class PluginValidation:
-        """Plugin validation patterns and rules."""
-
-        # Regex patterns
         PLUGIN_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
         VERSION_PATTERN: Final[str] = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
         SECURITY_LEVEL_PATTERN: Final[str] = r"^(low|medium|high|critical)$"
         LOG_LEVEL_PATTERN: Final[str] = r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
-
-        # Validation limits
         MAX_DEPENDENCIES: Final[int] = 50
         MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
         MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
         MAX_DESCRIPTION_LENGTH: Final[int] = 1000
         MAX_AUTHOR_LENGTH: Final[int] = 200
-
-        # Priority limits
         MIN_PRIORITY: Final[int] = 0
         MAX_PRIORITY: Final[int] = 100
 
+    # Message constants
     class PluginMessages:
-        """Plugin-specific error and status messages."""
-
         PLUGIN_NOT_FOUND: Final[str] = "Plugin '{plugin_name}' not found"
         PLUGIN_ALREADY_EXISTS: Final[str] = "Plugin '{plugin_name}' already exists"
         PLUGIN_LOAD_FAILED: Final[str] = (
             "Failed to load plugin '{plugin_name}': {error}"
         )
         PLUGIN_INVALID_NAME: Final[str] = "Invalid plugin name '{plugin_name}'"
-
-        # Success messages
         PLUGIN_LOADED_SUCCESS: Final[str] = "Plugin '{plugin_name}' loaded successfully"
         PLUGIN_ACTIVATED_SUCCESS: Final[str] = (
             "Plugin '{plugin_name}' activated successfully"
         )
-
-        # Validation messages
         TOO_MANY_DEPENDENCIES: Final[str] = "Too many dependencies (max 50)"
         INVALID_DEPENDENCY_FORMAT: Final[str] = "Invalid dependency name format: {dep}"
         PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED: Final[str] = (

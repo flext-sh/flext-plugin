@@ -13,7 +13,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 from flext_plugin.types import FlextPluginTypes
 
@@ -42,7 +42,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: FlextTypes.Dict = {}
+        self._loaded_plugins: dict[str, object] = {}
         self._plugin_metadata: dict[str, FlextPluginTypes.Core.PluginDict] = {}
 
     async def load_plugin(
@@ -62,7 +62,7 @@ class FlextPluginLoader:
             loop = asyncio.get_event_loop()
             path_obj = await loop.run_in_executor(
                 None,
-                lambda: Path(plugin_path).expanduser().resolve(),
+                lambda: Path(plugin_path).expanduser().resolve(),  # noqa: ASYNC240
             )
             path_exists = await loop.run_in_executor(None, path_obj.exists)
 
@@ -130,7 +130,7 @@ class FlextPluginLoader:
         """
         return plugin_name in self._loaded_plugins
 
-    def get_loaded_plugins(self) -> FlextTypes.StringList:
+    def get_loaded_plugins(self) -> list[str]:
         """Get list of currently loaded plugin names.
 
         Returns:
@@ -370,7 +370,7 @@ class FlextPluginLoader:
         """
         return datetime.now(UTC).isoformat()
 
-    def get_loader_status(self) -> FlextTypes.Dict:
+    def get_loader_status(self) -> dict[str, object]:
         """Get the current status of the plugin loader.
 
         Returns:
@@ -424,7 +424,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    async def get_plugin_info(self, plugin_name: str) -> FlextResult[FlextTypes.Dict]:
+    async def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:

@@ -21,7 +21,7 @@ class TestFlextPluginTypes:
     def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
-        assert FlextPluginTypes.Core.StringList == FlextTypes.StringList
+        assert FlextPluginTypes.Core.StringList == list[str]
         assert FlextPluginTypes.Core.StringSet == set[str]
         assert FlextPluginTypes.Core.StringDict == dict[str, str]
 
@@ -32,17 +32,17 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.Core.FloatDict == dict[str, float]
 
         # Test mixed collections
-        assert FlextPluginTypes.Core.AnyList == FlextTypes.List
-        assert FlextPluginTypes.Core.AnyDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.AnyList == list[object]
+        assert FlextPluginTypes.Core.AnyDict == dict[str, object]
 
         # Test plugin-specific collections
-        assert FlextPluginTypes.Core.PluginList == list[FlextTypes.Dict]
-        assert FlextPluginTypes.Core.PluginDict == FlextTypes.Dict
-        assert FlextPluginTypes.Core.ConfigDict == FlextTypes.Dict
-        assert FlextPluginTypes.Core.SettingsDict == FlextTypes.Dict
-        assert FlextPluginTypes.Core.MetadataDict == FlextTypes.Dict
-        assert FlextPluginTypes.Core.InputDict == FlextTypes.Dict
-        assert FlextPluginTypes.Core.OutputDict == FlextTypes.Dict
+        assert FlextPluginTypes.Core.PluginList == list[dict[str, object]]
+        assert FlextPluginTypes.Core.PluginDict == dict[str, object]
+        assert FlextPluginTypes.Core.ConfigDict == dict[str, object]
+        assert FlextPluginTypes.Core.SettingsDict == dict[str, object]
+        assert FlextPluginTypes.Core.MetadataDict == dict[str, object]
+        assert FlextPluginTypes.Core.InputDict == dict[str, object]
+        assert FlextPluginTypes.Core.OutputDict == dict[str, object]
 
     def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""
@@ -91,7 +91,7 @@ class TestFlextPluginTypes:
         # Test type aliases
         assert FlextPluginTypes.Security.SecurityLevel is str
         assert FlextPluginTypes.Security.Permission is str
-        assert FlextPluginTypes.Security.SecurityConfig is FlextTypes.Dict
+        assert FlextPluginTypes.Security.SecurityConfig is dict[str, object]
 
         # Test security levels
         assert FlextPluginTypes.Security.SECURITY_LOW == "low"
@@ -108,9 +108,9 @@ class TestFlextPluginTypes:
     def test_performance_types(self) -> None:
         """Test performance type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Performance.Metrics == FlextTypes.Dict
-        assert FlextPluginTypes.Performance.PerformanceData == FlextTypes.Dict
-        assert FlextPluginTypes.Performance.ResourceUsage == FlextTypes.Dict
+        assert FlextPluginTypes.Performance.Metrics == dict[str, object]
+        assert FlextPluginTypes.Performance.PerformanceData == dict[str, object]
+        assert FlextPluginTypes.Performance.ResourceUsage == dict[str, object]
 
         # Test performance thresholds
         assert FlextPluginTypes.Performance.EXCELLENT_SUCCESS_RATE == 95.0
@@ -126,7 +126,7 @@ class TestFlextPluginTypes:
         """Test discovery type definitions."""
         # Test type aliases
         assert FlextPluginTypes.Discovery.DiscoveryPath is str
-        assert FlextPluginTypes.Discovery.DiscoveryResult is FlextTypes.Dict
+        assert FlextPluginTypes.Discovery.DiscoveryResult is dict[str, object]
         assert FlextPluginTypes.Discovery.PluginLoader is object
         assert FlextPluginTypes.Discovery.EntryPoint is str
 
@@ -138,10 +138,10 @@ class TestFlextPluginTypes:
     def test_execution_types(self) -> None:
         """Test execution type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Execution.ExecutionContext == FlextTypes.Dict
-        assert FlextPluginTypes.Execution.ExecutionResult == FlextTypes.Dict
+        assert FlextPluginTypes.Execution.ExecutionContext == dict[str, object]
+        assert FlextPluginTypes.Execution.ExecutionResult == dict[str, object]
         assert FlextPluginTypes.Execution.ExecutionError is str
-        assert FlextPluginTypes.Execution.ResourceLimits == FlextTypes.Dict
+        assert FlextPluginTypes.Execution.ResourceLimits == dict[str, object]
 
         # Test execution states
         assert FlextPluginTypes.Execution.STATE_PENDING == "pending"
@@ -153,9 +153,9 @@ class TestFlextPluginTypes:
     def test_registry_types(self) -> None:
         """Test registry type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Registry.RegistryConfig == FlextTypes.Dict
-        assert FlextPluginTypes.Registry.RegistryEntry == FlextTypes.Dict
-        assert FlextPluginTypes.Registry.RegistrySync == FlextTypes.Dict
+        assert FlextPluginTypes.Registry.RegistryConfig == dict[str, object]
+        assert FlextPluginTypes.Registry.RegistryEntry == dict[str, object]
+        assert FlextPluginTypes.Registry.RegistrySync == dict[str, object]
 
         # Test registry types
         assert FlextPluginTypes.Registry.TYPE_LOCAL == "local"
@@ -165,8 +165,8 @@ class TestFlextPluginTypes:
     def test_hot_reload_types(self) -> None:
         """Test hot reload type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.HotReload.WatchConfig == FlextTypes.Dict
-        assert FlextPluginTypes.HotReload.ReloadEvent == FlextTypes.Dict
+        assert FlextPluginTypes.HotReload.WatchConfig == dict[str, object]
+        assert FlextPluginTypes.HotReload.ReloadEvent == dict[str, object]
         assert FlextPluginTypes.HotReload.FileWatcher is object
 
         # Test watch events

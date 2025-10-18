@@ -7,11 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import operator
 from collections.abc import Callable
 from datetime import UTC, datetime
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 
 class FlextPluginHandlers:
@@ -38,9 +37,10 @@ class FlextPluginHandlers:
 
     def __init__(self) -> None:
         """Initialize the plugin handlers."""
+        super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: dict[str, list[Callable[..., object]]] = {}
-        self._event_history: list[FlextTypes.Dict] = []
+        self._handlers: dict[str, list[dict[str, object]]] = {}
+        self._event_history: list[dict[str, object]] = []
 
     def register_handler(
         self,
@@ -72,7 +72,7 @@ class FlextPluginHandlers:
 
             # Sort by priority (highest first)
             self._handlers[event_type].sort(
-                key=operator.itemgetter("priority"), reverse=True
+                key=lambda x: x.get("priority", 0) or 0, reverse=True
             )
 
             self.logger.debug(f"Registered handler for event type: {event_type}")
@@ -124,8 +124,8 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: FlextTypes.Dict,
-    ) -> FlextResult[FlextTypes.List]:
+        event_data: dict[str, object],
+    ) -> FlextResult[list[object]]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -173,8 +173,8 @@ class FlextPluginHandlers:
 
     async def _execute_handler(
         self,
-        handler: Callable[..., object],
-        event_data: FlextTypes.Dict,
+        handler: object,
+        event_data: dict[str, object],
     ) -> object:
         """Execute a single handler with proper error handling.
 
@@ -187,15 +187,18 @@ class FlextPluginHandlers:
 
         """
         try:
-            # Check if handler is async
-            if self._is_async_function(handler):
+            # Check if handler is async and callable
+            if self._is_async_function(handler) and callable(handler):
                 return await handler(event_data)
-            return handler(event_data)
+            if callable(handler):
+                return handler(event_data)
+            msg = f"Handler is not callable: {type(handler)}"
+            raise TypeError(msg)
         except Exception:
             self.logger.exception("Handler execution failed")
             raise
 
-    def _is_async_function(self, func: Callable[..., object]) -> bool:
+    def _is_async_function(self, func: object) -> bool:
         """Check if a function is async.
 
         Args:
@@ -205,7 +208,10 @@ class FlextPluginHandlers:
             True if function is async, False otherwise
 
         """
-        return hasattr(func, "__code__") and func.__code__.co_flags & 0x80
+        try:
+            return hasattr(func, "__code__") and bool(func.__code__.co_flags & 0x80)
+        except AttributeError:
+            return False
 
     def _get_current_timestamp(self) -> str:
         """Get current timestamp as ISO string.
@@ -220,7 +226,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[FlextTypes.Dict]:
+    ) -> list[dict[str, object]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -277,8 +283,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin discovered event.
 
         Args:
@@ -294,8 +300,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin loaded event.
 
         Args:
@@ -311,8 +317,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin executed event.
 
         Args:
@@ -338,8 +344,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin error event.
 
         Args:
@@ -361,8 +367,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        event_data: dict[str, object],
+    ) -> dict[str, object]:
         """Handle plugin unloaded event.
 
         Args:
@@ -405,7 +411,7 @@ class FlextPluginHandlers:
             self.logger.exception("Failed to register default handlers")
             return FlextResult.fail(f"Default handler registration error: {e!s}")
 
-    def get_handler_status(self) -> FlextTypes.Dict:
+    def get_handler_status(self) -> dict[str, object]:
         """Get the current status of the event handlers.
 
         Returns:

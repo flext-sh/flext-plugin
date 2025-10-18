@@ -18,8 +18,6 @@ from flext_core import FlextResult
 from flext_plugin import (
     Plugin,
     PluginRegistry,
-    create_registry,
-    load_plugin,
 )
 
 
@@ -33,7 +31,7 @@ class TestPlugin:
     @pytest.fixture
     def plugin(self) -> Plugin:
         """Create plugin instance for testing."""
-        return Plugin("test-plugin")
+        return Plugin.create(name="test-plugin", plugin_version="1.0.0")
 
     def test_plugin_initialization(self, plugin: Plugin) -> None:
         """Test plugin initialization with name and default state."""
@@ -45,8 +43,8 @@ class TestPlugin:
         """Test successful plugin activation."""
         result = plugin.activate()
 
-        assert result.success
-        assert result.data is None
+        assert result.is_success
+        assert result.unwrap() is None
         assert plugin.active
         assert result.error is None
 
@@ -62,7 +60,9 @@ class TestPlugin:
                     raise RuntimeError(msg)
                 super().__setattr__(name, value)
 
-        failing_plugin = FailingPlugin("failing-plugin")
+        failing_plugin = FailingPlugin.create(
+            name="failing-plugin", plugin_version="1.0.0"
+        )
         result = failing_plugin.activate()
 
         assert result.is_failure
@@ -77,8 +77,8 @@ class TestPlugin:
 
         result = plugin.deactivate()
 
-        assert result.success
-        assert result.data is None
+        assert result.is_success
+        assert result.unwrap() is None
         assert not plugin.active
         assert result.error is None
 
@@ -100,7 +100,9 @@ class TestPlugin:
                     raise ValueError(msg)
                 super().__setattr__(name, value)
 
-        failing_plugin = FailingDeactivatePlugin("failing-deactivate-plugin")
+        failing_plugin = FailingDeactivatePlugin.create(
+            name="failing-deactivate-plugin", plugin_version="1.0.0"
+        )
 
         result = failing_plugin.deactivate()
 
@@ -116,12 +118,12 @@ class TestPlugin:
 
         # Activate
         activate_result = plugin.activate()
-        assert activate_result.success
+        assert activate_result.is_success
         assert plugin.active
 
         # Deactivate
         deactivate_result = plugin.deactivate()
-        assert deactivate_result.success
+        assert deactivate_result.is_success
         assert not plugin.active
 
     def test_multiple_activations(self, plugin: Plugin) -> None:
@@ -152,7 +154,7 @@ class TestPluginRegistry:
     @pytest.fixture
     def plugin(self) -> Plugin:
         """Create plugin for registry testing."""
-        return Plugin("test-plugin")
+        return Plugin.create(name="test-plugin", plugin_version="1.0.0")
 
     def test_registry_initialization(self, registry: PluginRegistry) -> None:
         """Test registry initialization with empty plugin collection."""
@@ -168,8 +170,8 @@ class TestPluginRegistry:
         """Test successful plugin registration."""
         result = registry.register(plugin)
 
-        assert result.success
-        assert result.data is None
+        assert result.is_success
+        assert result.unwrap() is None
         assert result.error is None
         assert plugin.name in registry.plugins
         assert registry.plugins[plugin.name] is plugin
@@ -192,7 +194,7 @@ class TestPluginRegistry:
                 return FlextResult[None].fail(msg)
 
         registry = FailingRegistry()
-        plugin = Plugin("test-plugin")
+        plugin = Plugin.create(name="test-plugin", plugin_version="1.0.0")
 
         result = registry.register(plugin)
 
@@ -213,8 +215,8 @@ class TestPluginRegistry:
         # Then unregister
         result = registry.unregister(plugin.name)
 
-        assert result.success
-        assert result.data is None
+        assert result.is_success
+        assert result.unwrap() is None
         assert result.error is None
         assert plugin.name not in registry.plugins
         assert plugin.name not in registry.list_plugins()
@@ -224,8 +226,8 @@ class TestPluginRegistry:
         result = registry.unregister("nonexistent-plugin")
 
         # Should succeed (graceful handling)
-        assert result.success
-        assert result.data is None
+        assert result.is_success
+        assert result.unwrap() is None
         assert result.error is None
 
     def test_unregister_plugin_exception_handling(self) -> None:
@@ -243,7 +245,7 @@ class TestPluginRegistry:
                 raise ValueError(msg)
 
         registry = FailingUnregisterRegistry()
-        plugin = Plugin("test-plugin")
+        plugin = Plugin.create(name="test-plugin", plugin_version="1.0.0")
 
         # Add plugin to the dict[str, object] directly
         registry.plugins["test-plugin"] = plugin
@@ -284,9 +286,9 @@ class TestPluginRegistry:
 
     def test_list_multiple_plugins(self, registry: PluginRegistry) -> None:
         """Test listing multiple registered plugins."""
-        plugin1 = Plugin("plugin-1")
-        plugin2 = Plugin("plugin-2")
-        plugin3 = Plugin("plugin-3")
+        plugin1 = Plugin.create(name="plugin-1", plugin_version="1.0.0")
+        plugin2 = Plugin.create(name="plugin-2", plugin_version="1.0.0")
+        plugin3 = Plugin.create(name="plugin-3", plugin_version="1.0.0")
 
         registry.register(plugin1)
         registry.register(plugin2)
@@ -318,7 +320,7 @@ class TestPluginRegistry:
 
         # Unregister one plugin
         unregister_result = registry.unregister("plugin-1")
-        assert unregister_result.success
+        assert unregister_result.is_success
         assert len(registry.list_plugins()) == 1
         assert "plugin-2" in registry.list_plugins()
         assert "plugin-1" not in registry.list_plugins()
@@ -333,7 +335,7 @@ class TestUtilityFunctions:
 
     def test_create_registry(self) -> None:
         """Test create_registry utility function."""
-        registry = create_registry()
+        registry = PluginRegistry.create(name="test-registry")
 
         assert isinstance(registry, PluginRegistry)
         assert isinstance(registry.plugins, dict)
@@ -341,8 +343,8 @@ class TestUtilityFunctions:
 
     def test_create_multiple_registries(self) -> None:
         """Test creating multiple independent registries."""
-        registry1 = create_registry()
-        registry2 = create_registry()
+        registry1 = PluginRegistry.create(name="test-registry")
+        registry2 = PluginRegistry.create(name="test-registry")
 
         assert registry1 is not registry2
         assert registry1.plugins is not registry2.plugins
@@ -377,13 +379,13 @@ class Plugin(Plugin):
             try:
                 result = load_plugin("test_real_plugin", "Plugin")
 
-                assert result.success
-                assert result.data is not None
-                assert isinstance(result.data, Plugin)
-                assert result.data.name == "real-loaded-plugin"
+                assert result.is_success
+                assert result.unwrap() is not None
+                assert isinstance(result.unwrap(), Plugin)
+                assert result.unwrap().name == "real-loaded-plugin"
                 assert result.error is None
-                assert hasattr(result.data, "loaded")
-                assert result.data.loaded is True
+                assert hasattr(result.unwrap(), "loaded")
+                assert result.unwrap().loaded is True
             finally:
                 # Clean up module from cache
                 if "test_real_plugin" in sys.modules:
@@ -419,13 +421,13 @@ class CustomPlugin(Plugin):
             try:
                 result = load_plugin("test_custom_plugin", "CustomPlugin")
 
-                assert result.success
-                assert result.data is not None
-                assert isinstance(result.data, Plugin)
-                assert result.data.name == "custom-named-plugin"
+                assert result.is_success
+                assert result.unwrap() is not None
+                assert isinstance(result.unwrap(), Plugin)
+                assert result.unwrap().name == "custom-named-plugin"
                 assert result.error is None
-                assert hasattr(result.data, "custom_attribute")
-                assert result.data.custom_attribute == "custom_value"
+                assert hasattr(result.unwrap(), "custom_attribute")
+                assert result.unwrap().custom_attribute == "custom_value"
             finally:
                 # Clean up module from cache
                 if "test_custom_plugin" in sys.modules:
@@ -624,16 +626,16 @@ class TestSimplePluginIntegration:
     def test_complete_plugin_workflow(self) -> None:
         """Test complete plugin workflow from creation to cleanup."""
         # Create registry
-        registry = create_registry()
+        registry = PluginRegistry.create(name="test-registry")
 
         # Create and register plugin
         plugin = Plugin("workflow-plugin")
         register_result = registry.register(plugin)
-        assert register_result.success
+        assert register_result.is_success
 
         # Activate plugin
         activate_result = plugin.activate()
-        assert activate_result.success
+        assert activate_result.is_success
         assert plugin.active
 
         # Verify plugin in registry
@@ -648,25 +650,27 @@ class TestSimplePluginIntegration:
 
         # Deactivate plugin
         deactivate_result = plugin.deactivate()
-        assert deactivate_result.success
+        assert deactivate_result.is_success
         assert not plugin.active
 
         # Unregister plugin
         unregister_result = registry.unregister("workflow-plugin")
-        assert unregister_result.success
+        assert unregister_result.is_success
         assert len(registry.list_plugins()) == 0
 
     def test_multiple_plugin_management(self) -> None:
         """Test managing multiple plugins simultaneously."""
-        registry = create_registry()
+        registry = PluginRegistry.create(name="test-registry")
 
         # Create multiple plugins
-        plugins = [Plugin(f"plugin-{i}") for i in range(5)]
+        plugins = [
+            Plugin.create(name=f"plugin-{i}", plugin_version="1.0.0") for i in range(5)
+        ]
 
         # Register all plugins
         for plugin in plugins:
             result = registry.register(plugin)
-            assert result.success
+            assert result.is_success
 
         # Verify all registered
         plugin_names = registry.list_plugins()
@@ -677,7 +681,7 @@ class TestSimplePluginIntegration:
         # Activate some plugins
         for i in [0, 2, 4]:
             result = plugins[i].activate()
-            assert result.success
+            assert result.is_success
             assert plugins[i].active
 
         # Verify inactive plugins remain inactive
@@ -694,11 +698,11 @@ class TestSimplePluginIntegration:
 
     def test_error_resilience_workflow(self) -> None:
         """Test system resilience with various error conditions."""
-        registry = create_registry()
+        registry = PluginRegistry.create(name="test-registry")
 
         # Test unregistering nonexistent plugin
         result = registry.unregister("nonexistent")
-        assert result.success  # Graceful handling
+        assert result.is_success  # Graceful handling
 
         # Test getting nonexistent plugin
         plugin = registry.get("nonexistent")

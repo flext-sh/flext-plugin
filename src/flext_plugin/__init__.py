@@ -40,12 +40,17 @@ from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin.api import FlextPluginApi
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.entities import FlextPluginEntities
 from flext_plugin.handlers import FlextPluginHandlers
 from flext_plugin.hot_reload import FlextPluginHotReload
 from flext_plugin.loader import FlextPluginLoader
-from flext_plugin.models import FlextPluginModels
+
+# Models consolidated into entities for generic design
 from flext_plugin.platform import FlextPluginPlatform
+from flext_plugin.plugin import Plugin, PluginStatus, PluginType
+from flext_plugin.plugin_config import PluginConfig
+from flext_plugin.plugin_execution import PluginExecution
+from flext_plugin.plugin_metadata import PluginMetadata
+from flext_plugin.plugin_registry import PluginRegistry
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.services import FlextPluginService
 from flext_plugin.types import FlextPluginTypes
@@ -65,15 +70,21 @@ __all__ = [
     "FlextPluginConfig",
     # Core classes following [Project][Module] pattern
     "FlextPluginConstants",
-    "FlextPluginEntities",
     "FlextPluginHandlers",
     "FlextPluginHotReload",
     "FlextPluginLoader",
-    "FlextPluginModels",
     "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginService",
     "FlextPluginTypes",
+    # Domain entities
+    "Plugin",
+    "PluginConfig",
+    "PluginExecution",
+    "PluginMetadata",
+    "PluginRegistry",
+    "PluginStatus",
+    "PluginType",
     "__version__",
     "__version_info__",
 ]

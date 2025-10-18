@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -50,6 +50,7 @@ class FlextPluginAdapters:
 
     def __init__(self) -> None:
         """Initialize the plugin adapters."""
+        super().__init__()
         self.logger = FlextLogger(__name__)
         self._discovery_adapter: DiscoveryAdapter | None = None
         self._loader_adapter: LoaderAdapter | None = None
@@ -129,6 +130,7 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the file system discovery adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
 
         def _resolve_plugin_path(self, path: str) -> Path:
@@ -282,9 +284,9 @@ class FlextPluginAdapters:
             try:
                 discovered_plugins = []
 
-                # Run pathlib operations in thread pool
+                # Run pathlib operations in thread pool (safe for async)
                 loop = asyncio.get_event_loop()
-                items = await loop.run_in_executor(None, list, path.iterdir())
+                items = await loop.run_in_executor(None, list, path.iterdir())  # noqa: ASYNC240
 
                 for item in items:
                     if item.is_file() and item.suffix == ".py":
@@ -307,8 +309,9 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the dynamic loader adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
-            self._loaded_plugins: FlextTypes.Dict = {}
+            self._loaded_plugins: dict[str, object] = {}
 
         def _resolve_plugin_path(self, path: str) -> Path:
             """Resolve and validate a plugin path synchronously.
@@ -409,7 +412,7 @@ class FlextPluginAdapters:
             """
             return plugin_name in self._loaded_plugins
 
-        def get_loaded_plugins(self) -> FlextTypes.StringList:
+        def get_loaded_plugins(self) -> list[str]:
             """Get list of currently loaded plugin names.
 
             Returns:
@@ -423,8 +426,9 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin executor adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
-            self._running_executions: FlextTypes.Dict = {}
+            self._running_executions: dict[str, object] = {}
 
         async def execute_plugin(
             self,
@@ -500,7 +504,7 @@ class FlextPluginAdapters:
                 self.logger.exception(f"Failed to get execution status {execution_id}")
                 return FlextResult.fail(f"Status check error: {e!s}")
 
-        def list_running_executions(self) -> FlextTypes.StringList:
+        def list_running_executions(self) -> list[str]:
             """List all currently running execution IDs.
 
             Returns:
@@ -514,6 +518,7 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin security adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
 
         async def validate_plugin(
@@ -548,7 +553,7 @@ class FlextPluginAdapters:
         async def check_permissions(
             self,
             plugin_name: str,
-            permissions: FlextPluginTypes.Core.StringList,
+            permissions: FlextPluginTypes.Core.StringList,  # noqa: ARG002
         ) -> FlextResult[bool]:
             """Check if a plugin has the required permissions.
 
@@ -573,7 +578,7 @@ class FlextPluginAdapters:
 
         async def scan_plugin_security(
             self, plugin_path: str
-        ) -> FlextResult[FlextTypes.Dict]:
+        ) -> FlextResult[dict[str, object]]:
             """Perform security scan on a plugin.
 
             Args:
@@ -593,7 +598,7 @@ class FlextPluginAdapters:
                 }
 
                 self.logger.info(f"Security scan completed for: {plugin_path}")
-                return FlextResult.ok(cast("FlextTypes.Dict", scan_results))
+                return FlextResult.ok(cast("dict[str, object]", scan_results))
 
             except Exception as e:
                 self.logger.exception(f"Security scan failed for {plugin_path}")
@@ -628,6 +633,7 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the memory registry adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
             self._plugins: dict[str, FlextPluginTypes.Core.PluginEntity] = {}
 
@@ -735,8 +741,9 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize the plugin monitoring adapter."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
-            self._monitored_plugins: dict[str, FlextTypes.Dict] = {}
+            self._monitored_plugins: dict[str, dict[str, object]] = {}
 
         async def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
             """Start monitoring a plugin.
@@ -802,7 +809,7 @@ class FlextPluginAdapters:
                     )
 
                 metrics = self._monitored_plugins[plugin_name]["metrics"]
-                return FlextResult.ok(cast("FlextTypes.Dict", metrics))
+                return FlextResult.ok(cast("dict[str, object]", metrics))
 
             except Exception as e:
                 self.logger.exception(f"Failed to get metrics for {plugin_name}")
@@ -810,7 +817,7 @@ class FlextPluginAdapters:
 
         async def get_plugin_health(
             self, plugin_name: str
-        ) -> FlextResult[FlextTypes.Dict]:
+        ) -> FlextResult[dict[str, object]]:
             """Get health status for a plugin.
 
             Args:

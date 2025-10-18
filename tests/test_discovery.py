@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
-from flext_core import FlextTypes
 
 from flext_plugin import PluginDiscovery, PluginType
 
@@ -194,7 +193,7 @@ class TestPluginDiscoveryReal:
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
-            METADATA: ClassVar[FlextTypes.StringDict] = {
+            METADATA: ClassVar[dict[str, str]] = {
                 "name": "valid-plugin",
                 "version": "1.0.0",
             }
@@ -208,7 +207,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.Dict:
+            def execute(self) -> dict[str, object]:
                 return {"status": "success"}
 
         # Register plugin
@@ -234,7 +233,7 @@ class TestPluginDiscoveryReal:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.Dict:
+            def execute(self) -> dict[str, object]:
                 return {"status": "success"}
 
         # Register plugin (should use class name)
@@ -569,7 +568,7 @@ class ExtraPlugin:
 
         # Register manual plugin
         class ManualPlugin:
-            METADATA: ClassVar[FlextTypes.StringDict] = {
+            METADATA: ClassVar[dict[str, str]] = {
                 "name": "manual-plugin",
                 "version": "3.0.0",
             }
@@ -583,7 +582,7 @@ class ExtraPlugin:
             def health_check(self) -> bool:
                 return True
 
-            def execute(self) -> FlextTypes.StringDict:
+            def execute(self) -> dict[str, str]:
                 return {"source": "manual"}
 
         discovery.register_plugin(ManualPlugin)

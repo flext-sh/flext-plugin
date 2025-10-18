@@ -18,19 +18,20 @@ from typing import Protocol, cast
 
 import pytest
 from anyio import Path as AnyioPath
-from flext_core import FlextContainer, FlextExceptions, FlextService, FlextTypes
+from flext_core import FlextContainer, FlextExceptions, FlextService
 
 from flext_plugin import (
-    FlextPluginDiscoveryService,
     FlextPluginEntities,
     FlextPluginService,
-    PluginDiscovery,
-    PluginLoader,
-    PluginType,
-    RealPluginDiscoveryAdapter,
-    RealPluginLoaderAdapter,
-    RealPluginManagerAdapter,
 )
+from flext_plugin.discovery import FlextPluginDiscovery
+from flext_plugin.entities import FlextPluginEntities as Entities
+from flext_plugin.loader import FlextPluginLoader
+
+# Type aliases for compatibility with old test code
+PluginType = Entities.PluginType
+PluginDiscovery = FlextPluginDiscovery
+PluginLoader = FlextPluginLoader
 
 
 class PluginInterface(Protocol):
@@ -46,13 +47,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> FlextTypes.Dict: ...
+    def initialize(self) -> dict[str, object]: ...
 
-    def execute(self, data: FlextTypes.Dict | None = None) -> FlextTypes.Dict: ...
+    def execute(self, data: dict[str, object] | None = None) -> dict[str, object]: ...
 
-    def cleanup(self) -> FlextTypes.Dict: ...
+    def cleanup(self) -> dict[str, object]: ...
 
-    def health_check(self) -> FlextTypes.Dict: ...
+    def health_check(self) -> dict[str, object]: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
@@ -220,15 +221,15 @@ def get_plugin():
 
 
 @pytest.fixture
-def real_plugin_loader() -> PluginLoader:
+def real_plugin_loader() -> FlextPluginLoader:
     """Create REAL plugin loader for testing."""
-    return PluginLoader(security_enabled=False)  # Disable for testing
+    return FlextPluginLoader()
 
 
 @pytest.fixture
-def real_plugin_discovery(temp_plugin_dir: Path) -> PluginDiscovery:
+def real_plugin_discovery(temp_plugin_dir: Path) -> FlextPluginDiscovery:
     """Create REAL plugin discovery for testing."""
-    return PluginDiscovery(
+    return FlextPluginDiscovery(
         plugin_directory=str(temp_plugin_dir),
         plugin_directories=[str(temp_plugin_dir)],
     )
@@ -240,13 +241,13 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     container = FlextContainer()
 
     # Register REAL implementations
-    discovery_adapter = RealPluginDiscoveryAdapter(str(temp_plugin_dir))
-    loader_adapter = RealPluginLoaderAdapter(str(temp_plugin_dir))
-    manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))
+    discovery_adapter = FlextPluginDiscovery(str(temp_plugin_dir))
+    loader_adapter = FlextPluginLoader(str(temp_plugin_dir))
+    # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))  # TODO: Implement when available
 
     container.register("plugin_discovery_port", discovery_adapter)
     container.register("plugin_loader_port", loader_adapter)
-    container.register("plugin_manager_port", manager_adapter)
+    # container.register("plugin_manager_port", manager_adapter)  # TODO: Implement when available
 
     return FlextPluginService(container=container)
 
@@ -254,15 +255,15 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
 @pytest.fixture
 def real_discovery_service_with_adapters(
     temp_plugin_dir: Path,
-) -> FlextPluginDiscoveryService:
-    """Create FlextPluginDiscoveryService with REAL adapters."""
+) -> FlextPluginDiscovery:
+    """Create FlextPluginDiscovery with REAL adapters."""
     container = FlextContainer()
 
     # Register REAL discovery implementation
-    discovery_adapter = RealPluginDiscoveryAdapter(str(temp_plugin_dir))
+    discovery_adapter = FlextPluginDiscovery(str(temp_plugin_dir))
     container.register("plugin_discovery_port", discovery_adapter)
 
-    return FlextPluginDiscoveryService(container=container)
+    return FlextPluginDiscovery(container=container)
 
 
 class TestRealPluginDiscoveryAndExecution:
@@ -884,20 +885,20 @@ class TestFlextPluginServiceReal:
         assert result.data is False  # Plugin not actually loaded
 
 
-class TestFlextPluginDiscoveryServiceReal:
-    """REAL test suite for FlextPluginDiscoveryService with actual plugin files.
+class TestFlextPluginDiscoveryReal:
+    """REAL test suite for FlextPluginDiscovery with actual plugin files.
 
     Tests the ACTUAL API with real plugin discovery and validation.
     """
 
     @pytest.fixture
-    def discovery_service(self) -> FlextPluginDiscoveryService:
+    def discovery_service(self) -> FlextPluginDiscovery:
         """Create discovery service instance."""
-        return FlextPluginDiscoveryService()
+        return FlextPluginDiscovery()
 
     def test_discovery_service_initialization_default(self) -> None:
         """Test discovery service initialization with default container."""
-        service = FlextPluginDiscoveryService()
+        service = FlextPluginDiscovery()
         assert service is not None
         assert hasattr(service, "container")
         assert service.container is not None
@@ -905,20 +906,20 @@ class TestFlextPluginDiscoveryServiceReal:
     def test_discovery_service_initialization_with_container(self) -> None:
         """Test discovery service initialization with provided container."""
         container = FlextContainer()
-        service = FlextPluginDiscoveryService(container=container)
+        service = FlextPluginDiscovery(container=container)
         assert service is not None
         assert service.container is container
 
     def test_discovery_service_inheritance(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test discovery service inherits correctly."""
         assert isinstance(discovery_service, FlextService)
 
     def test_execute_method_fails_as_expected(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test execute method returns failure as designed."""
         result = discovery_service.execute()
@@ -927,7 +928,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_discovery_port_property_real_fallback(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test discovery_port property returns REAL fallback when no port registered."""
         try:
@@ -952,7 +953,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_scan_directory_empty_path_fails(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test scan_directory with empty path fails."""
         result = discovery_service.scan_directory("")
@@ -961,7 +962,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_scan_directory_with_real_plugins(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
         temp_plugin_dir: Path,
     ) -> None:
         """Test scan_directory with REAL plugin files."""
@@ -988,7 +989,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_validate_plugin_integrity_none_plugin_fails(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test validate_plugin_integrity with None plugin fails."""
         result = discovery_service.validate_plugin_integrity(None)
@@ -997,7 +998,7 @@ class TestFlextPluginDiscoveryServiceReal:
 
     def test_validate_plugin_integrity_with_real_plugin_data(
         self,
-        discovery_service: FlextPluginDiscoveryService,
+        discovery_service: FlextPluginDiscovery,
         temp_plugin_dir: Path,
     ) -> None:
         """Test validate_plugin_integrity with plugin based on REAL files."""
@@ -1232,7 +1233,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
 
         plugin_service = FlextPluginService(container=container)
-        discovery_service = FlextPluginDiscoveryService(container=container)
+        discovery_service = FlextPluginDiscovery(container=container)
 
         assert plugin_service is not None
         assert discovery_service is not None
@@ -1243,7 +1244,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
 
         # Register a REAL service object in the container
-        test_service: FlextTypes.Dict = {
+        test_service: dict[str, object] = {
             "name": "test_service",
             "config": {"enabled": True},
         }
@@ -1251,7 +1252,7 @@ class TestServicesIntegrationReal:
 
         # Create services with shared container
         plugin_service = FlextPluginService(container=container)
-        discovery_service = FlextPluginDiscoveryService(container=container)
+        discovery_service = FlextPluginDiscovery(container=container)
 
         # Both should have access to shared container state
         result1 = plugin_service.container.get("test_service")
@@ -1277,7 +1278,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
 
         plugin_service = FlextPluginService(container=container)
-        discovery_service = FlextPluginDiscoveryService(container=container)
+        discovery_service = FlextPluginDiscovery(container=container)
 
         # Both should work with real plugin directories - handle infrastructure errors
         try:
@@ -1436,7 +1437,7 @@ class TestServiceErrorHandling:
     def test_discovery_service_handles_container_errors_gracefully_real(self) -> None:
         """Test discovery service handles container errors gracefully with REAL operations."""
         container = FlextContainer()
-        discovery_service = FlextPluginDiscoveryService(container=container)
+        discovery_service = FlextPluginDiscovery(container=container)
 
         # Operations should still work with fallback implementations
 
@@ -1486,7 +1487,7 @@ class TestServiceErrorHandling:
         self,
     ) -> None:
         """Test that discovery service port property returns REAL fallback implementation."""
-        service = FlextPluginDiscoveryService()
+        service = FlextPluginDiscovery()
 
         # These properties raise exceptions when not configured - that's expected
         try:
@@ -1546,7 +1547,7 @@ class TestServiceErrorHandling:
 
     def test_discovery_service_handles_scan_exceptions_real(self) -> None:
         """Test discovery service handles scan exceptions with REAL scenarios."""
-        service = FlextPluginDiscoveryService()
+        service = FlextPluginDiscovery()
 
         # Test with empty directory path (should handle gracefully)
         result = service.scan_directory("")
@@ -1594,9 +1595,9 @@ class TestBackwardsCompatibilityAliasesReal:
         """Test PluginDiscoveryService alias exists and works with REAL functionality."""
         # Import from application.services module
 
-        service = FlextPluginDiscoveryService()
+        service = FlextPluginDiscovery()
         assert service is not None
-        assert isinstance(service, FlextPluginDiscoveryService)
+        assert isinstance(service, FlextPluginDiscovery)
 
         # Test REAL functionality through alias
 
