@@ -17,7 +17,7 @@ Boundary(application_boundary, "Application Layer") {
 }
 
 Boundary(domain_boundary, "Domain Layer") {
-    Component(entities, "FlextPluginEntities", "Python Class", "Domain entities: Plugin, Execution, Registry")
+    Component(entities, "FlextPluginModels", "Python Class", "Domain entities: Plugin, Execution, Registry")
     Component(protocols, "FlextPluginProtocols", "Python Module", "Structural typing for plugin interfaces")
     Component(types, "FlextPluginTypes", "Python Module", "Type definitions and aliases")
     Component(constants, "FlextPluginConstants", "Python Module", "Domain constants and enumerations")

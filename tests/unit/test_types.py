@@ -7,7 +7,8 @@ SPDX-License-Identifier: MIT
 
 from flext_core import FlextTypes
 
-from flext_plugin.types import FlextPluginProtocols, FlextPluginTypes
+from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.types import FlextPluginTypes
 
 
 class TestFlextPluginTypes:
@@ -21,28 +22,28 @@ class TestFlextPluginTypes:
     def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
-        assert FlextPluginTypes.Core.StringList == list[str]
-        assert FlextPluginTypes.Core.StringSet == set[str]
-        assert FlextPluginTypes.Core.StringDict == dict[str, str]
+        assert FlextPluginTypes.PluginCore.StringList == list[str]
+        assert FlextPluginTypes.PluginCore.StringSet == set[str]
+        assert FlextPluginTypes.PluginCore.StringDict == dict[str, str]
 
         # Test numeric collections
-        assert FlextPluginTypes.Core.IntList == FlextTypes.IntList
-        assert FlextPluginTypes.Core.FloatList == FlextTypes.FloatList
-        assert FlextPluginTypes.Core.IntDict == dict[str, int]
-        assert FlextPluginTypes.Core.FloatDict == dict[str, float]
+        assert FlextPluginTypes.PluginCore.IntList == FlextTypes.IntList
+        assert FlextPluginTypes.PluginCore.FloatList == FlextTypes.FloatList
+        assert FlextPluginTypes.PluginCore.IntDict == dict[str, int]
+        assert FlextPluginTypes.PluginCore.FloatDict == dict[str, float]
 
         # Test mixed collections
-        assert FlextPluginTypes.Core.AnyList == list[object]
-        assert FlextPluginTypes.Core.AnyDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.AnyList == list[object]
+        assert FlextPluginTypes.PluginCore.AnyDict == dict[str, object]
 
         # Test plugin-specific collections
-        assert FlextPluginTypes.Core.PluginList == list[dict[str, object]]
-        assert FlextPluginTypes.Core.PluginDict == dict[str, object]
-        assert FlextPluginTypes.Core.ConfigDict == dict[str, object]
-        assert FlextPluginTypes.Core.SettingsDict == dict[str, object]
-        assert FlextPluginTypes.Core.MetadataDict == dict[str, object]
-        assert FlextPluginTypes.Core.InputDict == dict[str, object]
-        assert FlextPluginTypes.Core.OutputDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.PluginList == list[dict[str, object]]
+        assert FlextPluginTypes.PluginCore.PluginDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.ConfigDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.SettingsDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.MetadataDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.InputDict == dict[str, object]
+        assert FlextPluginTypes.PluginCore.OutputDict == dict[str, object]
 
     def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""

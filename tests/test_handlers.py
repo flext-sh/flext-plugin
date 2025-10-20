@@ -147,7 +147,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert result.error is not None and "Plugin name is required" in result.error
+        assert result.error is not None
+        assert "Plugin name is required" in result.error
 
     def test_register_plugin_missing_version_fails(
         self,
@@ -170,7 +171,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert result.error is not None and "Plugin version is required" in result.error
+        assert result.error is not None
+        assert "Plugin version is required" in result.error
 
     def test_register_plugin_no_service_fails(
         self,
@@ -182,9 +184,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None and "Plugin service not available" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin service not available" in result.error
 
     def test_register_plugin_handles_exceptions_gracefully(
         self,
@@ -248,7 +249,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert result.error is not None and "Plugin name is required" in result.error
+        assert result.error is not None
+        assert "Plugin name is required" in result.error
 
     def test_unregister_plugin_no_service_fails(
         self,
@@ -259,9 +261,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None and "Plugin service not available" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin service not available" in result.error
 
     def test_unregister_plugin_none_name_fails(
         self,
@@ -272,7 +273,8 @@ class TestFlextPluginRegistrationHandler:
 
         assert not result.success
         assert result.error is not None
-        assert result.error is not None and "Plugin name is required" in result.error
+        assert result.error is not None
+        assert "Plugin name is required" in result.error
 
 
 class TestFlextPluginEventHandler:
@@ -328,10 +330,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Plugin loaded event: plugin missing name" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin loaded event: plugin missing name" in result.error
 
     def test_handle_plugin_loaded_empty_name_fails(
         self,
@@ -351,10 +351,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Plugin loaded event: plugin missing name" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin loaded event: plugin missing name" in result.error
 
     def test_handle_plugin_loaded_handles_exceptions_gracefully(
         self,
@@ -374,11 +372,10 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Failed to handle plugin loaded event" in result.error
-        )
-        assert result.error is not None and "Simulated plugin error" in result.error
+        assert result.error is not None
+        assert "Failed to handle plugin loaded event" in result.error
+        assert result.error is not None
+        assert "Simulated plugin error" in result.error
 
     def test_handle_plugin_unloaded_success(
         self,
@@ -400,10 +397,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Plugin unloaded event: plugin name is required" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_whitespace_name_fails(
         self,
@@ -414,10 +409,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Plugin unloaded event: plugin name is required" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_none_name_fails(
         self,
@@ -428,10 +421,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Plugin unloaded event: plugin name is required" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin unloaded event: plugin name is required" in result.error
 
     def test_handle_plugin_unloaded_handles_exceptions_gracefully(
         self,
@@ -450,10 +441,8 @@ class TestFlextPluginEventHandler:
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None
-            and "Failed to handle plugin unloaded event" in result.error
-        )
+        assert result.error is not None
+        assert "Failed to handle plugin unloaded event" in result.error
 
 
 class TestHandlerIntegration:

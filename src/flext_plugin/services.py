@@ -7,47 +7,33 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextService
+from flext_core import FlextContainer, FlextMixins, FlextModels, FlextResult
 
-from flext_plugin.entities import FlextPluginEntities
+from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginService(FlextService[FlextResult]):
-    """Main plugin service orchestrating plugin operations.
+class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
+    """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
     coordinating between different protocol implementations to deliver
-    comprehensive plugin functionality.
+    comprehensive plugin functionality using composition over inheritance.
+
+    Follows SOLID principles:
+    - Single Responsibility: Only handles plugin orchestration
+    - Open/Closed: Extensible through protocol implementations
+    - Liskov Substitution: No forced inheritance from unrelated base classes
+    - Interface Segregation: Uses specific protocols for different concerns
+    - Dependency Inversion: Depends on abstractions, not concretions
 
     Usage:
         ```python
         from flext_plugin import FlextPluginService
-        from flext_core import FlextBus
-    from flext_core import FlextConfig
-    from flext_core import FlextConstants
-    from flext_core import FlextContainer
-    from flext_core import FlextContext
-    from flext_core import FlextDecorators
-    from flext_core import FlextDispatcher
-    from flext_core import FlextExceptions
-    from flext_core import FlextHandlers
-    from flext_core import FlextLogger
-    from flext_core import FlextMixins
-    from flext_core import FlextModels
-    from flext_core import FlextProcessors
-    from flext_core import FlextProtocols
-    from flext_core import FlextRegistry
-    from flext_core import FlextResult
-    from flext_core import FlextRuntime
-    from flext_core import FlextService
-    from flext_core import FlextTypes
-    from flext_core import FlextUtilities
 
-        # Initialize service
-        container = FlextContainer()
-        service = FlextPluginService(container)
+        # Initialize service with dependency injection
+        service = FlextPluginService()
 
         # Discover plugins
         result = await service.discover_and_register_plugins(["./plugins"])
@@ -58,6 +44,7 @@ class FlextPluginService(FlextService[FlextResult]):
 
     def __init__(
         self,
+        container: object | None = None,
         discovery: FlextPluginProtocols.PluginDiscovery | None = None,
         loader: FlextPluginProtocols.PluginLoader | None = None,
         executor: FlextPluginProtocols.PluginExecution | None = None,
@@ -65,9 +52,10 @@ class FlextPluginService(FlextService[FlextResult]):
         registry: FlextPluginProtocols.PluginRegistry | None = None,
         monitoring: FlextPluginProtocols.PluginMonitoring | None = None,
     ) -> None:
-        """Initialize the plugin service with protocol implementations.
+        """Initialize the plugin service with protocol implementations and dependency injection.
 
         Args:
+            container: Dependency injection container (uses FlextMixins for DI)
             discovery: Plugin discovery implementation
             loader: Plugin loader implementation
             executor: Plugin execution implementation
@@ -76,7 +64,13 @@ class FlextPluginService(FlextService[FlextResult]):
             monitoring: Plugin monitoring implementation
 
         """
-        super().__init__()
+        # Set container before initializing mixins if provided
+        if container is not None:
+            # Set the container for this service instance
+            self._container = container
+
+        # Initialize mixins for dependency injection
+        FlextMixins.__init__(self)
 
         # Store protocol implementations
         self._discovery = discovery
@@ -87,12 +81,20 @@ class FlextPluginService(FlextService[FlextResult]):
         self._monitoring = monitoring
 
         # Internal state
-        self._plugins: dict[str, FlextPluginEntities.Plugin] = {}
-        self._executions: dict[str, FlextPluginEntities.Execution] = {}
+        self._plugins: dict[str, FlextPluginModels.Plugin] = {}
+        self._executions: dict[str, FlextPluginModels.Execution] = {}
+
+    @property
+    def container(self) -> object:
+        """Get the container for this service instance."""
+        if hasattr(self, "_container") and self._container is not None:
+            return self._container
+        return FlextContainer.get_global()
 
     def discover_and_register_plugins(
-        self, paths: list[str]
-    ) -> FlextResult[list[FlextPluginEntities.Plugin]]:
+        self,
+        paths: list[str],
+    ) -> FlextResult[list[FlextPluginModels.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -116,7 +118,7 @@ class FlextPluginService(FlextService[FlextResult]):
 
             for plugin_data in plugins_data:
                 # Create plugin entity
-                plugin = FlextPluginEntities.Plugin.create(
+                plugin = FlextPluginModels.Plugin.create(
                     name=str(plugin_data["name"]),
                     plugin_version=str(plugin_data.get("version", "1.0.0")),
                     config=plugin_data,
@@ -126,7 +128,7 @@ class FlextPluginService(FlextService[FlextResult]):
                 validation_result = plugin.validate_business_rules()
                 if validation_result.is_failure:
                     self.logger.warning(
-                        f"Plugin {plugin.name} validation failed: {validation_result.error}"
+                        f"Plugin {plugin.name} validation failed: {validation_result.error}",
                     )
                     continue
 
@@ -167,7 +169,7 @@ class FlextPluginService(FlextService[FlextResult]):
             self.logger.exception("Plugin discovery and registration failed")
             return FlextResult.fail(f"Service error: {e!s}")
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginEntities.Plugin]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -187,7 +189,7 @@ class FlextPluginService(FlextService[FlextResult]):
                 return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
 
             plugin_data = load_result.value
-            plugin = FlextPluginEntities.Plugin.create(
+            plugin = FlextPluginModels.Plugin.create(
                 name=str(plugin_data["name"]),
                 plugin_version=str(plugin_data.get("version", "1.0.0")),
                 config=plugin_data,
@@ -197,7 +199,7 @@ class FlextPluginService(FlextService[FlextResult]):
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
                 return FlextResult.fail(
-                    f"Plugin validation failed: {validation_result.error}"
+                    f"Plugin validation failed: {validation_result.error}",
                 )
 
             # Security validation
@@ -231,15 +233,15 @@ class FlextPluginService(FlextService[FlextResult]):
             return FlextResult.ok(plugin)
 
         except Exception as e:
-            self.logger.exception(f"Failed to load plugin from {plugin_path}")
+            self.logger.exception("Failed to load plugin from %s", plugin_path)
             return FlextResult.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, object],
+        context: FlextPluginModels.InputData,
         execution_id: str | None = None,
-    ) -> FlextResult[FlextPluginEntities.Execution]:
+    ) -> FlextResult[FlextPluginModels.Execution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -261,7 +263,7 @@ class FlextPluginService(FlextService[FlextResult]):
             plugin = self._plugins[plugin_name]
 
             # Create execution entity
-            execution = FlextPluginEntities.Execution.create(
+            execution = FlextPluginModels.Execution.create(
                 plugin_name=plugin_name,
                 execution_config={"input_data": context, "status": "pending"},
                 execution_id=execution_id,
@@ -282,7 +284,7 @@ class FlextPluginService(FlextService[FlextResult]):
             # Sync-only operations maintained per FLEXT requirements
             # )
             exec_result = FlextResult.ok({
-                "status": "executed"
+                "status": "executed",
             })  # Mock success for sync interface
 
             if exec_result.is_failure:
@@ -295,14 +297,15 @@ class FlextPluginService(FlextService[FlextResult]):
 
             # Record execution metrics
             plugin.record_execution(
-                execution_time_ms=execution.execution_time * 1000, success=True
+                execution_time_ms=execution.execution_time * 1000,
+                success=True,
             )
 
-            self.logger.info(f"Executed plugin '{plugin_name}' successfully")
+            self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return FlextResult.ok(execution)
 
         except Exception as e:
-            self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
+            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
             return FlextResult.fail(f"Execution error: {e!s}")
 
     async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
@@ -344,14 +347,14 @@ class FlextPluginService(FlextService[FlextResult]):
             # Remove from service
             del self._plugins[plugin_name]
 
-            self.logger.info(f"Unloaded plugin: {plugin_name}")
+            self.logger.info("Unloaded plugin: %s", plugin_name)
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
+            self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return FlextResult.fail(f"Unloading error: {e!s}")
 
-    def get_plugin(self, plugin_name: str) -> FlextPluginEntities.Plugin | None:
+    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
         """Get a plugin by name.
 
         Args:
@@ -363,7 +366,7 @@ class FlextPluginService(FlextService[FlextResult]):
         """
         return self._plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[FlextPluginEntities.Plugin]:
+    def list_plugins(self) -> list[FlextPluginModels.Plugin]:
         """List all loaded plugins.
 
         Returns:
@@ -398,8 +401,9 @@ class FlextPluginService(FlextService[FlextResult]):
         return plugin_name in self._plugins
 
     async def get_plugin_metrics(
-        self, plugin_name: str
-    ) -> FlextResult[FlextPluginTypes.Performance.Metrics]:
+        self,
+        plugin_name: str,
+    ) -> FlextResult[FlextPluginModels.Metrics]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -419,17 +423,18 @@ class FlextPluginService(FlextService[FlextResult]):
             metrics_result = await self._monitoring.get_plugin_metrics(plugin_name)
             if metrics_result.is_failure:
                 return FlextResult.fail(
-                    f"Metrics retrieval failed: {metrics_result.error}"
+                    f"Metrics retrieval failed: {metrics_result.error}",
                 )
 
             return FlextResult.ok(metrics_result.value)
 
         except Exception as e:
-            self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
+            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
             return FlextResult.fail(f"Metrics error: {e!s}")
 
     async def get_plugin_health(
-        self, plugin_name: str
+        self,
+        plugin_name: str,
     ) -> FlextResult[dict[str, object]]:
         """Get health status for a specific plugin.
 
@@ -454,7 +459,7 @@ class FlextPluginService(FlextService[FlextResult]):
             return FlextResult.ok(health_result.value)
 
         except Exception as e:
-            self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
+            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
             return FlextResult.fail(f"Health check error: {e!s}")
 
     def get_service_status(self) -> dict[str, object]:
@@ -479,7 +484,7 @@ class FlextPluginService(FlextService[FlextResult]):
             "registry_available": self._registry is not None,
         }
 
-    def get_execution(self, execution_id: str) -> FlextPluginEntities.Execution | None:
+    def get_execution(self, execution_id: str) -> FlextPluginModels.Execution | None:
         """Get an execution by ID.
 
         Args:
@@ -491,7 +496,7 @@ class FlextPluginService(FlextService[FlextResult]):
         """
         return self._executions.get(execution_id)
 
-    def list_executions(self) -> list[FlextPluginEntities.Execution]:
+    def list_executions(self) -> list[FlextPluginModels.Execution]:
         """List all executions.
 
         Returns:
@@ -500,7 +505,7 @@ class FlextPluginService(FlextService[FlextResult]):
         """
         return list(self._executions.values())
 
-    def get_running_executions(self) -> list[FlextPluginEntities.Execution]:
+    def get_running_executions(self) -> list[FlextPluginModels.Execution]:
         """Get all currently running executions.
 
         Returns:

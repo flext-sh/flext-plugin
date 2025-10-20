@@ -66,7 +66,7 @@ All modules follow the FLEXT single-class-per-module pattern:
 
 ```python
 # ✅ COMPLIANT - Current implementation
-class FlextPluginEntities:
+class FlextPluginModels:
     """Unified plugin entities following FLEXT standards"""
 
     class Plugin(FlextModels.Entity):

@@ -48,7 +48,7 @@ from flext_core import FlextTypes
 from flext_core import FlextUtilities
 from typing import List, Optional
 
-class FlextPluginEntities:
+class FlextPluginModels:
     """Domain entities following FLEXT single-class-per-module pattern."""
 
     class Plugin(FlextModels.Entity):
@@ -139,7 +139,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import FlextTypes
 from flext_core import FlextUtilities
-from flext_plugin.entities import FlextPluginEntities
+from flext_plugin.entities import FlextPluginModels
 from typing import List, Protocol
 
 class FlextPluginServices:
@@ -152,7 +152,7 @@ class FlextPluginServices:
         self,
         paths: FlextTypes.StringList,
         discovery_service: PluginDiscovery
-    ) -> FlextResult[List[FlextPluginEntities.Plugin]]:
+    ) -> FlextResult[List[FlextPluginModels.Plugin]]:
         """Application service orchestrating plugin discovery."""
 
         try:
@@ -166,7 +166,7 @@ class FlextPluginServices:
 
             for config in plugin_configs:
                 # Create domain entity
-                plugin = FlextPluginEntities.Plugin.create(
+                plugin = FlextPluginModels.Plugin.create(
                     name=config["name"],
                     plugin_version=config.get("version", "1.0.0"),
                     config=config
@@ -189,15 +189,15 @@ class FlextPluginServices:
 
     async def execute_plugin(
         self,
-        plugin: FlextPluginEntities.Plugin,
+        plugin: FlextPluginModels.Plugin,
         context: FlextTypes.Dict,
         executor: PluginExecution
-    ) -> FlextResult[FlextPluginEntities.Execution]:
+    ) -> FlextResult[FlextPluginModels.Execution]:
         """Application service orchestrating plugin execution."""
 
         try:
             # Create execution entity
-            execution = FlextPluginEntities.Execution.create(
+            execution = FlextPluginModels.Execution.create(
                 plugin_name=plugin.name,
                 context=context
             )
@@ -356,7 +356,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import FlextTypes
 from flext_core import FlextUtilities
-from flext_plugin.entities import FlextPluginEntities
+from flext_plugin.entities import FlextPluginModels
 
 class FlextPluginProtocols:
     """Protocol definitions for plugin system interfaces."""
@@ -375,7 +375,7 @@ class FlextPluginProtocols:
 
         async def load_plugin(
             self, plugin_path: str
-        ) -> FlextResult[FlextPluginEntities.Plugin]:
+        ) -> FlextResult[FlextPluginModels.Plugin]:
             """Load plugin from specified path."""
             ...
 
@@ -384,7 +384,7 @@ class FlextPluginProtocols:
 
         async def execute_plugin(
             self,
-            plugin: FlextPluginEntities.Plugin,
+            plugin: FlextPluginModels.Plugin,
             context: Dict[str, object]
         ) -> FlextResult[object]:
             """Execute plugin with given context."""
@@ -395,7 +395,7 @@ class FlextPluginProtocols:
 
         async def validate_plugin(
             self,
-            plugin: FlextPluginEntities.Plugin
+            plugin: FlextPluginModels.Plugin
         ) -> FlextResult[bool]:
             """Validate plugin security."""
             ...
@@ -489,7 +489,7 @@ def _validate_plugin_names(
 
 async def _load_plugins(
     self, names: FlextTypes.StringList
-) -> FlextResult[List[FlextPluginEntities.Plugin]]:
+) -> FlextResult[List[FlextPluginModels.Plugin]]:
     """Load plugins by name."""
     plugins = []
     for name in names:
@@ -512,14 +512,14 @@ async def _load_plugins(
 ```python
 # tests/unit/test_entities.py
 import pytest
-from flext_plugin.entities import FlextPluginEntities
+from flext_plugin.entities import FlextPluginModels
 
 class TestPluginEntity:
     """Test plugin domain entity business rules."""
 
     def test_plugin_creation_success(self):
         """Test successful plugin creation."""
-        plugin = FlextPluginEntities.Plugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             config={"type": "extension"}
@@ -532,7 +532,7 @@ class TestPluginEntity:
     def test_plugin_validation_business_rules(self):
         """Test plugin business rule validation."""
         # Valid plugin
-        plugin = FlextPluginEntities.Plugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="valid-plugin",
             plugin_version="1.0.0",
             config={}
@@ -541,7 +541,7 @@ class TestPluginEntity:
         assert result.is_success
 
         # Invalid plugin (empty name)
-        plugin = FlextPluginEntities.Plugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="",
             plugin_version="1.0.0",
             config={}
@@ -552,7 +552,7 @@ class TestPluginEntity:
 
     def test_plugin_activation_workflow(self):
         """Test plugin activation business workflow."""
-        plugin = FlextPluginEntities.Plugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             config={"type": "extension"}
@@ -696,10 +696,10 @@ class TestPluginLifecycle:
         # Create test plugin file
         plugin_file = plugin_dir / "test_plugin.py"
         plugin_file.write_text("""
-from flext_plugin import FlextPluginEntities
+from flext_plugin import FlextPluginModels
 
 def create_plugin():
-    return FlextPluginEntities.Plugin.create(
+    return FlextPluginModels.Plugin.create(
         name="test-plugin",
         plugin_version="1.0.0",
         config={
@@ -830,7 +830,7 @@ from flext_plugin.types import FlextPluginTypes
 
 # Type checking imports
 if TYPE_CHECKING:
-    from flext_plugin.entities import FlextPluginEntities
+    from flext_plugin.entities import FlextPluginModels
 
 class FlextPlugin[ModuleName]:
     """Single main class following FLEXT naming convention.
@@ -849,7 +849,7 @@ class FlextPlugin[ModuleName]:
     async def public_method(
         self,
         param: FlextPluginTypes.SomeType
-    ) -> FlextResult[FlextPluginEntities.SomeEntity]:
+    ) -> FlextResult[FlextPluginModels.SomeEntity]:
         """Public method with comprehensive documentation."""
         try:
             # Validation
@@ -880,7 +880,7 @@ class FlextPlugin[ModuleName]:
 
     async def _execute_business_logic(
         self, param: FlextPluginTypes.SomeType
-    ) -> FlextPluginEntities.SomeEntity:
+    ) -> FlextPluginModels.SomeEntity:
         """Execute core business logic."""
         # Implementation details...
         pass
@@ -1366,7 +1366,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import FlextTypes
 from flext_core import FlextUtilities
-from flext_plugin.entities import FlextPluginEntities
+from flext_plugin.entities import FlextPluginModels
 
 class FlextPluginExecutor:
     """Asynchronous plugin execution with concurrency control."""
@@ -1378,12 +1378,12 @@ class FlextPluginExecutor:
 
     async def execute_plugins_concurrent(
         self,
-        plugins: List[FlextPluginEntities.Plugin],
+        plugins: List[FlextPluginModels.Plugin],
         context: Dict[str, object]
-    ) -> FlextResult[List[FlextPluginEntities.Execution]]:
+    ) -> FlextResult[List[FlextPluginModels.Execution]]:
         """Execute multiple plugins concurrently with resource limits."""
 
-        async def execute_single_plugin(plugin: FlextPluginEntities.Plugin):
+        async def execute_single_plugin(plugin: FlextPluginModels.Plugin):
             async with self.semaphore:  # Limit concurrency
                 return await self._execute_plugin_safe(plugin, context)
 
@@ -1414,13 +1414,13 @@ class FlextPluginExecutor:
 
     async def _execute_plugin_safe(
         self,
-        plugin: FlextPluginEntities.Plugin,
+        plugin: FlextPluginModels.Plugin,
         context: Dict[str, object]
-    ) -> FlextResult[FlextPluginEntities.Execution]:
+    ) -> FlextResult[FlextPluginModels.Execution]:
         """Execute single plugin with error isolation."""
         try:
             # Create execution entity
-            execution = FlextPluginEntities.Execution.create(
+            execution = FlextPluginModels.Execution.create(
                 plugin_name=plugin.name,
                 context=context
             )
@@ -1440,7 +1440,7 @@ class FlextPluginExecutor:
             return FlextResult.ok(execution)
 
         except Exception as e:
-            execution = FlextPluginEntities.Execution.create(
+            execution = FlextPluginModels.Execution.create(
                 plugin_name=plugin.name,
                 context=context
             )
@@ -1449,7 +1449,7 @@ class FlextPluginExecutor:
 
     def _execute_plugin_sync(
         self,
-        plugin: FlextPluginEntities.Plugin,
+        plugin: FlextPluginModels.Plugin,
         context: Dict[str, object]
     ) -> object:
         """Synchronous plugin execution (runs in thread pool)."""

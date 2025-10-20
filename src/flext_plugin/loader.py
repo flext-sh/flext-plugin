@@ -7,22 +7,22 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
-import importlib
-import sys
+import importlib.util
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.models import FlextPluginModels
 
 
 class FlextPluginLoader:
     """Plugin loader service for dynamic plugin loading and management.
 
-    This class provides comprehensive plugin loading capabilities including
-    dynamic import, dependency resolution, and lifecycle management.
+    Provides comprehensive plugin loading with safe spec-based module loading,
+    automatic entry file discovery, and lifecycle management. Uses strategy
+    pattern for file and directory-based plugins with composition.
 
     Usage:
         ```python
@@ -32,10 +32,10 @@ class FlextPluginLoader:
         loader = FlextPluginLoader()
 
         # Load a plugin
-        result = await loader.load_plugin("./my_plugin.py")
-        if result.success:
-            plugin_data = result.value
-            print(f"Loaded plugin: {plugin_data['name']}")
+        result = loader.load_plugin("./my_plugin.py")
+        if result.is_success:
+            load_data = result.unwrap()
+            print(f"Loaded plugin: {load_data.name}")
         ```
     """
 
@@ -43,11 +43,14 @@ class FlextPluginLoader:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
         self._loaded_plugins: dict[str, object] = {}
-        self._plugin_metadata: dict[str, FlextPluginTypes.Core.PluginDict] = {}
+        self._loader_strategies: list[
+            Callable[[Path], FlextPluginModels.LoadData | None]
+        ] = [
+            self.FilePluginLoader(self.logger).load,
+            self.DirectoryPluginLoader(self.logger).load,
+        ]
 
-    async def load_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -58,29 +61,27 @@ class FlextPluginLoader:
 
         """
         try:
-            # Run pathlib operations in thread pool
-            loop = asyncio.get_event_loop()
-            path_obj = await loop.run_in_executor(
-                None,
-                lambda: Path(plugin_path).expanduser().resolve(),  # noqa: ASYNC240
-            )
-            path_exists = await loop.run_in_executor(None, path_obj.exists)
+            path_obj = Path(plugin_path).expanduser().resolve()
 
-            if not path_exists:
-                return FlextResult.fail(f"Plugin path does not exist: {plugin_path}")
+            if not path_obj.exists():
+                error_msg = f"Plugin path does not exist: {plugin_path}"
+                return FlextResult.fail(error_msg)
 
-            # Determine loading strategy based on path type
-            if path_obj.is_file():
-                return await self._load_file_plugin(path_obj)
-            if path_obj.is_dir():
-                return await self._load_directory_plugin(path_obj)
-            return FlextResult.fail(f"Invalid plugin path type: {plugin_path}")
+            # Try each loader strategy
+            for loader_strategy in self._loader_strategies:
+                load_data = loader_strategy(path_obj)
+                if load_data:
+                    self._loaded_plugins[load_data.name] = load_data.module
+                    return FlextResult.ok(load_data)
+
+            error_msg = f"Invalid plugin path type: {plugin_path}"
+            return FlextResult.fail(error_msg)
 
         except Exception as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return FlextResult.fail(f"Loading error: {e!s}")
 
-    async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin by name.
 
         Args:
@@ -92,26 +93,13 @@ class FlextPluginLoader:
         """
         try:
             if plugin_name not in self._loaded_plugins:
-                return FlextResult.fail(f"Plugin not loaded: {plugin_name}")
-
-            # Get plugin metadata
-            metadata = self._plugin_metadata.get(plugin_name, {})
-            plugin_type = metadata.get("type", "file")
-
-            # Unload based on type
-            if plugin_type == "file":
-                await self._unload_file_plugin(plugin_name)
-            elif plugin_type == "directory":
-                await self._unload_directory_plugin(plugin_name)
-            elif plugin_type == "entry_point":
-                await self._unload_entry_point_plugin(plugin_name)
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
             # Remove from tracking
             del self._loaded_plugins[plugin_name]
-            if plugin_name in self._plugin_metadata:
-                del self._plugin_metadata[plugin_name]
 
-            self.logger.info(f"Unloaded plugin: {plugin_name}")
+            self.logger.info("Unloaded plugin: %s", plugin_name)
             return FlextResult.ok(True)
 
         except Exception as e:
@@ -139,23 +127,9 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_metadata(
+    def reload_plugin(
         self, plugin_name: str
-    ) -> FlextPluginTypes.Core.PluginDict | None:
-        """Get metadata for a loaded plugin.
-
-        Args:
-            plugin_name: Name of the plugin
-
-        Returns:
-            Plugin metadata if found, None otherwise
-
-        """
-        return self._plugin_metadata.get(plugin_name)
-
-    async def reload_plugin(
-        self, plugin_name: str
-    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
+    ) -> FlextResult[FlextPluginModels.LoadData]:
         """Reload a plugin by name.
 
         Args:
@@ -167,226 +141,38 @@ class FlextPluginLoader:
         """
         try:
             if plugin_name not in self._loaded_plugins:
-                return FlextResult.fail(f"Plugin not loaded: {plugin_name}")
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
-            # Get original path
-            metadata = self._plugin_metadata.get(plugin_name, {})
-            plugin_path = metadata.get("path")
+            # Get original plugin module for path extraction
+            module = self._loaded_plugins.get(plugin_name)
+            if not module or not hasattr(module, "__file__"):
+                error_msg = f"No path information for plugin: {plugin_name}"
+                return FlextResult.fail(error_msg)
+
+            plugin_path = getattr(module, "__file__", None)
             if not plugin_path:
-                return FlextResult.fail(
-                    f"No path information for plugin: {plugin_name}"
-                )
+                error_msg = f"Cannot determine plugin path for: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
             # Unload and reload
-            unload_result = await self.unload_plugin(plugin_name)
+            unload_result = self.unload_plugin(plugin_name)
             if unload_result.is_failure:
-                return FlextResult.fail(
-                    f"Failed to unload plugin for reload: {unload_result.error}"
-                )
+                error_msg = f"Failed to unload plugin for reload: {unload_result.error}"
+                return FlextResult.fail(error_msg)
 
-            load_result = await self.load_plugin(plugin_path)
+            load_result = self.load_plugin(str(plugin_path))
             if load_result.is_failure:
                 return FlextResult.fail(f"Failed to reload plugin: {load_result.error}")
 
-            self.logger.info(f"Reloaded plugin: {plugin_name}")
+            self.logger.info("Reloaded plugin: %s", plugin_name)
             return load_result
 
         except Exception as e:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
             return FlextResult.fail(f"Reload error: {e!s}")
 
-    async def _load_file_plugin(
-        self, path: Path
-    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
-        """Load a single file plugin.
-
-        Args:
-            path: Path to the plugin file
-
-        Returns:
-            FlextResult containing loaded plugin data
-
-        """
-        try:
-            # Add parent directory to Python path
-            parent_dir = str(path.parent)
-            if parent_dir not in sys.path:
-                sys.path.insert(0, parent_dir)
-
-            # Load the module
-            module_name = path.stem
-            try:
-                # Remove from sys.modules if already loaded to force reload
-                if module_name in sys.modules:
-                    del sys.modules[module_name]
-
-                module = importlib.import_module(module_name)
-                self._loaded_plugins[module_name] = module
-            except Exception as e:
-                return FlextResult.fail(f"Failed to import module: {e!s}")
-
-            # Extract plugin information
-            plugin_data = {
-                "name": module_name,
-                "version": getattr(module, "__version__", "1.0.0"),
-                "path": str(path),
-                "module": module,
-                "type": "file",
-                "loaded_at": self._get_current_timestamp(),
-            }
-
-            # Store metadata
-            self._plugin_metadata[module_name] = plugin_data
-
-            self.logger.info(f"Loaded file plugin: {module_name}")
-            return FlextResult.ok(plugin_data)
-
-        except Exception as e:
-            self.logger.exception(f"Failed to load file plugin: {path}")
-            return FlextResult.fail(f"File loading error: {e!s}")
-
-    async def _load_directory_plugin(
-        self, path: Path
-    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
-        """Load a directory-based plugin.
-
-        Args:
-            path: Path to the plugin directory
-
-        Returns:
-            FlextResult containing loaded plugin data
-
-        """
-        try:
-            # Look for __init__.py or main.py
-            init_file = path / "__init__.py"
-            main_file = path / "main.py"
-
-            if init_file.exists():
-                entry_file = init_file
-            elif main_file.exists():
-                entry_file = main_file
-            else:
-                return FlextResult.fail(f"No entry file found in directory: {path}")
-
-            # Add directory to Python path
-            directory_path = str(path)
-            if directory_path not in sys.path:
-                sys.path.insert(0, directory_path)
-
-            # Load the module
-            module_name = path.name
-            try:
-                # Remove from sys.modules if already loaded
-                if module_name in sys.modules:
-                    del sys.modules[module_name]
-
-                module = importlib.import_module(module_name)
-                self._loaded_plugins[module_name] = module
-            except Exception as e:
-                return FlextResult.fail(f"Failed to import directory module: {e!s}")
-
-            # Extract plugin information
-            plugin_data = {
-                "name": module_name,
-                "version": getattr(module, "__version__", "1.0.0"),
-                "path": str(path),
-                "module": module,
-                "type": "directory",
-                "entry_file": str(entry_file),
-                "loaded_at": self._get_current_timestamp(),
-            }
-
-            # Store metadata
-            self._plugin_metadata[module_name] = plugin_data
-
-            self.logger.info(f"Loaded directory plugin: {module_name}")
-            return FlextResult.ok(plugin_data)
-
-        except Exception as e:
-            self.logger.exception(f"Failed to load directory plugin: {path}")
-            return FlextResult.fail(f"Directory loading error: {e!s}")
-
-    async def _unload_file_plugin(self, plugin_name: str) -> None:
-        """Unload a file-based plugin.
-
-        Args:
-            plugin_name: Name of the plugin to unload
-
-        """
-        try:
-            # Remove from sys.modules
-            if plugin_name in sys.modules:
-                del sys.modules[plugin_name]
-
-            # Remove from loaded plugins
-            if plugin_name in self._loaded_plugins:
-                del self._loaded_plugins[plugin_name]
-
-        except Exception:
-            self.logger.exception(f"Failed to unload file plugin: {plugin_name}")
-
-    async def _unload_directory_plugin(self, plugin_name: str) -> None:
-        """Unload a directory-based plugin.
-
-        Args:
-            plugin_name: Name of the plugin to unload
-
-        """
-        try:
-            # Remove from sys.modules
-            if plugin_name in sys.modules:
-                del sys.modules[plugin_name]
-
-            # Remove from loaded plugins
-            if plugin_name in self._loaded_plugins:
-                del self._loaded_plugins[plugin_name]
-
-        except Exception:
-            self.logger.exception(f"Failed to unload directory plugin: {plugin_name}")
-
-    async def _unload_entry_point_plugin(self, plugin_name: str) -> None:
-        """Unload an entry point-based plugin.
-
-        Args:
-            plugin_name: Name of the plugin to unload
-
-        """
-        try:
-            # Entry point plugins are typically not unloadable
-            # Just remove from tracking
-            if plugin_name in self._loaded_plugins:
-                del self._loaded_plugins[plugin_name]
-
-        except Exception:
-            self.logger.exception(f"Failed to unload entry point plugin: {plugin_name}")
-
-    def _get_current_timestamp(self) -> str:
-        """Get current timestamp as ISO string.
-
-        Returns:
-            Current timestamp as ISO string
-
-        """
-        return datetime.now(UTC).isoformat()
-
-    def get_loader_status(self) -> dict[str, object]:
-        """Get the current status of the plugin loader.
-
-        Returns:
-            Dictionary containing loader status information
-
-        """
-        return {
-            "total_loaded_plugins": len(self._loaded_plugins),
-            "loaded_plugin_names": list(self._loaded_plugins.keys()),
-            "plugin_types": {
-                name: metadata.get("type", "unknown")
-                for name, metadata in self._plugin_metadata.items()
-            },
-        }
-
-    async def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
+    def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
         """Validate dependencies for a loaded plugin.
 
         Args:
@@ -398,7 +184,8 @@ class FlextPluginLoader:
         """
         try:
             if plugin_name not in self._loaded_plugins:
-                return FlextResult.fail(f"Plugin not loaded: {plugin_name}")
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
             module = self._loaded_plugins[plugin_name]
 
@@ -414,17 +201,17 @@ class FlextPluginLoader:
 
             if not available_attrs:
                 self.logger.warning(
-                    f"Plugin {plugin_name} has no standard plugin methods"
+                    "Plugin %s has no standard plugin methods", plugin_name
                 )
 
-            self.logger.info(f"Plugin dependencies validated: {plugin_name}")
+            self.logger.info("Plugin dependencies validated: %s", plugin_name)
             return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    async def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+    def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -436,10 +223,10 @@ class FlextPluginLoader:
         """
         try:
             if plugin_name not in self._loaded_plugins:
-                return FlextResult.fail(f"Plugin not loaded: {plugin_name}")
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
             module = self._loaded_plugins[plugin_name]
-            metadata = self._plugin_metadata.get(plugin_name, {})
 
             # Extract module information
             module_info = {
@@ -457,7 +244,6 @@ class FlextPluginLoader:
             ]
 
             plugin_info = {
-                **metadata,
                 **module_info,
                 "available_methods": callable_methods,
                 "all_attributes": methods,
@@ -468,6 +254,117 @@ class FlextPluginLoader:
         except Exception as e:
             self.logger.exception(f"Failed to get plugin info for {plugin_name}")
             return FlextResult.fail(f"Plugin info error: {e!s}")
+
+    class FilePluginLoader:
+        """File-based plugin loader using safe spec-based module loading."""
+
+        def __init__(self, logger: FlextLogger) -> None:
+            """Initialize file loader with logger."""
+            self.logger = logger
+
+        def load(self, path: Path) -> FlextPluginModels.LoadData | None:
+            """Load a single file plugin safely.
+
+            Uses importlib.util.spec_from_file_location for safe loading
+            without sys.path pollution.
+
+            Args:
+                path: Path to the plugin file
+
+            Returns:
+                LoadData if successfully loaded, None otherwise
+
+            """
+            if not path.is_file() or path.suffix != ".py":
+                return None
+
+            try:
+                spec = importlib.util.spec_from_file_location(path.stem, path)
+                if not spec or not spec.loader:
+                    return None
+
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
+                return FlextPluginModels.LoadData(
+                    name=path.stem,
+                    version=getattr(module, "__version__", "1.0.0"),
+                    path=path,
+                    module=module,
+                    load_type="file",
+                    loaded_at=datetime.now(UTC),
+                )
+            except Exception:
+                self.logger.exception(f"Failed to load file plugin: {path}")
+                return None
+
+    class DirectoryPluginLoader:
+        """Directory-based plugin loader with entry file discovery."""
+
+        def __init__(self, logger: FlextLogger) -> None:
+            """Initialize directory loader with logger."""
+            self.logger = logger
+
+        def load(self, path: Path) -> FlextPluginModels.LoadData | None:
+            """Load a directory-based plugin.
+
+            Searches for __init__.py or main.py entry files.
+
+            Args:
+                path: Path to the plugin directory
+
+            Returns:
+                LoadData if successfully loaded, None otherwise
+
+            """
+            if not path.is_dir():
+                return None
+
+            try:
+                # Find entry file
+                entry_file = self._find_entry_file(path)
+                if not entry_file:
+                    return None
+
+                # Load using spec-based approach
+                spec = importlib.util.spec_from_file_location(path.name, entry_file)
+                if not spec or not spec.loader:
+                    return None
+
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
+                return FlextPluginModels.LoadData(
+                    name=path.name,
+                    version=getattr(module, "__version__", "1.0.0"),
+                    path=path,
+                    module=module,
+                    load_type="directory",
+                    loaded_at=datetime.now(UTC),
+                    entry_file=entry_file,
+                )
+            except Exception:
+                self.logger.exception(f"Failed to load directory plugin: {path}")
+                return None
+
+        def _find_entry_file(self, path: Path) -> Path | None:
+            """Find entry file in directory (__init__.py or main.py).
+
+            Args:
+                path: Directory path to search
+
+            Returns:
+                Path to entry file if found, None otherwise
+
+            """
+            init_file = path / "__init__.py"
+            main_file = path / "main.py"
+
+            if init_file.exists():
+                return init_file
+            if main_file.exists():
+                return main_file
+            return None
 
 
 __all__ = ["FlextPluginLoader"]

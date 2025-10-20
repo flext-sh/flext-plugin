@@ -7,52 +7,45 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import re
-from datetime import UTC, datetime
-from typing import Self
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Literal, Self
 
-from flext_core import FlextConstants, FlextModels
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    field_serializer,
-    field_validator,
-    model_validator,
-)
-from pydantic_settings import SettingsConfigDict
+from flext_core import FlextModels, FlextResult
+from pydantic import Field, field_validator, model_validator
 
 from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.entities import FlextPluginEntities
-from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginModels(FlextModels):
-    """Comprehensive models for plugin system operations extending FlextModels.
+class FlextPluginModels:
+    """Plugin domain models extending flext-core patterns.
 
-    Provides standardized models for all plugin domain entities including:
-    - Plugin lifecycle and management
-    - Plugin configuration and metadata
-    - Plugin execution and monitoring
-    - Plugin registry and discovery
-    - Plugin security and validation
+    Provides standardized models for all plugin operations including plugin
+    entities, configurations, execution results, and monitoring data.
 
-    All nested classes inherit FlextModels validation and patterns.
+    All models inherit flext-core validation and patterns following
+    Railway-Oriented Programming with FlextResult[T] error handling.
     """
 
-    model_config = ConfigDict(
-        validate_assignment=True,
-        use_enum_values=True,
-        extra="forbid",
-        frozen=False,
-        validate_return=True,
-        str_strip_whitespace=True,
-        validate_default=True,
-        loc_by_alias=False,
-    )
+    # Re-export PluginType enum from constants for convenience
+    PluginType = FlextPluginConstants.PluginType
 
-    class PluginModel(FlextModels.Entity):
-        """Core plugin entity model with comprehensive validation."""
+    class Plugin(FlextModels.Entity):
+        """Plugin entity - core domain entity with identity and lifecycle.
+
+        Represents a plugin with identity, lifecycle management, and mutable state.
+        Compared by identity (id), not by value.
+
+        Attributes:
+            name: Plugin unique identifier
+            plugin_version: Plugin semantic version (X.Y.Z)
+            description: Plugin functionality description
+            author: Plugin author/maintainer
+            plugin_type: Plugin type classification (from PluginType enum)
+            is_enabled: Plugin enabled state
+            metadata: Extensible plugin metadata
+
+        """
 
         name: str = Field(
             ...,
@@ -64,7 +57,7 @@ class FlextPluginModels(FlextModels):
         plugin_version: str = Field(
             default="1.0.0",
             pattern=FlextPluginConstants.PluginValidation.VERSION_PATTERN,
-            description="Plugin semantic version",
+            description="Plugin semantic version (X.Y.Z)",
         )
         description: str = Field(
             default="",
@@ -74,400 +67,488 @@ class FlextPluginModels(FlextModels):
         author: str = Field(
             default="",
             max_length=FlextPluginConstants.PluginValidation.MAX_AUTHOR_LENGTH,
-            description="Plugin author",
+            description="Plugin author/maintainer",
         )
-        plugin_type: FlextPluginEntities.PluginType = Field(
+        plugin_type: str = Field(
+            default=FlextPluginConstants.PluginType.UTILITY,
             description="Plugin type classification",
         )
-        status: FlextPluginEntities.PluginStatus = Field(
-            description="Current plugin operational status",
+        is_enabled: bool = Field(default=True, description="Plugin enabled state")
+        metadata: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Extensible plugin metadata",
         )
-        enabled: bool = Field(default=True, description="Plugin enabled state")
-        dependencies: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list, description="Required plugin dependencies"
-        )
-        tags: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list, description="Plugin categorization tags"
-        )
-        created_at: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Plugin creation timestamp",
-        )
-        updated_at: datetime | None = Field(
-            default=None, description="Last update timestamp"
-        )
+
+        @field_validator("plugin_version", mode="before")
+        @classmethod
+        def validate_semantic_version(cls, value: str) -> str:
+            """Validate semantic version format (X.Y.Z)."""
+            min_version_parts = 2
+            max_version_parts = 3
+            if isinstance(value, str):
+                parts = value.split(".")
+                if (
+                    len(parts) < min_version_parts
+                    or len(parts) > max_version_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
+            return value
+
+        @field_validator("plugin_type", mode="before")
+        @classmethod
+        def validate_plugin_type(cls, value: str) -> str:
+            """Validate plugin type is a valid PluginType enum value."""
+            valid_types = {pt.value for pt in FlextPluginConstants.PluginType}
+            if value not in valid_types:
+                error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
+                raise ValueError(error_msg)
+            return value
 
         @model_validator(mode="after")
         def validate_plugin_consistency(self) -> Self:
             """Validate plugin model consistency and constraints."""
-            if (
-                self.status == FlextPluginEntities.PluginStatus.ACTIVE
-                and not self.enabled
-            ):
-                error_msg = FlextPluginConstants.PluginMessages.PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED
-                raise ValueError(error_msg)
-
-            if self.name in self.dependencies:
-                error_msg = (
-                    FlextPluginConstants.PluginMessages.PLUGIN_CANNOT_DEPEND_ON_ITSELF
-                )
-                raise ValueError(error_msg)
-
+            # Plugin cannot be active when disabled - if needed, add status field
             return self
 
-        @field_validator("dependencies")
         @classmethod
-        def validate_dependencies_format(
-            cls, value: FlextPluginTypes.Core.StringList
-        ) -> FlextPluginTypes.Core.StringList:
-            """Validate dependency format and constraints."""
-            if len(value) > FlextPluginConstants.PluginValidation.MAX_DEPENDENCIES:
-                error_msg = FlextPluginConstants.PluginMessages.TOO_MANY_DEPENDENCIES
-                raise ValueError(error_msg)
+        def create(
+            cls,
+            *,
+            name: str,
+            plugin_version: str = "1.0.0",
+            description: str = "",
+            author: str = "",
+            plugin_type: str = FlextPluginConstants.PluginType.UTILITY,
+            is_enabled: bool = True,
+            metadata: dict[str, Any] | None = None,
+            entity_id: str | None = None,
+        ) -> Self:
+            """Factory method to create a new Plugin entity.
 
-            for dep in value:
-                if not re.match(
-                    FlextPluginConstants.PluginValidation.PLUGIN_NAME_PATTERN, dep
-                ):
-                    error_msg = FlextPluginConstants.PluginMessages.INVALID_DEPENDENCY_FORMAT.format(
-                        dep=dep
-                    )
-                    raise ValueError(error_msg)
+            Args:
+                name: Plugin name (required)
+                plugin_version: Plugin semantic version
+                description: Plugin description
+                author: Plugin author
+                plugin_type: Plugin type (from PluginType enum)
+                is_enabled: Whether plugin is initially enabled
+                metadata: Additional metadata
+                entity_id: Entity ID (auto-generated if None)
 
-            return value
+            Returns:
+                New Plugin entity instance
 
-        @field_serializer("dependencies", when_used="json")
-        def serialize_dependencies_with_validation(
-            self, value: FlextPluginTypes.Core.StringList
-        ) -> FlextPluginTypes.Core.PluginDict:
-            """Field serializer for dependencies with validation metadata."""
-            return {
-                "dependencies": value,
-                "dependency_count": len(value),
-                "has_flext_dependencies": any("flext" in dep for dep in value),
-                "validated_at": datetime.now(UTC).isoformat(),
-            }
-
-    class ConfigModel(BaseModel):
-        """Plugin configuration model with comprehensive settings."""
-
-        model_config = SettingsConfigDict(
-            validate_assignment=True,
-            use_enum_values=True,
-            extra="forbid",
-            frozen=False,
-            validate_return=True,
-        )
-
-        enabled: bool = Field(default=True, description="Plugin enabled state")
-        settings: FlextPluginTypes.Core.SettingsDict = Field(
-            default_factory=dict, description="Plugin settings"
-        )
-        priority: int = Field(
-            default=100,
-            description="Plugin priority",
-        )
-        timeout_seconds: int = Field(default=60, description="Plugin execution timeout")
-        max_memory_mb: int = Field(default=512, description="Maximum memory usage")
-        max_cpu_percent: int = Field(default=50, description="Maximum CPU usage")
-        auto_restart: bool = Field(default=True, description="Auto restart on failure")
-        retry_attempts: int = Field(default=3, description="Maximum retry attempts")
-
-        @field_validator("priority")
-        @classmethod
-        def validate_priority_range(cls, value: int) -> int:
-            """Validate priority is within acceptable range."""
-            if (
-                not FlextPluginConstants.PluginValidation.MIN_PRIORITY
-                <= value
-                <= FlextPluginConstants.PluginValidation.MAX_PRIORITY
-            ):
-                error_msg = FlextPluginConstants.PluginMessages.PRIORITY_MUST_BE_BETWEEN_0_AND_100
-                raise ValueError(error_msg)
-            return value
-
-        @field_validator("max_memory_mb")
-        @classmethod
-        def validate_memory_limits(cls, value: int) -> int:
-            """Validate memory limits are reasonable."""
-            if value > FlextPluginConstants.PluginPerformance.READY_MAX_MEMORY_MB:
-                error_msg = (
-                    FlextPluginConstants.PluginMessages.MEMORY_LIMIT_EXCEEDS_MAXIMUM
-                )
-                raise ValueError(error_msg)
-            if value < FlextPluginConstants.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB:
-                error_msg = FlextPluginConstants.PluginMessages.MEMORY_LIMIT_TOO_LOW
-                raise ValueError(error_msg)
-            return value
-
-    class SecurityModel(FlextModels.Entity):
-        """Plugin security model with enterprise-grade validation."""
-
-        model_config = ConfigDict(
-            validate_assignment=True,
-            extra="forbid",
-            frozen=True,  # Security models should be immutable
-        )
-
-        security_level: str = Field(
-            default=FlextPluginConstants.PluginSecurity.SECURITY_MEDIUM,
-            pattern=FlextPluginConstants.PluginValidation.SECURITY_LEVEL_PATTERN,
-            description="Plugin security clearance level",
-        )
-        permissions: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list, description="Required security permissions"
-        )
-        sandboxed: bool = Field(
-            default=True, description="Whether plugin runs in sandbox"
-        )
-        network_access: bool = Field(
-            default=False, description="Network access permission"
-        )
-        file_access: bool = Field(
-            default=False, description="File system access permission"
-        )
-        encrypted_data: bool = Field(
-            default=True, description="Whether plugin data is encrypted"
-        )
-        audit_logging: bool = Field(
-            default=True, description="Whether actions are audit logged"
-        )
-        signature_verified: bool = Field(
-            default=False, description="Whether plugin signature is verified"
-        )
-
-        @property
-        def is_secure(self) -> bool:
-            """Check if security configuration meets enterprise standards."""
-            return (
-                self.sandboxed
-                and not self.network_access
-                and not self.file_access
-                and self.encrypted_data
-                and self.audit_logging
+            """
+            return cls(
+                id=entity_id,
+                name=name,
+                plugin_version=plugin_version,
+                description=description,
+                author=author,
+                plugin_type=plugin_type,
+                is_enabled=is_enabled,
+                metadata=metadata or {},
             )
 
-    class MonitoringModel(FlextModels.Entity):
-        """Plugin monitoring and observability model."""
+        def enable(self) -> FlextResult[None]:
+            """Enable the plugin.
 
-        model_config = ConfigDict(
-            validate_assignment=True,
-            extra="allow",  # Allow extra monitoring fields
-            frozen=False,
-        )
+            Returns:
+                FlextResult indicating success or failure
 
-        metrics_enabled: bool = Field(
-            default=True, description="Whether metrics collection is enabled"
-        )
-        health_checks: bool = Field(
-            default=True, description="Whether health checks are active"
-        )
-        performance_tracking: bool = Field(
-            default=True, description="Whether performance is tracked"
-        )
-        error_tracking: bool = Field(
-            default=True, description="Whether errors are tracked"
-        )
-        log_level: str = Field(
-            default=FlextPluginConstants.Monitoring.DEFAULT_LOG_LEVEL,
-            pattern=FlextPluginConstants.PluginValidation.LOG_LEVEL_PATTERN,
-            description="Logging level for plugin",
-        )
-        alert_thresholds: FlextPluginTypes.Core.FloatDict = Field(
-            default_factory=lambda: {
-                "cpu_percent": FlextPluginConstants.Monitoring.DEFAULT_CPU_THRESHOLD,
-                "memory_percent": FlextPluginConstants.Monitoring.DEFAULT_MEMORY_THRESHOLD,
-                "error_rate": FlextPluginConstants.Monitoring.DEFAULT_ERROR_RATE_THRESHOLD,
-                "response_time_ms": FlextPluginConstants.Monitoring.DEFAULT_RESPONSE_TIME_THRESHOLD,
-            },
-            description="Alert threshold configuration",
-        )
-        retention_days: int = Field(
-            default=FlextPluginConstants.Monitoring.DEFAULT_RETENTION_DAYS,
-            ge=FlextPluginConstants.Monitoring.MIN_RETENTION_DAYS,
-            le=FlextPluginConstants.Monitoring.MAX_RETENTION_DAYS,
-            description="Data retention period in days",
-        )
+            """
+            if self.is_enabled:
+                return FlextResult.fail("Plugin is already enabled")
+            self.is_enabled = True
+            return FlextResult.ok(None)
 
-        @property
-        def has_basic_monitoring(self) -> bool:
-            """Check if basic monitoring features are enabled."""
-            return self.metrics_enabled and self.health_checks and self.error_tracking
+        def disable(self) -> FlextResult[None]:
+            """Disable the plugin.
 
-        @field_validator("alert_thresholds")
-        @classmethod
-        def validate_alert_thresholds(
-            cls, value: FlextPluginTypes.Core.FloatDict
-        ) -> FlextPluginTypes.Core.FloatDict:
-            """Validate alert threshold values."""
-            required_thresholds = {
-                "cpu_percent",
-                "memory_percent",
-                "error_rate",
-                "response_time_ms",
-            }
-            missing = required_thresholds - set(value.keys())
-            if missing:
-                error_msg = FlextPluginConstants.PluginMessages.MISSING_REQUIRED_THRESHOLDS.format(
-                    missing=missing
+            Returns:
+                FlextResult indicating success or failure
+
+            """
+            if not self.is_enabled:
+                return FlextResult.fail("Plugin is already disabled")
+            self.is_enabled = False
+            return FlextResult.ok(None)
+
+        def validate_business_rules(self) -> FlextResult[None]:
+            """Validate plugin business rules.
+
+            Business Rules:
+            - Plugin name must not be empty
+            - Plugin version must follow semantic versioning (X.Y.Z)
+            - Plugin type must be valid
+
+            Returns:
+                FlextResult indicating validation success or failure
+
+            """
+            min_version_parts = 2
+            max_version_parts = 3
+            if not self.name or not self.name.strip():
+                return FlextResult.fail("Plugin name cannot be empty")
+
+            # Validate semantic version
+            version_parts = self.plugin_version.split(".")
+            if (
+                len(version_parts) < min_version_parts
+                or len(version_parts) > max_version_parts
+            ):
+                return FlextResult.fail(
+                    f"Invalid semantic version: {self.plugin_version}"
                 )
-                raise ValueError(error_msg)
+            if not all(part.isdigit() for part in version_parts if part):
+                return FlextResult.fail(
+                    f"Version parts must be numeric: {self.plugin_version}"
+                )
 
-            for key, threshold in value.items():
-                if (
-                    key.endswith("_percent")
-                    and not 0 <= threshold <= FlextConstants.Validation.MAX_PERCENTAGE
-                ):
-                    error_msg = FlextPluginConstants.PluginMessages.PERCENTAGE_THRESHOLD_MUST_BE_0_100.format(
-                        key=key
-                    )
-                    raise ValueError(error_msg)
-                if threshold < 0:
-                    error_msg = FlextPluginConstants.PluginMessages.THRESHOLD_CANNOT_BE_NEGATIVE.format(
-                        key=key
-                    )
-                    raise ValueError(error_msg)
+            # Validate plugin type
+            valid_types = {pt.value for pt in FlextPluginConstants.PluginType}
+            if self.plugin_type not in valid_types:
+                return FlextResult.fail(f"Invalid plugin type: {self.plugin_type}")
 
-            return value
+            return FlextResult.ok(None)
 
-    class MetadataModel(FlextModels.Entity):
-        """Plugin metadata model."""
+    class ExecutionResult(FlextModels.Value):
+        """Plugin execution result - immutable execution outcome.
 
-        model_config = ConfigDict(
-            extra="allow",
-            validate_assignment=True,
-        )
+        Represents the result of a plugin execution including success status,
+        output data, and execution metrics.
 
-        plugin_id: str = Field(..., description="Unique plugin identifier")
-        created_at: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Plugin creation timestamp",
-        )
-        updated_at: datetime | None = Field(
-            default=None,
-            description="Last update timestamp",
-        )
-        homepage: str | None = Field(default=None, description="Plugin homepage URL")
-        repository: str | None = Field(
-            default=None,
-            description="Plugin repository URL",
-        )
-        documentation: str | None = Field(
-            default=None,
-            description="Plugin documentation URL",
-        )
-        license: str | None = Field(default=None, description="Plugin license")
-        keywords: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list,
-            description="Plugin keywords",
-        )
-        maintainers: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list,
-            description="Plugin maintainers",
-        )
-        platform_version: str | None = Field(
-            default=None,
-            description="Required platform version",
-        )
-        python_version: str | None = Field(
-            default=None,
-            description="Required Python version",
-        )
+        Attributes:
+            success: Whether execution succeeded
+            data: Execution output data
+            error: Error message if execution failed
+            execution_time_ms: Execution time in milliseconds
 
-    class ExecutionContextModel(FlextModels.Entity):
-        """Plugin execution context model."""
+        """
 
-        model_config = ConfigDict(
-            extra="allow",
-            validate_assignment=True,
-        )
-
-        plugin_id: str = Field(..., description="Plugin identifier")
-        execution_id: str = Field(..., description="Unique execution identifier")
-        input_data: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
-            default_factory=dict,
-            description="Input data for execution",
-        )
-        context: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
-            default_factory=dict,
-            description="Execution context data",
-        )
-        timeout_seconds: int | None = Field(
-            default=None,
-            description="Execution timeout in seconds",
-        )
-        started_at: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Execution start timestamp",
-        )
-
-    class ExecutionResultModel(FlextModels.Entity):
-        """Plugin execution result model."""
-
-        model_config = ConfigDict(
-            extra="allow",
-            validate_assignment=True,
-        )
-
-        success: bool = Field(default=False, description="Whether execution succeeded")
-        data: FlextPluginTypes.Core.AnyDict = Field(
+        success: bool = Field(description="Whether execution succeeded")
+        data: dict[str, Any] = Field(
             default_factory=dict,
             description="Execution output data",
         )
-        error: str = Field(default="", description="Error message if execution failed")
-        plugin_name: str = Field(default="", description="Name of the executed plugin")
-        execution_time: float = Field(
-            default=0.0,
-            description="Execution time in seconds",
-        )
-        execution_id: str = Field(default="", description="Unique execution identifier")
-        completed_at: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Execution completion timestamp",
-        )
-
-        @property
-        def duration_ms(self) -> float:
-            """Get execution time in milliseconds."""
-            return self.execution_time * 1000
-
-        def is_failure(self) -> bool:
-            """Return True if execution failed."""
-            return not self.success
-
-    class ManagerResultModel(FlextModels.Entity):
-        """Plugin manager operation result model."""
-
-        model_config = ConfigDict(
-            extra="allow",
-            validate_assignment=True,
-        )
-
-        operation: str = Field(..., description="Operation name")
-        success: bool = Field(default=False, description="Whether operation succeeded")
-        plugins_affected: FlextPluginTypes.Core.StringList = Field(
-            default_factory=list,
-            description="List of affected plugin names",
+        error: str = Field(
+            default="",
+            description="Error message if execution failed",
         )
         execution_time_ms: float = Field(
             default=0.0,
-            description="Operation execution time in milliseconds",
+            ge=0,
+            description="Execution time in milliseconds",
         )
-        details: dict[str, FlextPluginTypes.Core.AnyDict] = Field(
+
+    class DiscoveryData(FlextModels.Value):
+        """Plugin discovery data - immutable discovery result.
+
+        Represents discovered plugin information from various discovery methods
+        (file system, entry points, etc.). Immutable value object.
+
+        Attributes:
+            name: Plugin unique identifier name
+            version: Plugin semantic version (X.Y.Z)
+            path: File system path to plugin
+            discovery_type: Type of discovered plugin (file, directory, entry_point)
+            discovery_method: Discovery method used (file_system, entry_points)
+            metadata: Extensible discovery metadata
+
+        """
+
+        name: str = Field(
+            min_length=FlextPluginConstants.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=FlextPluginConstants.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            pattern=FlextPluginConstants.PluginValidation.PLUGIN_NAME_PATTERN,
+            description="Plugin unique identifier name",
+        )
+        version: str = Field(
+            pattern=FlextPluginConstants.PluginValidation.VERSION_PATTERN,
+            description="Plugin semantic version (X.Y.Z)",
+        )
+        path: Path = Field(description="File system path to plugin")
+        discovery_type: Literal["file", "directory", "entry_point"] = Field(
+            description="Type of discovered plugin"
+        )
+        discovery_method: Literal["file_system", "entry_points"] = Field(
+            description="Discovery method used"
+        )
+        metadata: dict[str, Any] = Field(
             default_factory=dict,
-            description="Additional operation details",
+            description="Extensible discovery metadata",
         )
-        errors: FlextPluginTypes.Core.StringList = Field(
+
+        @field_validator("version", mode="before")
+        @classmethod
+        def validate_version(cls, value: str) -> str:
+            """Validate semantic version format."""
+            min_parts = 2
+            max_parts = 3
+            if isinstance(value, str):
+                parts = value.split(".")
+                if (
+                    len(parts) < min_parts
+                    or len(parts) > max_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
+            return value
+
+    class LoadData(FlextModels.Value):
+        """Plugin load data - immutable load result.
+
+        Represents successfully loaded plugin information including the loaded
+        module object and load metadata. Immutable value object.
+
+        Attributes:
+            name: Plugin unique identifier name
+            version: Plugin semantic version
+            path: File system path to plugin
+            module: The loaded Python module object
+            load_type: Type of loaded plugin (file, directory, entry_point)
+            loaded_at: Timestamp when plugin was loaded
+            entry_file: Entry file path for directory-based plugins
+
+        """
+
+        name: str = Field(
+            min_length=FlextPluginConstants.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=FlextPluginConstants.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            description="Plugin unique identifier name",
+        )
+        version: str = Field(
+            pattern=FlextPluginConstants.PluginValidation.VERSION_PATTERN,
+            description="Plugin semantic version (X.Y.Z)",
+        )
+        path: Path = Field(description="File system path to plugin")
+        module: Any = Field(description="The loaded Python module object")
+        load_type: Literal["file", "directory", "entry_point"] = Field(
+            description="Type of loaded plugin"
+        )
+        loaded_at: datetime = Field(description="Timestamp when plugin was loaded")
+        entry_file: Path | None = Field(
+            default=None,
+            description="Entry file path for directory-based plugins",
+        )
+
+    class ReloadRecord(FlextModels.Value):
+        """Plugin reload record - immutable reload history entry.
+
+        Records information about a plugin reload event including timing,
+        success/failure status, and optional error details. Immutable value object.
+
+        Attributes:
+            plugin_name: Name of reloaded plugin
+            plugin_path: Path to reloaded plugin
+            timestamp: When reload occurred
+            success: Whether reload succeeded
+            error: Error message if reload failed
+            duration_ms: Reload duration in milliseconds
+
+        """
+
+        plugin_name: str = Field(description="Name of reloaded plugin")
+        plugin_path: Path = Field(description="Path to reloaded plugin")
+        timestamp: datetime = Field(description="When reload occurred")
+        success: bool = Field(description="Whether reload succeeded")
+        error: str | None = Field(
+            default=None,
+            description="Error message if reload failed",
+        )
+        duration_ms: float = Field(
+            default=0.0,
+            ge=0,
+            description="Reload duration in milliseconds",
+        )
+
+    class PluginMetadata(FlextModels.Value):
+        """Plugin metadata - immutable metadata value object.
+
+        Represents comprehensive metadata about a plugin including discovery
+        and description information. Immutable value object.
+
+        Attributes:
+            name: Plugin unique identifier
+            version: Plugin semantic version
+            description: Plugin description
+            author: Plugin author
+            plugin_type: Type of plugin (extension, transformer, etc.)
+            entry_point: Entry point for plugin
+            dependencies: List of plugin dependencies
+            metadata: Additional metadata dictionary
+
+        """
+
+        name: str = Field(description="Plugin unique identifier")
+        version: str = Field(description="Plugin semantic version")
+        description: str = Field(default="", description="Plugin description")
+        author: str = Field(default="Unknown", description="Plugin author")
+        plugin_type: str = Field(default="extension", description="Type of plugin")
+        entry_point: str = Field(description="Entry point for plugin")
+        dependencies: list[str] = Field(
             default_factory=list,
-            description="List of error messages",
+            description="List of plugin dependencies",
         )
-        completed_at: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Operation completion timestamp",
+        metadata: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Additional metadata",
         )
 
+    class EventData(FlextModels.Value):
+        """Event data - immutable event information.
 
-__all__ = [
-    # Main unified class
-    "FlextPluginModels",
-]
+        Represents structured event data with context and metadata.
+        Immutable value object.
+
+        Attributes:
+            event_type: Type of event
+            plugin_name: Associated plugin name
+            timestamp: When event occurred
+            data: Event-specific data
+
+        """
+
+        event_type: str = Field(description="Type of event")
+        plugin_name: str = Field(description="Associated plugin name")
+        timestamp: datetime = Field(description="When event occurred")
+        data: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Event-specific data",
+        )
+
+    class ValidationResult(FlextModels.Value):
+        """Validation result - immutable validation outcome.
+
+        Represents result of plugin validation including status and details.
+        Immutable value object.
+
+        Attributes:
+            is_valid: Whether validation passed
+            errors: List of validation errors
+            warnings: List of validation warnings
+            details: Additional validation details
+
+        """
+
+        is_valid: bool = Field(description="Whether validation passed")
+        errors: list[str] = Field(
+            default_factory=list,
+            description="List of validation errors",
+        )
+        warnings: list[str] = Field(
+            default_factory=list,
+            description="List of validation warnings",
+        )
+        details: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Additional validation details",
+        )
+
+    class SecurityReport(FlextModels.Value):
+        """Security report - immutable security scan result.
+
+        Represents security scanning results for plugins.
+        Immutable value object.
+
+        Attributes:
+            is_safe: Whether plugin passed security checks
+            violations: List of security violations
+            warnings: List of security warnings
+            analysis_time: When analysis was performed
+
+        """
+
+        is_safe: bool = Field(description="Whether plugin passed security checks")
+        violations: list[str] = Field(
+            default_factory=list,
+            description="List of security violations",
+        )
+        warnings: list[str] = Field(
+            default_factory=list,
+            description="List of security warnings",
+        )
+        analysis_time: datetime = Field(description="When analysis was performed")
+
+    class WatcherConfig(FlextModels.Value):
+        """Watcher configuration - file system monitoring config.
+
+        Represents file watcher configuration for hot reload.
+        Immutable value object.
+
+        Attributes:
+            watch_path: Path being watched
+            watch_interval: Polling interval in seconds
+            callback: Callback function reference (Any for flexibility)
+            active: Whether watcher is active
+            last_modified: File modification tracking
+            created_at: Configuration creation time
+
+        """
+
+        watch_path: str = Field(description="Path being watched")
+        watch_interval: float = Field(description="Polling interval in seconds")
+        callback: Any = Field(default=None, description="Callback function reference")
+        active: bool = Field(default=False, description="Whether watcher is active")
+        last_modified: dict[str, Any] = Field(
+            default_factory=dict,
+            description="File modification tracking",
+        )
+        created_at: datetime = Field(description="Configuration creation time")
+
+    class SandboxConfig(FlextModels.Value):
+        """Sandbox configuration - plugin execution sandbox settings.
+
+        Represents security sandbox configuration for plugin execution.
+        Immutable value object.
+
+        Attributes:
+            plugin_name: Name of plugin to sandbox
+            max_memory_mb: Maximum memory in MB
+            max_execution_time: Maximum execution time in seconds
+            allowed_modules: Allowed import modules
+            network_access: Whether network access allowed
+            file_system_access: File system access level
+            environment_variables: Environment variable settings
+
+        """
+
+        plugin_name: str = Field(description="Name of plugin to sandbox")
+        max_memory_mb: int = Field(description="Maximum memory in MB")
+        max_execution_time: int = Field(description="Maximum execution time in seconds")
+        allowed_modules: list[str] = Field(
+            description="Allowed import modules",
+        )
+        network_access: bool = Field(description="Whether network access allowed")
+        file_system_access: str = Field(description="File system access level")
+        environment_variables: dict[str, str] = Field(
+            description="Environment variable settings",
+        )
+
+    class PluginRegistry(FlextModels.Value):
+        """Plugin registry - central plugin registry storage.
+
+        Represents plugin registry with version tracking and plugin entries.
+        Immutable value object.
+
+        Attributes:
+            version: Registry schema version
+            plugins: Dictionary of registered plugins
+            last_updated: Last update timestamp
+            created_at: Registry creation timestamp
+
+        """
+
+        version: str = Field(description="Registry schema version")
+        plugins: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Dictionary of registered plugins",
+        )
+        last_updated: datetime = Field(description="Last update timestamp")
+        created_at: datetime = Field(description="Registry creation timestamp")
+
+
+__all__ = ["FlextPluginModels"]

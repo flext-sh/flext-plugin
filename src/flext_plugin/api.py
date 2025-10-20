@@ -7,11 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
-from flext_plugin.platform import FlextPluginPlatform
-from flext_plugin.plugin import Plugin, PluginStatus
-from flext_plugin.plugin_execution import PluginExecution
+from flext_plugin.models import FlextPluginModels
+from flext_plugin.platform import FlextPluginPlatform, PluginExecution
 
 
 class FlextPluginApi:
@@ -20,64 +21,64 @@ class FlextPluginApi:
     __slots__ = ("logger", "platform")
 
     def __init__(self, container: FlextContainer | None = None) -> None:
+        """Initialize FlextPlugin with optional container.
+
+        Args:
+            container: Dependency injection container (uses default if None)
+
+        """
         self.logger = FlextLogger(__name__)
         self.platform = FlextPluginPlatform(container or FlextContainer())
 
     # Core operations with logging composition
-    async def discover_plugins(self, paths: list[str]) -> FlextResult[list[Plugin]]:
-        return (await self.platform.discover_plugins(paths)).map(
-            lambda plugins: (self._log(f"Discovered {len(plugins)} plugins"), plugins)[
+    def discover_plugins(
+        self, paths: list[str]
+    ) -> FlextResult[Sequence[FlextPluginModels.Plugin]]:
+        return self.platform.discover_plugins(paths).map(
+            lambda plugins: (
+                self.logger.info(f"Discovered {len(plugins)} plugins"),
+                plugins,
+            )[1],
+        )
+
+    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+        return self.platform.load_plugin(plugin_path).map(
+            lambda plugin: (self.logger.info(f"Loaded plugin: {plugin.name}"), plugin)[
                 1
-            ]
+            ],
         )
 
-    async def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
-        return (await self.platform.load_plugin(plugin_path)).map(
-            lambda plugin: (self._log(f"Loaded plugin: {plugin.name}"), plugin)[1]
-        )
-
-    async def execute_plugin(
+    def execute_plugin(
         self,
         plugin_name: str,
         context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[PluginExecution]:
-        return await self.platform.execute_plugin(plugin_name, context, execution_id)
+        return self.platform.execute_plugin(plugin_name, context, execution_id)
 
     # Direct delegation with railway patterns
-    def register_plugin(self, plugin: Plugin) -> FlextResult[bool]:
+    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         return self.platform.register_plugin(plugin)
 
     def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         return self.platform.unregister_plugin(plugin_name)
 
     # Hot reload operations
-    async def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
-        return await self.platform.start_hot_reload(paths)
+    def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
+        return self.platform.start_hot_reload(paths)
 
-    async def stop_hot_reload(self) -> FlextResult[bool]:
-        return await self.platform.stop_hot_reload()
+    def stop_hot_reload(self) -> FlextResult[bool]:
+        return self.platform.stop_hot_reload()
 
     # Plugin accessors
-    def get_plugin(self, plugin_name: str) -> Plugin | None:
+    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
         return self.platform.get_plugin(plugin_name)
 
-    def list_plugins(self) -> list[Plugin]:
+    def list_plugins(self) -> Sequence[FlextPluginModels.Plugin]:
         return self.platform.list_plugins()
 
-    def get_plugin_status(self, plugin_name: str) -> PluginStatus | None:
+    def get_plugin_status(self, plugin_name: str) -> str | None:
         return self.platform.get_plugin_status(plugin_name)
 
     def is_plugin_active(self, plugin_name: str) -> bool:
         return self.platform.is_plugin_active(plugin_name)
-
-    @property
-    def get_platform_status(self) -> dict[str, object]:
-        return self.platform.get_platform_status
-
-    # Private logging helper
-    def _log(self, message: str) -> None:
-        self.logger.info(message)
-
-
-__all__ = ["FlextPluginApi"]

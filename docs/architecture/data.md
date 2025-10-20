@@ -31,13 +31,13 @@ class Plugin {
     +description: str
     +plugin_type: PluginType
     +status: PluginStatus
-    +config: PluginConfig
+    +config: FlextPluginConfig
     +metadata: PluginMetadata
     +created_at: datetime
     +updated_at: datetime
 }
 
-class PluginConfig {
+class FlextPluginConfig {
     +dependencies: FlextTypes.StringList
     +entry_points: Dict[str, str]
     +security_level: SecurityLevel
@@ -81,7 +81,7 @@ class Registry {
     +version: str
 }
 
-Plugin ||--|| PluginConfig
+Plugin ||--|| FlextPluginConfig
 Plugin ||--|| PluginMetadata
 Execution ||--|| ExecutionContext
 Registry ||--o{ Plugin
@@ -378,7 +378,7 @@ Retired --> Archived: Retirement archival
 from pydantic import BaseModel, Field
 from typing import List, Dict, object
 
-class PluginConfig(BaseModel):
+class FlextPluginConfig(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r'^\d+\.\d+\.\d+$')
     dependencies: FlextTypes.StringList = Field(default_factory=list)
@@ -402,10 +402,10 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> dict[str, object
 
 ```python
 # Runtime data validation
-def validate_plugin_config(config_data: dict) -> FlextResult[PluginConfig]:
+def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginConfig]:
     """Validate plugin configuration data."""
     try:
-        config = PluginConfig(**config_data)
+        config = FlextPluginConfig(**config_data)
         return FlextResult.ok(config)
     except ValidationError as e:
         return FlextResult.fail(f"Configuration validation failed: {e}")
@@ -506,7 +506,7 @@ def validate_plugin_config(config_data: dict) -> FlextResult[PluginConfig]:
 interface PluginRegistrationRequest {
   name: string;
   version: string;
-  config: PluginConfig;
+  config: FlextPluginConfig;
   metadata: PluginMetadata;
 }
 

@@ -1,4 +1,4 @@
-"""Unit tests for FlextPluginConfig.
+"""Unit tests for FlextPluginModels.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,7 +13,7 @@ from flext_plugin.config import FlextPluginConfig
 
 
 class TestFlextPluginConfig:
-    """Test cases for FlextPluginConfig."""
+    """Test cases for FlextPluginModels."""
 
     def test_config_initialization(self) -> None:
         """Test that config can be initialized with defaults."""

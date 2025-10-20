@@ -35,7 +35,7 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         return False
 
 
-def create_docker_postgres_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
+def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
     postgres_config = {
         "host": "localhost",
@@ -50,7 +50,7 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.PluginModel, dict
     }
 
     # Use domain library patterns - create plugin model directly
-    postgres_plugin = FlextPluginModels.PluginModel(
+    postgres_plugin = FlextPluginModels.Plugin(
         name="docker-postgres-connector",
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
@@ -64,7 +64,7 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.PluginModel, dict
     return postgres_plugin, postgres_config
 
 
-def create_docker_redis_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
+def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
     redis_config = {
         "host": "localhost",
@@ -80,7 +80,7 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     }
 
     # Use domain library patterns - create plugin model directly
-    redis_plugin = FlextPluginModels.PluginModel(
+    redis_plugin = FlextPluginModels.Plugin(
         name="docker-redis-cache",
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
@@ -94,7 +94,7 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     return redis_plugin, redis_config
 
 
-def create_docker_ldap_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
+def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
     ldap_config = {
         "host": "localhost",
@@ -110,7 +110,7 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.PluginModel, dict]:
     }
 
     # Use domain library patterns - create plugin model directly
-    ldap_plugin = FlextPluginModels.PluginModel(
+    ldap_plugin = FlextPluginModels.Plugin(
         name="docker-ldap-directory",
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",

@@ -18,11 +18,12 @@ from typing import ClassVar
 
 import pytest
 
-from flext_plugin import PluginDiscovery, PluginType
+from flext_plugin.constants import FlextPluginConstants
+from flext_plugin.discovery import FlextPluginDiscovery
 
 
-class TestPluginDiscoveryReal:
-    """REAL test suite for PluginDiscovery with actual file system operations.
+class TestFlextPluginDiscoveryReal:
+    """REAL test suite for FlextPluginDiscovery with actual file system operations.
 
     This test class validates plugin discovery functionality using REAL method
     calls and file operations, providing integration-focused testing that validates
@@ -37,7 +38,7 @@ class TestPluginDiscoveryReal:
 
     def test_discovery_initialization_with_defaults(self) -> None:
         """Test plugin discovery initialization with default values."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         assert discovery is not None
         assert discovery.plugin_directory == "/usr/local/plugins"
@@ -53,7 +54,7 @@ class TestPluginDiscoveryReal:
     ) -> None:
         """Test plugin discovery initialization with custom directory."""
         custom_dir = str(temp_dir / "custom_plugins")
-        discovery = PluginDiscovery(plugin_directory=custom_dir)
+        discovery = FlextPluginDiscovery(plugin_directory=custom_dir)
 
         assert discovery.plugin_directory == custom_dir
         assert isinstance(discovery.plugin_directories, list)
@@ -70,7 +71,7 @@ class TestPluginDiscoveryReal:
             str(temp_dir / "extra2"),
         ]
 
-        discovery = PluginDiscovery(
+        discovery = FlextPluginDiscovery(
             plugin_directory=main_dir,
             plugin_directories=additional_dirs,
         )
@@ -81,7 +82,7 @@ class TestPluginDiscoveryReal:
     def test_validate_business_rules_success(self, temp_dir: Path) -> None:
         """Test business rules validation with valid directory."""
         plugin_dir = str(temp_dir / "plugins")
-        discovery = PluginDiscovery(plugin_directory=plugin_dir)
+        discovery = FlextPluginDiscovery(plugin_directory=plugin_dir)
 
         result = discovery.validate_business_rules()
 
@@ -91,19 +92,18 @@ class TestPluginDiscoveryReal:
 
     def test_validate_business_rules_empty_directory_fails(self) -> None:
         """Test business rules validation with empty directory fails."""
-        discovery = PluginDiscovery(plugin_directory="")
+        discovery = FlextPluginDiscovery(plugin_directory="")
 
         result = discovery.validate_business_rules()
 
         assert not result.success
         assert result.error is not None
-        assert (
-            result.error is not None and "Plugin directory is required" in result.error
-        )
+        assert result.error is not None
+        assert "Plugin directory is required" in result.error
 
     def test_add_plugin_directory(self, temp_dir: Path) -> None:
         """Test adding a new plugin directory."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         new_dir = temp_dir / "new_plugins"
 
         # Initially empty
@@ -118,7 +118,7 @@ class TestPluginDiscoveryReal:
 
     def test_add_duplicate_plugin_directory_ignored(self, temp_dir: Path) -> None:
         """Test adding duplicate plugin directory is ignored."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         plugin_dir = temp_dir / "plugins"
 
         # Add same directory twice
@@ -131,7 +131,7 @@ class TestPluginDiscoveryReal:
 
     def test_add_multiple_plugin_directories(self, temp_dir: Path) -> None:
         """Test adding multiple different plugin directories."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         dir1 = temp_dir / "plugins1"
         dir2 = temp_dir / "plugins2"
@@ -148,7 +148,7 @@ class TestPluginDiscoveryReal:
 
     def test_blacklist_plugin_functionality(self) -> None:
         """Test plugin blacklisting functionality."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         # Initially not blacklisted
         assert not discovery.is_blacklisted("test-plugin")
@@ -164,7 +164,7 @@ class TestPluginDiscoveryReal:
 
     def test_blacklist_multiple_plugins(self) -> None:
         """Test blacklisting multiple plugins."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         plugins_to_blacklist = ["plugin1", "plugin2", "plugin3"]
 
@@ -181,7 +181,7 @@ class TestPluginDiscoveryReal:
 
     def test_get_discovered_plugin_not_found(self) -> None:
         """Test getting non-existent discovered plugin."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         result = discovery.get_discovered_plugin("non-existent")
 
@@ -189,7 +189,7 @@ class TestPluginDiscoveryReal:
 
     def test_register_plugin_class_valid(self) -> None:
         """Test registering a valid plugin class."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         # Create REAL plugin class with required methods
         class ValidPlugin:
@@ -220,7 +220,7 @@ class TestPluginDiscoveryReal:
 
     def test_register_plugin_class_without_metadata(self) -> None:
         """Test registering plugin class without metadata."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         # Create REAL plugin class without metadata
         class PluginWithoutMetadata:
@@ -246,7 +246,7 @@ class TestPluginDiscoveryReal:
 
     def test_register_plugin_class_invalid(self) -> None:
         """Test registering invalid plugin class."""
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
 
         # Create REAL plugin class missing required methods
         class InvalidPlugin:
@@ -265,7 +265,7 @@ class TestPluginDiscoveryReal:
         plugin_dir = temp_dir / "empty_plugins"
         plugin_dir.mkdir()
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = FlextPluginDiscovery(plugin_directory=str(plugin_dir))
         discovery.add_plugin_directory(plugin_dir)
 
         result = discovery.discover_all()
@@ -304,12 +304,12 @@ class TestPlugin:
             "name": "test-plugin",
             "version": "1.0.0",
             "description": "REAL test plugin",
-            "type": PluginType.TAP.value,
+            "type": FlextPluginConstants.PluginType.TAP.value,
             "author": "Test Suite",
         }
         manifest_file.write_text(json.dumps(manifest_data, indent=2))
 
-        discovery = PluginDiscovery(plugin_directory=str(plugin_dir))
+        discovery = FlextPluginDiscovery(plugin_directory=str(plugin_dir))
         discovery.add_plugin_directory(plugin_dir)
 
         result = discovery.discover_all()
@@ -325,7 +325,8 @@ class TestPlugin:
         assert plugin_info["version"] == "1.0.0"
 
     def test_discover_multiple_plugins_different_directories(
-        self, temp_dir: Path
+        self,
+        temp_dir: Path,
     ) -> None:
         """Test discovering multiple plugins from different directories."""
         # Create multiple plugin directories
@@ -343,7 +344,7 @@ class TestPlugin:
                 {
                     "name": "plugin-1",
                     "version": "1.0.0",
-                    "type": PluginType.TAP.value,
+                    "type": FlextPluginConstants.PluginType.TAP.value,
                 },
             ),
         )
@@ -357,12 +358,12 @@ class TestPlugin:
                 {
                     "name": "plugin-2",
                     "version": "2.0.0",
-                    "type": PluginType.TARGET.value,
+                    "type": FlextPluginConstants.PluginType.TARGET.value,
                 },
             ),
         )
 
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         discovery.add_plugin_directory(dir1)
         discovery.add_plugin_directory(dir2)
 
@@ -386,7 +387,7 @@ class TestPlugin:
             json.dumps(
                 {
                     "name": "tap-plugin",
-                    "type": PluginType.TAP.value,
+                    "type": FlextPluginConstants.PluginType.TAP.value,
                     "version": "1.0.0",
                 },
             ),
@@ -400,24 +401,26 @@ class TestPlugin:
             json.dumps(
                 {
                     "name": "target-plugin",
-                    "type": PluginType.TARGET.value,
+                    "type": FlextPluginConstants.PluginType.TARGET.value,
                     "version": "1.0.0",
                 },
             ),
         )
 
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         discovery.add_plugin_directory(plugin_dir)
 
         # Discover TAP plugins only
-        tap_plugins = discovery.discover_by_type(PluginType.TAP)
+        tap_plugins = discovery.discover_by_type(FlextPluginConstants.PluginType.TAP)
 
         assert len(tap_plugins) == 1
         assert "tap-plugin" in tap_plugins
         assert "target-plugin" not in tap_plugins
 
         # Discover TARGET plugins only
-        target_plugins = discovery.discover_by_type(PluginType.TARGET)
+        target_plugins = discovery.discover_by_type(
+            FlextPluginConstants.PluginType.TARGET
+        )
 
         assert len(target_plugins) == 1
         assert "target-plugin" in target_plugins
@@ -451,7 +454,7 @@ class TestPlugin:
             ),
         )
 
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         discovery.add_plugin_directory(plugin_dir)
 
         result = discovery.discover_all()
@@ -485,7 +488,7 @@ class TestPlugin:
             ),
         )
 
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         discovery.add_plugin_directory(plugin_dir)
 
         result = discovery.discover_all()
@@ -499,7 +502,7 @@ class TestPlugin:
         """Test discovery with nonexistent directory."""
         nonexistent_dir = temp_dir / "does_not_exist"
 
-        discovery = PluginDiscovery()
+        discovery = FlextPluginDiscovery()
         discovery.add_plugin_directory(nonexistent_dir)
 
         # Should not raise exception
@@ -534,7 +537,7 @@ class MainPlugin:
             json.dumps(
                 {
                     "name": "main-plugin",
-                    "type": PluginType.TAP.value,
+                    "type": FlextPluginConstants.PluginType.TAP.value,
                     "version": "1.0.0",
                 },
             ),
@@ -555,14 +558,14 @@ class ExtraPlugin:
             json.dumps(
                 {
                     "name": "extra-plugin",
-                    "type": PluginType.TARGET.value,
+                    "type": FlextPluginConstants.PluginType.TARGET.value,
                     "version": "2.0.0",
                 },
             ),
         )
 
         # Initialize discovery
-        discovery = PluginDiscovery(plugin_directory=str(main_dir))
+        discovery = FlextPluginDiscovery(plugin_directory=str(main_dir))
         discovery.add_plugin_directory(main_dir)  # Add main directory to scanning list
         discovery.add_plugin_directory(extra_dir)
 
@@ -600,8 +603,10 @@ class ExtraPlugin:
         assert discovery.is_blacklisted("extra-plugin")  # But it's blacklisted
 
         # Test type-specific discovery
-        tap_plugins = discovery.discover_by_type(PluginType.TAP)
-        target_plugins = discovery.discover_by_type(PluginType.TARGET)
+        tap_plugins = discovery.discover_by_type(FlextPluginConstants.PluginType.TAP)
+        target_plugins = discovery.discover_by_type(
+            FlextPluginConstants.PluginType.TARGET
+        )
 
         assert "main-plugin" in tap_plugins
         assert "extra-plugin" in target_plugins

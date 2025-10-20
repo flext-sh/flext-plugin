@@ -19,13 +19,8 @@ import pytest
 from flext_core import FlextModels
 from pydantic import ValidationError
 
-from flext_plugin import (
-    FlextPlugin,
-    FlextPluginEntities,
-    FlextPluginExecution,
-    PluginStatus,
-    PluginType,
-)
+from flext_plugin.constants import FlextPluginConstants
+from flext_plugin.models import FlextPluginModels
 
 # Constants
 EXPECTED_BULK_SIZE = 2
@@ -54,18 +49,18 @@ class TestFlextPlugin:
       - Pydantic field validation and constraints
       - Business logic method behavior
       - Entity state transitions
-      - Integration with FlextPluginEntities.Metadata and FlextPluginEntities.Config
+      - Integration with FlextPluginModels.Metadata and FlextPluginModels.Config
       - Error scenarios and exception handling
     """
 
-    def create_test_metadata(self) -> FlextPluginEntities.Metadata:
+    def create_test_metadata(self) -> FlextPluginModels.Metadata:
         """Create test plugin metadata."""
-        return FlextPluginEntities.Metadata(
+        return FlextPluginModels.Metadata(
             id=cast("FlextModels", "test-metadata-id"),  # Proper type casting
             plugin_name="test-plugin",
             name="test-plugin",  # Required field
             entry_point="test.entry:main",  # Required field
-            plugin_type=PluginType.TAP.value,  # Convert enum to value
+            plugin_type=FlextPluginConstants.PluginType.TAP.value,  # Convert enum to value
             description="Test plugin",
             metadata=cast(
                 "FlextModels",
@@ -80,7 +75,7 @@ class TestFlextPlugin:
         """Test creating FlextPlugin entity."""
         self.create_test_metadata()
         # Use factory method for proper construction
-        plugin = FlextPlugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -96,8 +91,8 @@ class TestFlextPlugin:
         # Note: metadata is not directly accessible as a property on FlextPlugin
         # assert plugin.metadata == metadata  # Removed this assertion
         # FlextModels uses use_enum_values=True, so status is stored as string
-        if plugin.status != PluginStatus.INACTIVE.value:
-            msg = f"Expected {PluginStatus.INACTIVE.value}, got {plugin.status}"
+        if plugin.status != FlextPluginConstants.Lifecycle.INACTIVE.value:
+            msg = f"Expected {FlextPluginConstants.Lifecycle.INACTIVE.value}, got {plugin.status}"
             raise AssertionError(
                 msg,
             )
@@ -106,7 +101,7 @@ class TestFlextPlugin:
         """Test plugin status can be updated."""
         self.create_test_metadata()
         # Use factory method for proper construction
-        plugin = FlextPlugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -117,16 +112,16 @@ class TestFlextPlugin:
         )
 
         # Test status can be changed through proper methods
-        setattr(plugin, "status", PluginStatus.LOADED)
-        assert str(plugin.plugin_status) == str(PluginStatus.LOADED)
+        plugin.status = FlextPluginConstants.Lifecycle.LOADED
+        assert str(plugin.plugin_status) == str(FlextPluginConstants.Lifecycle.LOADED)
 
-        setattr(plugin, "status", PluginStatus.ACTIVE)
-        assert str(plugin.plugin_status) == str(PluginStatus.ACTIVE)
+        plugin.status = FlextPluginConstants.Lifecycle.ACTIVE
+        assert str(plugin.plugin_status) == str(FlextPluginConstants.Lifecycle.ACTIVE)
 
     def test_plugin_health_check(self) -> None:
         """Test plugin health status checking."""
         self.create_test_metadata()
-        plugin = FlextPlugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -137,13 +132,13 @@ class TestFlextPlugin:
         )
 
         # Test healthy status
-        setattr(plugin, "status", PluginStatus.HEALTHY)
+        plugin.status = FlextPluginConstants.Lifecycle.HEALTHY
         if not (plugin.is_healthy):
             msg = f"Expected True, got {plugin.is_healthy}"
             raise AssertionError(msg)
 
         # Test non-healthy status
-        setattr(plugin, "status", PluginStatus.UNHEALTHY)
+        plugin.status = FlextPluginConstants.Lifecycle.UNHEALTHY
         if plugin.is_healthy:
             msg = f"Expected False, got {plugin.is_healthy}"
             raise AssertionError(msg)
@@ -151,7 +146,7 @@ class TestFlextPlugin:
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics."""
         self.create_test_metadata()
-        plugin = FlextPlugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -177,7 +172,7 @@ class TestFlextPlugin:
     def test_plugin_error_recording(self) -> None:
         """Test recording plugin errors."""
         self.create_test_metadata()
-        plugin = FlextPlugin.create(
+        plugin = FlextPluginModels.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -194,15 +189,17 @@ class TestFlextPlugin:
             raise AssertionError(msg)
         assert plugin.last_error == "Test error message"
         assert plugin.last_error_time is not None
-        assert str(plugin.plugin_status) == str(PluginStatus.UNHEALTHY)
+        assert str(plugin.plugin_status) == str(
+            FlextPluginConstants.Lifecycle.UNHEALTHY
+        )
 
 
 class TestFlextPluginConfig:
-    """Test FlextPluginEntities.Config entity functionality."""
+    """Test FlextPluginModels.Config entity functionality."""
 
     def test_configuration_creation(self) -> None:
-        """Test creating FlextPluginEntities.Config."""
-        config = FlextPluginEntities.Config.create(
+        """Test creating FlextPluginModels.Config."""
+        config = FlextPluginModels.Config.create(
             plugin_name="test-plugin",
             config_data={
                 "enabled": True,
@@ -225,8 +222,8 @@ class TestFlextPluginConfig:
         assert config.config_data.get("dependencies") == ["dep1", "dep2"]
 
     def test_configuration_defaults(self) -> None:
-        """Test FlextPluginEntities.Config default values."""
-        config = FlextPluginEntities.Config.create(plugin_name="test-plugin")
+        """Test FlextPluginModels.Config default values."""
+        config = FlextPluginModels.Config.create(plugin_name="test-plugin")
 
         if not (config.enabled):
             msg = f"Expected True, got {config.enabled}"
@@ -241,7 +238,7 @@ class TestFlextPluginConfig:
 
     def test_configuration_resource_limits(self) -> None:
         """Test configuration resource limits."""
-        config = FlextPluginEntities.Config.create(
+        config = FlextPluginModels.Config.create(
             plugin_name="test-plugin",
             max_memory_mb=800,
             max_cpu_percent=75,
@@ -263,7 +260,7 @@ class TestFlextPluginExecution:
     def test_execution_creation(self) -> None:
         """Test creating FlextPluginExecution."""
         datetime.now(UTC)
-        execution = FlextPluginExecution(
+        execution = FlextPluginModels.ExecutionResult(
             id=cast("FlextModels", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
@@ -288,7 +285,7 @@ class TestFlextPluginExecution:
 
     def test_execution_lifecycle(self) -> None:
         """Test execution lifecycle management."""
-        execution = FlextPluginExecution(
+        execution = FlextPluginModels.ExecutionResult(
             id=cast("FlextModels", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
@@ -321,7 +318,7 @@ class TestFlextPluginExecution:
 
     def test_execution_failure(self) -> None:
         """Test failed plugin execution."""
-        execution = FlextPluginExecution(
+        execution = FlextPluginModels.ExecutionResult(
             id=cast("FlextModels", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
@@ -342,7 +339,7 @@ class TestFlextPluginExecution:
 
     def test_execution_resource_tracking(self) -> None:
         """Test execution resource usage tracking."""
-        execution = FlextPluginExecution(
+        execution = FlextPluginModels.ExecutionResult(
             id=cast("FlextModels", "exec-123"),
             plugin_id="test-plugin",
             execution_id="exec-123",
@@ -357,11 +354,11 @@ class TestFlextPluginExecution:
 
 
 class TestFlextPluginRegistryEntity:
-    """Test FlextPluginEntities.Registry domain entity functionality."""
+    """Test FlextPluginModels.Registry domain entity functionality."""
 
     def test_registry_creation(self) -> None:
-        """Test creating FlextPluginEntities.Registry entity."""
-        registry = FlextPluginEntities.Registry.create(
+        """Test creating FlextPluginModels.Registry entity."""
+        registry = FlextPluginModels.Registry.create(
             name="test-registry",
             registry_url="https://plugins.example.com",
         )
@@ -381,7 +378,7 @@ class TestFlextPluginRegistryEntity:
     def test_registry_availability(self) -> None:
         """Test registry availability check."""
         # Enabled registry with URL should be available
-        enabled_registry = FlextPluginEntities.Registry.create(
+        enabled_registry = FlextPluginModels.Registry.create(
             name="enabled",
             registry_url="https://plugins.example.com",
             is_enabled=True,
@@ -391,7 +388,7 @@ class TestFlextPluginRegistryEntity:
             raise AssertionError(msg)
 
         # Disabled registry should not be available
-        disabled_registry = FlextPluginEntities.Registry.create(
+        disabled_registry = FlextPluginModels.Registry.create(
             name="disabled",
             registry_url="https://plugins.example.com",
             is_enabled=False,
@@ -404,7 +401,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_sync_recording(self) -> None:
         """Test recording sync attempts."""
-        registry = FlextPluginEntities.Registry.create(
+        registry = FlextPluginModels.Registry.create(
             name="test",
             registry_url="https://example.com",
         )
@@ -424,7 +421,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_authentication_settings(self) -> None:
         """Test registry authentication configuration."""
-        registry = FlextPluginEntities.Registry.create(
+        registry = FlextPluginModels.Registry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             requires_authentication=True,
@@ -442,7 +439,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_security_settings(self) -> None:
         """Test registry security configuration."""
-        registry = FlextPluginEntities.Registry.create(
+        registry = FlextPluginModels.Registry.create(
             name="secure-registry",
             registry_url="https://secure.example.com",
             verify_signatures=True,
@@ -461,14 +458,14 @@ class TestFlextPluginRegistryEntity:
 
 
 class TestFlextPluginMetadata:
-    """Test FlextPluginEntities.Metadata functionality."""
+    """Test FlextPluginModels.Metadata functionality."""
 
     def test_metadata_creation(self) -> None:
-        """Test creating FlextPluginEntities.Metadata."""
-        metadata = FlextPluginEntities.Metadata.create(
+        """Test creating FlextPluginModels.Metadata."""
+        metadata = FlextPluginModels.Metadata.create(
             name="test-plugin",
             entry_point="test.entry:main",
-            plugin_type=PluginType.TAP,
+            plugin_type=FlextPluginConstants.PluginType.TAP,
             description="Test extractor plugin",
             dependencies=["requests", "pydantic"],
         )
@@ -477,7 +474,7 @@ class TestFlextPluginMetadata:
             msg = f"Expected {'test-plugin'}, got {metadata.name}"
             raise AssertionError(msg)
         assert metadata.entry_point == "test.entry:main"
-        assert str(metadata.plugin_type) == str(PluginType.TAP)
+        assert str(metadata.plugin_type) == str(FlextPluginConstants.PluginType.TAP)
         assert metadata.description == "Test extractor plugin"
         if "requests" not in metadata.dependencies:
             msg = f"Expected {'requests'} in {metadata.dependencies}"
@@ -485,11 +482,11 @@ class TestFlextPluginMetadata:
         assert "pydantic" in metadata.dependencies
 
     def test_metadata_defaults(self) -> None:
-        """Test FlextPluginEntities.Metadata default values."""
-        metadata = FlextPluginEntities.Metadata.create(
+        """Test FlextPluginModels.Metadata default values."""
+        metadata = FlextPluginModels.Metadata.create(
             name="minimal-plugin",
             entry_point="minimal.entry:main",
-            plugin_type=PluginType.UTILITY,
+            plugin_type=FlextPluginConstants.PluginType.UTILITY,
         )
 
         if metadata.name != "minimal-plugin":
@@ -506,21 +503,21 @@ class TestFlextPluginMetadata:
         assert metadata.repository is None
 
     def test_metadata_validation(self) -> None:
-        """Test FlextPluginEntities.Metadata validation."""
+        """Test FlextPluginModels.Metadata validation."""
         # Test empty name fails
         with pytest.raises(ValidationError):
-            FlextPluginEntities.Metadata(
+            FlextPluginModels.Metadata(
                 id=cast("FlextModels", "meta-123"),
                 name="",
                 entry_point="test.entry:main",
-                plugin_type=PluginType.TAP,
+                plugin_type=FlextPluginConstants.PluginType.TAP,
             )
 
         # Test empty entry point fails
         with pytest.raises(ValidationError):
-            FlextPluginEntities.Metadata(
+            FlextPluginModels.Metadata(
                 id=cast("FlextModels", "meta-123"),
                 name="test-plugin",
                 entry_point="",
-                plugin_type=PluginType.TAP,
+                plugin_type=FlextPluginConstants.PluginType.TAP,
             )

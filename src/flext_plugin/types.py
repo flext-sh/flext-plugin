@@ -13,7 +13,9 @@ from flext_core import FlextTypes
 class FlextPluginTypes(FlextTypes):
     """Advanced plugin type system with Python 3.13+ patterns."""
 
-    class Core:
+    class PluginCore:
+        """Core collection and plugin type aliases."""
+
         # Collections
         type StringList = list[str]
         type StringSet = set[str]
@@ -34,39 +36,53 @@ class FlextPluginTypes(FlextTypes):
         type PluginEntity = dict[str, object]
 
     class Lifecycle:
+        """Plugin lifecycle and status type aliases."""
+
         type PluginStatus = str
         type PluginType = str
         type LifecycleState = str
         type ExecutionStatus = str
 
     class Security:
+        """Security-related type aliases."""
+
         type SecurityLevel = str
         type Permission = str
         type SecurityConfig = dict[str, object]
 
     class Performance:
+        """Performance metrics and monitoring type aliases."""
+
         type Metrics = dict[str, object]
         type PerformanceData = dict[str, object]
         type ResourceUsage = dict[str, object]
 
     class Discovery:
+        """Plugin discovery type aliases."""
+
         type DiscoveryPath = str
         type DiscoveryResult = dict[str, object]
         type PluginLoader = object
         type EntryPoint = str
 
     class Execution:
+        """Plugin execution type aliases."""
+
         type ExecutionContext = dict[str, object]
         type ExecutionResult = dict[str, object]
         type ExecutionError = str
         type ResourceLimits = dict[str, object]
 
     class Registry:
+        """Plugin registry type aliases."""
+
         type RegistryConfig = dict[str, object]
         type RegistryEntry = dict[str, object]
         type RegistrySync = dict[str, object]
 
     class HotReload:
+        """Hot reload and file watching type aliases."""
+
         type WatchConfig = dict[str, object]
         type ReloadEvent = dict[str, object]
         type FileWatcher = object

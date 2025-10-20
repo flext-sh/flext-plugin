@@ -1,94 +1,59 @@
-"""FLEXT Plugin Discovery - Plugin discovery mechanisms.
+"""FLEXT Plugin Discovery - Strategy-based plugin discovery with Pydantic models.
+
+Comprehensive plugin discovery using strategy pattern for different discovery
+methods (file system, entry points). All operations return Pydantic models.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-import asyncio
-import importlib
 import importlib.metadata
-import os
-import re
 from pathlib import Path
+from typing import Protocol, cast
 
-from flext_core import FlextConstants, FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
 
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.models import FlextPluginModels
 
 
 class FlextPluginDiscovery:
-    """Plugin discovery service implementing comprehensive plugin discovery mechanisms.
+    """Plugin discovery using strategy pattern.
 
-    This class provides multiple discovery strategies including file system scanning,
-    entry point discovery, and package-based discovery for maximum flexibility.
-
-    Usage:
-        ```python
-        from flext_plugin import FlextPluginDiscovery
-
-        # Initialize discovery service
-        discovery = FlextPluginDiscovery()
-
-        # Discover plugins in multiple paths
-        result = await discovery.discover_plugins(["./plugins", "/opt/flext/plugins"])
-        if result.success:
-            plugins = result.value
-            print(f"Discovered {len(plugins)} plugins")
-        ```
+    Discovers plugins using multiple strategies (file system, entry points).
+    Delegates discovery logic to strategy classes, Pydantic handles validation.
     """
 
-    def __init__(
-        self,
-        file_discovery: FlextPluginProtocols.PluginDiscovery | None = None,
-        entry_point_discovery: FlextPluginProtocols.PluginDiscovery | None = None,
-    ) -> None:
-        """Initialize the plugin discovery service.
+    class DiscoveryStrategy(Protocol):
+        """Strategy protocol for plugin discovery."""
 
-        Args:
-            file_discovery: File system discovery implementation
-            entry_point_discovery: Entry point discovery implementation
+        def discover(
+            self,
+            paths: list[str],
+        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+            """Discover plugins using this strategy."""
+            ...
 
-        """
-        super().__init__()
+    def __init__(self) -> None:
+        """Initialize discovery with all strategies."""
         self.logger = FlextLogger(__name__)
-        self._file_discovery = file_discovery or self.FileSystemDiscovery()
-        self._entry_point_discovery = (
-            entry_point_discovery or self.EntryPointDiscovery()
-        )
+        self.strategies: list[FlextPluginDiscovery.DiscoveryStrategy] = [
+            cast(
+                "FlextPluginDiscovery.DiscoveryStrategy",
+                self.FileSystemStrategy(self.logger),
+            ),
+            cast(
+                "FlextPluginDiscovery.DiscoveryStrategy",
+                self.EntryPointStrategy(self.logger),
+            ),
+        ]
 
-    def _resolve_plugin_path(self, plugin_path: str) -> Path:
-        """Resolve and validate a plugin path synchronously.
-
-        Args:
-            plugin_path: Path to resolve
-
-        Returns:
-            Resolved Path object
-
-        """
-        return Path(plugin_path).expanduser().resolve()
-
-    def _read_file_sync(self, path: Path) -> str:
-        """Read file content synchronously.
-
-        Args:
-            path: Path to the file
-
-        Returns:
-            File content as string
-
-        """
-        with path.open(encoding="utf-8") as f:
-            return f.read()
-
-    async def discover_plugins(
-        self, paths: list[str]
-    ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
-        """Discover plugins using multiple discovery strategies.
+    def discover_plugins(
+        self,
+        paths: list[str],
+    ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+        """Discover plugins using all strategies.
 
         Args:
             paths: List of paths to search for plugins
@@ -98,40 +63,27 @@ class FlextPluginDiscovery:
 
         """
         try:
-            all_plugins = []
-            discovered_plugins = set()  # Track unique plugins by name
+            discovered: dict[str, FlextPluginModels.DiscoveryData] = {}
 
-            # File system discovery
-            file_result = await self._file_discovery.discover_plugins(paths)
-            if file_result.is_success:
-                for plugin in file_result.value:
-                    plugin_name = plugin.get("name")
-                    if plugin_name and plugin_name not in discovered_plugins:
-                        all_plugins.append(plugin)
-                        discovered_plugins.add(plugin_name)
+            for strategy in self.strategies:
+                result = strategy.discover(paths)
+                if result.is_success:
+                    for data in result.value:
+                        if data.name not in discovered:
+                            discovered[data.name] = data
 
-            # Entry point discovery
-            entry_point_result = await self._entry_point_discovery.discover_plugins(
-                paths
-            )
-            if entry_point_result.is_success:
-                for plugin in entry_point_result.value:
-                    plugin_name = plugin.get("name")
-                    if plugin_name and plugin_name not in discovered_plugins:
-                        all_plugins.append(plugin)
-                        discovered_plugins.add(plugin_name)
-
-            self.logger.info(f"Discovered {len(all_plugins)} unique plugins")
-            return FlextResult.ok(all_plugins)
+            self.logger.info(f"Discovered {len(discovered)} unique plugins")
+            return FlextResult.ok(list(discovered.values()))
 
         except Exception as e:
             self.logger.exception("Plugin discovery failed")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
-    async def discover_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
-        """Discover a single plugin at the given path.
+    def discover_plugin(
+        self,
+        plugin_path: str,
+    ) -> FlextResult[FlextPluginModels.DiscoveryData]:
+        """Discover single plugin at path.
 
         Args:
             plugin_path: Path to the plugin
@@ -141,20 +93,20 @@ class FlextPluginDiscovery:
 
         """
         try:
-            path_obj = self._resolve_plugin_path(plugin_path)
+            path_obj = Path(plugin_path).expanduser().resolve()
 
-            # Try file system discovery first
+            # Try file system strategy first
             if path_obj.exists():
-                file_result = await self._file_discovery.discover_plugin(plugin_path)
-                if file_result.is_success:
-                    return file_result
+                fs_strategy = self.FileSystemStrategy(self.logger)
+                result = fs_strategy.discover([plugin_path])
+                if result.is_success and result.value:
+                    return FlextResult.ok(result.value[0])
 
-            # Try entry point discovery
-            entry_point_result = await self._entry_point_discovery.discover_plugin(
-                plugin_path
-            )
-            if entry_point_result.is_success:
-                return entry_point_result
+            # Try entry point strategy
+            ep_strategy = self.EntryPointStrategy(self.logger)
+            result = ep_strategy.discover([plugin_path])
+            if result.is_success and result.value:
+                return FlextResult.ok(result.value[0])
 
             return FlextResult.fail(f"Plugin not found at: {plugin_path}")
 
@@ -162,428 +114,155 @@ class FlextPluginDiscovery:
             self.logger.exception(f"Failed to discover plugin at {plugin_path}")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
-    async def validate_plugin(
-        self, plugin_data: FlextPluginTypes.Core.PluginDict
+    def validate_plugin(
+        self,
+        plugin_data: FlextPluginModels.DiscoveryData,
     ) -> FlextResult[bool]:
         """Validate discovered plugin data.
+
+        Pydantic automatically validates on model creation.
 
         Args:
             plugin_data: Plugin data to validate
 
         Returns:
-            FlextResult indicating validation success or failure
+            FlextResult indicating validation success
 
         """
         try:
-            # Validate required fields
-            required_fields = ["name", "version"]
-            for field in required_fields:
-                if field not in plugin_data:
-                    return FlextResult.fail(f"Missing required field: {field}")
-
-            # Validate plugin name format
-            plugin_name = str(plugin_data["name"])
-            if not self._is_valid_plugin_name(plugin_name):
-                return FlextResult.fail(f"Invalid plugin name format: {plugin_name}")
-
-            # Validate version format
-            version = str(plugin_data["version"])
-            if not self._is_valid_version(version):
-                return FlextResult.fail(f"Invalid version format: {version}")
-
-            self.logger.debug(f"Plugin validation passed: {plugin_name}")
+            # Pydantic validates on model instantiation, so if we have a
+            # DiscoveryData instance, it's already valid
+            self.logger.debug(f"Plugin validation passed: {plugin_data.name}")
             return FlextResult.ok(True)
-
         except Exception as e:
             self.logger.exception("Plugin validation failed")
             return FlextResult.fail(f"Validation error: {e!s}")
 
-    def _is_valid_plugin_name(self, name: str) -> bool:
-        """Check if plugin name follows valid format.
+    class FileSystemStrategy:
+        """File system-based plugin discovery strategy."""
 
-        Args:
-            name: Plugin name to validate
+        def __init__(self, logger: FlextLogger) -> None:
+            """Initialize strategy with logger."""
+            self.logger = logger
 
-        Returns:
-            True if name is valid, False otherwise
-
-        """
-        pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-        return (
-            bool(re.match(pattern, name))
-            and FlextConstants.Validation.MIN_NAME_LENGTH
-            <= len(name)
-            <= FlextConstants.Validation.MAX_NAME_LENGTH
-        )
-
-    def _is_valid_version(self, version: str) -> bool:
-        """Check if version follows semantic versioning format.
-
-        Args:
-            version: Version string to validate
-
-        Returns:
-            True if version is valid, False otherwise
-
-        """
-        pattern = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
-        return bool(re.match(pattern, version))
-
-    class FileSystemDiscovery:
-        """File system-based plugin discovery implementation."""
-
-        def __init__(self) -> None:
-            """Initialize file system discovery."""
-            super().__init__()
-            self.logger = FlextLogger(__name__)
-
-        def _resolve_plugin_path(self, plugin_path: str) -> Path:
-            """Resolve plugin path to Path object."""
-            return Path(plugin_path)
-
-        def _read_file_sync(self, path: Path) -> str:
-            """Read file synchronously for use in thread pool."""
-            return path.read_text(encoding="utf-8")
-
-        async def discover_plugins(
-            self, paths: list[str]
-        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
-            """Discover plugins in file system paths.
-
-            Args:
-                paths: List of paths to search
-
-            Returns:
-                FlextResult containing list of discovered plugins
-
-            """
+        def discover(
+            self,
+            paths: list[str],
+        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+            """Discover plugins in file system paths."""
             try:
-                discovered_plugins = []
+                discovered = []
 
-                for path in paths:
-                    path_obj = self._resolve_plugin_path(path)
-                    if not path_obj.exists():
-                        self.logger.warning(f"Path does not exist: {path}")
+                for path_str in paths:
+                    path = Path(path_str).expanduser().resolve()
+                    if not path.exists():
+                        self.logger.warning(f"Path does not exist: {path_str}")
                         continue
 
-                    if path_obj.is_file():
-                        # Single file plugin
-                        plugin_data = await self._discover_single_file(path_obj)
-                        if plugin_data:
-                            discovered_plugins.append(plugin_data)
-                    elif path_obj.is_dir():
-                        # Directory with multiple plugins
-                        plugins = await self._discover_directory(path_obj)
-                        discovered_plugins.extend(plugins)
+                    if path.is_file():
+                        data = self._discover_file(path)
+                        if data:
+                            discovered.append(data)
+                    elif path.is_dir():
+                        discovered.extend(self._discover_directory(path))
 
                 self.logger.info(
-                    f"File system discovery found {len(discovered_plugins)} plugins"
+                    f"File system discovery found {len(discovered)} plugins"
                 )
-                return FlextResult.ok(discovered_plugins)
+                return FlextResult.ok(discovered)
 
             except Exception as e:
                 self.logger.exception("File system discovery failed")
                 return FlextResult.fail(f"File discovery error: {e!s}")
 
-        async def discover_plugin(
-            self, plugin_path: str
-        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
-            """Discover a single plugin file.
-
-            Args:
-                plugin_path: Path to the plugin file
-
-            Returns:
-                FlextResult containing plugin data
-
-            """
-            try:
-                path_obj = self._resolve_plugin_path(plugin_path)
-                if not path_obj.exists():
-                    return FlextResult.fail(
-                        f"Plugin path does not exist: {plugin_path}"
-                    )
-
-                plugin_data = await self._discover_single_file(path_obj)
-                if not plugin_data:
-                    return FlextResult.fail(
-                        f"Failed to discover plugin at: {plugin_path}"
-                    )
-
-                return FlextResult.ok(plugin_data)
-
-            except Exception as e:
-                self.logger.exception(f"Failed to discover plugin at {plugin_path}")
-                return FlextResult.fail(f"File discovery error: {e!s}")
-
-        async def validate_plugin(
-            self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextResult[bool]:
-            """Validate file-based plugin data.
-
-            Args:
-                plugin_data: Plugin data to validate
-
-            Returns:
-                FlextResult indicating validation success or failure
-
-            """
-            try:
-                # Check if plugin file exists and is readable
-                plugin_path = plugin_data.get("path")
-                if not plugin_path:
-                    return FlextResult.fail("Plugin path is required")
-
-                path_obj = self._resolve_plugin_path(str(plugin_path))
-                if not path_obj.exists() or not path_obj.is_file():
-                    return FlextResult.fail(
-                        f"Plugin file does not exist: {plugin_path}"
-                    )
-
-                if not os.access(path_obj, os.R_OK):
-                    return FlextResult.fail(
-                        f"Plugin file is not readable: {plugin_path}"
-                    )
-
-                return FlextResult.ok(True)
-
-            except Exception as e:
-                self.logger.exception("File plugin validation failed")
-                return FlextResult.fail(f"File validation error: {e!s}")
-
-        async def _discover_single_file(
-            self, path: Path
-        ) -> FlextPluginTypes.Core.PluginDict | None:
-            """Discover a single plugin file.
-
-            Args:
-                path: Path to the plugin file
-
-            Returns:
-                Plugin data if discovered, None otherwise
-
-            """
-            try:
-                if path.suffix != ".py":
-                    return None
-
-                # Extract plugin name from filename
-                plugin_name = path.stem
-
-                # Try to extract version from file
-                version = await self._extract_version_from_file(path)
-
-                # Basic plugin data
-                return {
-                    "name": plugin_name,
-                    "version": version,
-                    "path": str(path),
-                    "type": "file",
-                    "discovery_method": "file_system",
-                }
-
-            except Exception:
-                self.logger.exception(f"Failed to discover single file: {path}")
+        def _discover_file(
+            self,
+            path: Path,
+        ) -> FlextPluginModels.DiscoveryData | None:
+            """Discover single Python file as plugin."""
+            if path.suffix != ".py":
                 return None
 
-        async def _discover_directory(
-            self, path: Path
-        ) -> list[FlextPluginTypes.Core.PluginDict]:
-            """Discover plugins in a directory.
-
-            Args:
-                path: Path to the directory
-
-            Returns:
-                List of discovered plugin data
-
-            """
             try:
-                discovered_plugins = []
+                return FlextPluginModels.DiscoveryData(
+                    name=path.stem,
+                    version="1.0.0",
+                    path=path,
+                    discovery_type="file",
+                    discovery_method="file_system",
+                )
+            except ValueError:
+                self.logger.exception(f"Failed to create discovery data for {path}")
+                return None
 
-                # Use sync-compatible approach to avoid blocking async function
-                # Note: iterdir() is sync but fast for small directories
-                items = list(path.iterdir())  # noqa: ASYNC240
+        def _discover_directory(
+            self,
+            path: Path,
+        ) -> list[FlextPluginModels.DiscoveryData]:
+            """Recursively discover plugins in directory."""
+            discovered = []
 
-                for item in items:
+            try:
+                for item in path.iterdir():
                     if (
                         item.is_file()
                         and item.suffix == ".py"
                         and not item.name.startswith("_")
                     ):
-                        plugin_data = await self._discover_single_file(item)
-                        if plugin_data:
-                            discovered_plugins.append(plugin_data)
+                        data = self._discover_file(item)
+                        if data:
+                            discovered.append(data)
                     elif item.is_dir() and not item.name.startswith("__"):
-                        # Recursively discover in subdirectories
-                        sub_plugins = await self._discover_directory(item)
-                        discovered_plugins.extend(sub_plugins)
+                        discovered.extend(self._discover_directory(item))
 
-                return discovered_plugins
+            except (OSError, PermissionError):
+                self.logger.exception(f"Failed to discover directory {path}")
 
-            except Exception:
-                self.logger.exception(f"Failed to discover directory: {path}")
-                return []
+            return discovered
 
-        async def _extract_version_from_file(self, path: Path) -> str:
-            """Extract version information from a plugin file.
+    class EntryPointStrategy:
+        """Entry point-based plugin discovery strategy."""
 
-            Args:
-                path: Path to the plugin file
+        def __init__(self, logger: FlextLogger) -> None:
+            """Initialize strategy with logger."""
+            self.logger = logger
 
-            Returns:
-                Version string (defaults to "1.0.0" if not found)
-
-            """
-            try:
-                # Read file asynchronously using thread pool
-                loop = asyncio.get_event_loop()
-                content = await loop.run_in_executor(None, self._read_file_sync, path)
-
-                # Look for version patterns
-                version_patterns = [
-                    r'__version__\s*=\s*["\']([^"\']+)["\']',
-                    r'version\s*=\s*["\']([^"\']+)["\']',
-                    r'VERSION\s*=\s*["\']([^"\']+)["\']',
-                ]
-
-                for pattern in version_patterns:
-                    match = re.search(pattern, content)
-                    if match:
-                        return match.group(1)
-
-                return "1.0.0"
-
-            except Exception as e:
-                self.logger.debug(f"Failed to extract version from {path}: {e}")
-                return "1.0.0"
-
-    class EntryPointDiscovery:
-        """Entry point-based plugin discovery implementation."""
-
-        def __init__(self) -> None:
-            """Initialize entry point discovery."""
-            super().__init__()
-            self.logger = FlextLogger(__name__)
-
-        def _read_file_sync(self, path: Path) -> str:
-            """Read file synchronously for use in thread pool."""
-            return path.read_text(encoding="utf-8")
-
-        async def discover_plugins(
+        def discover(
             self,
-            paths: list[str],  # noqa: ARG002
-        ) -> FlextResult[list[FlextPluginTypes.Core.PluginDict]]:
-            """Discover plugins using entry points.
-
-            Args:
-                paths: List of paths to search (not used for entry points)
-
-            Returns:
-                FlextResult containing list of discovered plugins
-
-            """
+            _paths: list[str],
+        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+            """Discover plugins using entry points (paths ignored)."""
             try:
-                discovered_plugins = []
+                discovered = []
 
                 # Look for entry points in installed packages
                 for entry_point in importlib.metadata.entry_points().select(
-                    group="flext.plugins"
+                    group="flext.plugins",
                 ):
-                    plugin_data = {
-                        "name": entry_point.name,
-                        "version": getattr(entry_point.dist, "version", "1.0.0"),
-                        "entry_point": f"{entry_point.module}:{entry_point.attr}",
-                        "type": "entry_point",
-                        "discovery_method": "entry_points",
-                    }
-                    discovered_plugins.append(plugin_data)
+                    try:
+                        data = FlextPluginModels.DiscoveryData(
+                            name=entry_point.name,
+                            version=getattr(entry_point.dist, "version", "1.0.0"),
+                            path=Path(getattr(entry_point.dist, "_path", "")),
+                            discovery_type="entry_point",
+                            discovery_method="entry_points",
+                            metadata={
+                                "entry_point": f"{entry_point.module}:{entry_point.attr}",
+                            },
+                        )
+                        discovered.append(data)
+                    except ValueError:
+                        self.logger.debug(f"Invalid entry point: {entry_point.name}")
+                        continue
 
                 self.logger.info(
-                    f"Entry point discovery found {len(discovered_plugins)} plugins"
+                    f"Entry point discovery found {len(discovered)} plugins"
                 )
-                return FlextResult.ok(discovered_plugins)
+                return FlextResult.ok(discovered)
 
             except Exception as e:
                 self.logger.exception("Entry point discovery failed")
                 return FlextResult.fail(f"Entry point discovery error: {e!s}")
-
-        async def discover_plugin(
-            self, plugin_path: str
-        ) -> FlextResult[FlextPluginTypes.Core.PluginDict]:
-            """Discover a single plugin using entry points.
-
-            Args:
-                plugin_path: Plugin identifier (not used for entry points)
-
-            Returns:
-                FlextResult containing plugin data
-
-            """
-            try:
-                # For entry points, we search by name
-                plugin_name = plugin_path
-
-                entry_points = list(
-                    importlib.metadata.entry_points().select(
-                        group="flext.plugins", name=plugin_name
-                    )
-                )
-
-                if not entry_points:
-                    return FlextResult.fail(f"Entry point not found: {plugin_name}")
-
-                entry_point = entry_points[0]
-                plugin_data = {
-                    "name": entry_point.name,
-                    "version": getattr(entry_point.dist, "version", "1.0.0"),
-                    "entry_point": f"{entry_point.module}:{entry_point.attr}",
-                    "type": "entry_point",
-                    "discovery_method": "entry_points",
-                }
-
-                return FlextResult.ok(plugin_data)
-
-            except Exception as e:
-                self.logger.exception(
-                    f"Failed to discover entry point plugin: {plugin_path}"
-                )
-                return FlextResult.fail(f"Entry point discovery error: {e!s}")
-
-        async def validate_plugin(
-            self, plugin_data: FlextPluginTypes.Core.PluginDict
-        ) -> FlextResult[bool]:
-            """Validate entry point-based plugin data.
-
-            Args:
-                plugin_data: Plugin data to validate
-
-            Returns:
-                FlextResult indicating validation success or failure
-
-            """
-            try:
-                # Check if entry point is valid
-                entry_point = plugin_data.get("entry_point")
-                if not entry_point:
-                    return FlextResult.fail("Entry point is required")
-
-                # Validate entry point format
-                if ":" not in str(entry_point):
-                    return FlextResult.fail("Invalid entry point format")
-
-                module_name, attr_name = str(entry_point).split(":", 1)
-                if not module_name or not attr_name:
-                    return FlextResult.fail("Invalid entry point format")
-
-                # Try to import the module to validate it exists
-                importlib.import_module(module_name)
-
-                return FlextResult.ok(True)
-
-            except Exception as e:
-                self.logger.exception("Entry point plugin validation failed")
-                return FlextResult.fail(f"Entry point validation error: {e!s}")
 
 
 __all__ = ["FlextPluginDiscovery"]

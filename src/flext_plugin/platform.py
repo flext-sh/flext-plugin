@@ -7,132 +7,356 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from dataclasses import field
-from typing import ClassVar
+import uuid
+from typing import Any
 
-from flext_core import FlextResult, FlextService
+from flext_core import (
+    FlextResult,
+    FlextService,
+    FlextUtilities,
+)
 
 from flext_plugin.config import FlextPluginConfig
-from flext_plugin.plugin import Plugin, PluginStatus
-from flext_plugin.plugin_execution import PluginExecution
-from flext_plugin.plugin_registry import PluginRegistry
+from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
+
+# =========================================================================
+# PLUGIN DOMAIN CLASSES - SOLID Plugin Architecture
+# =========================================================================
+
+
+class PluginStatus:
+    """Plugin status enumeration."""
+
+    LOADED = "loaded"
+    UNLOADED = "unloaded"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    ERROR = "error"
+
+
+class PluginExecution:
+    """Plugin execution entity with lifecycle management."""
+
+    def __init__(
+        self,
+        plugin_name: str,
+        execution_config: dict[str, Any],
+        execution_id: str | None = None,
+    ) -> None:
+        """Initialize plugin execution."""
+        self.plugin_name = plugin_name
+        self.execution_id = execution_id or str(uuid.uuid4())
+        self.input_data = execution_config.get("input_data", {})
+        self.is_running = False
+        self.is_completed = False
+        self.success = False
+        self.error_message: str | None = None
+        self.result: dict[str, Any] | None = None
+        self.started_at: str | None = None
+        self.completed_at: str | None = None
+
+    @classmethod
+    def create(
+        cls,
+        plugin_name: str,
+        execution_config: dict[str, Any],
+        execution_id: str | None = None,
+    ) -> PluginExecution:
+        """Create new plugin execution."""
+        return cls(plugin_name, execution_config, execution_id)
+
+    def mark_started(self) -> None:
+        """Mark execution as started."""
+        self.is_running = True
+        self.started_at = FlextUtilities.Generators.generate_iso_timestamp()
+
+    def mark_completed(
+        self, *, success: bool, error_message: str | None = None
+    ) -> None:
+        """Mark execution as completed."""
+        self.is_running = False
+        self.is_completed = True
+        self.success = success
+        self.error_message = error_message
+        self.completed_at = FlextUtilities.Generators.generate_iso_timestamp()
+
+
+class PluginRegistry:
+    """Plugin registry for managing plugin lifecycle."""
+
+    def __init__(self, name: str = "default") -> None:
+        """Initialize plugin registry."""
+        self.name = name
+        self._plugins: dict[str, Any] = {}
+
+    @classmethod
+    def create(cls, name: str) -> PluginRegistry:
+        """Create new plugin registry."""
+        return cls(name)
+
+    def register(self, plugin: Plugin) -> FlextResult[bool]:
+        """Register plugin."""
+        try:
+            self._plugins[plugin.name] = plugin
+            return FlextResult.ok(True)
+        except Exception as e:
+            return FlextResult.fail(f"Registration failed: {e}")
+
+    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Unregister plugin."""
+        try:
+            self._plugins.pop(plugin_name, None)
+            return FlextResult.ok(True)
+        except Exception as e:
+            return FlextResult.fail(f"Unregistration failed: {e}")
+
+
+class Plugin(FlextPluginModels.Plugin):
+    """Plugin entity extending the base model."""
+
+    def is_active(self) -> bool:
+        """Check if plugin is active."""
+        return self.is_enabled
+
+    @property
+    def status(self) -> str:
+        """Get plugin status."""
+        if not self.is_enabled:
+            return PluginStatus.INACTIVE
+        return PluginStatus.ACTIVE
 
 
 class FlextPluginPlatform(FlextService[None]):
     """Advanced railway-oriented plugin platform with functional composition."""
 
-    plugins: dict[str, Plugin] = field(default_factory=dict)
-    executions: dict[str, PluginExecution] = field(default_factory=dict)
-    registry: PluginRegistry = field(
-        default_factory=lambda: PluginRegistry.create(name="platform")
-    )
-
-    # Injected protocols
-    discovery: ClassVar[FlextPluginProtocols.PluginDiscovery | None] = None
-    loader: ClassVar[FlextPluginProtocols.PluginLoader | None] = None
-    executor: ClassVar[FlextPluginProtocols.PluginExecution | None] = None
-
     def __init__(self, container: object | None = None) -> None:
+        """Initialize plugin platform."""
         super().__init__(container=container, config=FlextPluginConfig())
 
+        # Plugin storage
+        self.plugins: dict[str, Plugin] = {}
+        self.executions: dict[str, PluginExecution] = {}
+        self.registry = PluginRegistry.create(name="platform")
+
+        # Injected protocols
+        self.discovery: FlextPluginProtocols.PluginDiscovery | None = None
+        self.loader: FlextPluginProtocols.PluginLoader | None = None
+        self.executor: FlextPluginProtocols.PluginExecution | None = None
+
+    def execute(self) -> FlextResult[None]:
+        """Execute main platform initialization (FlextService protocol)."""
+        # Platform is always ready - no specific initialization needed
+        return FlextResult[None].ok(None)
+
     # Core plugin operations with advanced composition
-    async def discover_plugins(self, paths: list[str]) -> FlextResult[list[Plugin]]:
+    def discover_plugins(self, paths: list[str]) -> FlextResult[list[Plugin]]:
         """Discover plugins with railway composition."""
+
+        def discover_and_validate(_: None) -> FlextResult[list[dict[str, object]]]:
+            # Handle None discovery protocol
+            if not self.discovery:
+                return FlextResult.fail("Discovery protocol not configured")
+
+            result = self.discovery.discover_plugins(paths)
+            if result.is_success:
+                # Convert DiscoveryData objects to dicts
+                plugin_dicts = [
+                    {
+                        "name": discovery_data.name,
+                        "version": discovery_data.version,
+                        "path": str(discovery_data.path),
+                        "discovery_type": discovery_data.discovery_type,
+                        "discovery_method": discovery_data.discovery_method,
+                        "metadata": discovery_data.metadata,
+                    }
+                    for discovery_data in result.value
+                ]
+                return FlextResult.ok(plugin_dicts)
+            return result
+
+        def create_plugins_from_data(
+            data: list[dict[str, object]],
+        ) -> FlextResult[list[Plugin]]:
+            return self._validate_and_create_plugins(data)
+
         return (
-            await self._check_protocol(self.discovery, "Discovery")
-            .flat_map(lambda _: self.discovery.discover_plugins(paths))  # type: ignore
-            .flat_map(self._validate_and_create_plugins)
+            self._check_protocol(self.discovery, "Discovery")
+            .flat_map(discover_and_validate)
+            .flat_map(create_plugins_from_data)
             .map(self._register_all)
         )
 
-    async def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
         """Load single plugin with composition."""
+
+        def load_and_validate(_: None) -> FlextResult[dict[str, object]]:
+            # Handle None loader protocol
+            if not self.loader:
+                return FlextResult.fail("Loader protocol not configured")
+
+            result = self.loader.load_plugin(plugin_path)
+            if result.is_success:
+                load_data = result.value
+                plugin_dict = {
+                    "name": load_data.name,
+                    "version": load_data.version,
+                    "path": str(load_data.path),
+                    "load_type": load_data.load_type,
+                    "loaded_at": load_data.loaded_at,
+                    "entry_file": str(load_data.entry_file)
+                    if load_data.entry_file
+                    else None,
+                }
+                return FlextResult.ok(plugin_dict)
+            return result
+
+        def create_plugin_from_load_data(
+            data: dict[str, object],
+        ) -> FlextResult[Plugin]:
+            return self._validate_and_create_plugin(data)
+
         return (
-            await self._check_protocol(self.loader, "Loader")
-            .flat_map(lambda _: self.loader.load_plugin(plugin_path))  # type: ignore
-            .flat_map(self._validate_and_create_plugin)
+            self._check_protocol(self.loader, "Loader")
+            .flat_map(load_and_validate)
+            .flat_map(create_plugin_from_load_data)
             .map(self._register_single)
         )
 
-    async def execute_plugin(
+    def execute_plugin(
         self,
         plugin_name: str,
         context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[PluginExecution]:
         """Execute plugin with advanced async composition."""
+
+        def get_plugin_result(plugin_name_param: str) -> FlextResult[Plugin]:
+            return self._get_plugin(plugin_name_param)
+
+        def create_execution_from_plugin(
+            plugin: Plugin,
+        ) -> FlextResult[PluginExecution]:
+            return self._create_execution(plugin, context, execution_id)
+
+        def prepare_execution_result(
+            execution: PluginExecution,
+        ) -> FlextResult[PluginExecution]:
+            return self._prepare_execution(execution)
+
+        def execute_with_executor_result(
+            execution: PluginExecution,
+        ) -> FlextResult[PluginExecution]:
+            return self._execute_with_executor(execution)
+
         return (
-            self._get_plugin(plugin_name)
-            .flat_map(
-                lambda plugin: self._create_execution(plugin, context, execution_id)
-            )
-            .flat_map(self._prepare_execution)
-            .flat_map(self._execute_with_executor)
+            get_plugin_result(plugin_name)
+            .flat_map(create_execution_from_plugin)
+            .flat_map(prepare_execution_result)
+            .flat_map(execute_with_executor_result)
         )
 
     # Plugin management with functional patterns
-    def register_plugin(self, plugin: Plugin) -> FlextResult[bool]:
+    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin with validation chain."""
+
+        def validate_plugin_result(_: None) -> FlextResult[bool]:
+            return self.registry.register(plugin)
+
+        def add_to_plugins_result(*, registry_result: bool) -> bool:
+            # Use registry_result for validation
+            if not registry_result:
+                error_msg = "Plugin registration failed"
+                raise ValueError(error_msg)
+            return self._add_to_plugins(plugin)
+
         return (
             plugin.validate_business_rules()
-            .flat_map(lambda _: self.registry.register(plugin))
-            .map(lambda _: self._add_to_plugins(plugin))
+            .flat_map(validate_plugin_result)
+            .map(add_to_plugins_result)
         )
 
     def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister with cleanup chain."""
+
+        def unregister_from_registry(*, registry_result: bool) -> bool:
+            # Use registry_result for validation
+            if not registry_result:
+                error_msg = "Plugin unregistration failed"
+                raise ValueError(error_msg)
+            return self._remove_from_plugins(plugin_name)
+
         return self.registry.unregister_plugin(plugin_name).map(
-            lambda _: self._remove_from_plugins(plugin_name)
+            unregister_from_registry,
         )
 
     # Accessors using walrus and comprehension patterns
     def get_plugin(self, name: str) -> Plugin | None:
+        """Get plugin by name."""
         return self.plugins.get(name)
 
     def list_plugins(self) -> list[Plugin]:
+        """List all registered plugins."""
         return list(self.plugins.values())
 
-    def get_plugin_status(self, name: str) -> PluginStatus | None:
-        return (p := self.get_plugin(name)) and p.status
+    def get_plugin_status(self, name: str) -> str | None:
+        """Get plugin status."""
+        plugin = self.get_plugin(name)
+        return plugin.status if plugin else None
 
     def is_plugin_active(self, name: str) -> bool:
-        return (p := self.get_plugin(name)) and p.is_active()
+        """Check if plugin is active."""
+        plugin = self.get_plugin(name)
+        return plugin.is_active() if plugin else False
 
     # Execution management with advanced patterns
     def get_execution(self, eid: str) -> PluginExecution | None:
+        """Get execution by ID."""
         return self.executions.get(eid)
 
     def list_executions(self) -> list[PluginExecution]:
+        """List all executions."""
         return list(self.executions.values())
 
     def get_running_executions(self) -> list[PluginExecution]:
-        return [e for e in self.executions.values() if e.is_running]
+        """Get all running executions."""
+        return [
+            execution for execution in self.executions.values() if execution.is_running
+        ]
 
     def cleanup_executions(self) -> int:
         """Clean completed executions."""
-        completed = [eid for eid, e in self.executions.items() if e.is_completed]
-        for eid in completed:
+        completed_ids = [
+            eid for eid, execution in self.executions.items() if execution.is_completed
+        ]
+        for eid in completed_ids:
             del self.executions[eid]
-        return len(completed)
+        return len(completed_ids)
 
     # Hot reload placeholders
-    async def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
+    def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
+        """Start hot reload for given paths."""
         _ = paths
         return FlextResult.ok(True)
 
-    async def stop_hot_reload(self) -> FlextResult[bool]:
+    def stop_hot_reload(self) -> FlextResult[bool]:
+        """Stop hot reload."""
         return FlextResult.ok(True)
 
     # Status with dict comprehension
     @property
     def get_platform_status(self) -> dict[str, object]:
+        """Get platform status information."""
         return {
             "total_plugins": len(self.plugins),
-            "active_plugins": sum(p.is_active() for p in self.plugins.values()),
+            "active_plugins": sum(
+                plugin.is_active() for plugin in self.plugins.values()
+            ),
             "total_executions": len(self.executions),
-            "running_executions": sum(e.is_running for e in self.executions.values()),
+            "running_executions": sum(
+                execution.is_running for execution in self.executions.values()
+            ),
         }
 
     # Private composition helpers
@@ -145,36 +369,34 @@ class FlextPluginPlatform(FlextService[None]):
         )
 
     def _validate_and_create_plugins(
-        self, plugin_data: list[dict[str, object]]
+        self,
+        plugin_data: list[dict[str, object]],
     ) -> FlextResult[list[Plugin]]:
         """Create validated plugins from data."""
-        plugins = [
-            Plugin.create(
+        plugins: list[Plugin] = []
+        for data in plugin_data:
+            plugin = Plugin.create(
                 name=str(data["name"]),
                 plugin_version=str(data.get("version", "1.0.0")),
-                config=data,
             )
-            for data in plugin_data
-            if Plugin.create(
-                name=str(data["name"]),
-                plugin_version=str(data.get("version", "1.0.0")),
-                config=data,
-            )
-            .validate_business_rules()
-            .is_success
-        ]
+            validation_result = plugin.validate_business_rules()
+            if validation_result.is_success:
+                plugins.append(plugin)
         return FlextResult.ok(plugins)
 
     def _validate_and_create_plugin(
-        self, plugin_data: dict[str, object]
+        self,
+        plugin_data: dict[str, object],
     ) -> FlextResult[Plugin]:
         """Create single validated plugin."""
         plugin = Plugin.create(
             name=str(plugin_data["name"]),
             plugin_version=str(plugin_data.get("version", "1.0.0")),
-            config=plugin_data,
         )
-        return plugin.validate_business_rules().map(lambda _: plugin)
+        validation_result = plugin.validate_business_rules()
+        if validation_result.is_success:
+            return FlextResult.ok(plugin)
+        return FlextResult.fail(validation_result.error or "Plugin validation failed")
 
     def _register_all(self, plugins: list[Plugin]) -> list[Plugin]:
         """Register multiple plugins."""
@@ -196,7 +418,10 @@ class FlextPluginPlatform(FlextService[None]):
         return FlextResult.fail(f"Plugin '{name}' not found")
 
     def _create_execution(
-        self, plugin: Plugin, context: dict[str, object], execution_id: str | None
+        self,
+        plugin: Plugin,
+        context: dict[str, object],
+        execution_id: str | None,
     ) -> FlextResult[PluginExecution]:
         """Create execution entity."""
         execution = PluginExecution.create(
@@ -207,20 +432,23 @@ class FlextPluginPlatform(FlextService[None]):
         return FlextResult.ok(execution)
 
     def _prepare_execution(
-        self, execution: PluginExecution
+        self,
+        execution: PluginExecution,
     ) -> FlextResult[PluginExecution]:
         """Prepare execution for running."""
         execution.mark_started()
         self.executions[execution.execution_id] = execution
         return FlextResult.ok(execution)
 
-    async def _execute_with_executor(
-        self, execution: PluginExecution
+    def _execute_with_executor(
+        self,
+        execution: PluginExecution,
     ) -> FlextResult[PluginExecution]:
         """Execute with injected executor."""
         if not self.executor:
             execution.mark_completed(
-                success=False, error_message="Executor not configured"
+                success=False,
+                error_message="Executor not configured",
             )
             return FlextResult.fail("Executor not configured")
 
@@ -229,11 +457,12 @@ class FlextPluginPlatform(FlextService[None]):
             "execution_id": execution.execution_id,
             "input_data": execution.input_data,
             "timeout_seconds": getattr(self.config, "security", {}).get(
-                "max_execution_time", 30
+                "max_execution_time",
+                30,
             ),
         }
 
-        result = await self.executor.execute_plugin(execution.plugin_name, exec_context)
+        result = self.executor.execute_plugin(execution.plugin_name, exec_context)
         execution.mark_completed(
             success=result.is_success,
             error_message=result.error if result.is_failure else None,

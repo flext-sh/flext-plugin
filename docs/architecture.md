@@ -27,7 +27,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 ├─────────────────────────────────────────────────────────────────┤
 │                   DOMAIN LAYER                                  │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  FlextPlugin    │  │ FlextPluginEntities.Config│  │PluginRegistry   │  │
+│  │  FlextPlugin    │  │ FlextPluginModels.Config│  │PluginRegistry   │  │
 │  │   (Entity)      │  │    (Entity)     │  │   (Entity)      │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
 ├─────────────────────────────────────────────────────────────────┤
@@ -62,15 +62,15 @@ class FlextPlugin(FlextModels.Entity):
         """Domain validation logic"""
 ```
 
-#### FlextPluginEntities.Config
+#### FlextPluginModels.Config
 
 ```python
-class FlextPluginEntities.Config(FlextModels.Entity):
+class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
     version: str
     dependencies: FlextTypes.StringList
-    metadata: FlextPluginEntities.Metadata
+    metadata: FlextPluginModels.Metadata
 
     class Config:
         frozen = True  # Immutable value object
@@ -96,10 +96,10 @@ class FlextPluginPlatform:
         self.container = container or FlextContainer()
         self._setup_services()
 
-    def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginEntities.Entity]]:
+    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -146,7 +146,7 @@ class WatchdogHotReload:
 All operations return `FlextResult[T]` for railway-oriented programming:
 
 ```python
-def load_plugin(self, plugin: FlextPluginEntities.Entity) -> FlextResult[bool]:
+def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
     try:
         # Plugin loading logic
         return FlextResult[bool].ok(True)
@@ -187,7 +187,7 @@ class SingerTapPlugin(FlextPlugin):
 
 All modules follow the FLEXT single-class-per-module standard with nested helper classes:
 
-- ✅ `entities.py`: Unified `FlextPluginEntities` class (domain entities)
+- ✅ `entities.py`: Unified `FlextPluginModels` class (domain entities)
 - ✅ `implementations.py`: Unified `FlextPluginImplementations` class (concrete implementations)
 - ✅ `hot_reload.py`: Unified `FlextPluginHotReload` class (file monitoring)
 - ✅ All 20 modules: Single main class following FLEXT ecosystem patterns

@@ -74,7 +74,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 # Plugin domain modeling (DDD)
 ├── domain/
 │   ├── __init__.py          # 🏛️ Domain exports
-│   ├── entities.py          # 🏛️ Plugin entities (FlextPlugin, FlextPluginEntities.Registry)
+│   ├── entities.py          # 🏛️ Plugin entities (FlextPlugin, FlextPluginModels.Registry)
 │   ├── ports.py             # 🏛️ Domain interfaces and contracts
 │   └── value_objects.py     # 🏛️ Plugin metadata and configuration
 ```
@@ -84,7 +84,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 **Entity Pattern**:
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin, FlextPluginEntities.Registry
+from flext_plugin.domain.entities import FlextPlugin, FlextPluginModels.Registry
 from flext_plugin.domain.ports import FlextPlugins.Manager
 
 class CustomPlugin(FlextPlugin):
@@ -200,9 +200,9 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 ```python
 # Core plugin patterns
 FlextPlugin                  # Main plugin entity
-FlextPluginEntities.Config           # Plugin configuration entity
-FlextPluginEntities.Metadata         # Plugin metadata value object
-FlextPluginEntities.Registry         # Plugin collection aggregate
+FlextPluginModels.Config           # Plugin configuration entity
+FlextPluginModels.Metadata         # Plugin metadata value object
+FlextPluginModels.Registry         # Plugin collection aggregate
 FlextPluginPlatform         # Main platform orchestrator
 
 # Plugin management patterns
@@ -224,7 +224,7 @@ FlextPluginReloader         # Hot-reload management
 ```python
 # Core functionality modules
 types.py                    # Plugin types, enums, and result objects
-entities.py                 # Domain entities (FlextPlugin, FlextPluginEntities.Registry)
+entities.py                 # Domain entities (FlextPlugin, FlextPluginModels.Registry)
 ports.py                    # Domain interfaces and contracts
 services.py                 # Application services and business logic
 handlers.py                 # CQRS command and query handlers
@@ -295,7 +295,7 @@ def deploy_plugin():
 
 ```python
 # Import from specific modules for clarity
-from flext_plugin.domain.entities import FlextPlugin, FlextPluginEntities.Registry
+from flext_plugin.domain.entities import FlextPlugin, FlextPluginModels.Registry
 from flext_plugin.application.services import FlextPluginService
 from flext_plugin.core.types import PluginStatus, PluginType
 
@@ -831,7 +831,7 @@ class FlextPlugin(FlextModels.Entity):
 ### **Plugin Aggregate Patterns**
 
 ```python
-from flext_plugin.domain.entities import FlextPluginEntities.Registry
+from flext_plugin.domain.entities import FlextPluginModels.Registry
 from flext_core import FlextBus
 from flext_core import FlextConfig
 from flext_core import FlextConstants
@@ -854,7 +854,7 @@ from flext_core import FlextTypes
 from flext_core import FlextUtilities
 from typing import Dict, List, Optional
 
-class FlextPluginEntities.Registry(FlextModels.AggregateRoot):
+class FlextPluginModels.Registry(FlextModels.AggregateRoot):
     """
     Plugin registry aggregate managing plugin collections.
 
@@ -948,7 +948,7 @@ class FlextPluginEntities.Registry(FlextModels.AggregateRoot):
 ### **Plugin Value Object Patterns**
 
 ```python
-from flext_plugin.domain.value_objects import FlextPluginEntities.Metadata, FlextPluginEntities.Config
+from flext_plugin.domain.value_objects import FlextPluginModels.Metadata, FlextPluginModels.Config
 from flext_core import FlextBus
 from flext_core import FlextConfig
 from flext_core import FlextConstants
@@ -972,7 +972,7 @@ from flext_core import FlextUtilities
 from typing import List, Dict, Optional
 
 
-class FlextPluginEntities.Metadata(FlextModels.Value):
+class FlextPluginModels.Metadata(FlextModels.Value):
     """
     Immutable plugin metadata value object.
 
@@ -1015,7 +1015,7 @@ class FlextPluginEntities.Metadata(FlextModels.Value):
         """Validate URL format."""
         return url.startswith(("http://", "https://"))
 
-class FlextPluginEntities.Config(FlextModels.Value):
+class FlextPluginModels.Config(FlextModels.Value):
     """
     Immutable plugin configuration value object.
 
@@ -1046,10 +1046,10 @@ class FlextPluginEntities.Config(FlextModels.Value):
         """Check if configuration contains specific key."""
         return key in self.config_data
 
-    def with_override(self, overrides: FlextTypes.Dict) -> 'FlextPluginEntities.Config':
+    def with_override(self, overrides: FlextTypes.Dict) -> 'FlextPluginModels.Config':
         """Create new config with overridden values."""
         new_config_data = {**self.config_data, **overrides}
-        return FlextPluginEntities.Config(
+        return FlextPluginModels.Config(
             config_data=new_config_data,
             schema_version=self.schema_version,
             environment=self.environment
@@ -1405,7 +1405,7 @@ class DataProcessorPlugin(FlextPlugin):
         - Supports hot-reload for development workflows
 
     Configuration:
-        The plugin accepts configuration through FlextPluginEntities.Config with
+        The plugin accepts configuration through FlextPluginModels.Config with
         the following structure:
 
         ```json
@@ -1422,7 +1422,7 @@ class DataProcessorPlugin(FlextPlugin):
         ```
 
     Example:
-        >>> config = FlextPluginEntities.Config({
+        >>> config = FlextPluginModels.Config({
         ...     "batch_size": 500,
         ...     "formats": ["json"]
         ... })
@@ -1446,14 +1446,14 @@ class DataProcessorPlugin(FlextPlugin):
 
     See Also:
         - FlextPlugin: Base plugin class documentation
-        - FlextPluginEntities.Config: Configuration pattern documentation
+        - FlextPluginModels.Config: Configuration pattern documentation
         - Singer Integration Guide: docs/guides/singer-integration.md
     """
 
     def __init__(
         self,
-        config: Optional[FlextPluginEntities.Config] = None,
-        metadata: Optional[FlextPluginEntities.Metadata] = None,
+        config: Optional[FlextPluginModels.Config] = None,
+        metadata: Optional[FlextPluginModels.Metadata] = None,
         **kwargs: object
     ) -> None:
         """
@@ -1474,7 +1474,7 @@ class DataProcessorPlugin(FlextPlugin):
                                     batch_size or unsupported data formats.
 
         Example:
-            >>> config = FlextPluginEntities.Config({
+            >>> config = FlextPluginModels.Config({
             ...     "batch_size": 1000,
             ...     "timeout_seconds": 60,
             ...     "formats": ["json", "parquet"]
@@ -1591,11 +1591,11 @@ class DataProcessorPlugin(FlextPlugin):
 
 - [ ] **Plugin Interface**: Implements required plugin interface methods
 - [ ] **Status Management**: Proper PluginStatus transitions and validation
-- [ ] **Configuration**: Uses FlextPluginEntities.Config pattern with validation
-- [ ] **Metadata**: Complete FlextPluginEntities.Metadata with discovery information
+- [ ] **Configuration**: Uses FlextPluginModels.Config pattern with validation
+- [ ] **Metadata**: Complete FlextPluginModels.Metadata with discovery information
 - [ ] **Dependencies**: Properly declared plugin dependencies
 - [ ] **Events**: Domain events for plugin lifecycle and execution
-- [ ] **Registry**: Compatible with FlextPluginEntities.Registry management
+- [ ] **Registry**: Compatible with FlextPluginModels.Registry management
 - [ ] **Discovery**: Discoverable through plugin discovery system
 - [ ] **Platform**: Integrates with FlextPluginPlatform orchestration
 
@@ -1712,7 +1712,7 @@ class ProjectPluginConfig(PluginSystemSettings):
 
 ```python
 # ✅ Use centralized plugin registry across ecosystem
-from flext_plugin.domain.entities import FlextPluginEntities.Registry
+from flext_plugin.domain.entities import FlextPluginModels.Registry
 from flext_plugin import create_flext_plugin_platform
 
 class EcosystemPluginManager:

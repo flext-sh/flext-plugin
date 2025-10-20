@@ -9,7 +9,7 @@ from datetime import datetime
 
 import pytest
 
-from flext_plugin.models import FlextPluginModels, PluginStatus, PluginType
+from flext_plugin.models import FlextPluginModels
 
 
 class TestFlextPluginModels:
@@ -104,7 +104,7 @@ class TestFlextPluginModels:
     def test_plugin_model_creation(self) -> None:
         """Test PluginModel creation and validation."""
         # Test valid plugin creation
-        plugin = FlextPluginModels.PluginModel(
+        plugin = FlextPluginModels.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
             plugin_type=PluginType.UTILITY,
@@ -123,7 +123,7 @@ class TestFlextPluginModels:
     def test_plugin_model_validation(self) -> None:
         """Test PluginModel validation rules."""
         # Test valid plugin
-        plugin = FlextPluginModels.PluginModel(
+        plugin = FlextPluginModels.Plugin(
             name="valid-plugin",
             plugin_version="1.0.0",
             plugin_type=PluginType.UTILITY,
@@ -133,7 +133,7 @@ class TestFlextPluginModels:
 
         # Test invalid plugin name
         with pytest.raises(ValueError):
-            FlextPluginModels.PluginModel(
+            FlextPluginModels.Plugin(
                 name="",  # Empty name should fail
                 plugin_version="1.0.0",
                 plugin_type=PluginType.UTILITY,
@@ -142,7 +142,7 @@ class TestFlextPluginModels:
 
         # Test invalid version format
         with pytest.raises(ValueError):
-            FlextPluginModels.PluginModel(
+            FlextPluginModels.Plugin(
                 name="test-plugin",
                 plugin_version="invalid-version",  # Invalid format
                 plugin_type=PluginType.UTILITY,
@@ -153,7 +153,7 @@ class TestFlextPluginModels:
         """Test PluginModel consistency validation."""
         # Test active plugin cannot be disabled
         with pytest.raises(ValueError):
-            FlextPluginModels.PluginModel(
+            FlextPluginModels.Plugin(
                 name="test-plugin",
                 plugin_version="1.0.0",
                 plugin_type=PluginType.UTILITY,
@@ -163,7 +163,7 @@ class TestFlextPluginModels:
 
         # Test plugin cannot depend on itself
         with pytest.raises(ValueError):
-            FlextPluginModels.PluginModel(
+            FlextPluginModels.Plugin(
                 name="test-plugin",
                 plugin_version="1.0.0",
                 plugin_type=PluginType.UTILITY,
@@ -199,7 +199,9 @@ class TestFlextPluginModels:
 
         # Test high performance config
         config = FlextPluginModels.ConfigModel(
-            timeout_seconds=30, max_memory_mb=256, max_cpu_percent=50
+            timeout_seconds=30,
+            max_memory_mb=256,
+            max_cpu_percent=50,
         )
         assert config.is_high_performance is True
 
@@ -287,13 +289,17 @@ class TestFlextPluginModels:
         """Test MonitoringModel validation rules."""
         # Test basic monitoring check
         monitoring = FlextPluginModels.MonitoringModel(
-            metrics_enabled=True, health_checks=True, error_tracking=True
+            metrics_enabled=True,
+            health_checks=True,
+            error_tracking=True,
         )
         assert monitoring.has_basic_monitoring is True
 
         # Test missing basic monitoring
         monitoring = FlextPluginModels.MonitoringModel(
-            metrics_enabled=False, health_checks=True, error_tracking=True
+            metrics_enabled=False,
+            health_checks=True,
+            error_tracking=True,
         )
         assert monitoring.has_basic_monitoring is False
 
@@ -317,7 +323,7 @@ class TestFlextPluginModels:
                 "memory_percent": 85.0,
                 "error_rate": 5.0,
                 "response_time_ms": 5000.0,
-            }
+            },
         )
         assert monitoring.alert_thresholds["cpu_percent"] == 80.0
 
@@ -327,7 +333,7 @@ class TestFlextPluginModels:
                 alert_thresholds={
                     "cpu_percent": 80.0,
                     # Missing other required thresholds
-                }
+                },
             )
 
         # Test invalid percentage thresholds
@@ -338,7 +344,7 @@ class TestFlextPluginModels:
                     "memory_percent": 85.0,
                     "error_rate": 5.0,
                     "response_time_ms": 5000.0,
-                }
+                },
             )
 
         # Test negative thresholds
@@ -349,7 +355,7 @@ class TestFlextPluginModels:
                     "memory_percent": 85.0,
                     "error_rate": -5.0,  # Negative
                     "response_time_ms": 5000.0,
-                }
+                },
             )
 
     def test_metadata_model_creation(self) -> None:

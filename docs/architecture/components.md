@@ -236,7 +236,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - Support generic type parameters
   - Enable advanced typing features (Python 3.13+)
 - **Key Types**:
-  - `PluginConfig`: Plugin configuration type
+  - `FlextPluginConfig`: Plugin configuration type
   - `ExecutionContext`: Plugin execution context
   - `PluginMetadata`: Plugin metadata structure
   - `ValidationResult`: Validation result type
@@ -345,7 +345,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - Support complex nested data structures
   - Enable type-safe data handling
 - **Key Models**:
-  - `PluginConfig`: Plugin configuration model
+  - `FlextPluginConfig`: Plugin configuration model
   - `ExecutionResult`: Execution result model
   - `PluginMetadata`: Plugin metadata model
   - `ValidationError`: Error model
@@ -407,7 +407,7 @@ result = service.discover_plugins(paths)  # Business logic
 service = FlextPluginService()
 plugin = service.create_plugin(config)  # Service operation
     ↓
-entity = FlextPluginEntities.Plugin()   # Domain entity
+entity = FlextPluginModels.Plugin()   # Domain entity
 entity.validate_business_rules()        # Business rules
     ↓
 protocol = FlextPluginProtocols.Plugin  # Domain contract

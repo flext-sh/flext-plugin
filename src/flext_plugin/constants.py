@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from enum import StrEnum
 from typing import Final, Literal
 
 from flext_core import FlextConstants
@@ -30,6 +31,35 @@ class FlextPluginConstants(FlextConstants):
         METHOD_FILE_SYSTEM: Final[str] = "file_system"
         METHOD_ENTRY_POINTS: Final[str] = "entry_points"
         METHOD_PACKAGE_SCAN: Final[str] = "package_scan"
+
+    class PluginType(StrEnum):
+        """Plugin type enumeration."""
+
+        # Singer platform types
+        TAP = "tap"
+        TARGET = "target"
+        TRANSFORM = "transform"
+        # Architecture types
+        EXTENSION = "extension"
+        SERVICE = "service"
+        MIDDLEWARE = "middleware"
+        TRANSFORMER = "transformer"
+        # Integration types
+        API = "api"
+        DATABASE = "database"
+        NOTIFICATION = "notification"
+        AUTHENTICATION = "authentication"
+        AUTHORIZATION = "authorization"
+        # Utility types
+        UTILITY = "utility"
+        TOOL = "tool"
+        HANDLER = "handler"
+        PROCESSOR = "processor"
+        # Other types
+        CORE = "core"
+        ADDON = "addon"
+        THEME = "theme"
+        LANGUAGE = "language"
 
     # Plugin types with frozensets
     class Types:
@@ -106,7 +136,7 @@ class FlextPluginConstants(FlextConstants):
 
     # Lifecycle constants
     class Lifecycle:
-        PLUGIN_LIFECYCLE_STATES: Final[set[str]] = frozenset({
+        PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
             "UNKNOWN",
             "DISCOVERED",
             "LOADED",
@@ -302,6 +332,90 @@ class FlextPluginConstants(FlextConstants):
             "CPU percentage must be between 0 and 100"
         )
         SYNC_INTERVAL_MUST_BE_POSITIVE: Final[str] = "Sync interval must be positive"
+
+
+class PluginStatus(StrEnum):
+    """Plugin lifecycle and operational status enumeration."""
+
+    UNKNOWN = FlextPluginConstants.Lifecycle.STATUS_UNKNOWN
+    DISCOVERED = FlextPluginConstants.Lifecycle.STATUS_DISCOVERED
+    LOADED = FlextPluginConstants.Lifecycle.STATUS_LOADED
+    ACTIVE = FlextPluginConstants.Lifecycle.STATUS_ACTIVE
+    INACTIVE = FlextPluginConstants.Lifecycle.STATUS_INACTIVE
+    LOADING = FlextPluginConstants.Lifecycle.STATUS_LOADING
+    ERROR = FlextPluginConstants.Lifecycle.STATUS_ERROR
+    DISABLED = FlextPluginConstants.Lifecycle.STATUS_DISABLED
+    HEALTHY = FlextPluginConstants.Lifecycle.STATUS_HEALTHY
+    UNHEALTHY = FlextPluginConstants.Lifecycle.STATUS_UNHEALTHY
+
+    @classmethod
+    def get_operational_statuses(cls) -> list[PluginStatus]:
+        """Get statuses representing operational states."""
+        return [cls.ACTIVE, cls.HEALTHY, cls.LOADED]
+
+    @classmethod
+    def get_error_statuses(cls) -> list[PluginStatus]:
+        """Get statuses representing error states."""
+        return [cls.ERROR, cls.UNHEALTHY, cls.DISABLED]
+
+    def is_operational(self) -> bool:
+        """Check if status represents operational state."""
+        return self in self.get_operational_statuses()
+
+    def is_error_state(self) -> bool:
+        """Check if status represents error state."""
+        return self in self.get_error_statuses()
+
+    class PluginType(StrEnum):
+        """Plugin type classification for platform organization."""
+
+        # Singer ETL Types
+        TAP = FlextPluginConstants.Types.TYPE_TAP
+        TARGET = FlextPluginConstants.Types.TYPE_TARGET
+        TRANSFORM = FlextPluginConstants.Types.TYPE_TRANSFORM
+
+        # Architecture Types
+        EXTENSION = FlextPluginConstants.Types.TYPE_EXTENSION
+        SERVICE = FlextPluginConstants.Types.TYPE_SERVICE
+        MIDDLEWARE = FlextPluginConstants.Types.TYPE_MIDDLEWARE
+        TRANSFORMER = FlextPluginConstants.Types.TYPE_TRANSFORMER
+
+        # Integration Types
+        API = FlextPluginConstants.Types.TYPE_API
+        DATABASE = FlextPluginConstants.Types.TYPE_DATABASE
+        NOTIFICATION = FlextPluginConstants.Types.TYPE_NOTIFICATION
+        AUTHENTICATION = FlextPluginConstants.Types.TYPE_AUTHENTICATION
+        AUTHORIZATION = FlextPluginConstants.Types.TYPE_AUTHORIZATION
+
+        # Utility Types
+        UTILITY = FlextPluginConstants.Types.TYPE_UTILITY
+        TOOL = FlextPluginConstants.Types.TYPE_TOOL
+        HANDLER = FlextPluginConstants.Types.TYPE_HANDLER
+        PROCESSOR = FlextPluginConstants.Types.TYPE_PROCESSOR
+
+        # Additional Types
+        CORE = FlextPluginConstants.Types.TYPE_CORE
+        ADDON = FlextPluginConstants.Types.TYPE_ADDON
+        THEME = FlextPluginConstants.Types.TYPE_THEME
+        LANGUAGE = FlextPluginConstants.Types.TYPE_LANGUAGE
+
+        @classmethod
+        def get_etl_types(cls) -> list[str]:
+            """Get ETL-related plugin types."""
+            return [cls.TAP, cls.TARGET, cls.TRANSFORM]
+
+        @classmethod
+        def get_architectural_types(cls) -> list[str]:
+            """Get architectural plugin types."""
+            return [cls.EXTENSION, cls.SERVICE, cls.MIDDLEWARE, cls.TRANSFORMER]
+
+        def is_etl_plugin(self) -> bool:
+            """Check if this is an ETL plugin type."""
+            return self in self.get_etl_types()
+
+        def is_architectural_plugin(self) -> bool:
+            """Check if this is an architectural plugin type."""
+            return self in self.get_architectural_types()
 
 
 __all__ = ["FlextPluginConstants"]

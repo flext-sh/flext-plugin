@@ -7,20 +7,88 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
-import contextlib
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
 from flext_core import FlextLogger, FlextResult
+
+from flext_plugin.models import FlextPluginModels
+
+if TYPE_CHECKING:
+    from watchdog.events import FileSystemEventHandler
+
+try:
+    from watchdog.events import (
+        DirModifiedEvent,
+        FileModifiedEvent,
+        FileSystemEventHandler,
+    )
+    from watchdog.observers import Observer
+
+    HAS_WATCHDOG = True
+
+    class FileChangeHandler(FileSystemEventHandler):
+        """Watchdog event handler for file change detection."""
+
+        def __init__(
+            self,
+            callback: Callable[[str], None],
+            watched_paths: set[Path],
+            logger: FlextLogger,
+        ) -> None:
+            """Initialize file change handler.
+
+            Args:
+                callback: Callback to execute on file change
+                watched_paths: Set of paths being watched
+                logger: Logger instance
+
+            """
+            super().__init__()
+            self.callback = callback
+            self.watched_paths = watched_paths
+            self.logger = logger
+
+        def on_modified(self, event: FileModifiedEvent | DirModifiedEvent) -> None:
+            """Handle file modification event.
+
+            Args:
+                event: FileModifiedEvent or DirModifiedEvent from watchdog
+
+            """
+            if event.is_directory:
+                return
+
+            src_path = event.src_path
+            if isinstance(src_path, bytes):
+                src_path = src_path.decode("utf-8")
+
+            if not src_path.endswith(".py"):
+                return
+
+            file_path = Path(src_path)
+
+            # Check if file is in watched paths
+            for watched_path in self.watched_paths:
+                if (watched_path.is_file() and file_path == watched_path) or (
+                    watched_path.is_dir() and file_path.is_relative_to(watched_path)
+                ):
+                    self.callback(file_path.stem)
+                    break
+
+except ImportError:
+    HAS_WATCHDOG = False
+    Observer = None
+    FileChangeHandler = None
 
 
 class FlextPluginHotReload:
     """Plugin hot reload service for real-time plugin updates.
 
-    This class provides comprehensive hot reload functionality including
-    file monitoring, automatic reloading, and change detection.
+    Provides comprehensive hot reload functionality with event-driven file
+    monitoring using watchdog library, automatic reloading, and change detection.
 
     Usage:
         ```python
@@ -30,12 +98,12 @@ class FlextPluginHotReload:
         hot_reload = FlextPluginHotReload()
 
         # Start monitoring
-        result = await hot_reload.start_watching(["./plugins"])
-        if result.success:
+        result = hot_reload.start_watching(["./plugins"])
+        if result.is_success:
             print("Hot reload monitoring started")
 
         # Stop monitoring
-        await hot_reload.stop_watching()
+        result = hot_reload.stop_watching()
         ```
     """
 
@@ -48,12 +116,11 @@ class FlextPluginHotReload:
         """Initialize the hot reload service.
 
         Args:
-            watch_interval: File watching interval in seconds
+            watch_interval: File watching interval in seconds (unused with watchdog)
             debounce_ms: Debounce time in milliseconds
             max_retries: Maximum retry attempts for failed reloads
 
         """
-        super().__init__()
         self.logger = FlextLogger(__name__)
         self.watch_interval = watch_interval
         self.debounce_ms = debounce_ms
@@ -62,24 +129,14 @@ class FlextPluginHotReload:
         # Internal state
         self._is_watching = False
         self._watched_paths: set[Path] = set()
-        self._file_timestamps: dict[Path, float] = {}
         self._reload_callbacks: list[Callable[[str], object]] = []
-        self._watch_task: asyncio.Task[None] | None = None
-        self._reload_history: list[dict[str, object]] = []
+        self._reload_history: list[FlextPluginModels.ReloadRecord] = []
 
-    def _resolve_watch_path(self, path_str: str) -> Path:
-        """Resolve and validate a watch path synchronously.
+        # Watchdog-specific
+        self._observer: Any = None
+        self._event_handler: Any = None
 
-        Args:
-            path_str: Path string to resolve
-
-        Returns:
-            Resolved Path object
-
-        """
-        return Path(path_str).expanduser().resolve()
-
-    async def start_watching(self, paths: list[str]) -> FlextResult[bool]:
+    def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
 
         Args:
@@ -93,7 +150,7 @@ class FlextPluginHotReload:
             if self._is_watching:
                 return FlextResult.fail("Hot reload is already watching")
 
-            # Convert paths to Path objects
+            # Convert and validate paths
             watched_paths = set()
             for path_str in paths:
                 path_obj = self._resolve_watch_path(path_str)
@@ -108,19 +165,39 @@ class FlextPluginHotReload:
             self._watched_paths = watched_paths
             self._is_watching = True
 
-            # Start the watch task
-            self._watch_task = asyncio.create_task(self._watch_loop())
+            # Start watchdog observer if available
+            if HAS_WATCHDOG and Observer is not None:
+                fch = cast("type", FileChangeHandler)
+                self._event_handler = fch(
+                    self._handle_file_change, self._watched_paths, self.logger
+                )
+                self._observer = Observer()
+                for watched_path in watched_paths:
+                    self._observer.schedule(
+                        self._event_handler,
+                        str(
+                            watched_path.parent
+                            if watched_path.is_file()
+                            else watched_path
+                        ),
+                        recursive=True,
+                    )
+                self._observer.start()
+                self.logger.info(
+                    f"Started hot reload with watchdog for {len(watched_paths)} paths"
+                )
+            else:
+                self.logger.info(
+                    f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths"
+                )
 
-            self.logger.info(
-                f"Started hot reload monitoring for {len(watched_paths)} paths"
-            )
             return FlextResult.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to start hot reload watching")
             return FlextResult.fail(f"Start watching error: {e!s}")
 
-    async def stop_watching(self) -> FlextResult[bool]:
+    def stop_watching(self) -> FlextResult[bool]:
         """Stop watching for changes.
 
         Returns:
@@ -131,17 +208,15 @@ class FlextPluginHotReload:
             if not self._is_watching:
                 return FlextResult.fail("Hot reload is not watching")
 
+            # Stop watchdog observer
+            if self._observer is not None:
+                self._observer.stop()
+                self._observer.join()
+                self._observer = None
+                self._event_handler = None
+
             self._is_watching = False
-
-            # Cancel the watch task
-            if self._watch_task and not self._watch_task.done():
-                self._watch_task.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await self._watch_task
-
-            self._watch_task = None
             self._watched_paths.clear()
-            self._file_timestamps.clear()
 
             self.logger.info("Stopped hot reload monitoring")
             return FlextResult.ok(True)
@@ -150,7 +225,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to stop hot reload watching")
             return FlextResult.fail(f"Stop watching error: {e!s}")
 
-    async def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Reload a specific plugin.
 
         Args:
@@ -162,37 +237,25 @@ class FlextPluginHotReload:
         """
         try:
             # Find the plugin file
-            plugin_path = None
-            for watched_path in self._watched_paths:
-                if watched_path.is_file() and watched_path.stem == plugin_name:
-                    plugin_path = watched_path
-                    break
-                if watched_path.is_dir():
-                    plugin_file = watched_path / f"{plugin_name}.py"
-                    if plugin_file.exists():
-                        plugin_path = plugin_file
-                        break
-
+            plugin_path = self._find_plugin_path(plugin_name)
             if not plugin_path:
-                return FlextResult.fail(f"Plugin file not found: {plugin_name}")
+                error_msg = f"Plugin file not found: {plugin_name}"
+                return FlextResult.fail(error_msg)
 
             # Trigger reload callbacks
             for callback in self._reload_callbacks:
                 try:
-                    if asyncio.iscoroutinefunction(callback):
-                        await callback(plugin_name)
-                    else:
-                        callback(plugin_name)
+                    callback(plugin_name)
                 except Exception:
                     self.logger.exception(f"Reload callback failed for {plugin_name}")
 
             # Record reload in history
-            reload_record = {
-                "plugin_name": plugin_name,
-                "plugin_path": str(plugin_path),
-                "timestamp": self._get_current_timestamp(),
-                "success": True,
-            }
+            reload_record = FlextPluginModels.ReloadRecord(
+                plugin_name=plugin_name,
+                plugin_path=plugin_path,
+                timestamp=datetime.now(UTC),
+                success=True,
+            )
             self._reload_history.append(reload_record)
 
             self.logger.info(f"Reloaded plugin: {plugin_name}")
@@ -245,7 +308,9 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def get_reload_history(self, limit: int = 100) -> list[dict[str, object]]:
+    def get_reload_history(
+        self, limit: int = 100
+    ) -> list[FlextPluginModels.ReloadRecord]:
         """Get reload history.
 
         Args:
@@ -269,118 +334,7 @@ class FlextPluginHotReload:
         self.logger.info(f"Cleared {count} reload history entries")
         return count
 
-    async def _watch_loop(self) -> None:
-        """Main file watching loop."""
-        try:
-            while self._is_watching:
-                await self._check_for_changes()
-                await asyncio.sleep(self.watch_interval)
-        except asyncio.CancelledError:
-            self.logger.debug("Watch loop cancelled")
-        except Exception:
-            self.logger.exception("Error in watch loop")
-
-    async def _check_for_changes(self) -> None:
-        """Check for file changes in watched paths."""
-        try:
-            changed_files = []
-
-            for watched_path in self._watched_paths:
-                if watched_path.is_file():
-                    # Single file
-                    if self._has_file_changed(watched_path):
-                        changed_files.append(watched_path)
-                elif watched_path.is_dir():
-                    # Directory - check all Python files
-                    changed_files.extend(
-                        py_file
-                        for py_file in watched_path.rglob("*.py")
-                        if self._has_file_changed(py_file)
-                    )
-
-            # Process changed files
-            for changed_file in changed_files:
-                await self._handle_file_change(changed_file)
-
-        except Exception:
-            self.logger.exception("Error checking for file changes")
-
-    def _has_file_changed(self, file_path: Path) -> bool:
-        """Check if a file has changed since last check.
-
-        Args:
-            file_path: Path to the file to check
-
-        Returns:
-            True if file has changed, False otherwise
-
-        """
-        try:
-            if not file_path.exists():
-                return False
-
-            current_mtime = file_path.stat().st_mtime
-            last_mtime = self._file_timestamps.get(file_path, 0)
-
-            if current_mtime > last_mtime:
-                self._file_timestamps[file_path] = current_mtime
-                return True
-
-            return False
-
-        except Exception as e:
-            self.logger.debug(f"Error checking file change for {file_path}: {e}")
-            return False
-
-    async def _handle_file_change(self, file_path: Path) -> None:
-        """Handle a file change event.
-
-        Args:
-            file_path: Path to the changed file
-
-        """
-        try:
-            # Extract plugin name from file path
-            plugin_name = file_path.stem
-
-            # Apply debounce
-            await asyncio.sleep(self.debounce_ms / 1000.0)
-
-            # Check if file still exists and has changed (run in thread pool)
-            loop = asyncio.get_event_loop()
-            file_exists = await loop.run_in_executor(None, file_path.exists)
-            if not file_exists:
-                return
-
-            current_mtime = await loop.run_in_executor(
-                None,
-                lambda: file_path.stat().st_mtime,  # noqa: ASYNC240
-            )
-            if self._file_timestamps.get(file_path, 0) >= current_mtime:
-                return
-
-            # Reload the plugin
-            reload_result = await self.reload_plugin(plugin_name)
-            if reload_result.is_success:
-                self.logger.info(f"Hot reloaded plugin from file change: {file_path}")
-            else:
-                self.logger.warning(
-                    f"Failed to hot reload plugin: {reload_result.error}"
-                )
-
-        except Exception:
-            self.logger.exception(f"Error handling file change for {file_path}")
-
-    def _get_current_timestamp(self) -> str:
-        """Get current timestamp as ISO string.
-
-        Returns:
-            Current timestamp as ISO string
-
-        """
-        return datetime.now(UTC).isoformat()
-
-    def get_hot_reload_status(self) -> dict[str, object]:
+    def get_hot_reload_status(self) -> dict[str, Any]:
         """Get the current status of the hot reload service.
 
         Returns:
@@ -394,13 +348,12 @@ class FlextPluginHotReload:
             "debounce_ms": self.debounce_ms,
             "max_retries": self.max_retries,
             "total_reloads": len(self._reload_history),
-            "recent_reloads": len([
-                r for r in self._reload_history if r.get("success", False)
-            ]),
+            "recent_reloads": len([r for r in self._reload_history if r.success]),
             "callback_count": len(self._reload_callbacks),
+            "using_watchdog": HAS_WATCHDOG and self._observer is not None,
         }
 
-    async def force_reload_all(self) -> FlextResult[dict[str, bool]]:
+    def force_reload_all(self) -> FlextResult[dict[str, bool]]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -416,13 +369,14 @@ class FlextPluginHotReload:
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
-                    result = await self.reload_plugin(plugin_name)
+                    result = self.reload_plugin(plugin_name)
                     reload_results[plugin_name] = result.is_success
                 elif watched_path.is_dir():
                     for py_file in watched_path.rglob("*.py"):
-                        plugin_name = py_file.stem
-                        result = await self.reload_plugin(plugin_name)
-                        reload_results[plugin_name] = result.is_success
+                        if not py_file.name.startswith("_"):
+                            plugin_name = py_file.stem
+                            result = self.reload_plugin(plugin_name)
+                            reload_results[plugin_name] = result.is_success
 
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
             return FlextResult.ok(reload_results)
@@ -431,7 +385,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to force reload all plugins")
             return FlextResult.fail(f"Force reload error: {e!s}")
 
-    async def add_watch_path(self, path: str) -> FlextResult[bool]:
+    def add_watch_path(self, path: str) -> FlextResult[bool]:
         """Add a new path to watch.
 
         Args:
@@ -442,16 +396,11 @@ class FlextPluginHotReload:
 
         """
         try:
-            # Run pathlib operations in thread pool
-            loop = asyncio.get_event_loop()
-            path_obj = await loop.run_in_executor(
-                None,
-                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
-            )
-            path_exists = await loop.run_in_executor(None, path_obj.exists)
+            path_obj = self._resolve_watch_path(path)
 
-            if not path_exists:
-                return FlextResult.fail(f"Path does not exist: {path}")
+            if not path_obj.exists():
+                error_msg = f"Path does not exist: {path}"
+                return FlextResult.fail(error_msg)
 
             self._watched_paths.add(path_obj)
             self.logger.info(f"Added watch path: {path}")
@@ -461,7 +410,7 @@ class FlextPluginHotReload:
             self.logger.exception(f"Failed to add watch path: {path}")
             return FlextResult.fail(f"Add watch path error: {e!s}")
 
-    async def remove_watch_path(self, path: str) -> FlextResult[bool]:
+    def remove_watch_path(self, path: str) -> FlextResult[bool]:
         """Remove a path from watch list.
 
         Args:
@@ -472,17 +421,10 @@ class FlextPluginHotReload:
 
         """
         try:
-            # Run pathlib operations in thread pool
-            loop = asyncio.get_event_loop()
-            path_obj = await loop.run_in_executor(
-                None,
-                lambda: Path(path).expanduser().resolve(),  # noqa: ASYNC240
-            )
+            path_obj = self._resolve_watch_path(path)
 
             if path_obj in self._watched_paths:
                 self._watched_paths.remove(path_obj)
-                # Remove from timestamps
-                self._file_timestamps.pop(path_obj, None)
                 self.logger.info(f"Removed watch path: {path}")
                 return FlextResult.ok(True)
             return FlextResult.fail(f"Path not being watched: {path}")
@@ -490,6 +432,47 @@ class FlextPluginHotReload:
         except Exception as e:
             self.logger.exception(f"Failed to remove watch path: {path}")
             return FlextResult.fail(f"Remove watch path error: {e!s}")
+
+    def _resolve_watch_path(self, path_str: str) -> Path:
+        """Resolve and validate a watch path synchronously.
+
+        Args:
+            path_str: Path string to resolve
+
+        Returns:
+            Resolved Path object
+
+        """
+        return Path(path_str).expanduser().resolve()
+
+    def _find_plugin_path(self, plugin_name: str) -> Path | None:
+        """Find plugin file by name in watched paths.
+
+        Args:
+            plugin_name: Name of the plugin to find
+
+        Returns:
+            Path to plugin if found, None otherwise
+
+        """
+        for watched_path in self._watched_paths:
+            if watched_path.is_file() and watched_path.stem == plugin_name:
+                return watched_path
+            if watched_path.is_dir():
+                plugin_file = watched_path / f"{plugin_name}.py"
+                if plugin_file.exists():
+                    return plugin_file
+        return None
+
+    def _handle_file_change(self, plugin_name: str) -> None:
+        """Handle a file change event.
+
+        Args:
+            plugin_name: Name of the plugin that changed
+
+        """
+        self.logger.debug(f"Detected file change for plugin: {plugin_name}")
+        # Reload is triggered by the calling context
 
 
 __all__ = ["FlextPluginHotReload"]

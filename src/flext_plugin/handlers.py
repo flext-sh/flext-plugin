@@ -72,10 +72,11 @@ class FlextPluginHandlers:
 
             # Sort by priority (highest first)
             self._handlers[event_type].sort(
-                key=lambda x: x.get("priority", 0) or 0, reverse=True
+                key=lambda x: x.get("priority", 0) or 0,
+                reverse=True,
             )
 
-            self.logger.debug(f"Registered handler for event type: {event_type}")
+            self.logger.debug("Registered handler for event type: %s", event_type)
             return FlextResult.ok(True)
 
         except Exception as e:
@@ -100,7 +101,7 @@ class FlextPluginHandlers:
         try:
             if event_type not in self._handlers:
                 return FlextResult.fail(
-                    f"No handlers registered for event type: {event_type}"
+                    f"No handlers registered for event type: {event_type}",
                 )
 
             # Find and remove handler
@@ -111,10 +112,10 @@ class FlextPluginHandlers:
 
             if len(self._handlers[event_type]) == original_count:
                 return FlextResult.fail(
-                    f"Handler not found for event type: {event_type}"
+                    f"Handler not found for event type: {event_type}",
                 )
 
-            self.logger.debug(f"Unregistered handler for event type: {event_type}")
+            self.logger.debug("Unregistered handler for event type: %s", event_type)
             return FlextResult.ok(True)
 
         except Exception as e:
@@ -147,7 +148,8 @@ class FlextPluginHandlers:
 
             if event_type not in self._handlers:
                 self.logger.debug(
-                    f"No handlers registered for event type: {event_type}"
+                    "No handlers registered for event type: %s",
+                    event_type,
                 )
                 return FlextResult.ok([])
 
@@ -163,7 +165,7 @@ class FlextPluginHandlers:
                     results.append({"error": str(e), "success": False})
 
             self.logger.debug(
-                f"Triggered event {event_type} with {len(results)} handlers"
+                f"Triggered event {event_type} with {len(results)} handlers",
             )
             return FlextResult.ok(results)
 
@@ -253,7 +255,7 @@ class FlextPluginHandlers:
         """
         count = len(self._event_history)
         self._event_history.clear()
-        self.logger.info(f"Cleared {count} events from history")
+        self.logger.info("Cleared %s events from history", count)
         return count
 
     def get_registered_handlers(self) -> dict[str, int]:
@@ -295,7 +297,7 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info(f"Plugin discovered: {plugin_name}")
+        self.logger.info("Plugin discovered: %s", plugin_name)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_loaded(
@@ -312,7 +314,7 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info(f"Plugin loaded: {plugin_name}")
+        self.logger.info("Plugin loaded: %s", plugin_name)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_executed(
@@ -333,7 +335,10 @@ class FlextPluginHandlers:
         success = event_data.get("success", False)
 
         self.logger.info(
-            f"Plugin executed: {plugin_name} (execution: {execution_id}, success: {success})"
+            "Plugin executed: %s (execution: %s, success: %s)",
+            plugin_name,
+            execution_id,
+            success,
         )
         return {
             "success": True,
@@ -358,7 +363,7 @@ class FlextPluginHandlers:
         plugin_name = event_data.get("plugin_name", "unknown")
         error_message = event_data.get("error_message", "Unknown error")
 
-        self.logger.error(f"Plugin error: {plugin_name} - {error_message}")
+        self.logger.error("Plugin error: %s - %s", plugin_name, error_message)
         return {
             "success": True,
             "plugin_name": plugin_name,
@@ -379,7 +384,7 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info(f"Plugin unloaded: {plugin_name}")
+        self.logger.info("Plugin unloaded: %s", plugin_name)
         return {"success": True, "plugin_name": plugin_name}
 
     def register_default_handlers(self) -> FlextResult[bool]:
