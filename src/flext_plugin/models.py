@@ -37,13 +37,13 @@ class FlextPluginModels:
         Compared by identity (id), not by value.
 
         Attributes:
-            name: Plugin unique identifier
-            plugin_version: Plugin semantic version (X.Y.Z)
-            description: Plugin functionality description
-            author: Plugin author/maintainer
-            plugin_type: Plugin type classification (from PluginType enum)
-            is_enabled: Plugin enabled state
-            metadata: Extensible plugin metadata
+        name: Plugin unique identifier
+        plugin_version: Plugin semantic version (X.Y.Z)
+        description: Plugin functionality description
+        author: Plugin author/maintainer
+        plugin_type: Plugin type classification (from PluginType enum)
+        is_enabled: Plugin enabled state
+        metadata: Extensible plugin metadata
 
         """
 
@@ -128,17 +128,17 @@ class FlextPluginModels:
             """Factory method to create a new Plugin entity.
 
             Args:
-                name: Plugin name (required)
-                plugin_version: Plugin semantic version
-                description: Plugin description
-                author: Plugin author
-                plugin_type: Plugin type (from PluginType enum)
-                is_enabled: Whether plugin is initially enabled
-                metadata: Additional metadata
-                entity_id: Entity ID (auto-generated if None)
+            name: Plugin name (required)
+            plugin_version: Plugin semantic version
+            description: Plugin description
+            author: Plugin author
+            plugin_type: Plugin type (from PluginType enum)
+            is_enabled: Whether plugin is initially enabled
+            metadata: Additional metadata
+            entity_id: Entity ID (auto-generated if None)
 
             Returns:
-                New Plugin entity instance
+            New Plugin entity instance
 
             """
             return cls(
@@ -156,7 +156,7 @@ class FlextPluginModels:
             """Enable the plugin.
 
             Returns:
-                FlextResult indicating success or failure
+            FlextResult indicating success or failure
 
             """
             if self.is_enabled:
@@ -168,7 +168,7 @@ class FlextPluginModels:
             """Disable the plugin.
 
             Returns:
-                FlextResult indicating success or failure
+            FlextResult indicating success or failure
 
             """
             if not self.is_enabled:
@@ -185,7 +185,7 @@ class FlextPluginModels:
             - Plugin type must be valid
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             min_version_parts = 2
@@ -221,10 +221,10 @@ class FlextPluginModels:
         output data, and execution metrics.
 
         Attributes:
-            success: Whether execution succeeded
-            data: Execution output data
-            error: Error message if execution failed
-            execution_time_ms: Execution time in milliseconds
+        success: Whether execution succeeded
+        data: Execution output data
+        error: Error message if execution failed
+        execution_time_ms: Execution time in milliseconds
 
         """
 
@@ -250,12 +250,12 @@ class FlextPluginModels:
         (file system, entry points, etc.). Immutable value object.
 
         Attributes:
-            name: Plugin unique identifier name
-            version: Plugin semantic version (X.Y.Z)
-            path: File system path to plugin
-            discovery_type: Type of discovered plugin (file, directory, entry_point)
-            discovery_method: Discovery method used (file_system, entry_points)
-            metadata: Extensible discovery metadata
+        name: Plugin unique identifier name
+        version: Plugin semantic version (X.Y.Z)
+        path: File system path to plugin
+        discovery_type: Type of discovered plugin (file, directory, entry_point)
+        discovery_method: Discovery method used (file_system, entry_points)
+        metadata: Extensible discovery metadata
 
         """
 
@@ -305,13 +305,13 @@ class FlextPluginModels:
         module object and load metadata. Immutable value object.
 
         Attributes:
-            name: Plugin unique identifier name
-            version: Plugin semantic version
-            path: File system path to plugin
-            module: The loaded Python module object
-            load_type: Type of loaded plugin (file, directory, entry_point)
-            loaded_at: Timestamp when plugin was loaded
-            entry_file: Entry file path for directory-based plugins
+        name: Plugin unique identifier name
+        version: Plugin semantic version
+        path: File system path to plugin
+        module: The loaded Python module object
+        load_type: Type of loaded plugin (file, directory, entry_point)
+        loaded_at: Timestamp when plugin was loaded
+        entry_file: Entry file path for directory-based plugins
 
         """
 
@@ -342,12 +342,12 @@ class FlextPluginModels:
         success/failure status, and optional error details. Immutable value object.
 
         Attributes:
-            plugin_name: Name of reloaded plugin
-            plugin_path: Path to reloaded plugin
-            timestamp: When reload occurred
-            success: Whether reload succeeded
-            error: Error message if reload failed
-            duration_ms: Reload duration in milliseconds
+        plugin_name: Name of reloaded plugin
+        plugin_path: Path to reloaded plugin
+        timestamp: When reload occurred
+        success: Whether reload succeeded
+        error: Error message if reload failed
+        duration_ms: Reload duration in milliseconds
 
         """
 
@@ -368,18 +368,18 @@ class FlextPluginModels:
     class PluginMetadata(FlextModels.Value):
         """Plugin metadata - immutable metadata value object.
 
-        Represents comprehensive metadata about a plugin including discovery
+        Represents complete metadata about a plugin including discovery
         and description information. Immutable value object.
 
         Attributes:
-            name: Plugin unique identifier
-            version: Plugin semantic version
-            description: Plugin description
-            author: Plugin author
-            plugin_type: Type of plugin (extension, transformer, etc.)
-            entry_point: Entry point for plugin
-            dependencies: List of plugin dependencies
-            metadata: Additional metadata dictionary
+        name: Plugin unique identifier
+        version: Plugin semantic version
+        description: Plugin description
+        author: Plugin author
+        plugin_type: Type of plugin (extension, transformer, etc.)
+        entry_point: Entry point for plugin
+        dependencies: List of plugin dependencies
+        metadata: Additional metadata dictionary
 
         """
 
@@ -405,10 +405,10 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            event_type: Type of event
-            plugin_name: Associated plugin name
-            timestamp: When event occurred
-            data: Event-specific data
+        event_type: Type of event
+        plugin_name: Associated plugin name
+        timestamp: When event occurred
+        data: Event-specific data
 
         """
 
@@ -427,10 +427,10 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            is_valid: Whether validation passed
-            errors: List of validation errors
-            warnings: List of validation warnings
-            details: Additional validation details
+        is_valid: Whether validation passed
+        errors: List of validation errors
+        warnings: List of validation warnings
+        details: Additional validation details
 
         """
 
@@ -455,10 +455,10 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            is_safe: Whether plugin passed security checks
-            violations: List of security violations
-            warnings: List of security warnings
-            analysis_time: When analysis was performed
+        is_safe: Whether plugin passed security checks
+        violations: List of security violations
+        warnings: List of security warnings
+        analysis_time: When analysis was performed
 
         """
 
@@ -480,12 +480,12 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            watch_path: Path being watched
-            watch_interval: Polling interval in seconds
-            callback: Callback function reference (Any for flexibility)
-            active: Whether watcher is active
-            last_modified: File modification tracking
-            created_at: Configuration creation time
+        watch_path: Path being watched
+        watch_interval: Polling interval in seconds
+        callback: Callback function reference (Any for flexibility)
+        active: Whether watcher is active
+        last_modified: File modification tracking
+        created_at: Configuration creation time
 
         """
 
@@ -506,13 +506,13 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            plugin_name: Name of plugin to sandbox
-            max_memory_mb: Maximum memory in MB
-            max_execution_time: Maximum execution time in seconds
-            allowed_modules: Allowed import modules
-            network_access: Whether network access allowed
-            file_system_access: File system access level
-            environment_variables: Environment variable settings
+        plugin_name: Name of plugin to sandbox
+        max_memory_mb: Maximum memory in MB
+        max_execution_time: Maximum execution time in seconds
+        allowed_modules: Allowed import modules
+        network_access: Whether network access allowed
+        file_system_access: File system access level
+        environment_variables: Environment variable settings
 
         """
 
@@ -535,10 +535,10 @@ class FlextPluginModels:
         Immutable value object.
 
         Attributes:
-            version: Registry schema version
-            plugins: Dictionary of registered plugins
-            last_updated: Last update timestamp
-            created_at: Registry creation timestamp
+        version: Registry schema version
+        plugins: Dictionary of registered plugins
+        last_updated: Last update timestamp
+        created_at: Registry creation timestamp
 
         """
 

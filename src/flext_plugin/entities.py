@@ -75,11 +75,11 @@ class FlextPluginEntities:
         compared by value, and hashable for use in collections.
 
         Attributes:
-            name: Plugin name (unique identifier in registry)
-            plugin_version: Plugin semantic version
-            enabled: Whether plugin is enabled
-            metadata: Additional configuration metadata
-            tags: Classification tags for plugin discovery
+        name: Plugin name (unique identifier in registry)
+        plugin_version: Plugin semantic version
+        enabled: Whether plugin is enabled
+        metadata: Additional configuration metadata
+        tags: Classification tags for plugin discovery
 
         """
 
@@ -115,11 +115,11 @@ class FlextPluginEntities:
         and plugin type classification.
 
         Attributes:
-            description: Human-readable plugin description
-            author: Plugin author/maintainer
-            plugin_type: Plugin type classification
-            created_at: Creation timestamp
-            updated_at: Last update timestamp
+        description: Human-readable plugin description
+        author: Plugin author/maintainer
+        plugin_type: Plugin type classification
+        created_at: Creation timestamp
+        updated_at: Last update timestamp
 
         """
 
@@ -152,10 +152,10 @@ class FlextPluginEntities:
         Represents the result of plugin execution with status and outcome data.
 
         Attributes:
-            success: Whether execution succeeded
-            result_data: Execution result data
-            error_message: Error message if execution failed
-            execution_time_ms: Execution time in milliseconds
+        success: Whether execution succeeded
+        result_data: Execution result data
+        error_message: Error message if execution failed
+        execution_time_ms: Execution time in milliseconds
 
         """
 
@@ -189,13 +189,13 @@ class FlextPluginEntities:
         and mutable state. Compared by identity (id), not by value.
 
         Attributes:
-            id: Unique plugin identifier
-            config: Plugin configuration (PluginConfig value object)
-            metadata: Plugin metadata (PluginMetadata value object)
-            status: Plugin status (discovered, loaded, active, etc.)
-            created_at: Entity creation timestamp
-            updated_at: Last entity update timestamp
-            domain_data: Extensible domain-specific data
+        id: Unique plugin identifier
+        config: Plugin configuration (PluginConfig value object)
+        metadata: Plugin metadata (PluginMetadata value object)
+        status: Plugin status (discovered, loaded, active, etc.)
+        created_at: Entity creation timestamp
+        updated_at: Last entity update timestamp
+        domain_data: Extensible domain-specific data
 
         """
 
@@ -235,14 +235,14 @@ class FlextPluginEntities:
             """Factory method to create a new Plugin entity.
 
             Args:
-                name: Plugin name
-                plugin_version: Plugin version
-                config: Plugin configuration (auto-created if None)
-                metadata: Plugin metadata (auto-created if None)
-                entity_id: Entity ID (auto-generated if None)
+            name: Plugin name
+            plugin_version: Plugin version
+            config: Plugin configuration (auto-created if None)
+            metadata: Plugin metadata (auto-created if None)
+            entity_id: Entity ID (auto-generated if None)
 
             Returns:
-                New Plugin entity instance
+            New Plugin entity instance
 
             """
             final_id = entity_id or str(uuid4())
@@ -267,10 +267,10 @@ class FlextPluginEntities:
             - any -> failed
 
             Args:
-                new_status: New status value
+            new_status: New status value
 
             Returns:
-                FlextResult indicating success or validation failure
+            FlextResult indicating success or validation failure
 
             """
             valid_statuses = {
@@ -296,7 +296,7 @@ class FlextPluginEntities:
             - Status must be valid
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             if not self.config.name.strip():
@@ -334,11 +334,11 @@ class FlextPluginEntities:
         Enforces transactional invariants for plugin registry operations.
 
         Attributes:
-            id: Registry identifier
-            name: Registry name
-            plugins: Managed plugin collection (keyed by plugin name)
-            created_at: Registry creation timestamp
-            updated_at: Last update timestamp
+        id: Registry identifier
+        name: Registry name
+        plugins: Managed plugin collection (keyed by plugin name)
+        created_at: Registry creation timestamp
+        updated_at: Last update timestamp
 
         """
 
@@ -361,11 +361,11 @@ class FlextPluginEntities:
             """Factory method to create a new PluginRegistry.
 
             Args:
-                name: Registry name
-                registry_id: Registry ID (auto-generated if None)
+            name: Registry name
+            registry_id: Registry ID (auto-generated if None)
 
             Returns:
-                New PluginRegistry instance
+            New PluginRegistry instance
 
             """
             return cls(id=registry_id or str(uuid4()), name=name)
@@ -380,10 +380,10 @@ class FlextPluginEntities:
             - Plugin must pass business rule validation
 
             Args:
-                plugin: Plugin to register
+            plugin: Plugin to register
 
             Returns:
-                FlextResult indicating success or conflict/validation failure
+            FlextResult indicating success or conflict/validation failure
 
             """
             # Validate plugin business rules
@@ -408,10 +408,10 @@ class FlextPluginEntities:
             """Unregister a plugin from the registry.
 
             Args:
-                plugin_name: Name of plugin to unregister
+            plugin_name: Name of plugin to unregister
 
             Returns:
-                FlextResult with unregistered plugin or failure if not found
+            FlextResult with unregistered plugin or failure if not found
 
             """
             if plugin_name not in self.plugins:
@@ -427,10 +427,10 @@ class FlextPluginEntities:
             """Retrieve a plugin from the registry.
 
             Args:
-                plugin_name: Name of plugin to retrieve
+            plugin_name: Name of plugin to retrieve
 
             Returns:
-                FlextResult with plugin or None if not found
+            FlextResult with plugin or None if not found
 
             """
             plugin = self.plugins.get(plugin_name)
@@ -446,7 +446,7 @@ class FlextPluginEntities:
             - All contained plugins must be valid
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             if not self.name.strip():

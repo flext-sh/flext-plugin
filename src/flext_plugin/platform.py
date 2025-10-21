@@ -1,4 +1,4 @@
-"""FLEXT Plugin Platform - Advanced composition-based platform.
+"""FLEXT Plugin Platform - composition-based platform.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -129,7 +129,7 @@ class Plugin(FlextPluginModels.Plugin):
 
 
 class FlextPluginPlatform(FlextService[None]):
-    """Advanced railway-oriented plugin platform with functional composition."""
+    """railway-oriented plugin platform with functional composition."""
 
     def __init__(self, container: object | None = None) -> None:
         """Initialize plugin platform."""
@@ -230,7 +230,7 @@ class FlextPluginPlatform(FlextService[None]):
         context: dict[str, object],
         execution_id: str | None = None,
     ) -> FlextResult[PluginExecution]:
-        """Execute plugin with advanced async composition."""
+        """Execute plugin with async composition."""
 
         def get_plugin_result(plugin_name_param: str) -> FlextResult[Plugin]:
             return self._get_plugin(plugin_name_param)

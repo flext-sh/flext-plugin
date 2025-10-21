@@ -1,4 +1,4 @@
-"""FLEXT Plugin Constants - Advanced constant definitions.
+"""FLEXT Plugin Constants - constant definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -14,7 +14,7 @@ from flext_core import FlextConstants
 
 
 class FlextPluginConstants(FlextConstants):
-    """Advanced plugin constants with Python 3.13+ patterns."""
+    """plugin constants with Python 3.13+ patterns."""
 
     # Discovery constants
     class Discovery:

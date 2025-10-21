@@ -1,4 +1,4 @@
-"""FLEXT Plugin System - Enterprise-grade plugin management for FLEXT ecosystem.
+"""FLEXT Plugin System - plugin management for FLEXT ecosystem.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT

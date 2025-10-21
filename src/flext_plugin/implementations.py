@@ -60,11 +60,11 @@ class FlextPluginImplementations:
         for domain logic and state management.
 
         Attributes:
-          _name: Plugin name
-          _version: Plugin version
-          _entity: Domain entity for business logic
-          logger: Plugin logger
-          _initialized: Initialization state
+        _name: Plugin name
+        _version: Plugin version
+        _entity: Domain entity for business logic
+        logger: Plugin logger
+        _initialized: Initialization state
 
         """
 
@@ -78,9 +78,9 @@ class FlextPluginImplementations:
             """Initialize concrete plugin.
 
             Args:
-                name: Plugin name
-                version: Plugin version
-                entity: Optional domain entity for business logic
+            name: Plugin name
+            version: Plugin version
+            entity: Optional domain entity for business logic
 
             """
             super().__init__()
@@ -122,9 +122,9 @@ class FlextPluginImplementations:
             """Initialize plugin with context.
 
             Args:
-                context: Plugin runtime context
+            context: Plugin runtime context
             Returns:
-                FlextResult indicating success or failure
+            FlextResult indicating success or failure
 
             """
             try:
@@ -149,7 +149,7 @@ class FlextPluginImplementations:
             """Shutdown plugin and release resources.
 
             Returns:
-                FlextResult indicating success or failure
+            FlextResult indicating success or failure
 
             """
             try:
@@ -172,7 +172,7 @@ class FlextPluginImplementations:
             """Get plugin information.
 
             Returns:
-                Dictionary containing plugin metadata
+            Dictionary containing plugin metadata
 
             """
             return {
@@ -200,10 +200,10 @@ class FlextPluginImplementations:
             """Initialize executable plugin.
 
             Args:
-                name: Plugin name
-                version: Plugin version
-                operations: Supported operations mapping
-                entity: Optional domain entity
+            name: Plugin name
+            version: Plugin version
+            operations: Supported operations mapping
+            entity: Optional domain entity
 
             """
             super().__init__(name, version, entity)
@@ -217,10 +217,10 @@ class FlextPluginImplementations:
             """Execute a plugin operation.
 
             Args:
-                operation: Operation name to execute
-                params: Operation parameters
+            operation: Operation name to execute
+            params: Operation parameters
             Returns:
-                FlextResult containing operation result or error
+            FlextResult containing operation result or error
 
             """
             if not self._initialized:
@@ -248,7 +248,7 @@ class FlextPluginImplementations:
             """Get list of supported operations.
 
             Returns:
-                List of operation names
+            List of operation names
 
             """
             return list(self._operations.keys())
@@ -271,10 +271,10 @@ class FlextPluginImplementations:
             """Initialize data plugin.
 
             Args:
-                name: Plugin name
-                version: Plugin version
-                connection_config: Connection configuration
-                entity: Optional domain entity
+            name: Plugin name
+            version: Plugin version
+            connection_config: Connection configuration
+            entity: Optional domain entity
 
             """
             super().__init__(name, version, entity)
@@ -285,9 +285,9 @@ class FlextPluginImplementations:
             """Validate plugin configuration.
 
             Args:
-                config: Configuration to validate
+            config: Configuration to validate
             Returns:
-                FlextResult indicating validation success or errors
+            FlextResult indicating validation success or errors
 
             """
             required_fields = ["host", "port", "database"]
@@ -304,7 +304,7 @@ class FlextPluginImplementations:
             """Test connection to data source/destination.
 
             Returns:
-                FlextResult indicating connection success or failure
+            FlextResult indicating connection success or failure
 
             """
             try:
@@ -340,10 +340,10 @@ class FlextPluginImplementations:
             """Initialize transform plugin.
 
             Args:
-                name: Plugin name
-                version: Plugin version
-                schema: Transformation schema
-                entity: Optional domain entity
+            name: Plugin name
+            version: Plugin version
+            schema: Transformation schema
+            entity: Optional domain entity
 
             """
             super().__init__(name, version, entity)
@@ -353,9 +353,9 @@ class FlextPluginImplementations:
             """Transform input data.
 
             Args:
-                data: Input data to transform
+            data: Input data to transform
             Returns:
-                FlextResult containing transformed data or error
+            FlextResult containing transformed data or error
 
             """
             try:
@@ -378,7 +378,7 @@ class FlextPluginImplementations:
             """Get transformation schema.
 
             Returns:
-                FlextResult containing schema definition
+            FlextResult containing schema definition
 
             """
             if not self._schema:
@@ -458,9 +458,9 @@ class FlextPluginImplementations:
             """Initialize the instance.
 
             Args:
-                logger: Structured logger for plugin
-                config: Plugin configuration
-                services: Available services
+            logger: Structured logger for plugin
+            config: Plugin configuration
+            services: Available services
 
             """
             super().__init__()
@@ -485,9 +485,9 @@ class FlextPluginImplementations:
             """Get service by name from container.
 
             Args:
-                service_name: Name of service to retrieve
+            service_name: Name of service to retrieve
             Returns:
-                FlextResult with service instance or not found error
+            FlextResult with service instance or not found error
 
             """
             if service_name not in self._services:
@@ -511,9 +511,9 @@ class FlextPluginImplementations:
             """Register a plugin.
 
             Args:
-                plugin: Plugin instance to register
+            plugin: Plugin instance to register
             Returns:
-                FlextResult indicating registration success or failure
+            FlextResult indicating registration success or failure
 
             """
             plugin_name = plugin.name
@@ -529,9 +529,9 @@ class FlextPluginImplementations:
             """Unregister a plugin by name.
 
             Args:
-                plugin_name: Name of plugin to unregister
+            plugin_name: Name of plugin to unregister
             Returns:
-                FlextResult indicating success or not found error
+            FlextResult indicating success or not found error
 
             """
             if plugin_name not in self._plugins:
@@ -544,9 +544,9 @@ class FlextPluginImplementations:
             """Get plugin by name.
 
             Args:
-                plugin_name: Name of plugin to retrieve
+            plugin_name: Name of plugin to retrieve
             Returns:
-                Plugin instance or None if not found
+            Plugin instance or None if not found
 
             """
             return self._plugins.get(plugin_name)
@@ -555,7 +555,7 @@ class FlextPluginImplementations:
             """List all registered plugin names.
 
             Returns:
-                List of registered plugin instances
+            List of registered plugin instances
 
             """
             return list(self._plugins.values())
@@ -571,7 +571,7 @@ class FlextPluginImplementations:
             """Initialize plugin loader.
 
             Args:
-                registry: Optional plugin registry to use
+            registry: Optional plugin registry to use
 
             """
             super().__init__()
@@ -584,9 +584,9 @@ class FlextPluginImplementations:
             """Load plugin from path.
 
             Args:
-                plugin_path: Path to plugin module or package
+            plugin_path: Path to plugin module or package
             Returns:
-                FlextResult containing loaded plugin or load error
+            FlextResult containing loaded plugin or load error
 
             """
             try:
@@ -620,9 +620,9 @@ class FlextPluginImplementations:
             """Discover available plugins in path.
 
             Args:
-                search_path: Directory to search for plugins
+            search_path: Directory to search for plugins
             Returns:
-                FlextResult containing list of discovered plugin paths
+            FlextResult containing list of discovered plugin paths
 
             """
             try:

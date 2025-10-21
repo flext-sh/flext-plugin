@@ -1,4 +1,4 @@
-"""FLEXT Plugin Types - Advanced type system.
+"""FLEXT Plugin Types - type system.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,7 +11,7 @@ from flext_core import FlextTypes
 
 
 class FlextPluginTypes(FlextTypes):
-    """Advanced plugin type system with Python 3.13+ patterns."""
+    """plugin type system with Python 3.13+ patterns."""
 
     class PluginCore:
         """Core collection and plugin type aliases."""

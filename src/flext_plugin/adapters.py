@@ -45,11 +45,11 @@ class FlextPluginAdapters:
             """Execute operation with safe error handling.
 
             Args:
-                operation: Callable to execute
-                error_context: Error message context
+            operation: Callable to execute
+            error_context: Error message context
 
             Returns:
-                FlextResult with operation result or failure
+            FlextResult with operation result or failure
 
             """
             try:
@@ -217,7 +217,7 @@ class FlextPluginAdapters:
             """Unload plugin by name (placeholder implementation).
 
             Args:
-                plugin_name: Plugin to unload (reserved for implementation)
+            plugin_name: Plugin to unload (reserved for implementation)
 
             """
             return FlextResult.ok(True)
@@ -226,7 +226,7 @@ class FlextPluginAdapters:
             """Check if plugin is loaded (placeholder).
 
             Args:
-                plugin_name: Plugin to check (reserved for implementation)
+            plugin_name: Plugin to check (reserved for implementation)
 
             """
             return False

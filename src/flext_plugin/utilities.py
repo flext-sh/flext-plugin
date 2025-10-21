@@ -29,7 +29,7 @@ from flext_plugin.types import FlextPluginTypes
 
 @dataclass
 class FlextPluginUtilities(FlextUtilities):
-    """Advanced composition-based utilities using Python 3.13+ patterns."""
+    """composition-based utilities using Python 3.13+ patterns."""
 
     # Constants using advanced type syntax
     PLUGIN_EXTENSIONS: ClassVar[list[str]] = [".py", ".yaml", ".yml", ".json"]
@@ -67,10 +67,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Discover plugins in the specified directory.
 
             Args:
-                directory: Directory to search for plugins
+            directory: Directory to search for plugins
 
             Returns:
-                FlextResult containing list of discovered plugin metadata
+            FlextResult containing list of discovered plugin metadata
 
             """
             try:
@@ -110,10 +110,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate plugin file structure and safety.
 
             Args:
-                plugin_path: Path to the plugin file
+            plugin_path: Path to the plugin file
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             try:
@@ -159,10 +159,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Extract metadata from plugin file.
 
             Args:
-                plugin_path: Path to the plugin file
+            plugin_path: Path to the plugin file
 
             Returns:
-                FlextResult containing plugin metadata
+            FlextResult containing plugin metadata
 
             """
             try:
@@ -205,10 +205,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate plugin name follows naming conventions.
 
             Args:
-                name: Plugin name to validate
+            name: Plugin name to validate
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             if not re.match(
@@ -235,11 +235,11 @@ class FlextPluginUtilities(FlextUtilities):
             """Create file system watcher for plugin hot reload.
 
             Args:
-                watch_path: Path to watch for changes
-                callback_function: Function to call on file changes
+            watch_path: Path to watch for changes
+            callback_function: Function to call on file changes
 
             Returns:
-                FlextResult containing watcher configuration
+            FlextResult containing watcher configuration
 
             """
             try:
@@ -271,10 +271,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Detect file changes in watched directory.
 
             Args:
-                watcher_config: Watcher configuration from create_file_watcher
+            watcher_config: Watcher configuration from create_file_watcher
 
             Returns:
-                FlextResult containing list of changed files
+            FlextResult containing list of changed files
 
             """
             try:
@@ -314,10 +314,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate that plugin can be safely reloaded.
 
             Args:
-                plugin_path: Path to plugin being reloaded
+            plugin_path: Path to plugin being reloaded
 
             Returns:
-                FlextResult indicating reload safety
+            FlextResult indicating reload safety
 
             """
             try:
@@ -379,10 +379,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate plugin security before execution.
 
             Args:
-                plugin_content: Plugin source code content
+            plugin_content: Plugin source code content
 
             Returns:
-                FlextResult containing security validation results
+            FlextResult containing security validation results
 
             """
             try:
@@ -442,10 +442,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Create sandbox configuration for plugin execution.
 
             Args:
-                plugin_name: Name of the plugin to sandbox
+            plugin_name: Name of the plugin to sandbox
 
             Returns:
-                FlextResult containing sandbox configuration
+            FlextResult containing sandbox configuration
 
             """
             try:
@@ -474,10 +474,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Calculate secure hash of plugin content for integrity verification.
 
             Args:
-                plugin_content: Plugin source code content
+            plugin_content: Plugin source code content
 
             Returns:
-                FlextResult containing SHA-256 hash of plugin content
+            FlextResult containing SHA-256 hash of plugin content
 
             """
             try:
@@ -503,10 +503,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Load plugin configuration from file.
 
             Args:
-                config_path: Path to plugin configuration file
+            config_path: Path to plugin configuration file
 
             Returns:
-                FlextResult containing plugin configuration
+            FlextResult containing plugin configuration
 
             """
             try:
@@ -560,10 +560,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate plugin configuration structure and values.
 
             Args:
-                config: Plugin configuration to validate
+            config: Plugin configuration to validate
 
             Returns:
-                FlextResult indicating validation success or failure
+            FlextResult indicating validation success or failure
 
             """
             try:
@@ -602,11 +602,11 @@ class FlextPluginUtilities(FlextUtilities):
             """Merge plugin configurations with override precedence.
 
             Args:
-                base_config: Base plugin configuration
-                override_config: Configuration values to override
+            base_config: Base plugin configuration
+            override_config: Configuration values to override
 
             Returns:
-                FlextResult containing merged configuration
+            FlextResult containing merged configuration
 
             """
             try:
@@ -666,13 +666,13 @@ class FlextPluginUtilities(FlextUtilities):
             """Execute a specific function within a plugin module.
 
             Args:
-                plugin_module: Loaded plugin module
-                function_name: Name of function to execute
-                args: Positional arguments for function
-                kwargs: Keyword arguments for function
+            plugin_module: Loaded plugin module
+            function_name: Name of function to execute
+            args: Positional arguments for function
+            kwargs: Keyword arguments for function
 
             Returns:
-                FlextResult containing function execution result
+            FlextResult containing function execution result
 
             """
             try:
@@ -703,10 +703,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Load plugin module from file path.
 
             Args:
-                plugin_path: Path to plugin Python file
+            plugin_path: Path to plugin Python file
 
             Returns:
-                FlextResult containing loaded plugin module
+            FlextResult containing loaded plugin module
 
             """
             try:
@@ -745,11 +745,11 @@ class FlextPluginUtilities(FlextUtilities):
             """Validate that plugin module implements required interface.
 
             Args:
-                plugin_module: Loaded plugin module
-                required_functions: List of required function names
+            plugin_module: Loaded plugin module
+            required_functions: List of required function names
 
             Returns:
-                FlextResult indicating interface validation success or failure
+            FlextResult indicating interface validation success or failure
 
             """
             try:
@@ -796,10 +796,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Load plugin registry from file.
 
             Args:
-                registry_path: Path to plugin registry file
+            registry_path: Path to plugin registry file
 
             Returns:
-                FlextResult containing plugin registry data
+            FlextResult containing plugin registry data
 
             """
             try:
@@ -841,11 +841,11 @@ class FlextPluginUtilities(FlextUtilities):
             """Save plugin registry to file with backup.
 
             Args:
-                registry: Plugin registry data to save
-                registry_path: Path to save registry file
+            registry: Plugin registry data to save
+            registry_path: Path to save registry file
 
             Returns:
-                FlextResult indicating save success or failure
+            FlextResult indicating save success or failure
 
             """
             try:
@@ -881,11 +881,11 @@ class FlextPluginUtilities(FlextUtilities):
             """Register plugin in registry.
 
             Args:
-                registry: Plugin registry data
-                plugin_metadata: Metadata of plugin to register
+            registry: Plugin registry data
+            plugin_metadata: Metadata of plugin to register
 
             Returns:
-                FlextResult containing updated registry
+            FlextResult containing updated registry
 
             """
             try:
@@ -922,10 +922,10 @@ class FlextPluginUtilities(FlextUtilities):
             """Clean up old registry backup files.
 
             Args:
-                registry_directory: Directory containing registry backups
+            registry_directory: Directory containing registry backups
 
             Returns:
-                FlextResult indicating cleanup success or failure
+            FlextResult indicating cleanup success or failure
 
             """
             try:

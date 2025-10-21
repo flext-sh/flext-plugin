@@ -1,6 +1,6 @@
 """FLEXT Plugin Discovery - Strategy-based plugin discovery with Pydantic models.
 
-Comprehensive plugin discovery using strategy pattern for different discovery
+Complete plugin discovery using strategy pattern for different discovery
 methods (file system, entry points). All operations return Pydantic models.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -56,10 +56,10 @@ class FlextPluginDiscovery:
         """Discover plugins using all strategies.
 
         Args:
-            paths: List of paths to search for plugins
+        paths: List of paths to search for plugins
 
         Returns:
-            FlextResult containing list of discovered plugins
+        FlextResult containing list of discovered plugins
 
         """
         try:
@@ -86,10 +86,10 @@ class FlextPluginDiscovery:
         """Discover single plugin at path.
 
         Args:
-            plugin_path: Path to the plugin
+        plugin_path: Path to the plugin
 
         Returns:
-            FlextResult containing plugin data
+        FlextResult containing plugin data
 
         """
         try:
@@ -123,10 +123,10 @@ class FlextPluginDiscovery:
         Pydantic automatically validates on model creation.
 
         Args:
-            plugin_data: Plugin data to validate
+        plugin_data: Plugin data to validate
 
         Returns:
-            FlextResult indicating validation success
+        FlextResult indicating validation success
 
         """
         try:

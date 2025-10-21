@@ -20,7 +20,7 @@ from flext_plugin.models import FlextPluginModels
 class FlextPluginLoader:
     """Plugin loader service for dynamic plugin loading and management.
 
-    Provides comprehensive plugin loading with safe spec-based module loading,
+    Provides complete plugin loading with safe spec-based module loading,
     automatic entry file discovery, and lifecycle management. Uses strategy
     pattern for file and directory-based plugins with composition.
 
@@ -39,19 +39,19 @@ class FlextPluginLoader:
         ```
     """
 
-    def __init__(self) -> None:
-        """Initialize the plugin loader."""
-        self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, object] = {}
-        self._loader_strategies: list[
-            Callable[[Path], FlextPluginModels.LoadData | None]
-        ] = [
-            self.FilePluginLoader(self.logger).load,
-            self.DirectoryPluginLoader(self.logger).load,
-        ]
+ def __init__(self) -> None:
+ """Initialize the plugin loader."""
+ self.logger = FlextLogger(__name__)
+ self._loaded_plugins: dict[str, object] = {}
+ self._loader_strategies: list[
+ Callable[[Path], FlextPluginModels.LoadData | None]
+ ] = [
+ self.FilePluginLoader(self.logger).load,
+ self.DirectoryPluginLoader(self.logger).load,
+ ]
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
-        """Load a plugin from the specified path.
+ def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
+ """Load a plugin from the specified path.
 
         Args:
             plugin_path: Path to the plugin to load
@@ -84,13 +84,13 @@ class FlextPluginLoader:
     def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin by name.
 
-        Args:
-            plugin_name: Name of the plugin to unload
+ Args:
+ plugin_name: Name of the plugin to unload
 
-        Returns:
-            FlextResult indicating success or failure
+ Returns:
+ FlextResult indicating success or failure
 
-        """
+ """
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
@@ -109,22 +109,22 @@ class FlextPluginLoader:
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
-        Args:
-            plugin_name: Name of the plugin
+ Args:
+ plugin_name: Name of the plugin
 
-        Returns:
-            True if plugin is loaded, False otherwise
+ Returns:
+ True if plugin is loaded, False otherwise
 
-        """
+ """
         return plugin_name in self._loaded_plugins
 
     def get_loaded_plugins(self) -> list[str]:
         """Get list of currently loaded plugin names.
 
-        Returns:
-            List of loaded plugin names
+ Returns:
+ List of loaded plugin names
 
-        """
+ """
         return list(self._loaded_plugins.keys())
 
     def reload_plugin(
@@ -132,13 +132,13 @@ class FlextPluginLoader:
     ) -> FlextResult[FlextPluginModels.LoadData]:
         """Reload a plugin by name.
 
-        Args:
-            plugin_name: Name of the plugin to reload
+ Args:
+ plugin_name: Name of the plugin to reload
 
-        Returns:
-            FlextResult containing reloaded plugin data
+ Returns:
+ FlextResult containing reloaded plugin data
 
-        """
+ """
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
@@ -175,13 +175,13 @@ class FlextPluginLoader:
     def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
         """Validate dependencies for a loaded plugin.
 
-        Args:
-            plugin_name: Name of the plugin to validate
+ Args:
+ plugin_name: Name of the plugin to validate
 
-        Returns:
-            FlextResult indicating validation success or failure
+ Returns:
+ FlextResult indicating validation success or failure
 
-        """
+ """
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
@@ -214,13 +214,13 @@ class FlextPluginLoader:
     def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
-        Args:
-            plugin_name: Name of the plugin
+ Args:
+ plugin_name: Name of the plugin
 
-        Returns:
-            FlextResult containing plugin information
+ Returns:
+ FlextResult containing plugin information
 
-        """
+ """
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
@@ -265,16 +265,16 @@ class FlextPluginLoader:
         def load(self, path: Path) -> FlextPluginModels.LoadData | None:
             """Load a single file plugin safely.
 
-            Uses importlib.util.spec_from_file_location for safe loading
-            without sys.path pollution.
+ Uses importlib.util.spec_from_file_location for safe loading
+ without sys.path pollution.
 
-            Args:
-                path: Path to the plugin file
+ Args:
+ path: Path to the plugin file
 
-            Returns:
-                LoadData if successfully loaded, None otherwise
+ Returns:
+ LoadData if successfully loaded, None otherwise
 
-            """
+ """
             if not path.is_file() or path.suffix != ".py":
                 return None
 
@@ -308,15 +308,15 @@ class FlextPluginLoader:
         def load(self, path: Path) -> FlextPluginModels.LoadData | None:
             """Load a directory-based plugin.
 
-            Searches for __init__.py or main.py entry files.
+ Searches for __init__.py or main.py entry files.
 
-            Args:
-                path: Path to the plugin directory
+ Args:
+ path: Path to the plugin directory
 
-            Returns:
-                LoadData if successfully loaded, None otherwise
+ Returns:
+ LoadData if successfully loaded, None otherwise
 
-            """
+ """
             if not path.is_dir():
                 return None
 
@@ -350,13 +350,13 @@ class FlextPluginLoader:
         def _find_entry_file(self, path: Path) -> Path | None:
             """Find entry file in directory (__init__.py or main.py).
 
-            Args:
-                path: Directory path to search
+ Args:
+ path: Directory path to search
 
-            Returns:
-                Path to entry file if found, None otherwise
+ Returns:
+ Path to entry file if found, None otherwise
 
-            """
+ """
             init_file = path / "__init__.py"
             main_file = path / "main.py"
 

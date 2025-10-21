@@ -16,7 +16,7 @@ from flext_plugin.platform import FlextPluginPlatform, PluginExecution
 
 
 class FlextPluginApi:
-    """Railway-oriented plugin facade with advanced composition."""
+    """Railway-oriented plugin facade with composition."""
 
     __slots__ = ("logger", "platform")
 
@@ -24,7 +24,7 @@ class FlextPluginApi:
         """Initialize FlextPlugin with optional container.
 
         Args:
-            container: Dependency injection container (uses default if None)
+        container: Dependency injection container (uses default if None)
 
         """
         self.logger = FlextLogger(__name__)
