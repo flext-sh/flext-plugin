@@ -42,17 +42,17 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         ```
     """
 
- def __init__(
- self,
- container: object | None = None,
- discovery: FlextPluginProtocols.PluginDiscovery | None = None,
- loader: FlextPluginProtocols.PluginLoader | None = None,
- executor: FlextPluginProtocols.PluginExecution | None = None,
- security: FlextPluginProtocols.PluginSecurity | None = None,
- registry: FlextPluginProtocols.PluginRegistry | None = None,
- monitoring: FlextPluginProtocols.PluginMonitoring | None = None,
- ) -> None:
- """Initialize the plugin service with protocol implementations and dependency injection.
+    def __init__(
+        self,
+        container: object | None = None,
+        discovery: FlextPluginProtocols.PluginDiscovery | None = None,
+        loader: FlextPluginProtocols.PluginLoader | None = None,
+        executor: FlextPluginProtocols.PluginExecution | None = None,
+        security: FlextPluginProtocols.PluginSecurity | None = None,
+        registry: FlextPluginProtocols.PluginRegistry | None = None,
+        monitoring: FlextPluginProtocols.PluginMonitoring | None = None,
+    ) -> None:
+        """Initialize the plugin service with protocol implementations and dependency injection.
 
         Args:
             container: Dependency injection container (uses FlextMixins for DI)
@@ -64,29 +64,29 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             monitoring: Plugin monitoring implementation
 
         """
- # Set container before initializing mixins if provided
- if container is not None:
- # Set the container for this service instance
- self._container = container
+        # Set container before initializing mixins if provided
+        if container is not None:
+            # Set the container for this service instance
+            self._container = container
 
- # Initialize mixins for dependency injection
- FlextMixins.__init__(self)
+        # Initialize mixins for dependency injection
+        FlextMixins.__init__(self)
 
- # Store protocol implementations
- self._discovery = discovery
- self._loader = loader
- self._executor = executor
- self._security = security
- self._registry = registry
- self._monitoring = monitoring
+        # Store protocol implementations
+        self._discovery = discovery
+        self._loader = loader
+        self._executor = executor
+        self._security = security
+        self._registry = registry
+        self._monitoring = monitoring
 
- # Internal state
- self._plugins: dict[str, FlextPluginModels.Plugin] = {}
- self._executions: dict[str, FlextPluginModels.Execution] = {}
+        # Internal state
+        self._plugins: dict[str, FlextPluginModels.Plugin] = {}
+        self._executions: dict[str, FlextPluginModels.Execution] = {}
 
- @property
- def container(self) -> object:
- """Get the container for this service instance."""
+    @property
+    def container(self) -> object:
+        """Get the container for this service instance."""
         if hasattr(self, "_container") and self._container is not None:
             return self._container
         return FlextContainer.get_global()
@@ -97,13 +97,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     ) -> FlextResult[list[FlextPluginModels.Plugin]]:
         """Discover plugins and register them in the service.
 
- Args:
- paths: List of paths to search for plugins
+        Args:
+        paths: List of paths to search for plugins
 
- Returns:
- FlextResult containing list of registered plugins
+        Returns:
+        FlextResult containing list of registered plugins
 
- """
+        """
         try:
             if not self._discovery:
                 return FlextResult.fail("Plugin discovery not available")
@@ -172,13 +172,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
- Args:
- plugin_path: Path to the plugin to load
+        Args:
+        plugin_path: Path to the plugin to load
 
- Returns:
- FlextResult containing the loaded plugin
+        Returns:
+        FlextResult containing the loaded plugin
 
- """
+        """
         try:
             if not self._loader:
                 return FlextResult.fail("Plugin loader not available")
@@ -244,15 +244,15 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     ) -> FlextResult[FlextPluginModels.Execution]:
         """Execute a plugin with the given context.
 
- Args:
- plugin_name: Name of the plugin to execute
- context: Execution context data
- execution_id: Optional execution ID (generated if not provided)
+        Args:
+        plugin_name: Name of the plugin to execute
+        context: Execution context data
+        execution_id: Optional execution ID (generated if not provided)
 
- Returns:
- FlextResult containing the execution result
+        Returns:
+        FlextResult containing the execution result
 
- """
+        """
         try:
             if plugin_name not in self._plugins:
                 return FlextResult.fail(f"Plugin '{plugin_name}' not found")
@@ -311,13 +311,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin from the service.
 
- Args:
- plugin_name: Name of the plugin to unload
+        Args:
+        plugin_name: Name of the plugin to unload
 
- Returns:
- FlextResult indicating success or failure
+        Returns:
+        FlextResult indicating success or failure
 
- """
+        """
         try:
             if plugin_name not in self._plugins:
                 return FlextResult.fail(f"Plugin '{plugin_name}' not found")
@@ -357,47 +357,47 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
         """Get a plugin by name.
 
- Args:
- plugin_name: Name of the plugin to retrieve
+        Args:
+        plugin_name: Name of the plugin to retrieve
 
- Returns:
- Plugin entity if found, None otherwise
+        Returns:
+        Plugin entity if found, None otherwise
 
- """
+        """
         return self._plugins.get(plugin_name)
 
     def list_plugins(self) -> list[FlextPluginModels.Plugin]:
         """List all loaded plugins.
 
- Returns:
- List of all loaded plugin entities
+        Returns:
+        List of all loaded plugin entities
 
- """
+        """
         return list(self._plugins.values())
 
     def get_plugin_status(self, plugin_name: str) -> str | None:
         """Get the status of a specific plugin.
 
- Args:
- plugin_name: Name of the plugin
+        Args:
+        plugin_name: Name of the plugin
 
- Returns:
- Plugin status if found, None otherwise
+        Returns:
+        Plugin status if found, None otherwise
 
- """
+        """
         plugin = self.get_plugin(plugin_name)
         return plugin.status if plugin else None
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
- Args:
- plugin_name: Name of the plugin
+        Args:
+        plugin_name: Name of the plugin
 
- Returns:
- True if plugin is loaded, False otherwise
+        Returns:
+        True if plugin is loaded, False otherwise
 
- """
+        """
         return plugin_name in self._plugins
 
     async def get_plugin_metrics(
@@ -406,13 +406,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     ) -> FlextResult[FlextPluginModels.Metrics]:
         """Get metrics for a specific plugin.
 
- Args:
- plugin_name: Name of the plugin
+        Args:
+        plugin_name: Name of the plugin
 
- Returns:
- FlextResult containing plugin metrics
+        Returns:
+        FlextResult containing plugin metrics
 
- """
+        """
         try:
             if not self._monitoring:
                 return FlextResult.fail("Plugin monitoring not available")
@@ -438,13 +438,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     ) -> FlextResult[dict[str, object]]:
         """Get health status for a specific plugin.
 
- Args:
- plugin_name: Name of the plugin
+        Args:
+        plugin_name: Name of the plugin
 
- Returns:
- FlextResult containing plugin health information
+        Returns:
+        FlextResult containing plugin health information
 
- """
+        """
         try:
             if not self._monitoring:
                 return FlextResult.fail("Plugin monitoring not available")
@@ -465,10 +465,10 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     def get_service_status(self) -> dict[str, object]:
         """Get the current status of the plugin service.
 
- Returns:
- Dictionary containing service status information
+        Returns:
+        Dictionary containing service status information
 
- """
+        """
         return {
             "total_plugins": len(self._plugins),
             "active_plugins": len([p for p in self._plugins.values() if p.is_active()]),
@@ -487,40 +487,40 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     def get_execution(self, execution_id: str) -> FlextPluginModels.Execution | None:
         """Get an execution by ID.
 
- Args:
- execution_id: ID of the execution to retrieve
+        Args:
+        execution_id: ID of the execution to retrieve
 
- Returns:
- Execution entity if found, None otherwise
+        Returns:
+        Execution entity if found, None otherwise
 
- """
+        """
         return self._executions.get(execution_id)
 
     def list_executions(self) -> list[FlextPluginModels.Execution]:
         """List all executions.
 
- Returns:
- List of all execution entities
+        Returns:
+        List of all execution entities
 
- """
+        """
         return list(self._executions.values())
 
     def get_running_executions(self) -> list[FlextPluginModels.Execution]:
         """Get all currently running executions.
 
- Returns:
- List of running execution entities
+        Returns:
+        List of running execution entities
 
- """
+        """
         return [e for e in self._executions.values() if e.is_running]
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.
 
- Returns:
- Number of executions cleaned up
+        Returns:
+        Number of executions cleaned up
 
- """
+        """
         completed_executions = [
             eid for eid, execution in self._executions.items() if execution.is_completed
         ]

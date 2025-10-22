@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Literal, Self
 
 from flext_core import FlextModels, FlextResult
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, field_validator
 
 from flext_plugin.constants import FlextPluginConstants
 
@@ -105,12 +105,6 @@ class FlextPluginModels:
                 error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
                 raise ValueError(error_msg)
             return value
-
-        @model_validator(mode="after")
-        def validate_plugin_consistency(self) -> Self:
-            """Validate plugin model consistency and constraints."""
-            # Plugin cannot be active when disabled - if needed, add status field
-            return self
 
         @classmethod
         def create(
