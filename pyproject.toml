@@ -21,9 +21,10 @@
         "flext-observability (>=0.9.0)",
         "jsonschema (>=4.25.0)",
         "psutil (>=7.0.0)",
-        "pydantic (>=2.11.7)",
-        "pydantic-settings (>=2.10.1)",
+        "pydantic (>=2.12.3)",
+        "pydantic-settings (>=2.11.0)",
         "watchdog (>=6.0.0)",
+        "pydantic-core (>=2.41.4)",
     ]
     description = "FLEXT Plugin - Plugin System for FLEXT Platform"
     keywords = [
@@ -145,7 +146,7 @@
         develop = true
         path    = "../flext-core"
 
-    [tool.poetry.dependencies.flext-observability]
+        [tool.poetry.dependencies.flext-observability]
         develop = true
         path    = "../flext-observability"
 
