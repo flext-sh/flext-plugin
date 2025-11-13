@@ -122,7 +122,7 @@ class FlextPluginAdapters:
 
         def validate_plugin(
             self,
-            plugin_data: FlextPluginModels.DiscoveryData,
+            _plugin_data: FlextPluginModels.DiscoveryData,
         ) -> FlextResult[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(
@@ -213,20 +213,20 @@ class FlextPluginAdapters:
                 ),
             )
 
-        def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
             """Unload plugin by name (placeholder implementation).
 
             Args:
-            plugin_name: Plugin to unload (reserved for implementation)
+            _plugin_name: Plugin to unload (reserved for implementation)
 
             """
             return FlextResult.ok(True)
 
-        def is_plugin_loaded(self, plugin_name: str) -> bool:
+        def is_plugin_loaded(self, _plugin_name: str) -> bool:
             """Check if plugin is loaded (placeholder).
 
             Args:
-            plugin_name: Plugin to check (reserved for implementation)
+            _plugin_name: Plugin to check (reserved for implementation)
 
             """
             return False
@@ -249,11 +249,11 @@ class FlextPluginAdapters:
                 f"Execution error: {plugin_name}",
             )
 
-        def stop_execution(self, execution_id: str) -> FlextResult[bool]:
+        def stop_execution(self, _execution_id: str) -> FlextResult[bool]:
             """Stop plugin execution."""
             return FlextResult.ok(True)
 
-        def get_execution_status(self, execution_id: str) -> FlextResult[str]:
+        def get_execution_status(self, _execution_id: str) -> FlextResult[str]:
             """Get execution status."""
             return FlextResult.ok("completed")
 
