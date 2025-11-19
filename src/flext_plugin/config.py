@@ -11,10 +11,36 @@ from datetime import UTC, datetime
 
 from flext_core import FlextConfig, FlextResult, FlextUtilities
 from pydantic import Field
+from pydantic_settings import SettingsConfigDict
 
 
-class FlextPluginConfig(FlextConfig):
-    """Plugin system configuration management extending FlextConfig."""
+@FlextConfig.auto_register("plugin")
+class FlextPluginConfig(FlextConfig.AutoConfig):
+    """Plugin system configuration management using AutoConfig pattern.
+
+    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
+
+    This class uses FlextConfig.AutoConfig for automatic:
+    - Singleton pattern (thread-safe)
+    - Namespace registration (accessible via config.plugin)
+    - Environment variable loading from FLEXT_PLUGIN_* variables
+    - .env file loading (production/development)
+    - Automatic type conversion and validation via Pydantic v2
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_PLUGIN_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+        validate_assignment=True,
+        str_strip_whitespace=True,
+        validate_default=True,
+        frozen=False,
+        arbitrary_types_allowed=True,
+        strict=False,
+    )
 
     # Pydantic fields
     plugin_name: str = Field(
