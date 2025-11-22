@@ -9,7 +9,11 @@ from datetime import datetime
 
 import pytest
 
+from flext_plugin.constants import FlextPluginConstants, PluginStatus
 from flext_plugin.models import FlextPluginModels
+
+# Alias for convenience
+PluginType = FlextPluginConstants.PluginType
 
 
 class TestFlextPluginModels:

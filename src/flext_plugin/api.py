@@ -28,7 +28,7 @@ class FlextPluginApi:
 
         """
         self.logger = FlextLogger(__name__)
-        self.platform = FlextPluginPlatform(container or FlextContainer())
+        self.platform = FlextPluginPlatform(container=container or FlextContainer())
 
     # Core operations with logging composition
     def discover_plugins(

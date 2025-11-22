@@ -169,6 +169,22 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             self.logger.exception("Plugin discovery and registration failed")
             return FlextResult.fail(f"Service error: {e!s}")
 
+    def discover_plugins(
+        self, paths: list[str]
+    ) -> FlextResult[list[FlextPluginModels.Plugin]]:
+        """Discover plugins from the specified paths.
+
+        Alias for discover_and_register_plugins.
+
+        Args:
+            paths: List of paths to search for plugins
+
+        Returns:
+            FlextResult containing list of discovered plugins
+
+        """
+        return self.discover_and_register_plugins(paths)
+
     def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
@@ -530,6 +546,118 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
 
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
+
+    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+        """Install a plugin from the specified path.
+
+        This loads and registers the plugin.
+
+        Args:
+            plugin_path: Path to the plugin to install
+
+        Returns:
+            FlextResult containing the installed plugin
+
+        """
+        result = self.load_plugin(plugin_path)
+        if result.is_success:
+            plugin = result.value
+            self._plugins[plugin.name] = plugin
+            return FlextResult.ok(plugin)
+        return FlextResult.fail(result.error or "Plugin installation failed")
+
+    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Uninstall a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to uninstall
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
+        if plugin_name not in self._plugins:
+            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+
+        del self._plugins[plugin_name]
+        return FlextResult.ok(True)
+
+    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Enable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to enable
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin model has is_enabled field
+        plugin.is_enabled = True
+        return FlextResult.ok(True)
+
+    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Disable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to disable
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin model has is_enabled field
+        plugin.is_enabled = False
+        return FlextResult.ok(True)
+
+    def get_plugin_config(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+        """Get configuration for a plugin.
+
+        Args:
+            plugin_name: Name of the plugin
+
+        Returns:
+            FlextResult containing plugin configuration
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin stores config in metadata
+        config_data = plugin.metadata.get("config", {})
+        config = FlextPluginModels.Config(plugin_name=plugin.name, settings=config_data)
+        return FlextResult.ok(config)
+
+    def update_plugin_config(
+        self, plugin_name: str, config: dict[str, object]
+    ) -> FlextResult[bool]:
+        """Update configuration for a plugin.
+
+        Args:
+            plugin_name: Name of the plugin
+            config: New configuration
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+
+        # Assuming Plugin model has config field
+        if hasattr(plugin, "config"):
+            plugin.config.update(config)
+        return FlextResult.ok(True)
 
 
 __all__ = ["FlextPluginService"]

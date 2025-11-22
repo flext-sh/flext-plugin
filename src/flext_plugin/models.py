@@ -29,6 +29,7 @@ class FlextPluginModels:
 
     # Re-export PluginType enum from constants for convenience
     PluginType = FlextPluginConstants.PluginType
+    Entity = FlextModels.Entity
 
     class Plugin(FlextModels.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
@@ -543,6 +544,17 @@ class FlextPluginModels:
         )
         last_updated: datetime = Field(description="Last update timestamp")
         created_at: datetime = Field(description="Registry creation timestamp")
+
+    class Config(FlextModels.Value):
+        """Plugin configuration model.
+
+        Represents configuration for a plugin with key-value pairs.
+        """
+
+        plugin_name: str = Field(description="Plugin name")
+        settings: dict[str, Any] = Field(
+            default_factory=dict, description="Configuration settings"
+        )
 
 
 __all__ = ["FlextPluginModels"]

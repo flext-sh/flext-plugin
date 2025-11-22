@@ -17,7 +17,7 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer, FlextTypes
+from flext_core import FlextContainer
 
 from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin.models import FlextPluginModels
@@ -190,9 +190,9 @@ def real_container_with_adapters(real_plugin_directory: Path) -> FlextContainer:
     loader_adapter = FlextPluginAdapters.DynamicLoaderAdapter()
     manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
 
-    container.register("plugin_discovery_port", discovery_adapter)
-    container.register("plugin_loader_port", loader_adapter)
-    container.register("plugin_manager_port", manager_adapter)
+    container.with_service("plugin_discovery_port", discovery_adapter)
+    container.with_service("plugin_loader_port", loader_adapter)
+    container.with_service("plugin_manager_port", manager_adapter)
 
     return container
 
@@ -230,7 +230,9 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 
 # REAL Configuration fixtures
 @pytest.fixture
-def real_plugin_configs() -> FlextTypes.NestedDict:
+def real_plugin_configs() -> dict[
+    str, dict[str, dict[str, object] | list[str] | object]
+]:
     """REAL plugin configurations matching plugin files."""
     return {
         "tap_database": {

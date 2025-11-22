@@ -19,6 +19,7 @@ from flext_plugin import (
     Plugin,
     PluginRegistry,
 )
+from flext_plugin.loader import FlextPluginLoader
 
 
 class TestPlugin:
@@ -386,7 +387,8 @@ class Plugin(Plugin):
             # Add temp directory to Python path temporarily
 
             try:
-                result = load_plugin("test_real_plugin", "Plugin")
+                loader = FlextPluginLoader()
+                result = loader.load_plugin("test_real_plugin")
 
                 assert result.is_success
                 assert result.unwrap() is not None
@@ -426,9 +428,10 @@ class CustomPlugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
+            loader = FlextPluginLoader()
 
             try:
-                result = load_plugin("test_custom_plugin", "CustomPlugin")
+                result = loader.load_plugin(str(module_file))
 
                 assert result.is_success
                 assert result.unwrap() is not None
@@ -444,7 +447,8 @@ class CustomPlugin(Plugin):
 
     def test_load_plugin_import_error_with_real_nonexistent_module(self) -> None:
         """Test plugin loading with import error from REAL nonexistent module."""
-        result = load_plugin("totally_nonexistent_module_that_does_not_exist")
+        loader = FlextPluginLoader()
+        result = loader.load_plugin("totally_nonexistent_module_that_does_not_exist.py")
 
         assert result.is_failure
         assert result.error is not None
@@ -472,9 +476,10 @@ class SomeOtherClass:
 ''')
 
             # Add temp directory to Python path temporarily
+            loader = FlextPluginLoader()
 
             try:
-                result = load_plugin("test_no_plugin_class", "Plugin")
+                result = loader.load_plugin(str(module_file))
 
                 assert result.is_failure
                 assert result.error is not None
@@ -507,9 +512,10 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
+            loader = FlextPluginLoader()
 
             try:
-                result = load_plugin("test_failing_plugin", "Plugin")
+                result = loader.load_plugin(str(module_file))
 
                 assert result.is_failure
                 assert result.error is not None
@@ -544,9 +550,10 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
+            loader = FlextPluginLoader()
 
             try:
-                result = load_plugin("test_invalid_plugin", "Plugin")
+                result = loader.load_plugin(str(module_file))
 
                 assert result.is_failure
                 assert result.error is not None
@@ -601,9 +608,10 @@ class Plugin(Plugin):
 ''')
 
             # Add temp directory to Python path temporarily
+            loader = FlextPluginLoader()
 
             try:
-                result = load_plugin("test_type_error_plugin", "Plugin")
+                result = loader.load_plugin(str(module_file))
 
                 assert result.is_failure
                 assert result.error is not None

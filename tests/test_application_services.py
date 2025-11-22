@@ -22,11 +22,11 @@ from flext_core import FlextContainer, FlextExceptions, FlextService
 
 from flext_plugin import (
     FlextPluginModels,
+    FlextPluginService,
 )
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.loader import FlextPluginLoader
-from flext_plugin.models import FlextPluginModels
 
 # Type aliases for compatibility with old test code
 PluginDiscovery = FlextPluginDiscovery
@@ -226,12 +226,9 @@ def real_plugin_loader() -> FlextPluginLoader:
 
 
 @pytest.fixture
-def real_plugin_discovery(temp_plugin_dir: Path) -> FlextPluginDiscovery:
+def real_plugin_discovery() -> FlextPluginDiscovery:
     """Create REAL plugin discovery for testing."""
-    return FlextPluginDiscovery(
-        plugin_directory=str(temp_plugin_dir),
-        plugin_directories=[str(temp_plugin_dir)],
-    )
+    return FlextPluginDiscovery()
 
 
 @pytest.fixture
@@ -240,12 +237,12 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     container = FlextContainer()
 
     # Register REAL implementations
-    discovery_adapter = FlextPluginDiscovery(str(temp_plugin_dir))
-    loader_adapter = FlextPluginLoader(str(temp_plugin_dir))
+    discovery_adapter = FlextPluginDiscovery()
+    loader_adapter = FlextPluginLoader()
     # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))  # TODO: Implement when available
 
-    container.register("plugin_discovery_port", discovery_adapter)
-    container.register("plugin_loader_port", loader_adapter)
+    container.with_service("plugin_discovery_port", discovery_adapter)
+    container.with_service("plugin_loader_port", loader_adapter)
     # container.register("plugin_manager_port", manager_adapter)  # TODO: Implement when available
 
     return FlextPluginService(container=container)
@@ -254,15 +251,15 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
 @pytest.fixture
 def real_discovery_service_with_adapters(
     temp_plugin_dir: Path,
-) -> FlextPluginDiscovery:
-    """Create FlextPluginDiscovery with REAL adapters."""
+) -> FlextPluginService:
+    """Create FlextPluginService with REAL discovery adapters."""
     container = FlextContainer()
 
     # Register REAL discovery implementation
-    discovery_adapter = FlextPluginDiscovery(str(temp_plugin_dir))
-    container.register("plugin_discovery_port", discovery_adapter)
+    discovery_adapter = FlextPluginDiscovery()
+    container.with_service("plugin_discovery_port", discovery_adapter)
 
-    return FlextPluginDiscovery(container=container)
+    return FlextPluginService(container=container)
 
 
 class TestRealPluginDiscoveryAndExecution:
@@ -274,8 +271,13 @@ class TestRealPluginDiscoveryAndExecution:
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL plugin discovery with actual Python files."""
-        # Add the temp directory to discovery paths
-        real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
+        # Discover plugins in the temp directory
+        discovery_result = real_plugin_discovery.discover_plugins([
+            str(temp_plugin_dir)
+        ])
+        assert discovery_result.is_success
+        discovered_plugins = discovery_result.value
+        assert len(discovered_plugins) == 4  # tap, target, processor, error plugins
 
         # Verify plugins are discoverable
         plugin_files = list(temp_plugin_dir.glob("*.py"))
@@ -299,7 +301,7 @@ class TestRealPluginDiscoveryAndExecution:
         """Test REAL plugin loading and execution with actual Python modules."""
         # Load tap plugin
         tap_plugin_file = temp_plugin_dir / "tap_database.py"
-        tap_plugin = real_plugin_loader.load_plugin(tap_plugin_file)
+        tap_plugin = real_plugin_loader.load_plugin(str(tap_plugin_file))
 
         # Verify plugin loaded correctly
         assert tap_plugin is not None
@@ -315,7 +317,7 @@ class TestRealPluginDiscoveryAndExecution:
 
         # Load and test target plugin
         target_plugin_file = temp_plugin_dir / "target_warehouse.py"
-        target_plugin = real_plugin_loader.load_plugin(target_plugin_file)
+        target_plugin = real_plugin_loader.load_plugin(str(target_plugin_file))
 
         assert target_plugin is not None
         # Cast to proper plugin interface
@@ -334,7 +336,7 @@ class TestRealPluginDiscoveryAndExecution:
     ) -> None:
         """Test REAL processor plugin with data transformation."""
         processor_file = temp_plugin_dir / "processor_transform.py"
-        processor_plugin = real_plugin_loader.load_plugin(processor_file)
+        processor_plugin = real_plugin_loader.load_plugin(str(processor_file))
 
         assert processor_plugin is not None
         # Cast to proper plugin interface
@@ -367,7 +369,7 @@ class TestRealPluginDiscoveryAndExecution:
     ) -> None:
         """Test REAL error handling with actual plugin exceptions."""
         error_file = temp_plugin_dir / "error_plugin.py"
-        error_plugin = real_plugin_loader.load_plugin(error_file)
+        error_plugin = real_plugin_loader.load_plugin(str(error_file))
 
         assert error_plugin is not None
         # Cast to proper plugin interface
@@ -400,7 +402,7 @@ class TestFlextPluginServiceWithRealAdapters:
     ) -> None:
         """Test REAL plugin discovery using real adapters."""
         # Discover plugins using REAL adapter
-        result = real_service_with_adapters.discover_plugins(str(temp_plugin_dir))
+        result = real_service_with_adapters.discover_plugins([str(temp_plugin_dir)])
 
         # Should succeed and find REAL plugins
         assert result.is_success
@@ -434,13 +436,13 @@ class TestFlextPluginServiceWithRealAdapters:
         """Test REAL plugin loading using real adapters."""
         # First discover to get real plugin entity
         discover_result = real_service_with_adapters.discover_plugins(
-            str(temp_plugin_dir),
+            [str(temp_plugin_dir)],
         )
         assert discover_result.is_success
         assert len(discover_result.data) > 0
 
         # Get a real plugin entity
-        tap_plugin = None
+        tap_plugin: FlextPluginModels.Plugin | None = None
         for plugin in discover_result.data:
             if plugin.name == "tap_database":
                 tap_plugin = plugin
@@ -448,8 +450,9 @@ class TestFlextPluginServiceWithRealAdapters:
 
         assert tap_plugin is not None
 
-        # Load the real plugin using real adapter
-        load_result = real_service_with_adapters.load_plugin(tap_plugin)
+        # Load the real plugin using real adapter by path
+        tap_plugin_path = temp_plugin_dir / "tap_database.py"
+        load_result = real_service_with_adapters.load_plugin(str(tap_plugin_path))
         assert load_result.is_success
         assert load_result.data is True
 
@@ -464,7 +467,7 @@ class TestFlextPluginServiceWithRealAdapters:
 
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
         assert install_result.is_success
-        assert isinstance(install_result.data, FlextPluginModels.Entity)
+        assert isinstance(install_result.data, FlextPluginModels.Plugin)
         assert install_result.data.name == "tap_database"
 
     def test_is_plugin_loaded_with_real_adapters(
@@ -480,13 +483,11 @@ class TestFlextPluginServiceWithRealAdapters:
 
         # Check if plugin is really loaded
         loaded_result = real_service_with_adapters.is_plugin_loaded("tap_database")
-        assert loaded_result.is_success
-        assert loaded_result.data is True  # Should be loaded
+        assert loaded_result is True  # Should be loaded
 
         # Check non-loaded plugin
         not_loaded_result = real_service_with_adapters.is_plugin_loaded("non_existent")
-        assert not_loaded_result.is_success
-        assert not_loaded_result.data is False  # Should not be loaded
+        assert not_loaded_result is False  # Should not be loaded
 
 
 class TestFlextPluginServiceReal:
@@ -1030,7 +1031,7 @@ class TestRealPluginIntegrationWorkflow:
         """Test complete REAL workflow using services with real adapters."""
         # Step 1: Discover plugins through service with real adapter
         discover_result = real_service_with_adapters.discover_plugins(
-            str(temp_plugin_dir),
+            [str(temp_plugin_dir)],
         )
         assert discover_result.is_success
         assert len(discover_result.data) == 4
@@ -1082,7 +1083,12 @@ class TestRealPluginIntegrationWorkflow:
     ) -> None:
         """Test complete REAL workflow: discover -> load -> execute -> cleanup."""
         # Step 1: Real plugin discovery
-        real_plugin_discovery.add_plugin_directory(temp_plugin_dir)
+        discovery_result = real_plugin_discovery.discover_plugins([
+            str(temp_plugin_dir)
+        ])
+        assert discovery_result.is_success
+        discovered_plugins = discovery_result.value
+        assert len(discovered_plugins) == 4  # Our real plugins
 
         def _get_plugin_files() -> list[AnyioPath]:
             return [
@@ -1152,7 +1158,7 @@ class TestRealPluginIntegrationWorkflow:
         # Load plugins into registry
         tap_plugin = real_plugin_loader.load_plugin(tap_file)
         target_plugin = real_plugin_loader.load_plugin(target_file)
-        processor_plugin = real_plugin_loader.load_plugin(processor_file)
+        processor_plugin = real_plugin_loader.load_plugin(str(processor_file))
 
         # Cast to proper plugin interfaces
         tap = cast("PluginInterface", tap_plugin)
@@ -1186,7 +1192,7 @@ class TestRealPluginIntegrationWorkflow:
         """Test REAL plugin lifecycle with loading/unloading."""
         # Load plugin
         processor_file = temp_plugin_dir / "processor_transform.py"
-        processor_plugin = real_plugin_loader.load_plugin(processor_file)
+        processor_plugin = real_plugin_loader.load_plugin(str(processor_file))
 
         # Verify loaded
         assert processor_plugin is not None
@@ -1240,7 +1246,7 @@ class TestServicesIntegrationReal:
             "name": "test_service",
             "config": {"enabled": True},
         }
-        container.register("test_service", test_service)
+        container.with_service("test_service", test_service)
 
         # Create services with shared container
         plugin_service = FlextPluginService(container=container)
@@ -1275,7 +1281,7 @@ class TestServicesIntegrationReal:
         # Both should work with real plugin directories - handle infrastructure errors
         try:
             plugin_discovery_result = plugin_service.discover_plugins(
-                str(temp_plugin_dir),
+                [str(temp_plugin_dir)],
             )
         except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
@@ -1284,7 +1290,7 @@ class TestServicesIntegrationReal:
 
         try:
             service_discovery_result = discovery_service.scan_directory(
-                str(temp_plugin_dir),
+                [str(temp_plugin_dir)],
             )
         except FlextExceptions.BaseError as e:
             # Infrastructure not configured - skip test
@@ -1332,7 +1338,7 @@ class TestRealPluginErrorScenarios:
         """Test REAL error handling with plugin that actually throws exceptions."""
         # Load our error plugin
         error_file = temp_plugin_dir / "error_plugin.py"
-        error_plugin = real_plugin_loader.load_plugin(error_file)
+        error_plugin = real_plugin_loader.load_plugin(str(error_file))
 
         # Verify plugin loaded
         assert error_plugin is not None

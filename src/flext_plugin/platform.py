@@ -133,7 +133,10 @@ class FlextPluginPlatform(FlextService[None]):
 
     def __init__(self, container: object | None = None) -> None:
         """Initialize plugin platform."""
-        super().__init__(container=container, config=FlextPluginConfig())
+        super().__init__(config=FlextPluginConfig())
+        # Set container if provided
+        if container is not None:
+            self._container = container
 
         # Plugin storage
         self.plugins: dict[str, Plugin] = {}

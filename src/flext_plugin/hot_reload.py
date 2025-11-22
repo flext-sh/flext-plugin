@@ -10,78 +10,67 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from flext_core import FlextLogger, FlextResult
+from watchdog.events import (
+    DirModifiedEvent,
+    FileModifiedEvent,
+    FileSystemEventHandler,
+)
+from watchdog.observers import Observer
 
 from flext_plugin.models import FlextPluginModels
 
-if TYPE_CHECKING:
-    from watchdog.events import FileSystemEventHandler
 
-try:
-    from watchdog.events import (
-        DirModifiedEvent,
-        FileModifiedEvent,
-        FileSystemEventHandler,
-    )
-    from watchdog.observers import Observer
+class FileChangeHandler(FileSystemEventHandler):
+    """Watchdog event handler for file change detection."""
 
-    HAS_WATCHDOG = True
+    def __init__(
+        self,
+        callback: Callable[[str], None],
+        watched_paths: set[Path],
+        logger: FlextLogger,
+    ) -> None:
+        """Initialize file change handler.
 
-    class FileChangeHandler(FileSystemEventHandler):
-        """Watchdog event handler for file change detection."""
+        Args:
+        callback: Callback to execute on file change
+        watched_paths: Set of paths being watched
+        logger: Logger instance
 
-        def __init__(
-            self,
-            callback: Callable[[str], None],
-            watched_paths: set[Path],
-            logger: FlextLogger,
-        ) -> None:
-            """Initialize file change handler.
+        """
+        super().__init__()
+        self.callback = callback
+        self.watched_paths = watched_paths
+        self.logger = logger
 
-            Args:
-            callback: Callback to execute on file change
-            watched_paths: Set of paths being watched
-            logger: Logger instance
+    def on_modified(self, event: FileModifiedEvent | DirModifiedEvent) -> None:
+        """Handle file modification event.
 
-            """
-            super().__init__()
-            self.callback = callback
-            self.watched_paths = watched_paths
-            self.logger = logger
+        Args:
+        event: FileModifiedEvent or DirModifiedEvent from watchdog
 
-        def on_modified(self, event: FileModifiedEvent | DirModifiedEvent) -> None:
-            """Handle file modification event.
+        """
+        if event.is_directory:
+            return
 
-            Args:
-            event: FileModifiedEvent or DirModifiedEvent from watchdog
+        src_path = event.src_path
+        if isinstance(src_path, bytes):
+            src_path = src_path.decode("utf-8")
 
-            """
-            if event.is_directory:
-                return
+        if not src_path.endswith(".py"):
+            return
 
-            src_path = event.src_path
-            if isinstance(src_path, bytes):
-                src_path = src_path.decode("utf-8")
+        file_path = Path(src_path)
 
-            if not src_path.endswith(".py"):
-                return
-
-            file_path = Path(src_path)
-
-            # Check if file is in watched paths
-            for watched_path in self.watched_paths:
-                if (watched_path.is_file() and file_path == watched_path) or (
-                    watched_path.is_dir() and file_path.is_relative_to(watched_path)
-                ):
-                    self.callback(file_path.stem)
-                    break
-
-except ImportError:
-    HAS_WATCHDOG = False
-    Observer = None
-    FileChangeHandler = None
+        # Check if file is in watched paths
+        for watched_path in self.watched_paths:
+            if (watched_path.is_file() and file_path == watched_path) or (
+                watched_path.is_dir() and file_path.is_relative_to(watched_path)
+            ):
+                self.callback(file_path.stem)
+                break
 
 
 class FlextPluginHotReload:
@@ -166,7 +155,7 @@ class FlextPluginHotReload:
             self._is_watching = True
 
             # Start watchdog observer if available
-            if HAS_WATCHDOG and Observer is not None:
+            if Observer is not None:
                 fch = cast("type", FileChangeHandler)
                 self._event_handler = fch(
                     self._handle_file_change, self._watched_paths, self.logger
@@ -350,7 +339,7 @@ class FlextPluginHotReload:
             "total_reloads": len(self._reload_history),
             "recent_reloads": len([r for r in self._reload_history if r.success]),
             "callback_count": len(self._reload_callbacks),
-            "using_watchdog": HAS_WATCHDOG and self._observer is not None,
+            "using_watchdog": self._observer is not None,
         }
 
     def force_reload_all(self) -> FlextResult[dict[str, bool]]:
