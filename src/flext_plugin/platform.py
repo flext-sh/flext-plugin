@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import Any, cast
 
 from flext_core import (
     FlextResult,
@@ -96,7 +96,7 @@ class PluginRegistry:
         """Create new plugin registry."""
         return cls(name)
 
-    def register(self, plugin: Plugin) -> FlextResult[bool]:
+    def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin."""
         try:
             self._plugins[plugin.name] = plugin
@@ -148,7 +148,7 @@ class FlextPluginPlatform(FlextService[None]):
         self.loader: FlextPluginProtocols.PluginLoader | None = None
         self.executor: FlextPluginProtocols.PluginExecution | None = None
 
-    def execute(self) -> FlextResult[None]:
+    def execute(self, **kwargs: object) -> FlextResult[None]:
         """Execute main platform initialization (FlextService protocol)."""
         # Platform is always ready - no specific initialization needed
         return FlextResult[None].ok(None)
@@ -176,8 +176,10 @@ class FlextPluginPlatform(FlextService[None]):
                     }
                     for discovery_data in result.value
                 ]
-                return FlextResult.ok(plugin_dicts)
-            return result
+                return FlextResult.ok(cast("list[dict[str, object]]", plugin_dicts))
+            return FlextResult[list[dict[str, object]]].fail(
+                result.error or "Discovery failed"
+            )
 
         def create_plugins_from_data(
             data: list[dict[str, object]],
@@ -212,8 +214,8 @@ class FlextPluginPlatform(FlextService[None]):
                     if load_data.entry_file
                     else None,
                 }
-                return FlextResult.ok(plugin_dict)
-            return result
+                return FlextResult.ok(cast("dict[str, object]", plugin_dict))
+            return FlextResult[dict[str, object]].fail(result.error or "Load failed")
 
         def create_plugin_from_load_data(
             data: dict[str, object],
@@ -267,12 +269,12 @@ class FlextPluginPlatform(FlextService[None]):
         def validate_plugin_result(_: None) -> FlextResult[bool]:
             return self.registry.register(plugin)
 
-        def add_to_plugins_result(*, registry_result: bool) -> bool:
+        def add_to_plugins_result(registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin registration failed"
                 raise ValueError(error_msg)
-            return self._add_to_plugins(plugin)
+            return self._add_to_plugins(cast("Plugin", plugin))
 
         return (
             plugin.validate_business_rules()
@@ -283,7 +285,7 @@ class FlextPluginPlatform(FlextService[None]):
     def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister with cleanup chain."""
 
-        def unregister_from_registry(*, registry_result: bool) -> bool:
+        def unregister_from_registry(registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin unregistration failed"

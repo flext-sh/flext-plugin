@@ -7,8 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 
@@ -45,7 +46,7 @@ class FlextPluginHandlers:
     def register_handler(
         self,
         event_type: str,
-        handler: Callable[..., object],
+        handler: Callable[[dict[str, object]], Awaitable[object]],
         priority: int = 0,
     ) -> FlextResult[bool]:
         """Register an event handler for a specific event type.
@@ -64,7 +65,7 @@ class FlextPluginHandlers:
                 self._handlers[event_type] = []
 
             # Add handler with priority
-            handler_info = {
+            handler_info: dict[str, object] = {
                 "handler": handler,
                 "priority": priority,
             }
@@ -139,7 +140,7 @@ class FlextPluginHandlers:
         """
         try:
             # Record event in history regardless of whether handlers exist
-            event_record = {
+            event_record: dict[str, object] = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -190,10 +191,13 @@ class FlextPluginHandlers:
         """
         try:
             # Check if handler is async and callable
-            if self._is_async_function(handler) and callable(handler):
-                return await handler(event_data)
-            if callable(handler):
-                return handler(event_data)
+            typed_handler = cast(
+                "Callable[[dict[str, object]], Awaitable[object]]", handler
+            )
+            if self._is_async_function(typed_handler) and callable(typed_handler):
+                return await typed_handler(event_data)
+            if callable(typed_handler):
+                return typed_handler(event_data)
             msg = f"Handler is not callable: {type(handler)}"
             raise TypeError(msg)
         except Exception:

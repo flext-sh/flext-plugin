@@ -21,11 +21,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Any, ClassVar, Self, TypeVar
+from typing import Any, Self, TypeVar
 from uuid import uuid4
 
 from flext_core import FlextModels, FlextResult
-from pydantic import ConfigDict, Field
+from pydantic import Field
 
 T = TypeVar("T")
 
@@ -103,11 +103,6 @@ class FlextPluginEntities:
             description="Classification tags for discovery",
         )
 
-        model_config: ClassVar[ConfigDict] = {
-            "frozen": True,
-            "validate_assignment": True,
-        }
-
     class PluginMetadata(FlextModels.Value):
         """Plugin metadata value object - immutable plugin information.
 
@@ -141,11 +136,6 @@ class FlextPluginEntities:
             description="Last update timestamp",
         )
 
-        model_config: ClassVar[ConfigDict] = {
-            "frozen": True,
-            "validate_assignment": True,
-        }
-
     class PluginExecutionResult(FlextModels.Value):
         """Plugin execution result value object - immutable execution outcome.
 
@@ -172,11 +162,6 @@ class FlextPluginEntities:
             ge=0,
             description="Execution time in milliseconds",
         )
-
-        model_config: ClassVar[ConfigDict] = {
-            "frozen": True,
-            "validate_assignment": True,
-        }
 
     # ========================================================================
     # ENTITIES - Domain objects with identity and lifecycle

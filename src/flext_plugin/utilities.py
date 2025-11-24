@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
-from typing import ClassVar
+from typing import ClassVar, cast
 
 import yaml
 from flext_core import FlextResult, FlextUtilities
@@ -166,16 +166,9 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                metadata = FlextPluginModels.PluginMetadata(
-                    name=plugin_path.stem,
-                    version="1.0.0",
-                    description=f"Plugin from {plugin_path.name}",
-                    author="Unknown",
-                    plugin_type="extension",
-                    entry_point=str(plugin_path),
-                    dependencies=[],
-                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
-                )
+                # Default values
+                version = "1.0.0"
+                description = f"Plugin from {plugin_path.name}"
 
                 # Try to extract metadata from Python files
                 if plugin_path.suffix == ".py":
@@ -187,12 +180,23 @@ class FlextPluginUtilities(FlextUtilities):
                         content,
                     )
                     if version_match:
-                        metadata.version = version_match.group(1)
+                        version = version_match.group(1)
 
                     # Extract description from docstring
                     doc_match = re.search(r'"""([^"]+)"""', content)
                     if doc_match:
-                        metadata.description = doc_match.group(1).strip()
+                        description = doc_match.group(1).strip()
+
+                metadata = FlextPluginModels.PluginMetadata(
+                    name=plugin_path.stem,
+                    version=version,
+                    description=description,
+                    author="Unknown",
+                    plugin_type="extension",
+                    entry_point=str(plugin_path),
+                    dependencies=[],
+                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
+                )
 
                 return FlextResult[FlextPluginModels.PluginMetadata].ok(metadata)
             except Exception as e:
@@ -581,7 +585,9 @@ class FlextPluginUtilities(FlextUtilities):
                     )
                 )
                 if name_validation.is_failure:
-                    return FlextResult[None].fail(name_validation.error)
+                    return FlextResult[None].fail(
+                        name_validation.error or "Plugin name validation failed"
+                    )
 
                 # Validate version format
                 version_pattern = r"^\d+\.\d+\.\d+$"
@@ -620,7 +626,7 @@ class FlextPluginUtilities(FlextUtilities):
                     ):
                         # Recursively merge nested dictionaries
                         if isinstance(merged_config[key], dict):
-                            base_nested_config = dict(merged_config[key])
+                            base_nested_config = cast("dict", merged_config[key]).copy()
                         else:
                             base_nested_config = {}
                         override_value = value.copy() if isinstance(value, dict) else {}
@@ -952,7 +958,7 @@ class FlextPluginUtilities(FlextUtilities):
         if not isinstance(v, dict):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
-        return v
+        return cast("SettingsConfigDict", v)
 
     @model_validator(mode="after")
     def validate_utilities_configuration(self) -> FlextPluginUtilities:

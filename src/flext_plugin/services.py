@@ -7,9 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
 from flext_core import FlextContainer, FlextMixins, FlextModels, FlextResult
 
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.platform import Plugin as PlatformPlugin, PluginExecution
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
@@ -82,13 +85,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
 
         # Internal state
         self._plugins: dict[str, FlextPluginModels.Plugin] = {}
-        self._executions: dict[str, FlextPluginModels.Execution] = {}
+        self._executions: dict[str, PluginExecution] = {}
 
     @property
-    def container(self) -> object:
+    def container(self) -> FlextContainer:
         """Get the container for this service instance."""
         if hasattr(self, "_container") and self._container is not None:
-            return self._container
+            return cast("FlextContainer", self._container)
         return FlextContainer.get_global()
 
     def discover_and_register_plugins(
@@ -119,9 +122,12 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             for plugin_data in plugins_data:
                 # Create plugin entity
                 plugin = FlextPluginModels.Plugin.create(
-                    name=str(plugin_data["name"]),
-                    plugin_version=str(plugin_data.get("version", "1.0.0")),
-                    config=plugin_data,
+                    name=plugin_data.name,
+                    plugin_version=plugin_data.version,
+                    description=plugin_data.metadata.get("description", ""),
+                    author=plugin_data.metadata.get("author", ""),
+                    plugin_type=plugin_data.discovery_type,
+                    metadata=plugin_data.metadata,
                 )
 
                 # Validate plugin
@@ -206,9 +212,12 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
 
             plugin_data = load_result.value
             plugin = FlextPluginModels.Plugin.create(
-                name=str(plugin_data["name"]),
-                plugin_version=str(plugin_data.get("version", "1.0.0")),
-                config=plugin_data,
+                name=plugin_data.name,
+                plugin_version=plugin_data.version,
+                description=plugin_data.module.__doc__ or "",
+                author="",
+                plugin_type=plugin_data.load_type,
+                metadata={"module": plugin_data.module, "path": str(plugin_data.path)},
             )
 
             # Validate plugin
@@ -255,9 +264,9 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: FlextPluginModels.InputData,
+        context: FlextPluginTypes.Execution.ExecutionContext,
         execution_id: str | None = None,
-    ) -> FlextResult[FlextPluginModels.Execution]:
+    ) -> FlextResult[PluginExecution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -279,7 +288,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             plugin = self._plugins[plugin_name]
 
             # Create execution entity
-            execution = FlextPluginModels.Execution.create(
+            execution = PluginExecution.create(
                 plugin_name=plugin_name,
                 execution_config={"input_data": context, "status": "pending"},
                 execution_id=execution_id,
@@ -290,10 +299,14 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             self._executions[execution.execution_id] = execution
 
             # Execute plugin
-            FlextPluginTypes.Execution.ExecutionContext(
-                plugin_id=plugin_name,
-                execution_id=execution.execution_id,
-                input_data=context,
+            cast(
+                "FlextPluginTypes.Execution.ExecutionContext",
+                {
+                    "plugin_id": plugin_name,
+                    "execution_id": execution.execution_id,
+                    "input_data": context,
+                    "status": "pending",
+                },
             )
 
             # Note: Async executor execution not supported in sync context
@@ -312,10 +325,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             execution.result = exec_result.value
 
             # Record execution metrics
-            plugin.record_execution(
-                execution_time_ms=execution.execution_time * 1000,
-                success=True,
-            )
+            plugin.record_execution(0.0, True)
 
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return FlextResult.ok(execution)
@@ -402,7 +412,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
 
         """
         plugin = self.get_plugin(plugin_name)
-        return plugin.status if plugin else None
+        return cast("PlatformPlugin", plugin).status if plugin else None
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
@@ -419,7 +429,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> FlextResult[FlextPluginModels.Metrics]:
+    ) -> FlextResult[dict[str, object]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -436,7 +446,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             if plugin_name not in self._plugins:
                 return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-            metrics_result = await self._monitoring.get_plugin_metrics(plugin_name)
+            metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
             if metrics_result.is_failure:
                 return FlextResult.fail(
                     f"Metrics retrieval failed: {metrics_result.error}",
@@ -468,7 +478,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             if plugin_name not in self._plugins:
                 return FlextResult.fail(f"Plugin '{plugin_name}' not found")
 
-            health_result = await self._monitoring.get_plugin_health(plugin_name)
+            health_result = self._monitoring.get_plugin_health(plugin_name)
             if health_result.is_failure:
                 return FlextResult.fail(f"Health check failed: {health_result.error}")
 
@@ -487,7 +497,11 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """
         return {
             "total_plugins": len(self._plugins),
-            "active_plugins": len([p for p in self._plugins.values() if p.is_active()]),
+            "active_plugins": len([
+                p
+                for p in self._plugins.values()
+                if cast("PlatformPlugin", p).is_active()
+            ]),
             "total_executions": len(self._executions),
             "running_executions": len([
                 e for e in self._executions.values() if e.is_running
@@ -500,7 +514,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             "registry_available": self._registry is not None,
         }
 
-    def get_execution(self, execution_id: str) -> FlextPluginModels.Execution | None:
+    def get_execution(self, execution_id: str) -> PluginExecution | None:
         """Get an execution by ID.
 
         Args:
@@ -512,7 +526,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """
         return self._executions.get(execution_id)
 
-    def list_executions(self) -> list[FlextPluginModels.Execution]:
+    def list_executions(self) -> list[PluginExecution]:
         """List all executions.
 
         Returns:
@@ -521,7 +535,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """
         return list(self._executions.values())
 
-    def get_running_executions(self) -> list[FlextPluginModels.Execution]:
+    def get_running_executions(self) -> list[PluginExecution]:
         """Get all currently running executions.
 
         Returns:
@@ -618,7 +632,9 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         plugin.is_enabled = False
         return FlextResult.ok(True)
 
-    def get_plugin_config(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+    def get_plugin_config(
+        self, plugin_name: str
+    ) -> FlextResult[FlextPluginModels.Config]:
         """Get configuration for a plugin.
 
         Args:

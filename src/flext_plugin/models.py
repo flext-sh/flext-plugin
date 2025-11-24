@@ -101,7 +101,28 @@ class FlextPluginModels:
         @classmethod
         def validate_plugin_type(cls, value: str) -> str:
             """Validate plugin type is a valid PluginType enum value."""
-            valid_types = {pt.value for pt in FlextPluginConstants.PluginType}
+            valid_types = {
+                "tap",
+                "target",
+                "transform",
+                "extension",
+                "service",
+                "middleware",
+                "transformer",
+                "api",
+                "database",
+                "notification",
+                "authentication",
+                "authorization",
+                "utility",
+                "tool",
+                "handler",
+                "processor",
+                "core",
+                "addon",
+                "theme",
+                "language",
+            }
             if value not in valid_types:
                 error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
                 raise ValueError(error_msg)
@@ -171,6 +192,70 @@ class FlextPluginModels:
             self.is_enabled = False
             return FlextResult.ok(None)
 
+        def record_execution(self, execution_time: float, success: bool) -> None:
+            """Record plugin execution metrics.
+
+            Args:
+                execution_time: Time taken for execution in seconds
+                success: Whether the execution was successful
+
+            """
+            # Update metadata with execution info
+            if "execution_count" not in self.metadata:
+                self.metadata["execution_count"] = 0
+            if "total_execution_time" not in self.metadata:
+                self.metadata["total_execution_time"] = 0.0
+            if "success_count" not in self.metadata:
+                self.metadata["success_count"] = 0
+            if "failure_count" not in self.metadata:
+                self.metadata["failure_count"] = 0
+
+            self.metadata["execution_count"] += 1
+            self.metadata["total_execution_time"] += execution_time
+            if success:
+                self.metadata["success_count"] += 1
+            else:
+                self.metadata["failure_count"] += 1
+
+        def record_error(self, error_message: str) -> None:
+            """Record plugin error.
+
+            Args:
+                error_message: Error message to record
+
+            """
+            if "error_count" not in self.metadata:
+                self.metadata["error_count"] = 0
+            if "last_error" not in self.metadata:
+                self.metadata["last_error"] = ""
+
+            self.metadata["error_count"] += 1
+            self.metadata["last_error"] = error_message
+
+        def activate(self) -> bool:
+            """Activate the plugin (legacy method).
+
+            Returns:
+                True if activated, False if already active
+
+            """
+            if self.is_enabled:
+                return False
+            self.is_enabled = True
+            return True
+
+        def deactivate(self) -> bool:
+            """Deactivate the plugin (legacy method).
+
+            Returns:
+                True if deactivated, False if already inactive
+
+            """
+            if not self.is_enabled:
+                return False
+            self.is_enabled = False
+            return True
+
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate plugin business rules.
 
@@ -203,7 +288,28 @@ class FlextPluginModels:
                 )
 
             # Validate plugin type
-            valid_types = {pt.value for pt in FlextPluginConstants.PluginType}
+            valid_types = {
+                "tap",
+                "target",
+                "transform",
+                "extension",
+                "service",
+                "middleware",
+                "transformer",
+                "api",
+                "database",
+                "notification",
+                "authentication",
+                "authorization",
+                "utility",
+                "tool",
+                "handler",
+                "processor",
+                "core",
+                "addon",
+                "theme",
+                "language",
+            }
             if self.plugin_type not in valid_types:
                 return FlextResult.fail(f"Invalid plugin type: {self.plugin_type}")
 
@@ -542,8 +648,12 @@ class FlextPluginModels:
             default_factory=dict,
             description="Dictionary of registered plugins",
         )
-        last_updated: datetime = Field(description="Last update timestamp")
-        created_at: datetime = Field(description="Registry creation timestamp")
+        last_updated: datetime = Field(
+            default_factory=datetime.now, description="Last update timestamp"
+        )
+        created_at: datetime = Field(
+            default_factory=datetime.now, description="Registry creation timestamp"
+        )
 
     class Config(FlextModels.Value):
         """Plugin configuration model.
@@ -554,6 +664,23 @@ class FlextPluginModels:
         plugin_name: str = Field(description="Plugin name")
         settings: dict[str, Any] = Field(
             default_factory=dict, description="Configuration settings"
+        )
+
+    class Registry(FlextModels.Value):
+        """Plugin registry model.
+
+        Represents a registry of plugins with metadata.
+        """
+
+        plugins: dict[str, Any] = Field(
+            default_factory=dict,
+            description="Dictionary of registered plugins",
+        )
+        last_updated: datetime = Field(
+            default_factory=datetime.now, description="Last update timestamp"
+        )
+        created_at: datetime = Field(
+            default_factory=datetime.now, description="Registry creation timestamp"
         )
 
 

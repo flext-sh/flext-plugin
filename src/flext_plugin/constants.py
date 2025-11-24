@@ -366,56 +366,5 @@ class PluginStatus(StrEnum):
         """Check if status represents error state."""
         return self in self.get_error_statuses()
 
-    class PluginType(StrEnum):
-        """Plugin type classification for platform organization."""
-
-        # Singer ETL Types
-        TAP = FlextPluginConstants.Types.TYPE_TAP
-        TARGET = FlextPluginConstants.Types.TYPE_TARGET
-        TRANSFORM = FlextPluginConstants.Types.TYPE_TRANSFORM
-
-        # Architecture Types
-        EXTENSION = FlextPluginConstants.Types.TYPE_EXTENSION
-        SERVICE = FlextPluginConstants.Types.TYPE_SERVICE
-        MIDDLEWARE = FlextPluginConstants.Types.TYPE_MIDDLEWARE
-        TRANSFORMER = FlextPluginConstants.Types.TYPE_TRANSFORMER
-
-        # Integration Types
-        API = FlextPluginConstants.Types.TYPE_API
-        DATABASE = FlextPluginConstants.Types.TYPE_DATABASE
-        NOTIFICATION = FlextPluginConstants.Types.TYPE_NOTIFICATION
-        AUTHENTICATION = FlextPluginConstants.Types.TYPE_AUTHENTICATION
-        AUTHORIZATION = FlextPluginConstants.Types.TYPE_AUTHORIZATION
-
-        # Utility Types
-        UTILITY = FlextPluginConstants.Types.TYPE_UTILITY
-        TOOL = FlextPluginConstants.Types.TYPE_TOOL
-        HANDLER = FlextPluginConstants.Types.TYPE_HANDLER
-        PROCESSOR = FlextPluginConstants.Types.TYPE_PROCESSOR
-
-        # Additional Types
-        CORE = FlextPluginConstants.Types.TYPE_CORE
-        ADDON = FlextPluginConstants.Types.TYPE_ADDON
-        THEME = FlextPluginConstants.Types.TYPE_THEME
-        LANGUAGE = FlextPluginConstants.Types.TYPE_LANGUAGE
-
-        @classmethod
-        def get_etl_types(cls) -> list[str]:
-            """Get ETL-related plugin types."""
-            return [cls.TAP, cls.TARGET, cls.TRANSFORM]
-
-        @classmethod
-        def get_architectural_types(cls) -> list[str]:
-            """Get architectural plugin types."""
-            return [cls.EXTENSION, cls.SERVICE, cls.MIDDLEWARE, cls.TRANSFORMER]
-
-        def is_etl_plugin(self) -> bool:
-            """Check if this is an ETL plugin type."""
-            return self in self.get_etl_types()
-
-        def is_architectural_plugin(self) -> bool:
-            """Check if this is an architectural plugin type."""
-            return self in self.get_architectural_types()
-
 
 __all__ = ["FlextPluginConstants"]
