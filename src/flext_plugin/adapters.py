@@ -122,7 +122,7 @@ class FlextPluginAdapters:
 
         def validate_plugin(
             self,
-            plugin_data: FlextPluginModels.DiscoveryData,
+            _plugin_data: FlextPluginModels.DiscoveryData,
         ) -> FlextResult[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(
@@ -186,7 +186,7 @@ class FlextPluginAdapters:
                 f"Loading error: {plugin_path}",
             )
 
-        def _load_module(self, plugin_path: str) -> FlextPluginModels.LoadData:
+        def _load_module(self, _plugin_path: str) -> FlextPluginModels.LoadData:
             """Internal: load module using spec."""
             path = Path(plugin_path).expanduser().resolve()
             if not path.exists():
@@ -213,7 +213,7 @@ class FlextPluginAdapters:
                 ),
             )
 
-        def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
             """Unload plugin by name (placeholder implementation).
 
             Args:
@@ -222,7 +222,7 @@ class FlextPluginAdapters:
             """
             return FlextResult.ok(True)
 
-        def is_plugin_loaded(self, plugin_name: str) -> bool:
+        def is_plugin_loaded(self, _plugin_name: str) -> bool:
             """Check if plugin is loaded (placeholder).
 
             Args:
@@ -240,8 +240,8 @@ class FlextPluginAdapters:
 
         def execute_plugin(
             self,
-            plugin_name: str,
-            context: dict[str, object],
+            _plugin_name: str,
+            _context: dict[str, object],
         ) -> FlextResult[dict[str, object]]:
             """Execute plugin."""
             return self._execute_safe(
@@ -249,11 +249,11 @@ class FlextPluginAdapters:
                 f"Execution error: {plugin_name}",
             )
 
-        def stop_execution(self, execution_id: str) -> FlextResult[bool]:
+        def stop_execution(self, _execution_id: str) -> FlextResult[bool]:
             """Stop plugin execution."""
             return FlextResult.ok(True)
 
-        def get_execution_status(self, execution_id: str) -> FlextResult[str]:
+        def get_execution_status(self, _execution_id: str) -> FlextResult[str]:
             """Get execution status."""
             return FlextResult.ok("completed")
 
@@ -264,26 +264,26 @@ class FlextPluginAdapters:
     class PluginSecurityAdapter(BaseAdapter, FlextPluginProtocols.PluginSecurity):
         """Plugin security validation - synchronous."""
 
-        def validate_plugin(self, plugin: object) -> FlextResult[bool]:
+        def validate_plugin(self, _plugin: object) -> FlextResult[bool]:
             """Validate plugin for security."""
             return FlextResult.ok(True)
 
         def check_permissions(
             self,
-            plugin_name: str,
-            permissions: list[str],
+            _plugin_name: str,
+            _permissions: list[str],
         ) -> FlextResult[bool]:
             """Check plugin permissions."""
             return FlextResult.ok(True)
 
         def scan_plugin_security(
             self,
-            plugin_path: str,
+            _plugin_path: str,
         ) -> FlextResult[dict[str, object]]:
             """Scan plugin for security issues."""
             return FlextResult.ok({"security_level": "medium"})
 
-        def get_security_level(self, plugin_name: str) -> FlextResult[str]:
+        def get_security_level(self, _plugin_name: str) -> FlextResult[str]:
             """Get security level."""
             return FlextResult.ok("medium")
 
@@ -295,15 +295,15 @@ class FlextPluginAdapters:
             super().__init__()
             self._plugins: dict[str, object] = {}
 
-        def register_plugin(self, plugin: object) -> FlextResult[bool]:
+        def register_plugin(self, _plugin: object) -> FlextResult[bool]:
             """Register plugin in registry."""
             return FlextResult.ok(True)
 
-        def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
             """Unregister plugin from registry."""
             return FlextResult.ok(True)
 
-        def get_plugin(self, plugin_name: str) -> FlextResult[object | None]:
+        def get_plugin(self, _plugin_name: str) -> FlextResult[object | None]:
             """Get plugin from registry."""
             return FlextResult.ok(None)
 
@@ -311,36 +311,36 @@ class FlextPluginAdapters:
             """List all plugins in registry."""
             return FlextResult.ok([])
 
-        def is_plugin_registered(self, plugin_name: str) -> bool:
+        def is_plugin_registered(self, _plugin_name: str) -> bool:
             """Check if plugin is registered."""
             return False
 
     class PluginMonitoringAdapter(BaseAdapter, FlextPluginProtocols.PluginMonitoring):
         """Plugin monitoring - synchronous."""
 
-        def start_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+        def start_monitoring(self, _plugin_name: str) -> FlextResult[bool]:
             """Start monitoring plugin."""
             return FlextResult.ok(True)
 
-        def stop_monitoring(self, plugin_name: str) -> FlextResult[bool]:
+        def stop_monitoring(self, _plugin_name: str) -> FlextResult[bool]:
             """Stop monitoring plugin."""
             return FlextResult.ok(True)
 
         def get_plugin_metrics(
             self,
-            plugin_name: str,
+            _plugin_name: str,
         ) -> FlextResult[dict[str, object]]:
             """Get plugin metrics."""
             return FlextResult.ok({"execution_count": 0, "error_count": 0})
 
         def get_plugin_health(
             self,
-            plugin_name: str,
+            _plugin_name: str,
         ) -> FlextResult[dict[str, object]]:
             """Get plugin health information."""
             return FlextResult.ok({"status": "healthy"})
 
-        def is_monitoring(self, plugin_name: str) -> bool:
+        def is_monitoring(self, _plugin_name: str) -> bool:
             """Check if plugin is being monitored."""
             return False
 

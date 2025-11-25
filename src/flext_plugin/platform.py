@@ -96,7 +96,7 @@ class PluginRegistry:
         """Create new plugin registry."""
         return cls(name)
 
-    def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin."""
         try:
             self._plugins[plugin.name] = plugin
@@ -104,7 +104,7 @@ class PluginRegistry:
         except Exception as e:
             return FlextResult.fail(f"Registration failed: {e}")
 
-    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Unregister plugin."""
         try:
             self._plugins.pop(plugin_name, None)
@@ -148,7 +148,7 @@ class FlextPluginPlatform(FlextService[None]):
         self.loader: FlextPluginProtocols.PluginLoader | None = None
         self.executor: FlextPluginProtocols.PluginExecution | None = None
 
-    def execute(self, **kwargs: object) -> FlextResult[None]:
+    def execute(self, **_kwargs: object) -> FlextResult[None]:
         """Execute main platform initialization (FlextService protocol)."""
         # Platform is always ready - no specific initialization needed
         return FlextResult[None].ok(None)
@@ -193,7 +193,7 @@ class FlextPluginPlatform(FlextService[None]):
             .map(self._register_all)
         )
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
+    def load_plugin(self, _plugin_path: str) -> FlextResult[Plugin]:
         """Load single plugin with composition."""
 
         def load_and_validate(_: None) -> FlextResult[dict[str, object]]:
@@ -263,7 +263,7 @@ class FlextPluginPlatform(FlextService[None]):
         )
 
     # Plugin management with functional patterns
-    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin with validation chain."""
 
         def validate_plugin_result(_: None) -> FlextResult[bool]:
@@ -282,7 +282,7 @@ class FlextPluginPlatform(FlextService[None]):
             .map(add_to_plugins_result)
         )
 
-    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Unregister with cleanup chain."""
 
         def unregister_from_registry(registry_result: bool) -> bool:
@@ -410,7 +410,7 @@ class FlextPluginPlatform(FlextService[None]):
             self.registry.register(plugin)
         return plugins
 
-    def _register_single(self, plugin: Plugin) -> Plugin:
+    def _register_single(self, _plugin: Plugin) -> Plugin:
         """Register single plugin."""
         self.plugins[plugin.name] = plugin
         self.registry.register(plugin)
@@ -477,12 +477,12 @@ class FlextPluginPlatform(FlextService[None]):
 
         return result.map(lambda _: execution)
 
-    def _add_to_plugins(self, plugin: Plugin) -> bool:
+    def _add_to_plugins(self, _plugin: Plugin) -> bool:
         """Add plugin to internal registry."""
         self.plugins[plugin.name] = plugin
         return True
 
-    def _remove_from_plugins(self, plugin_name: str) -> bool:
+    def _remove_from_plugins(self, _plugin_name: str) -> bool:
         """Remove plugin from internal registry."""
         self.plugins.pop(plugin_name, None)
         return True

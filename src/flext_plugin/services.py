@@ -191,7 +191,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """
         return self.discover_and_register_plugins(paths)
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -334,7 +334,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             self.logger.exception("Failed to execute plugin '%s'", plugin_name)
             return FlextResult.fail(f"Execution error: {e!s}")
 
-    async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin from the service.
 
         Args:
@@ -380,7 +380,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return FlextResult.fail(f"Unloading error: {e!s}")
 
-    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+    def get_plugin(self, _plugin_name: str) -> FlextPluginModels.Plugin | None:
         """Get a plugin by name.
 
         Args:
@@ -401,7 +401,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """
         return list(self._plugins.values())
 
-    def get_plugin_status(self, plugin_name: str) -> str | None:
+    def get_plugin_status(self, _plugin_name: str) -> str | None:
         """Get the status of a specific plugin.
 
         Args:
@@ -414,7 +414,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         plugin = self.get_plugin(plugin_name)
         return cast("PlatformPlugin", plugin).status if plugin else None
 
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
+    def is_plugin_loaded(self, _plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
         Args:
@@ -514,7 +514,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             "registry_available": self._registry is not None,
         }
 
-    def get_execution(self, execution_id: str) -> PluginExecution | None:
+    def get_execution(self, _execution_id: str) -> PluginExecution | None:
         """Get an execution by ID.
 
         Args:
@@ -561,7 +561,9 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def install_plugin(
+        self, _plugin_path: str
+    ) -> FlextResult[FlextPluginModels.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -580,7 +582,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             return FlextResult.ok(plugin)
         return FlextResult.fail(result.error or "Plugin installation failed")
 
-    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def uninstall_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Uninstall a plugin by name.
 
         Args:
@@ -596,7 +598,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         del self._plugins[plugin_name]
         return FlextResult.ok(True)
 
-    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def enable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Enable a plugin by name.
 
         Args:
@@ -614,7 +616,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         plugin.is_enabled = True
         return FlextResult.ok(True)
 
-    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def disable_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Disable a plugin by name.
 
         Args:
@@ -633,7 +635,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         return FlextResult.ok(True)
 
     def get_plugin_config(
-        self, plugin_name: str
+        self, _plugin_name: str
     ) -> FlextResult[FlextPluginModels.Config]:
         """Get configuration for a plugin.
 
@@ -654,7 +656,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         return FlextResult.ok(config)
 
     def update_plugin_config(
-        self, plugin_name: str, config: dict[str, object]
+        self, _plugin_name: str, config: dict[str, object]
     ) -> FlextResult[bool]:
         """Update configuration for a plugin.
 

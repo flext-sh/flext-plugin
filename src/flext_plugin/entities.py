@@ -356,7 +356,7 @@ class FlextPluginEntities:
             return cls(id=registry_id or str(uuid4()), name=name)
 
         def register_plugin(
-            self, plugin: FlextPluginEntities.Plugin
+            self, _plugin: FlextPluginEntities.Plugin
         ) -> FlextResult[None]:
             """Register a plugin in the registry.
 
@@ -388,7 +388,7 @@ class FlextPluginEntities:
             return FlextResult.ok(None)
 
         def unregister_plugin(
-            self, plugin_name: str
+            self, _plugin_name: str
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Unregister a plugin from the registry.
 
@@ -407,7 +407,7 @@ class FlextPluginEntities:
             return FlextResult.ok(plugin)
 
         def get_plugin(
-            self, plugin_name: str
+            self, _plugin_name: str
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Retrieve a plugin from the registry.
 

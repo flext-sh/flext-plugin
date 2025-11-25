@@ -50,7 +50,7 @@ class FlextPluginLoader:
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
+    def load_plugin(self, _plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -81,7 +81,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return FlextResult.fail(f"Loading error: {e!s}")
 
-    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin by name.
 
         Args:
@@ -106,7 +106,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to unload plugin {plugin_name}")
             return FlextResult.fail(f"Unloading error: {e!s}")
 
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
+    def is_plugin_loaded(self, _plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
         Args:
@@ -128,7 +128,7 @@ class FlextPluginLoader:
         return list(self._loaded_plugins.keys())
 
     def reload_plugin(
-        self, plugin_name: str
+        self, _plugin_name: str
     ) -> FlextResult[FlextPluginModels.LoadData]:
         """Reload a plugin by name.
 
@@ -172,7 +172,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
             return FlextResult.fail(f"Reload error: {e!s}")
 
-    def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
+    def validate_plugin_dependencies(self, _plugin_name: str) -> FlextResult[bool]:
         """Validate dependencies for a loaded plugin.
 
         Args:
@@ -211,7 +211,7 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+    def get_plugin_info(self, _plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:

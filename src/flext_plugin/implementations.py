@@ -35,18 +35,18 @@ class FlextPluginImplementations:
     class FlextPluginLoaderProtocol(Protocol):
         """Protocol for plugin loader interface."""
 
-        def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
+        def load_plugin(self, _plugin_path: str | Path) -> FlextResult[object]:
             """Load plugin from path."""
             ...
 
     class FlextPluginRegistryProtocol(Protocol):
         """Protocol for plugin registry interface."""
 
-        def register(self, plugin: object) -> FlextResult[None]:
+        def register(self, _plugin: object) -> FlextResult[None]:
             """Register a plugin."""
             ...
 
-        def get_plugin(self, plugin_name: str) -> FlextResult[object]:
+        def get_plugin(self, _plugin_name: str) -> FlextResult[object]:
             """Get plugin by name."""
             ...
 
@@ -118,12 +118,12 @@ class FlextPluginImplementations:
 
         def initialize(
             self,
-            context: dict[str, object],
+            _context: dict[str, object],
         ) -> FlextResult[None]:
             """Initialize plugin with context.
 
             Args:
-            context: Plugin runtime context
+            _context: Plugin runtime context
             Returns:
             FlextResult indicating success or failure
 
@@ -392,27 +392,27 @@ class FlextPluginImplementations:
             """Initialize with FlextLogger instance."""
             self.logger = logger  # Simple adapter, no super() needed
 
-        def critical(self, message: str, *args: object, **kwargs: object) -> None:
+        def critical(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log critical message."""
             self.logger.critical(message)
 
-        def error(self, message: str, *args: object, **kwargs: object) -> None:
+        def error(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log error message."""
             self.logger.error(message)
 
-        def warning(self, message: str, *args: object, **kwargs: object) -> None:
+        def warning(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log warning message."""
             self.logger.warning(message)
 
-        def info(self, message: str, *args: object, **kwargs: object) -> None:
+        def info(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log info message."""
             self.logger.info(message)
 
-        def debug(self, message: str, *args: object, **kwargs: object) -> None:
+        def debug(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log debug message."""
             self.logger.debug(message)
 
-        def trace(self, message: str, *args: object, **kwargs: object) -> None:
+        def trace(self, message: str, *_args: object, **_kwargs: object) -> None:
             """Log trace message."""
             self.logger.debug(message)  # structlog doesn't have trace, use debug
 
@@ -420,7 +420,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            context: dict[str, object] | None = None,
+            _context: dict[str, object] | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -429,8 +429,8 @@ class FlextPluginImplementations:
             self,
             message: str,
             *,
-            exc_info: bool = True,
-            **kwargs: object,
+            _exc_info: bool = True,
+            **_kwargs: object,
         ) -> None:
             """Log exception message."""
             self.logger.error(message)
@@ -499,7 +499,7 @@ class FlextPluginImplementations:
             self.plugins: dict[str, FlextPluginModels.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
-        def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[None]:
+        def register(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[None]:
             """Register a plugin.
 
             Args:
@@ -517,7 +517,7 @@ class FlextPluginImplementations:
             self._logger.info("Registered plugin %s", plugin_name)
             return FlextResult[None].ok(None)
 
-        def unregister(self, plugin_name: str) -> FlextResult[None]:
+        def unregister(self, _plugin_name: str) -> FlextResult[None]:
             """Unregister a plugin by name.
 
             Args:
@@ -532,7 +532,7 @@ class FlextPluginImplementations:
             self._logger.info("Unregistered plugin %s", plugin_name)
             return FlextResult[None].ok(None)
 
-        def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+        def get_plugin(self, _plugin_name: str) -> FlextPluginModels.Plugin | None:
             """Get plugin by name.
 
             Args:
@@ -572,7 +572,7 @@ class FlextPluginImplementations:
             )
             self.logger = FlextLogger("plugin.loader")
 
-        def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
+        def load_plugin(self, _plugin_path: str | Path) -> FlextResult[object]:
             """Load plugin from path.
 
             Args:

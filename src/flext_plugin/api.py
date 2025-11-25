@@ -41,7 +41,7 @@ class FlextPluginApi:
             )[1],
         )
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
         return self.platform.load_plugin(plugin_path).map(
             lambda plugin: (self.logger.info(f"Loaded plugin: {plugin.name}"), plugin)[
                 1
@@ -57,10 +57,10 @@ class FlextPluginApi:
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 
     # Direct delegation with railway patterns
-    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         return self.platform.register_plugin(plugin)
 
-    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
         return self.platform.unregister_plugin(plugin_name)
 
     # Hot reload operations
@@ -71,14 +71,14 @@ class FlextPluginApi:
         return self.platform.stop_hot_reload()
 
     # Plugin accessors
-    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+    def get_plugin(self, _plugin_name: str) -> FlextPluginModels.Plugin | None:
         return self.platform.get_plugin(plugin_name)
 
     def list_plugins(self) -> Sequence[FlextPluginModels.Plugin]:
         return self.platform.list_plugins()
 
-    def get_plugin_status(self, plugin_name: str) -> str | None:
+    def get_plugin_status(self, _plugin_name: str) -> str | None:
         return self.platform.get_plugin_status(plugin_name)
 
-    def is_plugin_active(self, plugin_name: str) -> bool:
+    def is_plugin_active(self, _plugin_name: str) -> bool:
         return self.platform.is_plugin_active(plugin_name)
