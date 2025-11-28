@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Self
+, Literal, Self
 
 from flext_core import FlextModels, FlextResult
 from pydantic import Field, field_validator
@@ -75,7 +75,7 @@ class FlextPluginModels:
             description="Plugin type classification",
         )
         is_enabled: bool = Field(default=True, description="Plugin enabled state")
-        metadata: dict[str, Any] = Field(
+        metadata: dict[str, object] = Field(
             default_factory=dict,
             description="Extensible plugin metadata",
         )
@@ -138,7 +138,7 @@ class FlextPluginModels:
             author: str = "",
             plugin_type: str = FlextPluginConstants.PluginType.UTILITY,
             is_enabled: bool = True,
-            metadata: dict[str, Any] | None = None,
+            metadata: dict[str, object] | None = None,
             entity_id: str | None = None,
         ) -> Self:
             """Factory method to create a new Plugin entity.
@@ -330,7 +330,7 @@ class FlextPluginModels:
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        data: dict[str, Any] = Field(
+        data: dict[str, object] = Field(
             default_factory=dict,
             description="Execution output data",
         )
@@ -377,7 +377,7 @@ class FlextPluginModels:
         discovery_method: Literal["file_system", "entry_points"] = Field(
             description="Discovery method used"
         )
-        metadata: dict[str, Any] = Field(
+        metadata: dict[str, object] = Field(
             default_factory=dict,
             description="Extensible discovery metadata",
         )
@@ -494,7 +494,7 @@ class FlextPluginModels:
             default_factory=list,
             description="List of plugin dependencies",
         )
-        metadata: dict[str, Any] = Field(
+        metadata: dict[str, object] = Field(
             default_factory=dict,
             description="Additional metadata",
         )
@@ -516,7 +516,7 @@ class FlextPluginModels:
         event_type: str = Field(description="Type of event")
         plugin_name: str = Field(description="Associated plugin name")
         timestamp: datetime = Field(description="When event occurred")
-        data: dict[str, Any] = Field(
+        data: dict[str, object] = Field(
             default_factory=dict,
             description="Event-specific data",
         )
@@ -544,7 +544,7 @@ class FlextPluginModels:
             default_factory=list,
             description="List of validation warnings",
         )
-        details: dict[str, Any] = Field(
+        details: dict[str, object] = Field(
             default_factory=dict,
             description="Additional validation details",
         )
@@ -594,7 +594,7 @@ class FlextPluginModels:
         watch_interval: float = Field(description="Polling interval in seconds")
         callback: Any = Field(default=None, description="Callback function reference")
         active: bool = Field(default=False, description="Whether watcher is active")
-        last_modified: dict[str, Any] = Field(
+        last_modified: dict[str, object] = Field(
             default_factory=dict,
             description="File modification tracking",
         )
@@ -644,7 +644,7 @@ class FlextPluginModels:
         """
 
         version: str = Field(description="Registry schema version")
-        plugins: dict[str, Any] = Field(
+        plugins: dict[str, object] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )
@@ -662,7 +662,7 @@ class FlextPluginModels:
         """
 
         plugin_name: str = Field(description="Plugin name")
-        settings: dict[str, Any] = Field(
+        settings: dict[str, object] = Field(
             default_factory=dict, description="Configuration settings"
         )
 
@@ -672,7 +672,7 @@ class FlextPluginModels:
         Represents a registry of plugins with metadata.
         """
 
-        plugins: dict[str, Any] = Field(
+        plugins: dict[str, object] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )

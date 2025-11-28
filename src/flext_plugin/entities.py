@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Any, Self, TypeVar
+, Self, TypeVar
 from uuid import uuid4
 
 from flext_core import FlextModels, FlextResult
@@ -94,7 +94,7 @@ class FlextPluginEntities:
             max_length=50,
         )
         enabled: bool = Field(default=True, description="Whether plugin is enabled")
-        metadata: dict[str, Any] = Field(
+        metadata: dict[str, object] = Field(
             default_factory=dict,
             description="Additional configuration metadata",
         )
@@ -150,7 +150,7 @@ class FlextPluginEntities:
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        result_data: dict[str, Any] = Field(
+        result_data: dict[str, object] = Field(
             default_factory=dict,
             description="Execution result data",
         )
@@ -202,7 +202,7 @@ class FlextPluginEntities:
             default=None,
             description="Last update timestamp",
         )
-        domain_data: dict[str, Any] = Field(
+        domain_data: dict[str, object] = Field(
             default_factory=dict,
             description="Extensible domain-specific data for composition",
         )

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import Any, cast
+, cast
 
 from flext_core import (
     FlextResult,
@@ -42,7 +42,7 @@ class PluginExecution:
     def __init__(
         self,
         plugin_name: str,
-        execution_config: dict[str, Any],
+        execution_config: dict[str, object],
         execution_id: str | None = None,
     ) -> None:
         """Initialize plugin execution."""
@@ -53,7 +53,7 @@ class PluginExecution:
         self.is_completed = False
         self.success = False
         self.error_message: str | None = None
-        self.result: dict[str, Any] | None = None
+        self.result: dict[str, object] | None = None
         self.started_at: str | None = None
         self.completed_at: str | None = None
 
@@ -61,7 +61,7 @@ class PluginExecution:
     def create(
         cls,
         plugin_name: str,
-        execution_config: dict[str, Any],
+        execution_config: dict[str, object],
         execution_id: str | None = None,
     ) -> PluginExecution:
         """Create new plugin execution."""
@@ -89,7 +89,7 @@ class PluginRegistry:
     def __init__(self, name: str = "default") -> None:
         """Initialize plugin registry."""
         self.name = name
-        self._plugins: dict[str, Any] = {}
+        self._plugins: dict[str, object] = {}
 
     @classmethod
     def create(cls, name: str) -> PluginRegistry:

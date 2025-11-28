@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, cast
+, cast
 
 from flext_core import FlextLogger, FlextResult
 from watchdog.events import (
@@ -323,7 +323,7 @@ class FlextPluginHotReload:
         self.logger.info(f"Cleared {count} reload history entries")
         return count
 
-    def get_hot_reload_status(self) -> dict[str, Any]:
+    def get_hot_reload_status(self) -> dict[str, object]:
         """Get the current status of the hot reload service.
 
         Returns:
