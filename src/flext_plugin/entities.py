@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-, Self, TypeVar
+from typing import Self, TypeVar
 from uuid import uuid4
 
 from flext_core import FlextModels, FlextResult

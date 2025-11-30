@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-, Literal, Self
+from typing import Literal, Self
 
 from flext_core import FlextModels, FlextResult
 from pydantic import Field, field_validator

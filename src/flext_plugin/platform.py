@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-, cast
+from typing import cast
 
 from flext_core import (
     FlextResult,

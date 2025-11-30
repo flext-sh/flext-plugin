@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-, cast
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 from watchdog.events import (
