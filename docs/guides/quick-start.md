@@ -165,18 +165,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import Dict
 
 class GreetingPlugin(FlextPlugin):
@@ -200,7 +200,7 @@ class GreetingPlugin(FlextPlugin):
         # Setup any resources here
         return FlextResult[None].ok(data=True)
 
-    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import FlextContainer, FlextMixins, FlextModels, FlextResult
+from flext_core import FlextContainer, FlextModels, FlextResult, x
 
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import Plugin as PlatformPlugin, PluginExecution
@@ -17,7 +17,7 @@ from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
+class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
@@ -58,7 +58,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
         """Initialize the plugin service with protocol implementations and dependency injection.
 
         Args:
-            container: Dependency injection container (uses FlextMixins for DI)
+            container: Dependency injection container (uses x for DI)
             discovery: Plugin discovery implementation
             loader: Plugin loader implementation
             executor: Plugin execution implementation
@@ -73,7 +73,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, FlextMixins):
             self._container = container
 
         # Initialize mixins for dependency injection
-        FlextMixins.__init__(self)
+        x.__init__(self)
 
         # Store protocol implementations
         self._discovery = discovery

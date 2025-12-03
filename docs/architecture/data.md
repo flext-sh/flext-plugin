@@ -38,7 +38,7 @@ class Plugin {
 }
 
 class FlextPluginConfig {
-    +dependencies: FlextTypes.StringList
+    +dependencies: t.StringList
     +entry_points: Dict[str, str]
     +security_level: SecurityLevel
     +execution_limits: ExecutionLimits
@@ -46,12 +46,12 @@ class FlextPluginConfig {
 }
 
 class PluginMetadata {
-    +capabilities: FlextTypes.StringList
-    +supported_platforms: FlextTypes.StringList
+    +capabilities: t.StringList
+    +supported_platforms: t.StringList
     +license: str
     +homepage: str
     +documentation: str
-    +tags: FlextTypes.StringList
+    +tags: t.StringList
 }
 
 class Execution {
@@ -381,7 +381,7 @@ from typing import List, Dict, object
 class FlextPluginConfig(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r'^\d+\.\d+\.\d+$')
-    dependencies: FlextTypes.StringList = Field(default_factory=list)
+    dependencies: t.StringList = Field(default_factory=list)
     config: Dict[str, object] = Field(default_factory=dict)
 
     class Config:

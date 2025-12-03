@@ -67,7 +67,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str                           # Plugin identifier
     plugin_version: str                 # Plugin version
     status: PluginStatus               # Current lifecycle status
-    config: FlextTypes.Dict             # Plugin configuration
+    config: t.Dict             # Plugin configuration
     metadata: FlextPluginModels.Metadata      # Plugin metadata
 
     # Business Methods
@@ -93,7 +93,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     version: str                       # Plugin version
     description: str                   # Plugin description
     author: str                        # Plugin author
-    dependencies: FlextTypes.StringList            # Plugin dependencies
+    dependencies: t.StringList            # Plugin dependencies
     metadata: FlextPluginModels.Metadata      # Additional metadata
 
     def validate_business_rules(self) -> FlextResult[bool]:
@@ -138,7 +138,7 @@ class PluginType(str, Enum):
 def create_flext_plugin(
     name: str,
     version: str,
-    config: FlextTypes.Dict | None = None,
+    config: t.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs
 ) -> FlextPluginModels.Entity:
@@ -149,7 +149,7 @@ def create_flext_plugin(
 
 ```python
 def create_flext_plugin_platform(
-    config: FlextTypes.Dict | None = None
+    config: t.Dict | None = None
 ) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
@@ -232,18 +232,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 def plugin_operation() -> FlextResult[bool]:
     try:
@@ -261,18 +261,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 container = FlextContainer()
 platform = FlextPluginPlatform(container)

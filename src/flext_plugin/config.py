@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import FlextConfig, FlextResult, FlextUtilities
+from flext_core import FlextConfig, FlextResult
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
@@ -83,7 +83,7 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         **kwargs: object,
     ) -> FlextPluginConfig:
         """Create plugin config entity with proper validation."""
-        entity_id = entity_id or FlextUtilities.Generators.generate_entity_id()
+        entity_id = entity_id or uenerate_entity_id()
 
         # Create instance data
         instance_data: dict[str, object] = {

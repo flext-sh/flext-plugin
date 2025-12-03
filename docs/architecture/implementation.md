@@ -34,18 +34,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import List, Optional
 
 class FlextPluginModels:
@@ -58,7 +58,7 @@ class FlextPluginModels:
             self,
             name: str,
             plugin_version: str,
-            config: FlextTypes.Dict,
+            config: t.Dict,
         ) -> None:
             super().__init__()
             self.name = name
@@ -92,7 +92,7 @@ class FlextPluginModels:
         def __init__(
             self,
             plugin_name: str,
-            context: FlextTypes.Dict,
+            context: t.Dict,
             execution_id: Optional[str] = None,
         ) -> None:
             super().__init__()
@@ -127,18 +127,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from flext_plugin.entities import FlextPluginModels
 from typing import List, Protocol
 
@@ -150,7 +150,7 @@ class FlextPluginServices:
 
     async def discover_plugins(
         self,
-        paths: FlextTypes.StringList,
+        paths: t.StringList,
         discovery_service: PluginDiscovery
     ) -> FlextResult[List[FlextPluginModels.Plugin]]:
         """Application service orchestrating plugin discovery."""
@@ -190,7 +190,7 @@ class FlextPluginServices:
     async def execute_plugin(
         self,
         plugin: FlextPluginModels.Plugin,
-        context: FlextTypes.Dict,
+        context: t.Dict,
         executor: PluginExecution
     ) -> FlextResult[FlextPluginModels.Execution]:
         """Application service orchestrating plugin execution."""
@@ -230,18 +230,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from flext_plugin.protocols import FlextPluginProtocols
 import os
 from pathlib import Path
@@ -255,7 +255,7 @@ class FlextPluginDiscovery:
         self.logger = container.get("logger").unwrap()
 
     async def discover_plugins(
-        self, paths: FlextTypes.StringList
+        self, paths: t.StringList
     ) -> FlextResult[List[Dict[str, object]]]:
         """Discover plugins from file system."""
 
@@ -344,18 +344,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from flext_plugin.entities import FlextPluginModels
 
 class FlextPluginProtocols:
@@ -365,7 +365,7 @@ class FlextPluginProtocols:
         """Protocol for plugin discovery mechanisms."""
 
         async def discover_plugins(
-            self, paths: FlextTypes.StringList
+            self, paths: t.StringList
         ) -> FlextResult[List[Dict[str, object]]]:
             """Discover plugins from specified paths."""
             ...
@@ -404,7 +404,7 @@ class FlextPluginProtocols:
         """Protocol for plugin hot reload functionality."""
 
         async def start_watching(
-            self, paths: FlextTypes.StringList
+            self, paths: t.StringList
         ) -> FlextResult[bool]:
             """Start watching paths for plugin changes."""
             ...
@@ -424,7 +424,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
     """Concrete implementation of plugin discovery protocol."""
 
     async def discover_plugins(
-        self, paths: FlextTypes.StringList
+        self, paths: t.StringList
     ) -> FlextResult[List[Dict[str, object]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
@@ -445,24 +445,24 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import List
 
 async def process_plugins_workflow(
     self,
-    plugin_names: FlextTypes.StringList
-) -> FlextResult[FlextTypes.List]:
+    plugin_names: t.StringList
+) -> FlextResult[t.List]:
     """Complete plugin processing workflow using railway pattern."""
 
     # Chain operations with automatic error propagation
@@ -475,8 +475,8 @@ async def process_plugins_workflow(
     )
 
 def _validate_plugin_names(
-    self, names: FlextTypes.StringList
-) -> FlextResult[FlextTypes.StringList]:
+    self, names: t.StringList
+) -> FlextResult[t.StringList]:
     """Validate plugin names."""
     if not names:
         return FlextResult.fail("No plugin names provided")
@@ -488,7 +488,7 @@ def _validate_plugin_names(
     return FlextResult.ok(names)
 
 async def _load_plugins(
-    self, names: FlextTypes.StringList
+    self, names: t.StringList
 ) -> FlextResult[List[FlextPluginModels.Plugin]]:
     """Load plugins by name."""
     plugins = []
@@ -663,18 +663,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class TestPluginLifecycle:
     """End-to-end plugin lifecycle testing."""
@@ -786,18 +786,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Standard imports
 from typing import TYPE_CHECKING
@@ -811,18 +811,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Local imports (after FLEXT imports)
 from flext_plugin.constants import FlextPluginConstants
@@ -955,7 +955,7 @@ class FlextPluginConfig:
     """Plugin system configuration using Pydantic."""
 
     # Plugin discovery settings
-    plugin_paths: FlextTypes.StringList = Field(
+    plugin_paths: t.StringList = Field(
         default_factory=lambda: [
             "./plugins",
             "~/.flext/plugins",
@@ -993,7 +993,7 @@ class FlextPluginConfig:
                 raise ValueError(f"Invalid plugin path format: {path}")
         return paths
 
-    def get_plugin_paths(self) -> FlextTypes.StringList:
+    def get_plugin_paths(self) -> t.StringList:
         """Get resolved plugin paths."""
         import os
         from pathlib import Path
@@ -1146,18 +1146,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import Dict, object
 
 class FlextPluginHealth:
@@ -1278,18 +1278,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class FlextPluginCache:
     """Multi-level caching for plugin system performance."""
@@ -1354,18 +1354,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from flext_plugin.entities import FlextPluginModels
 
 class FlextPluginExecutor:

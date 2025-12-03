@@ -19,7 +19,7 @@ from types import ModuleType
 from typing import ClassVar, cast
 
 import yaml
-from flext_core import FlextResult, FlextUtilities
+from flext_core import FlextResult, u
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -28,7 +28,7 @@ from flext_plugin.types import FlextPluginTypes
 
 
 @dataclass
-class FlextPluginUtilities(FlextUtilities):
+class FlextPluginUtilities(u):
     """composition-based utilities using Python 3.13+ patterns."""
 
     # Constants using advanced type syntax

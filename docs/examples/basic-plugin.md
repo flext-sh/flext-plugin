@@ -29,18 +29,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import Dict, Optional
 
 import json
@@ -56,7 +56,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, config: Optional[FlextTypes.Dict] = None, **kwargs):
+    def __init__(self, config: Optional[t.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -119,7 +119,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return FlextResult[None].fail(error_msg)
 
-    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -127,7 +127,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Processing results or error
+            FlextResult[t.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -219,7 +219,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: FlextTypes.Dict) -> FlextResult[bool]:
+    def _validate_input_data(self, data: t.Dict) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -233,7 +233,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
+    def _process_data(self, data: t.Dict) -> t.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -302,7 +302,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Public utility methods
 
-    def get_statistics(self) -> FlextTypes.Dict:
+    def get_statistics(self) -> t.Dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 

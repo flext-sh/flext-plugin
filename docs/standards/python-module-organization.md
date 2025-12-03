@@ -158,22 +158,22 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class PluginSystemSettings(FlextConfig):
     """Plugin system configuration with environment support"""
-    discovery_paths: FlextTypes.StringList = ["./plugins", "~/.flext/plugins"]
+    discovery_paths: t.StringList = ["./plugins", "~/.flext/plugins"]
     hot_reload_enabled: bool = True
     watch_interval: int = 2
     max_workers: int = 10
@@ -443,24 +443,24 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Factory pattern for plugin creation
 def create_singer_tap_plugin(
     name: str,
     version: str,
-    tap_config: FlextTypes.Dict
+    tap_config: t.Dict
 ) -> FlextResult[FlextPlugin]:
     """Create Singer tap plugin with validation."""
     try:
@@ -503,18 +503,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class PluginLifecycleManager:
     """Manages plugin lifecycle with state transitions."""
@@ -611,18 +611,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class AdvancedPluginDiscovery:
     """Advanced plugin discovery with filtering and validation."""
@@ -634,7 +634,7 @@ class AdvancedPluginDiscovery:
     def discover_plugins_by_type(
         self,
         plugin_type: PluginType,
-        paths: FlextTypes.StringList
+        paths: t.StringList
     ) -> FlextResult[List[FlextPlugin]]:
         """Discover plugins filtered by type."""
         try:
@@ -705,18 +705,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import List, Dict
 from datetime import datetime
 
@@ -740,10 +740,10 @@ class FlextPlugin(FlextModels.Entity):
     homepage_url: str = ""
     repository_url: str = ""
     license: str = "MIT"
-    tags: FlextTypes.StringList = field(default_factory=list)
+    tags: t.StringList = field(default_factory=list)
 
     # Dependencies and compatibility
-    dependencies: FlextTypes.StringList = field(default_factory=list)
+    dependencies: t.StringList = field(default_factory=list)
     flext_core_version: str = ">=0.9.9"
     python_version: str = ">=3.13"
 
@@ -806,7 +806,7 @@ class FlextPlugin(FlextModels.Entity):
             "timestamp": self.last_executed.isoformat()
         })
 
-    def get_health_status(self) -> FlextTypes.Dict:
+    def get_health_status(self) -> t.Dict:
         """Get plugin health metrics."""
         if self.execution_count == 0:
             success_rate = 0.0
@@ -840,18 +840,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import Dict, List, Optional
 
 class FlextPluginModels.Registry(FlextModels.AggregateRoot):
@@ -863,7 +863,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
     """
 
     plugins: Dict[str, FlextPlugin] = field(default_factory=dict)
-    discovery_paths: FlextTypes.StringList = field(default_factory=list)
+    discovery_paths: t.StringList = field(default_factory=list)
     last_discovery: Optional[datetime] = None
     registry_version: str = "0.9.9"
 
@@ -916,7 +916,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
         """Get all currently active plugins."""
         return [p for p in self.plugins.values() if p.status == PluginStatus.ACTIVE]
 
-    def get_registry_health(self) -> FlextTypes.Dict:
+    def get_registry_health(self) -> t.Dict:
         """Get overall registry health metrics."""
         total_plugins = len(self.plugins)
         active_plugins = len(self.get_active_plugins())
@@ -957,18 +957,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import List, Dict, Optional
 
 
@@ -986,8 +986,8 @@ class FlextPluginModels.Metadata(FlextModels.Value):
     homepage_url: Optional[str] = None
     repository_url: Optional[str] = None
     documentation_url: Optional[str] = None
-    tags: FlextTypes.StringList = field(default_factory=list)
-    keywords: FlextTypes.StringList = field(default_factory=list)
+    tags: t.StringList = field(default_factory=list)
+    keywords: t.StringList = field(default_factory=list)
 
     def __post_init__(self):
         """Validate metadata on creation."""
@@ -1023,7 +1023,7 @@ class FlextPluginModels.Config(FlextModels.Value):
     behavior but doesn't change plugin identity.
     """
 
-    config_data: FlextTypes.Dict
+    config_data: t.Dict
     schema_version: str = "0.9.9"
     environment: str = "production"
 
@@ -1046,7 +1046,7 @@ class FlextPluginModels.Config(FlextModels.Value):
         """Check if configuration contains specific key."""
         return key in self.config_data
 
-    def with_override(self, overrides: FlextTypes.Dict) -> 'FlextPluginModels.Config':
+    def with_override(self, overrides: t.Dict) -> 'FlextPluginModels.Config':
         """Create new config with overridden values."""
         new_config_data = {**self.config_data, **overrides}
         return FlextPluginModels.Config(
@@ -1055,7 +1055,7 @@ class FlextPluginModels.Config(FlextModels.Value):
             environment=self.environment
         )
 
-    def _get_required_keys(self) -> FlextTypes.StringList:
+    def _get_required_keys(self) -> t.StringList:
         """Get required configuration keys based on environment."""
         base_required = ["name", "version"]
 
@@ -1078,9 +1078,9 @@ from typing import Optional, Dict
 class LazyPluginLoader:
     """Lazy loading pattern for plugin resources."""
 
-    def __init__(self, plugin_config: FlextTypes.Dict):
+    def __init__(self, plugin_config: t.Dict):
         self.plugin_config = plugin_config
-        self._loaded_modules: FlextTypes.Dict = {}
+        self._loaded_modules: t.Dict = {}
 
     @cached_property
     def plugin_module(self) -> FlextResult[object]:
@@ -1154,7 +1154,7 @@ class PluginCache:
     def __init__(self, max_size: int = 1000, ttl: int = 3600):
         self.max_size = max_size
         self.ttl = ttl
-        self._cache: Dict[str, FlextTypes.Dict] = {}
+        self._cache: Dict[str, t.Dict] = {}
 
     def cache_plugin_result(
         self,
@@ -1214,7 +1214,7 @@ class PluginCache:
 
         return cache_entry["data"]
 
-    def _cache_result(self, cache_key: str, data: object, metadata: FlextTypes.Dict) -> None:
+    def _cache_result(self, cache_key: str, data: object, metadata: t.Dict) -> None:
         """Cache result with metadata."""
         import time
 
@@ -1236,7 +1236,7 @@ plugin_cache = PluginCache()
     cache_key_func=lambda plugin_id, config: f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}",
     invalidate_on_plugin_change=True
 )
-def execute_plugin_cached(plugin_id: str, config: FlextTypes.Dict) -> FlextResult[object]:
+def execute_plugin_cached(plugin_id: str, config: t.Dict) -> FlextResult[object]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass
@@ -1260,18 +1260,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class PluginInterface(Protocol):
     """Protocol defining plugin interface with complete type safety."""
@@ -1280,7 +1280,7 @@ class PluginInterface(Protocol):
         """Initialize plugin resources."""
         ...
 
-    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """Execute plugin with typed input/output."""
         ...
 
@@ -1294,8 +1294,8 @@ U = TypeVar('U')
 
 def process_plugin_data(
     plugin: PluginInterface,
-    data: FlextTypes.Dict,
-    transformer: Callable[[FlextTypes.Dict], T],
+    data: t.Dict,
+    transformer: Callable[[t.Dict], T],
     validator: Callable[[T], FlextResult[U]]
 ) -> FlextResult[U]:
     """Process plugin data with complete type safety."""
@@ -1491,8 +1491,8 @@ class DataProcessorPlugin(FlextPlugin):
 
     def execute(
         self,
-        data: FlextTypes.Dict
-    ) -> FlextResult[FlextTypes.Dict]:
+        data: t.Dict
+    ) -> FlextResult[t.Dict]:
         """
         Execute data processing pipeline on input data.
 
@@ -1516,7 +1516,7 @@ class DataProcessorPlugin(FlextPlugin):
                  - "metadata": Additional processing metadata (optional)
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Processing results containing:
+            FlextResult[t.Dict]: Processing results containing:
                 - "processed_data": Transformed data in requested format
                 - "statistics": Processing metrics (records, errors, timing)
                 - "metadata": Output metadata with schema information
@@ -1617,21 +1617,21 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Oracle WMS plugin (flext-oracle-wms project)
-def create_oracle_wms_plugin(config: FlextTypes.Dict) -> FlextResult[FlextPlugin]:
+def create_oracle_wms_plugin(config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
     return FlextResult[None].ok(create_flext_plugin(
         name="oracle-wms-connector",
@@ -1645,7 +1645,7 @@ def create_oracle_wms_plugin(config: FlextTypes.Dict) -> FlextResult[FlextPlugin
     ))
 
 # Singer tap plugin (flext-tap-oracle project)
-def create_oracle_tap_plugin(tap_config: FlextTypes.Dict) -> FlextResult[FlextPlugin]:
+def create_oracle_tap_plugin(tap_config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle Singer tap plugin."""
     return FlextResult[None].ok(create_flext_plugin(
         name=f"tap-oracle-{tap_config.get('schema', 'default')}",
@@ -1676,18 +1676,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class OraclePluginSettings(FlextConfig):
     """Oracle plugin configuration extending FLEXT patterns."""
@@ -1722,7 +1722,7 @@ class EcosystemPluginManager:
         self.platform = create_flext_plugin_platform()
         self.registry = self.platform.registry
 
-    def register_ecosystem_plugins(self) -> FlextResult[FlextTypes.StringList]:
+    def register_ecosystem_plugins(self) -> FlextResult[t.StringList]:
         """Register plugins from all ecosystem projects."""
         plugin_sources = [
             "./flext-tap-oracle/plugins",

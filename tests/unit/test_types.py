@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextTypes
+from flext_core import t
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
@@ -27,8 +27,8 @@ class TestFlextPluginTypes:
         assert FlextPluginTypes.PluginCore.StringDict == dict[str, str]
 
         # Test numeric collections
-        assert FlextPluginTypes.PluginCore.IntList == FlextTypes.IntList
-        assert FlextPluginTypes.PluginCore.FloatList == FlextTypes.FloatList
+        assert FlextPluginTypes.PluginCore.IntList == t.IntList
+        assert FlextPluginTypes.PluginCore.FloatList == t.FloatList
         assert FlextPluginTypes.PluginCore.IntDict == dict[str, int]
         assert FlextPluginTypes.PluginCore.FloatDict == dict[str, float]
 

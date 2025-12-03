@@ -13,7 +13,6 @@ from typing import cast
 from flext_core import (
     FlextResult,
     FlextService,
-    FlextUtilities,
 )
 
 from flext_plugin.config import FlextPluginConfig
@@ -70,7 +69,7 @@ class PluginExecution:
     def mark_started(self) -> None:
         """Mark execution as started."""
         self.is_running = True
-        self.started_at = FlextUtilities.Generators.generate_iso_timestamp()
+        self.started_at = uenerate_iso_timestamp()
 
     def mark_completed(
         self, *, success: bool, error_message: str | None = None
@@ -80,7 +79,7 @@ class PluginExecution:
         self.is_completed = True
         self.success = success
         self.error_message = error_message
-        self.completed_at = FlextUtilities.Generators.generate_iso_timestamp()
+        self.completed_at = uenerate_iso_timestamp()
 
 
 class PluginRegistry:

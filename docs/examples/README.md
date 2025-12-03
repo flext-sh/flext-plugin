@@ -196,18 +196,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 from typing import Dict
 
 class ExamplePlugin(FlextPlugin):
@@ -234,7 +234,7 @@ class ExamplePlugin(FlextPlugin):
         except Exception as e:
             return FlextResult[None].fail(f"Initialization failed: {e}")
 
-    def execute(self, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
@@ -260,7 +260,7 @@ class ExamplePlugin(FlextPlugin):
         """Setup plugin-specific resources."""
         pass
 
-    def _process_data(self, data: FlextTypes.Dict) -> FlextTypes.Dict:
+    def _process_data(self, data: t.Dict) -> t.Dict:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
 
@@ -421,23 +421,23 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 def process_data(
     self,
-    data: FlextTypes.Dict
-) -> FlextResult[FlextTypes.Dict]:
+    data: t.Dict
+) -> FlextResult[t.Dict]:
     """Type-safe data processing."""
     pass
 ```

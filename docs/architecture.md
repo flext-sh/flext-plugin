@@ -53,7 +53,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str
     plugin_version: str
     status: PluginStatus
-    config: FlextTypes.Dict
+    config: t.Dict
 
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""
@@ -69,7 +69,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
     version: str
-    dependencies: FlextTypes.StringList
+    dependencies: t.StringList
     metadata: FlextPluginModels.Metadata
 
     class Config:
