@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import r
+from flext_core.container import FlextContainer
+from flext_core.loggings import FlextLogger
 
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import FlextPluginPlatform, PluginExecution
@@ -34,7 +36,7 @@ class FlextPluginApi:
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> FlextResult[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins in the given paths."""
         return self.platform.discover_plugins(paths).map(
             lambda plugins: (
@@ -43,7 +45,7 @@ class FlextPluginApi:
             )[1],
         )
 
-    def load_plugin(self, _plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> r[FlextPluginModels.Plugin]:
         """Load a plugin from the given path."""
         return self.platform.load_plugin(_plugin_path).map(
             lambda plugin: (self.logger.info(f"Loaded plugin: {plugin.name}"), plugin)[
@@ -56,25 +58,25 @@ class FlextPluginApi:
         plugin_name: str,
         context: dict[str, object],
         execution_id: str | None = None,
-    ) -> FlextResult[PluginExecution]:
+    ) -> r[PluginExecution]:
         """Execute a plugin by name with the given context."""
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 
     # Direct delegation with railway patterns
-    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> r[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
-    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, _plugin_name: str) -> r[bool]:
         """Unregister a plugin by name."""
         return self.platform.unregister_plugin(_plugin_name)
 
     # Hot reload operations
-    def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
+    def start_hot_reload(self, paths: list[str]) -> r[bool]:
         """Start hot reload monitoring for the given paths."""
         return self.platform.start_hot_reload(paths)
 
-    def stop_hot_reload(self) -> FlextResult[bool]:
+    def stop_hot_reload(self) -> r[bool]:
         """Stop hot reload monitoring."""
         return self.platform.stop_hot_reload()
 

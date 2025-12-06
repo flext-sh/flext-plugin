@@ -13,6 +13,7 @@ from typing import cast
 from flext_core import (
     FlextResult,
     FlextService,
+    FlextUtilities,
 )
 
 from flext_plugin.config import FlextPluginConfig
@@ -69,7 +70,7 @@ class PluginExecution:
     def mark_started(self) -> None:
         """Mark execution as started."""
         self.is_running = True
-        self.started_at = uenerate_iso_timestamp()
+        self.started_at = FlextUtilities.Generators.generate_iso_timestamp()
 
     def mark_completed(
         self,
@@ -82,7 +83,7 @@ class PluginExecution:
         self.is_completed = True
         self.success = success
         self.error_message = error_message
-        self.completed_at = uenerate_iso_timestamp()
+        self.completed_at = FlextUtilities.Generators.generate_iso_timestamp()
 
 
 class PluginRegistry:
@@ -98,7 +99,7 @@ class PluginRegistry:
         """Create new plugin registry."""
         return cls(name)
 
-    def register(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin."""
         try:
             self._plugins[plugin.name] = plugin
@@ -106,7 +107,7 @@ class PluginRegistry:
         except Exception as e:
             return FlextResult.fail(f"Registration failed: {e}")
 
-    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister plugin."""
         try:
             self._plugins.pop(plugin_name, None)
@@ -195,7 +196,7 @@ class FlextPluginPlatform(FlextService[None]):
             .map(self._register_all)
         )
 
-    def load_plugin(self, _plugin_path: str) -> FlextResult[Plugin]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
         """Load single plugin with composition."""
 
         def load_and_validate(_: None) -> FlextResult[dict[str, object]]:
@@ -265,13 +266,13 @@ class FlextPluginPlatform(FlextService[None]):
         )
 
     # Plugin management with functional patterns
-    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
         """Register plugin with validation chain."""
 
         def validate_plugin_result(_: None) -> FlextResult[bool]:
             return self.registry.register(plugin)
 
-        def add_to_plugins_result(registry_result: bool) -> bool:
+        def add_to_plugins_result(*, registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin registration failed"
@@ -284,10 +285,10 @@ class FlextPluginPlatform(FlextService[None]):
             .map(add_to_plugins_result)
         )
 
-    def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister with cleanup chain."""
 
-        def unregister_from_registry(registry_result: bool) -> bool:
+        def unregister_from_registry(*, registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin unregistration failed"
@@ -412,7 +413,7 @@ class FlextPluginPlatform(FlextService[None]):
             self.registry.register(plugin)
         return plugins
 
-    def _register_single(self, _plugin: Plugin) -> Plugin:
+    def _register_single(self, plugin: Plugin) -> Plugin:
         """Register single plugin."""
         self.plugins[plugin.name] = plugin
         self.registry.register(plugin)
@@ -479,12 +480,12 @@ class FlextPluginPlatform(FlextService[None]):
 
         return result.map(lambda _: execution)
 
-    def _add_to_plugins(self, _plugin: Plugin) -> bool:
+    def _add_to_plugins(self, plugin: Plugin) -> bool:
         """Add plugin to internal registry."""
         self.plugins[plugin.name] = plugin
         return True
 
-    def _remove_from_plugins(self, _plugin_name: str) -> bool:
+    def _remove_from_plugins(self, plugin_name: str) -> bool:
         """Remove plugin from internal registry."""
         self.plugins.pop(plugin_name, None)
         return True

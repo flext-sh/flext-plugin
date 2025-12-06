@@ -123,9 +123,10 @@ class FlextPluginImplementations:
             """Initialize plugin with context.
 
             Args:
-            _context: Plugin runtime context
+                _context: Plugin runtime context
+
             Returns:
-            FlextResult indicating success or failure
+                FlextResult indicating success or failure
 
             """
             try:
@@ -216,10 +217,11 @@ class FlextPluginImplementations:
             """Execute a plugin operation.
 
             Args:
-            operation: Operation name to execute
-            params: Operation parameters
+                operation: Operation name to execute
+                _params: Operation parameters
+
             Returns:
-            FlextResult containing operation result or error
+                FlextResult containing operation result or error
 
             """
             if not self._initialized:
@@ -284,9 +286,10 @@ class FlextPluginImplementations:
             """Validate plugin configuration.
 
             Args:
-            config: Configuration to validate
+                config: Configuration to validate
+
             Returns:
-            FlextResult indicating validation success or errors
+                FlextResult indicating validation success or errors
 
             """
             required_fields = ["host", "port", "database"]
@@ -339,10 +342,10 @@ class FlextPluginImplementations:
             """Initialize transform plugin.
 
             Args:
-            name: Plugin name
-            version: Plugin version
-            schema: Transformation schema
-            entity: Optional domain entity
+                name: Plugin name
+                version: Plugin version
+                schema: Transformation schema
+                entity: Optional domain entity
 
             """
             super().__init__(name, version, entity)
@@ -352,9 +355,10 @@ class FlextPluginImplementations:
             """Transform input data.
 
             Args:
-            data: Input data to transform
+                data: Input data to transform
+
             Returns:
-            FlextResult containing transformed data or error
+                FlextResult containing transformed data or error
 
             """
             try:
@@ -452,9 +456,9 @@ class FlextPluginImplementations:
             """Initialize the instance.
 
             Args:
-            logger: Structured logger for plugin
-            config: Plugin configuration
-            services: Available services
+                logger: Structured logger for plugin
+                config: Plugin configuration
+                services: Available services
 
             """
             super().__init__()
@@ -479,9 +483,10 @@ class FlextPluginImplementations:
             """Get service by name from container.
 
             Args:
-            service_name: Name of service to retrieve
+                service_name: Name of service to retrieve
+
             Returns:
-            FlextResult with service instance or not found error
+                FlextResult with service instance or not found error
 
             """
             if service_name not in self._services:
@@ -499,13 +504,14 @@ class FlextPluginImplementations:
             self.plugins: dict[str, FlextPluginModels.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
-        def register(self, _plugin: FlextPluginModels.Plugin) -> FlextResult[None]:
+        def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[None]:
             """Register a plugin.
 
             Args:
-            plugin: Plugin instance to register
+                plugin: Plugin instance to register
+
             Returns:
-            FlextResult indicating registration success or failure
+                FlextResult indicating registration success or failure
 
             """
             plugin_name = plugin.name
@@ -517,13 +523,14 @@ class FlextPluginImplementations:
             self._logger.info("Registered plugin %s", plugin_name)
             return FlextResult[None].ok(None)
 
-        def unregister(self, _plugin_name: str) -> FlextResult[None]:
+        def unregister(self, plugin_name: str) -> FlextResult[None]:
             """Unregister a plugin by name.
 
             Args:
-            plugin_name: Name of plugin to unregister
+                plugin_name: Name of plugin to unregister
+
             Returns:
-            FlextResult indicating success or not found error
+                FlextResult indicating success or not found error
 
             """
             if plugin_name not in self.plugins:
@@ -532,13 +539,14 @@ class FlextPluginImplementations:
             self._logger.info("Unregistered plugin %s", plugin_name)
             return FlextResult[None].ok(None)
 
-        def get_plugin(self, _plugin_name: str) -> FlextPluginModels.Plugin | None:
+        def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
             """Get plugin by name.
 
             Args:
-            plugin_name: Name of plugin to retrieve
+                plugin_name: Name of plugin to retrieve
+
             Returns:
-            Plugin instance or None if not found
+                Plugin instance or None if not found
 
             """
             return self.plugins.get(plugin_name)
@@ -572,13 +580,14 @@ class FlextPluginImplementations:
             )
             self.logger = FlextLogger("plugin.loader")
 
-        def load_plugin(self, _plugin_path: str | Path) -> FlextResult[object]:
+        def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
             """Load plugin from path.
 
             Args:
-            plugin_path: Path to plugin module or package
+                plugin_path: Path to plugin module or package
+
             Returns:
-            FlextResult containing loaded plugin or load error
+                FlextResult containing loaded plugin or load error
 
             """
             try:
@@ -615,9 +624,10 @@ class FlextPluginImplementations:
             """Discover available plugins in path.
 
             Args:
-            search_path: Directory to search for plugins
+                search_path: Directory to search for plugins
+
             Returns:
-            FlextResult containing list of discovered plugin paths
+                FlextResult containing list of discovered plugin paths
 
             """
             try:

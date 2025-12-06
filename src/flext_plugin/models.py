@@ -11,7 +11,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal, Self
 
-from flext_core import FlextModels, FlextResult
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import FlextPluginConstants
@@ -24,7 +23,7 @@ class FlextPluginModels:
     entities, configurations, execution results, and monitoring data.
 
     All models inherit flext-core validation and patterns following
-    Railway-Oriented Programming with FlextResult[T] error handling.
+    Railway-Oriented Programming with r[T] error handling.
     """
 
     # Re-export PluginType enum from constants for convenience
@@ -171,29 +170,29 @@ class FlextPluginModels:
                 metadata=metadata or {},
             )
 
-        def enable(self) -> FlextResult[None]:
+        def enable(self) -> r[None]:
             """Enable the plugin.
 
             Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
             """
             if self.is_enabled:
-                return FlextResult.fail("Plugin is already enabled")
+                return r.fail("Plugin is already enabled")
             self.is_enabled = True
-            return FlextResult.ok(None)
+            return r.ok(None)
 
-        def disable(self) -> FlextResult[None]:
+        def disable(self) -> r[None]:
             """Disable the plugin.
 
             Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
             """
             if not self.is_enabled:
-                return FlextResult.fail("Plugin is already disabled")
+                return r.fail("Plugin is already disabled")
             self.is_enabled = False
-            return FlextResult.ok(None)
+            return r.ok(None)
 
         def record_execution(self, execution_time: float, success: bool) -> None:
             """Record plugin execution metrics.
@@ -259,7 +258,7 @@ class FlextPluginModels:
             self.is_enabled = False
             return True
 
-        def validate_business_rules(self) -> FlextResult[None]:
+        def validate_business_rules(self) -> r[None]:
             """Validate plugin business rules.
 
             Business Rules:
@@ -268,13 +267,13 @@ class FlextPluginModels:
             - Plugin type must be valid
 
             Returns:
-            FlextResult indicating validation success or failure
+            r indicating validation success or failure
 
             """
             min_version_parts = 2
             max_version_parts = 3
             if not self.name or not self.name.strip():
-                return FlextResult.fail("Plugin name cannot be empty")
+                return r.fail("Plugin name cannot be empty")
 
             # Validate semantic version
             version_parts = self.plugin_version.split(".")
@@ -282,11 +281,11 @@ class FlextPluginModels:
                 len(version_parts) < min_version_parts
                 or len(version_parts) > max_version_parts
             ):
-                return FlextResult.fail(
+                return r.fail(
                     f"Invalid semantic version: {self.plugin_version}",
                 )
             if not all(part.isdigit() for part in version_parts if part):
-                return FlextResult.fail(
+                return r.fail(
                     f"Version parts must be numeric: {self.plugin_version}",
                 )
 
@@ -314,9 +313,9 @@ class FlextPluginModels:
                 "language",
             }
             if self.plugin_type not in valid_types:
-                return FlextResult.fail(f"Invalid plugin type: {self.plugin_type}")
+                return r.fail(f"Invalid plugin type: {self.plugin_type}")
 
-            return FlextResult.ok(None)
+            return r.ok(None)
 
     class ExecutionResult(FlextModels.Value):
         """Plugin execution result - immutable execution outcome.

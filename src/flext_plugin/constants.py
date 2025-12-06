@@ -10,17 +10,17 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Final, Literal
 
-from flext_core import FlextConstants
+from flext_core import c as c_core
 
 
-class FlextPluginConstants(FlextConstants):
+class FlextPluginConstants(c_core):
     """plugin constants with Python 3.13+ patterns."""
 
     # Discovery constants
     class Discovery:
         """Discovery-related constants."""
 
-        DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
+        DEFAULT_TIMEOUT_SECONDS: Final[int] = c_core.Network.DEFAULT_TIMEOUT
         DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
         DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
             "/opt/flext/plugins",
@@ -201,7 +201,7 @@ class FlextPluginConstants(FlextConstants):
         PERMISSION_DATABASE: Final[str] = "database"
         PERMISSION_EXTERNAL_API: Final[str] = "external_api"
 
-        SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
+        SECURITY_SCAN_TIMEOUT: Final[int] = c_core.Network.DEFAULT_TIMEOUT
         DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
         DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
             "os",
@@ -252,9 +252,11 @@ class FlextPluginConstants(FlextConstants):
 
     # Hot reload constants
     class HotReload:
+        """Hot reload configuration constants."""
+
         DEFAULT_INTERVAL_SECONDS: Final[int] = 2
         DEBOUNCE_MS: Final[int] = 500
-        MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
+        MAX_RETRIES: Final[int] = c_core.Reliability.MAX_RETRY_ATTEMPTS
         EVENT_CREATED: Final[str] = "created"
         EVENT_MODIFIED: Final[str] = "modified"
         EVENT_DELETED: Final[str] = "deleted"
@@ -277,16 +279,20 @@ class FlextPluginConstants(FlextConstants):
 
     # Files constants
     class Files:
-        PYTHON_EXTENSION: Final[str] = FlextConstants.Platform.EXT_PYTHON
-        YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_YAML
-        JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_JSON
-        TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_TOML
+        """File extension constants."""
+
+        PYTHON_EXTENSION: Final[str] = c_core.Platform.EXT_PYTHON
+        YAML_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_YAML
+        JSON_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_JSON
+        TOML_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_TOML
         DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
         DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-        DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
+        DEFAULT_CONFIG_DIR: Final[str] = c_core.Platform.DIR_CONFIG
 
     # Validation constants
     class PluginValidation:
+        """Plugin validation pattern constants."""
+
         PLUGIN_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
         VERSION_PATTERN: Final[str] = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
         SECURITY_LEVEL_PATTERN: Final[str] = r"^(low|medium|high|critical)$"
@@ -301,6 +307,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Message constants
     class PluginMessages:
+        """Plugin error message constants."""
+
         PLUGIN_NOT_FOUND: Final[str] = "Plugin '{plugin_name}' not found"
         PLUGIN_ALREADY_EXISTS: Final[str] = "Plugin '{plugin_name}' already exists"
         PLUGIN_LOAD_FAILED: Final[str] = (

@@ -122,8 +122,8 @@ class FlextPluginHotReload:
         self._reload_history: list[FlextPluginModels.ReloadRecord] = []
 
         # Watchdog-specific
-        self._observer: Any = None
-        self._event_handler: Any = None
+        self._observer: Observer | None = None
+        self._event_handler: FileSystemEventHandler | None = None
 
     def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
@@ -216,7 +216,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to stop hot reload watching")
             return FlextResult.fail(f"Stop watching error: {e!s}")
 
-    def reload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+    def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Reload a specific plugin.
 
         Args:
@@ -437,7 +437,7 @@ class FlextPluginHotReload:
         """
         return Path(path_str).expanduser().resolve()
 
-    def _find_plugin_path(self, _plugin_name: str) -> Path | None:
+    def _find_plugin_path(self, plugin_name: str) -> Path | None:
         """Find plugin file by name in watched paths.
 
         Args:
@@ -456,7 +456,7 @@ class FlextPluginHotReload:
                     return plugin_file
         return None
 
-    def _handle_file_change(self, _plugin_name: str) -> None:
+    def _handle_file_change(self, plugin_name: str) -> None:
         """Handle a file change event.
 
         Args:

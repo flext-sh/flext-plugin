@@ -34,13 +34,13 @@ class TestPlugin:
         """Create plugin instance for testing."""
         return Plugin.create(name="test-plugin", plugin_version="1.0.0")
 
-    def test_plugin_initialization(self, _plugin: Plugin) -> None:
+    def test_plugin_initialization(self, plugin: Plugin) -> None:
         """Test plugin initialization with name and default state."""
         assert plugin.name == "test-plugin"
         assert not plugin.active
         assert isinstance(plugin, Plugin)
 
-    def test_plugin_activation(self, _plugin: Plugin) -> None:
+    def test_plugin_activation(self, plugin: Plugin) -> None:
         """Test successful plugin activation."""
         result = plugin.activate()
 
@@ -74,7 +74,7 @@ class TestPlugin:
         assert result.error is not None
         assert "Activation failed" in result.error
 
-    def test_plugin_deactivation(self, _plugin: Plugin) -> None:
+    def test_plugin_deactivation(self, plugin: Plugin) -> None:
         """Test successful plugin deactivation."""
         # First activate the plugin
         plugin.active = True
@@ -118,7 +118,7 @@ class TestPlugin:
         assert result.error is not None
         assert "Deactivation failed" in result.error
 
-    def test_plugin_lifecycle(self, _plugin: Plugin) -> None:
+    def test_plugin_lifecycle(self, plugin: Plugin) -> None:
         """Test complete plugin lifecycle: inactive -> active -> inactive."""
         # Initial state
         assert not plugin.active
@@ -133,16 +133,16 @@ class TestPlugin:
         assert deactivate_result.is_success
         assert not plugin.active
 
-    def test_multiple_activations(self, _plugin: Plugin) -> None:
+    def test_multiple_activations(self, plugin: Plugin) -> None:
         """Test multiple activations are handled correctly."""
         # First activation
         result1 = plugin.activate()
-        assert result1.success
+        assert result1.is_success
         assert plugin.active
 
         # Second activation (should still work)
         result2 = plugin.activate()
-        assert result2.success
+        assert result2.is_success
         assert plugin.active
 
 

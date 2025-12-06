@@ -38,11 +38,21 @@ create_docker_postgres_plugin = _docker_mod.create_docker_postgres_plugin
 create_docker_redis_plugin = _docker_mod.create_docker_redis_plugin
 
 
+class _CommandResult:
+    """Simple result wrapper for command execution."""
+
+    def __init__(self, return_code: int, stdout: str, stderr: str) -> None:
+        """Initialize result."""
+        self.returncode = return_code
+        self.stdout = stdout
+        self.stderr = stderr
+
+
 def _run(
     cmd_list: list[str],
     cwd: str | None = None,
-) -> tuple[int, str, str]:
-    """Run a command and return (return_code, stdout, stderr)."""
+) -> _CommandResult:
+    """Run a command and return result object."""
     process = subprocess.Popen(
         *cmd_list,
         cwd=cwd,
@@ -50,10 +60,10 @@ def _run(
         stderr=subprocess.PIPE,
     )
     stdout_bytes, stderr_bytes = process.communicate()
-    return (
-        process.returncode or 0,
-        stdout_bytes.decode("utf-8"),
-        stderr_bytes.decode("utf-8"),
+    return _CommandResult(
+        return_code=process.returncode or 0,
+        stdout=stdout_bytes.decode("utf-8"),
+        stderr=stderr_bytes.decode("utf-8"),
     )
 
 
@@ -62,9 +72,9 @@ def test_basic_plugin_example_execution() -> None:
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
 
     # Execute the example script
-    result = ucurnal_command(
+    result = subprocess.run(
         [sys.executable, str(example_path)],
-        cwd=str(Path(__file__).parent.parent),
+        check=False, cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )
@@ -122,9 +132,9 @@ def test_plugin_configuration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = ucurnal_command(
+    result = subprocess.run(
         [sys.executable, str(example_path)],
-        cwd=str(Path(__file__).parent.parent),
+        check=False, cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )
@@ -388,11 +398,9 @@ def test_docker_integration_example_execution() -> None:
     )
 
     # Execute the example script
-    result = ucurnal_command(
-        _run(
-            [sys.executable, str(example_path)],
-            cwd=str(Path(__file__).parent.parent),
-        ),
+    result = _run(
+        [sys.executable, str(example_path)],
+        cwd=str(Path(__file__).parent.parent),
     )
 
     # Verify successful execution
@@ -512,9 +520,9 @@ def test_docker_integration_example_with_connection_testing() -> None:
     )
 
     # Execute the example script with connection testing
-    result = ucurnal_command(
+    result = subprocess.run(
         [sys.executable, str(example_path), "--test-connections"],
-        cwd=str(Path(__file__).parent.parent),
+        check=False, cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )

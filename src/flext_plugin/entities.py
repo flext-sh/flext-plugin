@@ -24,7 +24,7 @@ from datetime import UTC, datetime
 from typing import Self, TypeVar
 from uuid import uuid4
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, r
 from pydantic import Field
 
 T = TypeVar("T")
@@ -266,11 +266,11 @@ class FlextPluginEntities:
                 "failed",
             }
             if new_status not in valid_statuses:
-                return FlextResult.fail(f"Invalid status: {new_status}")
+                return r.fail(f"Invalid status: {new_status}")
 
             self.status = new_status
             self.updated_at = datetime.now(UTC)
-            return FlextResult.ok(None)
+            return r.ok(None)
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate plugin domain business rules.
@@ -285,14 +285,14 @@ class FlextPluginEntities:
 
             """
             if not self.config.name.strip():
-                return FlextResult.fail("Plugin name cannot be empty")
+                return r.fail("Plugin name cannot be empty")
 
             # Basic semantic version validation (X.Y.Z)
             version_parts = self.config.plugin_version.split(".")
             if len(version_parts) != SEMANTIC_VERSION_PARTS or not all(
                 p.isdigit() for p in version_parts
             ):
-                return FlextResult.fail(
+                return r.fail(
                     f"Invalid semantic version: {self.config.plugin_version}",
                 )
 
@@ -304,9 +304,9 @@ class FlextPluginEntities:
                 "failed",
             }
             if self.status not in valid_statuses:
-                return FlextResult.fail(f"Invalid plugin status: {self.status}")
+                return r.fail(f"Invalid plugin status: {self.status}")
 
-            return FlextResult.ok(None)
+            return r.ok(None)
 
     # ========================================================================
     # AGGREGATE ROOTS - Consistency boundaries
@@ -365,28 +365,25 @@ class FlextPluginEntities:
             - Plugin name must not already exist in registry
             - Plugin must pass business rule validation
 
-            Args:
-            plugin: Plugin to register
-
             Returns:
             FlextResult indicating success or conflict/validation failure
 
             """
             # Validate plugin business rules
-            validation = plugin.validate_business_rules()
+            validation = _plugin.validate_business_rules()
             if validation.is_failure:
                 return validation
 
             # Check for duplicate plugin names
-            if plugin.config.name in self.plugins:
-                return FlextResult.fail(
-                    f"Plugin '{plugin.config.name}' already registered",
+            if _plugin.config.name in self.plugins:
+                return r.fail(
+                    f"Plugin '{_plugin.config.name}' already registered",
                 )
 
             # Register plugin
-            self.plugins[plugin.config.name] = plugin
+            self.plugins[_plugin.config.name] = _plugin
             self.updated_at = datetime.now(UTC)
-            return FlextResult.ok(None)
+            return r.ok(None)
 
         def unregister_plugin(
             self,
@@ -394,23 +391,20 @@ class FlextPluginEntities:
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Unregister a plugin from the registry.
 
-            Args:
-            plugin_name: Name of plugin to unregister
-
             Returns:
             FlextResult with unregistered plugin or failure if not found
 
             """
-            if plugin_name not in self.plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not registered")
+            if _plugin_name not in self.plugins:
+                return r.fail(f"Plugin '{_plugin_name}' not registered")
 
-            plugin = self.plugins.pop(plugin_name)
+            plugin = self.plugins.pop(_plugin_name)
             self.updated_at = datetime.now(UTC)
-            return FlextResult.ok(plugin)
+            return r.ok(plugin)
 
         def get_plugin(
             self,
-            _plugin_name: str,
+            plugin_name: str,
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Retrieve a plugin from the registry.
 
@@ -423,8 +417,8 @@ class FlextPluginEntities:
             """
             plugin = self.plugins.get(plugin_name)
             if not plugin:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
-            return FlextResult.ok(plugin)
+                return r.fail(f"Plugin '{plugin_name}' not found")
+            return r.ok(plugin)
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate registry business rules.
@@ -438,7 +432,7 @@ class FlextPluginEntities:
 
             """
             if not self.name.strip():
-                return FlextResult.fail("Registry name cannot be empty")
+                return r.fail("Registry name cannot be empty")
 
             # Validate all plugins
             for plugin in self.plugins.values():
@@ -446,7 +440,7 @@ class FlextPluginEntities:
                 if validation.is_failure:
                     return validation
 
-            return FlextResult.ok(None)
+            return r.ok(None)
 
     # ========================================================================
     # DOMAIN EVENTS - Event sourcing events

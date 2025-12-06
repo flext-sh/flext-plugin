@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import FlextContainer, FlextModels, FlextResult, x
+from flext_core import m as m_core, r, x
+from flext_core.container import FlextContainer
 
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import Plugin as PlatformPlugin, PluginExecution
@@ -17,7 +18,7 @@ from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.types import FlextPluginTypes
 
 
-class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
+class FlextPluginService(m_core.ArbitraryTypesModel, x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
@@ -97,24 +98,24 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
     def discover_and_register_plugins(
         self,
         paths: list[str],
-    ) -> FlextResult[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
         paths: List of paths to search for plugins
 
         Returns:
-        FlextResult containing list of registered plugins
+        r containing list of registered plugins
 
         """
         try:
             if not self._discovery:
-                return FlextResult.fail("Plugin discovery not available")
+                return r.fail("Plugin discovery not available")
 
             # Discover plugins
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
-                return FlextResult.fail(f"Discovery failed: {discovery_result.error}")
+                return r.fail(f"Discovery failed: {discovery_result.error}")
 
             plugins_data = discovery_result.value
             registered_plugins = []
@@ -169,16 +170,16 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
                     pass
 
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
-            return FlextResult.ok(registered_plugins)
+            return r.ok(registered_plugins)
 
         except Exception as e:
             self.logger.exception("Plugin discovery and registration failed")
-            return FlextResult.fail(f"Service error: {e!s}")
+            return r.fail(f"Service error: {e!s}")
 
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> FlextResult[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins from the specified paths.
 
         Alias for discover_and_register_plugins.
@@ -187,29 +188,29 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             paths: List of paths to search for plugins
 
         Returns:
-            FlextResult containing list of discovered plugins
+            r containing list of discovered plugins
 
         """
         return self.discover_and_register_plugins(paths)
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
         plugin_path: Path to the plugin to load
 
         Returns:
-        FlextResult containing the loaded plugin
+        r containing the loaded plugin
 
         """
         try:
             if not self._loader:
-                return FlextResult.fail("Plugin loader not available")
+                return r.fail("Plugin loader not available")
 
             # Load plugin
             load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
-                return FlextResult.fail(f"Plugin loading failed: {load_result.error}")
+                return r.fail(f"Plugin loading failed: {load_result.error}")
 
             plugin_data = load_result.value
             plugin = FlextPluginModels.Plugin.create(
@@ -224,7 +225,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             # Validate plugin
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
-                return FlextResult.fail(
+                return r.fail(
                     f"Plugin validation failed: {validation_result.error}",
                 )
 
@@ -232,7 +233,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             if self._security:
                 # Note: Async security validation not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return r.fail(
                 #         f"Security validation failed: {security_result.error}"
                 #     )
                 pass
@@ -241,7 +242,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             if self._registry:
                 # Note: Async registry registration not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return r.fail(
                 #         f"Registration failed: {register_result.error}"
                 #     )
                 pass
@@ -256,18 +257,18 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
                 pass
 
             self.logger.info(f"Loaded plugin: {plugin.name}")
-            return FlextResult.ok(plugin)
+            return r.ok(plugin)
 
         except Exception as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
-            return FlextResult.fail(f"Loading error: {e!s}")
+            return r.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
         self,
         plugin_name: str,
         context: FlextPluginTypes.Execution.ExecutionContext,
         execution_id: str | None = None,
-    ) -> FlextResult[PluginExecution]:
+    ) -> r[PluginExecution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -276,15 +277,15 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
         execution_id: Optional execution ID (generated if not provided)
 
         Returns:
-        FlextResult containing the execution result
+        r containing the execution result
 
         """
         try:
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return r.fail(f"Plugin '{plugin_name}' not found")
 
             if not self._executor:
-                return FlextResult.fail("Plugin executor not available")
+                return r.fail("Plugin executor not available")
 
             plugin = self._plugins[plugin_name]
 
@@ -313,13 +314,13 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             # Note: Async executor execution not supported in sync context
             # Sync-only operations maintained per FLEXT requirements
             # )
-            exec_result = FlextResult.ok({
+            exec_result = r.ok({
                 "status": "executed",
             })  # Mock success for sync interface
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
-                return FlextResult.fail(f"Execution failed: {exec_result.error}")
+                return r.fail(f"Execution failed: {exec_result.error}")
 
             # Mark execution as completed
             execution.mark_completed(success=True)
@@ -329,25 +330,25 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             plugin.record_execution(0.0, True)
 
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
-            return FlextResult.ok(execution)
+            return r.ok(execution)
 
         except Exception as e:
             self.logger.exception("Failed to execute plugin '%s'", plugin_name)
-            return FlextResult.fail(f"Execution error: {e!s}")
+            return r.fail(f"Execution error: {e!s}")
 
-    async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin from the service.
 
         Args:
         plugin_name: Name of the plugin to unload
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return r.fail(f"Plugin '{plugin_name}' not found")
 
             # Stop monitoring
             if self._monitoring:
@@ -359,7 +360,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             if self._registry:
                 # Note: Async registry unregistration not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(
+                #     return r.fail(
                 #         f"Unregistration failed: {unregister_result.error}"
                 #     )
                 pass
@@ -368,18 +369,18 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             if self._loader:
                 # Note: Async loader unload not supported in sync context
                 # Sync-only operations maintained per FLEXT requirements
-                #     return FlextResult.fail(f"Unloading failed: {unload_result.error}")
+                #     return r.fail(f"Unloading failed: {unload_result.error}")
                 pass
 
             # Remove from service
             del self._plugins[plugin_name]
 
             self.logger.info("Unloaded plugin: %s", plugin_name)
-            return FlextResult.ok(True)
+            return r.ok(True)
 
         except Exception as e:
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
-            return FlextResult.fail(f"Unloading error: {e!s}")
+            return r.fail(f"Unloading error: {e!s}")
 
     def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
         """Get a plugin by name.
@@ -430,64 +431,64 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> r[dict[str, object]]:
         """Get metrics for a specific plugin.
 
         Args:
         plugin_name: Name of the plugin
 
         Returns:
-        FlextResult containing plugin metrics
+        r containing plugin metrics
 
         """
         try:
             if not self._monitoring:
-                return FlextResult.fail("Plugin monitoring not available")
+                return r.fail("Plugin monitoring not available")
 
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return r.fail(f"Plugin '{plugin_name}' not found")
 
             metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
             if metrics_result.is_failure:
-                return FlextResult.fail(
+                return r.fail(
                     f"Metrics retrieval failed: {metrics_result.error}",
                 )
 
-            return FlextResult.ok(metrics_result.value)
+            return r.ok(metrics_result.value)
 
         except Exception as e:
             self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
-            return FlextResult.fail(f"Metrics error: {e!s}")
+            return r.fail(f"Metrics error: {e!s}")
 
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> r[dict[str, object]]:
         """Get health status for a specific plugin.
 
         Args:
         plugin_name: Name of the plugin
 
         Returns:
-        FlextResult containing plugin health information
+        r containing plugin health information
 
         """
         try:
             if not self._monitoring:
-                return FlextResult.fail("Plugin monitoring not available")
+                return r.fail("Plugin monitoring not available")
 
             if plugin_name not in self._plugins:
-                return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+                return r.fail(f"Plugin '{plugin_name}' not found")
 
             health_result = self._monitoring.get_plugin_health(plugin_name)
             if health_result.is_failure:
-                return FlextResult.fail(f"Health check failed: {health_result.error}")
+                return r.fail(f"Health check failed: {health_result.error}")
 
-            return FlextResult.ok(health_result.value)
+            return r.ok(health_result.value)
 
         except Exception as e:
             self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
-            return FlextResult.fail(f"Health check error: {e!s}")
+            return r.fail(f"Health check error: {e!s}")
 
     def get_service_status(self) -> dict[str, object]:
         """Get the current status of the plugin service.
@@ -562,7 +563,7 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Plugin]:
+    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -571,95 +572,95 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             plugin_path: Path to the plugin to install
 
         Returns:
-            FlextResult containing the installed plugin
+            r containing the installed plugin
 
         """
         result = self.load_plugin(plugin_path)
         if result.is_success:
             plugin = result.value
             self._plugins[plugin.name] = plugin
-            return FlextResult.ok(plugin)
-        return FlextResult.fail(result.error or "Plugin installation failed")
+            return r.ok(plugin)
+        return r.fail(result.error or "Plugin installation failed")
 
-    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
         """Uninstall a plugin by name.
 
         Args:
             plugin_name: Name of the plugin to uninstall
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         if plugin_name not in self._plugins:
-            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
         del self._plugins[plugin_name]
-        return FlextResult.ok(True)
+        return r.ok(True)
 
-    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def enable_plugin(self, plugin_name: str) -> r[bool]:
         """Enable a plugin by name.
 
         Args:
             plugin_name: Name of the plugin to enable
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
-            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
         # Plugin model has is_enabled field
         plugin.is_enabled = True
-        return FlextResult.ok(True)
+        return r.ok(True)
 
-    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def disable_plugin(self, plugin_name: str) -> r[bool]:
         """Disable a plugin by name.
 
         Args:
             plugin_name: Name of the plugin to disable
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
-            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
         # Plugin model has is_enabled field
         plugin.is_enabled = False
-        return FlextResult.ok(True)
+        return r.ok(True)
 
     def get_plugin_config(
         self,
         plugin_name: str,
-    ) -> FlextResult[FlextPluginModels.Config]:
+    ) -> r[FlextPluginModels.Config]:
         """Get configuration for a plugin.
 
         Args:
             plugin_name: Name of the plugin
 
         Returns:
-            FlextResult containing plugin configuration
+            r containing plugin configuration
 
         """
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
-            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
         # Plugin stores config in metadata
         config_data = plugin.metadata.get("config", {})
         config = FlextPluginModels.Config(plugin_name=plugin.name, settings=config_data)
-        return FlextResult.ok(config)
+        return r.ok(config)
 
     def update_plugin_config(
         self,
         plugin_name: str,
         config: dict[str, object],
-    ) -> FlextResult[bool]:
+    ) -> r[bool]:
         """Update configuration for a plugin.
 
         Args:
@@ -667,17 +668,17 @@ class FlextPluginService(FlextModels.ArbitraryTypesModel, x):
             config: New configuration
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
-            return FlextResult.fail(f"Plugin '{plugin_name}' not found")
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
         # Assuming Plugin model has config field
         if hasattr(plugin, "config"):
             plugin.config.update(config)
-        return FlextResult.ok(True)
+        return r.ok(True)
 
 
 __all__ = ["FlextPluginService"]

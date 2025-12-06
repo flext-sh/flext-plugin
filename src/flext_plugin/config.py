@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import FlextConfig, FlextResult, u
+from flext_core import r, u as u_core
+from flext_core.config import FlextConfig
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
@@ -83,7 +84,7 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         **kwargs: object,
     ) -> FlextPluginConfig:
         """Create plugin config entity with proper validation."""
-        entity_id = entity_id or u.Generators.generate_entity_id()
+        entity_id = entity_id or u_core.Generators.generate_entity_id()
 
         # Create instance data
         instance_data: dict[str, object] = {
@@ -118,18 +119,18 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         """Update the updated_at timestamp."""
         self.updated_at = datetime.now(UTC)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> r[None]:
         """Validate domain rules for plugin config entity."""
         if not self.plugin_name or not self.plugin_name.strip():
-            return FlextResult[None].fail("Plugin name is required and cannot be empty")
+            return r[None].fail("Plugin name is required and cannot be empty")
         if self.max_memory_mb <= 0:
-            return FlextResult[None].fail("Maximum memory must be positive")
+            return r[None].fail("Maximum memory must be positive")
         cpu_percentage_max = 100
         if self.max_cpu_percent < 0 or self.max_cpu_percent > cpu_percentage_max:
-            return FlextResult[None].fail("CPU percentage must be between 0 and 100")
+            return r[None].fail("CPU percentage must be between 0 and 100")
         if self.timeout_seconds <= 0:
-            return FlextResult[None].fail("Timeout must be positive")
-        return FlextResult[None].ok(None)
+            return r[None].fail("Timeout must be positive")
+        return r[None].ok(None)
 
 
 __all__ = ["FlextPluginConfig"]
