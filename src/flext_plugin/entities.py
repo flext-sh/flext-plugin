@@ -185,10 +185,10 @@ class FlextPluginEntities:
         """
 
         config: FlextPluginEntities.PluginConfig = Field(
-            description="Plugin configuration"
+            description="Plugin configuration",
         )
         metadata: FlextPluginEntities.PluginMetadata = Field(
-            description="Plugin metadata"
+            description="Plugin metadata",
         )
         status: str = Field(
             default="discovered",
@@ -356,7 +356,8 @@ class FlextPluginEntities:
             return cls(id=registry_id or str(uuid4()), name=name)
 
         def register_plugin(
-            self, _plugin: FlextPluginEntities.Plugin
+            self,
+            _plugin: FlextPluginEntities.Plugin,
         ) -> FlextResult[None]:
             """Register a plugin in the registry.
 
@@ -388,7 +389,8 @@ class FlextPluginEntities:
             return FlextResult.ok(None)
 
         def unregister_plugin(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Unregister a plugin from the registry.
 
@@ -407,7 +409,8 @@ class FlextPluginEntities:
             return FlextResult.ok(plugin)
 
         def get_plugin(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[FlextPluginEntities.Plugin | None]:
             """Retrieve a plugin from the registry.
 

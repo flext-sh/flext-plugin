@@ -18,6 +18,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Discovery constants
     class Discovery:
+        """Discovery-related constants."""
+
         DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
         DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
         DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
@@ -63,6 +65,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Plugin types with frozensets
     class Types:
+        """Plugin type constants."""
+
         SINGER_PLUGIN_TYPES: Final = frozenset({"TAP", "TARGET", "TRANSFORM"})
         ARCHITECTURE_PLUGIN_TYPES: Final = frozenset({
             "EXTENSION",
@@ -136,6 +140,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Lifecycle constants
     class Lifecycle:
+        """Plugin lifecycle state constants."""
+
         PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
             "UNKNOWN",
             "DISCOVERED",
@@ -179,6 +185,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Security constants
     class PluginSecurity:
+        """Plugin security level constants."""
+
         SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
         SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
@@ -204,6 +212,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Performance constants
     class PluginPerformance:
+        """Plugin performance metric constants."""
+
         PERCENTAGE_MAX: Final[int] = 100
         PERCENTAGE_MIN: Final[int] = 0
         EXCELLENT_SUCCESS_RATE: Final[float] = 95.0
@@ -223,6 +233,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Execution constants
     class Execution:
+        """Execution state constants."""
+
         STATE_PENDING: Final[str] = "pending"
         STATE_RUNNING: Final[str] = "running"
         STATE_COMPLETED: Final[str] = "completed"
@@ -231,6 +243,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Registry constants
     class Registry:
+        """Registry type constants."""
+
         TYPE_LOCAL: Final[str] = "local"
         TYPE_REMOTE: Final[str] = "remote"
         TYPE_HYBRID: Final[str] = "hybrid"
@@ -248,6 +262,8 @@ class FlextPluginConstants(FlextConstants):
 
     # Monitoring constants
     class Monitoring:
+        """Monitoring configuration constants."""
+
         LOG_LEVELS: Final[list[str]] = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
         LogLevelLiteral = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

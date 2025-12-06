@@ -72,7 +72,10 @@ class PluginExecution:
         self.started_at = uenerate_iso_timestamp()
 
     def mark_completed(
-        self, *, success: bool, error_message: str | None = None
+        self,
+        *,
+        success: bool,
+        error_message: str | None = None,
     ) -> None:
         """Mark execution as completed."""
         self.is_running = False
@@ -177,7 +180,7 @@ class FlextPluginPlatform(FlextService[None]):
                 ]
                 return FlextResult.ok(cast("list[dict[str, object]]", plugin_dicts))
             return FlextResult[list[dict[str, object]]].fail(
-                result.error or "Discovery failed"
+                result.error or "Discovery failed",
             )
 
         def create_plugins_from_data(

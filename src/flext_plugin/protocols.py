@@ -25,7 +25,8 @@ class FlextPluginProtocols:
         """Protocol for plugin loading operations."""
 
         def load_plugin(
-            self, _plugin_path: str
+            self,
+            _plugin_path: str,
         ) -> FlextResult[FlextPluginModels.LoadData]: ...
 
         def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]: ...
@@ -38,15 +39,18 @@ class FlextPluginProtocols:
         """Protocol for plugin discovery operations."""
 
         def discover_plugins(
-            self, paths: list[str]
+            self,
+            paths: list[str],
         ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]: ...
 
         def discover_plugin(
-            self, _plugin_path: str
+            self,
+            _plugin_path: str,
         ) -> FlextResult[FlextPluginModels.DiscoveryData]: ...
 
         def validate_plugin(
-            self, _plugin_data: FlextPluginModels.DiscoveryData
+            self,
+            _plugin_data: FlextPluginModels.DiscoveryData,
         ) -> FlextResult[bool]: ...
 
     class PluginRegistry(Protocol):
@@ -66,7 +70,9 @@ class FlextPluginProtocols:
         """Protocol for plugin execution operations."""
 
         def execute_plugin(
-            self, _plugin_name: str, _context: dict[str, object]
+            self,
+            _plugin_name: str,
+            _context: dict[str, object],
         ) -> FlextResult[dict[str, object]]: ...
 
         def stop_execution(self, _execution_id: str) -> FlextResult[bool]: ...
@@ -81,11 +87,14 @@ class FlextPluginProtocols:
         def validate_plugin(self, _plugin: object) -> FlextResult[bool]: ...
 
         def check_permissions(
-            self, _plugin_name: str, _permissions: list[str]
+            self,
+            _plugin_name: str,
+            _permissions: list[str],
         ) -> FlextResult[bool]: ...
 
         def scan_plugin_security(
-            self, _plugin_path: str
+            self,
+            _plugin_path: str,
         ) -> FlextResult[dict[str, object]]: ...
 
         def get_security_level(self, _plugin_name: str) -> FlextResult[str]: ...
@@ -111,11 +120,13 @@ class FlextPluginProtocols:
         def stop_monitoring(self, _plugin_name: str) -> FlextResult[bool]: ...
 
         def get_plugin_metrics(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[dict[str, object]]: ...
 
         def get_plugin_health(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[dict[str, object]]: ...
 
         def is_monitoring(self, _plugin_name: str) -> bool: ...
@@ -126,13 +137,16 @@ class FlextPluginProtocols:
         def load_config(self, _plugin_name: str) -> FlextResult[dict[str, object]]: ...
 
         def save_config(
-            self, _plugin_name: str, config: dict[str, object]
+            self,
+            _plugin_name: str,
+            config: dict[str, object],
         ) -> FlextResult[bool]: ...
 
         def validate_config(self, config: dict[str, object]) -> FlextResult[bool]: ...
 
         def get_default_config(
-            self, plugin_type: str
+            self,
+            plugin_type: str,
         ) -> FlextResult[dict[str, object]]: ...
 
     class PluginLifecycle(Protocol):
@@ -154,30 +168,36 @@ class FlextPluginProtocols:
         """Protocol for plugin validation operations."""
 
         def validate_plugin_structure(
-            self, _plugin_data: dict[str, object]
+            self,
+            _plugin_data: dict[str, object],
         ) -> FlextResult[bool]: ...
 
         def validate_plugin_dependencies(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[bool]: ...
 
         def validate_plugin_permissions(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[bool]: ...
 
         def validate_plugin_compatibility(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[bool]: ...
 
     class PluginStorage(Protocol):
         """Protocol for plugin storage operations."""
 
         def store_plugin(
-            self, _plugin_data: dict[str, object]
+            self,
+            _plugin_data: dict[str, object],
         ) -> FlextResult[bool]: ...
 
         def retrieve_plugin(
-            self, _plugin_name: str
+            self,
+            _plugin_name: str,
         ) -> FlextResult[dict[str, object] | None]: ...
 
         def delete_plugin(self, _plugin_name: str) -> FlextResult[bool]: ...

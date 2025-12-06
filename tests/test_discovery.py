@@ -419,7 +419,7 @@ class TestPlugin:
 
         # Discover TARGET plugins only
         target_plugins = discovery.discover_by_type(
-            FlextPluginConstants.PluginType.TARGET
+            FlextPluginConstants.PluginType.TARGET,
         )
 
         assert len(target_plugins) == 1
@@ -605,7 +605,7 @@ class ExtraPlugin:
         # Test type-specific discovery
         tap_plugins = discovery.discover_by_type(FlextPluginConstants.PluginType.TAP)
         target_plugins = discovery.discover_by_type(
-            FlextPluginConstants.PluginType.TARGET
+            FlextPluginConstants.PluginType.TARGET,
         )
 
         assert "main-plugin" in tap_plugins

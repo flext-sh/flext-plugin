@@ -144,7 +144,7 @@ def test_connections() -> bool:
 
     if not all_available:
         print(
-            "\n⚠️  Some services are not available. Make sure Docker services are running:"
+            "\n⚠️  Some services are not available. Make sure Docker services are running:",
         )
         print("   cd ..docker && docker-compose up -d postgres redis openldap")
         return False
@@ -156,7 +156,7 @@ def test_connections() -> bool:
 def main() -> None:
     """Main entry point for the Docker integration example."""
     parser = argparse.ArgumentParser(
-        description="FLEXT Plugin Docker Integration Example"
+        description="FLEXT Plugin Docker Integration Example",
     )
     parser.add_argument(
         "--test-connections",
@@ -176,7 +176,7 @@ def main() -> None:
             sys.exit(1)
     else:
         print(
-            "INFO  Skipping connection tests. Use --test-connections to test Docker services."
+            "INFO  Skipping connection tests. Use --test-connections to test Docker services.",
         )
 
     print("\n🏗️  Creating Docker PostgreSQL plugin...")
@@ -204,7 +204,7 @@ def main() -> None:
             print("  ✅ PostgreSQL plugin validation passed")
         else:
             print(
-                f"  ❌ PostgreSQL plugin validation failed: {validation_result.error}"
+                f"  ❌ PostgreSQL plugin validation failed: {validation_result.error}",
             )
             sys.exit(1)
     else:
@@ -236,7 +236,7 @@ def main() -> None:
     print(f"  - Redis plugin: {redis_plugin.name}")
     print(f"  - LDAP plugin: {ldap_plugin.name}")
     print(
-        "\n💡 All plugins are configured for the FLEXT Docker development environment."
+        "\n💡 All plugins are configured for the FLEXT Docker development environment.",
     )
     print("   Make sure Docker services are running for full functionality.")
 

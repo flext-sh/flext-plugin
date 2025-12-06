@@ -190,7 +190,7 @@ class TestFlextPlugin:
         assert plugin.last_error == "Test error message"
         assert plugin.last_error_time is not None
         assert str(plugin.plugin_status) == str(
-            FlextPluginConstants.Lifecycle.UNHEALTHY
+            FlextPluginConstants.Lifecycle.UNHEALTHY,
         )
 
 

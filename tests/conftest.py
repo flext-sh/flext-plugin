@@ -231,7 +231,8 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 # REAL Configuration fixtures
 @pytest.fixture
 def real_plugin_configs() -> dict[
-    str, dict[str, dict[str, object] | list[str] | object]
+    str,
+    dict[str, dict[str, object] | list[str] | object],
 ]:
     """REAL plugin configurations matching plugin files."""
     return {

@@ -111,7 +111,7 @@ class FlextPluginDiscovery:
             return FlextResult.fail(f"Plugin not found at: {plugin_path}")
 
         except Exception as e:
-            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
+            self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return FlextResult.fail(f"Discovery error: {e!s}")
 
     def validate_plugin(
@@ -156,7 +156,7 @@ class FlextPluginDiscovery:
                 for path_str in paths:
                     path = Path(path_str).expanduser().resolve()
                     if not path.exists():
-                        self.logger.warning(f"Path does not exist: {path_str}")
+                        self.logger.warning("Path does not exist: %s", path_str)
                         continue
 
                     if path.is_file():
@@ -167,7 +167,7 @@ class FlextPluginDiscovery:
                         discovered.extend(self._discover_directory(path))
 
                 self.logger.info(
-                    f"File system discovery found {len(discovered)} plugins"
+                    f"File system discovery found {len(discovered)} plugins",
                 )
                 return FlextResult.ok(discovered)
 
@@ -192,7 +192,7 @@ class FlextPluginDiscovery:
                     discovery_method="file_system",
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
         def _discover_directory(
@@ -216,7 +216,7 @@ class FlextPluginDiscovery:
                         discovered.extend(self._discover_directory(item))
 
             except (OSError, PermissionError):
-                self.logger.exception(f"Failed to discover directory {path}")
+                self.logger.exception("Failed to discover directory %s", path)
 
             return discovered
 
@@ -256,7 +256,7 @@ class FlextPluginDiscovery:
                         continue
 
                 self.logger.info(
-                    f"Entry point discovery found {len(discovered)} plugins"
+                    f"Entry point discovery found {len(discovered)} plugins",
                 )
                 return FlextResult.ok(discovered)
 

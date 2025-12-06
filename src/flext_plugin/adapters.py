@@ -81,7 +81,7 @@ class FlextPluginAdapters:
             for path in paths:
                 path_obj = Path(path).expanduser().resolve()
                 if not path_obj.exists():
-                    self.logger.warning(f"Path does not exist: {path}")
+                    self.logger.warning("Path does not exist: %s", path)
                     continue
 
                 if path_obj.is_file():
@@ -147,7 +147,7 @@ class FlextPluginAdapters:
                     discovery_method="file_system",
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
         def _discover_directory(
@@ -169,7 +169,7 @@ class FlextPluginAdapters:
                     elif item.is_dir() and not item.name.startswith("__"):
                         discovered.extend(self._discover_directory(item))
             except (OSError, PermissionError):
-                self.logger.exception(f"Failed to discover directory {path}")
+                self.logger.exception("Failed to discover directory %s", path)
 
             return discovered
 
@@ -188,9 +188,9 @@ class FlextPluginAdapters:
 
         def _load_module(self, _plugin_path: str) -> FlextPluginModels.LoadData:
             """Internal: load module using spec."""
-            path = Path(plugin_path).expanduser().resolve()
+            path = Path(_plugin_path).expanduser().resolve()
             if not path.exists():
-                error_msg = f"Plugin path does not exist: {plugin_path}"
+                error_msg = f"Plugin path does not exist: {_plugin_path}"
                 raise FileNotFoundError(error_msg)
 
             # Use spec-based loading for safety (no sys.path pollution)
@@ -209,26 +209,16 @@ class FlextPluginAdapters:
                 module=module,
                 load_type="file",
                 loaded_at=__import__("datetime").datetime.now(
-                    __import__("datetime").UTC
+                    __import__("datetime").UTC,
                 ),
             )
 
         def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
-            """Unload plugin by name (placeholder implementation).
-
-            Args:
-            plugin_name: Plugin to unload (reserved for implementation)
-
-            """
+            """Unload plugin by name (placeholder implementation)."""
             return FlextResult.ok(True)
 
         def is_plugin_loaded(self, _plugin_name: str) -> bool:
-            """Check if plugin is loaded (placeholder).
-
-            Args:
-            plugin_name: Plugin to check (reserved for implementation)
-
-            """
+            """Check if plugin is loaded (placeholder)."""
             return False
 
         def get_loaded_plugins(self) -> list[str]:
@@ -245,8 +235,8 @@ class FlextPluginAdapters:
         ) -> FlextResult[dict[str, object]]:
             """Execute plugin."""
             return self._execute_safe(
-                lambda: {"status": "executed", "plugin": plugin_name},
-                f"Execution error: {plugin_name}",
+                lambda: {"status": "executed", "plugin": _plugin_name},
+                f"Execution error: {_plugin_name}",
             )
 
         def stop_execution(self, _execution_id: str) -> FlextResult[bool]:

@@ -306,7 +306,7 @@ class FlextPluginUtilities(u):
 
                 watcher_config["last_modified"] = last_modified
                 return FlextResult[FlextPluginTypes.PluginCore.StringList].ok(
-                    changed_files
+                    changed_files,
                 )
             except Exception as e:
                 return FlextResult[FlextPluginTypes.PluginCore.StringList].fail(
@@ -586,7 +586,7 @@ class FlextPluginUtilities(u):
                 )
                 if name_validation.is_failure:
                     return FlextResult[None].fail(
-                        name_validation.error or "Plugin name validation failed"
+                        name_validation.error or "Plugin name validation failed",
                     )
 
                 # Validate version format

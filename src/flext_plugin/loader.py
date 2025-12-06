@@ -50,7 +50,7 @@ class FlextPluginLoader:
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
-    def load_plugin(self, _plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
+    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -78,10 +78,10 @@ class FlextPluginLoader:
             return FlextResult.fail(error_msg)
 
         except Exception as e:
-            self.logger.exception(f"Failed to load plugin from {plugin_path}")
+            self.logger.exception("Failed to load plugin from %s", plugin_path)
             return FlextResult.fail(f"Loading error: {e!s}")
 
-    def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unload a plugin by name.
 
         Args:
@@ -103,10 +103,10 @@ class FlextPluginLoader:
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception(f"Failed to unload plugin {plugin_name}")
+            self.logger.exception("Failed to unload plugin %s", plugin_name)
             return FlextResult.fail(f"Unloading error: {e!s}")
 
-    def is_plugin_loaded(self, _plugin_name: str) -> bool:
+    def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
         Args:
@@ -128,7 +128,8 @@ class FlextPluginLoader:
         return list(self._loaded_plugins.keys())
 
     def reload_plugin(
-        self, _plugin_name: str
+        self,
+        plugin_name: str,
     ) -> FlextResult[FlextPluginModels.LoadData]:
         """Reload a plugin by name.
 
@@ -169,10 +170,10 @@ class FlextPluginLoader:
             return load_result
 
         except Exception as e:
-            self.logger.exception(f"Failed to reload plugin {plugin_name}")
+            self.logger.exception("Failed to reload plugin %s", plugin_name)
             return FlextResult.fail(f"Reload error: {e!s}")
 
-    def validate_plugin_dependencies(self, _plugin_name: str) -> FlextResult[bool]:
+    def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
         """Validate dependencies for a loaded plugin.
 
         Args:
@@ -201,17 +202,18 @@ class FlextPluginLoader:
 
             if not available_attrs:
                 self.logger.warning(
-                    "Plugin %s has no standard plugin methods", plugin_name
+                    "Plugin %s has no standard plugin methods",
+                    plugin_name,
                 )
 
             self.logger.info("Plugin dependencies validated: %s", plugin_name)
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
+            self.logger.exception("Failed to validate dependencies for %s", plugin_name)
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    def get_plugin_info(self, _plugin_name: str) -> FlextResult[dict[str, object]]:
+    def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -252,7 +254,7 @@ class FlextPluginLoader:
             return FlextResult.ok(plugin_info)
 
         except Exception as e:
-            self.logger.exception(f"Failed to get plugin info for {plugin_name}")
+            self.logger.exception("Failed to get plugin info for %s", plugin_name)
             return FlextResult.fail(f"Plugin info error: {e!s}")
 
     class FilePluginLoader:
@@ -295,7 +297,7 @@ class FlextPluginLoader:
                     loaded_at=datetime.now(UTC),
                 )
             except Exception:
-                self.logger.exception(f"Failed to load file plugin: {path}")
+                self.logger.exception("Failed to load file plugin: %s", path)
                 return None
 
     class DirectoryPluginLoader:
@@ -344,7 +346,7 @@ class FlextPluginLoader:
                     entry_file=entry_file,
                 )
             except Exception:
-                self.logger.exception(f"Failed to load directory plugin: {path}")
+                self.logger.exception("Failed to load directory plugin: %s", path)
                 return None
 
         def _find_entry_file(self, path: Path) -> Path | None:

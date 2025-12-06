@@ -237,7 +237,7 @@ class FlextPluginImplementations:
                 result = self._operations[operation]
                 return FlextResult[object].ok(result)
             except Exception as e:
-                self.logger.exception(f"Operation {operation} failed")
+                self.logger.exception("Operation %s failed", operation)
                 # Record error in entity if present
                 if self._entity:
                     self._entity.record_error(str(e))
@@ -596,7 +596,8 @@ class FlextPluginImplementations:
                 )
                 # Register loaded plugin
                 reg_result: FlextResult[None] = cast(
-                    "ConcretePluginRegistry", self._registry
+                    "ConcretePluginRegistry",
+                    self._registry,
                 ).register(plugin_entity)
                 if not reg_result.success:
                     return FlextResult[object].fail(
@@ -604,7 +605,7 @@ class FlextPluginImplementations:
                     )
                 return FlextResult[object].ok(concrete_plugin)
             except Exception as e:
-                self.logger.exception(f"Failed to load plugin from {plugin_path}")
+                self.logger.exception("Failed to load plugin from %s", plugin_path)
                 return FlextResult[object].fail(f"Load failed: {e!s}")
 
         def discover_plugins(
@@ -629,21 +630,44 @@ class FlextPluginImplementations:
                 ]
                 return FlextResult[list[str]].ok(discovered)
             except Exception as e:
-                self.logger.exception(f"Plugin discovery failed in {search_path}")
+                self.logger.exception("Plugin discovery failed in %s", search_path)
                 return FlextResult[list[str]].fail(
                     f"Discovery failed: {e!s}",
                 )
 
 
 # Backward compatibility exports - direct access to nested classes
-ConcretePlugin = FlextPluginImplementations.ConcretePlugin
-ConcreteExecutablePlugin = FlextPluginImplementations.ConcreteExecutablePlugin
-ConcreteDataPlugin = FlextPluginImplementations.ConcreteDataPlugin
-ConcreteTransformPlugin = FlextPluginImplementations.ConcreteTransformPlugin
-LoggerAdapter = FlextPluginImplementations.LoggerAdapter
-ConcretePluginContext = FlextPluginImplementations.ConcretePluginContext
-ConcretePluginRegistry = FlextPluginImplementations.ConcretePluginRegistry
-ConcretePluginLoader = FlextPluginImplementations.ConcretePluginLoader
+# Plugin implementation classes with real inheritance
+class ConcretePlugin(FlextPluginImplementations.ConcretePlugin):
+    """ConcretePlugin - real inheritance from FlextPluginImplementations.ConcretePlugin."""
+
+
+class ConcreteExecutablePlugin(FlextPluginImplementations.ConcreteExecutablePlugin):
+    """ConcreteExecutablePlugin - real inheritance from ConcreteExecutablePlugin."""
+
+
+class ConcreteDataPlugin(FlextPluginImplementations.ConcreteDataPlugin):
+    """ConcreteDataPlugin - real inheritance from ConcreteDataPlugin."""
+
+
+class ConcreteTransformPlugin(FlextPluginImplementations.ConcreteTransformPlugin):
+    """ConcreteTransformPlugin - real inheritance from ConcreteTransformPlugin."""
+
+
+class LoggerAdapter(FlextPluginImplementations.LoggerAdapter):
+    """LoggerAdapter - real inheritance from LoggerAdapter."""
+
+
+class ConcretePluginContext(FlextPluginImplementations.ConcretePluginContext):
+    """ConcretePluginContext - real inheritance from ConcretePluginContext."""
+
+
+class ConcretePluginRegistry(FlextPluginImplementations.ConcretePluginRegistry):
+    """ConcretePluginRegistry - real inheritance from ConcretePluginRegistry."""
+
+
+class ConcretePluginLoader(FlextPluginImplementations.ConcretePluginLoader):
+    """ConcretePluginLoader - real inheritance from ConcretePluginLoader."""
 
 
 __all__ = [

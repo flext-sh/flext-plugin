@@ -28,8 +28,11 @@ class FlextPluginModels:
     """
 
     # Re-export PluginType enum from constants for convenience
-    PluginType = FlextPluginConstants.PluginType
-    Entity = FlextModels.Entity
+    class PluginType(FlextPluginConstants.PluginType):
+        """PluginType - real inheritance."""
+
+    class Entity(FlextModels.Entity):
+        """Entity - real inheritance."""
 
     class Plugin(FlextModels.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
@@ -280,11 +283,11 @@ class FlextPluginModels:
                 or len(version_parts) > max_version_parts
             ):
                 return FlextResult.fail(
-                    f"Invalid semantic version: {self.plugin_version}"
+                    f"Invalid semantic version: {self.plugin_version}",
                 )
             if not all(part.isdigit() for part in version_parts if part):
                 return FlextResult.fail(
-                    f"Version parts must be numeric: {self.plugin_version}"
+                    f"Version parts must be numeric: {self.plugin_version}",
                 )
 
             # Validate plugin type
@@ -372,10 +375,10 @@ class FlextPluginModels:
         )
         path: Path = Field(description="File system path to plugin")
         discovery_type: Literal["file", "directory", "entry_point"] = Field(
-            description="Type of discovered plugin"
+            description="Type of discovered plugin",
         )
         discovery_method: Literal["file_system", "entry_points"] = Field(
-            description="Discovery method used"
+            description="Discovery method used",
         )
         metadata: dict[str, object] = Field(
             default_factory=dict,
@@ -428,7 +431,7 @@ class FlextPluginModels:
         path: Path = Field(description="File system path to plugin")
         module: Any = Field(description="The loaded Python module object")
         load_type: Literal["file", "directory", "entry_point"] = Field(
-            description="Type of loaded plugin"
+            description="Type of loaded plugin",
         )
         loaded_at: datetime = Field(description="Timestamp when plugin was loaded")
         entry_file: Path | None = Field(
@@ -649,10 +652,12 @@ class FlextPluginModels:
             description="Dictionary of registered plugins",
         )
         last_updated: datetime = Field(
-            default_factory=datetime.now, description="Last update timestamp"
+            default_factory=datetime.now,
+            description="Last update timestamp",
         )
         created_at: datetime = Field(
-            default_factory=datetime.now, description="Registry creation timestamp"
+            default_factory=datetime.now,
+            description="Registry creation timestamp",
         )
 
     class Config(FlextModels.Value):
@@ -663,7 +668,8 @@ class FlextPluginModels:
 
         plugin_name: str = Field(description="Plugin name")
         settings: dict[str, object] = Field(
-            default_factory=dict, description="Configuration settings"
+            default_factory=dict,
+            description="Configuration settings",
         )
 
     class Registry(FlextModels.Value):
@@ -677,10 +683,12 @@ class FlextPluginModels:
             description="Dictionary of registered plugins",
         )
         last_updated: datetime = Field(
-            default_factory=datetime.now, description="Last update timestamp"
+            default_factory=datetime.now,
+            description="Last update timestamp",
         )
         created_at: datetime = Field(
-            default_factory=datetime.now, description="Registry creation timestamp"
+            default_factory=datetime.now,
+            description="Registry creation timestamp",
         )
 
 
