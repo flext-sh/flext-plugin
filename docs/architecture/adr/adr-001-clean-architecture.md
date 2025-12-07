@@ -212,8 +212,6 @@ Infrastructure Layer (External Systems/Databases)
 
 ## Related ADRs
 
-- **[ADR-002](adr-002-domain-driven-design.md)**: Implements DDD patterns within Clean Architecture
-- **[ADR-006](adr-006-single-class-module.md)**: Defines module organization within layers
 
 ## References
 
@@ -225,9 +223,7 @@ Infrastructure Layer (External Systems/Databases)
 
 ### Internal References
 
-- [FLEXT Core Architecture](../flext-core/architecture.md)
-- [Plugin Requirements Specification](../../requirements.md)
-- [Architecture Review Meeting Notes](../../meetings/architecture-review-2025-01-10.md)
+- [FLEXT Core Architecture](https://github.com/organization/flext/tree/main/flext-core/docs/architecture.md)
 
 ## Notes
 

@@ -7,10 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import t
+from flext_core import FlextTypes
 
 
-class FlextPluginTypes(t):
+class FlextPluginTypes(FlextTypes):
     """plugin type system with Python 3.13+ patterns."""
 
     class PluginCore:

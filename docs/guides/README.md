@@ -7,26 +7,11 @@ Comprehensive step-by-step guides for developing plugins with the FLEXT Plugin s
 ### 🚀 Getting Started
 
 - **[Quick Start](quick-start.md)** - Get up and running with FLEXT Plugin in minutes
-- **[Installation Guide](installation.md)** - Detailed installation and setup instructions
-- **[Your First Plugin](first-plugin.md)** - Create your first plugin step-by-step
-
 ### 🔧 Development Workflows
-
-- **[Plugin Development](plugin-development.md)** - Complete plugin development guide
-- **[Hot Reload Development](hot-reload.md)** - Development with live reloading
-- **[Testing Guide](testing.md)** - Comprehensive testing strategies
-- **[Debugging Guide](debugging.md)** - Debugging and troubleshooting plugins
 
 ### 🎯 Plugin Types
 
-- **[Singer Integration](singer-integration.md)** - Singer tap/target development
-- **[Service Plugins](service-plugins.md)** - Microservice integration patterns
-- **[Utility Plugins](utility-plugins.md)** - General-purpose utility plugins
-- **[Custom Plugin Types](custom-plugin-types.md)** - Creating custom plugin categories
-
 ### 🏗️ Architecture & Integration
-
-- **[Clean Architecture](clean-architecture.md)** - Implementing Clean Architecture patterns
 - **[Domain-Driven Design](domain-driven-design.md)** - DDD implementation in plugins
 - **[FLEXT Ecosystem Integration](ecosystem-integration.md)** - Integration with FLEXT services
 - **[Performance Optimization](performance-optimization.md)** - Plugin performance best practices

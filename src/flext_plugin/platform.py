@@ -17,9 +17,9 @@ from flext_core import (
 )
 
 from flext_plugin.config import FlextPluginConfig
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.models import m
+from flext_plugin.protocols import p
+from flext_plugin.types import t
 
 # =========================================================================
 # PLUGIN DOMAIN CLASSES - SOLID Plugin Architecture
@@ -99,7 +99,7 @@ class PluginRegistry:
         """Create new plugin registry."""
         return cls(name)
 
-    def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register(self, plugin: m.Plugin) -> FlextResult[bool]:
         """Register plugin."""
         try:
             self._plugins[plugin.name] = plugin
@@ -116,7 +116,7 @@ class PluginRegistry:
             return FlextResult.fail(f"Unregistration failed: {e}")
 
 
-class Plugin(FlextPluginModels.Plugin):
+class Plugin(m.Plugin):
     """Plugin entity extending the base model."""
 
     def is_active(self) -> bool:
@@ -147,9 +147,9 @@ class FlextPluginPlatform(FlextService[None]):
         self.registry = PluginRegistry.create(name="platform")
 
         # Injected protocols
-        self.discovery: FlextPluginProtocols.PluginDiscovery | None = None
-        self.loader: FlextPluginProtocols.PluginLoader | None = None
-        self.executor: FlextPluginProtocols.PluginExecution | None = None
+        self.discovery: p.Plugin.PluginDiscovery | None = None
+        self.loader: p.Plugin.PluginLoader | None = None
+        self.executor: p.Plugin.PluginExecution | None = None
 
     def execute(self, **_kwargs: object) -> FlextResult[None]:
         """Execute main platform initialization (FlextService protocol)."""
@@ -266,7 +266,7 @@ class FlextPluginPlatform(FlextService[None]):
         )
 
     # Plugin management with functional patterns
-    def register_plugin(self, plugin: FlextPluginModels.Plugin) -> FlextResult[bool]:
+    def register_plugin(self, plugin: m.Plugin) -> FlextResult[bool]:
         """Register plugin with validation chain."""
 
         def validate_plugin_result(_: None) -> FlextResult[bool]:
@@ -460,7 +460,7 @@ class FlextPluginPlatform(FlextService[None]):
             )
             return FlextResult.fail("Executor not configured")
 
-        exec_context: FlextPluginTypes.Execution.ExecutionContext = {
+        exec_context: t.Execution.ExecutionContext = {
             "plugin_id": execution.plugin_name,
             "execution_id": execution.execution_id,
             "input_data": execution.input_data,

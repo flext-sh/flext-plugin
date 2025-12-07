@@ -9,16 +9,16 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import m as m_core, r, x
+from flext_core import r, x
 from flext_core.container import FlextContainer
 
-from flext_plugin.models import FlextPluginModels
+from flext_plugin.models import m
 from flext_plugin.platform import Plugin as PlatformPlugin, PluginExecution
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.protocols import p
+from flext_plugin.types import t
 
 
-class FlextPluginService(m_core.ArbitraryTypesModel, x):
+class FlextPluginService(m.ArbitraryTypesModel, x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
@@ -49,12 +49,12 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
     def __init__(
         self,
         container: object | None = None,
-        discovery: FlextPluginProtocols.PluginDiscovery | None = None,
-        loader: FlextPluginProtocols.PluginLoader | None = None,
-        executor: FlextPluginProtocols.PluginExecution | None = None,
-        security: FlextPluginProtocols.PluginSecurity | None = None,
-        registry: FlextPluginProtocols.PluginRegistry | None = None,
-        monitoring: FlextPluginProtocols.PluginMonitoring | None = None,
+        discovery: p.Plugin.PluginDiscovery | None = None,
+        loader: p.Plugin.PluginLoader | None = None,
+        executor: p.Plugin.PluginExecution | None = None,
+        security: p.Plugin.PluginSecurity | None = None,
+        registry: p.Plugin.PluginRegistry | None = None,
+        monitoring: p.Plugin.PluginMonitoring | None = None,
     ) -> None:
         """Initialize the plugin service with protocol implementations and dependency injection.
 
@@ -85,7 +85,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
         self._monitoring = monitoring
 
         # Internal state
-        self._plugins: dict[str, FlextPluginModels.Plugin] = {}
+        self._plugins: dict[str, m.Plugin] = {}
         self._executions: dict[str, PluginExecution] = {}
 
     @property
@@ -98,7 +98,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
     def discover_and_register_plugins(
         self,
         paths: list[str],
-    ) -> r[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[m.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -122,7 +122,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
 
             for plugin_data in plugins_data:
                 # Create plugin entity
-                plugin = FlextPluginModels.Plugin.create(
+                plugin = m.Plugin.create(
                     name=plugin_data.name,
                     plugin_version=plugin_data.version,
                     description=plugin_data.metadata.get("description", ""),
@@ -179,7 +179,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> r[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[m.Plugin]]:
         """Discover plugins from the specified paths.
 
         Alias for discover_and_register_plugins.
@@ -193,7 +193,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
         """
         return self.discover_and_register_plugins(paths)
 
-    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
+    def load_plugin(self, plugin_path: str) -> r[m.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -213,7 +213,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
                 return r.fail(f"Plugin loading failed: {load_result.error}")
 
             plugin_data = load_result.value
-            plugin = FlextPluginModels.Plugin.create(
+            plugin = m.Plugin.create(
                 name=plugin_data.name,
                 plugin_version=plugin_data.version,
                 description=plugin_data.module.__doc__ or "",
@@ -266,7 +266,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: FlextPluginTypes.Execution.ExecutionContext,
+        context: t.Execution.ExecutionContext,
         execution_id: str | None = None,
     ) -> r[PluginExecution]:
         """Execute a plugin with the given context.
@@ -302,7 +302,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
 
             # Execute plugin
             cast(
-                "FlextPluginTypes.Execution.ExecutionContext",
+                "t.Execution.ExecutionContext",
                 {
                     "plugin_id": plugin_name,
                     "execution_id": execution.execution_id,
@@ -382,7 +382,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return r.fail(f"Unloading error: {e!s}")
 
-    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+    def get_plugin(self, plugin_name: str) -> m.Plugin | None:
         """Get a plugin by name.
 
         Args:
@@ -394,7 +394,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
         """
         return self._plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[FlextPluginModels.Plugin]:
+    def list_plugins(self) -> list[m.Plugin]:
         """List all loaded plugins.
 
         Returns:
@@ -563,7 +563,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
+    def install_plugin(self, plugin_path: str) -> r[m.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -637,7 +637,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
     def get_plugin_config(
         self,
         plugin_name: str,
-    ) -> r[FlextPluginModels.Config]:
+    ) -> r[m.Config]:
         """Get configuration for a plugin.
 
         Args:
@@ -653,7 +653,7 @@ class FlextPluginService(m_core.ArbitraryTypesModel, x):
 
         # Plugin stores config in metadata
         config_data = plugin.metadata.get("config", {})
-        config = FlextPluginModels.Config(plugin_name=plugin.name, settings=config_data)
+        config = m.Config(plugin_name=plugin.name, settings=config_data)
         return r.ok(config)
 
     def update_plugin_config(

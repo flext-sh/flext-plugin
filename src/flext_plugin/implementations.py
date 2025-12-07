@@ -14,10 +14,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Protocol, cast, override
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.models import m
+from flext_plugin.protocols import p
 
 
 class FlextPluginImplementations:
@@ -35,18 +35,18 @@ class FlextPluginImplementations:
     class FlextPluginLoaderProtocol(Protocol):
         """Protocol for plugin loader interface."""
 
-        def load_plugin(self, _plugin_path: str | Path) -> FlextResult[object]:
+        def load_plugin(self, _plugin_path: str | Path) -> r[object]:
             """Load plugin from path."""
             ...
 
     class FlextPluginRegistryProtocol(Protocol):
         """Protocol for plugin registry interface."""
 
-        def register(self, _plugin: object) -> FlextResult[None]:
+        def register(self, _plugin: object) -> r[None]:
             """Register a plugin."""
             ...
 
-        def get_plugin(self, _plugin_name: str) -> FlextResult[object]:
+        def get_plugin(self, _plugin_name: str) -> r[object]:
             """Get plugin by name."""
             ...
 
@@ -57,7 +57,7 @@ class FlextPluginImplementations:
         """Concrete implementation of the FlextPlugin interface.
 
         This class implements the abstract FlextPlugin interface from flext-core,
-        providing actual plugin functionality while using FlextPluginModels.Plugin
+        providing actual plugin functionality while using m.Plugin
         for domain logic and state management.
 
         Attributes:
@@ -74,7 +74,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            entity: FlextPluginModels.Plugin | None = None,
+            entity: m.Plugin | None = None,
         ) -> None:
             """Initialize concrete plugin.
 
@@ -102,15 +102,15 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: dict[str, object]) -> FlextResult[None]:
+        def configure(self, config: dict[str, object]) -> r[None]:
             """Configure component with provided settings."""
             try:
                 # Store configuration
                 self._config.update(config)
-                return FlextResult[None].ok(None)
+                return r[None].ok(None)
             except Exception as e:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
-                return FlextResult[None].fail(f"Configuration failed: {e!s}")
+                return r[None].fail(f"Configuration failed: {e!s}")
 
         def get_config(self) -> dict[str, object]:
             """Get current configuration."""
@@ -119,14 +119,14 @@ class FlextPluginImplementations:
         def initialize(
             self,
             _context: dict[str, object],
-        ) -> FlextResult[None]:
+        ) -> r[None]:
             """Initialize plugin with context.
 
             Args:
                 _context: Plugin runtime context
 
             Returns:
-                FlextResult indicating success or failure
+                r indicating success or failure
 
             """
             try:
@@ -140,16 +140,16 @@ class FlextPluginImplementations:
                     self._entity.is_enabled = True
                     self.logger.info(f"Plugin entity {self.name} activated")
                 self._initialized = True
-                return FlextResult[None].ok(None)
+                return r[None].ok(None)
             except Exception as e:
                 self.logger.exception(f"Failed to initialize plugin {self.name}")
-                return FlextResult[None].fail(f"Initialization failed: {e!s}")
+                return r[None].fail(f"Initialization failed: {e!s}")
 
-        def shutdown(self) -> FlextResult[None]:
+        def shutdown(self) -> r[None]:
             """Shutdown plugin and release resources.
 
             Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
             """
             try:
@@ -163,10 +163,10 @@ class FlextPluginImplementations:
                             f"Plugin entity {self.name} already inactive",
                         )
                 self._initialized = False
-                return FlextResult[None].ok(None)
+                return r[None].ok(None)
             except Exception as e:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
-                return FlextResult[None].fail(f"Shutdown failed: {e!s}")
+                return r[None].fail(f"Shutdown failed: {e!s}")
 
         def get_info(self) -> dict[str, object]:
             """Get plugin information.
@@ -195,7 +195,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             operations: dict[str, object] | None = None,
-            entity: FlextPluginModels.Plugin | None = None,
+            entity: m.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
 
@@ -213,7 +213,7 @@ class FlextPluginImplementations:
             self,
             operation: str,
             _params: Mapping[str, object],
-        ) -> FlextResult[object]:
+        ) -> r[object]:
             """Execute a plugin operation.
 
             Args:
@@ -221,13 +221,13 @@ class FlextPluginImplementations:
                 _params: Operation parameters
 
             Returns:
-                FlextResult containing operation result or error
+                r containing operation result or error
 
             """
             if not self._initialized:
-                return FlextResult[object].fail("Plugin not initialized")
+                return r[object].fail("Plugin not initialized")
             if operation not in self._operations:
-                return FlextResult[object].fail(f"Unsupported operation: {operation}")
+                return r[object].fail(f"Unsupported operation: {operation}")
             try:
                 self.logger.info(
                     f"Executing operation {operation} on plugin {self.name}",
@@ -237,13 +237,13 @@ class FlextPluginImplementations:
                     self._entity.record_execution(0.0, success=True)
                 # Execute operation (simplified for example)
                 result = self._operations[operation]
-                return FlextResult[object].ok(result)
+                return r[object].ok(result)
             except Exception as e:
                 self.logger.exception("Operation %s failed", operation)
                 # Record error in entity if present
                 if self._entity:
                     self._entity.record_error(str(e))
-                return FlextResult[object].fail(f"Operation failed: {e!s}")
+                return r[object].fail(f"Operation failed: {e!s}")
 
         def get_supported_operations(self) -> list[str]:
             """Get list of supported operations.
@@ -267,7 +267,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             connection_config: dict[str, object] | None = None,
-            entity: FlextPluginModels.Plugin | None = None,
+            entity: m.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
 
@@ -282,47 +282,47 @@ class FlextPluginImplementations:
             self._connection_config = connection_config or {}
             self._connection_valid = False
 
-        def validate_config(self, config: Mapping[str, object]) -> FlextResult[None]:
+        def validate_config(self, config: Mapping[str, object]) -> r[None]:
             """Validate plugin configuration.
 
             Args:
                 config: Configuration to validate
 
             Returns:
-                FlextResult indicating validation success or errors
+                r indicating validation success or errors
 
             """
             required_fields = ["host", "port", "database"]
             missing_fields = [f for f in required_fields if f not in config]
             if missing_fields:
-                return FlextResult[None].fail(
+                return r[None].fail(
                     f"Missing required fields: {missing_fields}",
                 )
             # Additional validation logic here
             self._connection_config.update(config)
-            return FlextResult[None].ok(None)
+            return r[None].ok(None)
 
-        def test_connection(self) -> FlextResult[None]:
+        def test_connection(self) -> r[None]:
             """Test connection to data source/destination.
 
             Returns:
-            FlextResult indicating connection success or failure
+            r indicating connection success or failure
 
             """
             try:
                 self.logger.info(f"Testing connection for plugin {self.name}")
                 # Simplified connection test
                 if not self._connection_config:
-                    return FlextResult[None].fail(
+                    return r[None].fail(
                         "No connection configuration provided",
                     )
                 # Actual connection test would go here
                 self._connection_valid = True
-                return FlextResult[None].ok(None)
+                return r[None].ok(None)
             except Exception as e:
                 self.logger.exception("Connection test failed")
                 self._connection_valid = False
-                return FlextResult[None].fail(f"Connection failed: {e!s}")
+                return r[None].fail(f"Connection failed: {e!s}")
 
     class ConcreteTransformPlugin(ConcretePlugin):
         """Concrete implementation of data transformation plugin.
@@ -337,7 +337,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             schema: dict[str, object] | None = None,
-            entity: FlextPluginModels.Plugin | None = None,
+            entity: m.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
 
@@ -351,44 +351,44 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def transform(self, data: object) -> FlextResult[object]:
+        def transform(self, data: object) -> r[object]:
             """Transform input data.
 
             Args:
                 data: Input data to transform
 
             Returns:
-                FlextResult containing transformed data or error
+                r containing transformed data or error
 
             """
             try:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
                 if not isinstance(data, dict):
-                    return FlextResult[object].fail("Input data must be a dictionary")
+                    return r[object].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
                 transformed: dict[str, object] = dict[str, object](
                     cast("dict[str, object]", data),
                 )
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
-                return FlextResult[object].ok(transformed)
+                return r[object].ok(transformed)
             except Exception as e:
                 self.logger.exception("Transformation failed")
-                return FlextResult[object].fail(f"Transform failed: {e!s}")
+                return r[object].fail(f"Transform failed: {e!s}")
 
-        def get_schema(self) -> FlextResult[Mapping[str, object]]:
+        def get_schema(self) -> r[Mapping[str, object]]:
             """Get transformation schema.
 
             Returns:
-            FlextResult containing schema definition
+            r containing schema definition
 
             """
             if not self._schema:
-                return FlextResult[Mapping[str, object]].fail("No schema defined")
-            return FlextResult[Mapping[str, object]].ok(self._schema)
+                return r[Mapping[str, object]].fail("No schema defined")
+            return r[Mapping[str, object]].ok(self._schema)
 
-    class LoggerAdapter(FlextPluginProtocols.LoggerProtocol):
+    class LoggerAdapter(p.Plugin.LoggerProtocol):
         """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
         @override
@@ -475,23 +475,23 @@ class FlextPluginImplementations:
             """Get configuration for plugin."""
             return dict[str, object](self._config)
 
-        def get_logger(self) -> FlextPluginProtocols.LoggerProtocol:
+        def get_logger(self) -> p.Plugin.LoggerProtocol:
             """Get logger instance for plugin."""
             return LoggerAdapter(self.logger)
 
-        def get_service(self, service_name: str) -> FlextResult[object]:
+        def get_service(self, service_name: str) -> r[object]:
             """Get service by name from container.
 
             Args:
                 service_name: Name of service to retrieve
 
             Returns:
-                FlextResult with service instance or not found error
+                r with service instance or not found error
 
             """
             if service_name not in self._services:
-                return FlextResult[object].fail(f"Service not found: {service_name}")
-            return FlextResult[object].ok(self._services[service_name])
+                return r[object].fail(f"Service not found: {service_name}")
+            return r[object].ok(self._services[service_name])
 
     class ConcretePluginRegistry:
         """Concrete implementation of plugin registry.
@@ -501,45 +501,45 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: dict[str, FlextPluginModels.Plugin] = {}
+            self.plugins: dict[str, m.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
-        def register(self, plugin: FlextPluginModels.Plugin) -> FlextResult[None]:
+        def register(self, plugin: m.Plugin) -> r[None]:
             """Register a plugin.
 
             Args:
                 plugin: Plugin instance to register
 
             Returns:
-                FlextResult indicating registration success or failure
+                r indicating registration success or failure
 
             """
             plugin_name = plugin.name
             if plugin_name in self.plugins:
-                return FlextResult[None].fail(
+                return r[None].fail(
                     f"Plugin {plugin_name} already registered",
                 )
             self.plugins[plugin_name] = plugin
             self._logger.info("Registered plugin %s", plugin_name)
-            return FlextResult[None].ok(None)
+            return r[None].ok(None)
 
-        def unregister(self, plugin_name: str) -> FlextResult[None]:
+        def unregister(self, plugin_name: str) -> r[None]:
             """Unregister a plugin by name.
 
             Args:
                 plugin_name: Name of plugin to unregister
 
             Returns:
-                FlextResult indicating success or not found error
+                r indicating success or not found error
 
             """
             if plugin_name not in self.plugins:
-                return FlextResult[None].fail(f"Plugin {plugin_name} not found")
+                return r[None].fail(f"Plugin {plugin_name} not found")
             del self.plugins[plugin_name]
             self._logger.info("Unregistered plugin %s", plugin_name)
-            return FlextResult[None].ok(None)
+            return r[None].ok(None)
 
-        def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+        def get_plugin(self, plugin_name: str) -> m.Plugin | None:
             """Get plugin by name.
 
             Args:
@@ -551,7 +551,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> list[FlextPluginModels.Plugin]:
+        def list_plugins(self) -> list[m.Plugin]:
             """List all registered plugin names.
 
             Returns:
@@ -580,14 +580,14 @@ class FlextPluginImplementations:
             )
             self.logger = FlextLogger("plugin.loader")
 
-        def load_plugin(self, plugin_path: str | Path) -> FlextResult[object]:
+        def load_plugin(self, plugin_path: str | Path) -> r[object]:
             """Load plugin from path.
 
             Args:
                 plugin_path: Path to plugin module or package
 
             Returns:
-                FlextResult containing loaded plugin or load error
+                r containing loaded plugin or load error
 
             """
             try:
@@ -598,36 +598,36 @@ class FlextPluginImplementations:
                     name=f"loaded-from-{plugin_path}",
                     version="1.0.0",
                 )
-                # Create FlextPluginModels.Plugin for registration
-                plugin_entity = FlextPluginModels.Plugin.create(
+                # Create m.Plugin for registration
+                plugin_entity = m.Plugin.create(
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )
                 # Register loaded plugin
-                reg_result: FlextResult[None] = cast(
+                reg_result: r[None] = cast(
                     "ConcretePluginRegistry",
                     self._registry,
                 ).register(plugin_entity)
                 if not reg_result.success:
-                    return FlextResult[object].fail(
+                    return r[object].fail(
                         f"Failed to register loaded plugin: {reg_result.error}",
                     )
-                return FlextResult[object].ok(concrete_plugin)
+                return r[object].ok(concrete_plugin)
             except Exception as e:
                 self.logger.exception("Failed to load plugin from %s", plugin_path)
-                return FlextResult[object].fail(f"Load failed: {e!s}")
+                return r[object].fail(f"Load failed: {e!s}")
 
         def discover_plugins(
             self,
             search_path: str,
-        ) -> FlextResult[list[str]]:
+        ) -> r[list[str]]:
             """Discover available plugins in path.
 
             Args:
                 search_path: Directory to search for plugins
 
             Returns:
-                FlextResult containing list of discovered plugin paths
+                r containing list of discovered plugin paths
 
             """
             try:
@@ -638,10 +638,10 @@ class FlextPluginImplementations:
                     f"{search_path}/plugin1",
                     f"{search_path}/plugin2",
                 ]
-                return FlextResult[list[str]].ok(discovered)
+                return r[list[str]].ok(discovered)
             except Exception as e:
                 self.logger.exception("Plugin discovery failed in %s", search_path)
-                return FlextResult[list[str]].fail(
+                return r[list[str]].fail(
                     f"Discovery failed: {e!s}",
                 )
 
