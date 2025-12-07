@@ -239,11 +239,11 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     # Register REAL implementations
     discovery_adapter = FlextPluginDiscovery()
     loader_adapter = FlextPluginLoader()
-    # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))  # TODO: Implement when available
+    # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))
 
     container.with_service("plugin_discovery_port", discovery_adapter)
     container.with_service("plugin_loader_port", loader_adapter)
-    # container.register("plugin_manager_port", manager_adapter)  # TODO: Implement when available
+    # container.register("plugin_manager_port", manager_adapter)
 
     return FlextPluginService(container=container)
 

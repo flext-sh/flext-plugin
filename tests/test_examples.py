@@ -74,7 +74,8 @@ def test_basic_plugin_example_execution() -> None:
     # Execute the example script
     result = subprocess.run(
         [sys.executable, str(example_path)],
-        check=False, cwd=str(Path(__file__).parent.parent),
+        check=False,
+        cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )
@@ -134,7 +135,8 @@ def test_plugin_configuration_example_execution() -> None:
     # Execute the example script
     result = subprocess.run(
         [sys.executable, str(example_path)],
-        check=False, cwd=str(Path(__file__).parent.parent),
+        check=False,
+        cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )
@@ -522,7 +524,8 @@ def test_docker_integration_example_with_connection_testing() -> None:
     # Execute the example script with connection testing
     result = subprocess.run(
         [sys.executable, str(example_path), "--test-connections"],
-        check=False, cwd=str(Path(__file__).parent.parent),
+        check=False,
+        cwd=str(Path(__file__).parent.parent),
         capture_output=True,
         text=True,
     )
