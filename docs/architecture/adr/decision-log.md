@@ -354,20 +354,20 @@ This document provides a chronological record of all architectural decisions mad
 ### Decision-Making Framework
 
 - **[ADR Template](adr-template.md)**: Standardized decision documentation
-- **Decision Criteria** - Evaluation framework for decisions (*Documentation coming soon*)
-- **Impact Assessment** - Impact analysis methodology (*Documentation coming soon*)
+- **Decision Criteria** - Evaluation framework for decisions (_Documentation coming soon_)
+- **Impact Assessment** - Impact analysis methodology (_Documentation coming soon_)
 
 ### Historical Context
 
-- **Architecture Evolution** - How architecture has evolved (*Documentation coming soon*)
-- **Technology Assessments** - Technology evaluation results (*Documentation coming soon*)
-- **Stakeholder Analysis** - Stakeholder requirements and priorities (*Documentation coming soon*)
+- **Architecture Evolution** - How architecture has evolved (_Documentation coming soon_)
+- **Technology Assessments** - Technology evaluation results (_Documentation coming soon_)
+- **Stakeholder Analysis** - Stakeholder requirements and priorities (_Documentation coming soon_)
 
 ### Process Documentation
 
-- **Decision Process** - Step-by-step decision making (*Documentation coming soon*)
-- **Review Guidelines** - Architectural review procedures (*Documentation coming soon*)
-- **Implementation Tracking** - Linking decisions to implementation (*Documentation coming soon*)
+- **Decision Process** - Step-by-step decision making (_Documentation coming soon_)
+- **Review Guidelines** - Architectural review procedures (_Documentation coming soon_)
+- **Implementation Tracking** - Linking decisions to implementation (_Documentation coming soon_)
 
 ---
 

@@ -272,9 +272,11 @@ class TestRealPluginDiscoveryAndExecution:
     ) -> None:
         """Test REAL plugin discovery with actual Python files."""
         # Discover plugins in the temp directory
-        discovery_result = real_plugin_discovery.discover_plugins([
-            str(temp_plugin_dir),
-        ])
+        discovery_result = real_plugin_discovery.discover_plugins(
+            [
+                str(temp_plugin_dir),
+            ]
+        )
         assert discovery_result.is_success
         discovered_plugins = discovery_result.value
         assert len(discovered_plugins) == 4  # tap, target, processor, error plugins
@@ -1083,9 +1085,11 @@ class TestRealPluginIntegrationWorkflow:
     ) -> None:
         """Test complete REAL workflow: discover -> load -> execute -> cleanup."""
         # Step 1: Real plugin discovery
-        discovery_result = real_plugin_discovery.discover_plugins([
-            str(temp_plugin_dir),
-        ])
+        discovery_result = real_plugin_discovery.discover_plugins(
+            [
+                str(temp_plugin_dir),
+            ]
+        )
         assert discovery_result.is_success
         discovered_plugins = discovery_result.value
         assert len(discovered_plugins) == 4  # Our real plugins

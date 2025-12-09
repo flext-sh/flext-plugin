@@ -31,8 +31,8 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 
 ### Implementation Decisions
 
-| ADR                                       | Title                           | Status      | Date       | Category       |
-| ----------------------------------------- | ------------------------------- | ----------- | ---------- | -------------- |
+| ADR     | Title                           | Status      | Date       | Category       |
+| ------- | ------------------------------- | ----------- | ---------- | -------------- |
 | ADR-006 | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
 | ADR-007 | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
 | ADR-008 | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
@@ -41,8 +41,8 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 
 ### Future Decisions (Proposed)
 
-| ADR                                       | Title                           | Status      | Date       | Category    |
-| ----------------------------------------- | ------------------------------- | ----------- | ---------- | ----------- |
+| ADR     | Title                           | Status      | Date       | Category    |
+| ------- | ------------------------------- | ----------- | ---------- | ----------- |
 | ADR-011 | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
 | ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
 | ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
@@ -290,14 +290,14 @@ make adr-export
 ### Implementation Documentation
 
 - **[Implementation Guide](../implementation.md)** - Development patterns and practices
-- **API Reference** - Public API documentation (*Documentation coming soon*)
-- **Migration Guide** - Version migration strategies (*Documentation coming soon*)
+- **API Reference** - Public API documentation (_Documentation coming soon_)
+- **Migration Guide** - Version migration strategies (_Documentation coming soon_)
 
 ### Quality and Security
 
 - **[Security Architecture](../security.md)** - Security design and controls
 - **[Quality Attributes](../quality.md)** - Performance, scalability, reliability
-- **Testing Strategy** - Testing approach and framework (*Documentation coming soon*)
+- **Testing Strategy** - Testing approach and framework (_Documentation coming soon_)
 
 ---
 

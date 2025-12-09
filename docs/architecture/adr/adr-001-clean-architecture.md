@@ -212,7 +212,6 @@ Infrastructure Layer (External Systems/Databases)
 
 ## Related ADRs
 
-
 ## References
 
 ### External References

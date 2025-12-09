@@ -213,9 +213,9 @@ Implement a multi-tiered plugin discovery system supporting:
 
 ## Related ADRs
 
-- **ADR-004** - Security validation for discovered plugins (*Documentation coming soon*)
-- **ADR-008** - File watching for plugin changes (*Documentation coming soon*)
-- **ADR-011** - Entry points discovery enhancement (*Documentation coming soon*)
+- **ADR-004** - Security validation for discovered plugins (_Documentation coming soon_)
+- **ADR-008** - File watching for plugin changes (_Documentation coming soon_)
+- **ADR-011** - Entry points discovery enhancement (_Documentation coming soon_)
 
 ## References
 
@@ -227,9 +227,9 @@ Implement a multi-tiered plugin discovery system supporting:
 
 ### Internal References
 
-- **Plugin Requirements Specification** - (*Documentation coming soon*)
-- **Security Architecture Review** - (*Documentation coming soon*)
-- **Performance Benchmarks** - (*Documentation coming soon*)
+- **Plugin Requirements Specification** - (_Documentation coming soon_)
+- **Security Architecture Review** - (_Documentation coming soon_)
+- **Performance Benchmarks** - (_Documentation coming soon_)
 
 ## Notes
 

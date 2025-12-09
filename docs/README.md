@@ -9,7 +9,7 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plug
 ### 📚 Core Documentation
 
 - **[Architecture Guide](architecture/README.md)** - Clean Architecture and DDD implementation
-- **API Reference** - Complete API documentation and interfaces (*See [api-reference.md](api-reference.md)*)
+- **API Reference** - Complete API documentation and interfaces (_See [api-reference.md](api-reference.md)_)
 - **[Development Guides](guides/README.md)** - Step-by-step development workflows
 - **[Examples](examples/README.md)** - Practical implementation examples
 
@@ -21,12 +21,12 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plug
 ### 🛠️ Development Guides
 
 - **[Quick Start](guides/quick-start.md)** - Get up and running in minutes
-- **Plugin Development** - Creating custom plugins (*Documentation coming soon*)
+- **Plugin Development** - Creating custom plugins (_Documentation coming soon_)
 - **[Development Overview](guides/README.md)** - Development workflow and best practices
 
 ### 📖 API Reference
 
-- **API Overview** - Complete API documentation and usage patterns (*See [api-reference.md](api-reference.md)*)
+- **API Overview** - Complete API documentation and usage patterns (_See [api-reference.md](api-reference.md)_)
 
 ### 💡 Examples & Use Cases
 

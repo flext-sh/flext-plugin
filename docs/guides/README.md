@@ -7,17 +7,18 @@ Comprehensive step-by-step guides for developing plugins with the FLEXT Plugin s
 ### 🚀 Getting Started
 
 - **[Quick Start](quick-start.md)** - Get up and running with FLEXT Plugin in minutes
+
 ### 🔧 Development Workflows
 
 ### 🎯 Plugin Types
 
 ### 🏗️ Architecture & Integration
 
-*Additional architecture and integration guides coming soon.*
+_Additional architecture and integration guides coming soon._
 
 ### 📋 Best Practices
 
-*Best practices guides coming soon.*
+_Best practices guides coming soon._
 
 ## Quick Reference
 
@@ -126,11 +127,11 @@ class MyPlugin(FlextPlugin):
 
 ### Intermediate
 
-*Intermediate guides coming soon.*
+_Intermediate guides coming soon._
 
 ### Advanced
 
-*Advanced guides coming soon.*
+_Advanced guides coming soon._
 
 ## Support & Resources
 

@@ -170,16 +170,19 @@ For advanced usage and integration patterns, see the complete documentation in t
 ## Related Documentation
 
 **Within Project**:
+
 - [Architecture](architecture.md) - Understand the plugin system design
 - [API Reference](api-reference.md) - Complete API documentation
 - [Examples](examples/) - Working code examples
 - [Development](development.md) - Contributing guidelines
 
 **Across Projects**:
+
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
 - [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
 - [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/CLAUDE.md) - Data integration and ELT orchestration
 
 **External Resources**:
+
 - [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
 - [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
