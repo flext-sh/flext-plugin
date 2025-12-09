@@ -447,37 +447,29 @@ class FlextPluginConstants(c_core):
         """Plugin lifecycle states - generated from PluginStatus StrEnum."""
 
         # Generate plugin type frozensets from PluginType StrEnum (DRY principle)
-        Types.SINGER_PLUGIN_TYPES = frozenset(
-            {
-                PluginType.TAP.value,
-                PluginType.TARGET.value,
-                PluginType.TRANSFORM.value,
-            }
-        )
-        Types.ARCHITECTURE_PLUGIN_TYPES = frozenset(
-            {
-                PluginType.EXTENSION.value,
-                PluginType.SERVICE.value,
-                PluginType.MIDDLEWARE.value,
-                PluginType.TRANSFORMER.value,
-            }
-        )
-        Types.INTEGRATION_PLUGIN_TYPES = frozenset(
-            {
-                PluginType.API.value,
-                PluginType.DATABASE.value,
-                PluginType.NOTIFICATION.value,
-                PluginType.AUTHENTICATION.value,
-            }
-        )
-        Types.UTILITY_PLUGIN_TYPES = frozenset(
-            {
-                PluginType.UTILITY.value,
-                PluginType.TOOL.value,
-                PluginType.HANDLER.value,
-                PluginType.PROCESSOR.value,
-            }
-        )
+        Types.SINGER_PLUGIN_TYPES = frozenset({
+            PluginType.TAP.value,
+            PluginType.TARGET.value,
+            PluginType.TRANSFORM.value,
+        })
+        Types.ARCHITECTURE_PLUGIN_TYPES = frozenset({
+            PluginType.EXTENSION.value,
+            PluginType.SERVICE.value,
+            PluginType.MIDDLEWARE.value,
+            PluginType.TRANSFORMER.value,
+        })
+        Types.INTEGRATION_PLUGIN_TYPES = frozenset({
+            PluginType.API.value,
+            PluginType.DATABASE.value,
+            PluginType.NOTIFICATION.value,
+            PluginType.AUTHENTICATION.value,
+        })
+        Types.UTILITY_PLUGIN_TYPES = frozenset({
+            PluginType.UTILITY.value,
+            PluginType.TOOL.value,
+            PluginType.HANDLER.value,
+            PluginType.PROCESSOR.value,
+        })
         Types.ALL_PLUGIN_TYPES = (
             Types.SINGER_PLUGIN_TYPES
             | Types.ARCHITECTURE_PLUGIN_TYPES
