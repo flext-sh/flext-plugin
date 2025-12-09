@@ -7,27 +7,27 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 ### 🚀 Getting Started
 
 - **[Basic Plugin](basic-plugin.md)** - Simple plugin implementation
-- **[Plugin Configuration](plugin-configuration.md)** - Configuration management patterns
-- **[Plugin Lifecycle](plugin-lifecycle.md)** - Lifecycle management examples
+- **Plugin Configuration** - Configuration management patterns (*Documentation coming soon*)
+- **Plugin Lifecycle** - Lifecycle management examples (*Documentation coming soon*)
 
 ### 🔌 Plugin Types
 
-- **[Singer Tap Plugin](singer-tap.md)** - Data extraction plugin for Singer/Meltano
-- **[Singer Target Plugin](singer-target.md)** - Data loading plugin
-- **[Service Plugin](service-plugin.md)** - Microservice integration
-- **[Utility Plugin](utility-plugin.md)** - General-purpose utility plugin
+- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano (*Documentation coming soon*)
+- **Singer Target Plugin** - Data loading plugin (*Documentation coming soon*)
+- **Service Plugin** - Microservice integration (*Documentation coming soon*)
+- **Utility Plugin** - General-purpose utility plugin (*Documentation coming soon*)
 
 ### 🛠️ Development Workflow
 
-- **[Hot Reload Demo](hot-reload-demo.md)** - Development with live reloading
-- **[Testing Plugins](testing-plugins.md)** - Comprehensive testing strategies
-- **[Plugin Debugging](plugin-debugging.md)** - Debugging and troubleshooting
+- **Hot Reload Demo** - Development with live reloading (*Documentation coming soon*)
+- **Testing Plugins** - Comprehensive testing strategies (*Documentation coming soon*)
+- **Plugin Debugging** - Debugging and troubleshooting (*Documentation coming soon*)
 
 ### 🏗️ Advanced Integration
 
-- **[FlexCore Integration](flexcore-integration.md)** - Go service integration
-- **[Multi-Plugin Orchestration](multi-plugin-orchestration.md)** - Coordinating multiple plugins
-- **[Custom Plugin Types](custom-plugin-types.md)** - Creating custom plugin categories
+- **FlexCore Integration** - Go service integration (*Documentation coming soon*)
+- **Multi-Plugin Orchestration** - Coordinating multiple plugins (*Documentation coming soon*)
+- **Custom Plugin Types** - Creating custom plugin categories (*Documentation coming soon*)
 
 ## Quick Reference
 

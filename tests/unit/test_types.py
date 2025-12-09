@@ -1,4 +1,4 @@
-"""Unit tests for FlextPluginTypes.
+"""Unit tests for t_plugin.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -8,173 +8,173 @@ SPDX-License-Identifier: MIT
 from flext_core import t
 
 from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.types import t as t_plugin
 
 
 class TestFlextPluginTypes:
-    """Test cases for FlextPluginTypes."""
+    """Test cases for t_plugin."""
 
     def test_types_initialization(self) -> None:
         """Test that types can be initialized."""
-        types = FlextPluginTypes()
+        types = t_plugin()
         assert types is not None
 
     def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
-        assert FlextPluginTypes.PluginCore.StringList == list[str]
-        assert FlextPluginTypes.PluginCore.StringSet == set[str]
-        assert FlextPluginTypes.PluginCore.StringDict == dict[str, str]
+        assert t_plugin.PluginCore.StringList == list[str]
+        assert t_plugin.PluginCore.StringSet == set[str]
+        assert t_plugin.PluginCore.StringDict == dict[str, str]
 
         # Test numeric collections
-        assert FlextPluginTypes.PluginCore.IntList == t.IntList
-        assert FlextPluginTypes.PluginCore.FloatList == t.FloatList
-        assert FlextPluginTypes.PluginCore.IntDict == dict[str, int]
-        assert FlextPluginTypes.PluginCore.FloatDict == dict[str, float]
+        assert t_plugin.PluginCore.IntList == t.IntList
+        assert t_plugin.PluginCore.FloatList == t.FloatList
+        assert t_plugin.PluginCore.IntDict == dict[str, int]
+        assert t_plugin.PluginCore.FloatDict == dict[str, float]
 
         # Test mixed collections
-        assert FlextPluginTypes.PluginCore.AnyList == list[object]
-        assert FlextPluginTypes.PluginCore.AnyDict == dict[str, object]
+        assert t_plugin.PluginCore.AnyList == list[object]
+        assert t_plugin.PluginCore.AnyDict == dict[str, object]
 
         # Test plugin-specific collections
-        assert FlextPluginTypes.PluginCore.PluginList == list[dict[str, object]]
-        assert FlextPluginTypes.PluginCore.PluginDict == dict[str, object]
-        assert FlextPluginTypes.PluginCore.ConfigDict == dict[str, object]
-        assert FlextPluginTypes.PluginCore.SettingsDict == dict[str, object]
-        assert FlextPluginTypes.PluginCore.MetadataDict == dict[str, object]
-        assert FlextPluginTypes.PluginCore.InputDict == dict[str, object]
-        assert FlextPluginTypes.PluginCore.OutputDict == dict[str, object]
+        assert t_plugin.PluginCore.PluginList == list[dict[str, object]]
+        assert t_plugin.PluginCore.PluginDict == dict[str, object]
+        assert t_plugin.PluginCore.ConfigDict == dict[str, object]
+        assert t_plugin.PluginCore.SettingsDict == dict[str, object]
+        assert t_plugin.PluginCore.MetadataDict == dict[str, object]
+        assert t_plugin.PluginCore.InputDict == dict[str, object]
+        assert t_plugin.PluginCore.OutputDict == dict[str, object]
 
     def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Lifecycle.PluginStatus is str
-        assert FlextPluginTypes.Lifecycle.PluginType is str
-        assert FlextPluginTypes.Lifecycle.LifecycleState is str
-        assert FlextPluginTypes.Lifecycle.ExecutionStatus is str
+        assert t_plugin.Lifecycle.PluginStatus is str
+        assert t_plugin.Lifecycle.PluginType is str
+        assert t_plugin.Lifecycle.LifecycleState is str
+        assert t_plugin.Lifecycle.ExecutionStatus is str
 
         # Test status values
-        assert FlextPluginTypes.Lifecycle.STATUS_UNKNOWN == "unknown"
-        assert FlextPluginTypes.Lifecycle.STATUS_DISCOVERED == "discovered"
-        assert FlextPluginTypes.Lifecycle.STATUS_LOADED == "loaded"
-        assert FlextPluginTypes.Lifecycle.STATUS_ACTIVE == "active"
-        assert FlextPluginTypes.Lifecycle.STATUS_INACTIVE == "inactive"
-        assert FlextPluginTypes.Lifecycle.STATUS_LOADING == "loading"
-        assert FlextPluginTypes.Lifecycle.STATUS_ERROR == "error"
-        assert FlextPluginTypes.Lifecycle.STATUS_DISABLED == "disabled"
-        assert FlextPluginTypes.Lifecycle.STATUS_HEALTHY == "healthy"
-        assert FlextPluginTypes.Lifecycle.STATUS_UNHEALTHY == "unhealthy"
+        assert t_plugin.Lifecycle.STATUS_UNKNOWN == "unknown"
+        assert t_plugin.Lifecycle.STATUS_DISCOVERED == "discovered"
+        assert t_plugin.Lifecycle.STATUS_LOADED == "loaded"
+        assert t_plugin.Lifecycle.STATUS_ACTIVE == "active"
+        assert t_plugin.Lifecycle.STATUS_INACTIVE == "inactive"
+        assert t_plugin.Lifecycle.STATUS_LOADING == "loading"
+        assert t_plugin.Lifecycle.STATUS_ERROR == "error"
+        assert t_plugin.Lifecycle.STATUS_DISABLED == "disabled"
+        assert t_plugin.Lifecycle.STATUS_HEALTHY == "healthy"
+        assert t_plugin.Lifecycle.STATUS_UNHEALTHY == "unhealthy"
 
         # Test type values
-        assert FlextPluginTypes.Lifecycle.TYPE_TAP == "tap"
-        assert FlextPluginTypes.Lifecycle.TYPE_TARGET == "target"
-        assert FlextPluginTypes.Lifecycle.TYPE_TRANSFORM == "transform"
-        assert FlextPluginTypes.Lifecycle.TYPE_EXTENSION == "extension"
-        assert FlextPluginTypes.Lifecycle.TYPE_SERVICE == "service"
-        assert FlextPluginTypes.Lifecycle.TYPE_MIDDLEWARE == "middleware"
-        assert FlextPluginTypes.Lifecycle.TYPE_TRANSFORMER == "transformer"
-        assert FlextPluginTypes.Lifecycle.TYPE_API == "api"
-        assert FlextPluginTypes.Lifecycle.TYPE_DATABASE == "database"
-        assert FlextPluginTypes.Lifecycle.TYPE_NOTIFICATION == "notification"
-        assert FlextPluginTypes.Lifecycle.TYPE_AUTHENTICATION == "authentication"
-        assert FlextPluginTypes.Lifecycle.TYPE_AUTHORIZATION == "authorization"
-        assert FlextPluginTypes.Lifecycle.TYPE_UTILITY == "utility"
-        assert FlextPluginTypes.Lifecycle.TYPE_TOOL == "tool"
-        assert FlextPluginTypes.Lifecycle.TYPE_HANDLER == "handler"
-        assert FlextPluginTypes.Lifecycle.TYPE_PROCESSOR == "processor"
-        assert FlextPluginTypes.Lifecycle.TYPE_CORE == "core"
-        assert FlextPluginTypes.Lifecycle.TYPE_ADDON == "addon"
-        assert FlextPluginTypes.Lifecycle.TYPE_THEME == "theme"
-        assert FlextPluginTypes.Lifecycle.TYPE_LANGUAGE == "language"
+        assert t_plugin.Lifecycle.TYPE_TAP == "tap"
+        assert t_plugin.Lifecycle.TYPE_TARGET == "target"
+        assert t_plugin.Lifecycle.TYPE_TRANSFORM == "transform"
+        assert t_plugin.Lifecycle.TYPE_EXTENSION == "extension"
+        assert t_plugin.Lifecycle.TYPE_SERVICE == "service"
+        assert t_plugin.Lifecycle.TYPE_MIDDLEWARE == "middleware"
+        assert t_plugin.Lifecycle.TYPE_TRANSFORMER == "transformer"
+        assert t_plugin.Lifecycle.TYPE_API == "api"
+        assert t_plugin.Lifecycle.TYPE_DATABASE == "database"
+        assert t_plugin.Lifecycle.TYPE_NOTIFICATION == "notification"
+        assert t_plugin.Lifecycle.TYPE_AUTHENTICATION == "authentication"
+        assert t_plugin.Lifecycle.TYPE_AUTHORIZATION == "authorization"
+        assert t_plugin.Lifecycle.TYPE_UTILITY == "utility"
+        assert t_plugin.Lifecycle.TYPE_TOOL == "tool"
+        assert t_plugin.Lifecycle.TYPE_HANDLER == "handler"
+        assert t_plugin.Lifecycle.TYPE_PROCESSOR == "processor"
+        assert t_plugin.Lifecycle.TYPE_CORE == "core"
+        assert t_plugin.Lifecycle.TYPE_ADDON == "addon"
+        assert t_plugin.Lifecycle.TYPE_THEME == "theme"
+        assert t_plugin.Lifecycle.TYPE_LANGUAGE == "language"
 
     def test_security_types(self) -> None:
         """Test security type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Security.SecurityLevel is str
-        assert FlextPluginTypes.Security.Permission is str
-        assert FlextPluginTypes.Security.SecurityConfig is dict[str, object]
+        assert t_plugin.Security.SecurityLevel is str
+        assert t_plugin.Security.Permission is str
+        assert t_plugin.Security.SecurityConfig is dict[str, object]
 
         # Test security levels
-        assert FlextPluginTypes.Security.SECURITY_LOW == "low"
-        assert FlextPluginTypes.Security.SECURITY_MEDIUM == "medium"
-        assert FlextPluginTypes.Security.SECURITY_HIGH == "high"
-        assert FlextPluginTypes.Security.SECURITY_CRITICAL == "critical"
+        assert t_plugin.Security.SECURITY_LOW == "low"
+        assert t_plugin.Security.SECURITY_MEDIUM == "medium"
+        assert t_plugin.Security.SECURITY_HIGH == "high"
+        assert t_plugin.Security.SECURITY_CRITICAL == "critical"
 
         # Test permissions
-        assert FlextPluginTypes.Security.PERMISSION_NETWORK == "network"
-        assert FlextPluginTypes.Security.PERMISSION_FILESYSTEM == "filesystem"
-        assert FlextPluginTypes.Security.PERMISSION_DATABASE == "database"
-        assert FlextPluginTypes.Security.PERMISSION_EXTERNAL_API == "external_api"
+        assert t_plugin.Security.PERMISSION_NETWORK == "network"
+        assert t_plugin.Security.PERMISSION_FILESYSTEM == "filesystem"
+        assert t_plugin.Security.PERMISSION_DATABASE == "database"
+        assert t_plugin.Security.PERMISSION_EXTERNAL_API == "external_api"
 
     def test_performance_types(self) -> None:
         """Test performance type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Performance.Metrics == dict[str, object]
-        assert FlextPluginTypes.Performance.PerformanceData == dict[str, object]
-        assert FlextPluginTypes.Performance.ResourceUsage == dict[str, object]
+        assert t_plugin.Performance.Metrics == dict[str, object]
+        assert t_plugin.Performance.PerformanceData == dict[str, object]
+        assert t_plugin.Performance.ResourceUsage == dict[str, object]
 
         # Test performance thresholds
-        assert FlextPluginTypes.Performance.EXCELLENT_SUCCESS_RATE == 95.0
-        assert FlextPluginTypes.Performance.GOOD_SUCCESS_RATE == 90.0
-        assert FlextPluginTypes.Performance.FAIR_SUCCESS_RATE == 80.0
+        assert t_plugin.Performance.EXCELLENT_SUCCESS_RATE == 95.0
+        assert t_plugin.Performance.GOOD_SUCCESS_RATE == 90.0
+        assert t_plugin.Performance.FAIR_SUCCESS_RATE == 80.0
 
         # Test time thresholds
-        assert FlextPluginTypes.Performance.EXCELLENT_TIME_MS == 1000
-        assert FlextPluginTypes.Performance.GOOD_TIME_MS == 2000
-        assert FlextPluginTypes.Performance.FAIR_TIME_MS == 5000
+        assert t_plugin.Performance.EXCELLENT_TIME_MS == 1000
+        assert t_plugin.Performance.GOOD_TIME_MS == 2000
+        assert t_plugin.Performance.FAIR_TIME_MS == 5000
 
     def test_discovery_types(self) -> None:
         """Test discovery type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Discovery.DiscoveryPath is str
-        assert FlextPluginTypes.Discovery.DiscoveryResult is dict[str, object]
-        assert FlextPluginTypes.Discovery.PluginLoader is object
-        assert FlextPluginTypes.Discovery.EntryPoint is str
+        assert t_plugin.Discovery.DiscoveryPath is str
+        assert t_plugin.Discovery.DiscoveryResult is dict[str, object]
+        assert t_plugin.Discovery.PluginLoader is object
+        assert t_plugin.Discovery.EntryPoint is str
 
         # Test discovery methods
-        assert FlextPluginTypes.Discovery.METHOD_FILE_SYSTEM == "file_system"
-        assert FlextPluginTypes.Discovery.METHOD_ENTRY_POINTS == "entry_points"
-        assert FlextPluginTypes.Discovery.METHOD_PACKAGE_SCAN == "package_scan"
+        assert t_plugin.Discovery.METHOD_FILE_SYSTEM == "file_system"
+        assert t_plugin.Discovery.METHOD_ENTRY_POINTS == "entry_points"
+        assert t_plugin.Discovery.METHOD_PACKAGE_SCAN == "package_scan"
 
     def test_execution_types(self) -> None:
         """Test execution type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Execution.ExecutionContext == dict[str, object]
-        assert FlextPluginTypes.Execution.ExecutionResult == dict[str, object]
-        assert FlextPluginTypes.Execution.ExecutionError is str
-        assert FlextPluginTypes.Execution.ResourceLimits == dict[str, object]
+        assert t_plugin.Execution.ExecutionContext == dict[str, object]
+        assert t_plugin.Execution.ExecutionResult == dict[str, object]
+        assert t_plugin.Execution.ExecutionError is str
+        assert t_plugin.Execution.ResourceLimits == dict[str, object]
 
         # Test execution states
-        assert FlextPluginTypes.Execution.STATE_PENDING == "pending"
-        assert FlextPluginTypes.Execution.STATE_RUNNING == "running"
-        assert FlextPluginTypes.Execution.STATE_COMPLETED == "completed"
-        assert FlextPluginTypes.Execution.STATE_FAILED == "failed"
-        assert FlextPluginTypes.Execution.STATE_CANCELLED == "cancelled"
+        assert t_plugin.Execution.STATE_PENDING == "pending"
+        assert t_plugin.Execution.STATE_RUNNING == "running"
+        assert t_plugin.Execution.STATE_COMPLETED == "completed"
+        assert t_plugin.Execution.STATE_FAILED == "failed"
+        assert t_plugin.Execution.STATE_CANCELLED == "cancelled"
 
     def test_registry_types(self) -> None:
         """Test registry type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.Registry.RegistryConfig == dict[str, object]
-        assert FlextPluginTypes.Registry.RegistryEntry == dict[str, object]
-        assert FlextPluginTypes.Registry.RegistrySync == dict[str, object]
+        assert t_plugin.Registry.RegistryConfig == dict[str, object]
+        assert t_plugin.Registry.RegistryEntry == dict[str, object]
+        assert t_plugin.Registry.RegistrySync == dict[str, object]
 
         # Test registry types
-        assert FlextPluginTypes.Registry.TYPE_LOCAL == "local"
-        assert FlextPluginTypes.Registry.TYPE_REMOTE == "remote"
-        assert FlextPluginTypes.Registry.TYPE_HYBRID == "hybrid"
+        assert t_plugin.Registry.TYPE_LOCAL == "local"
+        assert t_plugin.Registry.TYPE_REMOTE == "remote"
+        assert t_plugin.Registry.TYPE_HYBRID == "hybrid"
 
     def test_hot_reload_types(self) -> None:
         """Test hot reload type definitions."""
         # Test type aliases
-        assert FlextPluginTypes.HotReload.WatchConfig == dict[str, object]
-        assert FlextPluginTypes.HotReload.ReloadEvent == dict[str, object]
-        assert FlextPluginTypes.HotReload.FileWatcher is object
+        assert t_plugin.HotReload.WatchConfig == dict[str, object]
+        assert t_plugin.HotReload.ReloadEvent == dict[str, object]
+        assert t_plugin.HotReload.FileWatcher is object
 
         # Test watch events
-        assert FlextPluginTypes.HotReload.EVENT_CREATED == "created"
-        assert FlextPluginTypes.HotReload.EVENT_MODIFIED == "modified"
-        assert FlextPluginTypes.HotReload.EVENT_DELETED == "deleted"
-        assert FlextPluginTypes.HotReload.EVENT_MOVED == "moved"
+        assert t_plugin.HotReload.EVENT_CREATED == "created"
+        assert t_plugin.HotReload.EVENT_MODIFIED == "modified"
+        assert t_plugin.HotReload.EVENT_DELETED == "deleted"
+        assert t_plugin.HotReload.EVENT_MOVED == "moved"
 
 
 class TestFlextPluginProtocols:

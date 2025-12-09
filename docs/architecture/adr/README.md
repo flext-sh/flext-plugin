@@ -33,19 +33,19 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 
 | ADR                                       | Title                           | Status      | Date       | Category       |
 | ----------------------------------------- | ------------------------------- | ----------- | ---------- | -------------- |
-| [ADR-006](adr-006-single-class-module.md) | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
-| [ADR-007](adr-007-railway-pattern.md)     | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
-| [ADR-008](adr-008-hot-reload.md)          | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
-| [ADR-009](adr-009-cli-architecture.md)    | CLI Architecture and Design     | ✅ Accepted | 2025-05-01 | Implementation |
-| [ADR-010](adr-010-testing-strategy.md)    | Testing Strategy and Framework  | ✅ Accepted | 2025-05-15 | Testing        |
+| ADR-006 | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
+| ADR-007 | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
+| ADR-008 | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
+| ADR-009 | CLI Architecture and Design     | ✅ Accepted | 2025-05-01 | Implementation |
+| ADR-010 | Testing Strategy and Framework  | ✅ Accepted | 2025-05-15 | Testing        |
 
 ### Future Decisions (Proposed)
 
 | ADR                                       | Title                           | Status      | Date       | Category    |
 | ----------------------------------------- | ------------------------------- | ----------- | ---------- | ----------- |
-| [ADR-011](adr-011-entry-points.md)        | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
-| [ADR-012](adr-012-plugin-marketplace.md)  | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
-| [ADR-013](adr-013-enterprise-security.md) | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
+| ADR-011 | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
+| ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
+| ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
 
 ---
 
@@ -289,15 +289,15 @@ make adr-export
 
 ### Implementation Documentation
 
-- **[Implementation Guide](implementation.md)** - Development patterns and practices
-- **[API Reference](api.md)** - Public API documentation
-- **[Migration Guide](migration.md)** - Version migration strategies
+- **[Implementation Guide](../implementation.md)** - Development patterns and practices
+- **API Reference** - Public API documentation (*Documentation coming soon*)
+- **Migration Guide** - Version migration strategies (*Documentation coming soon*)
 
 ### Quality and Security
 
-- **[Security Architecture](security.md)** - Security design and controls
-- **[Quality Attributes](quality.md)** - Performance, scalability, reliability
-- **[Testing Strategy](testing.md)** - Testing approach and framework
+- **[Security Architecture](../security.md)** - Security design and controls
+- **[Quality Attributes](../quality.md)** - Performance, scalability, reliability
+- **Testing Strategy** - Testing approach and framework (*Documentation coming soon*)
 
 ---
 

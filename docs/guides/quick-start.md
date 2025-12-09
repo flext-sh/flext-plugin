@@ -481,21 +481,21 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 ### Immediate Next Steps
 
-1. **[Plugin Development Guide](plugin-development.md)** - Learn advanced plugin patterns
-2. **[Testing Guide](testing.md)** - Comprehensive testing strategies
+1. **Plugin Development Guide** - Learn advanced plugin patterns (*Documentation coming soon*)
+2. **Testing Guide** - Comprehensive testing strategies (*Documentation coming soon*)
 3. **[Examples](../examples/README.md)** - More detailed examples
 
 ### Plugin Types to Explore
 
-1. **[Singer Integration](singer-integration.md)** - Create data extraction/loading plugins
-2. **[Service Plugins](service-plugins.md)** - Build microservice integrations
-3. **[Custom Plugin Types](custom-plugin-types.md)** - Define your own plugin categories
+1. **Singer Integration** - Create data extraction/loading plugins (*Documentation coming soon*)
+2. **Service Plugins** - Build microservice integrations (*Documentation coming soon*)
+3. **Custom Plugin Types** - Define your own plugin categories (*Documentation coming soon*)
 
 ### Advanced Topics
 
 1. **[Architecture Guide](../architecture/README.md)** - Understand the system design
-2. **[Performance Optimization](performance-optimization.md)** - Scale your plugins
-3. **[FLEXT Ecosystem Integration](ecosystem-integration.md)** - Integrate with other FLEXT services
+2. **Performance Optimization** - Scale your plugins (*Documentation coming soon*)
+3. **FLEXT Ecosystem Integration** - Integrate with other FLEXT services (*Documentation coming soon*)
 
 ## Troubleshooting
 

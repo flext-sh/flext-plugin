@@ -600,10 +600,10 @@ monitor.alert_on_anomalies()
 
 | Document                                      | Purpose                        | Audience      | Update Frequency |
 | --------------------------------------------- | ------------------------------ | ------------- | ---------------- |
-| **[Threat Model](threat-model.md)**           | Current threat analysis        | Security team | Quarterly        |
-| **[Security Controls](security-controls.md)** | Control implementation details | Developers    | Monthly          |
-| **[Incident Response](incident-response.md)** | Response procedures            | Operations    | As needed        |
-| **[Compliance Matrix](compliance-matrix.md)** | Regulatory compliance mapping  | Compliance    | Annually         |
+| Threat Model                                  | Current threat analysis        | Security team | Quarterly        | *Documentation coming soon* |
+| Security Controls                             | Control implementation details | Developers    | Monthly          | *Documentation coming soon* |
+| Incident Response                             | Response procedures            | Operations    | As needed        | *Documentation coming soon* |
+| Compliance Matrix                             | Regulatory compliance mapping  | Compliance    | Annually         | *Documentation coming soon* |
 
 ### Security Training and Awareness
 

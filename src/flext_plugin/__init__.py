@@ -26,12 +26,15 @@ from flext_plugin.hot_reload import FlextPluginHotReload
 from flext_plugin.loader import FlextPluginLoader
 
 # Layer 1: Domain Models
-from flext_plugin.models import FlextPluginModels
+from flext_plugin.models import FlextPluginModels, m, m_plugin
 from flext_plugin.platform import FlextPluginPlatform
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.services import FlextPluginService
 from flext_plugin.types import FlextPluginTypes
 from flext_plugin.utilities import FlextPluginUtilities
+
+# Domain-specific aliases
+u = FlextPluginUtilities  # Utilities (FlextPluginUtilities extends FlextUtilities)
 
 __all__ = [
     # Layer 3
@@ -56,4 +59,8 @@ __all__ = [
     # Version
     "__version__",
     "__version_info__",
+    # Domain-specific aliases
+    "m",
+    "m_plugin",
+    "u",
 ]

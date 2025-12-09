@@ -213,9 +213,9 @@ Implement a multi-tiered plugin discovery system supporting:
 
 ## Related ADRs
 
-- **[ADR-004](adr-004-security-model.md)**: Security validation for discovered plugins
-- **[ADR-008](adr-008-hot-reload.md)**: File watching for plugin changes
-- **[ADR-011](adr-011-entry-points.md)**: Entry points discovery enhancement
+- **ADR-004** - Security validation for discovered plugins (*Documentation coming soon*)
+- **ADR-008** - File watching for plugin changes (*Documentation coming soon*)
+- **ADR-011** - Entry points discovery enhancement (*Documentation coming soon*)
 
 ## References
 
@@ -227,9 +227,9 @@ Implement a multi-tiered plugin discovery system supporting:
 
 ### Internal References
 
-- [Plugin Requirements Specification](../../requirements/plugin-requirements.md)
-- [Security Architecture Review](../../security/plugin-security-review.md)
-- [Performance Benchmarks](../../performance/discovery-performance.md)
+- **Plugin Requirements Specification** - (*Documentation coming soon*)
+- **Security Architecture Review** - (*Documentation coming soon*)
+- **Performance Benchmarks** - (*Documentation coming soon*)
 
 ## Notes
 

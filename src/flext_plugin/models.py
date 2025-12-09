@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Literal, Self
 
 from flext_core import FlextModels as m_core
+from flext_core.utilities import u as flext_u
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import c
@@ -26,6 +27,14 @@ class FlextPluginModels(m_core):
     All models inherit flext-core validation and patterns following
     Railway-Oriented Programming with r[T] error handling.
     """
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        """Warn when FlextPluginModels is subclassed directly."""
+        super().__init_subclass__(**kwargs)
+        flext_u.Deprecation.warn_once(
+            f"subclass:{cls.__name__}",
+            "Subclassing FlextPluginModels is deprecated. Use FlextModels directly with composition instead.",
+        )
 
     # Re-export PluginType enum from constants for convenience
     PluginType = c.Plugin.PluginType
@@ -692,5 +701,6 @@ class FlextPluginModels(m_core):
 
 
 m = FlextPluginModels
+m_plugin = FlextPluginModels
 
-__all__ = ["FlextPluginModels", "m"]
+__all__ = ["FlextPluginModels", "m", "m_plugin"]

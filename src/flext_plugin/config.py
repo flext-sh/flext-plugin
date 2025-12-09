@@ -29,9 +29,10 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
     - Automatic type conversion and validation via Pydantic v2
     """
 
+    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_PLUGIN_",
-        env_file=".env",
+        env_file=FlextConfig.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -84,7 +85,7 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         **kwargs: object,
     ) -> FlextPluginConfig:
         """Create plugin config entity with proper validation."""
-        entity_id = entity_id or u_core.Generators.generate_entity_id()
+        entity_id = entity_id or u_core.generate("entity")
 
         # Create instance data
         instance_data: dict[str, object] = {

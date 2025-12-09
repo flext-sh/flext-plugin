@@ -223,7 +223,7 @@ Infrastructure Layer (External Systems/Databases)
 
 ### Internal References
 
-- [FLEXT Core Architecture](https://github.com/organization/flext/tree/main/flext-core/docs/architecture.md)
+- [FLEXT Core Architecture](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/README.md)
 
 ## Notes
 

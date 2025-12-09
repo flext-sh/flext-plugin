@@ -12,16 +12,12 @@ Comprehensive step-by-step guides for developing plugins with the FLEXT Plugin s
 ### 🎯 Plugin Types
 
 ### 🏗️ Architecture & Integration
-- **[Domain-Driven Design](domain-driven-design.md)** - DDD implementation in plugins
-- **[FLEXT Ecosystem Integration](ecosystem-integration.md)** - Integration with FLEXT services
-- **[Performance Optimization](performance-optimization.md)** - Plugin performance best practices
+
+*Additional architecture and integration guides coming soon.*
 
 ### 📋 Best Practices
 
-- **[Code Quality](code-quality.md)** - Quality standards and practices
-- **[Security Guidelines](security.md)** - Security best practices for plugins
-- **[Configuration Management](configuration.md)** - Plugin configuration patterns
-- **[Error Handling](error-handling.md)** - Robust error handling strategies
+*Best practices guides coming soon.*
 
 ## Quick Reference
 
@@ -127,28 +123,21 @@ class MyPlugin(FlextPlugin):
 ### Beginner
 
 1. **[Quick Start](quick-start.md)** - Basic concepts and first plugin
-2. **[Plugin Development](plugin-development.md)** - Core development patterns
-3. **[Testing Guide](testing.md)** - Testing your plugins
 
 ### Intermediate
 
-1. **[Singer Integration](singer-integration.md)** - Data pipeline plugins
-2. **[Service Plugins](service-plugins.md)** - Microservice integration
-3. **[Hot Reload Development](hot-reload.md)** - Development optimization
+*Intermediate guides coming soon.*
 
 ### Advanced
 
-1. **[Clean Architecture](clean-architecture.md)** - Architectural patterns
-2. **[Performance Optimization](performance-optimization.md)** - Scaling plugins
-3. **[Custom Plugin Types](custom-plugin-types.md)** - Extending the system
+*Advanced guides coming soon.*
 
 ## Support & Resources
 
 ### Documentation
 
-- **[API Reference](../api/README.md)** - Complete API documentation
 - **[Architecture Guide](../architecture/README.md)** - System architecture
-- **[Examples](../examples/README.md)** - Practical implementation examples
+- **[Examples](../../examples/README.md)** - Practical implementation examples
 
 ### Community
 

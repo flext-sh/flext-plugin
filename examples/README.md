@@ -154,7 +154,7 @@ Examples demonstrate DDD concepts:
 
 - **Entities**: `FlextPlugin`, `FlextPluginModels.Config`, `FlextPluginModels.Metadata`
 - **Value Objects**: Plugin types, status enums, configuration objects
-- **Domain Services**: Validation and lifecycle management
+- **Services**: Validation and lifecycle management
 - **Repositories**: Plugin registry patterns
 
 ### FLEXT Ecosystem Integration

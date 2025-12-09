@@ -1,6 +1,8 @@
-# FLEXT-Plugin Project Guidelines
+# flext-plugin - FLEXT Data Integration
 
-**Reference**: See [../CLAUDE.md](../CLAUDE.md) for FLEXT ecosystem standards and general rules.
+**Hierarchy**: PROJECT
+**Parent**: [../CLAUDE.md](../CLAUDE.md) - Workspace standards
+**Last Update**: 2025-12-07
 
 ---
 
@@ -69,4 +71,7 @@ if result.is_success:
 
 ---
 
-**Additional Resources**: [../CLAUDE.md](../CLAUDE.md) (workspace), [README.md](README.md) (overview)
+**See Also**:
+- [Workspace Standards](../CLAUDE.md)
+- [flext-core Patterns](../flext-core/CLAUDE.md)
+- [flext-meltano Patterns](../flext-meltano/CLAUDE.md)
