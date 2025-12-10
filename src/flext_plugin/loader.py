@@ -34,7 +34,7 @@ class FlextPluginLoader:
         # Load a plugin
         result = loader.load_plugin("./my_plugin.py")
         if result.is_success:
-            load_data = result.unwrap()
+            load_data = result.value
             print(f"Loaded plugin: {load_data.name}")
         ```
     """

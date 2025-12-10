@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from flext_core import t
 
 from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.types import t as t_plugin
+from flext_plugin.typings import t as t_plugin
 
 
 class TestFlextPluginTypes:
@@ -22,28 +22,28 @@ class TestFlextPluginTypes:
     def test_core_types(self) -> None:
         """Test core type definitions."""
         # Test string collections
-        assert t_plugin.PluginCore.StringList == list[str]
-        assert t_plugin.PluginCore.StringSet == set[str]
-        assert t_plugin.PluginCore.StringDict == dict[str, str]
+        assert t_plugin.Plugin.StringList == list[str]
+        assert t_plugin.Plugin.StringSet == set[str]
+        assert t_plugin.Plugin.StringDict == dict[str, str]
 
         # Test numeric collections
-        assert t_plugin.PluginCore.IntList == t.IntList
-        assert t_plugin.PluginCore.FloatList == t.FloatList
-        assert t_plugin.PluginCore.IntDict == dict[str, int]
-        assert t_plugin.PluginCore.FloatDict == dict[str, float]
+        assert t_plugin.Plugin.IntList == t.IntList
+        assert t_plugin.Plugin.FloatList == t.FloatList
+        assert t_plugin.Plugin.IntDict == dict[str, int]
+        assert t_plugin.Plugin.FloatDict == dict[str, float]
 
         # Test mixed collections
-        assert t_plugin.PluginCore.AnyList == list[object]
-        assert t_plugin.PluginCore.AnyDict == dict[str, object]
+        assert t_plugin.Plugin.AnyList == list[object]
+        assert t_plugin.Plugin.AnyDict == dict[str, object]
 
         # Test plugin-specific collections
-        assert t_plugin.PluginCore.PluginList == list[dict[str, object]]
-        assert t_plugin.PluginCore.PluginDict == dict[str, object]
-        assert t_plugin.PluginCore.ConfigDict == dict[str, object]
-        assert t_plugin.PluginCore.SettingsDict == dict[str, object]
-        assert t_plugin.PluginCore.MetadataDict == dict[str, object]
-        assert t_plugin.PluginCore.InputDict == dict[str, object]
-        assert t_plugin.PluginCore.OutputDict == dict[str, object]
+        assert t_plugin.Plugin.PluginList == list[dict[str, object]]
+        assert t_plugin.Plugin.PluginDict == dict[str, object]
+        assert t_plugin.Plugin.ConfigDict == dict[str, object]
+        assert t_plugin.Plugin.SettingsDict == dict[str, object]
+        assert t_plugin.Plugin.MetadataDict == dict[str, object]
+        assert t_plugin.Plugin.InputDict == dict[str, object]
+        assert t_plugin.Plugin.OutputDict == dict[str, object]
 
     def test_lifecycle_types(self) -> None:
         """Test lifecycle type definitions."""

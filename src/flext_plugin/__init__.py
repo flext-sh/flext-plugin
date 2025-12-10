@@ -30,7 +30,7 @@ from flext_plugin.models import FlextPluginModels, m, m_plugin
 from flext_plugin.platform import FlextPluginPlatform
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.services import FlextPluginService
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin.typings import FlextPluginTypes, t
 from flext_plugin.utilities import FlextPluginUtilities
 
 # Domain-specific aliases
@@ -62,5 +62,6 @@ __all__ = [
     # Domain-specific aliases
     "m",
     "m_plugin",
+    "t",
     "u",
 ]

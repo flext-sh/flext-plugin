@@ -24,7 +24,7 @@ from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_plugin.models import FlextPluginModels
-from flext_plugin.types import t
+from flext_plugin.typings import t
 
 # Import base utilities for inheritance
 u = FlextUtilities
@@ -48,13 +48,13 @@ class FlextPluginUtilities(u):
     class PluginDiscovery:
         """Plugin discovery and validation utilities."""
 
-        PLUGIN_FILE_EXTENSIONS: ClassVar[t.PluginCore.StringList] = [
+        PLUGIN_FILE_EXTENSIONS: ClassVar[t.Plugin.StringList] = [
             ".py",
             ".yaml",
             ".yml",
             ".json",
         ]
-        PLUGIN_MANIFEST_FILES: ClassVar[t.PluginCore.StringList] = [
+        PLUGIN_MANIFEST_FILES: ClassVar[t.Plugin.StringList] = [
             "plugin.yaml",
             "plugin.yml",
             "plugin.json",
@@ -100,7 +100,7 @@ class FlextPluginUtilities(u):
                                 plugin_file,
                             )
                             if metadata_result.is_success:
-                                plugins.append(metadata_result.unwrap())
+                                plugins.append(metadata_result.value)
 
                 return r[list[FlextPluginModels.PluginMetadata]].ok(plugins)
             except Exception as e:
@@ -274,7 +274,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def detect_file_changes(
             watcher_config: dict[str, object],
-        ) -> r[t.PluginCore.StringList]:
+        ) -> r[t.Plugin.StringList]:
             """Detect file changes in watched directory.
 
             Args:
@@ -308,11 +308,11 @@ class FlextPluginUtilities(u):
                             last_modified[file_key] = current_mtime
 
                 watcher_config["last_modified"] = last_modified
-                return r[t.PluginCore.StringList].ok(
+                return r[t.Plugin.StringList].ok(
                     changed_files,
                 )
             except Exception as e:
-                return r[t.PluginCore.StringList].fail(
+                return r[t.Plugin.StringList].fail(
                     f"File change detection failed: {e}",
                 )
 
@@ -357,7 +357,7 @@ class FlextPluginUtilities(u):
     class SecurityValidation:
         """Plugin security validation and sandboxing utilities."""
 
-        ALLOWED_IMPORTS: ClassVar[t.PluginCore.StringList] = [
+        ALLOWED_IMPORTS: ClassVar[t.Plugin.StringList] = [
             "flext_core",
             "flext_api",
             "flext_observability",
@@ -368,7 +368,7 @@ class FlextPluginUtilities(u):
             "typing",
             "pydantic",
         ]
-        DANGEROUS_OPERATIONS: ClassVar[t.PluginCore.StringList] = [
+        DANGEROUS_OPERATIONS: ClassVar[t.Plugin.StringList] = [
             "exec",
             "eval",
             "__import__",
@@ -638,7 +638,7 @@ class FlextPluginUtilities(u):
                             override_value,
                         )
                         if nested_merge.is_success:
-                            merged_config[key] = nested_merge.unwrap()
+                            merged_config[key] = nested_merge.value
                         else:
                             return r[dict[str, object]].fail(
                                 f"Failed to merge nested config for key '{key}': {nested_merge.error}",
@@ -657,7 +657,7 @@ class FlextPluginUtilities(u):
 
         DEFAULT_TIMEOUT_SECONDS: ClassVar[int] = 300
         MAX_RETRY_ATTEMPTS: ClassVar[int] = 3
-        EXECUTION_LOG_LEVELS: ClassVar[t.PluginCore.StringList] = [
+        EXECUTION_LOG_LEVELS: ClassVar[t.Plugin.StringList] = [
             "DEBUG",
             "INFO",
             "WARNING",
@@ -749,7 +749,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def validate_plugin_interface(
             plugin_module: ModuleType,
-            required_functions: t.PluginCore.StringList,
+            required_functions: t.Plugin.StringList,
         ) -> r[None]:
             """Validate that plugin module implements required interface.
 

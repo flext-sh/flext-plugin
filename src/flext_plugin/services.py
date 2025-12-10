@@ -15,7 +15,7 @@ from flext_core.container import FlextContainer
 from flext_plugin.models import m
 from flext_plugin.platform import Plugin as PlatformPlugin, PluginExecution
 from flext_plugin.protocols import p
-from flext_plugin.types import t
+from flext_plugin.typings import t
 
 
 class FlextPluginService(m.ArbitraryTypesModel, x):

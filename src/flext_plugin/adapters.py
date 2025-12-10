@@ -17,7 +17,7 @@ from flext_core import FlextLogger, T, r
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p
-from flext_plugin.types import t
+from flext_plugin.typings import t
 
 
 class FlextPluginAdapters:
@@ -61,7 +61,7 @@ class FlextPluginAdapters:
 
         def discover_plugins(
             self,
-            paths: t.PluginCore.StringList,
+            paths: t.Plugin.StringList,
         ) -> r[list[m.DiscoveryData]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
@@ -71,7 +71,7 @@ class FlextPluginAdapters:
 
         def _discover_all(
             self,
-            paths: t.PluginCore.StringList,
+            paths: t.Plugin.StringList,
         ) -> list[m.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered = []

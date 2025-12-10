@@ -11,9 +11,14 @@ from flext_core import FlextTypes
 
 
 class FlextPluginTypes(FlextTypes):
-    """plugin type system with Python 3.13+ patterns."""
+    """Plugin type system with Python 3.13+ patterns.
 
-    class PluginCore:
+    Follows FLEXT ecosystem namespace conventions:
+    - t.Plugin.* for plugin-specific types
+    - Inherits t.Core.* from FlextTypes
+    """
+
+    class Plugin:
         """Core collection and plugin type aliases."""
 
         # Collections
@@ -88,4 +93,7 @@ class FlextPluginTypes(FlextTypes):
         type FileWatcher = object
 
 
-__all__ = ["FlextPluginTypes"]
+# Standard FLEXT alias for namespace access
+t = FlextPluginTypes
+
+__all__ = ["FlextPluginTypes", "t"]

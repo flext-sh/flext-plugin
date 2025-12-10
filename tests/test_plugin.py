@@ -45,7 +45,7 @@ class TestPlugin:
         result = plugin.activate()
 
         assert result.is_success
-        assert result.unwrap() is None
+        assert result.value is None
         assert plugin.active
         assert result.error is None
 
@@ -82,7 +82,7 @@ class TestPlugin:
         result = plugin.deactivate()
 
         assert result.is_success
-        assert result.unwrap() is None
+        assert result.value is None
         assert not plugin.active
         assert result.error is None
 
@@ -178,7 +178,7 @@ class TestPluginRegistry:
         result = registry.register(plugin)
 
         assert result.is_success
-        assert result.unwrap() is None
+        assert result.value is None
         assert result.error is None
         assert plugin.name in registry.plugins
         assert registry.plugins[plugin.name] is plugin
@@ -224,7 +224,7 @@ class TestPluginRegistry:
         result = registry.unregister(plugin.name)
 
         assert result.is_success
-        assert result.unwrap() is None
+        assert result.value is None
         assert result.error is None
         assert plugin.name not in registry.plugins
         assert plugin.name not in registry.list_plugins()
@@ -235,7 +235,7 @@ class TestPluginRegistry:
 
         # Should succeed (graceful handling)
         assert result.is_success
-        assert result.unwrap() is None
+        assert result.value is None
         assert result.error is None
 
     def test_unregister_plugin_exception_handling(self) -> None:
@@ -391,12 +391,12 @@ class Plugin(Plugin):
                 result = loader.load_plugin("test_real_plugin")
 
                 assert result.is_success
-                assert result.unwrap() is not None
-                assert isinstance(result.unwrap(), Plugin)
-                assert result.unwrap().name == "real-loaded-plugin"
+                assert result.value is not None
+                assert isinstance(result.value, Plugin)
+                assert result.value.name == "real-loaded-plugin"
                 assert result.error is None
-                assert hasattr(result.unwrap(), "loaded")
-                assert result.unwrap().loaded is True
+                assert hasattr(result.value, "loaded")
+                assert result.value.loaded is True
             finally:
                 # Clean up module from cache
                 if "test_real_plugin" in sys.modules:
@@ -434,12 +434,12 @@ class CustomPlugin(Plugin):
                 result = loader.load_plugin(str(module_file))
 
                 assert result.is_success
-                assert result.unwrap() is not None
-                assert isinstance(result.unwrap(), Plugin)
-                assert result.unwrap().name == "custom-named-plugin"
+                assert result.value is not None
+                assert isinstance(result.value, Plugin)
+                assert result.value.name == "custom-named-plugin"
                 assert result.error is None
-                assert hasattr(result.unwrap(), "custom_attribute")
-                assert result.unwrap().custom_attribute == "custom_value"
+                assert hasattr(result.value, "custom_attribute")
+                assert result.value.custom_attribute == "custom_value"
             finally:
                 # Clean up module from cache
                 if "test_custom_plugin" in sys.modules:

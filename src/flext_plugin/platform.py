@@ -19,7 +19,7 @@ from flext_core import (
 from flext_plugin.config import FlextPluginConfig
 from flext_plugin.models import m
 from flext_plugin.protocols import p
-from flext_plugin.types import t
+from flext_plugin.typings import t
 
 # =========================================================================
 # PLUGIN DOMAIN CLASSES - SOLID Plugin Architecture
