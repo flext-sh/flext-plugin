@@ -32,7 +32,7 @@ Boundary(infrastructure_boundary, "Infrastructure Layer") {
 }
 
 Boundary(data_boundary, "Data Layer") {
-    Component(config, "FlextPluginConfig", "Python Class", "Configuration management")
+    Component(config, "FlextPluginSettings", "Python Class", "Configuration management")
     Component(models, "FlextPluginModels", "Python Class", "Pydantic data models")
     Component(exceptions, "FlextPluginExceptions", "Python Module", "Exception hierarchy")
 }

@@ -14,7 +14,6 @@ from flext_plugin.adapters import FlextPluginAdapters
 
 # Layer 4: Facade & Configuration
 from flext_plugin.api import FlextPluginApi
-from flext_plugin.config import FlextPluginConfig
 
 # Layer 0: Constants & Types
 from flext_plugin.constants import FlextPluginConstants
@@ -30,6 +29,7 @@ from flext_plugin.models import FlextPluginModels, m, m_plugin
 from flext_plugin.platform import FlextPluginPlatform
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.services import FlextPluginService
+from flext_plugin.settings import FlextPluginSettings
 from flext_plugin.typings import FlextPluginTypes, t
 from flext_plugin.utilities import FlextPluginUtilities
 
@@ -41,7 +41,6 @@ __all__ = [
     "FlextPluginAdapters",
     # Layer 4
     "FlextPluginApi",
-    "FlextPluginConfig",
     # Layer 0
     "FlextPluginConstants",
     # Layer 2
@@ -54,6 +53,7 @@ __all__ = [
     "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginService",
+    "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
     # Version

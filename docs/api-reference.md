@@ -206,7 +206,7 @@ else:
 class FlextPluginError(Exception):
     """Base plugin system error"""
 
-class FlextPluginConfigurationError(FlextPluginError):
+class FlextPluginSettingsurationError(FlextPluginError):
     """Plugin configuration error"""
 
 class FlextPluginLoadingError(FlextPluginError):
@@ -225,7 +225,7 @@ class FlextPluginExecutionError(FlextPluginError):
 ```python
 # Use FlextResult for all operations
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -254,7 +254,7 @@ def plugin_operation() -> FlextResult[bool]:
 
 # Use dependency injection
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

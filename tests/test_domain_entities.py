@@ -194,7 +194,7 @@ class TestFlextPlugin:
         )
 
 
-class TestFlextPluginConfig:
+class TestFlextPluginSettings:
     """Test FlextPluginModels.Config entity functionality."""
 
     def test_configuration_creation(self) -> None:

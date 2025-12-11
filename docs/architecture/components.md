@@ -236,7 +236,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - Support generic type parameters
   - Enable advanced typing features (Python 3.13+)
 - **Key Types**:
-  - `FlextPluginConfig`: Plugin configuration type
+  - `FlextPluginSettings`: Plugin configuration type
   - `ExecutionContext`: Plugin execution context
   - `PluginMetadata`: Plugin metadata structure
   - `ValidationResult`: Validation result type
@@ -345,7 +345,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - Support complex nested data structures
   - Enable type-safe data handling
 - **Key Models**:
-  - `FlextPluginConfig`: Plugin configuration model
+  - `FlextPluginSettings`: Plugin configuration model
   - `ExecutionResult`: Execution result model
   - `PluginMetadata`: Plugin metadata model
   - `ValidationError`: Error model

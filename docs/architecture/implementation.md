@@ -27,7 +27,7 @@ This guide provides practical implementation guidance for developing with the FL
 ```python
 # flext_plugin/entities.py - Domain entities with business rules
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -120,7 +120,7 @@ class FlextPluginModels:
 ```python
 # flext_plugin/services.py - Application services
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -223,7 +223,7 @@ class FlextPluginServices:
 ```python
 # flext_plugin/discovery.py - Infrastructure adapters
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -337,7 +337,7 @@ class FlextPluginDiscovery:
 # flext_plugin/protocols.py - Structural typing protocols
 from typing import Protocol, List, Dict, object, Optional
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -438,7 +438,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 ```python
 # Railway pattern throughout the system
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -656,7 +656,7 @@ from pathlib import Path
 import tempfile
 from flext_plugin import FlextPluginPlatform
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -779,7 +779,7 @@ License: MIT
 from __future__ import annotations
 from flext_core import FlextBus
 
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -804,7 +804,7 @@ from typing import TYPE_CHECKING
 
 # FLEXT ecosystem imports
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -951,7 +951,7 @@ from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 from flext_plugin.constants import FlextPluginConstants
 
-class FlextPluginConfig:
+class FlextPluginSettings:
     """Plugin system configuration using Pydantic."""
 
     # Plugin discovery settings
@@ -1139,7 +1139,7 @@ spec:
 ```python
 # flext_plugin/health.py
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1271,7 +1271,7 @@ from typing import Dict, object, Optional
 import asyncio
 from datetime import datetime, timedelta
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1347,7 +1347,7 @@ import asyncio
 from typing import List, Dict, object
 from concurrent.futures import ThreadPoolExecutor
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

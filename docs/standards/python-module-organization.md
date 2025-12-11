@@ -149,9 +149,9 @@ class PluginWorkflow:
 **Configuration Pattern**:
 
 ```python
-from flext_plugin.config.settings import PluginSystemSettings
+from flext_plugin.settings.settings import PluginSystemSettings
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -171,7 +171,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-class PluginSystemSettings(FlextConfig):
+class PluginSystemSettings(FlextSettings):
     """Plugin system configuration with environment support"""
     discovery_paths: t.StringList = ["./plugins", "~/.flext/plugins"]
     hot_reload_enabled: bool = True
@@ -436,7 +436,7 @@ from flext_plugin.platform import _InternalPlatformManager
 from flext_plugin import create_flext_plugin
 from flext_plugin.core.types import PluginType
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -496,7 +496,7 @@ def deploy_tap_plugin(config: dict) -> FlextResult[FlextPlugin]:
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -604,7 +604,7 @@ class PluginLifecycleManager:
 from flext_plugin.application.services import FlextPluginDiscoveryService
 from flext_plugin.core.discovery import PluginDiscovery
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -698,7 +698,7 @@ class AdvancedPluginDiscovery:
 from flext_plugin.domain.entities import FlextPlugin
 from flext_plugin.core.types import PluginStatus, PluginType
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -833,7 +833,7 @@ class FlextPlugin(FlextModels.Entity):
 ```python
 from flext_plugin.domain.entities import FlextPluginModels.Registry
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -950,7 +950,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
 ```python
 from flext_plugin.domain.value_objects import FlextPluginModels.Metadata, FlextPluginModels.Config
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1253,7 +1253,7 @@ def execute_plugin_cached(plugin_id: str, config: t.Dict) -> FlextResult[object]
 from typing import Dict, List, Optional, Callable, Awaitable, Protocol
 
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1610,7 +1610,7 @@ class DataProcessorPlugin(FlextPlugin):
 from flext_plugin import create_flext_plugin
 from flext_plugin.core.types import PluginType
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1667,9 +1667,9 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 
 ```python
 # ✅ Extend plugin configuration patterns consistently
-from flext_plugin.config.settings import PluginSystemSettings
+from flext_plugin.settings.settings import PluginSystemSettings
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1689,7 +1689,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-class OraclePluginSettings(FlextConfig):
+class OraclePluginSettings(FlextSettings):
     """Oracle plugin configuration extending FLEXT patterns."""
     connection_string: str
     schema: str = "HR"

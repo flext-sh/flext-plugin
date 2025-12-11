@@ -10,18 +10,18 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from flext_core import r, u as u_core
-from flext_core.config import FlextConfig
+from flext_core.settings import FlextSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 
-@FlextConfig.auto_register("plugin")
-class FlextPluginConfig(FlextConfig.AutoConfig):
+@FlextSettings.auto_register("plugin")
+class FlextPluginSettings(FlextSettings.AutoConfig):
     """Plugin system configuration management using AutoConfig pattern.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
 
-    This class uses FlextConfig.AutoConfig for automatic:
+    This class uses FlextSettings.AutoConfig for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.plugin)
     - Environment variable loading from FLEXT_PLUGIN_* variables
@@ -29,10 +29,10 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
     - Automatic type conversion and validation via Pydantic v2
     """
 
-    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
+    # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_PLUGIN_",
-        env_file=FlextConfig.resolve_env_file(),
+        env_file=FlextSettings.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -83,7 +83,7 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         entity_id: str | None = None,
         config_data: dict[str, object] | None = None,
         **kwargs: object,
-    ) -> FlextPluginConfig:
+    ) -> FlextPluginSettings:
         """Create plugin config entity with proper validation."""
         entity_id = entity_id or u_core.generate("entity")
 
@@ -134,4 +134,4 @@ class FlextPluginConfig(FlextConfig.AutoConfig):
         return r[None].ok(None)
 
 
-__all__ = ["FlextPluginConfig"]
+__all__ = ["FlextPluginSettings"]

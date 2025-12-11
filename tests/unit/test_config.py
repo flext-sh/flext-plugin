@@ -9,20 +9,20 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_plugin.config import FlextPluginConfig
+from flext_plugin.settings import FlextPluginSettings
 
 
-class TestFlextPluginConfig:
+class TestFlextPluginSettings:
     """Test cases for FlextPluginModels."""
 
     def test_config_initialization(self) -> None:
         """Test that config can be initialized with defaults."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         assert config is not None
 
     def test_discovery_config(self) -> None:
         """Test discovery configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         discovery = config.discovery
 
         assert discovery.plugin_paths is not None
@@ -35,7 +35,7 @@ class TestFlextPluginConfig:
 
     def test_discovery_config_validation(self) -> None:
         """Test discovery configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         discovery = config.discovery
 
         # Test valid plugin paths
@@ -55,7 +55,7 @@ class TestFlextPluginConfig:
 
     def test_security_config(self) -> None:
         """Test security configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         security = config.security
 
         assert security.default_level in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
@@ -69,7 +69,7 @@ class TestFlextPluginConfig:
 
     def test_security_config_validation(self) -> None:
         """Test security configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         security = config.security
 
         # Test valid security level
@@ -86,7 +86,7 @@ class TestFlextPluginConfig:
 
     def test_performance_config(self) -> None:
         """Test performance configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         performance = config.performance
 
         assert performance.max_memory_mb > 0
@@ -97,7 +97,7 @@ class TestFlextPluginConfig:
 
     def test_performance_config_validation(self) -> None:
         """Test performance configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         performance = config.performance
 
         # Test valid memory limit
@@ -126,7 +126,7 @@ class TestFlextPluginConfig:
 
     def test_hot_reload_config(self) -> None:
         """Test hot reload configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         hot_reload = config.hot_reload
 
         assert isinstance(hot_reload.enabled, bool)
@@ -138,7 +138,7 @@ class TestFlextPluginConfig:
 
     def test_hot_reload_config_validation(self) -> None:
         """Test hot reload configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         hot_reload = config.hot_reload
 
         # Test valid watch interval
@@ -162,7 +162,7 @@ class TestFlextPluginConfig:
 
     def test_monitoring_config(self) -> None:
         """Test monitoring configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         monitoring = config.monitoring
 
         assert isinstance(monitoring.enabled, bool)
@@ -175,7 +175,7 @@ class TestFlextPluginConfig:
 
     def test_monitoring_config_validation(self) -> None:
         """Test monitoring configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         monitoring = config.monitoring
 
         # Test valid log level
@@ -203,7 +203,7 @@ class TestFlextPluginConfig:
 
     def test_registry_config(self) -> None:
         """Test registry configuration section."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         registry = config.registry
 
         assert isinstance(registry.enabled, bool)
@@ -216,7 +216,7 @@ class TestFlextPluginConfig:
 
     def test_registry_config_validation(self) -> None:
         """Test registry configuration validation."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         registry = config.registry
 
         # Test valid sync interval
@@ -232,7 +232,7 @@ class TestFlextPluginConfig:
 
     def test_get_plugin_paths(self) -> None:
         """Test get_plugin_paths method."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         paths = config.get_plugin_paths()
 
         assert isinstance(paths, list)
@@ -241,7 +241,7 @@ class TestFlextPluginConfig:
 
     def test_is_security_enabled(self) -> None:
         """Test is_security_enabled method."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test with security features enabled
         config.security.enable_sandboxing = True
@@ -259,7 +259,7 @@ class TestFlextPluginConfig:
 
     def test_is_monitoring_enabled(self) -> None:
         """Test is_monitoring_enabled method."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test with monitoring enabled
         config.monitoring.enabled = True
@@ -281,7 +281,7 @@ class TestFlextPluginConfig:
 
     def test_get_performance_limits(self) -> None:
         """Test get_performance_limits method."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
         limits = config.get_performance_limits()
 
         assert isinstance(limits, dict)
@@ -297,7 +297,7 @@ class TestFlextPluginConfig:
 
     def test_validate_configuration(self) -> None:
         """Test validate_configuration method."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test valid configuration
         assert config.validate_configuration() is True
@@ -316,7 +316,7 @@ class TestFlextPluginConfig:
                 "FLEXT_PLUGIN_MONITORING__LOG_LEVEL": "DEBUG",
             },
         ):
-            config = FlextPluginConfig()
+            config = FlextPluginSettings()
 
             assert config.discovery.timeout_seconds == 15
             assert config.security.default_level == "HIGH"
@@ -325,7 +325,7 @@ class TestFlextPluginConfig:
 
     def test_config_sections_are_objects(self) -> None:
         """Test that config sections are proper objects."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test that sections are accessible as attributes
         assert hasattr(config, "discovery")
@@ -345,7 +345,7 @@ class TestFlextPluginConfig:
 
     def test_config_immutability(self) -> None:
         """Test that config values can be modified but structure is consistent."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test that we can modify values
         original_timeout = config.discovery.timeout_seconds
@@ -358,7 +358,7 @@ class TestFlextPluginConfig:
 
     def test_config_defaults_consistency(self) -> None:
         """Test that default values are consistent and reasonable."""
-        config = FlextPluginConfig()
+        config = FlextPluginSettings()
 
         # Test discovery defaults
         assert config.discovery.timeout_seconds > 0
