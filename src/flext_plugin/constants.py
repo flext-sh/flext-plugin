@@ -10,7 +10,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar, Final, Literal
 
-from flext_core.constants import FlextConstants as c_core
+from flext_core.constants import c_core
 
 
 class FlextPluginConstants(c_core):
