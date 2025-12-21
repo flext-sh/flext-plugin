@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import types
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Literal, Self
@@ -437,7 +439,7 @@ class FlextPluginModels(m_core):
             description="Plugin semantic version (X.Y.Z)",
         )
         path: Path = Field(description="File system path to plugin")
-        module: Any = Field(description="The loaded Python module object")
+        module: types.ModuleType = Field(description="The loaded Python module object")
         load_type: Literal["file", "directory", "entry_point"] = Field(
             description="Type of loaded plugin",
         )
@@ -603,7 +605,9 @@ class FlextPluginModels(m_core):
 
         watch_path: str = Field(description="Path being watched")
         watch_interval: float = Field(description="Polling interval in seconds")
-        callback: Any = Field(default=None, description="Callback function reference")
+        callback: Callable[..., object] | None = Field(
+            default=None, description="Callback function reference"
+        )
         active: bool = Field(default=False, description="Whether watcher is active")
         last_modified: dict[str, object] = Field(
             default_factory=dict,
