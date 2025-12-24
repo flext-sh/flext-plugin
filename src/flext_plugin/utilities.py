@@ -19,10 +19,10 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
+from flext_core import FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext import FlextUtilities, r
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 
@@ -628,7 +628,7 @@ class FlextPluginUtilities(u):
                         and isinstance(merged_config[key], dict)
                     ):
                         # Recursively merge nested dictionaries
-                        base_nested_config = merged_config[key].copy()  # type: ignore[attr-defined]
+                        base_nested_config = merged_config[key].copy()
                         override_value = value.copy() if isinstance(value, dict) else {}
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
@@ -958,7 +958,7 @@ class FlextPluginUtilities(u):
         if not isinstance(v, dict):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
-        return v  # type: ignore[return-value]
+        return v
 
     @model_validator(mode="after")
     def validate_utilities_configuration(self) -> FlextPluginUtilities:

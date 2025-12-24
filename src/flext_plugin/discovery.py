@@ -12,7 +12,8 @@ from __future__ import annotations
 import importlib.metadata
 from pathlib import Path
 
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
+
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import p
 
@@ -31,8 +32,8 @@ class FlextPluginDiscovery:
         """Initialize discovery with all strategies."""
         self.logger = FlextLogger(__name__)
         self.strategies: list[FlextPluginDiscovery.DiscoveryStrategy] = [
-            self.FileSystemStrategy(self.logger),  # type: ignore[assignment]
-            self.EntryPointStrategy(self.logger),  # type: ignore[assignment]
+            self.FileSystemStrategy(self.logger),
+            self.EntryPointStrategy(self.logger),
         ]
 
     def discover_plugins(
