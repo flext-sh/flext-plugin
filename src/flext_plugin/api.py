@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from flext_core import r
 from flext_core.container import FlextContainer
 from flext_core.loggings import FlextLogger
 
-from flext import r
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import FlextPluginPlatform, PluginExecution
 

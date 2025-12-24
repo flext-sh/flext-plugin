@@ -14,7 +14,8 @@ import argparse
 import socket
 import sys
 
-from flext import FlextContainer
+from flext_core import FlextContainer
+
 from flext_plugin import (
     FlextPluginApi,
     FlextPluginConstants,

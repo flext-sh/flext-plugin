@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import uuid
 
-from flext import FlextResult,
+from flext_core import  FlextResult,
     FlextService,
     FlextUtilities
 

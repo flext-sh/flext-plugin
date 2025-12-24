@@ -13,10 +13,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal, Self
 
+from flext_core import FlextModels as m_core
 from flext_core.utilities import u as flext_u
 from pydantic import Field, field_validator
 
-from flext import FlextModels as m_core
 from flext_plugin.constants import c
 
 
@@ -606,7 +606,8 @@ class FlextPluginModels(m_core):
         watch_path: str = Field(description="Path being watched")
         watch_interval: float = Field(description="Polling interval in seconds")
         callback: Callable[..., object] | None = Field(
-            default=None, description="Callback function reference",
+            default=None,
+            description="Callback function reference",
         )
         active: bool = Field(default=False, description="Whether watcher is active")
         last_modified: dict[str, object] = Field(

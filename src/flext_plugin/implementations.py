@@ -14,7 +14,8 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext import FlextLogger, r
+from flext_core import FlextLogger, r
+
 from flext_plugin.models import m
 from flext_plugin.protocols import p
 
@@ -591,7 +592,8 @@ class FlextPluginImplementations:
                 )
                 # Register loaded plugin
                 if isinstance(
-                    self._registry, FlextPluginImplementations.ConcretePluginRegistry,
+                    self._registry,
+                    FlextPluginImplementations.ConcretePluginRegistry,
                 ):
                     reg_result: r[None] = self._registry.register(plugin_entity)
                 else:

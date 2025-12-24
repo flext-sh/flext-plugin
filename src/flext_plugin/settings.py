@@ -9,11 +9,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from flext_core import r, u as u_core
 from flext_core.settings import FlextSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
-
-from flext import r, u as u_core
 
 
 @FlextSettings.auto_register("plugin")

@@ -11,7 +11,7 @@ from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from typing import cast
 
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
 
 
 class FlextPluginHandlers:
