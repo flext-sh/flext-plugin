@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 
@@ -191,14 +190,10 @@ class FlextPluginHandlers:
         """
         try:
             # Check if handler is async and callable
-            typed_handler = cast(
-                "Callable[[dict[str, object]], Awaitable[object]]",
-                handler,
-            )
-            if self._is_async_function(typed_handler) and callable(typed_handler):
-                return await typed_handler(event_data)
-            if callable(typed_handler):
-                return typed_handler(event_data)
+            if self._is_async_function(handler) and callable(handler):
+                return await handler(event_data)  # type: ignore[misc]
+            if callable(handler):
+                return handler(event_data)  # type: ignore[misc]
             msg = f"Handler is not callable: {type(handler)}"
             raise TypeError(msg)
         except Exception:

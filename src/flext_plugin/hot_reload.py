@@ -10,7 +10,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 from watchdog.events import (
@@ -156,8 +155,7 @@ class FlextPluginHotReload:
 
             # Start watchdog observer if available
             if Observer is not None:
-                fch = cast("type", FileChangeHandler)
-                self._event_handler = fch(
+                self._event_handler = FileChangeHandler(
                     self._handle_file_change,
                     self._watched_paths,
                     self.logger,
