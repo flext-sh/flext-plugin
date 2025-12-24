@@ -602,7 +602,9 @@ class FlextPluginImplementations:
                     plugin_version=concrete_plugin.version,
                 )
                 # Register loaded plugin
-                if isinstance(self._registry, FlextPluginImplementations.ConcretePluginRegistry):
+                if isinstance(
+                    self._registry, FlextPluginImplementations.ConcretePluginRegistry
+                ):
                     reg_result: r[None] = self._registry.register(plugin_entity)
                 else:
                     return r[object].fail("Registry is not a ConcretePluginRegistry")

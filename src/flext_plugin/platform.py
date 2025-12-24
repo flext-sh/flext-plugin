@@ -278,10 +278,12 @@ class FlextPluginPlatform(FlextService[None]):
                 raise ValueError(error_msg)
             if isinstance(plugin, Plugin):
                 return self._add_to_plugins(plugin)
-            return self._add_to_plugins(Plugin.create(
-                name=plugin.name,
-                plugin_version=plugin.plugin_version,
-            ))
+            return self._add_to_plugins(
+                Plugin.create(
+                    name=plugin.name,
+                    plugin_version=plugin.plugin_version,
+                )
+            )
 
         return (
             plugin.validate_business_rules()
