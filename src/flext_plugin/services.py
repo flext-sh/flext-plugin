@@ -92,7 +92,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
         if hasattr(self, "_container") and self._container is not None:
-            return cast("FlextContainer", self._container)
+            return self._container  # type: ignore[return-value]
         return FlextContainer.get_global()
 
     def discover_and_register_plugins(
@@ -300,17 +300,6 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             execution.mark_started()
             self._executions[execution.execution_id] = execution
 
-            # Execute plugin
-            cast(
-                "t.Execution.ExecutionContext",
-                {
-                    "plugin_id": plugin_name,
-                    "execution_id": execution.execution_id,
-                    "input_data": context,
-                    "status": "pending",
-                },
-            )
-
             # Note: Async executor execution not supported in sync context
             # Sync-only operations maintained per FLEXT requirements
             # )
@@ -414,7 +403,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         """
         plugin = self.get_plugin(plugin_name)
-        return cast("PlatformPlugin", plugin).status if plugin else None
+        return plugin.status if plugin else None  # type: ignore[attr-defined]
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
@@ -502,7 +491,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             "active_plugins": len([
                 p
                 for p in self._plugins.values()
-                if cast("PlatformPlugin", p).is_active()
+                if p.is_active()  # type: ignore[attr-defined]
             ]),
             "total_executions": len(self._executions),
             "running_executions": len([
