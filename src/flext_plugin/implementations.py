@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Protocol, cast, override
+from typing import Protocol, override
 
 from flext_core import FlextLogger, r
 
@@ -367,9 +367,7 @@ class FlextPluginImplementations:
                 if not isinstance(data, dict):
                     return r[object].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
-                transformed: dict[str, object] = dict[str, object](
-                    cast("dict[str, object]", data),
-                )
+                transformed: dict[str, object] = dict[str, object](data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[object].ok(transformed)
@@ -604,10 +602,10 @@ class FlextPluginImplementations:
                     plugin_version=concrete_plugin.version,
                 )
                 # Register loaded plugin
-                reg_result: r[None] = cast(
-                    "ConcretePluginRegistry",
-                    self._registry,
-                ).register(plugin_entity)
+                if isinstance(self._registry, FlextPluginImplementations.ConcretePluginRegistry):
+                    reg_result: r[None] = self._registry.register(plugin_entity)
+                else:
+                    return r[object].fail("Registry is not a ConcretePluginRegistry")
                 if not reg_result.success:
                     return r[object].fail(
                         f"Failed to register loaded plugin: {reg_result.error}",

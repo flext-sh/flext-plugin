@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
-from typing import ClassVar, cast
+from typing import ClassVar
 
 import yaml
 from flext_core import FlextUtilities, r
@@ -628,10 +628,7 @@ class FlextPluginUtilities(u):
                         and isinstance(merged_config[key], dict)
                     ):
                         # Recursively merge nested dictionaries
-                        if isinstance(merged_config[key], dict):
-                            base_nested_config = cast("dict", merged_config[key]).copy()
-                        else:
-                            base_nested_config = {}
+                        base_nested_config = merged_config[key].copy()  # type: ignore[attr-defined]
                         override_value = value.copy() if isinstance(value, dict) else {}
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
@@ -961,7 +958,7 @@ class FlextPluginUtilities(u):
         if not isinstance(v, dict):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
-        return cast("SettingsConfigDict", v)
+        return v  # type: ignore[return-value]
 
     @model_validator(mode="after")
     def validate_utilities_configuration(self) -> FlextPluginUtilities:

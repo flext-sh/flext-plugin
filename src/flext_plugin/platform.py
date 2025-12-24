@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import cast
 
 from flext_core import (
     FlextResult,
@@ -168,7 +167,7 @@ class FlextPluginPlatform(FlextService[None]):
             result = self.discovery.discover_plugins(paths)
             if result.is_success:
                 # Convert DiscoveryData objects to dicts
-                plugin_dicts = [
+                plugin_dicts: list[dict[str, object]] = [
                     {
                         "name": discovery_data.name,
                         "version": discovery_data.version,
@@ -179,7 +178,7 @@ class FlextPluginPlatform(FlextService[None]):
                     }
                     for discovery_data in result.value
                 ]
-                return FlextResult.ok(cast("list[dict[str, object]]", plugin_dicts))
+                return FlextResult.ok(plugin_dicts)
             return FlextResult[list[dict[str, object]]].fail(
                 result.error or "Discovery failed",
             )
@@ -207,7 +206,7 @@ class FlextPluginPlatform(FlextService[None]):
             result = self.loader.load_plugin(plugin_path)
             if result.is_success:
                 load_data = result.value
-                plugin_dict = {
+                plugin_dict: dict[str, object] = {
                     "name": load_data.name,
                     "version": load_data.version,
                     "path": str(load_data.path),
@@ -217,7 +216,7 @@ class FlextPluginPlatform(FlextService[None]):
                     if load_data.entry_file
                     else None,
                 }
-                return FlextResult.ok(cast("dict[str, object]", plugin_dict))
+                return FlextResult.ok(plugin_dict)
             return FlextResult[dict[str, object]].fail(result.error or "Load failed")
 
         def create_plugin_from_load_data(
@@ -277,7 +276,12 @@ class FlextPluginPlatform(FlextService[None]):
             if not registry_result:
                 error_msg = "Plugin registration failed"
                 raise ValueError(error_msg)
-            return self._add_to_plugins(cast("Plugin", plugin))
+            if isinstance(plugin, Plugin):
+                return self._add_to_plugins(plugin)
+            return self._add_to_plugins(Plugin.create(
+                name=plugin.name,
+                plugin_version=plugin.plugin_version,
+            ))
 
         return (
             plugin.validate_business_rules()
