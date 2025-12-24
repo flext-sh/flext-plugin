@@ -16,7 +16,7 @@ from datetime import UTC, datetime
 from typing import cast
 
 import pytest
-from flext_core import FlextModels
+from flext import FlextModels
 from pydantic import ValidationError
 
 from flext_plugin.constants import FlextPluginConstants

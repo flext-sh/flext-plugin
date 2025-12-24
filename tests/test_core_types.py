@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_core import FlextExceptions
+from flext import FlextExceptions
 
 from flext_plugin import (
     PluginExecutionResultModel,

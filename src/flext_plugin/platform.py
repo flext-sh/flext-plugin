@@ -9,11 +9,9 @@ from __future__ import annotations
 
 import uuid
 
-from flext_core import (
-    FlextResult,
+from flext import FlextResult,
     FlextService,
-    FlextUtilities,
-)
+    FlextUtilities
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p
@@ -282,7 +280,7 @@ class FlextPluginPlatform(FlextService[None]):
                 Plugin.create(
                     name=plugin.name,
                     plugin_version=plugin.plugin_version,
-                )
+                ),
             )
 
         return (

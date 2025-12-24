@@ -19,10 +19,10 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
+from flext import FlextUtilities, r
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 

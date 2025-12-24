@@ -10,10 +10,10 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar, Final, Literal
 
-from flext_core.constants import c_core
+from flext_core.constants import FlextConstants
 
 
-class FlextPluginConstants(c_core):
+class FlextPluginConstants(FlextConstants):
     """plugin constants with Python 3.13+ patterns.
 
     Usage:
@@ -36,7 +36,7 @@ class FlextPluginConstants(c_core):
         class Discovery:
             """Discovery-related constants."""
 
-            DEFAULT_TIMEOUT_SECONDS: Final[int] = c_core.Network.DEFAULT_TIMEOUT
+            DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
             DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
                 "/opt/flext/plugins",
@@ -203,7 +203,7 @@ class FlextPluginConstants(c_core):
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
 
-            SECURITY_SCAN_TIMEOUT: Final[int] = c_core.Network.DEFAULT_TIMEOUT
+            SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
             DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
             DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
                 "os",
@@ -258,7 +258,7 @@ class FlextPluginConstants(c_core):
 
             DEFAULT_INTERVAL_SECONDS: Final[int] = 2
             DEBOUNCE_MS: Final[int] = 500
-            MAX_RETRIES: Final[int] = c_core.Reliability.MAX_RETRY_ATTEMPTS
+            MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
             EVENT_CREATED: Final[str] = "created"
             EVENT_MODIFIED: Final[str] = "modified"
             EVENT_DELETED: Final[str] = "deleted"
@@ -277,7 +277,7 @@ class FlextPluginConstants(c_core):
             ]
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
             # Log level literal - reuse from flext-core (no duplication)
-            type LogLevelLiteral = c_core.Literals.LogLevelLiteral
+            type LogLevelLiteral = FlextConstants.Literals.LogLevelLiteral
             """Log level literal - references flext-core."""
             DEFAULT_RETENTION_DAYS: Final[int] = 30
             MIN_RETENTION_DAYS: Final[int] = 1
@@ -291,13 +291,13 @@ class FlextPluginConstants(c_core):
         class Files:
             """File extension constants."""
 
-            PYTHON_EXTENSION: Final[str] = c_core.Platform.EXT_PYTHON
-            YAML_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_YAML
-            JSON_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_JSON
-            TOML_CONFIG_EXTENSION: Final[str] = c_core.Platform.EXT_TOML
+            PYTHON_EXTENSION: Final[str] = FlextConstants.Platform.EXT_PYTHON
+            YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_YAML
+            JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_JSON
+            TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_TOML
             DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
             DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-            DEFAULT_CONFIG_DIR: Final[str] = c_core.Platform.DIR_CONFIG
+            DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
 
         # Validation constants
         class PluginValidation:

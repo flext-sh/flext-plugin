@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import t
+from flext import t
 
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.typings import t as t_plugin

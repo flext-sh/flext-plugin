@@ -293,20 +293,61 @@ class FlextPluginProtocols(m_core):
         class LoggerProtocol(Protocol):
             """Protocol for logging operations."""
 
-        def critical(self, message: str, *args: object, **kwargs: object) -> None:
-            """Log critical message."""
+            def critical(self, message: str, *args: object, **kwargs: object) -> None:
+                """Log critical message."""
+                ...
 
-        def error(self, message: str, *args: object, **kwargs: object) -> None:
-            """Log error message."""
+            def error(self, message: str, *args: object, **kwargs: object) -> None:
+                """Log error message."""
+                ...
 
-        def warning(self, message: str, *args: object, **kwargs: object) -> None:
-            """Log warning message."""
+            def warning(self, message: str, *args: object, **kwargs: object) -> None:
+                """Log warning message."""
+                ...
 
-        def info(self, message: str, *args: object, **kwargs: object) -> None:
-            """Log info message."""
+            def info(self, message: str, *args: object, **kwargs: object) -> None:
+                """Log info message."""
+                ...
 
-        def debug(self, message: str, *args: object, **kwargs: object) -> None:
-            """Log debug message."""
+            def debug(self, message: str, *args: object, **kwargs: object) -> None:
+                """Log debug message."""
+                ...
+
+        # =====================================================================
+        # DUCK TYPING PROTOCOLS
+        # =====================================================================
+        # Protocols for duck typing common plugin patterns.
+
+        @runtime_checkable
+        class PluginLoaderProtocol(Protocol):
+            """Protocol for plugin loader interface."""
+
+            def load_plugin(self, plugin_path: str | object) -> m_core.Result[object]:
+                """Load plugin from path."""
+                ...
+
+        @runtime_checkable
+        class PluginRegistryProtocol(Protocol):
+            """Protocol for plugin registry interface."""
+
+            def register(self, plugin: object) -> m_core.Result[None]:
+                """Register a plugin."""
+                ...
+
+            def get_plugin(self, plugin_name: str) -> m_core.Result[object]:
+                """Get plugin by name."""
+                ...
+
+        @runtime_checkable
+        class DiscoveryStrategyProtocol(Protocol):
+            """Strategy protocol for plugin discovery."""
+
+            def discover(
+                self,
+                paths: list[str],
+            ) -> m_core.Result[list[object]]:
+                """Discover plugins using this strategy."""
+                ...
 
 
 p = FlextPluginProtocols

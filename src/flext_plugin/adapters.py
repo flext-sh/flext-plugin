@@ -13,8 +13,7 @@ import importlib.util
 from collections.abc import Callable
 from pathlib import Path
 
-from flext_core import FlextLogger, T, r
-
+from flext import FlextLogger, T, r
 from flext_plugin.models import m
 from flext_plugin.protocols import p
 from flext_plugin.typings import t

@@ -11,7 +11,6 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
 from watchdog.events import (
     DirModifiedEvent,
     FileModifiedEvent,
@@ -19,6 +18,7 @@ from watchdog.events import (
 )
 from watchdog.observers import Observer
 
+from flext import FlextLogger, FlextResult
 from flext_plugin.models import FlextPluginModels
 
 

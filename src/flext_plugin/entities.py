@@ -24,8 +24,9 @@ from datetime import UTC, datetime
 from typing import Self, TypeVar
 from uuid import uuid4
 
-from flext_core import FlextModels, FlextResult, r
 from pydantic import Field
+
+from flext import FlextModels, FlextResult, r
 
 T = TypeVar("T")
 

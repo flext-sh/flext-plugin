@@ -7,8 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import r, x
-from flext_core.container import FlextContainer
+from flext import r, x, FlextContainer
 
 from flext_plugin.models import m
 from flext_plugin.platform import PluginExecution
@@ -90,7 +89,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
         if hasattr(self, "_container") and self._container is not None:
-            return self._container  # type: ignore[return-value]
+            return cast("FlextContainer", self._container)
         return FlextContainer.get_global()
 
     def discover_and_register_plugins(
@@ -401,7 +400,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         """
         plugin = self.get_plugin(plugin_name)
-        return plugin.status if plugin else None  # type: ignore[attr-defined]
+        return getattr(plugin, "status", None) if plugin else None
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
@@ -489,7 +488,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             "active_plugins": len([
                 p
                 for p in self._plugins.values()
-                if p.is_active()  # type: ignore[attr-defined]
+                if hasattr(p, "is_active") and p.is_active()
             ]),
             "total_executions": len(self._executions),
             "running_executions": len([

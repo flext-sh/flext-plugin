@@ -11,11 +11,10 @@ from __future__ import annotations
 
 import importlib.metadata
 from pathlib import Path
-from typing import Protocol
 
-from flext_core import FlextLogger, FlextResult
-
+from flext import FlextLogger, FlextResult
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.protocols import p
 
 
 class FlextPluginDiscovery:
@@ -25,15 +24,8 @@ class FlextPluginDiscovery:
     Delegates discovery logic to strategy classes, Pydantic handles validation.
     """
 
-    class DiscoveryStrategy(Protocol):
-        """Strategy protocol for plugin discovery."""
-
-        def discover(
-            self,
-            paths: list[str],
-        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
-            """Discover plugins using this strategy."""
-            ...
+    # Protocol reference from centralized protocols.py for backward compatibility
+    DiscoveryStrategy = p.Plugin.DiscoveryStrategyProtocol
 
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""

@@ -12,12 +12,15 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Protocol, override
+from typing import override
 
-from flext_core import FlextLogger, r
-
+from flext import FlextLogger, r
 from flext_plugin.models import m
 from flext_plugin.protocols import p
+
+# Protocol references from centralized protocols.py for backward compatibility
+FlextPluginLoaderProtocol = p.Plugin.PluginLoaderProtocol
+FlextPluginRegistryProtocol = p.Plugin.PluginRegistryProtocol
 
 
 class FlextPluginImplementations:
@@ -31,24 +34,9 @@ class FlextPluginImplementations:
     per module while preserving existing API surface for seamless migration.
     """
 
-    # Define minimal protocols for types that don't exist in flext-core yet
-    class FlextPluginLoaderProtocol(Protocol):
-        """Protocol for plugin loader interface."""
-
-        def load_plugin(self, _plugin_path: str | Path) -> r[object]:
-            """Load plugin from path."""
-            ...
-
-    class FlextPluginRegistryProtocol(Protocol):
-        """Protocol for plugin registry interface."""
-
-        def register(self, _plugin: object) -> r[None]:
-            """Register a plugin."""
-            ...
-
-        def get_plugin(self, _plugin_name: str) -> r[object]:
-            """Get plugin by name."""
-            ...
+    # Protocol aliases from centralized protocols.py
+    FlextPluginLoaderProtocol = p.Plugin.PluginLoaderProtocol
+    FlextPluginRegistryProtocol = p.Plugin.PluginRegistryProtocol
 
     # Type aliases for cleaner code
     FlextPluginLoader = FlextPluginLoaderProtocol
@@ -603,7 +591,7 @@ class FlextPluginImplementations:
                 )
                 # Register loaded plugin
                 if isinstance(
-                    self._registry, FlextPluginImplementations.ConcretePluginRegistry
+                    self._registry, FlextPluginImplementations.ConcretePluginRegistry,
                 ):
                     reg_result: r[None] = self._registry.register(plugin_entity)
                 else:
