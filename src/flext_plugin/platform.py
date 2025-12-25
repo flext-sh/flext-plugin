@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import uuid
 
-from flext_core import  FlextResult,
+from flext_core import (
+    FlextResult,
     FlextService,
-    FlextUtilities
+    FlextUtilities,
+)
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p

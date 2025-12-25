@@ -36,7 +36,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import (
+
+
     FlextPlugin,
     FlextPluginEventHandler,
     FlextPluginHandler,

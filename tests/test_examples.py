@@ -13,7 +13,8 @@ import sys
 from pathlib import Path
 from typing import cast
 
-from flext_plugin import (
+
+
     PluginStatus,
     PluginType,
     create_flext_plugin,

@@ -10,7 +10,8 @@ from __future__ import annotations
 import pytest
 
 # REAL imports - apenas classes que existem
-from flext_plugin import (
+
+
     FlextPlugin,
     PluginExecutionContextModel,
     PluginManagerResultModel,

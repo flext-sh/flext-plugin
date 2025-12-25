@@ -7,8 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
 from flext_core import FlextContainer, r, x
-from typings import cast
 
 from flext_plugin.models import m
 from flext_plugin.platform import PluginExecution

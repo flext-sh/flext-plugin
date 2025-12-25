@@ -20,7 +20,8 @@ import pytest
 from anyio import Path as AnyioPath
 from flext import FlextContainer, FlextExceptions, FlextService
 
-from flext_plugin import (
+
+
     FlextPluginModels,
     FlextPluginService,
 )

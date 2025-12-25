@@ -15,7 +15,8 @@ from typing import override
 import pytest
 from flext import FlextResult
 
-from flext_plugin import (
+
+
     Plugin,
     PluginRegistry,
 )
