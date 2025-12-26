@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import FlextResult, FlextService
+from flext_core import FlextResult, FlextService
 
 
 class TestDomainServiceExceptionCoverage:

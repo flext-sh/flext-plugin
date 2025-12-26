@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 # Protocol methods inherit documentation from the Protocol class docstring
+# mypy: disable-error-code=empty-body
 
 from __future__ import annotations
 
@@ -41,7 +42,7 @@ class FlextPluginProtocols(m_core):
         """Plugin domain-specific protocols."""
 
         @runtime_checkable
-        class PluginLoader(Protocol):
+        class PluginLoader(Protocol):  # type: ignore[empty-body]
             """Protocol for plugin loading operations."""
 
         def load_plugin(
@@ -290,7 +291,7 @@ class FlextPluginProtocols(m_core):
             """Check if plugin is stored."""
 
         @runtime_checkable
-        class LoggerProtocol(Protocol):
+        class LoggerProtocol(Protocol):  # type: ignore[empty-body]
             """Protocol for logging operations."""
 
             def critical(self, message: str, *args: object, **kwargs: object) -> None:
@@ -319,7 +320,7 @@ class FlextPluginProtocols(m_core):
         # Protocols for duck typing common plugin patterns.
 
         @runtime_checkable
-        class PluginLoaderProtocol(Protocol):
+        class PluginLoaderProtocol(Protocol):  # type: ignore[empty-body]
             """Protocol for plugin loader interface."""
 
             def load_plugin(self, plugin_path: str | object) -> m_core.Result[object]:
@@ -327,7 +328,7 @@ class FlextPluginProtocols(m_core):
                 ...
 
         @runtime_checkable
-        class PluginRegistryProtocol(Protocol):
+        class PluginRegistryProtocol(Protocol):  # type: ignore[empty-body]
             """Protocol for plugin registry interface."""
 
             def register(self, plugin: object) -> m_core.Result[None]:
@@ -339,7 +340,7 @@ class FlextPluginProtocols(m_core):
                 ...
 
         @runtime_checkable
-        class DiscoveryStrategyProtocol(Protocol):
+        class DiscoveryStrategyProtocol(Protocol):  # type: ignore[empty-body]
             """Strategy protocol for plugin discovery."""
 
             def discover(

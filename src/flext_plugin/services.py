@@ -9,8 +9,10 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import FlextContainer, r, x
+from flext_core import r, x
+from flext_core.container import FlextContainer
 
+from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin.models import m
 from flext_plugin.platform import PluginExecution
 from flext_plugin.protocols import p
@@ -45,6 +47,13 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         ```
     """
 
+    _discovery: FlextPluginAdapters.FileSystemDiscoveryAdapter
+    _loader: FlextPluginAdapters.DynamicLoaderAdapter
+    _executor: FlextPluginAdapters.PluginExecutorAdapter
+    _security: FlextPluginAdapters.PluginSecurityAdapter
+    _registry: FlextPluginAdapters.MemoryRegistryAdapter
+    _monitoring: FlextPluginAdapters.PluginMonitoringAdapter
+
     def __init__(
         self,
         container: object | None = None,
@@ -75,13 +84,31 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         # Initialize mixins for dependency injection
         x.__init__(self)
 
-        # Store protocol implementations
-        self._discovery = discovery
-        self._loader = loader
-        self._executor = executor
-        self._security = security
-        self._registry = registry
-        self._monitoring = monitoring
+        # Store protocol implementations with defaults
+        self._discovery = cast(
+            "FlextPluginAdapters.FileSystemDiscoveryAdapter",
+            discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter(),
+        )
+        self._loader = cast(
+            "FlextPluginAdapters.DynamicLoaderAdapter",
+            loader or FlextPluginAdapters.DynamicLoaderAdapter(),
+        )
+        self._executor = cast(
+            "FlextPluginAdapters.PluginExecutorAdapter",
+            executor or FlextPluginAdapters.PluginExecutorAdapter(),
+        )
+        self._security = cast(
+            "FlextPluginAdapters.PluginSecurityAdapter",
+            security or FlextPluginAdapters.PluginSecurityAdapter(),
+        )
+        self._registry = cast(
+            "FlextPluginAdapters.MemoryRegistryAdapter",
+            registry or FlextPluginAdapters.MemoryRegistryAdapter(),
+        )
+        self._monitoring = cast(
+            "FlextPluginAdapters.PluginMonitoringAdapter",
+            monitoring or FlextPluginAdapters.PluginMonitoringAdapter(),
+        )
 
         # Internal state
         self._plugins: dict[str, m.Plugin] = {}
@@ -116,7 +143,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             if discovery_result.is_failure:
                 return r.fail(f"Discovery failed: {discovery_result.error}")
 
-            plugins_data = discovery_result.value
+            plugins_data = cast("list[m.DiscoveryData]", discovery_result.value)
             registered_plugins = []
 
             for plugin_data in plugins_data:
@@ -124,8 +151,8 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
                 plugin = m.Plugin.create(
                     name=plugin_data.name,
                     plugin_version=plugin_data.version,
-                    description=plugin_data.metadata.get("description", ""),
-                    author=plugin_data.metadata.get("author", ""),
+                    description=str(plugin_data.metadata.get("description", "")),
+                    author=str(plugin_data.metadata.get("author", "")),
                     plugin_type=plugin_data.discovery_type,
                     metadata=plugin_data.metadata,
                 )
@@ -211,7 +238,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             if load_result.is_failure:
                 return r.fail(f"Plugin loading failed: {load_result.error}")
 
-            plugin_data = load_result.value
+            plugin_data = cast("m.LoadData", load_result.value)
             plugin = m.Plugin.create(
                 name=plugin_data.name,
                 plugin_version=plugin_data.version,
@@ -312,7 +339,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
             # Mark execution as completed
             execution.mark_completed(success=True)
-            execution.result = exec_result.value
+            execution.result = cast("dict[str, object]", exec_result.value)
 
             # Record execution metrics
             plugin.record_execution(0.0, True)
@@ -641,7 +668,9 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         # Plugin stores config in metadata
         config_data = plugin.metadata.get("config", {})
-        config = m.Config(plugin_name=plugin.name, settings=config_data)
+        config = m.Config(
+            plugin_name=plugin.name, settings=cast("dict[str, object]", config_data)
+        )
         return r.ok(config)
 
     def update_plugin_config(
