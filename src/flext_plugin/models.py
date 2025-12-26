@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Literal, Self
 
 from flext_core import FlextModels as m_core
+from flext_core.result import r
 from flext_core.utilities import u as flext_u
 from pydantic import Field, field_validator
 
@@ -170,8 +171,19 @@ class FlextPluginModels(m_core):
             New Plugin entity instance
 
             """
+            # Create instance directly with proper types
+            if entity_id is not None:
+                return cls(
+                    unique_id=entity_id,
+                    name=name,
+                    plugin_version=plugin_version,
+                    description=description,
+                    author=author,
+                    plugin_type=plugin_type,
+                    is_enabled=is_enabled,
+                    metadata=metadata or {},
+                )
             return cls(
-                id=entity_id,
                 name=name,
                 plugin_version=plugin_version,
                 description=description,
@@ -181,29 +193,29 @@ class FlextPluginModels(m_core):
                 metadata=metadata or {},
             )
 
-        def enable(self) -> r[None]:
+        def enable(self) -> r[bool]:
             """Enable the plugin.
 
             Returns:
-            r indicating success or failure
+            r[bool] indicating success or failure
 
             """
             if self.is_enabled:
-                return r.fail("Plugin is already enabled")
+                return r[bool].fail("Plugin is already enabled")
             self.is_enabled = True
-            return r.ok(None)
+            return r[bool].ok(True)
 
-        def disable(self) -> r[None]:
+        def disable(self) -> r[bool]:
             """Disable the plugin.
 
             Returns:
-            r indicating success or failure
+            r[bool] indicating success or failure
 
             """
             if not self.is_enabled:
-                return r.fail("Plugin is already disabled")
+                return r[bool].fail("Plugin is already disabled")
             self.is_enabled = False
-            return r.ok(None)
+            return r[bool].ok(True)
 
         def record_execution(self, execution_time: float, success: bool) -> None:
             """Record plugin execution metrics.
@@ -213,7 +225,7 @@ class FlextPluginModels(m_core):
                 success: Whether the execution was successful
 
             """
-            # Update metadata with execution info
+            # Update metadata with execution info - use proper type narrowing
             if "execution_count" not in self.metadata:
                 self.metadata["execution_count"] = 0
             if "total_execution_time" not in self.metadata:
@@ -223,12 +235,23 @@ class FlextPluginModels(m_core):
             if "failure_count" not in self.metadata:
                 self.metadata["failure_count"] = 0
 
-            self.metadata["execution_count"] += 1
-            self.metadata["total_execution_time"] += execution_time
+            # Type-safe arithmetic using type narrowing
+            exec_count = self.metadata["execution_count"]
+            if isinstance(exec_count, int):
+                self.metadata["execution_count"] = exec_count + 1
+
+            total_time = self.metadata["total_execution_time"]
+            if isinstance(total_time, (int, float)):
+                self.metadata["total_execution_time"] = total_time + execution_time
+
             if success:
-                self.metadata["success_count"] += 1
+                success_count = self.metadata["success_count"]
+                if isinstance(success_count, int):
+                    self.metadata["success_count"] = success_count + 1
             else:
-                self.metadata["failure_count"] += 1
+                failure_count = self.metadata["failure_count"]
+                if isinstance(failure_count, int):
+                    self.metadata["failure_count"] = failure_count + 1
 
         def record_error(self, error_message: str) -> None:
             """Record plugin error.
@@ -242,7 +265,10 @@ class FlextPluginModels(m_core):
             if "last_error" not in self.metadata:
                 self.metadata["last_error"] = ""
 
-            self.metadata["error_count"] += 1
+            # Type-safe arithmetic
+            error_count = self.metadata["error_count"]
+            if isinstance(error_count, int):
+                self.metadata["error_count"] = error_count + 1
             self.metadata["last_error"] = error_message
 
         def activate(self) -> bool:
@@ -269,7 +295,7 @@ class FlextPluginModels(m_core):
             self.is_enabled = False
             return True
 
-        def validate_business_rules(self) -> r[None]:
+        def validate_business_rules(self) -> r[bool]:
             """Validate plugin business rules.
 
             Business Rules:
@@ -278,13 +304,13 @@ class FlextPluginModels(m_core):
             - Plugin type must be valid
 
             Returns:
-            r indicating validation success or failure
+            r[bool] indicating validation success or failure
 
             """
             min_version_parts = 2
             max_version_parts = 3
             if not self.name or not self.name.strip():
-                return r.fail("Plugin name cannot be empty")
+                return r[bool].fail("Plugin name cannot be empty")
 
             # Validate semantic version
             version_parts = self.plugin_version.split(".")
@@ -292,11 +318,11 @@ class FlextPluginModels(m_core):
                 len(version_parts) < min_version_parts
                 or len(version_parts) > max_version_parts
             ):
-                return r.fail(
+                return r[bool].fail(
                     f"Invalid semantic version: {self.plugin_version}",
                 )
             if not all(part.isdigit() for part in version_parts if part):
-                return r.fail(
+                return r[bool].fail(
                     f"Version parts must be numeric: {self.plugin_version}",
                 )
 
@@ -324,9 +350,9 @@ class FlextPluginModels(m_core):
                 "language",
             }
             if self.plugin_type not in valid_types:
-                return r.fail(f"Invalid plugin type: {self.plugin_type}")
+                return r[bool].fail(f"Invalid plugin type: {self.plugin_type}")
 
-            return r.ok(None)
+            return r[bool].ok(True)
 
     class ExecutionResult(m_core.Value):
         """Plugin execution result - immutable execution outcome.

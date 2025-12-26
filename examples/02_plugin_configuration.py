@@ -88,8 +88,12 @@ def main() -> None:
     FlextPluginApi(container)
 
     print("Plugin configuration patterns demonstration")
-    print(f"Available plugin types: {FlextPluginConstants.Types.ALL_PLUGIN_TYPES}")
-    print(f"Plugin status constants: {FlextPluginConstants.Lifecycle.STATUS_ACTIVE}")
+    print(
+        f"Available plugin types: {FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES}"
+    )
+    print(
+        f"Plugin status constants: {FlextPluginConstants.Plugin.Lifecycle.STATUS_ACTIVE}"
+    )
 
     print(f"Database config created: {db_config}")
 

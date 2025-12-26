@@ -144,7 +144,7 @@ class FlextPluginAdapters:
                     discovery_method="file_system",
                 )
             except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
+                self.logger.exception(f"Failed to create discovery data for {path}")
                 return None
 
         def _discover_directory(
@@ -166,7 +166,7 @@ class FlextPluginAdapters:
                     elif item.is_dir() and not item.name.startswith("__"):
                         discovered.extend(self._discover_directory(item))
             except (OSError, PermissionError):
-                self.logger.exception("Failed to discover directory %s", path)
+                self.logger.exception(f"Failed to discover directory {path}")
 
             return discovered
 
@@ -229,20 +229,23 @@ class FlextPluginAdapters:
             self,
             _plugin_name: str,
             _context: dict[str, object],
-        ) -> r[dict[str, object]]:
+        ) -> p.Result[dict[str, object]]:
             """Execute plugin."""
-            return self._execute_safe(
+            result: r[dict[str, object]] = self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
                 f"Execution error: {_plugin_name}",
             )
+            return result
 
-        def stop_execution(self, _execution_id: str) -> r[bool]:
+        def stop_execution(self, _execution_id: str) -> p.Result[bool]:
             """Stop plugin execution."""
-            return r.ok(True)
+            result: r[bool] = r.ok(True)
+            return result
 
-        def get_execution_status(self, _execution_id: str) -> r[str]:
+        def get_execution_status(self, _execution_id: str) -> p.Result[str]:
             """Get execution status."""
-            return r.ok("completed")
+            result: r[str] = r.ok("completed")
+            return result
 
         def list_running_executions(self) -> list[str]:
             """List running executions."""

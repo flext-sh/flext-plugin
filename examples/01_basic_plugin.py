@@ -27,9 +27,9 @@ def main() -> None:
 
     # Demonstrate status constants
     print("Available plugin statuses:")
-    print(f"  - Active: {FlextPluginConstants.Lifecycle.STATUS_ACTIVE}")
-    print(f"  - Inactive: {FlextPluginConstants.Lifecycle.STATUS_INACTIVE}")
-    print(f"  - Loading: {FlextPluginConstants.Lifecycle.STATUS_LOADING}")
+    print(f"  - Active: {FlextPluginConstants.Plugin.Lifecycle.STATUS_ACTIVE}")
+    print(f"  - Inactive: {FlextPluginConstants.Plugin.Lifecycle.STATUS_INACTIVE}")
+    print(f"  - Loading: {FlextPluginConstants.Plugin.Lifecycle.STATUS_LOADING}")
 
     # Example of how to use the API (commented out since we don't have actual plugins)
     # discovery_result = api.discover_plugins(["./plugins"])

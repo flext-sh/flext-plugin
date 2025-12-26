@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 
@@ -71,9 +70,13 @@ class FlextPluginHandlers:
             }
             self._handlers[event_type].append(handler_info)
 
-            # Sort by priority (highest first)
+            # Sort by priority (highest first) - type-safe sorting
+            def get_priority(handler_info: dict[str, object]) -> int:
+                priority = handler_info.get("priority", 0)
+                return priority if isinstance(priority, int) else 0
+
             self._handlers[event_type].sort(
-                key=lambda x: x.get("priority", 0) or 0,
+                key=get_priority,
                 reverse=True,
             )
 
@@ -81,7 +84,7 @@ class FlextPluginHandlers:
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception("Failed to register handler for %s", event_type)
+            self.logger.exception(f"Failed to register handler for {event_type}")
             return FlextResult.fail(f"Handler registration error: {e!s}")
 
     def unregister_handler(
@@ -120,7 +123,7 @@ class FlextPluginHandlers:
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception("Failed to unregister handler for %s", event_type)
+            self.logger.exception(f"Failed to unregister handler for {event_type}")
             return FlextResult.fail(f"Handler unregistration error: {e!s}")
 
     async def trigger_event(
@@ -162,7 +165,7 @@ class FlextPluginHandlers:
                     result = await self._execute_handler(handler, event_data)
                     results.append(result)
                 except Exception as e:
-                    self.logger.exception("Handler execution failed for %s", event_type)
+                    self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append({"error": str(e), "success": False})
 
             self.logger.debug(
@@ -171,12 +174,12 @@ class FlextPluginHandlers:
             return FlextResult.ok(results)
 
         except Exception as e:
-            self.logger.exception("Failed to trigger event %s", event_type)
+            self.logger.exception(f"Failed to trigger event {event_type}")
             return FlextResult.fail(f"Event triggering error: {e!s}")
 
     async def _execute_handler(
         self,
-        handler: object,
+        handler: Callable[..., object] | Callable[..., Awaitable[object]],
         event_data: dict[str, object],
     ) -> object:
         """Execute a single handler with proper error handling.
@@ -190,15 +193,13 @@ class FlextPluginHandlers:
 
         """
         try:
-            # Check if handler is async and callable
-            if self._is_async_function(handler) and callable(handler):
-                return await cast("Callable[[object], Awaitable[object]]", handler)(
-                    event_data
-                )
-            if callable(handler):
-                return cast("Callable[[object], object]", handler)(event_data)
-            msg = f"Handler is not callable: {type(handler)}"
-            raise TypeError(msg)
+            # Check if handler is async - callable check redundant with new signature
+            if self._is_async_function(handler):
+                async_result = handler(event_data)
+                if isinstance(async_result, Awaitable):
+                    return await async_result
+                return async_result
+            return handler(event_data)
         except Exception:
             self.logger.exception("Handler execution failed")
             raise
@@ -300,7 +301,8 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info("Plugin discovered: %s", plugin_name)
+        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        self.logger.info("Plugin discovered: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_loaded(
@@ -317,7 +319,8 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info("Plugin loaded: %s", plugin_name)
+        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        self.logger.info("Plugin loaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_executed(
@@ -337,11 +340,18 @@ class FlextPluginHandlers:
         execution_id = event_data.get("execution_id", "unknown")
         success = event_data.get("success", False)
 
+        # Convert to proper types for logger
+        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        exec_str = (
+            str(execution_id) if not isinstance(execution_id, str) else execution_id
+        )
+        success_str = str(success) if not isinstance(success, bool) else success
+
         self.logger.info(
             "Plugin executed: %s (execution: %s, success: %s)",
-            plugin_name,
-            execution_id,
-            success,
+            name_str,
+            exec_str,
+            success_str,
         )
         return {
             "success": True,
@@ -366,7 +376,13 @@ class FlextPluginHandlers:
         plugin_name = event_data.get("plugin_name", "unknown")
         error_message = event_data.get("error_message", "Unknown error")
 
-        self.logger.error("Plugin error: %s - %s", plugin_name, error_message)
+        # Convert to proper types for logger
+        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        error_str = (
+            str(error_message) if not isinstance(error_message, str) else error_message
+        )
+
+        self.logger.error("Plugin error: %s - %s", name_str, error_str)
         return {
             "success": True,
             "plugin_name": plugin_name,
@@ -387,7 +403,8 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        self.logger.info("Plugin unloaded: %s", plugin_name)
+        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        self.logger.info("Plugin unloaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
     def register_default_handlers(self) -> FlextResult[bool]:

@@ -27,18 +27,16 @@ class FlextPluginTypes(FlextTypes):
         type StringDict = dict[str, str]
         type IntDict = dict[str, int]
         type FloatDict = dict[str, float]
-        type AnyList = list[object]
-        type AnyDict = dict[str, object]
 
-        # Plugin types
-        type PluginList = list[dict[str, object]]
-        type PluginDict = dict[str, object]
-        type ConfigDict = dict[str, object]
-        type SettingsDict = dict[str, object]
-        type MetadataDict = dict[str, object]
-        type InputDict = dict[str, object]
-        type OutputDict = dict[str, object]
-        type PluginEntity = dict[str, object]
+        # Plugin types - Using JsonDict from FlextTypes for JSON-like data
+        type PluginList = list[FlextTypes.Core.JsonDict]
+        type PluginDict = FlextTypes.Core.JsonDict
+        type ConfigDict = FlextTypes.Core.JsonDict
+        type SettingsDict = FlextTypes.Core.JsonDict
+        type MetadataDict = FlextTypes.Core.JsonDict
+        type InputDict = FlextTypes.Core.JsonDict
+        type OutputDict = FlextTypes.Core.JsonDict
+        type PluginEntity = FlextTypes.Core.JsonDict
 
     class Lifecycle:
         """Plugin lifecycle and status type aliases."""
@@ -53,44 +51,44 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = dict[str, object]
+        type SecurityConfig = FlextTypes.Core.JsonDict
 
     class Performance:
         """Performance metrics and monitoring type aliases."""
 
-        type Metrics = dict[str, object]
-        type PerformanceData = dict[str, object]
-        type ResourceUsage = dict[str, object]
+        type Metrics = FlextTypes.Core.JsonDict
+        type PerformanceData = FlextTypes.Core.JsonDict
+        type ResourceUsage = FlextTypes.Core.JsonDict
 
     class Discovery:
         """Plugin discovery type aliases."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = dict[str, object]
-        type PluginLoader = object
+        type DiscoveryResult = FlextTypes.Core.JsonDict
+        type PluginLoader = FlextTypes.Core.GeneralValueType
         type EntryPoint = str
 
     class Execution:
         """Plugin execution type aliases."""
 
-        type ExecutionContext = dict[str, object]
-        type ExecutionResult = dict[str, object]
+        type ExecutionContext = FlextTypes.Core.JsonDict
+        type ExecutionResult = FlextTypes.Core.JsonDict
         type ExecutionError = str
-        type ResourceLimits = dict[str, object]
+        type ResourceLimits = FlextTypes.Core.JsonDict
 
     class Registry:
         """Plugin registry type aliases."""
 
-        type RegistryConfig = dict[str, object]
-        type RegistryEntry = dict[str, object]
-        type RegistrySync = dict[str, object]
+        type RegistryConfig = FlextTypes.Core.JsonDict
+        type RegistryEntry = FlextTypes.Core.JsonDict
+        type RegistrySync = FlextTypes.Core.JsonDict
 
     class HotReload:
         """Hot reload and file watching type aliases."""
 
-        type WatchConfig = dict[str, object]
-        type ReloadEvent = dict[str, object]
-        type FileWatcher = object
+        type WatchConfig = FlextTypes.Core.JsonDict
+        type ReloadEvent = FlextTypes.Core.JsonDict
+        type FileWatcher = FlextTypes.Core.GeneralValueType
 
 
 # Standard FLEXT alias for namespace access

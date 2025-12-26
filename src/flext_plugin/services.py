@@ -7,12 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
 from flext_core import r, x
 from flext_core.container import FlextContainer
 
 from flext_plugin.adapters import FlextPluginAdapters
+from flext_plugin.constants import c
 from flext_plugin.models import m
 from flext_plugin.platform import PluginExecution
 from flext_plugin.protocols import p
@@ -47,12 +46,13 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         ```
     """
 
-    _discovery: FlextPluginAdapters.FileSystemDiscoveryAdapter
-    _loader: FlextPluginAdapters.DynamicLoaderAdapter
-    _executor: FlextPluginAdapters.PluginExecutorAdapter
-    _security: FlextPluginAdapters.PluginSecurityAdapter
-    _registry: FlextPluginAdapters.MemoryRegistryAdapter
-    _monitoring: FlextPluginAdapters.PluginMonitoringAdapter
+    # Use protocol types (interfaces) for attributes - follows Dependency Inversion
+    _discovery: p.Plugin.PluginDiscovery
+    _loader: p.Plugin.PluginLoader
+    _executor: p.Plugin.PluginExecution
+    _security: p.Plugin.PluginSecurity
+    _registry: p.Plugin.PluginRegistry
+    _monitoring: p.Plugin.PluginMonitoring
 
     def __init__(
         self,
@@ -84,31 +84,14 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         # Initialize mixins for dependency injection
         x.__init__(self)
 
-        # Store protocol implementations with defaults
-        self._discovery = cast(
-            "FlextPluginAdapters.FileSystemDiscoveryAdapter",
-            discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter(),
-        )
-        self._loader = cast(
-            "FlextPluginAdapters.DynamicLoaderAdapter",
-            loader or FlextPluginAdapters.DynamicLoaderAdapter(),
-        )
-        self._executor = cast(
-            "FlextPluginAdapters.PluginExecutorAdapter",
-            executor or FlextPluginAdapters.PluginExecutorAdapter(),
-        )
-        self._security = cast(
-            "FlextPluginAdapters.PluginSecurityAdapter",
-            security or FlextPluginAdapters.PluginSecurityAdapter(),
-        )
-        self._registry = cast(
-            "FlextPluginAdapters.MemoryRegistryAdapter",
-            registry or FlextPluginAdapters.MemoryRegistryAdapter(),
-        )
-        self._monitoring = cast(
-            "FlextPluginAdapters.PluginMonitoringAdapter",
-            monitoring or FlextPluginAdapters.PluginMonitoringAdapter(),
-        )
+        # Store protocol implementations with defaults - no cast needed
+        # Concrete adapters implement the protocols
+        self._discovery = discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter()
+        self._loader = loader or FlextPluginAdapters.DynamicLoaderAdapter()
+        self._executor = executor or FlextPluginAdapters.PluginExecutorAdapter()
+        self._security = security or FlextPluginAdapters.PluginSecurityAdapter()
+        self._registry = registry or FlextPluginAdapters.MemoryRegistryAdapter()
+        self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
 
         # Internal state
         self._plugins: dict[str, m.Plugin] = {}
@@ -117,8 +100,8 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     @property
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
-        if hasattr(self, "_container") and self._container is not None:
-            return cast("FlextContainer", self._container)
+        if hasattr(self, "_container") and isinstance(self._container, FlextContainer):
+            return self._container
         return FlextContainer.get_global()
 
     def discover_and_register_plugins(
@@ -143,17 +126,25 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             if discovery_result.is_failure:
                 return r.fail(f"Discovery failed: {discovery_result.error}")
 
-            plugins_data = cast("list[m.DiscoveryData]", discovery_result.value)
+            # Type narrowing - discovery returns list of DiscoveryData
+            if not isinstance(discovery_result.value, list):
+                return r.fail("Discovery did not return a list")
+            plugins_data: list[m.DiscoveryData] = discovery_result.value
             registered_plugins = []
 
             for plugin_data in plugins_data:
                 # Create plugin entity
+                # Note: discovery_type is how plugin was found (file/entry_point)
+                # plugin_type should come from metadata or default to "utility"
+                plugin_type_str = str(
+                    plugin_data.metadata.get("plugin_type", "utility")
+                )
                 plugin = m.Plugin.create(
                     name=plugin_data.name,
                     plugin_version=plugin_data.version,
                     description=str(plugin_data.metadata.get("description", "")),
                     author=str(plugin_data.metadata.get("author", "")),
-                    plugin_type=plugin_data.discovery_type,
+                    plugin_type=plugin_type_str,
                     metadata=plugin_data.metadata,
                 )
 
@@ -238,13 +229,18 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             if load_result.is_failure:
                 return r.fail(f"Plugin loading failed: {load_result.error}")
 
-            plugin_data = cast("m.LoadData", load_result.value)
+            # Type narrowing - loader returns LoadData
+            if not isinstance(load_result.value, m.LoadData):
+                return r.fail("Loader did not return LoadData")
+            plugin_data: m.LoadData = load_result.value
+            # load_type is how plugin was loaded (file/directory/entry_point), not the plugin type
+            # Use default utility type; actual type should come from plugin metadata
             plugin = m.Plugin.create(
                 name=plugin_data.name,
                 plugin_version=plugin_data.version,
                 description=plugin_data.module.__doc__ or "",
                 author="",
-                plugin_type=plugin_data.load_type,
+                plugin_type=c.Plugin.PluginType.UTILITY,
                 metadata={"module": plugin_data.module, "path": str(plugin_data.path)},
             )
 
@@ -286,7 +282,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             return r.ok(plugin)
 
         except Exception as e:
-            self.logger.exception("Failed to load plugin from %s", plugin_path)
+            self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return r.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
@@ -339,7 +335,9 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
             # Mark execution as completed
             execution.mark_completed(success=True)
-            execution.result = cast("dict[str, object]", exec_result.value)
+            # Type narrowing - executor returns dict result
+            if isinstance(exec_result.value, dict):
+                execution.result = exec_result.value
 
             # Record execution metrics
             plugin.record_execution(0.0, True)
@@ -348,7 +346,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             return r.ok(execution)
 
         except Exception as e:
-            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
+            self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
             return r.fail(f"Execution error: {e!s}")
 
     async def unload_plugin(self, plugin_name: str) -> r[bool]:
@@ -394,7 +392,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             return r.ok(True)
 
         except Exception as e:
-            self.logger.exception("Failed to unload plugin '%s'", plugin_name)
+            self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
             return r.fail(f"Unloading error: {e!s}")
 
     def get_plugin(self, plugin_name: str) -> m.Plugin | None:
@@ -472,7 +470,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             return r.ok(metrics_result.value)
 
         except Exception as e:
-            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
+            self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
             return r.fail(f"Metrics error: {e!s}")
 
     async def get_plugin_health(
@@ -502,7 +500,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             return r.ok(health_result.value)
 
         except Exception as e:
-            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
+            self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return r.fail(f"Health check error: {e!s}")
 
     def get_service_status(self) -> dict[str, object]:
@@ -668,9 +666,11 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         # Plugin stores config in metadata
         config_data = plugin.metadata.get("config", {})
-        config = m.Config(
-            plugin_name=plugin.name, settings=cast("dict[str, object]", config_data)
+        # Type narrowing - config should be a dict
+        settings: dict[str, t.GeneralValueType] = (
+            config_data if isinstance(config_data, dict) else {}
         )
+        config = m.Config(plugin_name=plugin.name, settings=settings)
         return r.ok(config)
 
     def update_plugin_config(

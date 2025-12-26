@@ -17,7 +17,7 @@ from watchdog.events import (
     FileModifiedEvent,
     FileSystemEventHandler,
 )
-from watchdog.observers import Observer
+from watchdog.observers import Observer as WatchdogObserver
 
 from flext_plugin.models import FlextPluginModels
 
@@ -121,7 +121,7 @@ class FlextPluginHotReload:
         self._reload_history: list[FlextPluginModels.ReloadRecord] = []
 
         # Watchdog-specific
-        self._observer: Observer | None = None
+        self._observer: WatchdogObserver | None = None
         self._event_handler: FileSystemEventHandler | None = None
 
     def start_watching(self, paths: list[str]) -> FlextResult[bool]:
@@ -153,32 +153,28 @@ class FlextPluginHotReload:
             self._watched_paths = watched_paths
             self._is_watching = True
 
-            # Start watchdog observer if available
-            if Observer is not None:
-                self._event_handler = FileChangeHandler(
-                    self._handle_file_change,
-                    self._watched_paths,
-                    self.logger,
+            # Start watchdog observer
+            self._event_handler = FileChangeHandler(
+                self._handle_file_change,
+                self._watched_paths,
+                self.logger,
+            )
+            self._observer = WatchdogObserver()
+            for watched_path in watched_paths:
+                self._observer.schedule(
+                    self._event_handler,
+                    str(
+                        watched_path.parent if watched_path.is_file() else watched_path,
+                    ),
+                    recursive=True,
                 )
-                self._observer = Observer()
-                for watched_path in watched_paths:
-                    self._observer.schedule(
-                        self._event_handler,
-                        str(
-                            watched_path.parent
-                            if watched_path.is_file()
-                            else watched_path,
-                        ),
-                        recursive=True,
-                    )
                 self._observer.start()
                 self.logger.info(
                     f"Started hot reload with watchdog for {len(watched_paths)} paths",
                 )
-            else:
-                self.logger.info(
-                    f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths",
-                )
+            self.logger.info(
+                f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths",
+            )
 
             return FlextResult.ok(True)
 
@@ -236,7 +232,7 @@ class FlextPluginHotReload:
                 try:
                     callback(plugin_name)
                 except Exception:
-                    self.logger.exception("Reload callback failed for %s", plugin_name)
+                    self.logger.exception(f"Reload callback failed for {plugin_name}")
 
             # Record reload in history
             reload_record = FlextPluginModels.ReloadRecord(
@@ -251,7 +247,7 @@ class FlextPluginHotReload:
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception("Failed to reload plugin %s", plugin_name)
+            self.logger.exception(f"Failed to reload plugin {plugin_name}")
             return FlextResult.fail(f"Reload error: {e!s}")
 
     def is_watching(self) -> bool:
@@ -397,7 +393,7 @@ class FlextPluginHotReload:
             return FlextResult.ok(True)
 
         except Exception as e:
-            self.logger.exception("Failed to add watch path: %s", path)
+            self.logger.exception(f"Failed to add watch path: {path}")
             return FlextResult.fail(f"Add watch path error: {e!s}")
 
     def remove_watch_path(self, path: str) -> FlextResult[bool]:
@@ -420,7 +416,7 @@ class FlextPluginHotReload:
             return FlextResult.fail(f"Path not being watched: {path}")
 
         except Exception as e:
-            self.logger.exception("Failed to remove watch path: %s", path)
+            self.logger.exception(f"Failed to remove watch path: {path}")
             return FlextResult.fail(f"Remove watch path error: {e!s}")
 
     def _resolve_watch_path(self, path_str: str) -> Path:

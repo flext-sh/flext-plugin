@@ -38,11 +38,32 @@ class FlextPluginApi:
         paths: list[str],
     ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins in the given paths."""
-        return self.platform.discover_plugins(paths).map(
-            lambda plugins: (
-                self.logger.info(f"Discovered {len(plugins)} plugins"),
-                plugins,
-            )[1],
+
+        def log_and_return(
+            plugins: list[FlextPluginModels.Plugin],
+        ) -> list[FlextPluginModels.Plugin]:
+            self.logger.info(f"Discovered {len(plugins)} plugins")
+            return plugins
+
+        result = self.platform.discover_plugins(paths)
+        # The platform returns list[Plugin] which is compatible with list[FlextPluginModels.Plugin]
+        # Use explicit type conversion
+        if result.is_success:
+            return r[list[FlextPluginModels.Plugin]].ok([
+                FlextPluginModels.Plugin.create(
+                    name=plugin.name,
+                    plugin_version=plugin.plugin_version,
+                    description=plugin.description,
+                    author=plugin.author,
+                    plugin_type=plugin.plugin_type,
+                    is_enabled=plugin.is_enabled,
+                    metadata=plugin.metadata,
+                    entity_id=plugin.unique_id,
+                )
+                for plugin in result.value
+            ])
+        return r[list[FlextPluginModels.Plugin]].fail(
+            result.error or "Discovery failed"
         )
 
     def load_plugin(self, _plugin_path: str) -> r[FlextPluginModels.Plugin]:

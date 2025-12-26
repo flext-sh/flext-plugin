@@ -7,45 +7,26 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin import PluginDiscoveryService
+from flext_plugin import FlextPluginDiscovery
 
 
-class TestPluginDiscoveryService:
-    """Comprehensive test suite for PluginDiscoveryService domain interface.
+class TestFlextPluginDiscovery:
+    """Comprehensive test suite for FlextPluginDiscovery domain interface.
 
     Este teste valida apenas a interface que REALMENTE existe.
     """
 
-    def test_is_abstract_base_class(self) -> None:
-        """Test that PluginDiscoveryService is a valid class."""
+    def test_is_valid_class(self) -> None:
+        """Test that FlextPluginDiscovery is a valid class."""
         # Apenas verificar que a classe existe e é importável
-        assert PluginDiscoveryService is not None
-        assert hasattr(PluginDiscoveryService, "__name__")
-        # Não assumir que é ABC - apenas que existe e é válida
+        assert FlextPluginDiscovery is not None
+        assert hasattr(FlextPluginDiscovery, "__name__")
 
-    def test_service_exists(self) -> None:
-        """Test that PluginDiscoveryService exists and is callable."""
+    def test_class_exists(self) -> None:
+        """Test that FlextPluginDiscovery exists and is callable."""
         # Testar que a classe existe e pode ser referenciada
-        assert PluginDiscoveryService is not None
-        assert callable(PluginDiscoveryService)
-
-    def test_has_discovery_methods(self) -> None:
-        """Test that service has expected discovery methods."""
-        # Verificar métodos que esperamos existir baseado no uso real
-        expected_methods = ["discover_plugins"]  # Método básico esperado
-
-        for method_name in expected_methods:
-            if hasattr(PluginDiscoveryService, method_name):
-                method = getattr(PluginDiscoveryService, method_name)
-                assert callable(method), f"Method {method_name} should be callable"
-
-    # Comentando testes de classes que NÃO EXISTEM:
-    # - TestPluginExecutionService (NÃO EXISTE)
-    # - TestPluginHotReloadService (NÃO EXISTE)
-    # - TestPluginLifecycleService (NÃO EXISTE)
-    # - TestPluginRegistryService (NÃO EXISTE)
-    # - TestPluginSecurityService (NÃO EXISTE)
-    # - TestPluginValidationService (NÃO EXISTE)
+        assert FlextPluginDiscovery is not None
+        assert callable(FlextPluginDiscovery)
 
 
 # NOTA: Este arquivo foi completamente reescrito para testar apenas a REALIDADE.

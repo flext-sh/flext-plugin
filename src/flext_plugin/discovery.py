@@ -25,13 +25,10 @@ class FlextPluginDiscovery:
     Delegates discovery logic to strategy classes, Pydantic handles validation.
     """
 
-    # Protocol reference from centralized protocols.py for backward compatibility
-    DiscoveryStrategy = p.Plugin.DiscoveryStrategyProtocol
-
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""
         self.logger = FlextLogger(__name__)
-        self.strategies: list[FlextPluginDiscovery.DiscoveryStrategy] = [
+        self.strategies: list[p.Plugin.DiscoveryStrategyProtocol] = [
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),
         ]
@@ -98,7 +95,7 @@ class FlextPluginDiscovery:
             return FlextResult.fail(f"Plugin not found at: {plugin_path}")
 
         except Exception as e:
-            self.logger.exception("Failed to discover plugin at %s", plugin_path)
+            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
     def validate_plugin(
@@ -179,7 +176,7 @@ class FlextPluginDiscovery:
                     discovery_method="file_system",
                 )
             except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
+                self.logger.exception(f"Failed to create discovery data for {path}")
                 return None
 
         def _discover_directory(
@@ -203,7 +200,7 @@ class FlextPluginDiscovery:
                         discovered.extend(self._discover_directory(item))
 
             except (OSError, PermissionError):
-                self.logger.exception("Failed to discover directory %s", path)
+                self.logger.exception(f"Failed to discover directory {path}")
 
             return discovered
 

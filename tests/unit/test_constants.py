@@ -152,17 +152,18 @@ class TestFlextPluginConstants:
     def test_lifecycle_states_consistency(self) -> None:
         """Test that lifecycle states are consistent."""
         states = FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES
+        # Values are lowercase (from PluginStatus StrEnum values)
         expected_states = {
-            "UNKNOWN",
-            "DISCOVERED",
-            "LOADED",
-            "ACTIVE",
-            "INACTIVE",
-            "LOADING",
-            "ERROR",
-            "DISABLED",
-            "HEALTHY",
-            "UNHEALTHY",
+            "unknown",
+            "discovered",
+            "loaded",
+            "active",
+            "inactive",
+            "loading",
+            "error",
+            "disabled",
+            "healthy",
+            "unhealthy",
         }
 
         assert states == expected_states

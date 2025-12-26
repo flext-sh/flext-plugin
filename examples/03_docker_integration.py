@@ -55,10 +55,9 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Types.TYPE_DATABASE,
-        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
-        dependencies=["psycopg2-binary"],
-        enabled=True,
+        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_DATABASE,
+        is_enabled=True,
+        metadata={"dependencies": ["psycopg2-binary"]},
     )
 
     return postgres_plugin, postgres_config
@@ -85,10 +84,9 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Types.TYPE_DATABASE,
-        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
-        dependencies=["redis"],
-        enabled=True,
+        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_DATABASE,
+        is_enabled=True,
+        metadata={"dependencies": ["redis"]},
     )
 
     return redis_plugin, redis_config
@@ -115,10 +113,9 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin, dict]:
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Types.TYPE_AUTHENTICATION,
-        status=FlextPluginConstants.Lifecycle.STATUS_DISCOVERED,
-        dependencies=["ldap3"],
-        enabled=True,
+        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_AUTHENTICATION,
+        is_enabled=True,
+        metadata={"dependencies": ["ldap3"]},
     )
 
     return ldap_plugin, ldap_config
@@ -200,7 +197,7 @@ def main() -> None:
     # Validate PostgreSQL plugin configuration
     if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
         validation_result = postgres_plugin.validate_business_rules()
-        if validation_result.success:
+        if validation_result.is_success:
             print("  ✅ PostgreSQL plugin validation passed")
         else:
             print(
@@ -213,7 +210,7 @@ def main() -> None:
     # Validate Redis plugin configuration
     if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
         validation_result = redis_plugin.validate_business_rules()
-        if validation_result.success:
+        if validation_result.is_success:
             print("  ✅ Redis plugin validation passed")
     else:
         print(f"  ❌ Redis plugin validation failed: {validation_result.error}")
@@ -222,7 +219,7 @@ def main() -> None:
     # Validate LDAP plugin configuration
     if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
         validation_result = ldap_plugin.validate_business_rules()
-        if validation_result.success:
+        if validation_result.is_success:
             print("  ✅ LDAP plugin validation passed")
         else:
             print(f"  ❌ LDAP plugin validation failed: {validation_result.error}")

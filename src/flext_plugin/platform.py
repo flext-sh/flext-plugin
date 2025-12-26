@@ -10,10 +10,14 @@ from __future__ import annotations
 import uuid
 
 from flext_core import (
+    FlextRegistry,
     FlextResult,
     FlextService,
+    FlextSettings,
     FlextUtilities,
+    r,
 )
+from pydantic import PrivateAttr
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p
@@ -85,34 +89,77 @@ class PluginExecution:
         self.completed_at = FlextUtilities.Generators.generate_iso_timestamp()
 
 
-class PluginRegistry:
-    """Plugin registry for managing plugin lifecycle."""
+class PluginRegistry(FlextRegistry):
+    """Plugin registry for managing plugin lifecycle.
 
-    def __init__(self, name: str = "default") -> None:
+    Extends FlextRegistry to provide plugin-specific registration with
+    class-level storage for auto-discovery patterns.
+    """
+
+    # Plugin category constant
+    PLUGINS: str = "plugins"
+
+    def __init__(self) -> None:
         """Initialize plugin registry."""
-        self.name = name
-        self._plugins: dict[str, object] = {}
+        super().__init__()
 
     @classmethod
-    def create(cls, name: str) -> PluginRegistry:
-        """Create new plugin registry."""
-        return cls(name)
+    def create(cls, name: str = "plugins") -> PluginRegistry:
+        """Create new plugin registry.
 
-    def register(self, plugin: m.Plugin) -> FlextResult[bool]:
-        """Register plugin."""
-        try:
-            self._plugins[plugin.name] = plugin
-            return FlextResult.ok(True)
-        except Exception as e:
-            return FlextResult.fail(f"Registration failed: {e}")
+        Args:
+            name: Registry name (default: "plugins")
 
-    def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Unregister plugin."""
-        try:
-            self._plugins.pop(plugin_name, None)
-            return FlextResult.ok(True)
-        except Exception as e:
-            return FlextResult.fail(f"Unregistration failed: {e}")
+        Returns:
+            New PluginRegistry instance
+
+        """
+        return cls()
+
+    def register(
+        self,
+        plugin: m.Plugin,
+        category: str = "plugins",
+        metadata: dict[str, object] | None = None,
+    ) -> r[bool]:
+        """Register plugin using class-level storage.
+
+        Args:
+            plugin: Plugin to register
+            category: Plugin category
+            metadata: Optional metadata
+
+        Returns:
+            Result indicating success or failure
+
+        """
+        _ = metadata  # Unused but required for signature compatibility
+        return self.register_class_plugin(category, plugin.name, plugin)
+
+    def unregister(self, plugin_name: str) -> r[bool]:
+        """Unregister plugin from class-level storage."""
+        return self.unregister_class_plugin(self.PLUGINS, plugin_name)
+
+    def get(self, plugin_name: str) -> r[m.Plugin]:
+        """Get plugin by name from class-level storage."""
+        result = self.get_class_plugin(self.PLUGINS, plugin_name)
+        if result.is_success and isinstance(result.value, m.Plugin):
+            return r[m.Plugin].ok(result.value)
+        if result.is_failure:
+            return r[m.Plugin].fail(result.error)
+        return r[m.Plugin].fail("Plugin is not a valid Plugin type")
+
+    def list_plugins(self, category: str = "plugins") -> r[list[str]]:
+        """List all registered plugin names.
+
+        Args:
+            category: Plugin category to list
+
+        Returns:
+            Result containing list of plugin names
+
+        """
+        return self.list_class_plugins(category)
 
 
 class Plugin(m.Plugin):
@@ -133,22 +180,81 @@ class Plugin(m.Plugin):
 class FlextPluginPlatform(FlextService[None]):
     """railway-oriented plugin platform with functional composition."""
 
+    # Use PrivateAttr for instance variables that are not model fields
+    _plugins: dict[str, Plugin] = PrivateAttr(default_factory=dict)
+    _executions: dict[str, PluginExecution] = PrivateAttr(default_factory=dict)
+    _registry: PluginRegistry | None = PrivateAttr(default=None)
+    _discovery: p.Plugin.PluginDiscovery | None = PrivateAttr(default=None)
+    _loader: p.Plugin.PluginLoader | None = PrivateAttr(default=None)
+    _executor: p.Plugin.PluginExecution | None = PrivateAttr(default=None)
+
+    @classmethod
+    def _get_service_config_type(cls) -> type[FlextSettings]:
+        """Return FlextPluginSettings as the config type for this service."""
+        return FlextPluginSettings
+
     def __init__(self, container: object | None = None) -> None:
         """Initialize plugin platform."""
-        super().__init__(config=FlextPluginSettings())
+        super().__init__()
         # Set container if provided
         if container is not None:
             self._container = container
 
-        # Plugin storage
-        self.plugins: dict[str, Plugin] = {}
-        self.executions: dict[str, PluginExecution] = {}
-        self.registry = PluginRegistry.create(name="platform")
+        # Initialize private attributes
+        self._plugins = {}
+        self._executions = {}
+        self._registry = PluginRegistry.create()
+        self._discovery = None
+        self._loader = None
+        self._executor = None
 
-        # Injected protocols
-        self.discovery: p.Plugin.PluginDiscovery | None = None
-        self.loader: p.Plugin.PluginLoader | None = None
-        self.executor: p.Plugin.PluginExecution | None = None
+    # Properties for backward compatibility with public-like access
+    @property
+    def plugins(self) -> dict[str, Plugin]:
+        """Plugin storage."""
+        return self._plugins
+
+    @property
+    def executions(self) -> dict[str, PluginExecution]:
+        """Execution storage."""
+        return self._executions
+
+    @property
+    def registry(self) -> PluginRegistry:
+        """Plugin registry."""
+        if self._registry is None:
+            self._registry = PluginRegistry.create(name="platform")
+        return self._registry
+
+    @property
+    def discovery(self) -> p.Plugin.PluginDiscovery | None:
+        """Discovery protocol."""
+        return self._discovery
+
+    @discovery.setter
+    def discovery(self, value: p.Plugin.PluginDiscovery | None) -> None:
+        """Set discovery protocol."""
+        self._discovery = value
+
+    @property
+    def loader(self) -> p.Plugin.PluginLoader | None:
+        """Loader protocol."""
+        return self._loader
+
+    @loader.setter
+    def loader(self, value: p.Plugin.PluginLoader | None) -> None:
+        """Set loader protocol."""
+        self._loader = value
+
+    @property
+    def executor(self) -> p.Plugin.PluginExecution | None:
+        """Executor protocol."""
+        return self._executor
+
+    @executor.setter
+    def executor(self, value: p.Plugin.PluginExecution | None) -> None:
+        """Set executor protocol."""
+        self._executor = value
 
     def execute(self, **_kwargs: object) -> FlextResult[None]:
         """Execute main platform initialization (FlextService protocol)."""
@@ -164,23 +270,29 @@ class FlextPluginPlatform(FlextService[None]):
             if not self.discovery:
                 return FlextResult.fail("Discovery protocol not configured")
 
-            result = self.discovery.discover_plugins(paths)
-            if result.is_success:
-                # Convert DiscoveryData objects to dicts
-                plugin_dicts: list[dict[str, object]] = [
-                    {
-                        "name": discovery_data.name,
-                        "version": discovery_data.version,
-                        "path": str(discovery_data.path),
-                        "discovery_type": discovery_data.discovery_type,
-                        "discovery_method": discovery_data.discovery_method,
-                        "metadata": discovery_data.metadata,
-                    }
-                    for discovery_data in result.value
-                ]
-                return FlextResult.ok(plugin_dicts)
+            # Call discover_plugins - it exists on protocol implementations
+            discovery_result = self.discovery.discover_plugins(paths)
+            if discovery_result.is_success:
+                # Check if result.value is a list of DiscoveryData or dicts
+                discovered_items = discovery_result.value
+                if discovered_items and hasattr(discovered_items[0], "name"):
+                    # Convert DiscoveryData objects to dicts
+                    plugin_dicts: list[dict[str, object]] = [
+                        {
+                            "name": discovery_data.name,
+                            "version": discovery_data.version,
+                            "path": str(discovery_data.path),
+                            "discovery_type": discovery_data.discovery_type,
+                            "discovery_method": discovery_data.discovery_method,
+                            "metadata": discovery_data.metadata,
+                        }
+                        for discovery_data in discovered_items
+                    ]
+                    return FlextResult.ok(plugin_dicts)
+                # Already dicts
+                return FlextResult.ok(discovered_items)
             return FlextResult[list[dict[str, object]]].fail(
-                result.error or "Discovery failed",
+                discovery_result.error or "Discovery failed",
             )
 
         def create_plugins_from_data(
@@ -189,8 +301,7 @@ class FlextPluginPlatform(FlextService[None]):
             return self._validate_and_create_plugins(data)
 
         return (
-            self
-            ._check_protocol(self.discovery, "Discovery")
+            self._check_protocol(self.discovery, "Discovery")
             .flat_map(discover_and_validate)
             .flat_map(create_plugins_from_data)
             .map(self._register_all)
@@ -204,21 +315,27 @@ class FlextPluginPlatform(FlextService[None]):
             if not self.loader:
                 return FlextResult.fail("Loader protocol not configured")
 
-            result = self.loader.load_plugin(plugin_path)
-            if result.is_success:
-                load_data = result.value
-                plugin_dict: dict[str, object] = {
-                    "name": load_data.name,
-                    "version": load_data.version,
-                    "path": str(load_data.path),
-                    "load_type": load_data.load_type,
-                    "loaded_at": load_data.loaded_at,
-                    "entry_file": str(load_data.entry_file)
-                    if load_data.entry_file
-                    else None,
-                }
-                return FlextResult.ok(plugin_dict)
-            return FlextResult[dict[str, object]].fail(result.error or "Load failed")
+            load_result = self.loader.load_plugin(plugin_path)
+            if load_result.is_success:
+                load_data = load_result.value
+                # Check if it's a LoadData object or already a dict
+                if hasattr(load_data, "name"):
+                    plugin_dict: dict[str, object] = {
+                        "name": load_data.name,
+                        "version": load_data.version,
+                        "path": str(load_data.path),
+                        "load_type": load_data.load_type,
+                        "loaded_at": load_data.loaded_at,
+                        "entry_file": str(load_data.entry_file)
+                        if load_data.entry_file
+                        else None,
+                    }
+                    return FlextResult.ok(plugin_dict)
+                # Already a dict
+                return FlextResult.ok(load_data)
+            return FlextResult[dict[str, object]].fail(
+                load_result.error or "Load failed"
+            )
 
         def create_plugin_from_load_data(
             data: dict[str, object],
@@ -226,8 +343,7 @@ class FlextPluginPlatform(FlextService[None]):
             return self._validate_and_create_plugin(data)
 
         return (
-            self
-            ._check_protocol(self.loader, "Loader")
+            self._check_protocol(self.loader, "Loader")
             .flat_map(load_and_validate)
             .flat_map(create_plugin_from_load_data)
             .map(self._register_single)
@@ -273,7 +389,7 @@ class FlextPluginPlatform(FlextService[None]):
         def validate_plugin_result(_: None) -> FlextResult[bool]:
             return self.registry.register(plugin)
 
-        def add_to_plugins_result(*, registry_result: bool) -> bool:
+        def add_to_plugins_result(registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin registration failed"
@@ -288,8 +404,7 @@ class FlextPluginPlatform(FlextService[None]):
             )
 
         return (
-            plugin
-            .validate_business_rules()
+            plugin.validate_business_rules()
             .flat_map(validate_plugin_result)
             .map(add_to_plugins_result)
         )
@@ -297,14 +412,14 @@ class FlextPluginPlatform(FlextService[None]):
     def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
         """Unregister with cleanup chain."""
 
-        def unregister_from_registry(*, registry_result: bool) -> bool:
+        def unregister_from_registry(registry_result: bool) -> bool:
             # Use registry_result for validation
             if not registry_result:
                 error_msg = "Plugin unregistration failed"
                 raise ValueError(error_msg)
             return self._remove_from_plugins(plugin_name)
 
-        return self.registry.unregister_plugin(plugin_name).map(
+        return self.registry.unregister(plugin_name).map(
             unregister_from_registry,
         )
 
@@ -487,7 +602,10 @@ class FlextPluginPlatform(FlextService[None]):
         if result.is_success:
             execution.result = result.value
 
-        return result.map(lambda _: execution)
+        # Map result to PluginExecution type
+        if result.is_success:
+            return FlextResult.ok(execution)
+        return FlextResult.fail(result.error or "Execution failed")
 
     def _add_to_plugins(self, plugin: Plugin) -> bool:
         """Add plugin to internal registry."""

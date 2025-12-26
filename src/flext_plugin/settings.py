@@ -16,17 +16,16 @@ from pydantic_settings import SettingsConfigDict
 
 
 @FlextSettings.auto_register("plugin")
-class FlextPluginSettings(FlextSettings.AutoConfig):
-    """Plugin system configuration management using AutoConfig pattern.
+class FlextPluginSettings(FlextSettings):
+    """Plugin system configuration management.
 
-    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
+    **ARCHITECTURAL PATTERN**: BaseSettings Configuration
 
-    This class uses FlextSettings.AutoConfig for automatic:
-    - Singleton pattern (thread-safe)
-    - Namespace registration (accessible via config.plugin)
-    - Environment variable loading from FLEXT_PLUGIN_* variables
-    - .env file loading (production/development)
-    - Automatic type conversion and validation via Pydantic v2
+    This class provides:
+    - Environment variable support via FLEXT_PLUGIN_* prefix
+    - Namespace registration (accessible via FlextSettings.get_namespace)
+    - Pydantic v2 validation and type safety
+    - Complete plugin system configuration
     """
 
     # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
@@ -120,18 +119,18 @@ class FlextPluginSettings(FlextSettings.AutoConfig):
         """Update the updated_at timestamp."""
         self.updated_at = datetime.now(UTC)
 
-    def validate_business_rules(self) -> r[None]:
+    def validate_business_rules(self) -> r[bool]:
         """Validate domain rules for plugin config entity."""
         if not self.plugin_name or not self.plugin_name.strip():
-            return r[None].fail("Plugin name is required and cannot be empty")
+            return r[bool].fail("Plugin name is required and cannot be empty")
         if self.max_memory_mb <= 0:
-            return r[None].fail("Maximum memory must be positive")
+            return r[bool].fail("Maximum memory must be positive")
         cpu_percentage_max = 100
         if self.max_cpu_percent < 0 or self.max_cpu_percent > cpu_percentage_max:
-            return r[None].fail("CPU percentage must be between 0 and 100")
+            return r[bool].fail("CPU percentage must be between 0 and 100")
         if self.timeout_seconds <= 0:
-            return r[None].fail("Timeout must be positive")
-        return r[None].ok(None)
+            return r[bool].fail("Timeout must be positive")
+        return r[bool].ok(True)
 
 
 __all__ = ["FlextPluginSettings"]
