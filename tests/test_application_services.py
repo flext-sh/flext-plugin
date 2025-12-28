@@ -19,7 +19,7 @@ from typing import Protocol
 
 import pytest
 from anyio import Path as AnyioPath
-from flext_core import FlextContainer, FlextExceptions, FlextService
+from flext_core import FlextTypes as t, FlextContainer, FlextExceptions, FlextService
 
 from flext_plugin import (
     FlextPluginModels,
@@ -47,13 +47,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> dict[str, object]: ...
+    def initialize(self) -> dict[str, t.GeneralValueType]: ...
 
-    def execute(self, data: dict[str, object] | None = None) -> dict[str, object]: ...
+    def execute(self, data: dict[str, t.GeneralValueType] | None = None) -> dict[str, t.GeneralValueType]: ...
 
-    def cleanup(self) -> dict[str, object]: ...
+    def cleanup(self) -> dict[str, t.GeneralValueType]: ...
 
-    def health_check(self) -> dict[str, object]: ...
+    def health_check(self) -> dict[str, t.GeneralValueType]: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
@@ -1195,7 +1195,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
 
         # Register a REAL service object in the container
-        test_service: dict[str, object] = {
+        test_service: dict[str, t.GeneralValueType] = {
             "name": "test_service",
             "config": {"enabled": True},
         }

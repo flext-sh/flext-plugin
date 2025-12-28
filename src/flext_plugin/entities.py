@@ -27,6 +27,8 @@ from uuid import uuid4
 from flext_core import FlextModels, FlextResult, r
 from pydantic import Field
 
+from flext_plugin.typings import t
+
 T = TypeVar("T")
 
 # Constants
@@ -94,7 +96,7 @@ class FlextPluginEntities:
             max_length=50,
         )
         enabled: bool = Field(default=True, description="Whether plugin is enabled")
-        metadata: dict[str, object] = Field(
+        metadata: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Additional configuration metadata",
         )
@@ -150,7 +152,7 @@ class FlextPluginEntities:
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        result_data: dict[str, object] = Field(
+        result_data: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Execution result data",
         )
@@ -202,7 +204,7 @@ class FlextPluginEntities:
             default=None,
             description="Last update timestamp",
         )
-        domain_data: dict[str, object] = Field(
+        domain_data: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Extensible domain-specific data for composition",
         )

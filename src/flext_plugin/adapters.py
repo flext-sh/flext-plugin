@@ -228,10 +228,10 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: dict[str, object],
-        ) -> p.Result[dict[str, object]]:
+            _context: dict[str, t.GeneralValueType],
+        ) -> p.Result[dict[str, t.GeneralValueType]]:
             """Execute plugin."""
-            result: r[dict[str, object]] = self._execute_safe(
+            result: r[dict[str, t.GeneralValueType]] = self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
                 f"Execution error: {_plugin_name}",
             )
@@ -269,7 +269,7 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> r[dict[str, object]]:
+        ) -> r[dict[str, t.GeneralValueType]]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": "medium"})
 
@@ -283,7 +283,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: dict[str, object] = {}
+            self._plugins: dict[str, t.GeneralValueType] = {}
 
         def register_plugin(self, _plugin: object) -> r[bool]:
             """Register plugin in registry."""
@@ -297,7 +297,7 @@ class FlextPluginAdapters:
             """Get plugin from registry."""
             return r.ok(None)
 
-        def list_plugins(self) -> r[list[dict[str, object]]]:
+        def list_plugins(self) -> r[list[dict[str, t.GeneralValueType]]]:
             """List all plugins in registry."""
             return r.ok([])
 
@@ -319,14 +319,14 @@ class FlextPluginAdapters:
         def get_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> r[dict[str, object]]:
+        ) -> r[dict[str, t.GeneralValueType]]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 
         def get_plugin_health(
             self,
             _plugin_name: str,
-        ) -> r[dict[str, object]]:
+        ) -> r[dict[str, t.GeneralValueType]]:
             """Get plugin health information."""
             return r.ok({"status": "healthy"})
 

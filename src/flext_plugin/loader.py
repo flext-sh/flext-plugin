@@ -15,6 +15,7 @@ from pathlib import Path
 from flext_core import FlextLogger, FlextResult
 
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.typings import t
 
 
 class FlextPluginLoader:
@@ -42,7 +43,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, object] = {}
+        self._loaded_plugins: dict[str, t.GeneralValueType] = {}
         self._loader_strategies: list[
             Callable[[Path], FlextPluginModels.LoadData | None]
         ] = [
@@ -213,7 +214,9 @@ class FlextPluginLoader:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
-    def get_plugin_info(self, plugin_name: str) -> FlextResult[dict[str, object]]:
+    def get_plugin_info(
+        self, plugin_name: str
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Get detailed information about a loaded plugin.
 
         Args:

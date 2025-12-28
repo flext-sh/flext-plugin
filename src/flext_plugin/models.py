@@ -19,6 +19,7 @@ from flext_core.utilities import u as flext_u
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import c
+from flext_plugin.typings import t
 
 
 class FlextPluginModels(m_core):
@@ -89,7 +90,7 @@ class FlextPluginModels(m_core):
             description="Plugin type classification",
         )
         is_enabled: bool = Field(default=True, description="Plugin enabled state")
-        metadata: dict[str, object] = Field(
+        metadata: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Extensible plugin metadata",
         )
@@ -152,7 +153,7 @@ class FlextPluginModels(m_core):
             author: str = "",
             plugin_type: str = c.Plugin.PluginType.UTILITY,
             is_enabled: bool = True,
-            metadata: dict[str, object] | None = None,
+            metadata: dict[str, t.GeneralValueType] | None = None,
             entity_id: str | None = None,
         ) -> Self:
             """Factory method to create a new Plugin entity.
@@ -369,7 +370,7 @@ class FlextPluginModels(m_core):
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        data: dict[str, object] = Field(
+        data: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Execution output data",
         )
@@ -416,7 +417,7 @@ class FlextPluginModels(m_core):
         discovery_method: Literal["file_system", "entry_points"] = Field(
             description="Discovery method used",
         )
-        metadata: dict[str, object] = Field(
+        metadata: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Extensible discovery metadata",
         )
@@ -533,7 +534,7 @@ class FlextPluginModels(m_core):
             default_factory=list,
             description="List of plugin dependencies",
         )
-        metadata: dict[str, object] = Field(
+        metadata: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Additional metadata",
         )
@@ -555,7 +556,7 @@ class FlextPluginModels(m_core):
         event_type: str = Field(description="Type of event")
         plugin_name: str = Field(description="Associated plugin name")
         timestamp: datetime = Field(description="When event occurred")
-        data: dict[str, object] = Field(
+        data: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Event-specific data",
         )
@@ -583,7 +584,7 @@ class FlextPluginModels(m_core):
             default_factory=list,
             description="List of validation warnings",
         )
-        details: dict[str, object] = Field(
+        details: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Additional validation details",
         )
@@ -636,7 +637,7 @@ class FlextPluginModels(m_core):
             description="Callback function reference",
         )
         active: bool = Field(default=False, description="Whether watcher is active")
-        last_modified: dict[str, object] = Field(
+        last_modified: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="File modification tracking",
         )
@@ -686,7 +687,7 @@ class FlextPluginModels(m_core):
         """
 
         version: str = Field(description="Registry schema version")
-        plugins: dict[str, object] = Field(
+        plugins: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )
@@ -699,14 +700,14 @@ class FlextPluginModels(m_core):
             description="Registry creation timestamp",
         )
 
-    class Config(m_core.Value):
+    class PluginConfig(m_core.Value):
         """Plugin configuration model.
 
         Represents configuration for a plugin with key-value pairs.
         """
 
         plugin_name: str = Field(description="Plugin name")
-        settings: dict[str, object] = Field(
+        settings: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Configuration settings",
         )
@@ -717,7 +718,7 @@ class FlextPluginModels(m_core):
         Represents a registry of plugins with metadata.
         """
 
-        plugins: dict[str, object] = Field(
+        plugins: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )

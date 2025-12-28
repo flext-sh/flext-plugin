@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+from flext_core import FlextTypes as t
 
 from typing import Never
 
@@ -28,7 +29,7 @@ class TestFlextPluginHandlers:
         """Test registering event handlers."""
         handlers = FlextPluginHandlers()
 
-        def test_handler(event_data: dict[str, object]) -> str:
+        def test_handler(event_data: dict[str, t.GeneralValueType]) -> str:
             return f"processed: {event_data}"
 
         result = handlers.register_handler("test_event", test_handler)
@@ -45,7 +46,7 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def test_handler(event_data: dict[str, object]) -> str:
+        def test_handler(event_data: dict[str, t.GeneralValueType]) -> str:
             results.append(event_data)
             return "handled"
 
@@ -81,10 +82,10 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler_low(event_data: dict[str, object]) -> None:
+        def handler_low(event_data: dict[str, t.GeneralValueType]) -> None:
             results.append("low")
 
-        def handler_high(event_data: dict[str, object]) -> None:
+        def handler_high(event_data: dict[str, t.GeneralValueType]) -> None:
             results.append("high")
 
         # Register with different priorities (higher number = higher priority)
@@ -103,10 +104,10 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler1(event_data: dict[str, object]) -> None:
+        def handler1(event_data: dict[str, t.GeneralValueType]) -> None:
             results.append("handler1")
 
-        def handler2(event_data: dict[str, object]) -> None:
+        def handler2(event_data: dict[str, t.GeneralValueType]) -> None:
             results.append("handler2")
 
         handlers.register_handler("test_event", handler1)
@@ -143,11 +144,11 @@ class TestFlextPluginHandlers:
         """Test error handling in event handlers."""
         handlers = FlextPluginHandlers()
 
-        def failing_handler(event_data: dict[str, object]) -> Never:
+        def failing_handler(event_data: dict[str, t.GeneralValueType]) -> Never:
             msg = "Handler failed"
             raise ValueError(msg)
 
-        def working_handler(event_data: dict[str, object]) -> str:
+        def working_handler(event_data: dict[str, t.GeneralValueType]) -> str:
             return "success"
 
         handlers.register_handler("test", failing_handler)

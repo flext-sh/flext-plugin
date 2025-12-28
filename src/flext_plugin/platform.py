@@ -45,7 +45,7 @@ class PluginExecution:
     def __init__(
         self,
         plugin_name: str,
-        execution_config: dict[str, object],
+        execution_config: dict[str, t.GeneralValueType],
         execution_id: str | None = None,
     ) -> None:
         """Initialize plugin execution."""
@@ -56,7 +56,7 @@ class PluginExecution:
         self.is_completed = False
         self.success = False
         self.error_message: str | None = None
-        self.result: dict[str, object] | None = None
+        self.result: dict[str, t.GeneralValueType] | None = None
         self.started_at: str | None = None
         self.completed_at: str | None = None
 
@@ -64,7 +64,7 @@ class PluginExecution:
     def create(
         cls,
         plugin_name: str,
-        execution_config: dict[str, object],
+        execution_config: dict[str, t.GeneralValueType],
         execution_id: str | None = None,
     ) -> PluginExecution:
         """Create new plugin execution."""
@@ -104,11 +104,11 @@ class PluginRegistry(FlextRegistry):
         super().__init__()
 
     @classmethod
-    def create(cls, name: str = "plugins") -> PluginRegistry:
+    def create(cls, _name: str = "plugins") -> PluginRegistry:
         """Create new plugin registry.
 
         Args:
-            name: Registry name (default: "plugins")
+            _name: Registry name (default: "plugins"), reserved for future use
 
         Returns:
             New PluginRegistry instance
@@ -120,7 +120,7 @@ class PluginRegistry(FlextRegistry):
         self,
         plugin: m.Plugin,
         category: str = "plugins",
-        metadata: dict[str, object] | None = None,
+        metadata: dict[str, t.GeneralValueType] | None = None,
     ) -> r[bool]:
         """Register plugin using class-level storage.
 
@@ -265,7 +265,9 @@ class FlextPluginPlatform(FlextService[None]):
     def discover_plugins(self, paths: list[str]) -> FlextResult[list[Plugin]]:
         """Discover plugins with railway composition."""
 
-        def discover_and_validate(_: None) -> FlextResult[list[dict[str, object]]]:
+        def discover_and_validate(
+            _: None,
+        ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
             # Handle None discovery protocol
             if not self.discovery:
                 return FlextResult.fail("Discovery protocol not configured")
@@ -277,7 +279,7 @@ class FlextPluginPlatform(FlextService[None]):
                 discovered_items = discovery_result.value
                 if discovered_items and hasattr(discovered_items[0], "name"):
                     # Convert DiscoveryData objects to dicts
-                    plugin_dicts: list[dict[str, object]] = [
+                    plugin_dicts: list[dict[str, t.GeneralValueType]] = [
                         {
                             "name": discovery_data.name,
                             "version": discovery_data.version,
@@ -291,17 +293,18 @@ class FlextPluginPlatform(FlextService[None]):
                     return FlextResult.ok(plugin_dicts)
                 # Already dicts
                 return FlextResult.ok(discovered_items)
-            return FlextResult[list[dict[str, object]]].fail(
+            return FlextResult[list[dict[str, t.GeneralValueType]]].fail(
                 discovery_result.error or "Discovery failed",
             )
 
         def create_plugins_from_data(
-            data: list[dict[str, object]],
+            data: list[dict[str, t.GeneralValueType]],
         ) -> FlextResult[list[Plugin]]:
             return self._validate_and_create_plugins(data)
 
         return (
-            self._check_protocol(self.discovery, "Discovery")
+            self
+            ._check_protocol(self.discovery, "Discovery")
             .flat_map(discover_and_validate)
             .flat_map(create_plugins_from_data)
             .map(self._register_all)
@@ -310,7 +313,9 @@ class FlextPluginPlatform(FlextService[None]):
     def load_plugin(self, plugin_path: str) -> FlextResult[Plugin]:
         """Load single plugin with composition."""
 
-        def load_and_validate(_: None) -> FlextResult[dict[str, object]]:
+        def load_and_validate(
+            _: None,
+        ) -> FlextResult[dict[str, t.GeneralValueType]]:
             # Handle None loader protocol
             if not self.loader:
                 return FlextResult.fail("Loader protocol not configured")
@@ -320,7 +325,7 @@ class FlextPluginPlatform(FlextService[None]):
                 load_data = load_result.value
                 # Check if it's a LoadData object or already a dict
                 if hasattr(load_data, "name"):
-                    plugin_dict: dict[str, object] = {
+                    plugin_dict: dict[str, t.GeneralValueType] = {
                         "name": load_data.name,
                         "version": load_data.version,
                         "path": str(load_data.path),
@@ -333,17 +338,18 @@ class FlextPluginPlatform(FlextService[None]):
                     return FlextResult.ok(plugin_dict)
                 # Already a dict
                 return FlextResult.ok(load_data)
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
                 load_result.error or "Load failed"
             )
 
         def create_plugin_from_load_data(
-            data: dict[str, object],
+            data: dict[str, t.GeneralValueType],
         ) -> FlextResult[Plugin]:
             return self._validate_and_create_plugin(data)
 
         return (
-            self._check_protocol(self.loader, "Loader")
+            self
+            ._check_protocol(self.loader, "Loader")
             .flat_map(load_and_validate)
             .flat_map(create_plugin_from_load_data)
             .map(self._register_single)
@@ -352,7 +358,7 @@ class FlextPluginPlatform(FlextService[None]):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, object],
+        context: dict[str, t.GeneralValueType],
         execution_id: str | None = None,
     ) -> FlextResult[PluginExecution]:
         """Execute plugin with async composition."""
@@ -404,7 +410,8 @@ class FlextPluginPlatform(FlextService[None]):
             )
 
         return (
-            plugin.validate_business_rules()
+            plugin
+            .validate_business_rules()
             .flat_map(validate_plugin_result)
             .map(add_to_plugins_result)
         )
@@ -478,7 +485,7 @@ class FlextPluginPlatform(FlextService[None]):
 
     # Status with dict comprehension
     @property
-    def get_platform_status(self) -> dict[str, object]:
+    def get_platform_status(self) -> dict[str, t.GeneralValueType]:
         """Get platform status information."""
         return {
             "total_plugins": len(self.plugins),
@@ -502,7 +509,7 @@ class FlextPluginPlatform(FlextService[None]):
 
     def _validate_and_create_plugins(
         self,
-        plugin_data: list[dict[str, object]],
+        plugin_data: list[dict[str, t.GeneralValueType]],
     ) -> FlextResult[list[Plugin]]:
         """Create validated plugins from data."""
         plugins: list[Plugin] = []
@@ -518,7 +525,7 @@ class FlextPluginPlatform(FlextService[None]):
 
     def _validate_and_create_plugin(
         self,
-        plugin_data: dict[str, object],
+        plugin_data: dict[str, t.GeneralValueType],
     ) -> FlextResult[Plugin]:
         """Create single validated plugin."""
         plugin = Plugin.create(
@@ -552,7 +559,7 @@ class FlextPluginPlatform(FlextService[None]):
     def _create_execution(
         self,
         plugin: Plugin,
-        context: dict[str, object],
+        context: dict[str, t.GeneralValueType],
         execution_id: str | None,
     ) -> FlextResult[PluginExecution]:
         """Create execution entity."""

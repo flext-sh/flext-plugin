@@ -20,6 +20,7 @@ from watchdog.events import (
 from watchdog.observers import Observer as WatchdogObserver
 
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.typings import t
 
 
 class FileChangeHandler(FileSystemEventHandler):
@@ -320,7 +321,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def get_hot_reload_status(self) -> dict[str, object]:
+    def get_hot_reload_status(self) -> dict[str, t.GeneralValueType]:
         """Get the current status of the hot reload service.
 
         Returns:

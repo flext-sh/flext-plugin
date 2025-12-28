@@ -14,6 +14,8 @@ from flext_core.settings import FlextSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
+from flext_plugin.typings import t
+
 
 @FlextSettings.auto_register("plugin")
 class FlextPluginSettings(FlextSettings):
@@ -48,12 +50,12 @@ class FlextPluginSettings(FlextSettings):
         default="",
         description="Name of the plugin this config belongs to",
     )
-    config_data: dict[str, object] = Field(
+    config_data: dict[str, t.GeneralValueType] = Field(
         default_factory=dict,
         description="Plugin configuration data",
     )
     enabled: bool = Field(default=True, description="Whether plugin is enabled")
-    settings: dict[str, object] = Field(
+    settings: dict[str, t.GeneralValueType] = Field(
         default_factory=dict,
         description="Plugin settings",
     )
@@ -80,14 +82,14 @@ class FlextPluginSettings(FlextSettings):
         *,
         plugin_name: str,
         entity_id: str | None = None,
-        config_data: dict[str, object] | None = None,
+        config_data: dict[str, t.GeneralValueType] | None = None,
         **kwargs: object,
     ) -> FlextPluginSettings:
         """Create plugin config entity with proper validation."""
         entity_id = entity_id or u_core.generate("entity")
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data: dict[str, t.GeneralValueType] = {
             "id": entity_id,
             "version": kwargs.get("version", 1),
             "metadata": kwargs.get("entity_metadata", {}),

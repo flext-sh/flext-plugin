@@ -444,7 +444,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[dict[str, object]]:
+    ) -> r[dict[str, t.GeneralValueType]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -476,7 +476,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[dict[str, object]]:
+    ) -> r[dict[str, t.GeneralValueType]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -503,7 +503,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return r.fail(f"Health check error: {e!s}")
 
-    def get_service_status(self) -> dict[str, object]:
+    def get_service_status(self) -> dict[str, t.GeneralValueType]:
         """Get the current status of the plugin service.
 
         Returns:
@@ -676,7 +676,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        config: dict[str, object],
+        config: dict[str, t.GeneralValueType],
     ) -> r[bool]:
         """Update configuration for a plugin.
 
