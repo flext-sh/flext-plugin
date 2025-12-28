@@ -303,8 +303,7 @@ class FlextPluginPlatform(FlextService[None]):
             return self._validate_and_create_plugins(data)
 
         return (
-            self
-            ._check_protocol(self.discovery, "Discovery")
+            self._check_protocol(self.discovery, "Discovery")
             .flat_map(discover_and_validate)
             .flat_map(create_plugins_from_data)
             .map(self._register_all)
@@ -348,8 +347,7 @@ class FlextPluginPlatform(FlextService[None]):
             return self._validate_and_create_plugin(data)
 
         return (
-            self
-            ._check_protocol(self.loader, "Loader")
+            self._check_protocol(self.loader, "Loader")
             .flat_map(load_and_validate)
             .flat_map(create_plugin_from_load_data)
             .map(self._register_single)
@@ -410,8 +408,7 @@ class FlextPluginPlatform(FlextService[None]):
             )
 
         return (
-            plugin
-            .validate_business_rules()
+            plugin.validate_business_rules()
             .flat_map(validate_plugin_result)
             .map(add_to_plugins_result)
         )
