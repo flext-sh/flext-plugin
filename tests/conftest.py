@@ -4,6 +4,9 @@ This module provides REAL pytest fixtures for testing the FLEXT plugin system
 without mocks. All fixtures create actual plugin files, directories, and real
 instances for comprehensive functionality testing.
 
+NOTE: Contains test classes defined in strings for creating real plugins.
+These violate facade rules but are acceptable for test fixtures.
+
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
@@ -103,6 +106,7 @@ def real_plugin_directory() -> Generator[Path]:
         tap_plugin.write_text('''
 """REAL tap plugin for database extraction."""
 
+# TEST CLASS - Acceptable exception for conftest.py
 class DatabaseTapPlugin:
     def __init__(self):
         """Initialize the instance."""
@@ -127,6 +131,7 @@ def get_plugin():
         target_plugin.write_text('''
 """REAL target plugin for data warehouse loading."""
 
+# TEST CLASS - Acceptable exception for conftest.py
 class WarehouseTargetPlugin:
     def __init__(self):
         """Initialize the instance."""
@@ -144,6 +149,7 @@ class WarehouseTargetPlugin:
         }
 
     def cleanup(self):
+        # STUB - Test implementation
         pass
 
 def get_plugin():
@@ -154,6 +160,7 @@ def get_plugin():
         processor_plugin.write_text('''
 """REAL processor plugin for data transformation."""
 
+# TEST CLASS - Acceptable exception for conftest.py
 class TransformProcessorPlugin:
     def __init__(self):
         """Initialize the instance."""
@@ -171,6 +178,7 @@ class TransformProcessorPlugin:
         }
 
     def cleanup(self):
+        # STUB - Test implementation
         pass
 
 def get_plugin():

@@ -1,6 +1,6 @@
 """FLEXT Plugin Services - Plugin system application services.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2025 FLEXT TeaFlextPluginModels. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
@@ -9,16 +9,17 @@ from __future__ import annotations
 
 from flext_core import r, x
 from flext_core.container import FlextContainer
+from flext_core.typings import t
 
 from flext_plugin.adapters import FlextPluginAdapters
-from flext_plugin.constants import c
-from flext_plugin.models import m
+from flext_plugin.constants import FlextPluginConstants as c
+from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import PluginExecution
-from flext_plugin.protocols import p
-from flext_plugin.typings import t
+from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.typings import FlextPluginTypes
 
 
-class FlextPluginService(m.ArbitraryTypesModel, x):
+class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
@@ -41,28 +42,28 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         # Discover plugins
         result = await service.discover_and_register_plugins(["./plugins"])
-        if result.success:
-            print(f"Registered {len(result.value)} plugins")
+        if result.is_success:
+            # Process the registered plugins
         ```
     """
 
     # Use protocol types (interfaces) for attributes - follows Dependency Inversion
-    _discovery: p.Plugin.PluginDiscovery
-    _loader: p.Plugin.PluginLoader
-    _executor: p.Plugin.PluginExecution
-    _security: p.Plugin.PluginSecurity
-    _registry: p.Plugin.PluginRegistry
-    _monitoring: p.Plugin.PluginMonitoring
+    _discovery: FlextPluginProtocols.Plugin.PluginDiscovery
+    _loader: FlextPluginProtocols.Plugin.PluginLoader
+    _executor: FlextPluginProtocols.Plugin.PluginExecution
+    _security: FlextPluginProtocols.Plugin.PluginSecurity
+    _registry: FlextPluginProtocols.Plugin.PluginRegistry
+    _monitoring: FlextPluginProtocols.Plugin.PluginMonitoring
 
     def __init__(
         self,
-        container: object | None = None,
-        discovery: p.Plugin.PluginDiscovery | None = None,
-        loader: p.Plugin.PluginLoader | None = None,
-        executor: p.Plugin.PluginExecution | None = None,
-        security: p.Plugin.PluginSecurity | None = None,
-        registry: p.Plugin.PluginRegistry | None = None,
-        monitoring: p.Plugin.PluginMonitoring | None = None,
+        container: FlextContainer | None = None,
+        discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = None,
+        loader: FlextPluginProtocols.Plugin.PluginLoader | None = None,
+        executor: FlextPluginProtocols.Plugin.PluginExecution | None = None,
+        security: FlextPluginProtocols.Plugin.PluginSecurity | None = None,
+        registry: FlextPluginProtocols.Plugin.PluginRegistry | None = None,
+        monitoring: FlextPluginProtocols.Plugin.PluginMonitoring | None = None,
     ) -> None:
         """Initialize the plugin service with protocol implementations and dependency injection.
 
@@ -94,7 +95,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
 
         # Internal state
-        self._plugins: dict[str, m.Plugin] = {}
+        self._plugins: dict[str, FlextPluginModels.Plugin] = {}
         self._executions: dict[str, PluginExecution] = {}
 
     @property
@@ -107,7 +108,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def discover_and_register_plugins(
         self,
         paths: list[str],
-    ) -> r[list[m.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -129,7 +130,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             # Type narrowing - discovery returns list of DiscoveryData
             if not isinstance(discovery_result.value, list):
                 return r.fail("Discovery did not return a list")
-            plugins_data: list[m.DiscoveryData] = discovery_result.value
+            plugins_data: list[FlextPluginModels.DiscoveryData] = discovery_result.value
             registered_plugins = []
 
             for plugin_data in plugins_data:
@@ -139,7 +140,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
                 plugin_type_str = str(
                     plugin_data.metadata.get("plugin_type", "utility")
                 )
-                plugin = m.Plugin.create(
+                plugin = FlextPluginModels.Plugin.create(
                     name=plugin_data.name,
                     plugin_version=plugin_data.version,
                     description=str(plugin_data.metadata.get("description", "")),
@@ -196,7 +197,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> r[list[m.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin]]:
         """Discover plugins from the specified paths.
 
         Alias for discover_and_register_plugins.
@@ -210,7 +211,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         """
         return self.discover_and_register_plugins(paths)
 
-    def load_plugin(self, plugin_path: str) -> r[m.Plugin]:
+    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -230,12 +231,12 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
                 return r.fail(f"Plugin loading failed: {load_result.error}")
 
             # Type narrowing - loader returns LoadData
-            if not isinstance(load_result.value, m.LoadData):
+            if not isinstance(load_result.value, FlextPluginModels.LoadData):
                 return r.fail("Loader did not return LoadData")
-            plugin_data: m.LoadData = load_result.value
+            plugin_data: FlextPluginModels.LoadData = load_result.value
             # load_type is how plugin was loaded (file/directory/entry_point), not the plugin type
             # Use default utility type; actual type should come from plugin metadata
-            plugin = m.Plugin.create(
+            plugin = FlextPluginModels.Plugin.create(
                 name=plugin_data.name,
                 plugin_version=plugin_data.version,
                 description=plugin_data.module.__doc__ or "",
@@ -288,7 +289,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: t.Execution.ExecutionContext,
+        context: FlextPluginTypes.Execution.ExecutionContext,
         execution_id: str | None = None,
     ) -> r[PluginExecution]:
         """Execute a plugin with the given context.
@@ -395,7 +396,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
             return r.fail(f"Unloading error: {e!s}")
 
-    def get_plugin(self, plugin_name: str) -> m.Plugin | None:
+    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
         """Get a plugin by name.
 
         Args:
@@ -407,7 +408,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         """
         return self._plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[m.Plugin]:
+    def list_plugins(self) -> list[FlextPluginModels.Plugin]:
         """List all loaded plugins.
 
         Returns:
@@ -427,7 +428,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
 
         """
         plugin = self.get_plugin(plugin_name)
-        return getattr(plugin, "status", None) if plugin else None
+        return plugin.status if plugin else None
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
@@ -515,7 +516,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
             "active_plugins": len([
                 p
                 for p in self._plugins.values()
-                if hasattr(p, "is_active") and p.is_active()
+                if hasattr(p, "is_active") and FlextPluginProtocols.is_active()
             ]),
             "total_executions": len(self._executions),
             "running_executions": len([
@@ -576,7 +577,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def install_plugin(self, plugin_path: str) -> r[m.Plugin]:
+    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -650,7 +651,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
     def get_plugin_config(
         self,
         plugin_name: str,
-    ) -> r[m.Config]:
+    ) -> r[FlextPluginModels.Config]:
         """Get configuration for a plugin.
 
         Args:
@@ -670,7 +671,7 @@ class FlextPluginService(m.ArbitraryTypesModel, x):
         settings: dict[str, t.GeneralValueType] = (
             config_data if isinstance(config_data, dict) else {}
         )
-        config = m.Config(plugin_name=plugin.name, settings=settings)
+        config = FlextPluginModels.Config(plugin_name=plugin.name, settings=settings)
         return r.ok(config)
 
     def update_plugin_config(

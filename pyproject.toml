@@ -17,14 +17,16 @@
     ]
     dependencies = [
         "anyio (>=4.0.0)",
-        "flext-core (>=0.9.9)",
-        "flext-observability (>=0.9.0)",
         "jsonschema (>=4.25.0)",
         "psutil (>=7.0.0)",
         "pydantic (>=2.12.3)",
         "pydantic-settings (>=2.11.0)",
         "watchdog (>=6.0.0)",
         "pydantic-core (>=2.41.4)",
+        "pytest (>=9.0.2,<10.0.0)",
+        "pytest-cov (>=7.0.0,<8.0.0)",
+        "pytest-randomly (>=4.0.1,<5.0.0)",
+        "faker (>=40.1.0,<41.0.0)",
     ]
     description = "FLEXT Plugin - Plugin System for FLEXT Platform"
     keywords = [
@@ -119,7 +121,7 @@
 [tool.pytest.ini_options]
     addopts = [
         "--cov-branch",
-        "--cov-fail-under=20",
+        "--cov-fail-under=80",
         "--cov-report=html:reports/coverage",
         "--cov-report=term-missing:skip-covered",
         "--cov-report=xml:reports/coverage.xml",
@@ -146,14 +148,19 @@
         develop = true
         path    = "../flext-core"
 
-        [tool.poetry.dependencies.flext-observability]
+                                [tool.poetry.dependencies.flext-observability]
         develop = true
         path    = "../flext-observability"
 
-	[tool.ruff]
-		extend = "../ruff-shared.toml"
+    [tool.ruff]
+        extend = "../ruff-shared.toml"
 
     [tool.ruff.lint.isort]
         known-first-party = [
             "flext_plugin",
         ]
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)"
+]

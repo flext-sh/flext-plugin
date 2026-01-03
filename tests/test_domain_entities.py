@@ -184,7 +184,7 @@ class TestFlextPluginExecution:
             execution_time_ms=150.5,
         )
 
-        assert result.success is True
+        assert result.is_success is True
         assert result.data == {"output": "test data"}
         assert result.error == ""
         assert result.execution_time_ms == 150.5
@@ -197,7 +197,7 @@ class TestFlextPluginExecution:
             execution_time_ms=50.0,
         )
 
-        assert result.success is False
+        assert result.is_success is False
         assert result.error == "Plugin execution failed"
         assert result.data == {}
         assert result.execution_time_ms == 50.0
@@ -206,7 +206,7 @@ class TestFlextPluginExecution:
         """Test ExecutionResult default values."""
         result = FlextPluginModels.ExecutionResult(success=True)
 
-        assert result.success is True
+        assert result.is_success is True
         assert result.data == {}
         assert result.error == ""
         assert result.execution_time_ms == 0.0
@@ -223,7 +223,7 @@ class TestFlextPluginExecution:
             execution_time_ms=100.0,
         )
 
-        assert result.success is True
+        assert result.is_success is True
         assert result.data == complex_data
         assert result.execution_time_ms == 100.0
 

@@ -335,7 +335,7 @@ class FlextPluginHotReload:
             "debounce_ms": self.debounce_ms,
             "max_retries": self.max_retries,
             "total_reloads": len(self._reload_history),
-            "recent_reloads": len([r for r in self._reload_history if r.success]),
+            "recent_reloads": len([r for r in self._reload_history if r.is_success]),
             "callback_count": len(self._reload_callbacks),
             "using_watchdog": self._observer is not None,
         }

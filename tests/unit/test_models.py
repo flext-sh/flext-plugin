@@ -138,7 +138,7 @@ class TestFlextPluginModels:
             execution_time_ms=1500.0,
         )
 
-        assert result.success is True
+        assert result.is_success is True
         assert result.data == {"output": "result"}
         assert not result.error
         assert result.execution_time_ms == 1500.0
@@ -152,7 +152,7 @@ class TestFlextPluginModels:
             execution_time_ms=500.0,
         )
 
-        assert result.success is False
+        assert result.is_success is False
         assert result.error == "Plugin execution failed"
 
     def test_discovery_data_creation(self) -> None:

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import ClassVar, Final, Literal
+from typing import ClassVar, Final
 
 from flext_core.constants import FlextConstants
 
@@ -89,30 +89,7 @@ class FlextPluginConstants(FlextConstants):
         # ═══════════════════════════════════════════════════════════════════
         # All Literal types reference StrEnum members - NO string duplication!
 
-        type PluginTypeLiteral = Literal[
-            PluginType.TAP,
-            PluginType.TARGET,
-            PluginType.TRANSFORM,
-            PluginType.EXTENSION,
-            PluginType.SERVICE,
-            PluginType.MIDDLEWARE,
-            PluginType.TRANSFORMER,
-            PluginType.API,
-            PluginType.DATABASE,
-            PluginType.NOTIFICATION,
-            PluginType.AUTHENTICATION,
-            PluginType.AUTHORIZATION,
-            PluginType.UTILITY,
-            PluginType.TOOL,
-            PluginType.HANDLER,
-            PluginType.PROCESSOR,
-            PluginType.CORE,
-            PluginType.ADDON,
-            PluginType.THEME,
-            PluginType.LANGUAGE,
-        ]
-        """Plugin type literal - references PluginType StrEnum members."""
-
+        # PluginTypeLiteral moved to typings.py (t.Plugin.PluginTypeLiteral)
         # PluginStatusLiteral defined after PluginStatus class - see below
 
         # Plugin types with frozensets
@@ -178,6 +155,18 @@ class FlextPluginConstants(FlextConstants):
             STATUS_DISABLED: Final[str] = "disabled"
             STATUS_HEALTHY: Final[str] = "healthy"
             STATUS_UNHEALTHY: Final[str] = "unhealthy"
+            # Additional status constants from platform.py
+            STATUS_UNLOADED: Final[str] = "unloaded"
+
+        # Entity constants
+        class Entities:
+            """Entity-related constants."""
+
+            SEMANTIC_VERSION_PARTS: Final[int] = 3
+            # Field validation constants
+            PLUGIN_NAME_MAX_LENGTH: Final[int] = 255
+            PLUGIN_VERSION_MAX_LENGTH: Final[int] = 50
+            PLUGIN_VERSION_MIN_LENGTH: Final[int] = 1
 
             # Generated from PluginStatus StrEnum (DRY principle)
             # Note: PluginStatus enum is defined later in the file, generated after definition
@@ -189,9 +178,7 @@ class FlextPluginConstants(FlextConstants):
 
             SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
             DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
-            # SecurityLevelLiteral - no corresponding StrEnum, keep as string literals
-            type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
-            """Security level literal - no corresponding StrEnum."""
+            # SecurityLevelLiteral moved to typings.py (t.Security.SecurityLevelLiteral)
 
             SECURITY_LOW: Final[str] = "low"
             SECURITY_MEDIUM: Final[str] = "medium"
@@ -423,21 +410,7 @@ class FlextPluginConstants(FlextConstants):
         # ═══════════════════════════════════════════════════════════════════
         # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)
         # ═══════════════════════════════════════════════════════════════════
-        # PluginStatusLiteral defined here to reference PluginStatus StrEnum
-
-        type PluginStatusLiteral = Literal[
-            PluginStatus.UNKNOWN,
-            PluginStatus.DISCOVERED,
-            PluginStatus.LOADED,
-            PluginStatus.ACTIVE,
-            PluginStatus.INACTIVE,
-            PluginStatus.LOADING,
-            PluginStatus.ERROR,
-            PluginStatus.DISABLED,
-            PluginStatus.HEALTHY,
-            PluginStatus.UNHEALTHY,
-        ]
-        """Plugin status literal - references PluginStatus StrEnum members."""
+        # PluginStatusLiteral moved to typings.py (t.Plugin.PluginStatusLiteral)
 
         # Set PLUGIN_LIFECYCLE_STATES after PluginStatus is defined
         # Generated from PluginStatus StrEnum (DRY principle)
@@ -479,6 +452,4 @@ class FlextPluginConstants(FlextConstants):
         """All plugin types - union of all plugin type frozensets."""
 
 
-c = FlextPluginConstants
-
-__all__ = ["FlextPluginConstants", "c"]
+__all__ = ["FlextPluginConstants"]

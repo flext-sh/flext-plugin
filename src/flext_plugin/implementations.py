@@ -14,14 +14,13 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, FlextTypes, r
+from flext_core import FlextLogger, r
+from flext_core.typings import t
 
-from flext_plugin.models import m
-from flext_plugin.protocols import p
+from flext_plugin.models import FlextPluginModels
+from flext_plugin.protocols import FlextPluginProtocols
 
-# Protocol references from centralized protocols.py for backward compatibility
-FlextPluginLoaderProtocol = p.Plugin.PluginLoaderProtocol
-FlextPluginRegistryProtocol = p.Plugin.PluginRegistryProtocol
+# Protocol references moved to avoid root aliases - use FlextPluginProtocols.Plugin.* directly
 
 
 class FlextPluginImplementations:
@@ -36,17 +35,17 @@ class FlextPluginImplementations:
     """
 
     # Protocol aliases from centralized protocols.py
-    FlextPluginLoaderProtocol = p.Plugin.PluginLoaderProtocol
-    FlextPluginRegistryProtocol = p.Plugin.PluginRegistryProtocol
+    FlextPluginLoaderProtocol = FlextPluginProtocols.Plugin.PluginLoaderProtocol
+    FlextPluginRegistryProtocol = FlextPluginProtocols.Plugin.PluginRegistryProtocol
 
     # Type aliases for cleaner code
-    FlextPluginLoader = FlextPluginLoaderProtocol
+    FlextPluginLoader = FlextPluginProtocols.Plugin.PluginLoaderProtocol
 
     class ConcretePlugin:
         """Concrete implementation of the FlextPlugin interface.
 
         This class implements the abstract FlextPlugin interface from flext-core,
-        providing actual plugin functionality while using m.Plugin
+        providing actual plugin functionality while using FlextPluginModels.Plugin
         for domain logic and state management.
 
         Attributes:
@@ -63,7 +62,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            entity: m.Plugin | None = None,
+            entity: FlextPluginModels.Plugin | None = None,
         ) -> None:
             """Initialize concrete plugin.
 
@@ -79,7 +78,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = FlextLogger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: FlextTypes.Core.JsonDict = {}
+            self._config: t.Core.JsonDict = {}
 
         @property
         def name(self) -> str:
@@ -91,7 +90,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: FlextTypes.Core.JsonDict) -> r[None]:
+        def configure(self, config: t.Core.JsonDict) -> r[None]:
             """Configure component with provided settings."""
             try:
                 # Store configuration
@@ -101,13 +100,13 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
-        def get_config(self) -> FlextTypes.Core.JsonDict:
+        def get_config(self) -> t.Core.JsonDict:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
         def initialize(
             self,
-            _context: FlextTypes.Core.JsonDict,
+            _context: t.Core.JsonDict,
         ) -> r[None]:
             """Initialize plugin with context.
 
@@ -157,7 +156,7 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail(f"Shutdown failed: {e!s}")
 
-        def get_info(self) -> FlextTypes.Core.JsonDict:
+        def get_info(self) -> t.Core.JsonDict:
             """Get plugin information.
 
             Returns:
@@ -183,8 +182,8 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            operations: FlextTypes.Core.JsonDict | None = None,
-            entity: m.Plugin | None = None,
+            operations: t.Core.JsonDict | None = None,
+            entity: FlextPluginModels.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
 
@@ -201,8 +200,8 @@ class FlextPluginImplementations:
         def execute(
             self,
             operation: str,
-            _params: Mapping[str, FlextTypes.Core.GeneralValueType],
-        ) -> r[FlextTypes.Core.GeneralValueType]:
+            _params: Mapping[str, t.Core.GeneralValueType],
+        ) -> r[t.Core.GeneralValueType]:
             """Execute a plugin operation.
 
             Args:
@@ -214,11 +213,9 @@ class FlextPluginImplementations:
 
             """
             if not self._initialized:
-                return r[FlextTypes.Core.GeneralValueType].fail(
-                    "Plugin not initialized"
-                )
+                return r[t.Core.GeneralValueType].fail("Plugin not initialized")
             if operation not in self._operations:
-                return r[FlextTypes.Core.GeneralValueType].fail(
+                return r[t.Core.GeneralValueType].fail(
                     f"Unsupported operation: {operation}"
                 )
             try:
@@ -230,15 +227,13 @@ class FlextPluginImplementations:
                     self._entity.record_execution(0.0, success=True)
                 # Execute operation (simplified for example)
                 result = self._operations[operation]
-                return r[FlextTypes.Core.GeneralValueType].ok(result)
+                return r[t.Core.GeneralValueType].ok(result)
             except Exception as e:
                 self.logger.exception(f"Operation {operation} failed")
                 # Record error in entity if present
                 if self._entity:
                     self._entity.record_error(str(e))
-                return r[FlextTypes.Core.GeneralValueType].fail(
-                    f"Operation failed: {e!s}"
-                )
+                return r[t.Core.GeneralValueType].fail(f"Operation failed: {e!s}")
 
         def get_supported_operations(self) -> list[str]:
             """Get list of supported operations.
@@ -261,8 +256,8 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            connection_config: FlextTypes.Core.JsonDict | None = None,
-            entity: m.Plugin | None = None,
+            connection_config: t.Core.JsonDict | None = None,
+            entity: FlextPluginModels.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
 
@@ -278,7 +273,7 @@ class FlextPluginImplementations:
             self._connection_valid = False
 
         def validate_config(
-            self, config: Mapping[str, FlextTypes.Core.GeneralValueType]
+            self, config: Mapping[str, t.Core.GeneralValueType]
         ) -> r[None]:
             """Validate plugin configuration.
 
@@ -333,8 +328,8 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            schema: FlextTypes.Core.JsonDict | None = None,
-            entity: m.Plugin | None = None,
+            schema: t.Core.JsonDict | None = None,
+            entity: FlextPluginModels.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
 
@@ -349,8 +344,8 @@ class FlextPluginImplementations:
             self._schema = schema or {}
 
         def transform(
-            self, data: FlextTypes.Core.GeneralValueType
-        ) -> r[FlextTypes.Core.GeneralValueType]:
+            self, data: t.Core.GeneralValueType
+        ) -> r[t.Core.GeneralValueType]:
             """Transform input data.
 
             Args:
@@ -364,21 +359,19 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
                 if not isinstance(data, dict):
-                    return r[FlextTypes.Core.GeneralValueType].fail(
+                    return r[t.Core.GeneralValueType].fail(
                         "Input data must be a dictionary"
                     )
                 # Apply transformation based on schema
-                transformed: FlextTypes.Core.JsonDict = FlextTypes.Core.JsonDict(data)
+                transformed: t.Core.JsonDict = t.Core.JsonDict(data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
-                return r[FlextTypes.Core.GeneralValueType].ok(transformed)
+                return r[t.Core.GeneralValueType].ok(transformed)
             except Exception as e:
                 self.logger.exception("Transformation failed")
-                return r[FlextTypes.Core.GeneralValueType].fail(
-                    f"Transform failed: {e!s}"
-                )
+                return r[t.Core.GeneralValueType].fail(f"Transform failed: {e!s}")
 
-        def get_schema(self) -> r[Mapping[str, FlextTypes.Core.GeneralValueType]]:
+        def get_schema(self) -> r[Mapping[str, t.Core.GeneralValueType]]:
             """Get transformation schema.
 
             Returns:
@@ -386,12 +379,12 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[Mapping[str, FlextTypes.Core.GeneralValueType]].fail(
+                return r[Mapping[str, t.Core.GeneralValueType]].fail(
                     "No schema defined"
                 )
-            return r[Mapping[str, FlextTypes.Core.GeneralValueType]].ok(self._schema)
+            return r[Mapping[str, t.Core.GeneralValueType]].ok(self._schema)
 
-    class LoggerAdapter(p.Plugin.LoggerProtocol):
+    class LoggerAdapter(FlextPluginProtocols.Plugin.LoggerProtocol):
         """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
         @override
@@ -402,8 +395,8 @@ class FlextPluginImplementations:
         def critical(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log critical message."""
             self.logger.critical(message)
@@ -411,8 +404,8 @@ class FlextPluginImplementations:
         def error(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log error message."""
             self.logger.error(message)
@@ -420,8 +413,8 @@ class FlextPluginImplementations:
         def warning(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log warning message."""
             self.logger.warning(message)
@@ -429,8 +422,8 @@ class FlextPluginImplementations:
         def info(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log info message."""
             self.logger.info(message)
@@ -438,8 +431,8 @@ class FlextPluginImplementations:
         def debug(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log debug message."""
             self.logger.debug(message)
@@ -447,8 +440,8 @@ class FlextPluginImplementations:
         def trace(
             self,
             message: str,
-            *_args: FlextTypes.Core.GeneralValueType,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            *_args: t.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log trace message."""
             self.logger.debug(message)  # structlog doesn't have trace, use debug
@@ -457,7 +450,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            _context: FlextTypes.Core.JsonDict | None = None,
+            _context: t.Core.JsonDict | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -467,7 +460,7 @@ class FlextPluginImplementations:
             message: str,
             *,
             _exc_info: bool = True,
-            **_kwargs: FlextTypes.Core.GeneralValueType,
+            **_kwargs: t.Core.GeneralValueType,
         ) -> None:
             """Log exception message."""
             self.logger.error(message)
@@ -483,8 +476,8 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: FlextLogger,
-            config: FlextTypes.Core.JsonDict | None = None,
-            services: FlextTypes.Core.JsonDict | None = None,
+            config: t.Core.JsonDict | None = None,
+            services: t.Core.JsonDict | None = None,
         ) -> None:
             """Initialize the instance.
 
@@ -496,7 +489,7 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: FlextTypes.Core.JsonDict = config or {}
+            self._config: t.Core.JsonDict = config or {}
             self._services = services or {}
 
         @property
@@ -504,15 +497,15 @@ class FlextPluginImplementations:
             """Get logger for plugin."""
             return self._logger
 
-        def get_config(self) -> FlextTypes.Core.JsonDict:
+        def get_config(self) -> t.Core.JsonDict:
             """Get configuration for plugin."""
-            return FlextTypes.Core.JsonDict(self._config)
+            return t.Core.JsonDict(self._config)
 
-        def get_logger(self) -> p.Plugin.LoggerProtocol:
+        def get_logger(self) -> FlextPluginProtocols.Plugin.LoggerProtocol:
             """Get logger instance for plugin."""
-            return LoggerAdapter(self.logger)
+            return FlextPluginImplementations.LoggerAdapter(self.logger)
 
-        def get_service(self, service_name: str) -> r[FlextTypes.Core.GeneralValueType]:
+        def get_service(self, service_name: str) -> r[t.Core.GeneralValueType]:
             """Get service by name from container.
 
             Args:
@@ -534,10 +527,10 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: dict[str, m.Plugin] = {}
+            self.plugins: dict[str, FlextPluginModels.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
-        def register(self, plugin: m.Plugin) -> r[None]:
+        def register(self, plugin: FlextPluginModels.Plugin) -> r[None]:
             """Register a plugin.
 
             Args:
@@ -572,7 +565,7 @@ class FlextPluginImplementations:
             self._logger.info("Unregistered plugin %s", plugin_name)
             return r[None].ok(None)
 
-        def get_plugin(self, plugin_name: str) -> m.Plugin | None:
+        def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
             """Get plugin by name.
 
             Args:
@@ -584,7 +577,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> list[m.Plugin]:
+        def list_plugins(self) -> list[FlextPluginModels.Plugin]:
             """List all registered plugin names.
 
             Returns:
@@ -601,7 +594,10 @@ class FlextPluginImplementations:
         """
 
         @override
-        def __init__(self, registry: object | None = None) -> None:
+        def __init__(
+            self,
+            registry: FlextPluginProtocols.Plugin.PluginRegistryProtocol | None = None,
+        ) -> None:
             """Initialize plugin loader.
 
             Args:
@@ -632,8 +628,8 @@ class FlextPluginImplementations:
                     name=f"loaded-from-{plugin_path}",
                     version="1.0.0",
                 )
-                # Create m.Plugin for registration
-                plugin_entity = m.Plugin.create(
+                # Create FlextPluginModels.Plugin for registration
+                plugin_entity = FlextPluginModels.Plugin.create(
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )
@@ -683,50 +679,6 @@ class FlextPluginImplementations:
                 )
 
 
-# Backward compatibility exports - direct access to nested classes
-# Plugin implementation classes with real inheritance
-class ConcretePlugin(FlextPluginImplementations.ConcretePlugin):
-    """ConcretePlugin - real inheritance from FlextPluginImplementations.ConcretePlugin."""
-
-
-class ConcreteExecutablePlugin(FlextPluginImplementations.ConcreteExecutablePlugin):
-    """ConcreteExecutablePlugin - real inheritance from ConcreteExecutablePlugin."""
-
-
-class ConcreteDataPlugin(FlextPluginImplementations.ConcreteDataPlugin):
-    """ConcreteDataPlugin - real inheritance from ConcreteDataPlugin."""
-
-
-class ConcreteTransformPlugin(FlextPluginImplementations.ConcreteTransformPlugin):
-    """ConcreteTransformPlugin - real inheritance from ConcreteTransformPlugin."""
-
-
-class LoggerAdapter(FlextPluginImplementations.LoggerAdapter):
-    """LoggerAdapter - real inheritance from LoggerAdapter."""
-
-
-class ConcretePluginContext(FlextPluginImplementations.ConcretePluginContext):
-    """ConcretePluginContext - real inheritance from ConcretePluginContext."""
-
-
-class ConcretePluginRegistry(FlextPluginImplementations.ConcretePluginRegistry):
-    """ConcretePluginRegistry - real inheritance from ConcretePluginRegistry."""
-
-
-class ConcretePluginLoader(FlextPluginImplementations.ConcretePluginLoader):
-    """ConcretePluginLoader - real inheritance from ConcretePluginLoader."""
-
-
 __all__ = [
-    "ConcreteDataPlugin",
-    "ConcreteExecutablePlugin",
-    # Backward compatibility exports
-    "ConcretePlugin",
-    "ConcretePluginContext",
-    "ConcretePluginLoader",
-    "ConcretePluginRegistry",
-    "ConcreteTransformPlugin",
-    # CONSOLIDATED class (FLEXT pattern)
     "FlextPluginImplementations",
-    "LoggerAdapter",
 ]

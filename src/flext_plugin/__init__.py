@@ -6,62 +6,27 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Version
+# Version - acceptable exception for __init__.py (foundation module importing version)
 from flext_plugin.__version__ import __version__, __version_info__
 
-# Layer 3: Infrastructure
-from flext_plugin.adapters import FlextPluginAdapters
-
-# Layer 4: Facade & Configuration
-from flext_plugin.api import FlextPluginApi
-
-# Layer 0: Constants & Types
+# Layer 0: Constants & Types (Foundation only - no services/api imports)
 from flext_plugin.constants import FlextPluginConstants
 
-# Layer 2: Application Services
-from flext_plugin.discovery import FlextPluginDiscovery
-from flext_plugin.handlers import FlextPluginHandlers
-from flext_plugin.hot_reload import FlextPluginHotReload
-from flext_plugin.loader import FlextPluginLoader
-
 # Layer 1: Domain Models
-from flext_plugin.models import FlextPluginModels, m, m_plugin
-from flext_plugin.platform import FlextPluginPlatform
+from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.services import FlextPluginService
-from flext_plugin.settings import FlextPluginSettings
 from flext_plugin.typings import FlextPluginTypes, t
-from flext_plugin.utilities import FlextPluginUtilities
-
-# Domain-specific aliases
-u = FlextPluginUtilities  # Utilities (FlextPluginUtilities extends FlextUtilities)
 
 __all__ = [
-    # Layer 3
-    "FlextPluginAdapters",
-    # Layer 4
-    "FlextPluginApi",
     # Layer 0
     "FlextPluginConstants",
-    # Layer 2
-    "FlextPluginDiscovery",
-    "FlextPluginHandlers",
-    "FlextPluginHotReload",
-    "FlextPluginLoader",
     # Layer 1
     "FlextPluginModels",
-    "FlextPluginPlatform",
     "FlextPluginProtocols",
-    "FlextPluginService",
-    "FlextPluginSettings",
     "FlextPluginTypes",
-    "FlextPluginUtilities",
     # Version
     "__version__",
     "__version_info__",
     # Domain-specific aliases
-    "m",
-    "m_plugin",
     "t",
-    "u",
 ]

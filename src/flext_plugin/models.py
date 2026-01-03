@@ -11,18 +11,19 @@ import types
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Literal, Self
+from typing import Self
 
-from flext_core import FlextModels as m_core
+from flext_core import FlextModels
 from flext_core.result import r
+from flext_core.typings import FlextTypes
 from flext_core.utilities import u as flext_u
 from pydantic import Field, field_validator
 
-from flext_plugin.constants import c
-from flext_plugin.typings import t
+from flext_plugin.constants import FlextPluginConstants as c_constants
+from flext_plugin.typings import FlextPluginTypes as t_types
 
 
-class FlextPluginModels(m_core):
+class FlextPluginModels(FlextModels):
     """Plugin domain models extending flext-core patterns.
 
     Provides standardized models for all plugin operations including plugin
@@ -41,12 +42,12 @@ class FlextPluginModels(m_core):
         )
 
     # Re-export PluginType enum from constants for convenience
-    PluginType = c.Plugin.PluginType
+    PluginType = c_constants.Plugin.PluginType
 
-    class Entity(m_core.Entity):
+    class Entity(FlextModels.Entity):
         """Entity - real inheritance."""
 
-    class Plugin(m_core.Entity):
+    class Plugin(FlextModels.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
 
         Represents a plugin with identity, lifecycle management, and mutable state.
@@ -65,32 +66,32 @@ class FlextPluginModels(m_core):
 
         name: str = Field(
             ...,
-            min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-            max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-            pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+            min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
             description="Plugin unique identifier name",
         )
         plugin_version: str = Field(
             default="1.0.0",
-            pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+            pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
             description="Plugin semantic version (X.Y.Z)",
         )
         description: str = Field(
             default="",
-            max_length=c.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
+            max_length=c_constants.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
             description="Plugin functionality description",
         )
         author: str = Field(
             default="",
-            max_length=c.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
+            max_length=c_constants.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
             description="Plugin author/maintainer",
         )
         plugin_type: str = Field(
-            default=c.Plugin.PluginType.UTILITY,
+            default=c_constants.Plugin.PluginType.UTILITY,
             description="Plugin type classification",
         )
         is_enabled: bool = Field(default=True, description="Plugin enabled state")
-        metadata: dict[str, t.GeneralValueType] = Field(
+        metadata: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Extensible plugin metadata",
         )
@@ -151,9 +152,9 @@ class FlextPluginModels(m_core):
             plugin_version: str = "1.0.0",
             description: str = "",
             author: str = "",
-            plugin_type: str = c.Plugin.PluginType.UTILITY,
+            plugin_type: str = c_constants.Plugin.PluginType.UTILITY,
             is_enabled: bool = True,
-            metadata: dict[str, t.GeneralValueType] | None = None,
+            metadata: dict[str, FlextTypes.GeneralValueType] | None = None,
             entity_id: str | None = None,
         ) -> Self:
             """Factory method to create a new Plugin entity.
@@ -355,7 +356,7 @@ class FlextPluginModels(m_core):
 
             return r[bool].ok(True)
 
-    class ExecutionResult(m_core.Value):
+    class ExecutionResult(FlextModels.Value):
         """Plugin execution result - immutable execution outcome.
 
         Represents the result of a plugin execution including success status,
@@ -370,7 +371,7 @@ class FlextPluginModels(m_core):
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        data: dict[str, t.GeneralValueType] = Field(
+        data: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Execution output data",
         )
@@ -384,11 +385,11 @@ class FlextPluginModels(m_core):
             description="Execution time in milliseconds",
         )
 
-    class DiscoveryData(m_core.Value):
+    class DiscoveryData(FlextModels.Value):
         """Plugin discovery data - immutable discovery result.
 
         Represents discovered plugin information from various discovery methods
-        (file system, entry points, etc.). Immutable value object.
+        (file system, entry points, etc_constants.). Immutable value object.
 
         Attributes:
         name: Plugin unique identifier name
@@ -401,23 +402,23 @@ class FlextPluginModels(m_core):
         """
 
         name: str = Field(
-            min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-            max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-            pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+            min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
             description="Plugin unique identifier name",
         )
         version: str = Field(
-            pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+            pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
             description="Plugin semantic version (X.Y.Z)",
         )
         path: Path = Field(description="File system path to plugin")
-        discovery_type: Literal["file", "directory", "entry_point"] = Field(
+        discovery_type: t_types.Plugin.DiscoveryTypeLiteral = Field(
             description="Type of discovered plugin",
         )
-        discovery_method: Literal["file_system", "entry_points"] = Field(
+        discovery_method: t_types.Plugin.DiscoveryMethodLiteral = Field(
             description="Discovery method used",
         )
-        metadata: dict[str, t.GeneralValueType] = Field(
+        metadata: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Extensible discovery metadata",
         )
@@ -439,7 +440,7 @@ class FlextPluginModels(m_core):
                     raise ValueError(error_msg)
             return value
 
-    class LoadData(m_core.Value):
+    class LoadData(FlextModels.Value):
         """Plugin load data - immutable load result.
 
         Represents successfully loaded plugin information including the loaded
@@ -457,17 +458,17 @@ class FlextPluginModels(m_core):
         """
 
         name: str = Field(
-            min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-            max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+            min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+            max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
             description="Plugin unique identifier name",
         )
         version: str = Field(
-            pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+            pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
             description="Plugin semantic version (X.Y.Z)",
         )
         path: Path = Field(description="File system path to plugin")
         module: types.ModuleType = Field(description="The loaded Python module object")
-        load_type: Literal["file", "directory", "entry_point"] = Field(
+        load_type: t_types.Plugin.LoadTypeLiteral = Field(
             description="Type of loaded plugin",
         )
         loaded_at: datetime = Field(description="Timestamp when plugin was loaded")
@@ -476,7 +477,7 @@ class FlextPluginModels(m_core):
             description="Entry file path for directory-based plugins",
         )
 
-    class ReloadRecord(m_core.Value):
+    class ReloadRecord(FlextModels.Value):
         """Plugin reload record - immutable reload history entry.
 
         Records information about a plugin reload event including timing,
@@ -506,7 +507,7 @@ class FlextPluginModels(m_core):
             description="Reload duration in milliseconds",
         )
 
-    class PluginMetadata(m_core.Value):
+    class PluginMetadata(FlextModels.Value):
         """Plugin metadata - immutable metadata value object.
 
         Represents complete metadata about a plugin including discovery
@@ -517,7 +518,7 @@ class FlextPluginModels(m_core):
         version: Plugin semantic version
         description: Plugin description
         author: Plugin author
-        plugin_type: Type of plugin (extension, transformer, etc.)
+        plugin_type: Type of plugin (extension, transformer, etc_constants.)
         entry_point: Entry point for plugin
         dependencies: List of plugin dependencies
         metadata: Additional metadata dictionary
@@ -534,12 +535,12 @@ class FlextPluginModels(m_core):
             default_factory=list,
             description="List of plugin dependencies",
         )
-        metadata: dict[str, t.GeneralValueType] = Field(
+        metadata: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Additional metadata",
         )
 
-    class EventData(m_core.Value):
+    class EventData(FlextModels.Value):
         """Event data - immutable event information.
 
         Represents structured event data with context and metadata.
@@ -556,12 +557,12 @@ class FlextPluginModels(m_core):
         event_type: str = Field(description="Type of event")
         plugin_name: str = Field(description="Associated plugin name")
         timestamp: datetime = Field(description="When event occurred")
-        data: dict[str, t.GeneralValueType] = Field(
+        data: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Event-specific data",
         )
 
-    class ValidationResult(m_core.Value):
+    class ValidationResult(FlextModels.Value):
         """Validation result - immutable validation outcome.
 
         Represents result of plugin validation including status and details.
@@ -584,12 +585,12 @@ class FlextPluginModels(m_core):
             default_factory=list,
             description="List of validation warnings",
         )
-        details: dict[str, t.GeneralValueType] = Field(
+        details: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Additional validation details",
         )
 
-    class SecurityReport(m_core.Value):
+    class SecurityReport(FlextModels.Value):
         """Security report - immutable security scan result.
 
         Represents security scanning results for plugins.
@@ -614,7 +615,7 @@ class FlextPluginModels(m_core):
         )
         analysis_time: datetime = Field(description="When analysis was performed")
 
-    class WatcherConfig(m_core.Value):
+    class WatcherConfig(FlextModels.Value):
         """Watcher configuration - file system monitoring config.
 
         Represents file watcher configuration for hot reload.
@@ -637,13 +638,13 @@ class FlextPluginModels(m_core):
             description="Callback function reference",
         )
         active: bool = Field(default=False, description="Whether watcher is active")
-        last_modified: dict[str, t.GeneralValueType] = Field(
+        last_modified: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="File modification tracking",
         )
         created_at: datetime = Field(description="Configuration creation time")
 
-    class SandboxConfig(m_core.Value):
+    class SandboxConfig(FlextModels.Value):
         """Sandbox configuration - plugin execution sandbox settings.
 
         Represents security sandbox configuration for plugin execution.
@@ -672,7 +673,7 @@ class FlextPluginModels(m_core):
             description="Environment variable settings",
         )
 
-    class PluginRegistry(m_core.Value):
+    class PluginRegistry(FlextModels.Value):
         """Plugin registry - central plugin registry storage.
 
         Represents plugin registry with version tracking and plugin entries.
@@ -687,7 +688,7 @@ class FlextPluginModels(m_core):
         """
 
         version: str = Field(description="Registry schema version")
-        plugins: dict[str, t.GeneralValueType] = Field(
+        plugins: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )
@@ -700,25 +701,25 @@ class FlextPluginModels(m_core):
             description="Registry creation timestamp",
         )
 
-    class PluginConfig(m_core.Value):
+    class PluginConfig(FlextModels.Value):
         """Plugin configuration model.
 
         Represents configuration for a plugin with key-value pairs.
         """
 
         plugin_name: str = Field(description="Plugin name")
-        settings: dict[str, t.GeneralValueType] = Field(
+        settings: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Configuration settings",
         )
 
-    class Registry(m_core.Value):
+    class Registry(FlextModels.Value):
         """Plugin registry model.
 
         Represents a registry of plugins with metadata.
         """
 
-        plugins: dict[str, t.GeneralValueType] = Field(
+        plugins: dict[str, FlextTypes.GeneralValueType] = Field(
             default_factory=dict,
             description="Dictionary of registered plugins",
         )

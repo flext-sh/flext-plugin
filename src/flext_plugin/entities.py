@@ -21,18 +21,17 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Self, TypeVar
+from typing import Self
 from uuid import uuid4
 
-from flext_core import FlextModels, FlextResult, r
+from flext_core import FlextResult, r
+from flext_core.models import m
 from pydantic import Field
 
+from flext_plugin.constants import c
 from flext_plugin.typings import t
 
-T = TypeVar("T")
-
-# Constants
-SEMANTIC_VERSION_PARTS = 3
+# Constants moved to constants.py - use c.Plugin.Entities.SEMANTIC_VERSION_PARTS
 
 
 class FlextPluginEntities:
@@ -70,7 +69,7 @@ class FlextPluginEntities:
     # VALUE OBJECTS - Immutable domain values
     # ========================================================================
 
-    class PluginConfig(FlextModels.Value):
+    class PluginConfig(m.Value):
         """Plugin configuration value object - immutable configuration.
 
         Value object representing plugin configuration. Immutable after creation,
@@ -88,12 +87,12 @@ class FlextPluginEntities:
         name: str = Field(
             description="Plugin name (unique in registry)",
             min_length=1,
-            max_length=255,
+            max_length=c.Plugin.Entities.PLUGIN_NAME_MAX_LENGTH,
         )
         plugin_version: str = Field(
             description="Plugin semantic version (e.g., '1.0.0')",
-            min_length=1,
-            max_length=50,
+            min_length=c.Plugin.Entities.PLUGIN_VERSION_MIN_LENGTH,
+            max_length=c.Plugin.Entities.PLUGIN_VERSION_MAX_LENGTH,
         )
         enabled: bool = Field(default=True, description="Whether plugin is enabled")
         metadata: dict[str, t.GeneralValueType] = Field(
@@ -105,7 +104,7 @@ class FlextPluginEntities:
             description="Classification tags for discovery",
         )
 
-    class PluginMetadata(FlextModels.Value):
+    class PluginMetadata(m.Value):
         """Plugin metadata value object - immutable plugin information.
 
         Represents read-only plugin information including description, author,
@@ -138,7 +137,7 @@ class FlextPluginEntities:
             description="Last update timestamp",
         )
 
-    class PluginExecutionResult(FlextModels.Value):
+    class PluginExecutionResult(m.Value):
         """Plugin execution result value object - immutable execution outcome.
 
         Represents the result of plugin execution with status and outcome data.
@@ -169,7 +168,7 @@ class FlextPluginEntities:
     # ENTITIES - Domain objects with identity and lifecycle
     # ========================================================================
 
-    class Plugin(FlextModels.Entity):
+    class Plugin(m.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
 
         Represents a plugin with identity (id), lifecycle (created_at, updated_at),
@@ -291,7 +290,9 @@ class FlextPluginEntities:
 
             # Basic semantic version validation (X.Y.Z)
             version_parts = self.config.plugin_version.split(".")
-            if len(version_parts) != SEMANTIC_VERSION_PARTS or not all(
+            if len(
+                version_parts
+            ) != c.Plugin.Entities.SEMANTIC_VERSION_PARTS or not all(
                 p.isdigit() for p in version_parts
             ):
                 return r.fail(
@@ -314,7 +315,7 @@ class FlextPluginEntities:
     # AGGREGATE ROOTS - Consistency boundaries
     # ========================================================================
 
-    class PluginRegistry(FlextModels.AggregateRoot):
+    class PluginRegistry(m.AggregateRoot):
         """Plugin registry aggregate root - manages plugin collection.
 
         Aggregate root for plugin lifecycle management and consistency boundary.
@@ -456,20 +457,20 @@ class FlextPluginEntities:
 
         """
 
-        class PluginRegistered(FlextModels.DomainEvent):
+        class PluginRegistered(m.DomainEvent):
             """Event: Plugin was registered in the registry."""
 
             plugin_name: str = Field(description="Name of registered plugin")
             plugin_version: str = Field(description="Version of registered plugin")
 
-        class PluginStatusChanged(FlextModels.DomainEvent):
+        class PluginStatusChanged(m.DomainEvent):
             """Event: Plugin status changed."""
 
             plugin_name: str = Field(description="Name of plugin")
             old_status: str = Field(description="Previous status")
             new_status: str = Field(description="New status")
 
-        class PluginExecuted(FlextModels.DomainEvent):
+        class PluginExecuted(m.DomainEvent):
             """Event: Plugin execution completed."""
 
             plugin_name: str = Field(description="Name of executed plugin")
@@ -479,7 +480,7 @@ class FlextPluginEntities:
                 description="Execution time in milliseconds",
             )
 
-        class PluginUnregistered(FlextModels.DomainEvent):
+        class PluginUnregistered(m.DomainEvent):
             """Event: Plugin was unregistered from the registry."""
 
             plugin_name: str = Field(description="Name of unregistered plugin")
