@@ -116,6 +116,54 @@
 [tool.deptry]
     known_first_party = [
         "flext_plugin",
+        "flext_core",
+        "flext_observability",
+    ]
+    pep621_dev_dependency_groups = [
+        "dev",
+        "test",
+        "typings",
+        "security",
+    ]
+
+[tool.deptry.per_rule_ignores]
+    DEP002 = [
+        # CLI tools (invoked from command line, not imported)
+        "autoflake",
+        "bandit",
+        "black",
+        "codespell",
+        "deptry",
+        "isort",
+        "pip-audit",
+        "pre-commit",
+        "pylint",
+        "pyupgrade",
+        "radon",
+        "ruff",
+        "vulture",
+        # Type stubs
+        "django-stubs",
+        "types-ldap3",
+        "types-protobuf",
+        "types-psutil",
+        "types-psycopg2",
+        "types-python-dateutil",
+        "types-pyyaml",
+        "types-redis",
+        "types-requests",
+        "types-setuptools",
+        "types-toml",
+        # Runtime deps used indirectly (via pydantic, anyio)
+        "anyio",
+        "faker",
+        "jsonschema",
+        "psutil",
+        "pydantic-core",
+        "pytest",
+        "pytest-cov",
+        "pytest-randomly",
+        "watchdog",
     ]
 
 [tool.pytest.ini_options]

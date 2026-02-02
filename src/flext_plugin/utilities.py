@@ -45,7 +45,7 @@ class FlextPluginUtilities(u):
     MAX_SIZE_MB: ClassVar[int] = 100
     NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
 
-    class PluginDiscovery:
+    class Plugin:
         """Plugin discovery and validation utilities."""
 
         PLUGIN_FILE_EXTENSIONS: ClassVar[t.Plugin.StringList] = [

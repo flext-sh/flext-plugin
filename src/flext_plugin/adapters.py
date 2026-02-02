@@ -14,10 +14,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 from flext_core import FlextLogger, T, r
+from flext_core.protocols import FlextProtocols
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p
-from flext_plugin.typings import t
 
 
 class FlextPluginAdapters:
@@ -61,18 +61,21 @@ class FlextPluginAdapters:
 
         def discover_plugins(
             self,
-            paths: t.Plugin.StringList,
-        ) -> r[list[m.DiscoveryData]]:
+            paths: list[str],
+        ) -> r[list[FlextProtocols.JsonDict]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
-                lambda: self._discover_all(paths),
+                lambda: [
+                    self._discovery_data_to_dict(d)
+                    for d in self._discover_all(paths)
+                ],
                 "Plugin discovery failed",
             )
 
         def _discover_all(
             self,
-            paths: t.Plugin.StringList,
-        ) -> list[m.DiscoveryData]:
+            paths: list[str],
+        ) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered = []
             for path in paths:
@@ -93,18 +96,20 @@ class FlextPluginAdapters:
 
         def discover_plugin(
             self,
-            plugin_path: str,
-        ) -> r[m.DiscoveryData]:
+            _plugin_path: str,
+        ) -> r[FlextProtocols.JsonDict]:
             """Discover single plugin at path."""
             return self._execute_safe(
-                lambda: self._discover_single(plugin_path),
-                f"Failed to discover plugin at {plugin_path}",
+                lambda: self._discovery_data_to_dict(
+                    self._discover_single(_plugin_path)
+                ),
+                f"Failed to discover plugin at {_plugin_path}",
             )
 
         def _discover_single(
             self,
             plugin_path: str,
-        ) -> m.DiscoveryData:
+        ) -> m.Plugin.DiscoveryData:
             """Internal: discover single plugin."""
             path_obj = Path(plugin_path).expanduser().resolve()
             if not path_obj.exists():
@@ -117,26 +122,39 @@ class FlextPluginAdapters:
                 raise ValueError(error_msg)
             return data
 
+        def _discovery_data_to_dict(
+            self,
+            data: m.Plugin.DiscoveryData,
+        ) -> FlextProtocols.JsonDict:
+            """Convert DiscoveryData model to JsonDict."""
+            return {
+                "name": data.name,
+                "version": data.version,
+                "path": str(data.path),
+                "discovery_type": data.discovery_type,
+                "discovery_method": data.discovery_method,
+            }
+
         def validate_plugin(
             self,
-            _plugin_data: m.DiscoveryData,
+            _plugin_data: FlextProtocols.JsonDict,
         ) -> r[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(
-                lambda: True,  # Pydantic validates on creation
+                lambda: True,  # Validates if convertible to model
                 "Plugin validation failed",
             )
 
         def _discover_single_file(
             self,
             path: Path,
-        ) -> m.DiscoveryData | None:
+        ) -> m.Plugin.DiscoveryData | None:
             """Internal: discover single file."""
             if path.suffix != ".py":
                 return None
 
             try:
-                return m.DiscoveryData(
+                return m.Plugin.DiscoveryData(
                     name=path.stem,
                     version="1.0.0",
                     path=path,
@@ -150,7 +168,7 @@ class FlextPluginAdapters:
         def _discover_directory(
             self,
             path: Path,
-        ) -> list[m.DiscoveryData]:
+        ) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
             discovered = []
             try:
@@ -175,15 +193,15 @@ class FlextPluginAdapters:
 
         def load_plugin(
             self,
-            plugin_path: str,
-        ) -> r[m.LoadData]:
+            _plugin_path: str,
+        ) -> r[FlextProtocols.JsonDict]:
             """Load plugin from path."""
             return self._execute_safe(
-                lambda: self._load_module(plugin_path),
-                f"Loading error: {plugin_path}",
+                lambda: self._load_module_as_dict(_plugin_path),
+                f"Loading error: {_plugin_path}",
             )
 
-        def _load_module(self, _plugin_path: str) -> m.LoadData:
+        def _load_module(self, _plugin_path: str) -> m.Plugin.LoadData:
             """Internal: load module using spec."""
             path = Path(_plugin_path).expanduser().resolve()
             if not path.exists():
@@ -199,7 +217,7 @@ class FlextPluginAdapters:
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
-            return m.LoadData(
+            return m.Plugin.LoadData(
                 name=path.stem,
                 version=getattr(module, "__version__", "1.0.0"),
                 path=path,
@@ -209,6 +227,17 @@ class FlextPluginAdapters:
                     __import__("datetime").UTC,
                 ),
             )
+
+        def _load_module_as_dict(self, plugin_path: str) -> p.JsonDict:
+            """Load module and convert to JsonDict."""
+            data = self._load_module(plugin_path)
+            return {
+                "name": data.name,
+                "version": data.version,
+                "path": str(data.path),
+                "load_type": data.load_type,
+                "loaded_at": data.loaded_at.isoformat(),
+            }
 
         def unload_plugin(self, _plugin_name: str) -> r[bool]:
             """Unload plugin by name (placeholder implementation)."""
@@ -228,24 +257,21 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: dict[str, t.GeneralValueType],
-        ) -> p.Result[dict[str, t.GeneralValueType]]:
+            _context: FlextProtocols.JsonDict,
+        ) -> r[FlextProtocols.JsonDict]:
             """Execute plugin."""
-            result: r[dict[str, t.GeneralValueType]] = self._execute_safe(
+            return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
                 f"Execution error: {_plugin_name}",
             )
-            return result
 
-        def stop_execution(self, _execution_id: str) -> p.Result[bool]:
+        def stop_execution(self, _execution_id: str) -> r[bool]:
             """Stop plugin execution."""
-            result: r[bool] = r.ok(True)
-            return result
+            return r.ok(True)
 
-        def get_execution_status(self, _execution_id: str) -> p.Result[str]:
+        def get_execution_status(self, _execution_id: str) -> r[str]:
             """Get execution status."""
-            result: r[str] = r.ok("completed")
-            return result
+            return r.ok("completed")
 
         def list_running_executions(self) -> list[str]:
             """List running executions."""
@@ -254,7 +280,9 @@ class FlextPluginAdapters:
     class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
         """Plugin security validation - synchronous."""
 
-        def validate_plugin(self, _plugin: object) -> r[bool]:
+        def validate_plugin_security(
+            self, _plugin: p.GeneralValueType
+        ) -> r[bool]:
             """Validate plugin for security."""
             return r.ok(True)
 
@@ -269,7 +297,7 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[FlextProtocols.JsonDict]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": "medium"})
 
@@ -283,9 +311,11 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: dict[str, t.GeneralValueType] = {}
+            self._plugins: dict[str, p.GeneralValueType] = {}
 
-        def register_plugin(self, _plugin: object) -> r[bool]:
+        def register_plugin(
+            self, _plugin: p.GeneralValueType
+        ) -> r[bool]:
             """Register plugin in registry."""
             return r.ok(True)
 
@@ -293,11 +323,13 @@ class FlextPluginAdapters:
             """Unregister plugin from registry."""
             return r.ok(True)
 
-        def get_plugin(self, _plugin_name: str) -> r[object | None]:
+        def get_plugin(
+            self, _plugin_name: str
+        ) -> r[p.GeneralValueType | None]:
             """Get plugin from registry."""
             return r.ok(None)
 
-        def list_plugins(self) -> r[list[dict[str, t.GeneralValueType]]]:
+        def list_plugins(self) -> r[list[FlextProtocols.JsonDict]]:
             """List all plugins in registry."""
             return r.ok([])
 
@@ -319,14 +351,14 @@ class FlextPluginAdapters:
         def get_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[FlextProtocols.JsonDict]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 
         def get_plugin_health(
             self,
             _plugin_name: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[FlextProtocols.JsonDict]:
             """Get plugin health information."""
             return r.ok({"status": "healthy"})
 

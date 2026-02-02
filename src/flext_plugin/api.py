@@ -14,7 +14,7 @@ from flext_core.container import FlextContainer
 from flext_core.loggings import FlextLogger
 
 from flext_plugin.models import FlextPluginModels
-from flext_plugin.platform import FlextPluginPlatform, PluginExecution
+from flext_plugin.platform import FlextPluginPlatform
 from flext_plugin.typings import t
 
 
@@ -80,7 +80,7 @@ class FlextPluginApi:
         plugin_name: str,
         context: dict[str, t.GeneralValueType],
         execution_id: str | None = None,
-    ) -> r[PluginExecution]:
+    ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin by name with the given context."""
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 

@@ -150,4 +150,7 @@ class FlextPluginTypes(FlextTypes):
         type FileWatcher = FlextTypes.Core.GeneralValueType
 
 
-__all__ = ["FlextPluginTypes"]
+# Shorthand alias for convenient use throughout ecosystem
+t = FlextPluginTypes
+
+__all__ = ["FlextPluginTypes", "t"]
