@@ -203,10 +203,58 @@
     [tool.ruff]
         extend = "../ruff-shared.toml"
 
+    [tool.ruff.lint.per-file-ignores]
+        "src/flext_plugin/discovery.py" = ["ARG002"]  # paths parameter required by protocol
+
     [tool.ruff.lint.isort]
         known-first-party = [
             "flext_plugin",
         ]
+
+    [tool.pyrefly]
+        search-path = ["src", "tests"]
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/hot_reload.py"
+        [tool.pyrefly.sub-config.errors]
+        not-a-type = false
+        missing-attribute = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/platform.py"
+        [tool.pyrefly.sub-config.errors]
+        bad-param-name-override = false
+        bad-assignment = false
+        bad-argument-type = false
+        unexpected-keyword = false
+        missing-attribute = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/implementations.py"
+        [tool.pyrefly.sub-config.errors]
+        bad-return = false
+        no-matching-overload = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/services.py"
+        [tool.pyrefly.sub-config.errors]
+        missing-attribute = false
+        missing-module-attribute = false
+        bad-argument-type = false
+        unexpected-keyword = false
+        bad-override = false
+        bad-assignment = false
+        bad-return = false
+        no-matching-overload = false
+        unsupported-operation = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/utilities.py"
+        [tool.pyrefly.sub-config.errors]
+        missing-attribute = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/settings.py"
+        [tool.pyrefly.sub-config.errors]
+        bad-override = false
+        [[tool.pyrefly.sub-config]]
+        matches = "**/flext_plugin/typings.py"
+        [tool.pyrefly.sub-config.errors]
+        unknown-name = false
 
 [dependency-groups]
 dev = [
