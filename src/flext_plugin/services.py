@@ -95,7 +95,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
 
         # Internal state
-        self._plugins: dict[str, FlextPluginModels.Plugin] = {}
+        self._plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
         self._executions: dict[str, PluginExecution] = {}
 
     @property
@@ -127,26 +127,37 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             if discovery_result.is_failure:
                 return r.fail(f"Discovery failed: {discovery_result.error}")
 
-            # Type narrowing - discovery returns list of DiscoveryData
+            # Type narrowing - discovery returns list of DiscoveryData or dicts
             if not isinstance(discovery_result.value, list):
                 return r.fail("Discovery did not return a list")
-            plugins_data: list[FlextPluginModels.DiscoveryData] = discovery_result.value
+            plugins_data: list[
+                FlextPluginModels.Plugin.DiscoveryData | dict[str, t.GeneralValueType]
+            ] = discovery_result.value
             registered_plugins = []
 
             for plugin_data in plugins_data:
+                # Support both DiscoveryData model and dict (adapter may return either)
+                if isinstance(plugin_data, dict):
+                    name = plugin_data.get("name", "")
+                    version = plugin_data.get("version", "1.0.0")
+                    metadata = plugin_data.get("metadata", {})
+                else:
+                    name = plugin_data.name
+                    version = plugin_data.version
+                    metadata = plugin_data.metadata
                 # Create plugin entity
                 # Note: discovery_type is how plugin was found (file/entry_point)
                 # plugin_type should come from metadata or default to "utility"
                 plugin_type_str = str(
-                    plugin_data.metadata.get("plugin_type", "utility")
+                    metadata.get("plugin_type", "utility")
                 )
-                plugin = FlextPluginModels.Plugin.create(
-                    name=plugin_data.name,
-                    plugin_version=plugin_data.version,
-                    description=str(plugin_data.metadata.get("description", "")),
-                    author=str(plugin_data.metadata.get("author", "")),
+                plugin = FlextPluginModels.Plugin.Plugin.create(
+                    name=name,
+                    plugin_version=version,
+                    description=str(metadata.get("description", "")),
+                    author=str(metadata.get("author", "")),
                     plugin_type=plugin_type_str,
-                    metadata=plugin_data.metadata,
+                    metadata=metadata,
                 )
 
                 # Validate plugin
@@ -230,20 +241,33 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             if load_result.is_failure:
                 return r.fail(f"Plugin loading failed: {load_result.error}")
 
-            # Type narrowing - loader returns LoadData
-            if not isinstance(load_result.value, FlextPluginModels.LoadData):
+            # Loader may return LoadData (FlextPluginLoader) or dict (adapter)
+            value = load_result.value
+            if isinstance(value, FlextPluginModels.LoadData):
+                plugin_data = value
+                plugin = FlextPluginModels.Plugin.Plugin.create(
+                    name=plugin_data.name,
+                    plugin_version=plugin_data.version,
+                    description=plugin_data.module.__doc__ or "",
+                    author="",
+                    plugin_type=c.Plugin.PluginType.UTILITY,
+                    metadata={
+                        "module": plugin_data.module,
+                        "path": str(plugin_data.path),
+                    },
+                )
+            elif isinstance(value, dict):
+                data = value
+                plugin = FlextPluginModels.Plugin.Plugin.create(
+                    name=str(data.get("name", "")),
+                    plugin_version=str(data.get("version", "1.0.0")),
+                    description=str(data.get("description", "")),
+                    author=str(data.get("author", "")),
+                    plugin_type=c.Plugin.PluginType.UTILITY,
+                    metadata=dict(data.get("metadata", data)),
+                )
+            else:
                 return r.fail("Loader did not return LoadData")
-            plugin_data: FlextPluginModels.LoadData = load_result.value
-            # load_type is how plugin was loaded (file/directory/entry_point), not the plugin type
-            # Use default utility type; actual type should come from plugin metadata
-            plugin = FlextPluginModels.Plugin.create(
-                name=plugin_data.name,
-                plugin_version=plugin_data.version,
-                description=plugin_data.module.__doc__ or "",
-                author="",
-                plugin_type=c.Plugin.PluginType.UTILITY,
-                metadata={"module": plugin_data.module, "path": str(plugin_data.path)},
-            )
 
             # Validate plugin
             validation_result = plugin.validate_business_rules()
@@ -651,7 +675,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     def get_plugin_config(
         self,
         plugin_name: str,
-    ) -> r[FlextPluginModels.Config]:
+    ) -> r[FlextPluginModels.PluginConfig]:
         """Get configuration for a plugin.
 
         Args:
@@ -671,7 +695,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         settings: dict[str, t.GeneralValueType] = (
             config_data if isinstance(config_data, dict) else {}
         )
-        config = FlextPluginModels.Config(plugin_name=plugin.name, settings=settings)
+        config = FlextPluginModels.PluginConfig(
+            plugin_name=plugin.name, settings=settings
+        )
         return r.ok(config)
 
     def update_plugin_config(

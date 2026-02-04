@@ -91,7 +91,7 @@ class FlextPluginSettings(FlextSettings):
         # Create instance data
         instance_data: dict[str, t.GeneralValueType] = {
             "id": entity_id,
-            "version": kwargs.get("version", 1),
+            "version": kwargs.get("version", "1"),
             "metadata": kwargs.get("entity_metadata", {}),
             "plugin_name": plugin_name,
             "config_data": config_data or {},

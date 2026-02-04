@@ -414,7 +414,7 @@ class TestFlextPluginServiceWithRealAdapters:
 
         # Verify plugins are real FlextPluginModels.Plugin objects
         for plugin in result.data:
-            assert isinstance(plugin, FlextPluginModels.Plugin)
+            assert isinstance(plugin, FlextPluginModels.Plugin.Plugin)
             assert plugin.name in {
                 "tap_database",
                 "target_warehouse",
@@ -451,7 +451,7 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_path = temp_plugin_dir / "tap_database.py"
         load_result = real_service_with_adapters.load_plugin(str(tap_plugin_path))
         assert load_result.is_success
-        assert isinstance(load_result.data, FlextPluginModels.Plugin)
+        assert isinstance(load_result.data, FlextPluginModels.Plugin.Plugin)
         assert load_result.data.name == "tap_database"
 
     def test_install_plugin_with_real_adapters(
@@ -465,7 +465,7 @@ class TestFlextPluginServiceWithRealAdapters:
 
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
         assert install_result.is_success
-        assert isinstance(install_result.data, FlextPluginModels.Plugin)
+        assert isinstance(install_result.data, FlextPluginModels.Plugin.Plugin)
         assert install_result.data.name == "tap_database"
 
     def test_is_plugin_loaded_with_real_adapters(
@@ -625,7 +625,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
         # Create REAL plugin entity that corresponds to actual file
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="tap_database",  # Corresponds to our real plugin file
             plugin_version="1.0.0",
             description="Database tap plugin for testing",
@@ -667,7 +667,7 @@ class TestFlextPluginServiceReal:
         ]
 
         for plugin_type in plugin_types:
-            plugin = FlextPluginModels.Plugin.create(
+            plugin = FlextPluginModels.Plugin.Plugin.create(
                 name=f"real-plugin-{plugin_type.value}",
                 plugin_version="1.0.0",
                 plugin_type=plugin_type.value,
@@ -819,7 +819,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        config = FlextPluginModels.Config(plugin_name="test")
+        config = FlextPluginModels.PluginConfig(plugin_name="test")
         result = service.update_plugin_config("", config)
         assert not result.is_success
         assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
@@ -830,7 +830,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test update_plugin_config with mismatched plugin name fails."""
         # Create config for one plugin but try to update a different one
-        config = FlextPluginModels.Config(plugin_name="different-plugin")
+        config = FlextPluginModels.PluginConfig(plugin_name="different-plugin")
         result = service.update_plugin_config("test-plugin", config)
         # Should fail because plugin doesn't exist or names mismatch
         assert not result.is_success
@@ -840,7 +840,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
-        config = FlextPluginModels.Config(plugin_name="real-test-plugin")
+        config = FlextPluginModels.PluginConfig(plugin_name="real-test-plugin")
         result = service.update_plugin_config("real-test-plugin", config)
 
         # Accept either success or failure - depends on plugin being loaded

@@ -10,6 +10,7 @@ from __future__ import annotations
 import uuid
 
 from flext_core import (
+    FlextContainer,
     FlextRegistry,
     FlextResult,
     FlextService,
@@ -136,14 +137,18 @@ class FlextPluginPlatform:
             """Unregister plugin from class-level storage."""
             return self.unregister_class_plugin(self.PLUGINS, plugin_name)
 
-        def get(self, plugin_name: str) -> r[FlextPluginModels.Plugin]:
+        def get(self, plugin_name: str) -> r[FlextPluginModels.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
             result = self.get_class_plugin(self.PLUGINS, plugin_name)
-            if result.is_success and isinstance(result.value, FlextPluginModels.Plugin):
-                return r[FlextPluginModels.Plugin].ok(result.value)
+            if result.is_success and isinstance(
+                result.value, FlextPluginModels.Plugin.Plugin
+            ):
+                return r[FlextPluginModels.Plugin.Plugin].ok(result.value)
             if result.is_failure:
-                return r[FlextPluginModels.Plugin].fail(result.error)
-            return r[FlextPluginModels.Plugin].fail("Plugin is not a valid Plugin type")
+                return r[FlextPluginModels.Plugin.Plugin].fail(result.error)
+            return r[FlextPluginModels.Plugin.Plugin].fail(
+                "Plugin is not a valid Plugin type"
+            )
 
         def list_plugins(self, category: str = "plugins") -> r[list[str]]:
             """List all registered plugin names.
@@ -157,7 +162,7 @@ class FlextPluginPlatform:
             """
             return self.list_class_plugins(category)
 
-    class Plugin(FlextPluginModels.Plugin):
+    class Plugin(FlextPluginModels.Plugin.Plugin):
         """Plugin entity extending the base model."""
 
         def is_active(self) -> bool:
@@ -197,7 +202,10 @@ class FlextPluginPlatform:
             """Return FlextPluginSettings as the config type for this service."""
             return FlextPluginSettings
 
-        def __init__(self, container: FlextRegistry | None = None) -> None:
+        def __init__(
+            self,
+            container: FlextContainer | FlextRegistry | None = None,
+        ) -> None:
             """Initialize plugin platforFlextPluginModels."""
             super().__init__()
             # Set container if provided
@@ -408,7 +416,7 @@ class FlextPluginPlatform:
 
         # Plugin management with functional patterns
         def register_plugin(
-            self, plugin: FlextPluginModels.Plugin
+            self, plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin
         ) -> FlextResult[bool]:
             """Register plugin with validation chain."""
 
@@ -657,4 +665,8 @@ class FlextPluginPlatform:
             return True
 
 
-__all__ = ["FlextPluginPlatform"]
+Plugin = FlextPluginPlatform.Plugin
+PluginExecution = FlextPluginPlatform.PluginExecution
+PluginRegistry = FlextPluginPlatform.PluginRegistry
+
+__all__ = ["FlextPluginPlatform", "Plugin", "PluginExecution", "PluginRegistry"]

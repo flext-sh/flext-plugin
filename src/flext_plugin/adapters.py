@@ -10,11 +10,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
-from flext_core import FlextLogger, T, r
-from flext_core.protocols import FlextProtocols
+from flext_core import FlextLogger, FlextTypes as t, T, r
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p
@@ -62,12 +61,11 @@ class FlextPluginAdapters:
         def discover_plugins(
             self,
             paths: list[str],
-        ) -> r[list[FlextProtocols.JsonDict]]:
+        ) -> r[list[Mapping[str, t.GeneralValueType]]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
-                    self._discovery_data_to_dict(d)
-                    for d in self._discover_all(paths)
+                    self._discovery_data_to_dict(d) for d in self._discover_all(paths)
                 ],
                 "Plugin discovery failed",
             )
@@ -97,7 +95,7 @@ class FlextPluginAdapters:
         def discover_plugin(
             self,
             _plugin_path: str,
-        ) -> r[FlextProtocols.JsonDict]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
@@ -125,7 +123,7 @@ class FlextPluginAdapters:
         def _discovery_data_to_dict(
             self,
             data: m.Plugin.DiscoveryData,
-        ) -> FlextProtocols.JsonDict:
+        ) -> Mapping[str, t.GeneralValueType]:
             """Convert DiscoveryData model to JsonDict."""
             return {
                 "name": data.name,
@@ -137,7 +135,7 @@ class FlextPluginAdapters:
 
         def validate_plugin(
             self,
-            _plugin_data: FlextProtocols.JsonDict,
+            _plugin_data: Mapping[str, t.GeneralValueType],
         ) -> r[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(
@@ -194,7 +192,7 @@ class FlextPluginAdapters:
         def load_plugin(
             self,
             _plugin_path: str,
-        ) -> r[FlextProtocols.JsonDict]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(_plugin_path),
@@ -228,7 +226,9 @@ class FlextPluginAdapters:
                 ),
             )
 
-        def _load_module_as_dict(self, plugin_path: str) -> p.JsonDict:
+        def _load_module_as_dict(
+            self, plugin_path: str
+        ) -> Mapping[str, t.GeneralValueType]:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
             return {
@@ -257,8 +257,8 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: FlextProtocols.JsonDict,
-        ) -> r[FlextProtocols.JsonDict]:
+            _context: Mapping[str, t.GeneralValueType],
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Execute plugin."""
             return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
@@ -280,9 +280,7 @@ class FlextPluginAdapters:
     class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
         """Plugin security validation - synchronous."""
 
-        def validate_plugin_security(
-            self, _plugin: p.GeneralValueType
-        ) -> r[bool]:
+        def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
             """Validate plugin for security."""
             return r.ok(True)
 
@@ -297,7 +295,7 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> r[FlextProtocols.JsonDict]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": "medium"})
 
@@ -311,11 +309,9 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: dict[str, p.GeneralValueType] = {}
+            self._plugins: dict[str, t.GeneralValueType] = {}
 
-        def register_plugin(
-            self, _plugin: p.GeneralValueType
-        ) -> r[bool]:
+        def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
             """Register plugin in registry."""
             return r.ok(True)
 
@@ -323,13 +319,11 @@ class FlextPluginAdapters:
             """Unregister plugin from registry."""
             return r.ok(True)
 
-        def get_plugin(
-            self, _plugin_name: str
-        ) -> r[p.GeneralValueType | None]:
+        def get_plugin(self, _plugin_name: str) -> r[t.GeneralValueType | None]:
             """Get plugin from registry."""
             return r.ok(None)
 
-        def list_plugins(self) -> r[list[FlextProtocols.JsonDict]]:
+        def list_plugins(self) -> r[list[Mapping[str, t.GeneralValueType]]]:
             """List all plugins in registry."""
             return r.ok([])
 
@@ -351,14 +345,14 @@ class FlextPluginAdapters:
         def get_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> r[FlextProtocols.JsonDict]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 
         def get_plugin_health(
             self,
             _plugin_name: str,
-        ) -> r[FlextProtocols.JsonDict]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Get plugin health information."""
             return r.ok({"status": "healthy"})
 

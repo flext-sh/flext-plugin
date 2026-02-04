@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from flext_core import FlextLogger, FlextResult
 from watchdog.events import (
@@ -18,6 +19,9 @@ from watchdog.events import (
     FileSystemEventHandler,
 )
 from watchdog.observers import Observer as WatchdogObserver
+
+if TYPE_CHECKING:
+    from watchdog.observers.api import BaseObserver
 
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
@@ -119,10 +123,10 @@ class FlextPluginHotReload:
         self._is_watching = False
         self._watched_paths: set[Path] = set()
         self._reload_callbacks: list[Callable[[str], object]] = []
-        self._reload_history: list[FlextPluginModels.ReloadRecord] = []
+        self._reload_history: list[FlextPluginModels.Plugin.ReloadRecord] = []
 
         # Watchdog-specific
-        self._observer: WatchdogObserver | None = None
+        self._observer: BaseObserver | None = None
         self._event_handler: FileSystemEventHandler | None = None
 
     def start_watching(self, paths: list[str]) -> FlextResult[bool]:
@@ -161,14 +165,17 @@ class FlextPluginHotReload:
                 self.logger,
             )
             self._observer = WatchdogObserver()
-            for watched_path in watched_paths:
-                self._observer.schedule(
-                    self._event_handler,
-                    str(
-                        watched_path.parent if watched_path.is_file() else watched_path,
-                    ),
-                    recursive=True,
-                )
+            if self._observer:
+                for watched_path in watched_paths:
+                    self._observer.schedule(
+                        self._event_handler,
+                        str(
+                            watched_path.parent
+                            if watched_path.is_file()
+                            else watched_path,
+                        ),
+                        recursive=True,
+                    )
                 self._observer.start()
                 self.logger.info(
                     f"Started hot reload with watchdog for {len(watched_paths)} paths",
@@ -195,9 +202,10 @@ class FlextPluginHotReload:
                 return FlextResult.fail("Hot reload is not watching")
 
             # Stop watchdog observer
-            if self._observer is not None:
-                self._observer.stop()
-                self._observer.join()
+            obs = self._observer
+            if obs is not None:
+                obs.stop()
+                obs.join()
                 self._observer = None
                 self._event_handler = None
 
@@ -236,7 +244,7 @@ class FlextPluginHotReload:
                     self.logger.exception(f"Reload callback failed for {plugin_name}")
 
             # Record reload in history
-            reload_record = FlextPluginModels.ReloadRecord(
+            reload_record = FlextPluginModels.Plugin.ReloadRecord(
                 plugin_name=plugin_name,
                 plugin_path=plugin_path,
                 timestamp=datetime.now(UTC),
@@ -297,7 +305,7 @@ class FlextPluginHotReload:
     def get_reload_history(
         self,
         limit: int = 100,
-    ) -> list[FlextPluginModels.ReloadRecord]:
+    ) -> list[FlextPluginModels.Plugin.ReloadRecord]:
         """Get reload history.
 
         Args:
@@ -335,7 +343,7 @@ class FlextPluginHotReload:
             "debounce_ms": self.debounce_ms,
             "max_retries": self.max_retries,
             "total_reloads": len(self._reload_history),
-            "recent_reloads": len([r for r in self._reload_history if r.is_success]),
+            "recent_reloads": len([rec for rec in self._reload_history if rec.success]),
             "callback_count": len(self._reload_callbacks),
             "using_watchdog": self._observer is not None,
         }

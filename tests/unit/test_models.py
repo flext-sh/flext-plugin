@@ -92,7 +92,7 @@ class TestFlextPluginModels:
 
     def test_plugin_model_creation(self) -> None:
         """Test Plugin model creation."""
-        plugin = FlextPluginModels.Plugin(
+        plugin = FlextPluginModels.Plugin.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
             plugin_type=PluginType.UTILITY,
@@ -106,7 +106,7 @@ class TestFlextPluginModels:
     def test_plugin_model_validation(self) -> None:
         """Test Plugin model validation rules."""
         # Test valid plugin
-        plugin = FlextPluginModels.Plugin(
+        plugin = FlextPluginModels.Plugin.Plugin(
             name="valid-plugin",
             plugin_version="1.0.0",
             plugin_type=PluginType.UTILITY,
@@ -115,7 +115,7 @@ class TestFlextPluginModels:
 
         # Test invalid plugin name
         with pytest.raises(ValueError):
-            FlextPluginModels.Plugin(
+            FlextPluginModels.Plugin.Plugin(
                 name="",  # Empty name should fail
                 plugin_version="1.0.0",
                 plugin_type=PluginType.UTILITY,
@@ -123,7 +123,7 @@ class TestFlextPluginModels:
 
         # Test invalid version format
         with pytest.raises(ValueError):
-            FlextPluginModels.Plugin(
+            FlextPluginModels.Plugin.Plugin(
                 name="test-plugin",
                 plugin_version="invalid-version",  # Invalid format
                 plugin_type=PluginType.UTILITY,
@@ -138,7 +138,7 @@ class TestFlextPluginModels:
             execution_time_ms=1500.0,
         )
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.data == {"output": "result"}
         assert not result.error
         assert result.execution_time_ms == 1500.0
@@ -152,7 +152,7 @@ class TestFlextPluginModels:
             execution_time_ms=500.0,
         )
 
-        assert result.is_success is False
+        assert result.success is False
         assert result.error == "Plugin execution failed"
 
     def test_discovery_data_creation(self) -> None:
@@ -214,7 +214,7 @@ class TestFlextPluginModels:
 
     def test_config_creation(self) -> None:
         """Test Config model creation."""
-        config = FlextPluginModels.Config(
+        config = FlextPluginModels.PluginConfig(
             plugin_name="test-plugin",
             settings={"key": "value"},
         )

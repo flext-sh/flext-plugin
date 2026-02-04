@@ -452,4 +452,6 @@ class FlextPluginConstants(FlextConstants):
         """All plugin types - union of all plugin type frozensets."""
 
 
-__all__ = ["FlextPluginConstants"]
+c = FlextPluginConstants
+
+__all__ = ["FlextPluginConstants", "c"]

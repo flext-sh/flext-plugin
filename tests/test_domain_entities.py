@@ -26,7 +26,7 @@ class TestFlextPlugin:
 
     def test_plugin_instance_creation(self) -> None:
         """Test creating FlextPlugin entity with factory method."""
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -43,7 +43,7 @@ class TestFlextPlugin:
 
     def test_plugin_enable_disable(self) -> None:
         """Test plugin enable and disable methods."""
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -70,7 +70,7 @@ class TestFlextPlugin:
 
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics in metadata."""
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -98,7 +98,7 @@ class TestFlextPlugin:
 
     def test_plugin_error_recording(self) -> None:
         """Test recording plugin errors in metadata."""
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -118,7 +118,7 @@ class TestFlextPlugin:
 
     def test_plugin_business_rules_validation(self) -> None:
         """Test plugin business rules validation."""
-        plugin = FlextPluginModels.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Plugin.create(
             name="valid-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -136,7 +136,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
-        config = FlextPluginModels.Config(
+        config = FlextPluginModels.PluginConfig(
             plugin_name="test-plugin",
             settings={
                 "enabled": True,
@@ -150,7 +150,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginModels.Config default values."""
-        config = FlextPluginModels.Config(plugin_name="test-plugin")
+        config = FlextPluginModels.PluginConfig(plugin_name="test-plugin")
 
         assert config.plugin_name == "test-plugin"
         assert config.settings == {}
@@ -163,7 +163,7 @@ class TestFlextPluginSettings:
             "timeout_seconds": 300,
             "nested": {"deep": "value"},
         }
-        config = FlextPluginModels.Config(
+        config = FlextPluginModels.PluginConfig(
             plugin_name="test-plugin",
             settings=settings,
         )
@@ -184,7 +184,7 @@ class TestFlextPluginExecution:
             execution_time_ms=150.5,
         )
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.data == {"output": "test data"}
         assert result.error == ""
         assert result.execution_time_ms == 150.5
@@ -197,7 +197,7 @@ class TestFlextPluginExecution:
             execution_time_ms=50.0,
         )
 
-        assert result.is_success is False
+        assert result.success is False
         assert result.error == "Plugin execution failed"
         assert result.data == {}
         assert result.execution_time_ms == 50.0
@@ -206,7 +206,7 @@ class TestFlextPluginExecution:
         """Test ExecutionResult default values."""
         result = FlextPluginModels.ExecutionResult(success=True)
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.data == {}
         assert result.error == ""
         assert result.execution_time_ms == 0.0
@@ -223,7 +223,7 @@ class TestFlextPluginExecution:
             execution_time_ms=100.0,
         )
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.data == complex_data
         assert result.execution_time_ms == 100.0
 

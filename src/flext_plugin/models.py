@@ -112,7 +112,9 @@ class FlextPluginModels(FlextModels):
                         or len(parts) > max_version_parts
                         or not all(p.isdigit() for p in parts if p)
                     ):
-                        error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                        error_msg = (
+                            f"Version must be semantic format X.Y.Z, got: {value}"
+                        )
                         raise ValueError(error_msg)
                 return value
 
@@ -439,7 +441,9 @@ class FlextPluginModels(FlextModels):
                         or len(parts) > max_parts
                         or not all(p.isdigit() for p in parts if p)
                     ):
-                        error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                        error_msg = (
+                            f"Version must be semantic format X.Y.Z, got: {value}"
+                        )
                         raise ValueError(error_msg)
                 return value
 
@@ -470,7 +474,9 @@ class FlextPluginModels(FlextModels):
                 description="Plugin semantic version (X.Y.Z)",
             )
             path: Path = Field(description="File system path to plugin")
-            module: types.ModuleType = Field(description="The loaded Python module object")
+            module: types.ModuleType = Field(
+                description="The loaded Python module object"
+            )
             load_type: t_types.Plugin.LoadTypeLiteral = Field(
                 description="Type of loaded plugin",
             )
@@ -666,7 +672,9 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: str = Field(description="Name of plugin to sandbox")
             max_memory_mb: int = Field(description="Maximum memory in MB")
-            max_execution_time: int = Field(description="Maximum execution time in seconds")
+            max_execution_time: int = Field(
+                description="Maximum execution time in seconds"
+            )
             allowed_modules: list[str] = Field(
                 description="Allowed import modules",
             )
@@ -734,6 +742,16 @@ class FlextPluginModels(FlextModels):
                 default_factory=datetime.now,
                 description="Registry creation timestamp",
             )
+
+    # Top-level aliases for convenience
+    LoadData = Plugin.LoadData
+    DiscoveryData = Plugin.DiscoveryData
+    PluginMetadata = Plugin.PluginMetadata
+    PluginEntity = Plugin.Plugin
+    ExecutionResult = Plugin.ExecutionResult
+    PluginConfig = Plugin.PluginConfig
+    Registry = Plugin.Registry
+    ValidationResult = Plugin.ValidationResult
 
 
 m = FlextPluginModels

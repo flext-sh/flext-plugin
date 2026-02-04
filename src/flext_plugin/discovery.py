@@ -36,7 +36,7 @@ class FlextPluginDiscovery:
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+    ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
         Args:
@@ -47,7 +47,7 @@ class FlextPluginDiscovery:
 
         """
         try:
-            discovered: dict[str, FlextPluginModels.DiscoveryData] = {}
+            discovered: dict[str, FlextPluginModels.Plugin.DiscoveryData] = {}
 
             for strategy in self.strategies:
                 result = strategy.discover(paths)
@@ -66,7 +66,7 @@ class FlextPluginDiscovery:
     def discover_plugin(
         self,
         plugin_path: str,
-    ) -> FlextResult[FlextPluginModels.DiscoveryData]:
+    ) -> FlextResult[FlextPluginModels.Plugin.DiscoveryData]:
         """Discover single plugin at path.
 
         Args:
@@ -100,7 +100,7 @@ class FlextPluginDiscovery:
 
     def validate_plugin(
         self,
-        plugin_data: FlextPluginModels.DiscoveryData,
+        plugin_data: FlextPluginModels.Plugin.DiscoveryData,
     ) -> FlextResult[bool]:
         """Validate discovered plugin data.
 
@@ -132,7 +132,7 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: list[str],
-        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+        ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
                 discovered = []
@@ -162,13 +162,13 @@ class FlextPluginDiscovery:
         def _discover_file(
             self,
             path: Path,
-        ) -> FlextPluginModels.DiscoveryData | None:
+        ) -> FlextPluginModels.Plugin.DiscoveryData | None:
             """Discover single Python file as plugin."""
             if path.suffix != ".py":
                 return None
 
             try:
-                return FlextPluginModels.DiscoveryData(
+                return FlextPluginModels.Plugin.DiscoveryData(
                     name=path.stem,
                     version="1.0.0",
                     path=path,
@@ -182,7 +182,7 @@ class FlextPluginDiscovery:
         def _discover_directory(
             self,
             path: Path,
-        ) -> list[FlextPluginModels.DiscoveryData]:
+        ) -> list[FlextPluginModels.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
             discovered = []
 
@@ -213,8 +213,8 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            _paths: list[str],
-        ) -> FlextResult[list[FlextPluginModels.DiscoveryData]]:
+            paths: list[str],
+        ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             try:
                 discovered = []
@@ -224,7 +224,7 @@ class FlextPluginDiscovery:
                     group="flext.plugins",
                 ):
                     try:
-                        data = FlextPluginModels.DiscoveryData(
+                        data = FlextPluginModels.Plugin.DiscoveryData(
                             name=entry_point.name,
                             version=getattr(entry_point.dist, "version", "1.0.0"),
                             path=Path(getattr(entry_point.dist, "_path", "")),

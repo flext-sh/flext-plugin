@@ -31,48 +31,29 @@ class FlextPluginApi:
 
         """
         self.logger = FlextLogger(__name__)
-        self.platform = FlextPluginPlatform(container=container or FlextContainer())
+        self.platform = FlextPluginPlatform.PluginPlatformService(
+            container=container or FlextContainer()
+        )
 
     # Core operations with logging composition
     def discover_plugins(
         self,
         paths: list[str],
-    ) -> r[list[FlextPluginModels.Plugin]]:
+    ) -> r[list[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths."""
-
-        def log_and_return(
-            plugins: list[FlextPluginModels.Plugin],
-        ) -> list[FlextPluginModels.Plugin]:
-            self.logger.info(f"Discovered {len(plugins)} plugins")
-            return plugins
-
         result = self.platform.discover_plugins(paths)
-        # The platform returns list[Plugin] which is compatible with list[FlextPluginModels.Plugin]
-        # Use explicit type conversion
         if result.is_success:
-            return r[list[FlextPluginModels.Plugin]].ok([
-                FlextPluginModels.Plugin.create(
-                    name=plugin.name,
-                    plugin_version=plugin.plugin_version,
-                    description=plugin.description,
-                    author=plugin.author,
-                    plugin_type=plugin.plugin_type,
-                    is_enabled=plugin.is_enabled,
-                    metadata=plugin.metadata,
-                    entity_id=plugin.unique_id,
-                )
-                for plugin in result.value
-            ])
-        return r[list[FlextPluginModels.Plugin]].fail(
+            plugins = result.value
+            self.logger.info(f"Discovered {len(plugins)} plugins")
+            return r[list[FlextPluginPlatform.Plugin]].ok(plugins)
+        return r[list[FlextPluginPlatform.Plugin]].fail(
             result.error or "Discovery failed"
         )
 
-    def load_plugin(self, _plugin_path: str) -> r[FlextPluginModels.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path."""
         return self.platform.load_plugin(_plugin_path).map(
-            lambda plugin: (self.logger.info(f"Loaded plugin: {plugin.name}"), plugin)[
-                1
-            ],
+            lambda p: (self.logger.info(f"Loaded plugin: {p.name}"), p)[1]
         )
 
     def execute_plugin(
@@ -85,7 +66,7 @@ class FlextPluginApi:
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 
     # Direct delegation with railway patterns
-    def register_plugin(self, _plugin: FlextPluginModels.Plugin) -> r[bool]:
+    def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin) -> r[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
@@ -103,11 +84,13 @@ class FlextPluginApi:
         return self.platform.stop_hot_reload()
 
     # Plugin accessors
-    def get_plugin(self, _plugin_name: str) -> FlextPluginModels.Plugin | None:
+    def get_plugin(
+        self, _plugin_name: str
+    ) -> FlextPluginPlatform.Plugin | None:
         """Get a plugin by name."""
         return self.platform.get_plugin(_plugin_name)
 
-    def list_plugins(self) -> Sequence[FlextPluginModels.Plugin]:
+    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
         """List all registered plugins."""
         return self.platform.list_plugins()
 

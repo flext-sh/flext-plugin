@@ -7,9 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Literal, TypeVar
 
 from flext_core.typings import FlextTypes
+from pydantic import BaseModel, ConfigDict
 
 from .constants import FlextPluginConstants as c_plugin
 
@@ -21,8 +23,28 @@ class FlextPluginTypes(FlextTypes):
 
     Follows FLEXT ecosystem namespace conventions:
     - t.Plugin.* for plugin-specific types
-    - Inherits t.Core.* from FlextTypes
+    - t.Core.JsonDict, t.Core.GeneralValueType via Core alias
     """
+
+    # Alias for projects expecting t.Core.* (JsonDict, GeneralValueType)
+    class Core:
+        JsonDict = FlextTypes.JsonDict
+        GeneralValueType = FlextTypes.GeneralValueType
+
+    class Handlers:
+        """Event handler type definitions."""
+
+        type EventHandler = Callable[
+            [dict[str, FlextTypes.GeneralValueType]], Awaitable[object]
+        ]
+
+        class HandlerInfo(BaseModel):
+            """Handler registration info."""
+
+            model_config = ConfigDict(frozen=False, extra="forbid")
+
+            handler: FlextPluginTypes.Handlers.EventHandler
+            priority: int
 
     class Plugin:
         """Core collection and plugin type aliases."""
@@ -35,14 +57,14 @@ class FlextPluginTypes(FlextTypes):
         type FloatDict = dict[str, float]
 
         # Plugin types - Using JsonDict from FlextTypes for JSON-like data
-        type PluginList = list[FlextTypes.Core.JsonDict]
-        type PluginDict = FlextTypes.Core.JsonDict
-        type ConfigDict = FlextTypes.Core.JsonDict
-        type SettingsDict = FlextTypes.Core.JsonDict
-        type MetadataDict = FlextTypes.Core.JsonDict
-        type InputDict = FlextTypes.Core.JsonDict
-        type OutputDict = FlextTypes.Core.JsonDict
-        type PluginEntity = FlextTypes.Core.JsonDict
+        type PluginList = list[FlextTypes.JsonDict]
+        type PluginDict = FlextTypes.JsonDict
+        type ConfigDict = FlextTypes.JsonDict
+        type SettingsDict = FlextTypes.JsonDict
+        type MetadataDict = FlextTypes.JsonDict
+        type InputDict = FlextTypes.JsonDict
+        type OutputDict = FlextTypes.JsonDict
+        type PluginEntity = FlextTypes.JsonDict
 
         # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -101,7 +123,7 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = FlextTypes.Core.JsonDict
+        type SecurityConfig = FlextTypes.JsonDict
 
         # Literal type for security levels
         type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
@@ -110,32 +132,32 @@ class FlextPluginTypes(FlextTypes):
     class Performance:
         """Performance metrics and monitoring type aliases."""
 
-        type Metrics = FlextTypes.Core.JsonDict
-        type PerformanceData = FlextTypes.Core.JsonDict
-        type ResourceUsage = FlextTypes.Core.JsonDict
+        type Metrics = FlextTypes.JsonDict
+        type PerformanceData = FlextTypes.JsonDict
+        type ResourceUsage = FlextTypes.JsonDict
 
     class Discovery:
         """Plugin discovery type aliases."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = FlextTypes.Core.JsonDict
-        type PluginLoader = FlextTypes.Core.GeneralValueType
+        type DiscoveryResult = FlextTypes.JsonDict
+        type PluginLoader = FlextTypes.GeneralValueType
         type EntryPoint = str
 
     class Execution:
         """Plugin execution type aliases."""
 
-        type ExecutionContext = FlextTypes.Core.JsonDict
-        type ExecutionResult = FlextTypes.Core.JsonDict
+        type ExecutionContext = FlextTypes.JsonDict
+        type ExecutionResult = FlextTypes.JsonDict
         type ExecutionError = str
-        type ResourceLimits = FlextTypes.Core.JsonDict
+        type ResourceLimits = FlextTypes.JsonDict
 
     class Registry:
         """Plugin registry type aliases."""
 
-        type RegistryConfig = FlextTypes.Core.JsonDict
-        type RegistryEntry = FlextTypes.Core.JsonDict
-        type RegistrySync = FlextTypes.Core.JsonDict
+        type RegistryConfig = FlextTypes.JsonDict
+        type RegistryEntry = FlextTypes.JsonDict
+        type RegistrySync = FlextTypes.JsonDict
 
         # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -145,9 +167,9 @@ class FlextPluginTypes(FlextTypes):
     class HotReload:
         """Hot reload and file watching type aliases."""
 
-        type WatchConfig = FlextTypes.Core.JsonDict
-        type ReloadEvent = FlextTypes.Core.JsonDict
-        type FileWatcher = FlextTypes.Core.GeneralValueType
+        type WatchConfig = FlextTypes.JsonDict
+        type ReloadEvent = FlextTypes.JsonDict
+        type FileWatcher = FlextTypes.GeneralValueType
 
 
 # Shorthand alias for convenient use throughout ecosystem

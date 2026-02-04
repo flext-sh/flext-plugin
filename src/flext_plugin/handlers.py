@@ -7,9 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 
@@ -42,13 +40,13 @@ class FlextPluginHandlers:
         """Initialize the plugin handlers."""
         super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: dict[str, list[dict[str, t.GeneralValueType]]] = {}
+        self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
         self._event_history: list[dict[str, t.GeneralValueType]] = []
 
     def register_handler(
         self,
         event_type: str,
-        handler: Callable[[dict[str, t.GeneralValueType]], Awaitable[object]],
+        handler: t.Handlers.EventHandler,
         priority: int = 0,
     ) -> FlextResult[bool]:
         """Register an event handler for a specific event type.
@@ -67,16 +65,15 @@ class FlextPluginHandlers:
                 self._handlers[event_type] = []
 
             # Add handler with priority
-            handler_info: dict[str, t.GeneralValueType] = {
-                "handler": cast("t.GeneralValueType", handler),
+            handler_info: t.Handlers.HandlerInfo = {
+                "handler": handler,
                 "priority": priority,
             }
             self._handlers[event_type].append(handler_info)
 
             # Sort by priority (highest first) - type-safe sorting
-            def get_priority(handler_info: dict[str, t.GeneralValueType]) -> int:
-                priority = handler_info.get("priority", 0)
-                return priority if isinstance(priority, int) else 0
+            def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
+                return handler_info.get("priority", 0)
 
             self._handlers[event_type].sort(
                 key=get_priority,
@@ -93,7 +90,7 @@ class FlextPluginHandlers:
     def unregister_handler(
         self,
         event_type: str,
-        handler: Callable[[dict[str, t.GeneralValueType]], Awaitable[object]],
+        handler: t.Handlers.EventHandler,
     ) -> FlextResult[bool]:
         """Unregister an event handler.
 
@@ -164,10 +161,7 @@ class FlextPluginHandlers:
             results = []
             for handler_info in self._handlers[event_type]:
                 try:
-                    handler = cast(
-                        "Callable[[dict[str, t.GeneralValueType]], Awaitable[object]]",
-                        handler_info["handler"],
-                    )
+                    handler = handler_info["handler"]
                     result = await self._execute_handler(handler, event_data)
                     results.append(result)
                 except Exception as e:
@@ -177,7 +171,7 @@ class FlextPluginHandlers:
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
-            return FlextResult.ok(cast("list[t.GeneralValueType]", results))
+            return FlextResult.ok(results)
 
         except Exception as e:
             self.logger.exception(f"Failed to trigger event {event_type}")
@@ -185,7 +179,7 @@ class FlextPluginHandlers:
 
     async def _execute_handler(
         self,
-        handler: Callable[[dict[str, t.GeneralValueType]], Awaitable[object]],
+        handler: t.Handlers.EventHandler,
         event_data: dict[str, t.GeneralValueType],
     ) -> object:
         """Execute a single handler with proper error handling.

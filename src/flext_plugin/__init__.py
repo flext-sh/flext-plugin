@@ -16,20 +16,26 @@ from flext_plugin.api import FlextPluginApi
 from flext_plugin.constants import FlextPluginConstants
 
 # Layer 1: Domain Models
+from flext_plugin.discovery import FlextPluginDiscovery
+from flext_plugin.handlers import FlextPluginHandlers
+from flext_plugin.hot_reload import FlextPluginHotReload
+from flext_plugin.loader import FlextPluginLoader
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.services import FlextPluginService
 from flext_plugin.typings import FlextPluginTypes
 
 __all__ = [
-    # Layer 0
+    "FlextPluginApi",
     "FlextPluginConstants",
-    # Layer 1
+    "FlextPluginDiscovery",
+    "FlextPluginHandlers",
+    "FlextPluginHotReload",
+    "FlextPluginLoader",
     "FlextPluginModels",
     "FlextPluginProtocols",
+    "FlextPluginService",
     "FlextPluginTypes",
-    # Layer 3
-    "FlextPluginApi",
-    # Version
     "__version__",
     "__version_info__",
 ]
