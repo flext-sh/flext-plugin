@@ -18,7 +18,6 @@ from flext_core import FlextContainer, FlextTypes as t
 
 from flext_plugin import (
     FlextPluginApi,
-    FlextPluginConstants,
 )
 
 
@@ -81,27 +80,14 @@ def create_ldap_plugin_config() -> dict[str, t.GeneralValueType]:
 def main() -> None:
     """Demonstrate plugin configuration patterns."""
     # 1. Create a database plugin with complex configuration
-    db_config = create_database_plugin_config()
+    create_database_plugin_config()
 
     # Initialize plugin API
     container = FlextContainer()
     FlextPluginApi(container)
 
-    print("Plugin configuration patterns demonstration")
-    print(
-        f"Available plugin types: {FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES}"
-    )
-    print(
-        f"Plugin status constants: {FlextPluginConstants.Plugin.Lifecycle.STATUS_ACTIVE}"
-    )
-
-    print(f"Database config created: {db_config}")
-
     # 2. Create LDAP plugin with service configuration
-    ldap_config = create_ldap_plugin_config()
-
-    print(f"LDAP config created: {ldap_config}")
-    print("✅ Plugin configuration demonstration complete")
+    create_ldap_plugin_config()
 
 
 if __name__ == "__main__":

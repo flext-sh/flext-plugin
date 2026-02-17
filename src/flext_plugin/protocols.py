@@ -102,9 +102,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def register_plugin(
-                self, _plugin: FlextTypes.GeneralValueType
-            ) -> r[bool]:
+            def register_plugin(self, _plugin: FlextTypes.GeneralValueType) -> r[bool]:
                 """Register a plugin."""
                 # INTERFACE
                 ...
@@ -473,9 +471,7 @@ class FlextPluginProtocols(FlextProtocols):
                 # INTERFACE
                 ...
 
-            def get_plugin(
-                self, plugin_name: str
-            ) -> r[FlextTypes.GeneralValueType]:
+            def get_plugin(self, plugin_name: str) -> r[FlextTypes.GeneralValueType]:
                 """Get plugin by name."""
                 # INTERFACE
                 ...

@@ -148,9 +148,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 # Create plugin entity
                 # Note: discovery_type is how plugin was found (file/entry_point)
                 # plugin_type should come from metadata or default to "utility"
-                plugin_type_str = str(
-                    metadata.get("plugin_type", "utility")
-                )
+                plugin_type_str = str(metadata.get("plugin_type", "utility"))
                 plugin = FlextPluginModels.Plugin.Plugin.create(
                     name=name,
                     plugin_version=version,

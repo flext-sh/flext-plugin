@@ -123,8 +123,6 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
 
 def test_connections() -> bool:
     """Test connectivity to all Docker services."""
-    print("🔍 Testing Docker service connectivity...")
-
     services = [
         ("PostgreSQL", "localhost", 5432),
         ("Redis", "localhost", 6379),
@@ -132,22 +130,12 @@ def test_connections() -> bool:
     ]
 
     all_available = True
-    for service_name, host, port in services:
+    for _service_name, host, port in services:
         available = check_service_availability(host, port)
-        status = "✅ AVAILABLE" if available else "❌ UNAVAILABLE"
-        print(f"  {service_name}: {status}")
         if not available:
             all_available = False
 
-    if not all_available:
-        print(
-            "\n⚠️  Some services are not available. Make sure Docker services are running:",
-        )
-        print("   cd ..docker && docker-compose up -d postgres redis openldap")
-        return False
-
-    print("✅ All Docker services are available!")
-    return True
+    return all_available
 
 
 def main() -> None:
@@ -162,33 +150,17 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print("🚀 FLEXT Plugin Docker Integration Example")
-    print("=" * 50)
-
     # Test connections if requested
     if args.test_connections:
-        print("\nTesting Docker service connectivity...")
         services_available = test_connections()
         if not services_available:
             sys.exit(1)
-    else:
-        print(
-            "INFO  Skipping connection tests. Use --test-connections to test Docker services.",
-        )
 
-    print("\n🏗️  Creating Docker PostgreSQL plugin...")
     postgres_plugin, _postgres_config = create_docker_postgres_plugin()
-    print(f"  ✅ PostgreSQL plugin created: {postgres_plugin.name}")
 
-    print("\n🏗️  Creating Docker Redis plugin...")
     redis_plugin, _redis_config = create_docker_redis_plugin()
-    print(f"  ✅ Redis plugin created: {redis_plugin.name}")
 
-    print("\n🏗️  Creating Docker LDAP plugin...")
     ldap_plugin, _ldap_config = create_docker_ldap_plugin()
-    print(f"  ✅ LDAP plugin created: {ldap_plugin.name}")
-
-    print("\n🔍 Validating plugin configurations...")
 
     # Use FlextPluginApi for validation (domain library pattern)
     container = FlextContainer()
@@ -198,44 +170,25 @@ def main() -> None:
     if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
         validation_result = postgres_plugin.validate_business_rules()
         if validation_result.is_success:
-            print("  ✅ PostgreSQL plugin validation passed")
+            pass
         else:
-            print(
-                f"  ❌ PostgreSQL plugin validation failed: {validation_result.error}",
-            )
             sys.exit(1)
-    else:
-        print("  ✅ PostgreSQL plugin configuration looks valid")
 
     # Validate Redis plugin configuration
     if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
         validation_result = redis_plugin.validate_business_rules()
         if validation_result.is_success:
-            print("  ✅ Redis plugin validation passed")
+            pass
     else:
-        print(f"  ❌ Redis plugin validation failed: {validation_result.error}")
         sys.exit(1)
 
     # Validate LDAP plugin configuration
     if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
         validation_result = ldap_plugin.validate_business_rules()
         if validation_result.is_success:
-            print("  ✅ LDAP plugin validation passed")
+            pass
         else:
-            print(f"  ❌ LDAP plugin validation failed: {validation_result.error}")
             sys.exit(1)
-    else:
-        print("  ✅ LDAP plugin configuration looks valid")
-
-    print("\n🎉 Docker Integration example completed successfully!")
-    print("\n📋 Summary:")
-    print(f"  - PostgreSQL plugin: {postgres_plugin.name}")
-    print(f"  - Redis plugin: {redis_plugin.name}")
-    print(f"  - LDAP plugin: {ldap_plugin.name}")
-    print(
-        "\n💡 All plugins are configured for the FLEXT Docker development environment.",
-    )
-    print("   Make sure Docker services are running for full functionality.")
 
 
 if __name__ == "__main__":

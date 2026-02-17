@@ -215,9 +215,7 @@ class FlextPluginImplementations:
             if not self._initialized:
                 return r[t.GeneralValueType].fail("Plugin not initialized")
             if operation not in self._operations:
-                return r[t.GeneralValueType].fail(
-                    f"Unsupported operation: {operation}"
-                )
+                return r[t.GeneralValueType].fail(f"Unsupported operation: {operation}")
             try:
                 self.logger.info(
                     f"Executing operation {operation} on plugin {self.name}",
@@ -272,9 +270,7 @@ class FlextPluginImplementations:
             self._connection_config = connection_config or {}
             self._connection_valid = False
 
-        def validate_config(
-            self, config: Mapping[str, t.GeneralValueType]
-        ) -> r[None]:
+        def validate_config(self, config: Mapping[str, t.GeneralValueType]) -> r[None]:
             """Validate plugin configuration.
 
             Args:
@@ -343,9 +339,7 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def transform(
-            self, data: t.GeneralValueType
-        ) -> r[t.GeneralValueType]:
+        def transform(self, data: t.GeneralValueType) -> r[t.GeneralValueType]:
             """Transform input data.
 
             Args:
@@ -359,11 +353,11 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
                 if not isinstance(data, dict):
-                    return r[t.GeneralValueType].fail(
-                        "Input data must be a dictionary"
-                    )
+                    return r[t.GeneralValueType].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
-                transformed: dict[str, t.GeneralValueType] = dict[str, t.GeneralValueType](data)
+                transformed: dict[str, t.GeneralValueType] = dict[
+                    str, t.GeneralValueType
+                ](data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[t.GeneralValueType].ok(transformed)
@@ -379,9 +373,7 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[Mapping[str, t.GeneralValueType]].fail(
-                    "No schema defined"
-                )
+                return r[Mapping[str, t.GeneralValueType]].fail("No schema defined")
             return r[Mapping[str, t.GeneralValueType]].ok(self._schema)
 
     class LoggerAdapter(FlextPluginProtocols.Plugin.LoggerProtocol):

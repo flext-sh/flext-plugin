@@ -84,9 +84,7 @@ class FlextPluginApi:
         return self.platform.stop_hot_reload()
 
     # Plugin accessors
-    def get_plugin(
-        self, _plugin_name: str
-    ) -> FlextPluginPlatform.Plugin | None:
+    def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
         """Get a plugin by name."""
         return self.platform.get_plugin(_plugin_name)
 
