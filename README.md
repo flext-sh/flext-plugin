@@ -4,7 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-**FLEXT-Plugin** is the extensible engine powering the [FLEXT data integration ecosystem](https://github.com/flext-sh/flext). It provides comprehensive lifecycle management for plugins, enabling dynamic component discovery, secure validation, and hot-reload capabilities across all FLEXT projects.
+**FLEXT-Plugin** is the extensible engine powering the [FLEXT data integration ecosystem](https://github.com/flext/flext). It provides comprehensive lifecycle management for plugins, enabling dynamic component discovery, secure validation, and hot-reload capabilities across all FLEXT projects.
+
+**Reviewed**: 2026-02-17 | **Version**: 0.10.0-dev
+
+Part of the [FLEXT](https://github.com/flext/flext) ecosystem.
 
 ## 🚀 Key Features
 
