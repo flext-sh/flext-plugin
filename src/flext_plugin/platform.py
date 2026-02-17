@@ -423,7 +423,7 @@ class FlextPluginPlatform:
             def validate_plugin_result(_: None) -> FlextResult[bool]:
                 return self.registry.register(plugin)
 
-            def add_to_plugins_result(_registry_result: bool) -> bool:  # noqa: FBT001
+            def add_to_plugins_result(_registry_result: bool) -> bool:
                 # Use _registry_result for validation
                 if not _registry_result:
                     error_msg = "Plugin registration failed"
@@ -447,7 +447,7 @@ class FlextPluginPlatform:
         def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Unregister with cleanup chain."""
 
-            def unregister_from_registry(_registry_result: bool) -> bool:  # noqa: FBT001
+            def unregister_from_registry(_registry_result: bool) -> bool:
                 # Use _registry_result for validation
                 if not _registry_result:
                     error_msg = "Plugin unregistration failed"
