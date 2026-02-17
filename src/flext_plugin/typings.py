@@ -27,9 +27,11 @@ class FlextPluginTypes(FlextTypes):
     """
 
     # Alias for projects expecting t.Core.* (JsonDict, GeneralValueType)
-    class Core:
+    class _Core:
         JsonDict = FlextTypes.JsonDict
         GeneralValueType = FlextTypes.GeneralValueType
+
+    Core = _Core
 
     class Handlers:
         """Event handler type definitions."""

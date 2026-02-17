@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import inspect
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger, FlextResult
@@ -65,15 +66,12 @@ class FlextPluginHandlers:
                 self._handlers[event_type] = []
 
             # Add handler with priority
-            handler_info: t.Handlers.HandlerInfo = {
-                "handler": handler,
-                "priority": priority,
-            }
+            handler_info = t.Handlers.HandlerInfo(handler=handler, priority=priority)
             self._handlers[event_type].append(handler_info)
 
             # Sort by priority (highest first) - type-safe sorting
             def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
-                return handler_info.get("priority", 0)
+                return handler_info.priority
 
             self._handlers[event_type].sort(
                 key=get_priority,
@@ -111,7 +109,7 @@ class FlextPluginHandlers:
             # Find and remove handler
             original_count = len(self._handlers[event_type])
             self._handlers[event_type] = [
-                h for h in self._handlers[event_type] if h["handler"] != handler
+                h for h in self._handlers[event_type] if h.handler != handler
             ]
 
             if len(self._handlers[event_type]) == original_count:
@@ -161,7 +159,7 @@ class FlextPluginHandlers:
             results = []
             for handler_info in self._handlers[event_type]:
                 try:
-                    handler = handler_info["handler"]
+                    handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
                     results.append(result)
                 except Exception as e:
@@ -210,10 +208,7 @@ class FlextPluginHandlers:
         True if function is async, False otherwise
 
         """
-        try:
-            return hasattr(func, "__code__") and bool(func.__code__.co_flags & 0x80)
-        except AttributeError:
-            return False
+        return inspect.iscoroutinefunction(func)
 
     def _get_current_timestamp(self) -> str:
         """Get current timestamp as ISO string.

@@ -189,7 +189,7 @@ def get_plugin():
 
 
 @pytest.fixture
-def real_container_with_adapters(real_plugin_directory: Path) -> FlextContainer:
+def real_container_with_adapters() -> FlextContainer:
     """Create FlextContainer with REAL adapters registered."""
     container = FlextContainer()
 

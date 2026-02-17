@@ -224,7 +224,7 @@ class FlextPluginModels(FlextModels):
                 self.is_enabled = False
                 return r[bool].ok(True)
 
-            def record_execution(self, execution_time: float, success: bool) -> None:
+            def record_execution(self, execution_time: float, *, success: bool) -> None:
                 """Record plugin execution metrics.
 
                 Args:

@@ -363,7 +363,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 execution.result = exec_result.value
 
             # Record execution metrics
-            plugin.record_execution(0.0, True)
+            plugin.record_execution(0.0, success=True)
 
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r.ok(execution)
