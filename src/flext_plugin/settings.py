@@ -132,7 +132,7 @@ class FlextPluginSettings(FlextSettings):
             return r[bool].fail("CPU percentage must be between 0 and 100")
         if self.timeout_seconds <= 0:
             return r[bool].fail("Timeout must be positive")
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__ = ["FlextPluginSettings"]

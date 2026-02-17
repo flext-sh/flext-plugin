@@ -80,15 +80,15 @@ class MyPlugin(FlextPlugin):
 
     def initialize(self) -> FlextResult[bool]:
         # Setup plugin resources
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 
     def execute(self, data) -> FlextResult:
         # Core plugin logic
-        return FlextResult[None].ok({"processed": True})
+        return FlextResult[bool].ok({"processed": True})
 
     def cleanup(self) -> FlextResult[bool]:
         # Cleanup resources
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 ```
 
 ### Development Workflow

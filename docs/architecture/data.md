@@ -81,9 +81,9 @@ class Registry {
     +version: str
 }
 
-Plugin ||--|| FlextPluginSettings
-Plugin ||--|| PluginMetadata
-Execution ||--|| ExecutionContext
+Plugin || -- | | FlextPluginSettings
+Plugin || -- | | PluginMetadata
+Execution || -- | | ExecutionContext
 Registry ||--o{ Plugin
 @enduml
 ```

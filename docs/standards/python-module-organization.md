@@ -93,12 +93,12 @@ class CustomPlugin(FlextPlugin):
     def activate(self) -> FlextResult[bool]:
         """Business operation with domain validation"""
         if self.status == PluginStatus.ACTIVE:
-            return FlextResult[None].fail("Plugin already active")
+            return FlextResult[bool].fail("Plugin already active")
 
         # Business logic and domain events
         self.status = PluginStatus.ACTIVE
         self.add_domain_event("PluginActivated", {"plugin_id": self.id})
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 ```
 
 ### **Application Layer** (`src/flext_plugin/application/`)
@@ -474,9 +474,9 @@ def create_singer_tap_plugin(
                 "description": f"Singer tap for {name} data extraction"
             }
         )
-        return FlextResult[None].ok(plugin)
+        return FlextResult[bool].ok(plugin)
     except Exception as e:
-        return FlextResult[None].fail(f"Failed to create tap plugin: {e}")
+        return FlextResult[bool].fail(f"Failed to create tap plugin: {e}")
 
 # Usage with railway-oriented chaining
 def deploy_tap_plugin(config: dict) -> FlextResult[FlextPlugin]:
@@ -522,7 +522,7 @@ class PluginLifecycleManager:
     def initialize_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
         """Initialize plugin with resource allocation."""
         if plugin.status != PluginStatus.LOADED:
-            return FlextResult[None].fail("Plugin must be loaded before initialization")
+            return FlextResult[bool].fail("Plugin must be loaded before initialization")
 
         try:
             # Allocate resources
@@ -538,16 +538,16 @@ class PluginLifecycleManager:
             plugin.status = PluginStatus.INACTIVE
             self._emit_plugin_event("PluginInitialized", plugin)
 
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             self._cleanup_plugin_resources(plugin)
-            return FlextResult[None].fail(f"Plugin initialization failed: {e}")
+            return FlextResult[bool].fail(f"Plugin initialization failed: {e}")
 
     def activate_plugin(self, plugin: FlextPlugin) -> FlextResult[bool]:
         """Activate plugin with dependency checking."""
         if plugin.status not in [PluginStatus.INACTIVE, PluginStatus.LOADED]:
-            return FlextResult[None].fail("Plugin not ready for activation")
+            return FlextResult[bool].fail("Plugin not ready for activation")
 
         # Check dependencies
         dependency_check = self._validate_plugin_dependencies(plugin)
@@ -592,10 +592,10 @@ class PluginLifecycleManager:
             self._restore_plugin_state(new_plugin, state_backup.data)
             self.activate_plugin(new_plugin)
 
-            return FlextResult[None].ok(new_plugin)
+            return FlextResult[bool].ok(new_plugin)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Hot reload failed: {e}")
+            return FlextResult[bool].fail(f"Hot reload failed: {e}")
 ```
 
 ### **Plugin Discovery Patterns**
@@ -650,17 +650,17 @@ class AdvancedPluginDiscovery:
                     ]
                     all_plugins.extend(typed_plugins)
 
-            return FlextResult[None].ok(all_plugins)
+            return FlextResult[bool].ok(all_plugins)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Plugin discovery failed: {e}")
+            return FlextResult[bool].fail(f"Plugin discovery failed: {e}")
 
     def discover_singer_plugins(self, meltano_path: str) -> FlextResult[dict[str, List[FlextPlugin]]]:
         """Discover Singer plugins from Meltano project structure."""
         try:
             meltano_yml_path = Path(meltano_path) / "meltano.yml"
             if not meltano_yml_path.exists():
-                return FlextResult[None].fail("meltano.yml not found")
+                return FlextResult[bool].fail("meltano.yml not found")
 
             # Parse meltano.yml
             meltano_config = self._parse_meltano_config(meltano_yml_path)
@@ -682,10 +682,10 @@ class AdvancedPluginDiscovery:
                     )
                     validated_plugins[category] = validated.data if validated.success else []
 
-            return FlextResult[None].ok(validated_plugins)
+            return FlextResult[bool].ok(validated_plugins)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Singer plugin discovery failed: {e}")
+            return FlextResult[bool].fail(f"Singer plugin discovery failed: {e}")
 ```
 
 ---
@@ -757,16 +757,16 @@ class FlextPlugin(FlextModels.Entity):
     def can_activate(self) -> FlextResult[bool]:
         """Check if plugin can be activated with business rules."""
         if self.status == PluginStatus.ACTIVE:
-            return FlextResult[None].fail("Plugin already active")
+            return FlextResult[bool].fail("Plugin already active")
 
         if self.status not in [PluginStatus.LOADED, PluginStatus.INACTIVE]:
-            return FlextResult[None].fail(f"Cannot activate plugin in {self.status} state")
+            return FlextResult[bool].fail(f"Cannot activate plugin in {self.status} state")
 
         # Check dependencies
         if not self._validate_dependencies():
-            return FlextResult[None].fail("Plugin dependencies not satisfied")
+            return FlextResult[bool].fail("Plugin dependencies not satisfied")
 
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 
     def activate(self) -> FlextResult[bool]:
         """Activate plugin with business validation and event generation."""
@@ -787,7 +787,7 @@ class FlextPlugin(FlextModels.Entity):
             "plugin_type": self.plugin_type.value
         })
 
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 
     def record_execution(self, success: bool, execution_time: float) -> None:
         """Record plugin execution with metrics."""
@@ -876,18 +876,18 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
         try:
             # Validate plugin name
             if plugin.name in self.RESERVED_PLUGIN_NAMES:
-                return FlextResult[None].fail(f"Plugin name '{plugin.name}' is reserved")
+                return FlextResult[bool].fail(f"Plugin name '{plugin.name}' is reserved")
 
             # Check for duplicates
             if plugin.name in self.plugins:
                 existing = self.plugins[plugin.name]
                 if existing.plugin_version == plugin.plugin_version:
-                    return FlextResult[None].fail(f"Plugin {plugin.name} v{plugin.plugin_version} already registered")
+                    return FlextResult[bool].fail(f"Plugin {plugin.name} v{plugin.plugin_version} already registered")
 
             # Validate plugin type limits
             type_count = len([p for p in self.plugins.values() if p.plugin_type == plugin.plugin_type])
             if type_count >= self.MAX_PLUGINS_PER_TYPE:
-                return FlextResult[None].fail(f"Maximum plugins of type {plugin.plugin_type} exceeded")
+                return FlextResult[bool].fail(f"Maximum plugins of type {plugin.plugin_type} exceeded")
 
             # Register plugin
             self.plugins[plugin.name] = plugin
@@ -903,10 +903,10 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
                 "timestamp": datetime.utcnow().isoformat()
             })
 
-            return FlextResult[None].ok(plugin)
+            return FlextResult[bool].ok(plugin)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Plugin registration failed: {e}")
+            return FlextResult[bool].fail(f"Plugin registration failed: {e}")
 
     def get_plugins_by_type(self, plugin_type: PluginType) -> List[FlextPlugin]:
         """Get all plugins of specified type."""
@@ -1088,17 +1088,17 @@ class LazyPluginLoader:
         try:
             module_path = self.plugin_config.get("module_path")
             if not module_path:
-                return FlextResult[None].fail("Module path not specified")
+                return FlextResult[bool].fail("Module path not specified")
 
             # Dynamic import with caching
             if module_path not in self._loaded_modules:
                 module = __import__(module_path, fromlist=[""])
                 self._loaded_modules[module_path] = module
 
-            return FlextResult[None].ok(self._loaded_modules[module_path])
+            return FlextResult[bool].ok(self._loaded_modules[module_path])
 
         except ImportError as e:
-            return FlextResult[None].fail(f"Failed to import plugin module: {e}")
+            return FlextResult[bool].fail(f"Failed to import plugin module: {e}")
 
     @cached_property
     def plugin_class(self) -> FlextResult[type]:
@@ -1120,23 +1120,23 @@ class LazyPluginLoader:
         class_name = self.plugin_config.get("class_name", "Plugin")
 
         if not hasattr(module, class_name):
-            return FlextResult[None].fail(f"Plugin class '{class_name}' not found in module")
+            return FlextResult[bool].fail(f"Plugin class '{class_name}' not found in module")
 
         plugin_class = getattr(module, class_name)
 
         # Validate plugin class
         if not issubclass(plugin_class, FlextPlugin):
-            return FlextResult[None].fail(f"Class '{class_name}' is not a FlextPlugin subclass")
+            return FlextResult[bool].fail(f"Class '{class_name}' is not a FlextPlugin subclass")
 
-        return FlextResult[None].ok(plugin_class)
+        return FlextResult[bool].ok(plugin_class)
 
     def _instantiate_plugin(self, plugin_class: type, *args, **kwargs) -> FlextResult[FlextPlugin]:
         """Instantiate plugin with error handling."""
         try:
             instance = plugin_class(*args, **kwargs)
-            return FlextResult[None].ok(instance)
+            return FlextResult[bool].ok(instance)
         except Exception as e:
-            return FlextResult[None].fail(f"Failed to instantiate plugin: {e}")
+            return FlextResult[bool].fail(f"Failed to instantiate plugin: {e}")
 ```
 
 ### **Plugin Caching Patterns**
@@ -1171,7 +1171,7 @@ class PluginCache:
                 # Check cache first
                 cached_result = self._get_cached_result(cache_key)
                 if cached_result is not None:
-                    return FlextResult[None].ok(cached_result)
+                    return FlextResult[bool].ok(cached_result)
 
                 # Execute function
                 result = func(*args, **kwargs)
@@ -1302,13 +1302,13 @@ def process_plugin_data(
     execution_result = plugin.execute(data)
 
     if execution_result.is_failure:
-        return FlextResult[None].fail(execution_result.error)
+        return FlextResult[bool].fail(execution_result.error)
 
     try:
         transformed_data = transformer(execution_result.data)
         return validator(transformed_data)
     except Exception as e:
-        return FlextResult[None].fail(f"Data processing failed: {e}")
+        return FlextResult[bool].fail(f"Data processing failed: {e}")
 
 # ❌ Avoid untyped plugin interfaces
 def execute_plugin(plugin, data):  # Missing types
@@ -1326,7 +1326,7 @@ def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
     try:
         # Validate plugin state
         if not plugin.is_valid():
-            return FlextResult[None].fail("Plugin is not in valid state")
+            return FlextResult[bool].fail("Plugin is not in valid state")
 
         # Check plugin dependencies
         dependency_check = validate_plugin_dependencies(plugin)
@@ -1346,15 +1346,15 @@ def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
             )
             return result
 
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
 
     except PluginError as e:
         # Handle plugin-specific errors
-        return FlextResult[None].fail(f"Plugin error: {e}")
+        return FlextResult[bool].fail(f"Plugin error: {e}")
     except Exception as e:
         # Handle unexpected errors
         logger.exception("Unexpected error in plugin operation", plugin_name=plugin.name)
-        return FlextResult[None].fail(f"Unexpected error: {e}")
+        return FlextResult[bool].fail(f"Unexpected error: {e}")
 
 # ✅ Plugin error hierarchy
 class PluginError(FlextExceptions.ProcessingError):
@@ -1633,7 +1633,7 @@ from flext_core import u
 # Oracle WMS plugin (flext-oracle-wms project)
 def create_oracle_wms_plugin(config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
-    return FlextResult[None].ok(create_flext_plugin(
+    return FlextResult[bool].ok(create_flext_plugin(
         name="oracle-wms-connector",
         version="0.9.9",
         plugin_type=PluginType.DATABASE,
@@ -1647,7 +1647,7 @@ def create_oracle_wms_plugin(config: t.Dict) -> FlextResult[FlextPlugin]:
 # Singer tap plugin (flext-tap-oracle project)
 def create_oracle_tap_plugin(tap_config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle Singer tap plugin."""
-    return FlextResult[None].ok(create_flext_plugin(
+    return FlextResult[bool].ok(create_flext_plugin(
         name=f"tap-oracle-{tap_config.get('schema', 'default')}",
         version="0.9.9",
         plugin_type=PluginType.TAP,
@@ -1742,7 +1742,7 @@ class EcosystemPluginManager:
                     if register_result.success:
                         registered_plugins.append(plugin.name)
 
-        return FlextResult[None].ok(registered_plugins)
+        return FlextResult[bool].ok(registered_plugins)
 ```
 
 ---

@@ -245,7 +245,7 @@ class FlextPluginEntities:
                 status="discovered",
             )
 
-        def update_status(self, new_status: str) -> FlextResult[None]:
+        def update_status(self, new_status: str) -> FlextResult[bool]:
             """Update plugin status following business rules.
 
             Valid status transitions:
@@ -273,7 +273,7 @@ class FlextPluginEntities:
             self.updated_at = datetime.now(UTC)
             return r.ok(None)
 
-        def validate_business_rules(self) -> FlextResult[None]:
+        def validate_business_rules(self) -> FlextResult[bool]:
             """Validate plugin domain business rules.
 
             Business Rules:
@@ -361,7 +361,7 @@ class FlextPluginEntities:
         def register_plugin(
             self,
             _plugin: FlextPluginEntities.Plugin,
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Register a plugin in the registry.
 
             Business Rules:
@@ -423,7 +423,7 @@ class FlextPluginEntities:
                 return r.fail(f"Plugin '{plugin_name}' not found")
             return r.ok(plugin)
 
-        def validate_business_rules(self) -> FlextResult[None]:
+        def validate_business_rules(self) -> FlextResult[bool]:
             """Validate registry business rules.
 
             Business Rules:

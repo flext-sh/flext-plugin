@@ -230,31 +230,31 @@ class ExamplePlugin(FlextPlugin):
         try:
             # Setup plugin resources
             self._setup_resources()
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Initialization failed: {e}")
+            return FlextResult[bool].fail(f"Initialization failed: {e}")
 
     def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[None].fail("Plugin not active")
+                return FlextResult[bool].fail("Plugin not active")
 
             # Process data
             result = self._process_data(data)
-            return FlextResult[None].ok(result)
+            return FlextResult[bool].ok(result)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Execution failed: {e}")
+            return FlextResult[bool].fail(f"Execution failed: {e}")
 
     def cleanup(self) -> FlextResult[bool]:
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Cleanup failed: {e}")
+            return FlextResult[bool].fail(f"Cleanup failed: {e}")
 
     def _setup_resources(self):
         """Setup plugin-specific resources."""
@@ -384,7 +384,7 @@ try:
         return None
 except Exception as e:
     logger.error(f"Unexpected error: {e}")
-    return FlextResult[None].fail(f"Unexpected error: {e}")
+    return FlextResult[bool].fail(f"Unexpected error: {e}")
 ```
 
 ### 2. Resource Management
@@ -402,9 +402,9 @@ def cleanup(self) -> FlextResult[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return FlextResult[None].ok(data=True)
+        return FlextResult[bool].ok(data=True)
     except Exception as e:
-        return FlextResult[None].fail(f"Cleanup failed: {e}")
+        return FlextResult[bool].fail(f"Cleanup failed: {e}")
 ```
 
 ### 3. Type Safety

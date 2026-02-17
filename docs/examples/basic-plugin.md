@@ -112,12 +112,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[None].fail(error_msg)
+            return FlextResult[bool].fail(error_msg)
 
     def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """
@@ -132,10 +132,10 @@ class BasicDataProcessorPlugin(FlextPlugin):
         try:
             # Validate plugin state
             if not self._is_initialized:
-                return FlextResult[None].fail("Plugin not initialized")
+                return FlextResult[bool].fail("Plugin not initialized")
 
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[None].fail("Plugin not active")
+                return FlextResult[bool].fail("Plugin not active")
 
             # Validate input data
             validation_result = self._validate_input_data(data)
@@ -166,13 +166,13 @@ class BasicDataProcessorPlugin(FlextPlugin):
             }
 
             logger.info(f"Successfully processed data in plugin {self.name}")
-            return FlextResult[None].ok(result)
+            return FlextResult[bool].ok(result)
 
         except Exception as e:
             self._processing_stats["total_errors"] += 1
             error_msg: str = f"Execution failed in plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[None].fail(error_msg)
+            return FlextResult[bool].fail(error_msg)
 
     def cleanup(self) -> FlextResult[bool]:
         """
@@ -194,12 +194,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[None].fail(error_msg)
+            return FlextResult[bool].fail(error_msg)
 
     # Plugin-specific helper methods
 
@@ -208,30 +208,30 @@ class BasicDataProcessorPlugin(FlextPlugin):
         try:
             batch_size = self._get_config_value("batch_size", 100)
             if not isinstance(batch_size, int) or batch_size <= 0:
-                return FlextResult[None].fail("batch_size must be a positive integer")
+                return FlextResult[bool].fail("batch_size must be a positive integer")
 
             timeout = self._get_config_value("timeout_seconds", 30)
             if not isinstance(timeout, int) or timeout <= 0:
-                return FlextResult[None].fail("timeout_seconds must be a positive integer")
+                return FlextResult[bool].fail("timeout_seconds must be a positive integer")
 
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Configuration validation failed: {e}")
+            return FlextResult[bool].fail(f"Configuration validation failed: {e}")
 
     def _validate_input_data(self, data: t.Dict) -> FlextResult[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
-                return FlextResult[None].fail("Input data must be a dictionary")
+                return FlextResult[bool].fail("Input data must be a dictionary")
 
             if "payload" not in data:
-                return FlextResult[None].fail("Input data must contain 'payload' key")
+                return FlextResult[bool].fail("Input data must contain 'payload' key")
 
-            return FlextResult[None].ok(data=True)
+            return FlextResult[bool].ok(data=True)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Input validation failed: {e}")
+            return FlextResult[bool].fail(f"Input validation failed: {e}")
 
     def _process_data(self, data: t.Dict) -> t.Dict:
         """Core data processing logic."""

@@ -210,7 +210,7 @@ class FlextPluginModels(FlextModels):
                 if self.is_enabled:
                     return r[bool].fail("Plugin is already enabled")
                 self.is_enabled = True
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
             def disable(self) -> r[bool]:
                 """Disable the plugin.
@@ -222,7 +222,7 @@ class FlextPluginModels(FlextModels):
                 if not self.is_enabled:
                     return r[bool].fail("Plugin is already disabled")
                 self.is_enabled = False
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
             def record_execution(self, execution_time: float, *, success: bool) -> None:
                 """Record plugin execution metrics.
@@ -359,7 +359,7 @@ class FlextPluginModels(FlextModels):
                 if self.plugin_type not in valid_types:
                     return r[bool].fail(f"Invalid plugin type: {self.plugin_type}")
 
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
         class ExecutionResult(FlextModels.Value):
             """Plugin execution result - immutable execution outcome.
