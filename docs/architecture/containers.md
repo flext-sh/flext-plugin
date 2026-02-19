@@ -2,35 +2,35 @@
 
 
 <!-- TOC START -->
-- [🏗️ Container Architecture Overview](#-container-architecture-overview)
-  - [Architecture Principles](#architecture-principles)
-- [📦 Container Diagram](#-container-diagram)
-- [🐳 Container Descriptions](#-container-descriptions)
-  - [Core Containers](#core-containers)
-  - [Data Containers](#data-containers)
-- [🔗 Container Communication Patterns](#-container-communication-patterns)
-  - [Internal Communication](#internal-communication)
-  - [External Communication](#external-communication)
-- [🚀 Deployment and Technology Choices](#-deployment-and-technology-choices)
-  - [Technology Stack](#technology-stack)
-  - [Deployment Patterns](#deployment-patterns)
-  - [Environment Configurations](#environment-configurations)
-- [📊 Container Quality Attributes](#-container-quality-attributes)
-  - [Performance Characteristics](#performance-characteristics)
-  - [Reliability Characteristics](#reliability-characteristics)
-  - [Security Characteristics](#security-characteristics)
-- [🔧 Container Management and Operations](#-container-management-and-operations)
-  - [Lifecycle Management](#lifecycle-management)
-  - [Monitoring and Observability](#monitoring-and-observability)
-  - [Scaling and Performance](#scaling-and-performance)
-- [🧪 Testing Strategy by Container](#-testing-strategy-by-container)
-  - [Unit Testing](#unit-testing)
-  - [Integration Testing](#integration-testing)
-  - [Performance Testing](#performance-testing)
-- [📋 Container Interface Contracts](#-container-interface-contracts)
-  - [FLEXT Plugin Core API](#flext-plugin-core-api)
-  - [FLEXT Plugin CLI Interface](#flext-plugin-cli-interface)
-  - [FLEXT Plugin API Interface (Planned)](#flext-plugin-api-interface-planned)
+- 🏗️ Container Architecture Overview
+  - Architecture Principles
+- 📦 Container Diagram
+- 🐳 Container Descriptions
+  - Core Containers
+  - Data Containers
+- 🔗 Container Communication Patterns
+  - Internal Communication
+  - External Communication
+- 🚀 Deployment and Technology Choices
+  - Technology Stack
+  - Deployment Patterns
+  - Environment Configurations
+- 📊 Container Quality Attributes
+  - Performance Characteristics
+  - Reliability Characteristics
+  - Security Characteristics
+- 🔧 Container Management and Operations
+  - Lifecycle Management
+  - Monitoring and Observability
+  - Scaling and Performance
+- 🧪 Testing Strategy by Container
+  - Unit Testing
+  - Integration Testing
+  - Performance Testing
+- 📋 Container Interface Contracts
+  - FLEXT Plugin Core API
+  - FLEXT Plugin CLI Interface
+  - FLEXT Plugin API Interface (Planned)
 <!-- TOC END -->
 
 **C4 Model Level 2**: Containers | **Version**: 0.9.0 | **Last Updated**: October 2025

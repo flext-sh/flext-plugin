@@ -2,32 +2,32 @@
 
 
 <!-- TOC START -->
-- [Documentation Structure](#documentation-structure)
-  - [📚 Core Documentation](#-core-documentation)
-  - [🏗️ Architecture & Design](#-architecture-design)
-  - [🛠️ Development Guides](#-development-guides)
-  - [📖 API Reference](#-api-reference)
-  - [💡 Examples & Use Cases](#-examples-use-cases)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [First Steps](#first-steps)
-- [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
-  - [Core Services Integration](#core-services-integration)
-  - [Foundation Libraries](#foundation-libraries)
-  - [Singer Ecosystem (15 Projects)](#singer-ecosystem-15-projects)
-  - [Application Services (5 Projects)](#application-services-5-projects)
-- [Development Workflow](#development-workflow)
-  - [Quality Standards](#quality-standards)
-  - [Development Commands (UPDATED FOR COMPLIANCE)](#development-commands-updated-for-compliance)
-- [Architecture Principles](#architecture-principles)
-  - [Clean Architecture](#clean-architecture)
-  - [Domain-Driven Design](#domain-driven-design)
-  - [CQRS Pattern](#cqrs-pattern)
-- [Support & Contributing](#support-contributing)
-  - [Getting Help](#getting-help)
-  - [Contributing](#contributing)
-  - [Commercial Support](#commercial-support)
+- Documentation Structure
+  - 📚 Core Documentation
+  - 🏗️ Architecture & Design
+  - 🛠️ Development Guides
+  - 📖 API Reference
+  - 💡 Examples & Use Cases
+- Getting Started
+  - Prerequisites
+  - Installation
+  - First Steps
+- FLEXT Ecosystem Integration
+  - Core Services Integration
+  - Foundation Libraries
+  - Singer Ecosystem (15 Projects)
+  - Application Services (5 Projects)
+- Development Workflow
+  - Quality Standards
+  - Development Commands (UPDATED FOR COMPLIANCE)
+- Architecture Principles
+  - Clean Architecture
+  - Domain-Driven Design
+  - CQRS Pattern
+- Support & Contributing
+  - Getting Help
+  - Contributing
+  - Commercial Support
 <!-- TOC END -->
 
 Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plugin management system for the FLEXT ecosystem.
@@ -38,30 +38,30 @@ Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plug
 
 ### 📚 Core Documentation
 
-- **[Architecture Guide](architecture/README.md)** - Clean Architecture and DDD implementation
-- **API Reference** - Complete API documentation and interfaces (_See [api-reference.md](api-reference.md)_)
-- **[Development Guides](guides/README.md)** - Step-by-step development workflows
-- **[Examples](examples/README.md)** - Practical implementation examples
+- **Architecture Guide** - Clean Architecture and DDD implementation
+- **API Reference** - Complete API documentation and interfaces (_See api-reference.md_)
+- **Development Guides** - Step-by-step development workflows
+- **Examples** - Practical implementation examples
 
 ### 🏗️ Architecture & Design
 
-- **[Architecture Overview](architecture/README.md)** - Clean Architecture and DDD foundations
-- **[Python Module Standards](standards/python-module-organization.md)** - Code organization patterns
+- **Architecture Overview** - Clean Architecture and DDD foundations
+- **Python Module Standards** - Code organization patterns
 
 ### 🛠️ Development Guides
 
-- **[Quick Start](guides/quick-start.md)** - Get up and running in minutes
+- **Quick Start** - Get up and running in minutes
 - **Plugin Development** - Creating custom plugins (_Documentation coming soon_)
-- **[Development Overview](guides/README.md)** - Development workflow and best practices
+- **Development Overview** - Development workflow and best practices
 
 ### 📖 API Reference
 
-- **API Overview** - Complete API documentation and usage patterns (_See [api-reference.md](api-reference.md)_)
+- **API Overview** - Complete API documentation and usage patterns (_See api-reference.md_)
 
 ### 💡 Examples & Use Cases
 
-- **[Basic Plugin](examples/basic-plugin.md)** - Simple plugin implementation
-- **[Examples Overview](examples/README.md)** - Collection of practical examples
+- **Basic Plugin** - Simple plugin implementation
+- **Examples Overview** - Collection of practical examples
 
 ## Getting Started
 
@@ -93,10 +93,10 @@ make setup
 
 ### First Steps
 
-1. **[Quick Start Guide](guides/quick-start.md)** - Basic plugin creation and usage
-2. **[Architecture Overview](architecture/README.md)** - Understand the system design
-3. **[Plugin Development](guides/plugin-development.md)** - Create your first plugin
-4. **[Integration Examples](examples/README.md)** - See real-world usage patterns
+1. **Quick Start Guide** - Basic plugin creation and usage
+2. **Architecture Overview** - Understand the system design
+3. **Plugin Development** - Create your first plugin
+4. **Integration Examples** - See real-world usage patterns
 
 ## FLEXT Ecosystem Integration
 
@@ -197,4 +197,4 @@ Enterprise support and consulting available through [team@flext.sh](mailto:team@
 
 ---
 
-**Next Steps**: Start with the [Quick Start Guide](guides/quick-start.md) or explore the [Architecture Overview](architecture/README.md) to understand the system design.
+**Next Steps**: Start with the Quick Start Guide or explore the Architecture Overview to understand the system design.

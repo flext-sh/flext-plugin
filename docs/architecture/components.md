@@ -2,30 +2,30 @@
 
 
 <!-- TOC START -->
-- [🏗️ Component Architecture Overview](#-component-architecture-overview)
-  - [Architecture Layers](#architecture-layers)
-  - [Component Design Principles](#component-design-principles)
-- [📦 Component Diagram](#-component-diagram)
-- [🔧 Component Descriptions](#-component-descriptions)
-  - [Interface Layer Components](#interface-layer-components)
-  - [Application Layer Components](#application-layer-components)
-  - [Domain Layer Components](#domain-layer-components)
-  - [Infrastructure Layer Components](#infrastructure-layer-components)
-  - [Data Layer Components](#data-layer-components)
-- [🔗 Component Relationships and Dependencies](#-component-relationships-and-dependencies)
-  - [Dependency Flow (Clean Architecture)](#dependency-flow-clean-architecture)
-  - [Key Component Interactions](#key-component-interactions)
-- [📊 Component Quality Attributes](#-component-quality-attributes)
-  - [Performance Characteristics](#performance-characteristics)
-  - [Reliability Characteristics](#reliability-characteristics)
-  - [Maintainability Characteristics](#maintainability-characteristics)
-- [🧪 Component Testing Strategy](#-component-testing-strategy)
-  - [Unit Testing (Domain + Application Layers)](#unit-testing-domain-application-layers)
-  - [Integration Testing (Component Interactions)](#integration-testing-component-interactions)
-  - [End-to-End Testing (Full Workflows)](#end-to-end-testing-full-workflows)
-- [🔧 Component Evolution and Maintenance](#-component-evolution-and-maintenance)
-  - [Component Lifecycle](#component-lifecycle)
-  - [Component Refactoring Guidelines](#component-refactoring-guidelines)
+- 🏗️ Component Architecture Overview
+  - Architecture Layers
+  - Component Design Principles
+- 📦 Component Diagram
+- 🔧 Component Descriptions
+  - Interface Layer Components
+  - Application Layer Components
+  - Domain Layer Components
+  - Infrastructure Layer Components
+  - Data Layer Components
+- 🔗 Component Relationships and Dependencies
+  - Dependency Flow (Clean Architecture)
+  - Key Component Interactions
+- 📊 Component Quality Attributes
+  - Performance Characteristics
+  - Reliability Characteristics
+  - Maintainability Characteristics
+- 🧪 Component Testing Strategy
+  - Unit Testing (Domain + Application Layers)
+  - Integration Testing (Component Interactions)
+  - End-to-End Testing (Full Workflows)
+- 🔧 Component Evolution and Maintenance
+  - Component Lifecycle
+  - Component Refactoring Guidelines
 <!-- TOC END -->
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025

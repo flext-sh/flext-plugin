@@ -7,11 +7,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_core import FlextResult as r
 from flext_core.protocols import FlextProtocols
 from flext_core.typings import FlextTypes
+
+if TYPE_CHECKING:
+    from flext_plugin.models import FlextPluginModels
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -47,7 +51,7 @@ class FlextPluginProtocols(FlextProtocols):
             def load_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[FlextTypes.JsonDict]:
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Load a plugin from the specified path."""
                 # INTERFACE
                 # INTERFACE
@@ -77,7 +81,7 @@ class FlextPluginProtocols(FlextProtocols):
             def discover_plugins(
                 self,
                 paths: list[str],
-            ) -> r[list[FlextTypes.JsonDict]]:
+            ) -> r[list[Mapping[str, FlextTypes.GeneralValueType]]]:
                 """Discover plugins at the given paths."""
                 # INTERFACE
                 ...
@@ -85,14 +89,14 @@ class FlextPluginProtocols(FlextProtocols):
             def discover_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[FlextTypes.JsonDict]:
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Discover a single plugin at the specified path."""
                 # INTERFACE
                 ...
 
             def validate_plugin(
                 self,
-                _plugin_data: FlextTypes.JsonDict,
+                _plugin_data: Mapping[str, FlextTypes.GeneralValueType],
             ) -> r[bool]:
                 """Validate plugin discovery data."""
                 # INTERFACE
@@ -121,7 +125,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def list_plugins(
                 self,
-            ) -> r[list[FlextTypes.JsonDict]]:
+            ) -> r[list[Mapping[str, FlextTypes.GeneralValueType]]]:
                 """List all registered plugins."""
                 # INTERFACE
                 ...
@@ -138,8 +142,8 @@ class FlextPluginProtocols(FlextProtocols):
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: FlextTypes.JsonDict,
-            ) -> r[FlextTypes.JsonDict]:
+                _context: Mapping[str, FlextTypes.GeneralValueType],
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Execute a plugin with the given context."""
                 # INTERFACE
                 ...
@@ -182,7 +186,7 @@ class FlextPluginProtocols(FlextProtocols):
             def scan_plugin_security(
                 self,
                 _plugin_path: str,
-            ) -> r[FlextTypes.JsonDict]:
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Scan plugin for security vulnerabilities."""
                 # INTERFACE
                 ...
@@ -238,7 +242,7 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin_metrics(
                 self,
                 _plugin_name: str,
-            ) -> r[FlextTypes.JsonDict]:
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Get metrics for a plugin."""
                 # INTERFACE
                 ...
@@ -246,7 +250,7 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin_health(
                 self,
                 _plugin_name: str,
-            ) -> r[FlextTypes.JsonDict]:
+            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
                 """Get health status of a plugin."""
                 # INTERFACE
                 ...
@@ -483,7 +487,7 @@ class FlextPluginProtocols(FlextProtocols):
             def discover(
                 self,
                 paths: list[str],
-            ) -> r[list[FlextTypes.GeneralValueType]]:
+            ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 # INTERFACE
                 ...

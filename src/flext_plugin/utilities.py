@@ -258,7 +258,9 @@ class FlextPluginUtilities(u):
 
                 watcher_config = {
                     "watch_path": str(path),
-                    "callback": callback_function,
+                    "callback": callback_function.__name__
+                    if callback_function
+                    else None,
                     "watch_interval": FlextPluginUtilities.HotReloadManager.DEFAULT_WATCH_INTERVAL,
                     "last_modified": {},
                     "active": False,

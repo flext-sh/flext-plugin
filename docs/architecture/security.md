@@ -2,43 +2,43 @@
 
 
 <!-- TOC START -->
-- [🔒 Security Architecture Overview](#-security-architecture-overview)
-  - [Security Principles](#security-principles)
-- [🛡️ Security Architecture Layers](#-security-architecture-layers)
-  - [Security Control Layers](#security-control-layers)
-- [🔍 Threat Model](#-threat-model)
-  - [STRIDE Threat Analysis](#stride-threat-analysis)
-- [🛡️ Security Controls Implementation](#-security-controls-implementation)
-  - [Plugin Validation Pipeline](#plugin-validation-pipeline)
-  - [Plugin Execution Isolation](#plugin-execution-isolation)
-- [🔐 Authentication and Authorization](#-authentication-and-authorization)
-  - [Authentication Mechanisms](#authentication-mechanisms)
-  - [Authorization Model](#authorization-model)
-- [📊 Security Monitoring and Audit](#-security-monitoring-and-audit)
-  - [Security Event Types](#security-event-types)
-  - [Audit Logging Architecture](#audit-logging-architecture)
-- [🔒 Data Protection and Encryption](#-data-protection-and-encryption)
-  - [Data Classification and Protection](#data-classification-and-protection)
-  - [Secure Configuration Management](#secure-configuration-management)
-- [🚨 Incident Response and Recovery](#-incident-response-and-recovery)
-  - [Incident Response Process](#incident-response-process)
-  - [Security Incident Categories](#security-incident-categories)
-- [📋 Compliance and Regulatory Requirements](#-compliance-and-regulatory-requirements)
-  - [Security Standards Compliance](#security-standards-compliance)
-  - [Compliance Implementation](#compliance-implementation)
-- [🔧 Security Architecture Tools and Technologies](#-security-architecture-tools-and-technologies)
-  - [Security Tools Integration](#security-tools-integration)
-  - [Security Automation](#security-automation)
-- [📊 Security Metrics and KPIs](#-security-metrics-and-kpis)
-  - [Security Effectiveness Metrics](#security-effectiveness-metrics)
-  - [Compliance Metrics](#compliance-metrics)
-- [🚀 Security Architecture Evolution](#-security-architecture-evolution)
-  - [Current Security (v0.9.0)](#current-security-v090)
-  - [Enhanced Security (v0.10.0)](#enhanced-security-v0100)
-  - [Enterprise Security (v1.0.0)](#enterprise-security-v100)
-- [📚 Security Architecture Documentation](#-security-architecture-documentation)
-  - [Security Documentation Index](#security-documentation-index)
-  - [Security Training and Awareness](#security-training-and-awareness)
+- 🔒 Security Architecture Overview
+  - Security Principles
+- 🛡️ Security Architecture Layers
+  - Security Control Layers
+- 🔍 Threat Model
+  - STRIDE Threat Analysis
+- 🛡️ Security Controls Implementation
+  - Plugin Validation Pipeline
+  - Plugin Execution Isolation
+- 🔐 Authentication and Authorization
+  - Authentication Mechanisms
+  - Authorization Model
+- 📊 Security Monitoring and Audit
+  - Security Event Types
+  - Audit Logging Architecture
+- 🔒 Data Protection and Encryption
+  - Data Classification and Protection
+  - Secure Configuration Management
+- 🚨 Incident Response and Recovery
+  - Incident Response Process
+  - Security Incident Categories
+- 📋 Compliance and Regulatory Requirements
+  - Security Standards Compliance
+  - Compliance Implementation
+- 🔧 Security Architecture Tools and Technologies
+  - Security Tools Integration
+  - Security Automation
+- 📊 Security Metrics and KPIs
+  - Security Effectiveness Metrics
+  - Compliance Metrics
+- 🚀 Security Architecture Evolution
+  - Current Security (v0.9.0)
+  - Enhanced Security (v0.10.0)
+  - Enterprise Security (v1.0.0)
+- 📚 Security Architecture Documentation
+  - Security Documentation Index
+  - Security Training and Awareness
 <!-- TOC END -->
 
 **Security Design, Controls, and Threat Model** | **Version**: 0.9.0 | **Last Updated**: October 2025

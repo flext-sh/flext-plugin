@@ -2,19 +2,19 @@
 
 
 <!-- TOC START -->
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-  - [Development Installation (Recommended)](#development-installation-recommended)
-  - [Dependencies](#dependencies)
-- [First Plugin](#first-plugin)
-  - [Create a Basic Plugin](#create-a-basic-plugin)
-  - [Plugin Discovery](#plugin-discovery)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [Plugin Directory Structure](#plugin-directory-structure)
-- [Development Commands](#development-commands)
-- [Next Steps](#next-steps)
-- [Related Documentation](#related-documentation)
+- Prerequisites
+- Installation
+  - Development Installation (Recommended)
+  - Dependencies
+- First Plugin
+  - Create a Basic Plugin
+  - Plugin Discovery
+- Configuration
+  - Environment Variables
+  - Plugin Directory Structure
+- Development Commands
+- Next Steps
+- Related Documentation
 <!-- TOC END -->
 
 **Version**: 0.9.9 RC
@@ -175,23 +175,23 @@ make plugin-watch          # Enable hot reload for development
 
 ## Next Steps
 
-- **[Architecture](architecture.md)** - Understand the plugin system design
-- **[API Reference](api-reference.md)** - Complete API documentation
-- **[Examples](examples/)** - Working code examples
-- **[Development](development.md)** - Contributing guidelines
+- **Architecture** - Understand the plugin system design
+- **API Reference** - Complete API documentation
+- **Examples** - Working code examples
+- **Development** - Contributing guidelines
 
 ---
 
-For advanced usage and integration patterns, see the complete documentation in the [docs/](.) directory.
+For advanced usage and integration patterns, see the complete documentation in the docs/ directory.
 
 ## Related Documentation
 
 **Within Project**:
 
-- [Architecture](architecture.md) - Understand the plugin system design
-- [API Reference](api-reference.md) - Complete API documentation
-- [Examples](examples/) - Working code examples
-- [Development](development.md) - Contributing guidelines
+- Architecture - Understand the plugin system design
+- API Reference - Complete API documentation
+- Examples - Working code examples
+- Development - Contributing guidelines
 
 **Across Projects**:
 

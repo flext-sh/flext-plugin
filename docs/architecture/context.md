@@ -2,33 +2,33 @@
 
 
 <!-- TOC START -->
-- [🎯 System Context Overview](#-system-context-overview)
-  - [System Mission](#system-mission)
-- [📊 System Context Diagram](#-system-context-diagram)
-- [👥 User Personas and Stakeholders](#-user-personas-and-stakeholders)
-  - [Primary Users](#primary-users)
-  - [Secondary Stakeholders](#secondary-stakeholders)
-- [🔗 External Systems and Integrations](#-external-systems-and-integrations)
-  - [FLEXT Ecosystem Core Dependencies](#flext-ecosystem-core-dependencies)
-  - [FLEXT Ecosystem Extension Points](#flext-ecosystem-extension-points)
-  - [Infrastructure and Runtime](#infrastructure-and-runtime)
-- [🌐 System Boundaries and Responsibilities](#-system-boundaries-and-responsibilities)
-  - [Functional Boundaries](#functional-boundaries)
-  - [Quality Attribute Boundaries](#quality-attribute-boundaries)
-- [📋 System Interfaces and Contracts](#-system-interfaces-and-contracts)
-  - [Primary Interfaces](#primary-interfaces)
-  - [External System Contracts](#external-system-contracts)
-- [🎯 System Goals and Success Criteria](#-system-goals-and-success-criteria)
-  - [Business Goals](#business-goals)
-  - [Quality Goals](#quality-goals)
-- [🚨 Constraints and Assumptions](#-constraints-and-assumptions)
-  - [Technical Constraints](#technical-constraints)
-  - [Business Constraints](#business-constraints)
-  - [Assumptions](#assumptions)
-- [📈 Evolution and Future Context](#-evolution-and-future-context)
-  - [Version 0.9.0 (Current)](#version-090-current)
-  - [Version 0.10.0 (Next)](#version-0100-next)
-  - [Version 1.0.0 (Future)](#version-100-future)
+- 🎯 System Context Overview
+  - System Mission
+- 📊 System Context Diagram
+- 👥 User Personas and Stakeholders
+  - Primary Users
+  - Secondary Stakeholders
+- 🔗 External Systems and Integrations
+  - FLEXT Ecosystem Core Dependencies
+  - FLEXT Ecosystem Extension Points
+  - Infrastructure and Runtime
+- 🌐 System Boundaries and Responsibilities
+  - Functional Boundaries
+  - Quality Attribute Boundaries
+- 📋 System Interfaces and Contracts
+  - Primary Interfaces
+  - External System Contracts
+- 🎯 System Goals and Success Criteria
+  - Business Goals
+  - Quality Goals
+- 🚨 Constraints and Assumptions
+  - Technical Constraints
+  - Business Constraints
+  - Assumptions
+- 📈 Evolution and Future Context
+  - Version 0.9.0 (Current)
+  - Version 0.10.0 (Next)
+  - Version 1.0.0 (Future)
 <!-- TOC END -->
 
 **C4 Model Level 1**: System Context | **Version**: 0.9.0 | **Last Updated**: October 2025

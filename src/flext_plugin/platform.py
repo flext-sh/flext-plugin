@@ -276,10 +276,10 @@ class FlextPluginPlatform:
             """Set executor protocol."""
             self._executor = value
 
-        def execute(self, **_kwargs: t.GeneralValueType) -> FlextResult[bool]:
+        def execute(self) -> FlextResult[None]:
             """Execute main platform initialization (FlextService protocol)."""
             # Platform is always ready - no specific initialization needed
-            return FlextResult[bool].ok(value=True)
+            return FlextResult[None].ok(None)
 
         # Core plugin operations with advanced composition
         def discover_plugins(

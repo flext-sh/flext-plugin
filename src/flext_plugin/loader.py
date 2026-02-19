@@ -43,7 +43,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, t.GeneralValueType] = {}
+        self._loaded_plugins: dict[str, object] = {}
         self._loader_strategies: list[
             Callable[[Path], FlextPluginModels.LoadData | None]
         ] = [

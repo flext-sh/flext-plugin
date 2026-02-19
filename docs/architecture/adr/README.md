@@ -2,50 +2,50 @@
 
 
 <!-- TOC START -->
-- [📋 ADR Overview](#-adr-overview)
-  - [ADR Purpose](#adr-purpose)
-- [📊 ADR Index](#-adr-index)
-  - [Core Architecture Decisions](#core-architecture-decisions)
-  - [Implementation Decisions](#implementation-decisions)
-  - [Future Decisions (Proposed)](#future-decisions-proposed)
-- [📝 ADR Template](#-adr-template)
-  - [ADR Template Structure](#adr-template-structure)
-- [Status](#status)
-- [Context](#context)
-- [Decision](#decision)
-- [Consequences](#consequences)
-- [Alternatives Considered](#alternatives-considered)
-- [Related ADRs](#related-adrs)
-- [Notes](#notes)
-- [🔄 ADR Workflow](#-adr-workflow)
-  - [Creating a New ADR](#creating-a-new-adr)
-  - [ADR Lifecycle](#adr-lifecycle)
-  - [Status Definitions](#status-definitions)
-- [🏷️ ADR Categories](#-adr-categories)
-  - [Architecture Category](#architecture-category)
-  - [Implementation Category](#implementation-category)
-  - [Integration Category](#integration-category)
-  - [Security Category](#security-category)
-  - [Performance Category](#performance-category)
-  - [Testing Category](#testing-category)
-- [📚 ADR Best Practices](#-adr-best-practices)
-  - [Writing Effective ADRs](#writing-effective-adrs)
-  - [Maintaining ADRs](#maintaining-adrs)
-- [🛠️ ADR Tools and Automation](#-adr-tools-and-automation)
-  - [ADR Creation Tools](#adr-creation-tools)
-  - [ADR Validation](#adr-validation)
-  - [Documentation Integration](#documentation-integration)
-- [📊 ADR Metrics and Analytics](#-adr-metrics-and-analytics)
-  - [Decision Quality Metrics](#decision-quality-metrics)
-  - [Process Effectiveness Metrics](#process-effectiveness-metrics)
-- [🔗 Related Documentation](#-related-documentation)
-  - [Architecture Documentation](#architecture-documentation)
-  - [Implementation Documentation](#implementation-documentation)
-  - [Quality and Security](#quality-and-security)
-- [🤝 Contributing to ADRs](#-contributing-to-adrs)
-  - [ADR Creation Guidelines](#adr-creation-guidelines)
-  - [ADR Review Process](#adr-review-process)
-  - [ADR Maintenance](#adr-maintenance)
+- 📋 ADR Overview
+  - ADR Purpose
+- 📊 ADR Index
+  - Core Architecture Decisions
+  - Implementation Decisions
+  - Future Decisions (Proposed)
+- 📝 ADR Template
+  - ADR Template Structure
+- Status
+- Context
+- Decision
+- Consequences
+- Alternatives Considered
+- Related ADRs
+- Notes
+- 🔄 ADR Workflow
+  - Creating a New ADR
+  - ADR Lifecycle
+  - Status Definitions
+- 🏷️ ADR Categories
+  - Architecture Category
+  - Implementation Category
+  - Integration Category
+  - Security Category
+  - Performance Category
+  - Testing Category
+- 📚 ADR Best Practices
+  - Writing Effective ADRs
+  - Maintaining ADRs
+- 🛠️ ADR Tools and Automation
+  - ADR Creation Tools
+  - ADR Validation
+  - Documentation Integration
+- 📊 ADR Metrics and Analytics
+  - Decision Quality Metrics
+  - Process Effectiveness Metrics
+- 🔗 Related Documentation
+  - Architecture Documentation
+  - Implementation Documentation
+  - Quality and Security
+- 🤝 Contributing to ADRs
+  - ADR Creation Guidelines
+  - ADR Review Process
+  - ADR Maintenance
 <!-- TOC END -->
 
 **Framework**: ADR | **Version**: 0.9.0 | **Last Updated**: October 2025
@@ -71,11 +71,11 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 
 | ADR                                        | Title                            | Status      | Date       | Category     |
 | ------------------------------------------ | -------------------------------- | ----------- | ---------- | ------------ |
-| [ADR-001](adr-001-clean-architecture.md)   | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
-| [ADR-002](adr-002-domain-driven-design.md) | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
-| [ADR-003](adr-003-plugin-discovery.md)     | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
-| [ADR-004](adr-004-security-model.md)       | Plugin Security and Isolation    | ✅ Accepted | 2025-02-15 | Security     |
-| [ADR-005](adr-005-flext-integration.md)    | FLEXT Ecosystem Integration      | ✅ Accepted | 2025-03-01 | Integration  |
+| ADR-001   | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
+| ADR-002 | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
+| ADR-003     | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
+| ADR-004       | Plugin Security and Isolation    | ✅ Accepted | 2025-02-15 | Security     |
+| ADR-005    | FLEXT Ecosystem Integration      | ✅ Accepted | 2025-03-01 | Integration  |
 
 ### Implementation Decisions
 
@@ -297,7 +297,7 @@ make adr-graph
 
 ```bash
 # Include ADRs in architecture docs
-make docs-architecture
+make docs
 
 # Generate ADR summary for README
 make adr-summary
@@ -330,21 +330,21 @@ make adr-export
 
 ### Architecture Documentation
 
-- **[System Context](context.md)** - System in its environment
-- **[Container Architecture](containers.md)** - Technology stack and deployment
-- **[Component Architecture](components.md)** - Module structure and relationships
-- **[Data Architecture](data.md)** - Data models and persistence
+- **System Context** - System in its environment
+- **Container Architecture** - Technology stack and deployment
+- **Component Architecture** - Module structure and relationships
+- **Data Architecture** - Data models and persistence
 
 ### Implementation Documentation
 
-- **[Implementation Guide](../implementation.md)** - Development patterns and practices
+- **Implementation Guide** - Development patterns and practices
 - **API Reference** - Public API documentation (_Documentation coming soon_)
 - **Migration Guide** - Version migration strategies (_Documentation coming soon_)
 
 ### Quality and Security
 
-- **[Security Architecture](../security.md)** - Security design and controls
-- **[Quality Attributes](../quality.md)** - Performance, scalability, reliability
+- **Security Architecture** - Security design and controls
+- **Quality Attributes** - Performance, scalability, reliability
 - **Testing Strategy** - Testing approach and framework (_Documentation coming soon_)
 
 ---

@@ -89,7 +89,7 @@ class FlextPluginSettings(FlextSettings):
         entity_id = entity_id or u_core.generate("entity")
 
         # Create instance data
-        instance_data: dict[str, t.GeneralValueType] = {
+        instance_data: dict[str, object] = {
             "id": entity_id,
             "version": kwargs.get("version", "1"),
             "metadata": kwargs.get("entity_metadata", {}),

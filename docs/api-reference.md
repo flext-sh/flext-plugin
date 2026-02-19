@@ -2,29 +2,29 @@
 
 
 <!-- TOC START -->
-- [Core Classes](#core-classes)
-  - [FlextPluginPlatform](#flextpluginplatform)
-  - [FlextPlugin (Entity)](#flextplugin-entity)
-  - [FlextPluginModels.Config (Entity)](#flextpluginmodelsconfig-entity)
-- [Enumerations](#enumerations)
-  - [PluginStatus](#pluginstatus)
-  - [PluginType](#plugintype)
-- [Factory Functions](#factory-functions)
-  - [create_flext_plugin](#createflextplugin)
-  - [create_flext_plugin_platform](#createflextpluginplatform)
-- [Discovery Services](#discovery-services)
-  - [FlextPluginDiscoveryService](#flextplugindiscoveryservice)
-- [Hot Reload](#hot-reload)
-  - [Hot Reload Configuration](#hot-reload-configuration)
-- [Error Handling](#error-handling)
-  - [Exception Types](#exception-types)
-- [Integration Patterns](#integration-patterns)
-  - [FLEXT-Core Integration](#flext-core-integration)
-  - [Singer Integration](#singer-integration)
-- [Usage Examples](#usage-examples)
-  - [Basic Plugin Management](#basic-plugin-management)
-  - [Plugin Discovery](#plugin-discovery)
-- [Related Documentation](#related-documentation)
+- Core Classes
+  - FlextPluginPlatform
+  - FlextPlugin (Entity)
+  - FlextPluginModels.Config (Entity)
+- Enumerations
+  - PluginStatus
+  - PluginType
+- Factory Functions
+  - create_flext_plugin
+  - create_flext_plugin_platform
+- Discovery Services
+  - FlextPluginDiscoveryService
+- Hot Reload
+  - Hot Reload Configuration
+- Error Handling
+  - Exception Types
+- Integration Patterns
+  - FLEXT-Core Integration
+  - Singer Integration
+- Usage Examples
+  - Basic Plugin Management
+  - Plugin Discovery
+- Related Documentation
 <!-- TOC END -->
 
 **FLEXT Plugin System API Reference**
@@ -363,16 +363,16 @@ if discovery_result.success:
 
 ---
 
-For complete examples and usage patterns, see the [examples/](examples/) directory.
+For complete examples and usage patterns, see the examples/ directory.
 
 ## Related Documentation
 
 **Within Project**:
 
-- [Getting Started](getting-started.md) - Installation and basic usage
-- [Architecture](architecture.md) - Architecture and design patterns
-- [Examples](examples/) - Working code examples
-- [Development](development.md) - Contributing guidelines
+- Getting Started - Installation and basic usage
+- Architecture - Architecture and design patterns
+- Examples - Working code examples
+- Development - Contributing guidelines
 
 **Across Projects**:
 

@@ -2,25 +2,25 @@
 
 
 <!-- TOC START -->
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-  - [Option 1: Install from PyPI (Recommended)](#option-1-install-from-pypi-recommended)
-  - [Option 2: Development Installation](#option-2-development-installation)
-- [Your First Plugin (5 minutes)](#your-first-plugin-5-minutes)
-  - [Step 1: Create a Simple Plugin](#step-1-create-a-simple-plugin)
-  - [Step 2: Use the Plugin Platform](#step-2-use-the-plugin-platform)
-  - [Step 3: Create a Custom Plugin Class](#step-3-create-a-custom-plugin-class)
-- [Plugin Discovery](#plugin-discovery)
-- [Testing Your Plugin](#testing-your-plugin)
-- [Development with Hot Reload](#development-with-hot-reload)
-- [Quality Gates](#quality-gates)
-- [Next Steps](#next-steps)
-  - [Immediate Next Steps](#immediate-next-steps)
-  - [Plugin Types to Explore](#plugin-types-to-explore)
-  - [Advanced Topics](#advanced-topics)
-- [Troubleshooting](#troubleshooting)
-  - [Common Issues](#common-issues)
-  - [Getting Help](#getting-help)
+- Prerequisites
+- Installation
+  - Option 1: Install from PyPI (Recommended)
+  - Option 2: Development Installation
+- Your First Plugin (5 minutes)
+  - Step 1: Create a Simple Plugin
+  - Step 2: Use the Plugin Platform
+  - Step 3: Create a Custom Plugin Class
+- Plugin Discovery
+- Testing Your Plugin
+- Development with Hot Reload
+- Quality Gates
+- Next Steps
+  - Immediate Next Steps
+  - Plugin Types to Explore
+  - Advanced Topics
+- Troubleshooting
+  - Common Issues
+  - Getting Help
 <!-- TOC END -->
 
 **⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0 compliance. Current implementation is non-compliant with FLEXT standards and modern Python practices.
@@ -506,7 +506,7 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 1. **Plugin Development Guide** - Learn advanced plugin patterns (_Documentation coming soon_)
 2. **Testing Guide** - Comprehensive testing strategies (_Documentation coming soon_)
-3. **[Examples](../examples/README.md)** - More detailed examples
+3. **Examples** - More detailed examples
 
 ### Plugin Types to Explore
 
@@ -516,7 +516,7 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 ### Advanced Topics
 
-1. **[Architecture Guide](../architecture/README.md)** - Understand the system design
+1. **Architecture Guide** - Understand the system design
 2. **Performance Optimization** - Scale your plugins (_Documentation coming soon_)
 3. **FLEXT Ecosystem Integration** - Integrate with other FLEXT services (_Documentation coming soon_)
 
@@ -558,11 +558,11 @@ ls -la ./
 
 ### Getting Help
 
-- **Documentation**: Browse the [complete documentation](../README.md)
-- **Examples**: Check [practical examples](../examples/README.md)
+- **Documentation**: Browse the complete documentation
+- **Examples**: Check practical examples
 - **Issues**: [Report bugs](https://github.com/flext-sh/flext/issues)
 - **Discussions**: [Ask questions](https://github.com/flext-sh/flext/discussions)
 
 ---
 
-🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue with the [Plugin Development Guide](plugin-development.md) to learn advanced patterns and best practices.
+🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue with the Plugin Development Guide to learn advanced patterns and best practices.

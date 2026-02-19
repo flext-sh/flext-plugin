@@ -2,33 +2,33 @@
 
 
 <!-- TOC START -->
-- [Example Categories](#example-categories)
-  - [🚀 Getting Started](#-getting-started)
-  - [🔌 Plugin Types](#-plugin-types)
-  - [🛠️ Development Workflow](#-development-workflow)
-  - [🏗️ Advanced Integration](#-advanced-integration)
-- [Quick Reference](#quick-reference)
-  - [Basic Plugin Creation](#basic-plugin-creation)
-  - [Singer Plugin Creation](#singer-plugin-creation)
-  - [Hot Reload Development](#hot-reload-development)
-  - [Testing Setup](#testing-setup)
-- [Example Projects Structure](#example-projects-structure)
-- [Running Examples](#running-examples)
-  - [Prerequisites](#prerequisites)
-  - [Running Individual Examples](#running-individual-examples)
-  - [Development Mode](#development-mode)
-- [Example Templates](#example-templates)
-  - [Plugin Template](#plugin-template)
-  - [Test Template](#test-template)
-  - [Configuration Template](#configuration-template)
-- [Best Practices Demonstrated](#best-practices-demonstrated)
-  - [1. Error Handling](#1-error-handling)
-  - [2. Resource Management](#2-resource-management)
-  - [3. Type Safety](#3-type-safety)
-  - [4. Testing Coverage](#4-testing-coverage)
-- [Contributing Examples](#contributing-examples)
-  - [Adding New Examples](#adding-new-examples)
-  - [Example Quality Standards](#example-quality-standards)
+- Example Categories
+  - 🚀 Getting Started
+  - 🔌 Plugin Types
+  - 🛠️ Development Workflow
+  - 🏗️ Advanced Integration
+- Quick Reference
+  - Basic Plugin Creation
+  - Singer Plugin Creation
+  - Hot Reload Development
+  - Testing Setup
+- Example Projects Structure
+- Running Examples
+  - Prerequisites
+  - Running Individual Examples
+  - Development Mode
+- Example Templates
+  - Plugin Template
+  - Test Template
+  - Configuration Template
+- Best Practices Demonstrated
+  - 1. Error Handling
+  - 2. Resource Management
+  - 3. Type Safety
+  - 4. Testing Coverage
+- Contributing Examples
+  - Adding New Examples
+  - Example Quality Standards
 <!-- TOC END -->
 
 Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
@@ -37,7 +37,7 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ### 🚀 Getting Started
 
-- **[Basic Plugin](basic-plugin.md)** - Simple plugin implementation
+- **Basic Plugin** - Simple plugin implementation
 - **Plugin Configuration** - Configuration management patterns (_Documentation coming soon_)
 - **Plugin Lifecycle** - Lifecycle management examples (_Documentation coming soon_)
 

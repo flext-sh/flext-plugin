@@ -271,7 +271,7 @@ class FlextPluginEntities:
 
             self.status = new_status
             self.updated_at = datetime.now(UTC)
-            return r.ok(None)
+            return r.ok(True)
 
         def validate_business_rules(self) -> FlextResult[bool]:
             """Validate plugin domain business rules.
@@ -309,7 +309,7 @@ class FlextPluginEntities:
             if self.status not in valid_statuses:
                 return r.fail(f"Invalid plugin status: {self.status}")
 
-            return r.ok(None)
+            return r.ok(True)
 
     # ========================================================================
     # AGGREGATE ROOTS - Consistency boundaries
@@ -386,7 +386,7 @@ class FlextPluginEntities:
             # Register plugin
             self.plugins[_plugin.config.name] = _plugin
             self.updated_at = datetime.now(UTC)
-            return r.ok(None)
+            return r.ok(True)
 
         def unregister_plugin(
             self,
@@ -443,7 +443,7 @@ class FlextPluginEntities:
                 if validation.is_failure:
                     return validation
 
-            return r.ok(None)
+            return r.ok(True)
 
     # ========================================================================
     # DOMAIN EVENTS - Event sourcing events
