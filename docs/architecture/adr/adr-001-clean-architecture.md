@@ -1,7 +1,7 @@
 # ADR-001: Adopt Clean Architecture Pattern
 
-
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -38,6 +38,7 @@
   - [Architectural Principles Established](#architectural-principles-established)
   - [Implementation Considerations](#implementation-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status
@@ -269,9 +270,9 @@ Infrastructure Layer (External Systems/Databases)
 ### Architectural Principles Established
 
 1. **Dependency Rule**: Inner layers don't depend on outer layers
-2. **Abstraction Principle**: Interfaces in inner layers, implementations in outer layers
-3. **Single Responsibility**: Each class has one reason to change
-4. **Open/Closed Principle**: Open for extension, closed for modification
+1. **Abstraction Principle**: Interfaces in inner layers, implementations in outer layers
+1. **Single Responsibility**: Each class has one reason to change
+1. **Open/Closed Principle**: Open for extension, closed for modification
 
 ### Implementation Considerations
 

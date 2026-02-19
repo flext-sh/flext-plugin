@@ -1,7 +1,7 @@
 # API Reference
 
-
 <!-- TOC START -->
+
 - [Core Classes](#core-classes)
   - [FlextPluginPlatform](#flextpluginplatform)
   - [FlextPlugin (Entity)](#flextplugin-entity)
@@ -25,11 +25,12 @@
   - [Basic Plugin Management](#basic-plugin-management)
   - [Plugin Discovery](#plugin-discovery)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **FLEXT Plugin System API Reference**
 
----
+______________________________________________________________________
 
 ## Core Classes
 
@@ -127,7 +128,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
         """Validate configuration business rules"""
 ```
 
----
+______________________________________________________________________
 
 ## Enumerations
 
@@ -155,7 +156,7 @@ class PluginType(str, Enum):
     TRANSFORM = "TRANSFORM"           # DBT transform plugin
 ```
 
----
+______________________________________________________________________
 
 ## Factory Functions
 
@@ -181,7 +182,7 @@ def create_flext_plugin_platform(
     """Create configured plugin platform"""
 ```
 
----
+______________________________________________________________________
 
 ## Discovery Services
 
@@ -198,7 +199,7 @@ class FlextPluginDiscoveryService:
         """Validate plugin integrity"""
 ```
 
----
+______________________________________________________________________
 
 ## Hot Reload
 
@@ -210,7 +211,7 @@ FLEXT_PLUGIN_HOT_RELOAD=true          # Enable hot reload
 FLEXT_PLUGIN_WATCH_INTERVAL=2         # Watch interval in seconds
 ```
 
----
+______________________________________________________________________
 
 ## Error Handling
 
@@ -243,7 +244,7 @@ class FlextPluginExecutionError(FlextPluginError):
     """Plugin execution error"""
 ```
 
----
+______________________________________________________________________
 
 ## Integration Patterns
 
@@ -321,7 +322,7 @@ class MyTapPlugin(FlextPlugin):
         )
 ```
 
----
+______________________________________________________________________
 
 ## Usage Examples
 
@@ -361,7 +362,7 @@ if discovery_result.success:
             print(f"  ✗ Invalid: {validation.error}")
 ```
 
----
+______________________________________________________________________
 
 For complete examples and usage patterns, see the examples/ directory.
 

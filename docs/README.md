@@ -1,13 +1,13 @@
 # FLEXT Plugin Documentation
 
-
 <!-- TOC START -->
+
 - [Documentation Structure](#documentation-structure)
-  - [📚 Core Documentation](#-core-documentation)
-  - [🏗️ Architecture & Design](#-architecture-design)
-  - [🛠️ Development Guides](#-development-guides)
-  - [📖 API Reference](#-api-reference)
-  - [💡 Examples & Use Cases](#-examples-use-cases)
+  - [📚 Core Documentation](#core-documentation)
+  - [🏗️ Architecture & Design](#architecture-design)
+  - [🛠️ Development Guides](#development-guides)
+  - [📖 API Reference](#api-reference)
+  - [💡 Examples & Use Cases](#examples-use-cases)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -28,6 +28,7 @@
   - [Getting Help](#getting-help)
   - [Contributing](#contributing)
   - [Commercial Support](#commercial-support)
+
 <!-- TOC END -->
 
 Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plugin management system for the FLEXT ecosystem.
@@ -94,9 +95,9 @@ make setup
 ### First Steps
 
 1. **Quick Start Guide** - Basic plugin creation and usage
-2. **Architecture Overview** - Understand the system design
-3. **Plugin Development** - Create your first plugin
-4. **Integration Examples** - See real-world usage patterns
+1. **Architecture Overview** - Understand the system design
+1. **Plugin Development** - Create your first plugin
+1. **Integration Examples** - See real-world usage patterns
 
 ## FLEXT Ecosystem Integration
 
@@ -195,6 +196,6 @@ make plugin-discovery      # Test plugin discovery mechanisms
 
 Enterprise support and consulting available through [team@flext.sh](mailto:team@flext.sh).
 
----
+______________________________________________________________________
 
 **Next Steps**: Start with the Quick Start Guide or explore the Architecture Overview to understand the system design.

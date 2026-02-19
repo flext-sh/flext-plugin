@@ -1,41 +1,42 @@
 # Container Architecture (C4 Level 2)
 
-
 <!-- TOC START -->
-- [🏗️ Container Architecture Overview](#-container-architecture-overview)
+
+- [🏗️ Container Architecture Overview](#container-architecture-overview)
   - [Architecture Principles](#architecture-principles)
-- [📦 Container Diagram](#-container-diagram)
-- [🐳 Container Descriptions](#-container-descriptions)
+- [📦 Container Diagram](#container-diagram)
+- [🐳 Container Descriptions](#container-descriptions)
   - [Core Containers](#core-containers)
   - [Data Containers](#data-containers)
-- [🔗 Container Communication Patterns](#-container-communication-patterns)
+- [🔗 Container Communication Patterns](#container-communication-patterns)
   - [Internal Communication](#internal-communication)
   - [External Communication](#external-communication)
-- [🚀 Deployment and Technology Choices](#-deployment-and-technology-choices)
+- [🚀 Deployment and Technology Choices](#deployment-and-technology-choices)
   - [Technology Stack](#technology-stack)
   - [Deployment Patterns](#deployment-patterns)
   - [Environment Configurations](#environment-configurations)
-- [📊 Container Quality Attributes](#-container-quality-attributes)
+- [📊 Container Quality Attributes](#container-quality-attributes)
   - [Performance Characteristics](#performance-characteristics)
   - [Reliability Characteristics](#reliability-characteristics)
   - [Security Characteristics](#security-characteristics)
-- [🔧 Container Management and Operations](#-container-management-and-operations)
+- [🔧 Container Management and Operations](#container-management-and-operations)
   - [Lifecycle Management](#lifecycle-management)
   - [Monitoring and Observability](#monitoring-and-observability)
   - [Scaling and Performance](#scaling-and-performance)
-- [🧪 Testing Strategy by Container](#-testing-strategy-by-container)
+- [🧪 Testing Strategy by Container](#testing-strategy-by-container)
   - [Unit Testing](#unit-testing)
   - [Integration Testing](#integration-testing)
   - [Performance Testing](#performance-testing)
-- [📋 Container Interface Contracts](#-container-interface-contracts)
+- [📋 Container Interface Contracts](#container-interface-contracts)
   - [FLEXT Plugin Core API](#flext-plugin-core-api)
   - [FLEXT Plugin CLI Interface](#flext-plugin-cli-interface)
   - [FLEXT Plugin API Interface (Planned)](#flext-plugin-api-interface-planned)
+
 <!-- TOC END -->
 
 **C4 Model Level 2**: Containers | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 🏗️ Container Architecture Overview
 
@@ -48,7 +49,7 @@ FLEXT Plugin operates as a **Python library package** with **optional CLI compon
 - **Container Agnostic**: Deployable in any Python environment (Docker, Podman, Kubernetes, bare metal)
 - **Dependency Injection**: Clean separation through FLEXT container patterns
 
----
+______________________________________________________________________
 
 ## 📦 Container Diagram
 
@@ -112,7 +113,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 🐳 Container Descriptions
 
@@ -198,7 +199,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
   - Temporary configuration files
   - Performance optimization metadata
 
----
+______________________________________________________________________
 
 ## 🔗 Container Communication Patterns
 
@@ -252,7 +253,7 @@ platform = FlextPluginPlatform()
 | All       | Kubernetes      | kubectl/API | Orchestration and deployment     |
 | Core      | File System     | POSIX       | Local plugin storage and caching |
 
----
+______________________________________________________________________
 
 ## 🚀 Deployment and Technology Choices
 
@@ -333,7 +334,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Packaging**: Build and publish packages
 - **Documentation**: Generate and validate docs
 
----
+______________________________________________________________________
 
 ## 📊 Container Quality Attributes
 
@@ -393,7 +394,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Access Control**: Role-based plugin execution permissions
 - **Integrity Checks**: Plugin code and data integrity validation
 
----
+______________________________________________________________________
 
 ## 🔧 Container Management and Operations
 
@@ -402,17 +403,17 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 #### **Startup Sequence**
 
 1. **Core Initialization**: Load FLEXT dependencies and configuration
-2. **Registry Setup**: Initialize plugin registry and cache
-3. **Discovery Phase**: Scan for available plugins
-4. **Validation Phase**: Validate plugin security and compatibility
-5. **Ready State**: Accept plugin operations
+1. **Registry Setup**: Initialize plugin registry and cache
+1. **Discovery Phase**: Scan for available plugins
+1. **Validation Phase**: Validate plugin security and compatibility
+1. **Ready State**: Accept plugin operations
 
 #### **Shutdown Sequence**
 
 1. **Operation Drain**: Complete in-flight plugin operations
-2. **State Persistence**: Save plugin state and metrics
-3. **Resource Cleanup**: Release resources and connections
-4. **Graceful Exit**: Clean shutdown with proper logging
+1. **State Persistence**: Save plugin state and metrics
+1. **Resource Cleanup**: Release resources and connections
+1. **Graceful Exit**: Clean shutdown with proper logging
 
 ### Monitoring and Observability
 
@@ -446,7 +447,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Caching Strategy**: Optimize for available memory
 - **Performance Tuning**: Configurable thread pools and timeouts
 
----
+______________________________________________________________________
 
 ## 🧪 Testing Strategy by Container
 
@@ -471,7 +472,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Scalability Testing**: Multi-container deployments
 - **Benchmarking**: Performance regression detection
 
----
+______________________________________________________________________
 
 ## 📋 Container Interface Contracts
 
@@ -504,6 +505,6 @@ POST /api/v1/plugins/{name}/execute
 GET /api/v1/plugins/{name}/status
 ```
 
----
+______________________________________________________________________
 
 **Container Architecture** - Technology stack, deployment patterns, and container interactions for FLEXT Plugin system.

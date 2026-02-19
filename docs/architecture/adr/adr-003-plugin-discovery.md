@@ -1,7 +1,7 @@
 # ADR-003: Plugin Discovery Mechanism
 
-
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -39,6 +39,7 @@
   - [Plugin Metadata Standard](#plugin-metadata-standard)
   - [Performance Considerations](#performance-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status
@@ -90,9 +91,9 @@ Basic file-based discovery exists but lacks comprehensive plugin ecosystem suppo
 Implement a multi-tiered plugin discovery system supporting:
 
 1. **File-based Discovery**: Local directory scanning for development
-2. **Entry Points Discovery**: Python packaging standard for distribution
-3. **Registry-based Discovery**: Centralized plugin repositories
-4. **Hybrid Discovery**: Combined approach with fallback mechanisms
+1. **Entry Points Discovery**: Python packaging standard for distribution
+1. **Registry-based Discovery**: Centralized plugin repositories
+1. **Hybrid Discovery**: Combined approach with fallback mechanisms
 
 **Primary Implementation**: File-based discovery as foundation, with entry points as enhancement.
 
@@ -277,9 +278,9 @@ Implement a multi-tiered plugin discovery system supporting:
 ### Discovery Strategy
 
 1. **Primary**: File-based discovery for development and flexibility
-2. **Secondary**: Entry points for packaged plugin distribution
-3. **Tertiary**: Registry-based for enterprise plugin management
-4. **Fallback**: Local cache for offline operation
+1. **Secondary**: Entry points for packaged plugin distribution
+1. **Tertiary**: Registry-based for enterprise plugin management
+1. **Fallback**: Local cache for offline operation
 
 ### Plugin Metadata Standard
 

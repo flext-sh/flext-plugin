@@ -1,12 +1,12 @@
 # FLEXT Plugin Examples
 
-
 <!-- TOC START -->
+
 - [Example Categories](#example-categories)
-  - [🚀 Getting Started](#-getting-started)
-  - [🔌 Plugin Types](#-plugin-types)
-  - [🛠️ Development Workflow](#-development-workflow)
-  - [🏗️ Advanced Integration](#-advanced-integration)
+  - [🚀 Getting Started](#getting-started)
+  - [🔌 Plugin Types](#plugin-types)
+  - [🛠️ Development Workflow](#development-workflow)
+  - [🏗️ Advanced Integration](#advanced-integration)
 - [Quick Reference](#quick-reference)
   - [Basic Plugin Creation](#basic-plugin-creation)
   - [Singer Plugin Creation](#singer-plugin-creation)
@@ -29,6 +29,7 @@
 - [Contributing Examples](#contributing-examples)
   - [Adding New Examples](#adding-new-examples)
   - [Example Quality Standards](#example-quality-standards)
+
 <!-- TOC END -->
 
 Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
@@ -493,16 +494,17 @@ Comprehensive test coverage for all plugin functionality:
    cd docs/examples/your-example
    ```
 
-2. **Follow Template Structure**:
+1. **Follow Template Structure**:
+
    - `plugin.py` - Main plugin implementation
    - `test_plugin.py` - Comprehensive tests
    - `config.json` - Configuration example
    - `README.md` - Documentation and usage
 
-3. **Update Index**:
+1. **Update Index**:
    Add your example to this README.md file
 
-4. **Test Example**:
+1. **Test Example**:
 
    ```bash
    # Ensure example works
@@ -522,6 +524,6 @@ Comprehensive test coverage for all plugin functionality:
 - **Error Handling**: Proper FlextResult pattern usage
 - **Resource Management**: Clean initialization and cleanup
 
----
+______________________________________________________________________
 
 **Next Steps**: Browse individual example directories for detailed implementations and run the examples to see FLEXT Plugin system in action.

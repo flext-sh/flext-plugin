@@ -1,36 +1,37 @@
 # Component Architecture (C4 Level 3)
 
-
 <!-- TOC START -->
-- [🏗️ Component Architecture Overview](#-component-architecture-overview)
+
+- [🏗️ Component Architecture Overview](#component-architecture-overview)
   - [Architecture Layers](#architecture-layers)
   - [Component Design Principles](#component-design-principles)
-- [📦 Component Diagram](#-component-diagram)
-- [🔧 Component Descriptions](#-component-descriptions)
+- [📦 Component Diagram](#component-diagram)
+- [🔧 Component Descriptions](#component-descriptions)
   - [Interface Layer Components](#interface-layer-components)
   - [Application Layer Components](#application-layer-components)
   - [Domain Layer Components](#domain-layer-components)
   - [Infrastructure Layer Components](#infrastructure-layer-components)
   - [Data Layer Components](#data-layer-components)
-- [🔗 Component Relationships and Dependencies](#-component-relationships-and-dependencies)
+- [🔗 Component Relationships and Dependencies](#component-relationships-and-dependencies)
   - [Dependency Flow (Clean Architecture)](#dependency-flow-clean-architecture)
   - [Key Component Interactions](#key-component-interactions)
-- [📊 Component Quality Attributes](#-component-quality-attributes)
+- [📊 Component Quality Attributes](#component-quality-attributes)
   - [Performance Characteristics](#performance-characteristics)
   - [Reliability Characteristics](#reliability-characteristics)
   - [Maintainability Characteristics](#maintainability-characteristics)
-- [🧪 Component Testing Strategy](#-component-testing-strategy)
+- [🧪 Component Testing Strategy](#component-testing-strategy)
   - [Unit Testing (Domain + Application Layers)](#unit-testing-domain-application-layers)
   - [Integration Testing (Component Interactions)](#integration-testing-component-interactions)
   - [End-to-End Testing (Full Workflows)](#end-to-end-testing-full-workflows)
-- [🔧 Component Evolution and Maintenance](#-component-evolution-and-maintenance)
+- [🔧 Component Evolution and Maintenance](#component-evolution-and-maintenance)
   - [Component Lifecycle](#component-lifecycle)
   - [Component Refactoring Guidelines](#component-refactoring-guidelines)
+
 <!-- TOC END -->
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 🏗️ Component Architecture Overview
 
@@ -55,7 +56,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Interface Segregation**: Small, focused interfaces for better testability
 - **Railway Pattern**: FlextResult[T] for composable error handling throughout
 
----
+______________________________________________________________________
 
 ## 📦 Component Diagram
 
@@ -130,7 +131,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 🔧 Component Descriptions
 
@@ -394,7 +395,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - `FlextPluginExecutionError`: Execution failures
 - **Dependencies**: Domain types, standard exception hierarchy
 
----
+______________________________________________________________________
 
 ## 🔗 Component Relationships and Dependencies
 
@@ -453,7 +454,7 @@ adapter = FilesystemAdapter()
 content = adapter.read_file(path)  # External system access
 ```
 
----
+______________________________________________________________________
 
 ## 📊 Component Quality Attributes
 
@@ -515,7 +516,7 @@ content = adapter.read_file(path)  # External system access
 - **Integration Testable**: Clear component boundaries for integration testing
 - **Performance Testable**: Isolated components for performance benchmarking
 
----
+______________________________________________________________________
 
 ## 🧪 Component Testing Strategy
 
@@ -537,7 +538,7 @@ content = adapter.read_file(path)  # External system access
 - **Error Scenarios**: Failure handling and recovery
 - **Performance Testing**: Load testing and benchmarking
 
----
+______________________________________________________________________
 
 ## 🔧 Component Evolution and Maintenance
 
@@ -546,43 +547,43 @@ content = adapter.read_file(path)  # External system access
 #### **Development Phase**
 
 1. Define component interface (protocol)
-2. Implement component with tests
-3. Integrate with dependent components
-4. Performance and security validation
+1. Implement component with tests
+1. Integrate with dependent components
+1. Performance and security validation
 
 #### **Maintenance Phase**
 
 1. Monitor component metrics and health
-2. Handle bug fixes and improvements
-3. Plan component evolution and refactoring
-4. Deprecation and migration planning
+1. Handle bug fixes and improvements
+1. Plan component evolution and refactoring
+1. Deprecation and migration planning
 
 ### Component Refactoring Guidelines
 
 #### **Adding New Components**
 
 1. Identify responsibility gap in existing architecture
-2. Define component interface and contracts
-3. Implement component following architectural patterns
-4. Update component relationships and dependencies
-5. Add comprehensive tests and documentation
+1. Define component interface and contracts
+1. Implement component following architectural patterns
+1. Update component relationships and dependencies
+1. Add comprehensive tests and documentation
 
 #### **Modifying Existing Components**
 
 1. Assess impact on dependent components
-2. Maintain backward compatibility where possible
-3. Update component interfaces and contracts
-4. Implement changes with feature flags if needed
-5. Update tests and documentation
+1. Maintain backward compatibility where possible
+1. Update component interfaces and contracts
+1. Implement changes with feature flags if needed
+1. Update tests and documentation
 
 #### **Removing Components**
 
 1. Identify all dependent components and usages
-2. Create migration plan for dependent code
-3. Implement deprecation warnings
-4. Provide migration guides and examples
-5. Remove component after migration period
+1. Create migration plan for dependent code
+1. Implement deprecation warnings
+1. Provide migration guides and examples
+1. Remove component after migration period
 
----
+______________________________________________________________________
 
 **Component Architecture** - Detailed component structure, responsibilities, and interactions within the Clean Architecture framework.

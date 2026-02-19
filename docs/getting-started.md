@@ -1,7 +1,7 @@
 # Getting Started with FLEXT Plugin
 
-
 <!-- TOC START -->
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Development Installation (Recommended)](#development-installation-recommended)
@@ -15,12 +15,13 @@
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Version**: 0.9.9 RC
 **Last Updated**: 2025-09-17
 
----
+______________________________________________________________________
 
 ## Prerequisites
 
@@ -28,7 +29,7 @@
 - **FLEXT Workspace** - flext-plugin is part of the FLEXT ecosystem
 - Basic understanding of Clean Architecture and domain-driven design
 
----
+______________________________________________________________________
 
 ## Installation
 
@@ -56,7 +57,7 @@ flext-core>=0.9.9        # Foundation patterns and FlextResult
 flext-observability>=0.9.9  # Monitoring and observability
 ```
 
----
+______________________________________________________________________
 
 ## First Plugin
 
@@ -124,7 +125,7 @@ if discovery_result.success:
         print(f"- {plugin.name} v{plugin.plugin_version}")
 ```
 
----
+______________________________________________________________________
 
 ## Configuration
 
@@ -152,7 +153,7 @@ plugins/
     └── plugin.py
 ```
 
----
+______________________________________________________________________
 
 ## Development Commands
 
@@ -171,7 +172,7 @@ make plugin-validate       # Validate plugin system
 make plugin-watch          # Enable hot reload for development
 ```
 
----
+______________________________________________________________________
 
 ## Next Steps
 
@@ -180,7 +181,7 @@ make plugin-watch          # Enable hot reload for development
 - **Examples** - Working code examples
 - **Development** - Contributing guidelines
 
----
+______________________________________________________________________
 
 For advanced usage and integration patterns, see the complete documentation in the docs/ directory.
 

@@ -1,14 +1,14 @@
 # Architecture Decision Records (ADRs)
 
-
 <!-- TOC START -->
-- [📋 ADR Overview](#-adr-overview)
+
+- [📋 ADR Overview](#adr-overview)
   - [ADR Purpose](#adr-purpose)
-- [📊 ADR Index](#-adr-index)
+- [📊 ADR Index](#adr-index)
   - [Core Architecture Decisions](#core-architecture-decisions)
   - [Implementation Decisions](#implementation-decisions)
   - [Future Decisions (Proposed)](#future-decisions-proposed)
-- [📝 ADR Template](#-adr-template)
+- [📝 ADR Template](#adr-template)
   - [ADR Template Structure](#adr-template-structure)
 - [Status](#status)
 - [Context](#context)
@@ -17,40 +17,41 @@
 - [Alternatives Considered](#alternatives-considered)
 - [Related ADRs](#related-adrs)
 - [Notes](#notes)
-- [🔄 ADR Workflow](#-adr-workflow)
+- [🔄 ADR Workflow](#adr-workflow)
   - [Creating a New ADR](#creating-a-new-adr)
   - [ADR Lifecycle](#adr-lifecycle)
   - [Status Definitions](#status-definitions)
-- [🏷️ ADR Categories](#-adr-categories)
+- [🏷️ ADR Categories](#adr-categories)
   - [Architecture Category](#architecture-category)
   - [Implementation Category](#implementation-category)
   - [Integration Category](#integration-category)
   - [Security Category](#security-category)
   - [Performance Category](#performance-category)
   - [Testing Category](#testing-category)
-- [📚 ADR Best Practices](#-adr-best-practices)
+- [📚 ADR Best Practices](#adr-best-practices)
   - [Writing Effective ADRs](#writing-effective-adrs)
   - [Maintaining ADRs](#maintaining-adrs)
-- [🛠️ ADR Tools and Automation](#-adr-tools-and-automation)
+- [🛠️ ADR Tools and Automation](#adr-tools-and-automation)
   - [ADR Creation Tools](#adr-creation-tools)
   - [ADR Validation](#adr-validation)
   - [Documentation Integration](#documentation-integration)
-- [📊 ADR Metrics and Analytics](#-adr-metrics-and-analytics)
+- [📊 ADR Metrics and Analytics](#adr-metrics-and-analytics)
   - [Decision Quality Metrics](#decision-quality-metrics)
   - [Process Effectiveness Metrics](#process-effectiveness-metrics)
-- [🔗 Related Documentation](#-related-documentation)
+- [🔗 Related Documentation](#related-documentation)
   - [Architecture Documentation](#architecture-documentation)
   - [Implementation Documentation](#implementation-documentation)
   - [Quality and Security](#quality-and-security)
-- [🤝 Contributing to ADRs](#-contributing-to-adrs)
+- [🤝 Contributing to ADRs](#contributing-to-adrs)
   - [ADR Creation Guidelines](#adr-creation-guidelines)
   - [ADR Review Process](#adr-review-process)
   - [ADR Maintenance](#adr-maintenance)
+
 <!-- TOC END -->
 
 **Framework**: ADR | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 📋 ADR Overview
 
@@ -63,19 +64,19 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 - **Share Knowledge**: Enable team members to understand historical decisions
 - **Guide Evolution**: Inform future architectural changes and refactoring
 
----
+______________________________________________________________________
 
 ## 📊 ADR Index
 
 ### Core Architecture Decisions
 
-| ADR                                        | Title                            | Status      | Date       | Category     |
-| ------------------------------------------ | -------------------------------- | ----------- | ---------- | ------------ |
-| ADR-001   | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
+| ADR     | Title                            | Status      | Date       | Category     |
+| ------- | -------------------------------- | ----------- | ---------- | ------------ |
+| ADR-001 | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
 | ADR-002 | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
-| ADR-003     | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
-| ADR-004       | Plugin Security and Isolation    | ✅ Accepted | 2025-02-15 | Security     |
-| ADR-005    | FLEXT Ecosystem Integration      | ✅ Accepted | 2025-03-01 | Integration  |
+| ADR-003 | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
+| ADR-004 | Plugin Security and Isolation    | ✅ Accepted | 2025-02-15 | Security     |
+| ADR-005 | FLEXT Ecosystem Integration      | ✅ Accepted | 2025-03-01 | Integration  |
 
 ### Implementation Decisions
 
@@ -95,7 +96,7 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 | ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
 | ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
 
----
+______________________________________________________________________
 
 ## 📝 ADR Template
 
@@ -135,20 +136,20 @@ All ADRs follow a standardized template for consistency and completeness.
 [object additional information or implementation details]
 ```
 
----
+______________________________________________________________________
 
 ## 🔄 ADR Workflow
 
 ### Creating a New ADR
 
 1. **Identify Decision**: Recognize when an architectural decision needs to be made
-2. **Gather Context**: Collect requirements, constraints, and stakeholder input
-3. **Evaluate Options**: Analyze alternatives and trade-offs
-4. **Make Decision**: Choose the best option based on criteria
-5. **Document ADR**: Create ADR following the template
-6. **Review**: Have ADR reviewed by architects and stakeholders
-7. **Implement**: Proceed with implementation
-8. **Update Status**: Mark ADR as Accepted after implementation
+1. **Gather Context**: Collect requirements, constraints, and stakeholder input
+1. **Evaluate Options**: Analyze alternatives and trade-offs
+1. **Make Decision**: Choose the best option based on criteria
+1. **Document ADR**: Create ADR following the template
+1. **Review**: Have ADR reviewed by architects and stakeholders
+1. **Implement**: Proceed with implementation
+1. **Update Status**: Mark ADR as Accepted after implementation
 
 ### ADR Lifecycle
 
@@ -166,7 +167,7 @@ Rejected   Deprecated → Superseded
 - **Deprecated**: Decision no longer recommended but may still be in use
 - **Superseded**: Decision replaced by a newer ADR
 
----
+______________________________________________________________________
 
 ## 🏷️ ADR Categories
 
@@ -206,7 +207,7 @@ Rejected   Deprecated → Superseded
 - Test organization and coverage goals
 - Quality assurance approaches
 
----
+______________________________________________________________________
 
 ## 📚 ADR Best Practices
 
@@ -263,7 +264,7 @@ Rejected   Deprecated → Superseded
 - Document any deviations from decisions
 - Record lessons learned during implementation
 
----
+______________________________________________________________________
 
 ## 🛠️ ADR Tools and Automation
 
@@ -306,7 +307,7 @@ make adr-summary
 make adr-export
 ```
 
----
+______________________________________________________________________
 
 ## 📊 ADR Metrics and Analytics
 
@@ -324,7 +325,7 @@ make adr-export
 - **Implementation Alignment**: Percentage of implementations matching ADR decisions
 - **Knowledge Sharing**: Usage of ADRs in new decision-making
 
----
+______________________________________________________________________
 
 ## 🔗 Related Documentation
 
@@ -347,32 +348,32 @@ make adr-export
 - **Quality Attributes** - Performance, scalability, reliability
 - **Testing Strategy** - Testing approach and framework (_Documentation coming soon_)
 
----
+______________________________________________________________________
 
 ## 🤝 Contributing to ADRs
 
 ### ADR Creation Guidelines
 
 1. **Identify Decision Point**: Recognize when architectural decisions are needed
-2. **Gather Input**: Consult with relevant stakeholders and architects
-3. **Document Thoroughly**: Follow the complete ADR template
-4. **Review Process**: Have ADR reviewed by architecture team
-5. **Implementation**: Ensure decision is implemented as documented
+1. **Gather Input**: Consult with relevant stakeholders and architects
+1. **Document Thoroughly**: Follow the complete ADR template
+1. **Review Process**: Have ADR reviewed by architecture team
+1. **Implementation**: Ensure decision is implemented as documented
 
 ### ADR Review Process
 
 1. **Technical Review**: Architecture team reviews technical soundness
-2. **Stakeholder Review**: Product and business stakeholders review business alignment
-3. **Implementation Review**: Development team reviews implementation feasibility
-4. **Final Approval**: Architecture lead approves ADR for implementation
+1. **Stakeholder Review**: Product and business stakeholders review business alignment
+1. **Implementation Review**: Development team reviews implementation feasibility
+1. **Final Approval**: Architecture lead approves ADR for implementation
 
 ### ADR Maintenance
 
 1. **Regular Audits**: Review ADRs annually for continued relevance
-2. **Status Updates**: Update status when decisions change or are superseded
-3. **Implementation Tracking**: Link ADRs to implementation work and outcomes
-4. **Lessons Learned**: Document what worked and what didn't during implementation
+1. **Status Updates**: Update status when decisions change or are superseded
+1. **Implementation Tracking**: Link ADRs to implementation work and outcomes
+1. **Lessons Learned**: Document what worked and what didn't during implementation
 
----
+______________________________________________________________________
 
 **Architecture Decision Records** - Comprehensive documentation of architectural decisions, rationale, and consequences for FLEXT Plugin system.

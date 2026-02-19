@@ -1,7 +1,7 @@
 # FLEXT Plugin Examples
 
-
 <!-- TOC START -->
+
 - [Available Examples](#available-examples)
   - [1. Basic Plugin Example (`01_basic_plugin.py`)](#1-basic-plugin-example-01basicpluginpy)
   - [2. Plugin Configuration Example (`02_plugin_configuration.py`)](#2-plugin-configuration-example-02pluginconfigurationpy)
@@ -21,6 +21,7 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Support](#support)
+
 <!-- TOC END -->
 
 This directory contains comprehensive examples demonstrating the FLEXT Plugin system functionality with 100% working code and enterprise-grade patterns.
@@ -194,11 +195,11 @@ Examples integrate with the broader FLEXT platform:
 ### Creating New Examples
 
 1. **Follow Naming Convention**: `{purpose}_example.py`
-2. **Include Comprehensive Docstring**: Purpose, features, usage, prerequisites
-3. **Add Direct Execution Support**: `sys.path.insert()` for `src/` access
-4. **Create Corresponding Tests**: In `tests/test_examples.py`
-5. **Validate Docker Compatibility**: Test with Docker services when applicable
-6. **Update This README**: Add to examples list with features and usage
+1. **Include Comprehensive Docstring**: Purpose, features, usage, prerequisites
+1. **Add Direct Execution Support**: `sys.path.insert()` for `src/` access
+1. **Create Corresponding Tests**: In `tests/test_examples.py`
+1. **Validate Docker Compatibility**: Test with Docker services when applicable
+1. **Update This README**: Add to examples list with features and usage
 
 ### Quality Standards
 
@@ -253,10 +254,10 @@ docker-compose logs postgres
 For issues with examples:
 
 1. Check test suite: `python -m pytest tests/test_examples.py -v`
-2. Verify Docker services: `docker-compose ps`
-3. Review main project documentation: `../README.md` and `../CLAUDE.md`
-4. Check integration with workspace: `..README.md`
+1. Verify Docker services: `docker-compose ps`
+1. Review main project documentation: `../README.md` and `../CLAUDE.md`
+1. Check integration with workspace: `..README.md`
 
----
+______________________________________________________________________
 
 **Status**: 1.0.0 Release Preparation | **Coverage**: Functional | **Docker Integration**: In Progress

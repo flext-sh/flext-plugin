@@ -1,7 +1,7 @@
-# ADR-[NUMBER]: [TITLE]
-
+# ADR-\[NUMBER\]: [TITLE]
 
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -34,6 +34,7 @@
   - [Internal References](#internal-references)
 - [Notes](#notes)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status
@@ -195,6 +196,6 @@
 | YYYY-MM-DD | Implemented | Implementation completed                 |
 | YYYY-MM-DD | Superseded  | [If applicable, link to superseding ADR] |
 
----
+______________________________________________________________________
 
 **ADR Template** - Standardized template for documenting architecture decisions in FLEXT Plugin.

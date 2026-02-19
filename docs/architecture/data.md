@@ -1,42 +1,43 @@
 # Data Architecture
 
-
 <!-- TOC START -->
-- [💾 Data Architecture Overview](#-data-architecture-overview)
+
+- [💾 Data Architecture Overview](#data-architecture-overview)
   - [Data Architecture Principles](#data-architecture-principles)
-- [🗂️ Data Model Hierarchy](#-data-model-hierarchy)
+- [🗂️ Data Model Hierarchy](#data-model-hierarchy)
   - [Core Data Models](#core-data-models)
-- [📊 Data Storage Architecture](#-data-storage-architecture)
+- [📊 Data Storage Architecture](#data-storage-architecture)
   - [Storage Layers](#storage-layers)
   - [Storage Architecture Diagram](#storage-architecture-diagram)
-- [🔄 Data Flow Patterns](#-data-flow-patterns)
+- [🔄 Data Flow Patterns](#data-flow-patterns)
   - [Plugin Lifecycle Data Flow](#plugin-lifecycle-data-flow)
-- [🔒 Data Security and Privacy](#-data-security-and-privacy)
+- [🔒 Data Security and Privacy](#data-security-and-privacy)
   - [Data Classification](#data-classification)
   - [Security Controls](#security-controls)
-- [📈 Data Governance and Lifecycle](#-data-governance-and-lifecycle)
+- [📈 Data Governance and Lifecycle](#data-governance-and-lifecycle)
   - [Data Lifecycle Management](#data-lifecycle-management)
   - [Data Quality Management](#data-quality-management)
-- [🚀 Data Architecture Evolution](#-data-architecture-evolution)
+- [🚀 Data Architecture Evolution](#data-architecture-evolution)
   - [Current Architecture (v0.9.0)](#current-architecture-v090)
   - [Planned Enhancements (v0.10.0)](#planned-enhancements-v0100)
   - [Future Architecture (v1.0.0)](#future-architecture-v100)
-- [🛠️ Data Architecture Tools and Technologies](#-data-architecture-tools-and-technologies)
+- [🛠️ Data Architecture Tools and Technologies](#data-architecture-tools-and-technologies)
   - [Core Technologies](#core-technologies)
   - [Development Tools](#development-tools)
-- [📊 Data Architecture Metrics](#-data-architecture-metrics)
+- [📊 Data Architecture Metrics](#data-architecture-metrics)
   - [Performance Metrics](#performance-metrics)
   - [Quality Metrics](#quality-metrics)
-- [🔍 Data Architecture Monitoring](#-data-architecture-monitoring)
+- [🔍 Data Architecture Monitoring](#data-architecture-monitoring)
   - [Data Health Monitoring](#data-health-monitoring)
-- [📚 Data Architecture Documentation](#-data-architecture-documentation)
+- [📚 Data Architecture Documentation](#data-architecture-documentation)
   - [Data Dictionary](#data-dictionary)
   - [API Data Contracts](#api-data-contracts)
+
 <!-- TOC END -->
 
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 💾 Data Architecture Overview
 
@@ -50,7 +51,7 @@ FLEXT Plugin system implements a comprehensive data architecture supporting plug
 - **Auditable Operations**: Complete audit trails for plugin operations and state changes
 - **Portable Storage**: File-based storage for deployment flexibility
 
----
+______________________________________________________________________
 
 ## 🗂️ Data Model Hierarchy
 
@@ -122,7 +123,7 @@ Registry ||--o{ Plugin
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 📊 Data Storage Architecture
 
@@ -196,7 +197,7 @@ runtime --> memory_cache: Updates cache
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 🔄 Data Flow Patterns
 
@@ -249,7 +250,7 @@ Registry --> Plugin: Status updated
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 🔒 Data Security and Privacy
 
@@ -296,7 +297,7 @@ Registry --> Plugin: Status updated
 - **Type Safety**: Pydantic models ensure data structure integrity
 - **Business Rules**: Domain logic validates data consistency
 
----
+______________________________________________________________________
 
 ## 📈 Data Governance and Lifecycle
 
@@ -353,7 +354,7 @@ Retired --> Archived: Retirement archival
 - **Automated Testing**: Data validation tests for all data operations
 - **Monitoring**: Data quality metrics and alerts
 
----
+______________________________________________________________________
 
 ## 🚀 Data Architecture Evolution
 
@@ -379,7 +380,7 @@ Retired --> Archived: Retirement archival
 - 📋 Data federation for multi-system deployments
 - 📋 GDPR compliance and data portability features
 
----
+______________________________________________________________________
 
 ## 🛠️ Data Architecture Tools and Technologies
 
@@ -445,7 +446,7 @@ def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginSettings
         return FlextResult.fail(f"Configuration validation failed: {e}")
 ```
 
----
+______________________________________________________________________
 
 ## 📊 Data Architecture Metrics
 
@@ -481,7 +482,7 @@ def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginSettings
 - **Recovery Time**: < 1 minute for data restoration
 - **Backup Frequency**: Hourly automated backups
 
----
+______________________________________________________________________
 
 ## 🔍 Data Architecture Monitoring
 
@@ -508,7 +509,7 @@ def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginSettings
 - Audit log integrity verification
 - Compliance monitoring and reporting
 
----
+______________________________________________________________________
 
 ## 📚 Data Architecture Documentation
 
@@ -525,12 +526,12 @@ def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginSettings
 
 #### **Data Types**
 
-| Type          | Purpose                 | Validation       | Examples                             |
-| ------------- | ----------------------- | ---------------- | ------------------------------------ |
-| PluginName    | Plugin identification   | ^[a-zA-Z0-9_-]+$ | my-plugin, data-loader               |
-| PluginVersion | Semantic versioning     | ^\d+\.\d+\.\d+$  | 1.0.0, 0.9.0                         |
-| ExecutionId   | Unique execution ID     | UUID format      | 123e4567-e89b-12d3-a456-426614174000 |
-| SecurityLevel | Security classification | Enum values      | LOW, MEDIUM, HIGH                    |
+| Type          | Purpose                 | Validation        | Examples                             |
+| ------------- | ----------------------- | ----------------- | ------------------------------------ |
+| PluginName    | Plugin identification   | ^[a-zA-Z0-9\_-]+$ | my-plugin, data-loader               |
+| PluginVersion | Semantic versioning     | ^\\d+.\\d+.\\d+$  | 1.0.0, 0.9.0                         |
+| ExecutionId   | Unique execution ID     | UUID format       | 123e4567-e89b-12d3-a456-426614174000 |
+| SecurityLevel | Security classification | Enum values       | LOW, MEDIUM, HIGH                    |
 
 ### API Data Contracts
 
@@ -570,6 +571,6 @@ interface PluginExecutionResponse {
 }
 ```
 
----
+______________________________________________________________________
 
 **Data Architecture** - Comprehensive data models, storage patterns, security controls, and governance for the FLEXT Plugin system.
