@@ -1,9 +1,10 @@
 # flext-plugin - Plugin Framework
 PROJECT_NAME := flext-plugin
-COV_DIR := flext_plugin
-MIN_COVERAGE := 90
-
+ifneq ("$(wildcard ../base.mk)", "")
 include ../base.mk
+else
+include base.mk
+endif
 
 # === PROJECT-SPECIFIC TARGETS ===
 .PHONY: test-unit test-integration build shell

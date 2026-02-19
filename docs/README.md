@@ -1,5 +1,35 @@
 # FLEXT Plugin Documentation
 
+
+<!-- TOC START -->
+- [Documentation Structure](#documentation-structure)
+  - [📚 Core Documentation](#-core-documentation)
+  - [🏗️ Architecture & Design](#-architecture-design)
+  - [🛠️ Development Guides](#-development-guides)
+  - [📖 API Reference](#-api-reference)
+  - [💡 Examples & Use Cases](#-examples-use-cases)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [First Steps](#first-steps)
+- [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+  - [Core Services Integration](#core-services-integration)
+  - [Foundation Libraries](#foundation-libraries)
+  - [Singer Ecosystem (15 Projects)](#singer-ecosystem-15-projects)
+  - [Application Services (5 Projects)](#application-services-5-projects)
+- [Development Workflow](#development-workflow)
+  - [Quality Standards](#quality-standards)
+  - [Development Commands (UPDATED FOR COMPLIANCE)](#development-commands-updated-for-compliance)
+- [Architecture Principles](#architecture-principles)
+  - [Clean Architecture](#clean-architecture)
+  - [Domain-Driven Design](#domain-driven-design)
+  - [CQRS Pattern](#cqrs-pattern)
+- [Support & Contributing](#support-contributing)
+  - [Getting Help](#getting-help)
+  - [Contributing](#contributing)
+  - [Commercial Support](#commercial-support)
+<!-- TOC END -->
+
 Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plugin management system for the FLEXT ecosystem.
 
 > 📊 **STATUS**: Production-ready plugin system with Clean Architecture and comprehensive FLEXT integration. Version 0.9.0 - October 10, 2025.

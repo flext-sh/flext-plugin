@@ -1,5 +1,32 @@
 # API Reference
 
+
+<!-- TOC START -->
+- [Core Classes](#core-classes)
+  - [FlextPluginPlatform](#flextpluginplatform)
+  - [FlextPlugin (Entity)](#flextplugin-entity)
+  - [FlextPluginModels.Config (Entity)](#flextpluginmodelsconfig-entity)
+- [Enumerations](#enumerations)
+  - [PluginStatus](#pluginstatus)
+  - [PluginType](#plugintype)
+- [Factory Functions](#factory-functions)
+  - [create_flext_plugin](#createflextplugin)
+  - [create_flext_plugin_platform](#createflextpluginplatform)
+- [Discovery Services](#discovery-services)
+  - [FlextPluginDiscoveryService](#flextplugindiscoveryservice)
+- [Hot Reload](#hot-reload)
+  - [Hot Reload Configuration](#hot-reload-configuration)
+- [Error Handling](#error-handling)
+  - [Exception Types](#exception-types)
+- [Integration Patterns](#integration-patterns)
+  - [FLEXT-Core Integration](#flext-core-integration)
+  - [Singer Integration](#singer-integration)
+- [Usage Examples](#usage-examples)
+  - [Basic Plugin Management](#basic-plugin-management)
+  - [Plugin Discovery](#plugin-discovery)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **FLEXT Plugin System API Reference**
 
 ---

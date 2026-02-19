@@ -1,5 +1,45 @@
 # ADR-001: Adopt Clean Architecture Pattern
 
+
+<!-- TOC START -->
+- [Status](#status)
+- [Context](#context)
+  - [Problem Statement](#problem-statement)
+  - [Background](#background)
+  - [Stakeholders](#stakeholders)
+  - [Requirements](#requirements)
+  - [Current State](#current-state)
+- [Decision](#decision)
+  - [Decision Statement](#decision-statement)
+  - [Implementation Approach](#implementation-approach)
+  - [Key Components](#key-components)
+  - [Timeline](#timeline)
+- [Consequences](#consequences)
+  - [Positive Consequences](#positive-consequences)
+  - [Negative Consequences](#negative-consequences)
+  - [Risks](#risks)
+  - [Mitigation Strategies](#mitigation-strategies)
+- [Alternatives Considered](#alternatives-considered)
+  - [Alternative 1: Layered Architecture (Simplified)](#alternative-1-layered-architecture-simplified)
+  - [Alternative 2: Hexagonal Architecture](#alternative-2-hexagonal-architecture)
+  - [Alternative 3: Functional Architecture](#alternative-3-functional-architecture)
+- [Implementation Plan](#implementation-plan)
+  - [Phase 1: Architecture Definition](#phase-1-architecture-definition)
+  - [Phase 2: Domain Layer Implementation](#phase-2-domain-layer-implementation)
+  - [Phase 3: Application Layer Implementation](#phase-3-application-layer-implementation)
+  - [Phase 4: Infrastructure Layer Implementation](#phase-4-infrastructure-layer-implementation)
+  - [Success Criteria](#success-criteria)
+  - [Rollback Plan](#rollback-plan)
+- [Related ADRs](#related-adrs)
+- [References](#references)
+  - [External References](#external-references)
+  - [Internal References](#internal-references)
+- [Notes](#notes)
+  - [Architectural Principles Established](#architectural-principles-established)
+  - [Implementation Considerations](#implementation-considerations)
+- [Decision Log](#decision-log)
+<!-- TOC END -->
+
 ## Status
 
 **Status**: ✅ Accepted

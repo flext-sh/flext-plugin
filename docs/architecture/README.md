@@ -1,5 +1,38 @@
 # FLEXT Plugin System Architecture Documentation
 
+
+<!-- TOC START -->
+- [📋 Documentation Structure](#-documentation-structure)
+  - [🎯 Documentation Levels](#-documentation-levels)
+- [🗂️ Architecture Documentation Index](#-architecture-documentation-index)
+  - [Core Architecture Documentation](#core-architecture-documentation)
+  - [Decision Documentation](#decision-documentation)
+  - [Implementation Documentation](#implementation-documentation)
+  - [Diagrams and Visualizations](#diagrams-and-visualizations)
+- [🏗️ Architecture Frameworks Used](#-architecture-frameworks-used)
+  - [C4 Model Structure](#c4-model-structure)
+  - [Arc42 Chapters](#arc42-chapters)
+  - [ADR Structure](#adr-structure)
+- [📊 Architecture Metrics](#-architecture-metrics)
+  - [System Overview](#system-overview)
+  - [Quality Attributes](#quality-attributes)
+  - [Technical Debt](#technical-debt)
+- [🚀 Architecture Evolution](#-architecture-evolution)
+  - [Version 0.9.0 (Current)](#version-090-current)
+  - [Version 0.10.0 (Next)](#version-0100-next)
+  - [Version 1.0.0 (Future)](#version-100-future)
+- [🛠️ Documentation Tools and Workflow](#-documentation-tools-and-workflow)
+  - [Generation Tools](#generation-tools)
+  - [Maintenance Workflow](#maintenance-workflow)
+  - [Quality Gates](#quality-gates)
+- [📖 Reading Guide](#-reading-guide)
+  - [For Different Audiences](#for-different-audiences)
+- [🤝 Contributing to Architecture Documentation](#-contributing-to-architecture-documentation)
+  - [Documentation Standards](#documentation-standards)
+  - [Tools and Templates](#tools-and-templates)
+  - [Review Process](#review-process)
+<!-- TOC END -->
+
 **Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October 2025
 
 ---
@@ -184,7 +217,7 @@ Alternatives: [Other options considered]
 plantuml diagrams/*.puml
 
 # Documentation validation
-make docs-validate
+make docs DOCS_PHASE=validate
 
 # Architecture analysis
 make architecture-audit
@@ -250,7 +283,7 @@ make architecture-audit
 - **PlantUML**: For all diagrams (templates in `diagrams/templates/`)
 - **ADR Template**: `adr/adr-template.md`
 - **Markdown Linting**: `make docs-lint`
-- **Link Validation**: `make docs-validate`
+- **Link Validation**: `make docs DOCS_PHASE=validate`
 
 ### Review Process
 

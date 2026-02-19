@@ -1,5 +1,28 @@
 # FLEXT Plugin Examples
 
+
+<!-- TOC START -->
+- [Available Examples](#available-examples)
+  - [1. Basic Plugin Example (`01_basic_plugin.py`)](#1-basic-plugin-example-01basicpluginpy)
+  - [2. Plugin Configuration Example (`02_plugin_configuration.py`)](#2-plugin-configuration-example-02pluginconfigurationpy)
+  - [3. Docker Integration Example (`03_docker_integration.py`)](#3-docker-integration-example-03dockerintegrationpy)
+- [Configuration Compatibility](#configuration-compatibility)
+  - [Docker Service Mapping](#docker-service-mapping)
+  - [Environment Variables](#environment-variables)
+- [Testing](#testing)
+- [Architecture Integration](#architecture-integration)
+  - [Clean Architecture Compliance](#clean-architecture-compliance)
+  - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
+  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+- [Development Workflow](#development-workflow)
+  - [Creating New Examples](#creating-new-examples)
+  - [Quality Standards](#quality-standards)
+- [Integration with Main Project](#integration-with-main-project)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Support](#support)
+<!-- TOC END -->
+
 This directory contains comprehensive examples demonstrating the FLEXT Plugin system functionality with 100% working code and enterprise-grade patterns.
 
 ## Available Examples

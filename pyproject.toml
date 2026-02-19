@@ -1,14 +1,13 @@
 [build-system]
     build-backend = "poetry.core.masonry.api"
     requires = [
-        "poetry-core>=1.9.0",
+        "poetry-core>=2.0",
     ]
 
 [project]
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.13",
@@ -23,10 +22,6 @@
         "pydantic-settings (>=2.11.0)",
         "watchdog (>=6.0.0)",
         "pydantic-core (>=2.41.4)",
-        "pytest (>=9.0.2,<10.0.0)",
-        "pytest-cov (>=7.0.0,<8.0.0)",
-        "pytest-randomly (>=4.0.1,<5.0.0)",
-        "faker (>=40.1.0,<41.0.0)",
     ]
     description = "FLEXT Plugin - Plugin System for FLEXT Platform"
     keywords = [
@@ -41,6 +36,8 @@
     readme = "README.md"
     requires-python = ">=3.13,<3.14"
     version = "0.10.0-dev"
+    license = "MIT"
+
     [[project.authors]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
@@ -48,10 +45,6 @@
     [[project.maintainers]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
-
-    [project.license]
-        text = "MIT"
-
     [project.urls]
         Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
         Homepage      = "https://github.com/flext-sh/flext"
@@ -76,20 +69,6 @@
             "pip-audit>=2.7.3",
         ]
         test = [
-            "factory-boy>=3.3.1",
-            "faker>=37.4.0",
-            "hypothesis>=6.125.0",
-            "pytest-benchmark>=5.1.0",
-            "pytest-clarity>=1.0.1",
-            "pytest-cov>=6.2.0",
-            "pytest-deadfixtures>=2.2.1",
-            "pytest-env>=1.1.5",
-            "pytest-mock>=3.14.0",
-            "pytest-randomly>=3.16.0",
-            "pytest-sugar>=1.0.0",
-            "pytest-timeout>=2.4.0",
-            "pytest-xdist>=3.8.0",
-            "pytest>=8.4.0",
         ]
         typings = [
             "django-stubs>=5.2.2",
@@ -156,24 +135,14 @@
         "types-toml",
         # Runtime deps used indirectly (via pydantic, anyio)
         "anyio",
-        "faker",
         "jsonschema",
         "psutil",
         "pydantic-core",
-        "pytest",
-        "pytest-cov",
-        "pytest-randomly",
         "watchdog",
     ]
 
 [tool.pytest.ini_options]
     addopts = [
-        "--cov-branch",
-        "--cov-fail-under=80",
-        "--cov-report=html:reports/coverage",
-        "--cov-report=term-missing:skip-covered",
-        "--cov-report=xml:reports/coverage.xml",
-        "--cov=flext_plugin",
         "--maxfail=1",
         "--strict-config",
         "--strict-markers",
@@ -258,7 +227,24 @@
         [tool.pyrefly.sub-config.errors]
         unknown-name = false
 
+
+[tool.coverage]
+    [tool.coverage.run]
+        source = ["src/flext_plugin"]
+
+    [tool.coverage.report]
+        fail_under = 100
+        precision = 2
+
+[tool.bandit]
+    skips = [
+        "B404",
+        "B603",
+        "B607",
+        "B105",
+        "B608",
+    ]
+
 [dependency-groups]
 dev = [
-    "pytest (>=9.0.2,<10.0.0)"
 ]

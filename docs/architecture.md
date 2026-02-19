@@ -1,5 +1,29 @@
 # Architecture
 
+
+<!-- TOC START -->
+- [Clean Architecture Overview](#clean-architecture-overview)
+- [Domain Layer](#domain-layer)
+  - [Core Entities](#core-entities)
+  - [Services](#services)
+- [Application Layer](#application-layer)
+  - [FlextPluginPlatform (Facade)](#flextpluginplatform-facade)
+  - [Application Services](#application-services)
+- [Infrastructure Layer](#infrastructure-layer)
+  - [Adapters](#adapters)
+- [Integration Patterns](#integration-patterns)
+  - [FLEXT-Core Integration](#flext-core-integration)
+  - [Singer Ecosystem Integration](#singer-ecosystem-integration)
+- [Current Architecture Status ✅ COMPLIANT](#current-architecture-status-compliant)
+  - [FLEXT Single-Class-Per-Module Compliance Achieved](#flext-single-class-per-module-compliance-achieved)
+  - [Architecture Achievements](#architecture-achievements)
+- [Future Architecture Enhancements](#future-architecture-enhancements)
+  - [Version 0.10.0 Enhancements](#version-0100-enhancements)
+  - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
+  - [Integration Points](#integration-points)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **FLEXT Plugin System Architecture**
 
 ---

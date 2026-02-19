@@ -1,154 +1,128 @@
-# FLEXT Plugin Development Guides
+<!-- Generated from docs/guides/README.md for flext-plugin. -->
+<!-- Source of truth: workspace docs/guides/. -->
 
-Comprehensive step-by-step guides for developing plugins with the FLEXT Plugin system.
+# flext-plugin - User Guides
 
-## Guide Categories
+> Project profile: `flext-plugin`
 
-### 🚀 Getting Started
 
-- **[Quick Start](quick-start.md)** - Get up and running with FLEXT Plugin in minutes
 
-### 🔧 Development Workflows
 
-### 🎯 Plugin Types
+## Table of Contents
 
-### 🏗️ Architecture & Integration
+- [User Guides](#user-guides)
+  - [Getting Started](#getting-started)
+    - [[Installation Guide](./getting-started.md) ✅](#installation-guidegetting-startedmd-)
+    - [Quick Start Tutorial (Coming Soon)](#quick-start-tutorial-coming-soon)
+    - [[Configuration Guide](./configuration.md) ✅](#configuration-guideconfigurationmd-)
+  - [Development](#development)
+    - [[Development Setup](./development.md) ✅](#development-setupdevelopmentmd-)
+    - [[Automation Skill Pattern](./skill-automation-pattern.md) ✅](#automation-skill-patternskill-automation-patternmd-)
+    - [Contributing Guide (Coming Soon)](#contributing-guide-coming-soon)
+    - [[Testing Guide](./testing.md) ✅](#testing-guidetestingmd-)
+  - [Operations](#operations)
+    - [Deployment Guide (Coming Soon)](#deployment-guide-coming-soon)
+    - [Monitoring Guide (Coming Soon)](#monitoring-guide-coming-soon)
+    - [[Troubleshooting Guide](./troubleshooting.md) ✅](#troubleshooting-guidetroubleshootingmd-)
+  - [Integration](#integration)
+    - [LDAP Integration (Coming Soon)](#ldap-integration-coming-soon)
+    - [Database Integration (Coming Soon)](#database-integration-coming-soon)
+    - [API Integration (Coming Soon)](#api-integration-coming-soon)
+  - [Migration](#migration)
+    - [LDIF Migration Guide (Coming Soon)](#ldif-migration-guide-coming-soon)
+    - [Data Migration (Coming Soon)](#data-migration-coming-soon)
+  - [Best Practices](#best-practices)
+    - [Performance Optimization (Coming Soon)](#performance-optimization-coming-soon)
+    - [Security Best Practices (Coming Soon)](#security-best-practices-coming-soon)
+    - [Error Handling (Coming Soon)](#error-handling-coming-soon)
 
-_Additional architecture and integration guides coming soon._
+Comprehensive guides for using FLEXT effectively in various scenarios.
 
-### 📋 Best Practices
+## Getting Started
 
-_Best practices guides coming soon._
+### [Installation Guide](./getting-started.md) ✅
 
-## Quick Reference
+Complete installation instructions for FLEXT and all its components.
 
-### Essential Commands
+### Quick Start Tutorial (Coming Soon)
 
-```bash
-# Setup development environment
-make setup
+Hands-on tutorial to get you up and running with FLEXT in minutes.
 
-# Quality gates (run before commit)
-make validate              # Complete validation
-make check                 # Quick health check
-make fix                   # Auto-fix issues
+### [Configuration Guide](./configuration.md) ✅
 
-# Testing
-make test                  # Full test suite
-make test-unit             # Unit tests only
-make coverage-html         # Coverage report
+How to configure FLEXT for your specific environment and requirements.
 
-# Plugin development
-make plugin-watch          # Hot reload development
-make plugin-validate       # Validate plugin system
-```
+## Development
 
-### Basic Plugin Template
+### [Development Setup](./development.md) ✅
 
-```python
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus, PluginType
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import FlextDecorators
-from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
-from flext_core import h
-from flext_core import FlextLogger
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import FlextResult
-from flext_core import FlextRuntime
-from flext_core import FlextService
-from flext_core import t
-from flext_core import u
+Setting up a development environment for FLEXT contributions.
 
-class MyPlugin(FlextPlugin):
-    def __init__(self, **kwargs):
-        super().__init__(
-            name="my-plugin",
-            version="0.9.9",
-            config={"plugin_type": PluginType.UTILITY},
-            **kwargs
-        )
+### [Automation Skill Pattern](./skill-automation-pattern.md) ✅
 
-    def initialize(self) -> FlextResult[bool]:
-        # Setup plugin resources
-        return FlextResult[bool].ok(data=True)
+Standard pattern for creating future script-backed automation skills and docs.
 
-    def execute(self, data) -> FlextResult:
-        # Core plugin logic
-        return FlextResult[bool].ok({"processed": True})
+### Contributing Guide (Coming Soon)
 
-    def cleanup(self) -> FlextResult[bool]:
-        # Cleanup resources
-        return FlextResult[bool].ok(data=True)
-```
+Guidelines for contributing to the FLEXT ecosystem.
 
-### Development Workflow
+### [Testing Guide](./testing.md) ✅
 
-1. **Setup**: `make setup` - Initialize development environment
-2. **Create**: Implement plugin following Clean Architecture patterns
-3. **Test**: Add comprehensive tests following project patterns
-4. **Validate**: `make validate` - All quality gates must pass
-5. **Integrate**: Register and test with FLEXT platform
+Best practices for testing FLEXT applications and libraries.
 
-## Prerequisites
+## Operations
 
-### System Requirements
+### Deployment Guide (Coming Soon)
 
-- **Python 3.13+**: Modern Python with type hints and support
-- **Poetry**: Dependency management and packaging
-- **Git**: Version control and repository management
+Deploying FLEXT applications to production environments.
 
-### FLEXT Dependencies
+### Monitoring Guide (Coming Soon)
 
-- **flext-core**: Foundation patterns and utilities
-- **flext-observability**: Monitoring and health checks
+Monitoring and observability for FLEXT applications.
 
-### Development Tools
+### [Troubleshooting Guide](./troubleshooting.md) ✅
 
-- **pytest**: Testing framework with comprehensive plugin support
-- **ruff**: Fast Python linter and formatter
-- **mypy**: Static type checking with strict mode
-- **bandit**: Security vulnerability scanning
+Common issues and their solutions.
 
-## Learning Path
+## Integration
 
-### Beginner
+### LDAP Integration (Coming Soon)
 
-1. **[Quick Start](quick-start.md)** - Basic concepts and first plugin
+Integrating FLEXT with LDAP servers and directories.
 
-### Intermediate
+### Database Integration (Coming Soon)
 
-_Intermediate guides coming soon._
+Working with databases through FLEXT's data access layer.
 
-### Advanced
+### API Integration (Coming Soon)
 
-_Advanced guides coming soon._
+Building and consuming APIs with FLEXT.
 
-## Support & Resources
+## Migration
 
-### Documentation
+### LDIF Migration Guide (Coming Soon)
 
-- **[Architecture Guide](../architecture/README.md)** - System architecture
-- **[Examples](../../examples/README.md)** - Practical implementation examples
+Complete guide for migrating LDIF data between LDAP servers.
 
-### Community
+### Data Migration (Coming Soon)
 
-- **GitHub Issues**: [Report bugs and request features](https://github.com/flext-sh/flext/issues)
-- **Discussions**: [Community Q&A and ideas](https://github.com/flext-sh/flext/discussions)
+Migrating data between different systems using FLEXT.
 
-### Commercial Support
+## Best Practices
 
-Enterprise support and consulting available through [team@flext.sh](mailto:team@flext.sh).
+### Performance Optimization (Coming Soon)
+
+Optimizing FLEXT applications for better performance.
+
+### Security Best Practices (Coming Soon)
+
+Security considerations when using FLEXT.
+
+### Error Handling (Coming Soon)
+
+Effective error handling strategies in FLEXT applications.
 
 ---
 
-**Next Steps**: Start with the [Quick Start Guide](quick-start.md) to create your first plugin, then explore specific guides based on your use case.
+**Note**: This guide structure is being updated. Currently,
+only the Getting Started guide is available. Additional guides are being created as part of the documentation maintenance process.

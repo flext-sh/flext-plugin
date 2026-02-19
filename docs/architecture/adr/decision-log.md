@@ -1,5 +1,35 @@
 # Architecture Decision Log
 
+
+<!-- TOC START -->
+- [📊 Decision Log Overview](#-decision-log-overview)
+  - [Decision Log Structure](#decision-log-structure)
+- [📅 Detailed Decision Timeline](#-detailed-decision-timeline)
+  - [January 2025 - Foundation Architecture](#january-2025-foundation-architecture)
+  - [February 2025 - Core Functionality](#february-2025-core-functionality)
+  - [March 2025 - Ecosystem Integration](#march-2025-ecosystem-integration)
+  - [April-June 2025 - Implementation Details](#april-june-2025-implementation-details)
+  - [July-September 2025 - Production Readiness](#july-september-2025-production-readiness)
+- [📈 Decision Impact Analysis](#-decision-impact-analysis)
+  - [High-Impact Decisions (System-wide Changes)](#high-impact-decisions-system-wide-changes)
+  - [Medium-Impact Decisions (Component Changes)](#medium-impact-decisions-component-changes)
+  - [Low-Impact Decisions (Implementation Details)](#low-impact-decisions-implementation-details)
+- [🎯 Decision Quality Metrics](#-decision-quality-metrics)
+  - [Decision Process Quality](#decision-process-quality)
+  - [Decision Learning and Improvement](#decision-learning-and-improvement)
+- [🔄 Active and Pending Decisions](#-active-and-pending-decisions)
+  - [Currently Active Decisions](#currently-active-decisions)
+  - [Superseded Decisions](#superseded-decisions)
+  - [Rejected Decisions (with Rationale)](#rejected-decisions-with-rationale)
+- [📋 Decision Maintenance Procedures](#-decision-maintenance-procedures)
+  - [Regular Review Process](#regular-review-process)
+  - [Decision Update Process](#decision-update-process)
+- [📚 Decision Reference Materials](#-decision-reference-materials)
+  - [Decision-Making Framework](#decision-making-framework)
+  - [Historical Context](#historical-context)
+  - [Process Documentation](#process-documentation)
+<!-- TOC END -->
+
 **Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
 ---
