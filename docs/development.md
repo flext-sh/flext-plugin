@@ -2,33 +2,33 @@
 
 
 <!-- TOC START -->
-- Development Setup
-  - Prerequisites
-  - Setup Commands
-- Code Standards
-  - FLEXT-Core Compliance
-  - Quality Gates
-- Architecture Compliance
-  - Current Status ✅ COMPLIANT
-  - Compliance Achieved
-- Testing
-  - Test Structure
-  - Testing Commands
-  - Test Guidelines
-- Plugin Development
-  - Creating Plugins
-  - Hot Reload Development
-- Contributing Process
-  - 1. Issue Discussion
-  - 2. Development
-  - 3. Quality Validation
-  - 4. Pull Request
-- Debugging
-  - Common Issues
-- Release Process
-  - Version Management
-  - Quality Requirements
-- Getting Help
+- [Development Setup](#development-setup)
+  - [Prerequisites](#prerequisites)
+  - [Setup Commands](#setup-commands)
+- [Code Standards](#code-standards)
+  - [FLEXT-Core Compliance](#flext-core-compliance)
+  - [Quality Gates](#quality-gates)
+- [Architecture Compliance](#architecture-compliance)
+  - [Current Status ✅ COMPLIANT](#current-status-compliant)
+  - [Compliance Achieved](#compliance-achieved)
+- [Testing](#testing)
+  - [Test Structure](#test-structure)
+  - [Testing Commands](#testing-commands)
+  - [Test Guidelines](#test-guidelines)
+- [Plugin Development](#plugin-development)
+  - [Creating Plugins](#creating-plugins)
+  - [Hot Reload Development](#hot-reload-development)
+- [Contributing Process](#contributing-process)
+  - [1. Issue Discussion](#1-issue-discussion)
+  - [2. Development](#2-development)
+  - [3. Quality Validation](#3-quality-validation)
+  - [4. Pull Request](#4-pull-request)
+- [Debugging](#debugging)
+  - [Common Issues](#common-issues)
+- [Release Process](#release-process)
+  - [Version Management](#version-management)
+  - [Quality Requirements](#quality-requirements)
+- [Getting Help](#getting-help)
 <!-- TOC END -->
 
 **Contributing to FLEXT Plugin**

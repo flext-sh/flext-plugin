@@ -2,19 +2,19 @@
 
 
 <!-- TOC START -->
-- Prerequisites
-- Installation
-  - Development Installation (Recommended)
-  - Dependencies
-- First Plugin
-  - Create a Basic Plugin
-  - Plugin Discovery
-- Configuration
-  - Environment Variables
-  - Plugin Directory Structure
-- Development Commands
-- Next Steps
-- Related Documentation
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Development Installation (Recommended)](#development-installation-recommended)
+  - [Dependencies](#dependencies)
+- [First Plugin](#first-plugin)
+  - [Create a Basic Plugin](#create-a-basic-plugin)
+  - [Plugin Discovery](#plugin-discovery)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Plugin Directory Structure](#plugin-directory-structure)
+- [Development Commands](#development-commands)
+- [Next Steps](#next-steps)
+- [Related Documentation](#related-documentation)
 <!-- TOC END -->
 
 **Version**: 0.9.9 RC

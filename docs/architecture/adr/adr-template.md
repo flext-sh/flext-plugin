@@ -2,38 +2,38 @@
 
 
 <!-- TOC START -->
-- Status
-- Context
-  - Problem Statement
-  - Background
-  - Stakeholders
-  - Requirements
-  - Current State
-- Decision
-  - Decision Statement
-  - Implementation Approach
-  - Key Components
-  - Timeline
-- Consequences
-  - Positive Consequences
-  - Negative Consequences
-  - Risks
-  - Mitigation Strategies
-- Alternatives Considered
+- [Status](#status)
+- [Context](#context)
+  - [Problem Statement](#problem-statement)
+  - [Background](#background)
+  - [Stakeholders](#stakeholders)
+  - [Requirements](#requirements)
+  - [Current State](#current-state)
+- [Decision](#decision)
+  - [Decision Statement](#decision-statement)
+  - [Implementation Approach](#implementation-approach)
+  - [Key Components](#key-components)
+  - [Timeline](#timeline)
+- [Consequences](#consequences)
+  - [Positive Consequences](#positive-consequences)
+  - [Negative Consequences](#negative-consequences)
+  - [Risks](#risks)
+  - [Mitigation Strategies](#mitigation-strategies)
+- [Alternatives Considered](#alternatives-considered)
   - [Alternative 1: [Name]](#alternative-1-name)
   - [Alternative 2: [Name]](#alternative-2-name)
-  - Additional Alternatives
-- Implementation Plan
+  - [Additional Alternatives](#additional-alternatives)
+- [Implementation Plan](#implementation-plan)
   - [Phase 1: [Name]](#phase-1-name)
   - [Phase 2: [Name]](#phase-2-name)
-  - Success Criteria
-  - Rollback Plan
-- Related ADRs
-- References
-  - External References
-  - Internal References
-- Notes
-- Decision Log
+  - [Success Criteria](#success-criteria)
+  - [Rollback Plan](#rollback-plan)
+- [Related ADRs](#related-adrs)
+- [References](#references)
+  - [External References](#external-references)
+  - [Internal References](#internal-references)
+- [Notes](#notes)
+- [Decision Log](#decision-log)
 <!-- TOC END -->
 
 ## Status

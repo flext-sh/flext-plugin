@@ -2,43 +2,43 @@
 
 
 <!-- TOC START -->
-- Status
-- Context
-  - Problem Statement
-  - Background
-  - Stakeholders
-  - Requirements
-  - Current State
-- Decision
-  - Decision Statement
-  - Implementation Approach
-  - Key Components
-  - Timeline
-- Consequences
-  - Positive Consequences
-  - Negative Consequences
-  - Risks
-  - Mitigation Strategies
-- Alternatives Considered
-  - Alternative 1: Entry Points Only
-  - Alternative 2: Configuration File Only
-  - Alternative 3: Database-Driven Discovery
-- Implementation Plan
-  - Phase 1: File-Based Discovery
-  - Phase 2: Entry Points Research
-  - Phase 3: Validation Framework
-  - Phase 4: Integration and Optimization
-  - Success Criteria
-  - Rollback Plan
-- Related ADRs
-- References
-  - External References
-  - Internal References
-- Notes
-  - Discovery Strategy
-  - Plugin Metadata Standard
-  - Performance Considerations
-- Decision Log
+- [Status](#status)
+- [Context](#context)
+  - [Problem Statement](#problem-statement)
+  - [Background](#background)
+  - [Stakeholders](#stakeholders)
+  - [Requirements](#requirements)
+  - [Current State](#current-state)
+- [Decision](#decision)
+  - [Decision Statement](#decision-statement)
+  - [Implementation Approach](#implementation-approach)
+  - [Key Components](#key-components)
+  - [Timeline](#timeline)
+- [Consequences](#consequences)
+  - [Positive Consequences](#positive-consequences)
+  - [Negative Consequences](#negative-consequences)
+  - [Risks](#risks)
+  - [Mitigation Strategies](#mitigation-strategies)
+- [Alternatives Considered](#alternatives-considered)
+  - [Alternative 1: Entry Points Only](#alternative-1-entry-points-only)
+  - [Alternative 2: Configuration File Only](#alternative-2-configuration-file-only)
+  - [Alternative 3: Database-Driven Discovery](#alternative-3-database-driven-discovery)
+- [Implementation Plan](#implementation-plan)
+  - [Phase 1: File-Based Discovery](#phase-1-file-based-discovery)
+  - [Phase 2: Entry Points Research](#phase-2-entry-points-research)
+  - [Phase 3: Validation Framework](#phase-3-validation-framework)
+  - [Phase 4: Integration and Optimization](#phase-4-integration-and-optimization)
+  - [Success Criteria](#success-criteria)
+  - [Rollback Plan](#rollback-plan)
+- [Related ADRs](#related-adrs)
+- [References](#references)
+  - [External References](#external-references)
+  - [Internal References](#internal-references)
+- [Notes](#notes)
+  - [Discovery Strategy](#discovery-strategy)
+  - [Plugin Metadata Standard](#plugin-metadata-standard)
+  - [Performance Considerations](#performance-considerations)
+- [Decision Log](#decision-log)
 <!-- TOC END -->
 
 ## Status

@@ -2,22 +2,22 @@
 
 
 <!-- TOC START -->
-- Overview
-- Plugin Implementation
-  - 1. Basic Plugin Class
-  - 2. Plugin Usage Example
-  - 3. Comprehensive Tests
-  - 4. Configuration File
-- Running the Example
-  - Prerequisites
-  - Execution
-  - Expected Output
-- Key Learning Points
-  - 1. Plugin Structure
-  - 2. Lifecycle Management
-  - 3. Error Handling
-  - 4. Testing Strategy
-  - 5. Best Practices
+- [Overview](#overview)
+- [Plugin Implementation](#plugin-implementation)
+  - [1. Basic Plugin Class](#1-basic-plugin-class)
+  - [2. Plugin Usage Example](#2-plugin-usage-example)
+  - [3. Comprehensive Tests](#3-comprehensive-tests)
+  - [4. Configuration File](#4-configuration-file)
+- [Running the Example](#running-the-example)
+  - [Prerequisites](#prerequisites)
+  - [Execution](#execution)
+  - [Expected Output](#expected-output)
+- [Key Learning Points](#key-learning-points)
+  - [1. Plugin Structure](#1-plugin-structure)
+  - [2. Lifecycle Management](#2-lifecycle-management)
+  - [3. Error Handling](#3-error-handling)
+  - [4. Testing Strategy](#4-testing-strategy)
+  - [5. Best Practices](#5-best-practices)
 <!-- TOC END -->
 
 This example demonstrates how to create a simple, functional plugin using the FLEXT Plugin system. The example covers plugin creation, registration, lifecycle management, and basic execution patterns.

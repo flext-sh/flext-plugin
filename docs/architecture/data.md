@@ -2,36 +2,36 @@
 
 
 <!-- TOC START -->
-- 💾 Data Architecture Overview
-  - Data Architecture Principles
-- 🗂️ Data Model Hierarchy
-  - Core Data Models
-- 📊 Data Storage Architecture
-  - Storage Layers
-  - Storage Architecture Diagram
-- 🔄 Data Flow Patterns
-  - Plugin Lifecycle Data Flow
-- 🔒 Data Security and Privacy
-  - Data Classification
-  - Security Controls
-- 📈 Data Governance and Lifecycle
-  - Data Lifecycle Management
-  - Data Quality Management
-- 🚀 Data Architecture Evolution
-  - Current Architecture (v0.9.0)
-  - Planned Enhancements (v0.10.0)
-  - Future Architecture (v1.0.0)
-- 🛠️ Data Architecture Tools and Technologies
-  - Core Technologies
-  - Development Tools
-- 📊 Data Architecture Metrics
-  - Performance Metrics
-  - Quality Metrics
-- 🔍 Data Architecture Monitoring
-  - Data Health Monitoring
-- 📚 Data Architecture Documentation
-  - Data Dictionary
-  - API Data Contracts
+- [💾 Data Architecture Overview](#-data-architecture-overview)
+  - [Data Architecture Principles](#data-architecture-principles)
+- [🗂️ Data Model Hierarchy](#-data-model-hierarchy)
+  - [Core Data Models](#core-data-models)
+- [📊 Data Storage Architecture](#-data-storage-architecture)
+  - [Storage Layers](#storage-layers)
+  - [Storage Architecture Diagram](#storage-architecture-diagram)
+- [🔄 Data Flow Patterns](#-data-flow-patterns)
+  - [Plugin Lifecycle Data Flow](#plugin-lifecycle-data-flow)
+- [🔒 Data Security and Privacy](#-data-security-and-privacy)
+  - [Data Classification](#data-classification)
+  - [Security Controls](#security-controls)
+- [📈 Data Governance and Lifecycle](#-data-governance-and-lifecycle)
+  - [Data Lifecycle Management](#data-lifecycle-management)
+  - [Data Quality Management](#data-quality-management)
+- [🚀 Data Architecture Evolution](#-data-architecture-evolution)
+  - [Current Architecture (v0.9.0)](#current-architecture-v090)
+  - [Planned Enhancements (v0.10.0)](#planned-enhancements-v0100)
+  - [Future Architecture (v1.0.0)](#future-architecture-v100)
+- [🛠️ Data Architecture Tools and Technologies](#-data-architecture-tools-and-technologies)
+  - [Core Technologies](#core-technologies)
+  - [Development Tools](#development-tools)
+- [📊 Data Architecture Metrics](#-data-architecture-metrics)
+  - [Performance Metrics](#performance-metrics)
+  - [Quality Metrics](#quality-metrics)
+- [🔍 Data Architecture Monitoring](#-data-architecture-monitoring)
+  - [Data Health Monitoring](#data-health-monitoring)
+- [📚 Data Architecture Documentation](#-data-architecture-documentation)
+  - [Data Dictionary](#data-dictionary)
+  - [API Data Contracts](#api-data-contracts)
 <!-- TOC END -->
 
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025
