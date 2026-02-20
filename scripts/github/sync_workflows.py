@@ -192,8 +192,11 @@ def main(argv: list[str] | None = None) -> int:
 
     mode = "apply" if args.apply else "dry-run"
     _write_report(report.resolve(), mode, operations)
-    for _operation in operations:
-        pass
+    print(f"Wrote: {report}")
+    for operation in operations:
+        print(
+            f"[{operation.project}] {operation.action}: {operation.path} ({operation.reason})"
+        )
     return 0
 
 

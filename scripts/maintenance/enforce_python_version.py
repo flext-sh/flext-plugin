@@ -77,17 +77,21 @@ def _ensure_python_version_file(
         content = pv_file.read_text(encoding="utf-8").strip()
         if content == f"3.{REQUIRED_MINOR}":
             if verbose:
-                pass
+                print(f"  ✓ .python-version OK: {project.name}")
             return True
         if check_only:
+            print(f"  ✗ .python-version WRONG ({content}): {project.name}")
             return False
         if verbose:
-            pass
+            print(
+                f"  ↻ .python-version FIXED ({content} → 3.{REQUIRED_MINOR}): {project.name}"
+            )
     else:
         if check_only:
+            print(f"  ✗ .python-version MISSING: {project.name}")
             return False
         if verbose:
-            pass
+            print(f"  + .python-version CREATED: {project.name}")
 
     _ = pv_file.write_text(PYTHON_VERSION_CONTENT, encoding="utf-8")
     return True
@@ -175,23 +179,24 @@ def _ensure_conftest_guard(project: Path, *, check_only: bool, verbose: bool) ->
 
     if not conftest.exists():
         if verbose:
-            pass
+            print(f"  - No tests/conftest.py: {project.name} (skipped)")
         return True  # Not a failure — project might not have tests
 
     content = conftest.read_text(encoding="utf-8")
 
     if _has_guard(content):
         if verbose:
-            pass
+            print(f"  ✓ conftest.py guard OK: {project.name}")
         return True
 
     if check_only:
+        print(f"  ✗ conftest.py guard MISSING: {project.name}")
         return False
 
     new_content = _inject_guard(content)
     _ = conftest.write_text(new_content, encoding="utf-8")
     if verbose:
-        pass
+        print(f"  + conftest.py guard INJECTED: {project.name}")
     return True
 
 
@@ -208,6 +213,9 @@ def main(argv: list[str] | None = None) -> int:
 
     projects = _discover_projects(ROOT)
     all_ok = True
+    mode = "Checking" if args.check else "Enforcing"
+
+    print(f"{mode} Python 3.{REQUIRED_MINOR} for {len(projects)} projects...")
 
     # Workspace root .python-version
     if not _ensure_python_version_file(
@@ -226,9 +234,12 @@ def main(argv: list[str] | None = None) -> int:
             all_ok = False
 
     if all_ok:
+        print(f"✓ All {len(projects)} projects enforce Python 3.{REQUIRED_MINOR}")
         return 0
 
     if args.check:
+        print(f"✗ Some projects missing Python 3.{REQUIRED_MINOR} enforcement")
+        print("  Run: python scripts/maintenance/enforce_python_version.py")
         return 1
 
     return 0

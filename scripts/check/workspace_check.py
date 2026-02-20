@@ -219,7 +219,20 @@ def _run_mypy(project_dir: Path, src_dir: str) -> GateResult:
     src_path = project_dir / src_dir
     if not src_path.exists():
         return GateResult(gate="mypy", project=project_dir.name, passed=True)
-    result = _run(["mypy", src_dir, "--output", "json"], project_dir)
+
+    package_candidates = [
+        child.name
+        for child in src_path.iterdir()
+        if child.is_dir() and (child / "__init__.py").exists()
+    ]
+    if len(package_candidates) == 1:
+        result = _run(
+            ["mypy", "-p", package_candidates[0], "--output", "json"],
+            project_dir,
+        )
+    else:
+        result = _run(["mypy", src_dir, "--output", "json"], project_dir)
+
     errors: list[CheckError] = []
     for raw_line in (result.stdout or "").splitlines():
         raw_line = raw_line.strip()
@@ -592,6 +605,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if not args.projects:
+        print("ERROR: no projects specified", file=sys.stderr)
         return 1
 
     requested_gates = [g.strip() for g in args.gates.split(",") if g.strip()]
@@ -608,6 +622,7 @@ def main() -> int:
             "markdown",
             "go",
         }:
+            print(f"ERROR: unknown gate '{gate}'", file=sys.stderr)
             return 2
         if resolved_gate not in gates:
             gates.append(resolved_gate)
@@ -625,6 +640,7 @@ def main() -> int:
     for i, proj_name in enumerate(args.projects, 1):
         project_dir = ROOT / proj_name
         if not project_dir.is_dir() or not (project_dir / "pyproject.toml").exists():
+            print(f"[{i:2d}/{total:2d}] {proj_name} ... skipped")
             continue
 
         sys.stdout.write(f"[{i:2d}/{total:2d}] {proj_name} ... ")
@@ -633,13 +649,14 @@ def main() -> int:
         all_results.append(result)
 
         if result.passed:
-            pass
+            print("ok")
         else:
-            " ".join(
+            counts = " ".join(
                 f"{g}={result.gates[g].error_count}"
                 for g in gates
                 if g in result.gates and result.gates[g].error_count > 0
             )
+            print(f"FAIL ({result.total_errors} errors: {counts})")
             failed += 1
             if args.fail_fast:
                 break
@@ -653,15 +670,22 @@ def main() -> int:
     sarif_path.write_text(json.dumps(_generate_sarif(all_results, gates), indent=2))
 
     total_errors = sum(r.total_errors for r in all_results)
+    print(f"\n{'=' * 60}")
+    print(f"Check: {len(all_results)} projects, {total_errors} errors, {failed} failed")
+    print(f"Reports: {md_path}")
+    print(f"         {sarif_path}")
+    print(f"{'=' * 60}")
 
     if total_errors > 0:
+        print("\nErrors by project:")
         for r in sorted(all_results, key=lambda x: x.total_errors, reverse=True):
             if r.total_errors > 0:
-                ", ".join(
+                breakdown = ", ".join(
                     f"{g}={r.gates[g].error_count}"
                     for g in gates
                     if g in r.gates and r.gates[g].error_count > 0
                 )
+                print(f"  {r.project:30s} {r.total_errors:6d}  ({breakdown})")
 
     return 1 if failed > 0 else 0
 

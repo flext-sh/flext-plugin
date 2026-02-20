@@ -115,9 +115,11 @@ def main() -> int:
 
     projects = discover_projects(ROOT, projects_filter=projects_filter)
     if not projects:
+        print("No projects found.", file=sys.stderr)
         return 2
 
     if not (VENV_BIN / "deptry").exists():
+        print("deptry not found in .venv. Run make setup first.", file=sys.stderr)
         return 3
 
     report: dict[str, object] = {
@@ -139,13 +141,13 @@ def main() -> int:
     for proj_path in projects:
         name = proj_path.name
         if not args.quiet:
-            pass
+            print(f"Running deptry for {name}...", file=sys.stderr)
         issues, _ = run_deptry(proj_path, VENV_BIN)
         report["projects"][name] = build_project_report(name, issues)
 
         if do_typings and (proj_path / "src").is_dir():
             if not args.quiet:
-                pass
+                print(f"Detecting typings for {name}...", file=sys.stderr)
             typings_report = get_required_typings(
                 proj_path, VENV_BIN, limits_path=limits_path
             )
@@ -166,11 +168,11 @@ def main() -> int:
                         env=env,
                     )
                     if rc.returncode != 0 and not args.quiet:
-                        pass
+                        print(f"  add {pkg}: failed", file=sys.stderr)
 
     if not args.no_pip_check:
         if not args.quiet:
-            pass
+            print("Running pip check (workspace)...", file=sys.stderr)
         pip_lines, pip_exit = run_pip_check(ROOT, VENV_BIN)
         report["pip_check"] = {"ok": pip_exit == 0, "lines": pip_lines}
 
@@ -189,7 +191,7 @@ def main() -> int:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
         if not args.quiet:
-            pass
+            print(f"Report written to {out_path}", file=sys.stderr)
 
     # Summary
     total_issues = sum(
@@ -199,7 +201,10 @@ def main() -> int:
         "ok", True
     )
     if not args.quiet:
-        pass
+        print(
+            f"Projects: {len(projects)} | Deptry issues: {total_issues} | Pip check: {'ok' if pip_ok else 'FAIL'}",
+            file=sys.stderr,
+        )
     if args.no_fail:
         return 0
     return 0 if total_issues == 0 and pip_ok else 1

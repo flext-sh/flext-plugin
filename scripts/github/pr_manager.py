@@ -47,7 +47,7 @@ def _run_stream_with_output(command: list[str], cwd: Path) -> tuple[int, str]:
     ]
     output = "\n".join(output_parts)
     if output:
-        pass
+        print(output)
     return result.returncode, output
 
 
@@ -83,8 +83,18 @@ def _open_pr_for_head(repo_root: Path, head: str) -> dict[str, object] | None:
 
 def _print_status(repo_root: Path, base: str, head: str) -> int:
     pr = _open_pr_for_head(repo_root, head)
+    print(f"repo={repo_root}")
+    print(f"base={base}")
+    print(f"head={head}")
     if pr is None:
+        print("status=no-open-pr")
         return 0
+    print("status=open")
+    print(f"pr_number={pr.get('number')}")
+    print(f"pr_title={pr.get('title')}")
+    print(f"pr_url={pr.get('url')}")
+    print(f"pr_state={pr.get('state')}")
+    print(f"pr_draft={pr.get('isDraft')}")
     return 0
 
 
@@ -108,6 +118,7 @@ def _trigger_release_if_needed(repo_root: Path, head: str) -> None:
         return
 
     if _run_stream(["gh", "release", "view", tag], repo_root) == 0:
+        print(f"status=release-exists tag={tag}")
         return
 
     run_code = _run_stream(
@@ -115,7 +126,9 @@ def _trigger_release_if_needed(repo_root: Path, head: str) -> None:
         repo_root,
     )
     if run_code == 0:
-        pass
+        print(f"status=release-dispatched tag={tag}")
+    else:
+        print(f"status=release-dispatch-failed tag={tag} exit={run_code}")
 
 
 def _create_pr(
@@ -128,6 +141,8 @@ def _create_pr(
 ) -> int:
     existing = _open_pr_for_head(repo_root, head)
     if existing is not None:
+        print("status=already-open")
+        print(f"pr_url={existing.get('url')}")
         return 0
 
     command = [
@@ -146,7 +161,9 @@ def _create_pr(
     if draft == 1:
         command.append("--draft")
 
-    _run_capture(command, repo_root)
+    created = _run_capture(command, repo_root)
+    print("status=created")
+    print(f"pr_url={created}")
     return 0
 
 
@@ -160,6 +177,7 @@ def _merge_pr(
     release_on_merge: int,
 ) -> int:
     if selector == head and _open_pr_for_head(repo_root, head) is None:
+        print("status=no-open-pr")
         return 0
 
     command = ["gh", "pr", "merge", selector]
@@ -181,8 +199,10 @@ def _merge_pr(
         )
         if update_code == 0:
             exit_code, _ = _run_stream_with_output(command, repo_root)
-    if exit_code == 0 and release_on_merge == 1:
-        _trigger_release_if_needed(repo_root, head)
+    if exit_code == 0:
+        print("status=merged")
+        if release_on_merge == 1:
+            _trigger_release_if_needed(repo_root, head)
     return exit_code
 
 
@@ -229,6 +249,7 @@ def main() -> int:
     if args.action == "checks":
         exit_code = _run_stream(["gh", "pr", "checks", selector], repo_root)
         if exit_code != 0 and args.checks_strict == 0:
+            print("status=checks-nonblocking")
             return 0
         return exit_code
 

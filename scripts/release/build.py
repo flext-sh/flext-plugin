@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Script to build multiple projects within the workspace using Make."""
+
 from __future__ import annotations
 
 import argparse
@@ -11,10 +13,12 @@ SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_ROOT))
 
+# pylint: disable=wrong-import-position
 from release.shared import resolve_projects, workspace_root
 
 
 def _parse_args() -> argparse.Namespace:
+    """Parse command line arguments for the build script."""
     parser = argparse.ArgumentParser()
     _ = parser.add_argument("--root", type=Path, default=Path())
     _ = parser.add_argument("--version", required=True)
@@ -24,6 +28,16 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _run_make(project_path: Path, verb: str) -> tuple[int, str]:
+    """Execute a make command for a specific project.
+
+    Args:
+        project_path: The path to the project directory.
+        verb: The make target to run (e.g., "build").
+
+    Returns:
+        A tuple of (return_code, combined_output).
+
+    """
     command = ["make", "-C", str(project_path), verb]
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     output = (result.stdout + "\n" + result.stderr).strip()
@@ -31,6 +45,12 @@ def _run_make(project_path: Path, verb: str) -> tuple[int, str]:
 
 
 def main() -> int:
+    """Execute the multi-project build process.
+
+    Returns:
+        0 if all projects built successfully, 1 otherwise.
+
+    """
     args = _parse_args()
     root = workspace_root(args.root)
     output_dir = (
@@ -69,6 +89,7 @@ def main() -> int:
             "exit_code": code,
             "log": str(log),
         })
+        _ = print(f"[{name}] build exit={code}")
 
     report = {
         "version": args.version,
@@ -79,6 +100,7 @@ def main() -> int:
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    _ = print(f"report: {report_path}")
     return 1 if failures else 0
 
 

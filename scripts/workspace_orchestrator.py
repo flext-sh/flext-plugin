@@ -28,7 +28,11 @@ def _run(
             stderr=subprocess.STDOUT,
             check=False,
         )
-    int(time.monotonic() - started)
+    elapsed = int(time.monotonic() - started)
+    status = "OK" if proc.returncode == 0 else "FAIL"
+    print(
+        f"{index:02d} [{status}] {project} {verb} ({elapsed}s) exit={proc.returncode} log={log_path}"
+    )
     if proc.returncode != 0 and fail_fast:
         return proc.returncode, True
     return proc.returncode, False
@@ -50,6 +54,7 @@ def main() -> int:
     total = len(projects)
     for idx, project in enumerate(projects, start=1):
         if skipped:
+            print(f"{idx:02d} [SKIP] {project} {args.verb} (0s) exit=0")
             continue
         code, stop = _run(
             project,
@@ -67,6 +72,7 @@ def main() -> int:
         if stop:
             skipped = total - idx
 
+    print(f"summary total={total} success={success} fail={failed} skip={skipped}")
     return max(failures) if failures else 0
 
 

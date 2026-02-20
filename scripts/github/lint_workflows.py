@@ -35,6 +35,7 @@ def main() -> int:
         report.write_text(
             json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+        _ = print(f"wrote: {report}")
         return 0
 
     result = subprocess.run(
@@ -53,8 +54,10 @@ def main() -> int:
     report.write_text(
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    _ = print(f"wrote: {report}")
     if result.returncode != 0:
-        pass
+        _ = print(result.stdout)
+        _ = print(result.stderr)
     if args.strict == 1:
         return result.returncode
     return 0

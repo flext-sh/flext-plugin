@@ -38,7 +38,8 @@ def detect_mode(project_root: Path) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     _ = parser.add_argument("--project-root", required=True, type=Path)
-    parser.parse_args()
+    args = parser.parse_args()
+    print(detect_mode(args.project_root))
     return 0
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -29,10 +30,11 @@ def main() -> int:
         projects = [p for p in projects if p.kind == args.kind]
 
     if args.format == "makefile":
+        print(" ".join(project.name for project in projects))
         return 0
 
     if args.format == "json":
-        {
+        payload = {
             "workspace_root": str(args.workspace_root.resolve()),
             "kind": args.kind,
             "count": len(projects),
@@ -45,10 +47,11 @@ def main() -> int:
                 for project in projects
             ],
         }
+        print(json.dumps(payload, indent=2, sort_keys=True))
         return 0
 
-    for _project in projects:
-        pass
+    for project in projects:
+        print(project.name)
     return 0
 
 
