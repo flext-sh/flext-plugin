@@ -117,11 +117,11 @@ python examples/03_docker_integration.py --test-connections
 
 All examples use configurations that are compatible with the FLEXT Docker development environment at `..docker/docker-compose.yml`:
 
-| Service    | Docker Container | Host Port | Plugin Configuration                                                |
-| ---------- | ---------------- | --------- | ------------------------------------------------------------------- |
-| PostgreSQL | `flext-postgres` | 5432      | Database: `flext_db`, User: `flext`, Password: `flext_dev_password` |
-| Redis      | `flext-redis`    | 6379      | Password: `flext_redis_password`, DB: 0                             |
-| LDAP       | `flext-ldap`     | 389       | Domain: `dc=flext,dc=dev`, Admin: `flext_ldap_REDACTED_LDAP_BIND_PASSWORD`                |
+| Service    | Docker Container | Host Port | Plugin Configuration                                                       |
+| ---------- | ---------------- | --------- | -------------------------------------------------------------------------- |
+| PostgreSQL | `flext-postgres` | 5432      | Database: `flext_db`, User: `flext`, Password: `flext_dev_password`        |
+| Redis      | `flext-redis`    | 6379      | Password: `flext_redis_password`, DB: 0                                    |
+| LDAP       | `flext-ldap`     | 389       | Domain: `dc=flext,dc=dev`, Admin: `flext_ldap_REDACTED_LDAP_BIND_PASSWORD` |
 
 ### Environment Variables
 
