@@ -11,11 +11,9 @@ from urllib.parse import urlparse
 
 def _repo_name_from_url(url: str) -> str:
     parsed = urlparse(url)
-    path = parsed.path if parsed.path else url
+    path = parsed.path or url
     name = path.rsplit("/", 1)[-1]
-    if name.endswith(".git"):
-        name = name[:-4]
-    return name
+    return name.removesuffix(".git")
 
 
 def detect_mode(project_root: Path) -> str:
@@ -40,8 +38,7 @@ def detect_mode(project_root: Path) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     _ = parser.add_argument("--project-root", required=True, type=Path)
-    args = parser.parse_args()
-    print(detect_mode(args.project_root))
+    parser.parse_args()
     return 0
 
 

@@ -32,6 +32,7 @@ from dependency_detection import (
     run_deptry,
     run_pip_check,
 )
+
 VENV_BIN = ROOT / ".venv" / "bin"
 REPORTS_DIR = ROOT / ".reports" / "dependencies"
 LIMITS_PATH = _DEPS_DIR / "dependency_limits.toml"
@@ -68,12 +69,14 @@ def main() -> int:
         help="Print full report JSON to stdout only (no file write).",
     )
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         metavar="FILE",
         help="Write report to this path (default: .reports/dependencies/detect-runtime-dev-<timestamp>.json).",
     )
     parser.add_argument(
-        "-q", "--quiet",
+        "-q",
+        "--quiet",
         action="store_true",
         help="Minimal stdout (summary only).",
     )
@@ -112,11 +115,9 @@ def main() -> int:
 
     projects = discover_projects(ROOT, projects_filter=projects_filter)
     if not projects:
-        print("No projects found.", file=sys.stderr)
         return 2
 
     if not (VENV_BIN / "deptry").exists():
-        print("deptry not found in .venv. Run make setup first.", file=sys.stderr)
         return 3
 
     report: dict[str, object] = {
@@ -129,24 +130,32 @@ def main() -> int:
         limits_data = load_dependency_limits(limits_path)
         if limits_data:
             report["dependency_limits"] = {
-                "python_version": (limits_data.get("python") or {}).get("version") if isinstance(limits_data.get("python"), dict) else None,
+                "python_version": (limits_data.get("python") or {}).get("version")
+                if isinstance(limits_data.get("python"), dict)
+                else None,
                 "limits_path": str(limits_path),
             }
 
     for proj_path in projects:
         name = proj_path.name
         if not args.quiet:
-            print(f"Running deptry for {name}...", file=sys.stderr)
+            pass
         issues, _ = run_deptry(proj_path, VENV_BIN)
         report["projects"][name] = build_project_report(name, issues)
 
         if do_typings and (proj_path / "src").is_dir():
             if not args.quiet:
-                print(f"Detecting typings for {name}...", file=sys.stderr)
-            typings_report = get_required_typings(proj_path, VENV_BIN, limits_path=limits_path)
+                pass
+            typings_report = get_required_typings(
+                proj_path, VENV_BIN, limits_path=limits_path
+            )
             report["projects"][name]["typings"] = typings_report
             if apply_typings and typings_report.get("to_add") and not args.dry_run:
-                env = {**os.environ, "VIRTUAL_ENV": str(VENV_BIN.parent), "PATH": f"{VENV_BIN}:{os.environ.get('PATH', '')}"}
+                env = {
+                    **os.environ,
+                    "VIRTUAL_ENV": str(VENV_BIN.parent),
+                    "PATH": f"{VENV_BIN}:{os.environ.get('PATH', '')}",
+                }
                 for pkg in typings_report["to_add"]:
                     rc = subprocess.run(
                         ["poetry", "add", "--group", "typings", pkg],
@@ -157,11 +166,11 @@ def main() -> int:
                         env=env,
                     )
                     if rc.returncode != 0 and not args.quiet:
-                        print(f"  add {pkg}: failed", file=sys.stderr)
+                        pass
 
     if not args.no_pip_check:
         if not args.quiet:
-            print("Running pip check (workspace)...", file=sys.stderr)
+            pass
         pip_lines, pip_exit = run_pip_check(ROOT, VENV_BIN)
         report["pip_check"] = {"ok": pip_exit == 0, "lines": pip_lines}
 
@@ -180,16 +189,17 @@ def main() -> int:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
         if not args.quiet:
-            print(f"Report written to {out_path}", file=sys.stderr)
+            pass
 
     # Summary
     total_issues = sum(
-        (p.get("deptry") or {}).get("raw_count", 0)
-        for p in report["projects"].values()
+        (p.get("deptry") or {}).get("raw_count", 0) for p in report["projects"].values()
     )
-    pip_ok = report.get("pip_check") is None or (report["pip_check"] or {}).get("ok", True)
+    pip_ok = report.get("pip_check") is None or (report["pip_check"] or {}).get(
+        "ok", True
+    )
     if not args.quiet:
-        print(f"Projects: {len(projects)} | Deptry issues: {total_issues} | Pip check: {'ok' if pip_ok else 'FAIL'}", file=sys.stderr)
+        pass
     if args.no_fail:
         return 0
     return 0 if total_issues == 0 and pip_ok else 1

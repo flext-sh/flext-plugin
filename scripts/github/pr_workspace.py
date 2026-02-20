@@ -3,10 +3,9 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import sys
 import time
 from pathlib import Path
-import sys
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -18,7 +17,7 @@ from libs.subprocess import run_capture, run_checked
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    _ = parser.add_argument("--workspace-root", type=Path, default=Path("."))
+    _ = parser.add_argument("--workspace-root", type=Path, default=Path())
     _ = parser.add_argument("--project", action="append", default=[])
     _ = parser.add_argument("--include-root", type=int, default=1)
     _ = parser.add_argument("--branch", default="")
@@ -174,11 +173,7 @@ def _run_pr(repo_root: Path, workspace_root: Path, args: argparse.Namespace) -> 
         result = subprocess.run(
             command, stdout=handle, stderr=subprocess.STDOUT, check=False
         )
-    elapsed = int(time.monotonic() - started)
-    status = "OK" if result.returncode == 0 else "FAIL"
-    print(
-        f"[{status}] {display} pr ({elapsed}s) exit={result.returncode} log={log_path}"
-    )
+    int(time.monotonic() - started)
     return result.returncode
 
 
@@ -192,8 +187,7 @@ def main() -> int:
 
     failures = 0
     for repo_root in repos:
-        display = _repo_display_name(repo_root, workspace_root)
-        print(f"[RUN] {display}", flush=True)
+        _repo_display_name(repo_root, workspace_root)
         _checkout_branch(repo_root, args.branch)
         if args.checkpoint == 1:
             _checkpoint(repo_root, args.branch)
@@ -204,8 +198,7 @@ def main() -> int:
                 break
 
     total = len(repos)
-    success = total - failures
-    print(f"summary total={total} success={success} fail={failures} skip=0")
+    total - failures
     return 1 if failures else 0
 
 

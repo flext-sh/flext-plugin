@@ -131,7 +131,7 @@ def _read_min_coverage(project_dir: Path) -> int:
 
     makefile = project_dir / "Makefile"
     if makefile.exists():
-        match = re.search(r"MIN" r"_COVERAGE\s*:?=\s*(\d+)", makefile.read_text())
+        match = re.search(r"MIN_COVERAGE\s*:?=\s*(\d+)", makefile.read_text())
         if match:
             return int(match.group(1))
 
@@ -166,22 +166,24 @@ def _get_ssot_bandit_skips() -> list[str]:
     root_doc = tomlkit.parse((ROOT / "pyproject.toml").read_text())
     tool = root_doc.get("tool")
     if not tool:
-        raise RuntimeError("workspace pyproject missing [tool] for Bandit SSOT")
+        msg = "workspace pyproject missing [tool] for Bandit SSOT"
+        raise RuntimeError(msg)
     bandit = tool.get("bandit")
     if not bandit:
-        raise RuntimeError("workspace pyproject missing [tool.bandit] for Bandit SSOT")
+        msg = "workspace pyproject missing [tool.bandit] for Bandit SSOT"
+        raise RuntimeError(msg)
     skips = bandit.get("skips")
     if not skips or not isinstance(skips, list):
-        raise RuntimeError(
-            "workspace pyproject missing [tool.bandit].skips list for Bandit SSOT"
-        )
+        msg = "workspace pyproject missing [tool.bandit].skips list for Bandit SSOT"
+        raise RuntimeError(msg)
     unique: list[str] = []
     for item in skips:
         value = str(item).strip()
         if value and value not in unique:
             unique.append(value)
     if not unique:
-        raise RuntimeError("workspace pyproject defines empty [tool.bandit].skips")
+        msg = "workspace pyproject defines empty [tool.bandit].skips"
+        raise RuntimeError(msg)
     return unique
 
 
@@ -190,23 +192,24 @@ def _get_ssot_pytest_addopts() -> list[str]:
     root_doc = tomlkit.parse((ROOT / "pyproject.toml").read_text())
     tool = root_doc.get("tool")
     if not tool:
-        raise RuntimeError("workspace pyproject missing [tool] for pytest SSOT")
+        msg = "workspace pyproject missing [tool] for pytest SSOT"
+        raise RuntimeError(msg)
     pytest_section = tool.get("pytest")
     if not pytest_section:
-        raise RuntimeError("workspace pyproject missing [tool.pytest] for pytest SSOT")
+        msg = "workspace pyproject missing [tool.pytest] for pytest SSOT"
+        raise RuntimeError(msg)
     ini_options = pytest_section.get("ini_options")
     if not ini_options:
-        raise RuntimeError(
-            "workspace pyproject missing [tool.pytest.ini_options] for pytest SSOT"
-        )
+        msg = "workspace pyproject missing [tool.pytest.ini_options] for pytest SSOT"
+        raise RuntimeError(msg)
     addopts = ini_options.get("addopts")
     if not addopts or not isinstance(addopts, list):
-        raise RuntimeError(
-            "workspace pyproject missing [tool.pytest.ini_options].addopts list for pytest SSOT"
-        )
+        msg = "workspace pyproject missing [tool.pytest.ini_options].addopts list for pytest SSOT"
+        raise RuntimeError(msg)
     normalized: list[str] = [str(item) for item in addopts if str(item).strip()]
     if not normalized:
-        raise RuntimeError("workspace pyproject defines empty pytest addopts SSOT")
+        msg = "workspace pyproject defines empty pytest addopts SSOT"
+        raise RuntimeError(msg)
     return normalized
 
 
@@ -538,12 +541,12 @@ def fix_bandit_skips(doc: tomlkit.TOMLDocument, spec: ProjectSpec) -> str | None
 
 def _has_array_of_tables(path: Path) -> bool:
     """Detect [[array.of.tables]] that tomlkit corrupts on write (indented sub-configs)."""
-    return "[[tool.pyrefly.sub-config]]" in path.read_text()
+    return "[[tool.pyrefly.sub-config]]" in path.read_text(encoding="utf-8")
 
 
 def process_file(path: Path, spec: ProjectSpec, *, dry_run: bool = False) -> list[str]:
     """Run all fix functions on a single pyproject.toml. Returns fix descriptions."""
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     unsafe_write = _has_array_of_tables(path)
 
     doc = tomlkit.parse(text)
@@ -573,7 +576,7 @@ def process_file(path: Path, spec: ProjectSpec, *, dry_run: bool = False) -> lis
         if unsafe_write:
             _apply_regex_fixes(path, spec, fixes)
         else:
-            path.write_text(tomlkit.dumps(doc))
+            path.write_text(tomlkit.dumps(doc), encoding="utf-8")
 
     return fixes
 
@@ -583,7 +586,7 @@ def _apply_regex_fixes(path: Path, spec: ProjectSpec, fixes: list[str]) -> None:
 
     Comprehensive handler for all fix types since tomlkit cannot safely write these files.
     """
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     original = text
 
     # 1. poetry-core version bump
@@ -810,7 +813,7 @@ def _apply_regex_fixes(path: Path, spec: ProjectSpec, fixes: list[str]) -> None:
             text = text[: section_match.start()] + section + text[section_match.end() :]
 
     if text != original:
-        path.write_text(text)
+        path.write_text(text, encoding="utf-8")
 
 
 # ── Makefile cleanup ─────────────────────────────────────────────────
@@ -827,9 +830,7 @@ def cleanup_makefiles(*, dry_run: bool = False) -> list[str]:
         text = makefile.read_text()
         original = text
 
-        text = re.sub(
-            r"^MIN" r"_COVERAGE\s*:?=\s*\d+\s*\n", "", text, flags=re.MULTILINE
-        )
+        text = re.sub(r"^MIN_COVERAGE\s*:?=\s*\d+\s*\n", "", text, flags=re.MULTILINE)
         text = re.sub(r"^COV_DIR\s*:?=\s*\S+\s*\n", "", text, flags=re.MULTILINE)
 
         if text != original:
@@ -859,14 +860,11 @@ def find_pyproject_files() -> list[Path]:
 def run_pyproject_fmt(paths: list[Path], *, dry_run: bool = False) -> int:
     fmt_bin = VENV_BIN / "pyproject-fmt"
     if not fmt_bin.exists():
-        print(f"  ⚠ pyproject-fmt not found at {fmt_bin}")
         return 1
     safe = [p for p in paths if not _has_array_of_tables(p)]
     skipped = len(paths) - len(safe)
     if skipped:
-        print(
-            f"  ⚠ Skipping {skipped} files with [[array.of.tables]] (pyproject-fmt corrupts them)"
-        )
+        pass
     if not safe:
         return 0
     args = [str(fmt_bin)]
@@ -874,10 +872,8 @@ def run_pyproject_fmt(paths: list[Path], *, dry_run: bool = False) -> int:
         args.append("--check")
     args.extend(str(p) for p in safe)
     result = subprocess.run(args, capture_output=True, text=True)
-    if result.returncode != 0 and dry_run:
-        print(f"  ℹ {len(safe)} files would be reformatted")
-    elif result.returncode == 0:
-        print(f"  ✓ {len(safe)} files formatted")
+    if (result.returncode != 0 and dry_run) or result.returncode == 0:
+        pass
     return result.returncode
 
 
@@ -908,16 +904,9 @@ def main() -> int:
     skip_fmt = "--skip-fmt" in sys.argv
     skip_check = "--skip-check" in sys.argv
 
-    mode = "[AUDIT]" if audit else ("[DRY RUN]" if dry_run else "")
-    print(f"{mode} Modernizing pyproject.toml files...".strip())
-    print(f"  Root: {ROOT}")
-
     files = find_pyproject_files()
-    print(f"  Found {len(files)} pyproject.toml files\n")
 
     # Phase 1: ProjectSpec-driven fixes
-    print("Phase 1: Declarative fixes (ProjectSpec-driven)")
-    print("=" * 60)
     total_fixes = 0
     violations: dict[str, list[str]] = {}
 
@@ -928,57 +917,34 @@ def main() -> int:
             rel = str(path.relative_to(ROOT))
             total_fixes += len(fixes)
             violations[rel] = fixes
-            marker = "⚠" if audit else "✓"
-            print(f"\n  {rel}:")
-            for fix in fixes:
-                print(f"    {marker} {fix}")
+            for _fix in fixes:
+                pass
 
     if total_fixes == 0:
-        print("  ✓ All projects comply with spec.")
-    else:
-        word = "violations" if audit else "fixes"
-        print(f"\n  Total: {total_fixes} {word} across {len(violations)} files")
+        pass
 
     # Phase 1b: Makefile cleanup (remove legacy coverage var/COV_DIR)
-    print(f"\n\nPhase 1b: Makefile cleanup")
-    print("=" * 60)
     mk_fixes = cleanup_makefiles(dry_run=dry_run)
     if mk_fixes:
-        marker = "⚠" if audit else "✓"
-        print(
-            f"  {marker} Removed legacy coverage var/COV_DIR from: {', '.join(mk_fixes)}"
-        )
-    else:
-        print("  ✓ All Makefiles clean.")
+        pass
 
     if audit and (total_fixes > 0 or mk_fixes):
-        total = total_fixes + len(mk_fixes)
-        print(f"\n✗ Audit failed: {total} violations found.")
-        print("  Run without --audit to auto-fix.")
+        total_fixes + len(mk_fixes)
         return 1
 
     # Phase 2: pyproject-fmt
     if not skip_fmt:
-        label = "(check only)" if dry_run else "(apply)"
-        print(f"\n\nPhase 2: pyproject-fmt {label}")
-        print("=" * 60)
         run_pyproject_fmt(files, dry_run=dry_run)
 
     # Phase 3: poetry check
     if not skip_check and not dry_run:
-        print("\n\nPhase 3: poetry check")
-        print("=" * 60)
         warnings = run_poetry_check(files)
         if warnings:
-            print(f"\n  ⚠ {len(warnings)} projects have warnings:\n")
-            for project, warns in sorted(warnings.items()):
-                print(f"  {project}:")
-                for w in warns:
-                    print(f"    {w}")
+            for _project, warns in sorted(warnings.items()):
+                for _w in warns:
+                    pass
             return 1
-        print(f"  ✓ All {len(files)} projects pass poetry check")
 
-    print("\n✓ Done.")
     return 0
 
 

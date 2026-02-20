@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_ROOT) not in sys.path:
@@ -14,7 +14,7 @@ from release.shared import resolve_projects, run_capture, workspace_root
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    _ = parser.add_argument("--root", type=Path, default=Path("."))
+    _ = parser.add_argument("--root", type=Path, default=Path())
     _ = parser.add_argument("--tag", required=True)
     _ = parser.add_argument("--output", type=Path, required=True)
     _ = parser.add_argument("--version", default="")
@@ -97,7 +97,6 @@ def main() -> int:
     ])
 
     output_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    _ = print(f"wrote: {output_path}")
     return 0
 
 

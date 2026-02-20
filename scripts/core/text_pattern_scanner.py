@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
-import json
 import re
 from pathlib import Path
 
@@ -79,7 +78,6 @@ def main() -> int:
 
     violation_count = matches if match_mode == "present" else 0 if matches > 0 else 1
 
-    print(json.dumps({"violation_count": violation_count}))
     return 1 if violation_count > 0 else 0
 
 

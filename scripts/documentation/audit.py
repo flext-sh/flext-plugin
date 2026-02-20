@@ -11,7 +11,7 @@ import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-if __package__ in (None, ""):
+if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.documentation.shared import (
@@ -75,9 +75,7 @@ def should_skip_target(raw: str, target: str) -> bool:
         return False
     if "," in raw and ".md" not in raw and "/" not in raw:
         return True
-    if " " in raw and ".md" not in raw and "/" not in raw:
-        return True
-    return False
+    return bool(" " in raw and ".md" not in raw and "/" not in raw)
 
 
 def is_external(target: str) -> bool:
@@ -200,12 +198,10 @@ def run_scope(
     if strict:
         limit = 0 if max_issues is None else max_issues
         has_error = 1 if len(issues) > limit else 0
-        reason = f"issues:{len(issues)}/max:{limit}"
+        f"issues:{len(issues)}/max:{limit}"
     else:
         has_error = 0
-        reason = f"issues:{len(issues)}"
-    result = "FAIL" if has_error else "OK"
-    print(f"PROJECT={scope.name} PHASE=audit RESULT={result} REASON={reason}")
+        f"issues:{len(issues)}"
     return len(issues), has_error
 
 

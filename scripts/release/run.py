@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_ROOT))
 
+from libs.versioning import current_workspace_version
 from release.shared import (
     bump_version,
     parse_semver,
@@ -17,12 +18,11 @@ from release.shared import (
     run_checked,
     workspace_root,
 )
-from libs.versioning import current_workspace_version
 
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    _ = parser.add_argument("--root", type=Path, default=Path("."))
+    _ = parser.add_argument("--root", type=Path, default=Path())
     _ = parser.add_argument("--phase", default="all")
     _ = parser.add_argument("--version", default="")
     _ = parser.add_argument("--tag", default="")
@@ -54,17 +54,18 @@ def _resolve_version(args: argparse.Namespace, root: Path) -> str:
     if args.interactive != 1:
         return current
 
-    print("Select version bump type: [major|minor|patch]")
     bump = input("bump> ").strip().lower()
     if bump not in {"major", "minor", "patch"}:
-        raise RuntimeError("invalid bump type")
+        msg = "invalid bump type"
+        raise RuntimeError(msg)
     return bump_version(current, bump)
 
 
 def _resolve_tag(args: argparse.Namespace, version: str) -> str:
     if args.tag:
         if not args.tag.startswith("v"):
-            raise RuntimeError("tag must start with v")
+            msg = "tag must start with v"
+            raise RuntimeError(msg)
         return args.tag
     return f"v{version}"
 
@@ -200,12 +201,6 @@ def main() -> int:
         else [part.strip() for part in args.phase.split(",") if part.strip()]
     )
 
-    _ = print(f"release_version={version}")
-    _ = print(f"release_tag={tag}")
-    _ = print(f"phases={','.join(phases)}")
-    _ = print(f"projects={','.join(selected_project_names)}")
-    _ = print(f"next_dev={args.next_dev}")
-
     if args.create_branches == 1 and args.dry_run == 0:
         _create_release_branches(root, version, selected_project_paths)
 
@@ -235,21 +230,20 @@ def main() -> int:
                 selected_project_names,
             )
             continue
-        raise RuntimeError(f"invalid phase: {phase}")
+        msg = f"invalid phase: {phase}"
+        raise RuntimeError(msg)
 
     if args.next_dev == 1:
         if args.dry_run == 1:
-            print("status=skip-next-dev reason=dry-run")
+            pass
         else:
-            next_version = _phase_next_dev(
+            _phase_next_dev(
                 root=root,
                 version=version,
                 project_names=selected_project_names,
                 bump=args.next_bump,
             )
-            print(f"next_dev_version={next_version}-dev")
 
-    _ = print("release_run=ok")
     return 0
 
 

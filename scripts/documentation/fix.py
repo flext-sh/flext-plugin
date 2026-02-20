@@ -146,8 +146,6 @@ def run_scope(scope: Scope, *, apply: bool) -> int:
         *[f"| {item.file} | {item.links} | {item.toc} |" for item in items],
     ]
     write_markdown(scope.report_dir / "fix-report.md", lines)
-    result = "OK" if apply or not items else "WARN"
-    print(f"PROJECT={scope.name} PHASE=fix RESULT={result} REASON=changes:{len(items)}")
     return 0
 
 
