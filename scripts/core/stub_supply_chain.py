@@ -16,12 +16,7 @@ import tempfile
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-
-_SCRIPTS_ROOT = str(Path(__file__).resolve().parents[1])
-if _SCRIPTS_ROOT not in sys.path:
-    sys.path.insert(0, _SCRIPTS_ROOT)
-
-from libs.selection import resolve_projects  # noqa: E402
+from scripts.libs.selection import resolve_projects  # noqa: E402
 
 MISSING_IMPORT_RE = re.compile(r"Cannot find module `([^`]+)` \[missing-import\]")
 MYPY_HINT_RE = re.compile(r'note: Hint: "python3 -m pip install ([^"]+)"')
@@ -426,6 +421,7 @@ def main() -> int:
         wanted = set(args.project)
         projects = [project for project in projects if project.name in wanted]
     if not projects:
+        print("ERROR: no projects found", file=sys.stderr)
         return 2
 
     generated_root = root / "typings" / "generated"
@@ -486,19 +482,37 @@ def main() -> int:
     write_report(Path(args.report), report)
 
     for result in results:
-        (
+        line = (
             f"{result.project}: internal={len(result.internal_missing_imports)} "
             f"unresolved={len(result.unresolved_missing_imports)} "
             f"types_added={len(result.types_packages_added)} generated={len(result.generated_files)}"
         )
+        print(line)
 
+    print(f"Report: {args.report}")
     if internal_total > 0:
+        print(
+            f"FAIL: internal missing imports detected ({internal_total})",
+            file=sys.stderr,
+        )
         return 1
     if types_missing_total > 0:
+        print(
+            f"FAIL: missing types-* packages remain ({types_missing_total})",
+            file=sys.stderr,
+        )
         return 1
     if unresolved_total > 0:
+        print(
+            f"FAIL: unresolved third-party missing imports remain ({unresolved_total})",
+            file=sys.stderr,
+        )
         return 1
     if idempotency_enabled and idempotency_pending > 0:
+        print(
+            f"FAIL: idempotency pending work remains ({idempotency_pending})",
+            file=sys.stderr,
+        )
         return 1
     return 0
 

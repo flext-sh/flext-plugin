@@ -50,6 +50,7 @@ def main() -> int:
         _ = path.write_text(
             json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+        print(f"Wrote: {path}")
     return 0
 
 

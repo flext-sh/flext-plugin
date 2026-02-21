@@ -8,7 +8,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from release.shared import resolve_projects, workspace_root
+from scripts.release.shared import resolve_projects, workspace_root
 
 
 def _parse_args() -> argparse.Namespace:
@@ -83,6 +83,7 @@ def main() -> int:
             "exit_code": code,
             "log": str(log),
         })
+        _ = print(f"[{name}] build exit={code}")
 
     report = {
         "version": args.version,
@@ -93,6 +94,7 @@ def main() -> int:
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    _ = print(f"report: {report_path}")
     return 1 if failures else 0
 
 

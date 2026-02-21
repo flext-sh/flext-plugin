@@ -7,9 +7,9 @@ import argparse
 import re
 from pathlib import Path
 
-from libs.versioning import replace_project_version
+from scripts.libs.versioning import replace_project_version
 
-from release.shared import parse_semver, resolve_projects, workspace_root
+from scripts.release.shared import parse_semver, resolve_projects, workspace_root
 
 
 def _needs_version_update(content: str, version: str) -> bool:
@@ -62,9 +62,11 @@ def main() -> int:
             changed += 1
             if args.apply:
                 replace_project_version(file_path.parent, target_version)
+            _ = print(f"update: {file_path}")
 
     if args.check:
-        pass
+        _ = print(f"checked_version={target_version}")
+    _ = print(f"files_changed={changed}")
     return 0
 
 

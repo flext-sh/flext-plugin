@@ -18,6 +18,7 @@ def main() -> int:
     root = Path.cwd().resolve()
     source = root / "base.mk"
     if not source.exists():
+        print("[base-mk-sync] missing root base.mk", file=sys.stderr)
         return 1
     source_hash = _sha256(source)
     mismatched: list[Path] = []
@@ -30,9 +31,10 @@ def main() -> int:
         if _sha256(local_base) != source_hash:
             mismatched.append(local_base.relative_to(root))
     if mismatched:
-        for _path in mismatched:
-            pass
+        for path in mismatched:
+            print(f"[base-mk-sync] drift: {path}")
         return 1
+    print(f"[base-mk-sync] all vendored base.mk copies are in sync ({checked} checked)")
     return 0
 
 

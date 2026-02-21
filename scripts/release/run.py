@@ -6,9 +6,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from libs.versioning import current_workspace_version
+from scripts.libs.versioning import current_workspace_version
 
-from release.shared import (
+from scripts.release.shared import (
     bump_version,
     parse_semver,
     resolve_projects,
@@ -56,6 +56,7 @@ def _resolve_version(args: argparse.Namespace, root: Path) -> str:
     if args.interactive != 1:
         return current
 
+    print("Select version bump type: [major|minor|patch]")
     bump = input("bump> ").strip().lower()
     if bump not in {"major", "minor", "patch"}:
         msg = "invalid bump type"
@@ -219,6 +220,12 @@ def main() -> int:
         else [part.strip() for part in args.phase.split(",") if part.strip()]
     )
 
+    _ = print(f"release_version={version}")
+    _ = print(f"release_tag={tag}")
+    _ = print(f"phases={','.join(phases)}")
+    _ = print(f"projects={','.join(selected_project_names)}")
+    _ = print(f"next_dev={args.next_dev}")
+
     if args.create_branches == 1 and args.dry_run == 0:
         _create_release_branches(root, version, selected_project_paths)
 
@@ -253,15 +260,17 @@ def main() -> int:
 
     if args.next_dev == 1:
         if args.dry_run == 1:
-            pass
+            print("status=skip-next-dev reason=dry-run")
         else:
-            _phase_next_dev(
+            next_version = _phase_next_dev(
                 root=root,
                 version=version,
                 project_names=selected_project_names,
                 bump=args.next_bump,
             )
+            print(f"next_dev_version={next_version}-dev")
 
+    _ = print("release_run=ok")
     return 0
 
 

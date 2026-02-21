@@ -8,13 +8,8 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-
-_SCRIPTS_ROOT = str(Path(__file__).resolve().parents[1])
-if _SCRIPTS_ROOT not in sys.path:
-    sys.path.insert(0, _SCRIPTS_ROOT)
-
-from libs.selection import resolve_projects  # noqa: E402
-from libs.subprocess import run_capture, run_checked  # noqa: E402
+from scripts.libs.selection import resolve_projects  # noqa: E402
+from scripts.libs.subprocess import run_capture, run_checked  # noqa: E402
 
 
 def _parse_args() -> argparse.Namespace:
@@ -175,7 +170,11 @@ def _run_pr(repo_root: Path, workspace_root: Path, args: argparse.Namespace) -> 
         result = subprocess.run(
             command, stdout=handle, stderr=subprocess.STDOUT, check=False
         )
-    int(time.monotonic() - started)
+    elapsed = int(time.monotonic() - started)
+    status = "OK" if result.returncode == 0 else "FAIL"
+    print(
+        f"[{status}] {display} pr ({elapsed}s) exit={result.returncode} log={log_path}"
+    )
     return result.returncode
 
 
@@ -190,7 +189,8 @@ def main() -> int:
 
     failures = 0
     for repo_root in repos:
-        _repo_display_name(repo_root, workspace_root)
+        display = _repo_display_name(repo_root, workspace_root)
+        print(f"[RUN] {display}", flush=True)
         _checkout_branch(repo_root, args.branch)
         if args.checkpoint == 1:
             _checkpoint(repo_root, args.branch)
@@ -201,7 +201,8 @@ def main() -> int:
                 break
 
     total = len(repos)
-    total - failures
+    success = total - failures
+    print(f"summary total={total} success={success} fail={failures} skip=0")
     return 1 if failures else 0
 
 

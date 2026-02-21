@@ -7,7 +7,7 @@ import argparse
 from datetime import UTC, datetime
 from pathlib import Path
 
-from release.shared import workspace_root
+from scripts.release.shared import workspace_root
 
 
 def _parse_args() -> argparse.Namespace:
@@ -78,6 +78,9 @@ def main() -> int:
         _ = latest_path.write_text(notes_text, encoding="utf-8")
         _ = tagged_notes_path.write_text(notes_text, encoding="utf-8")
 
+    _ = print(f"changelog: {changelog_path}")
+    _ = print(f"latest: {latest_path}")
+    _ = print(f"release_notes: {tagged_notes_path}")
     return 0
 
 

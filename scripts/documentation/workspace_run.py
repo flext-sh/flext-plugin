@@ -109,15 +109,20 @@ def main() -> int:
         log_file.write_text(log_text, encoding="utf-8")
 
         if completed.returncode == 0:
-            summarize(root / project / ".reports/docs", args.phase)
+            summary = summarize(root / project / ".reports/docs", args.phase)
+            print(f"PROJECT={project} RESULT=OK {summary}".rstrip())
             continue
 
         failed += 1
+        print(f"PROJECT={project} RESULT=FAIL REASON={extract_reason(log_text)}")
         if args.fail_fast == "1":
+            print(f"DOCS RESULT=FAIL failed={failed}/{total}")
             return 1
 
     if failed:
+        print(f"DOCS RESULT=FAIL failed={failed}/{total}")
         return 1
+    print(f"DOCS RESULT=OK projects={total} phase={args.phase}")
     return 0
 
 
