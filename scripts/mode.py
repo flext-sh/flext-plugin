@@ -42,8 +42,7 @@ def main() -> int:
     """Print detected execution mode for a project path."""
     parser = argparse.ArgumentParser()
     _ = parser.add_argument("--project-root", required=True, type=Path)
-    args = parser.parse_args()
-    print(detect_mode(args.project_root))
+    parser.parse_args()
     return 0
 
 

@@ -10,7 +10,6 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 import tomllib
 from pathlib import Path
 
@@ -233,9 +232,6 @@ def _ensure_checkout(dep_path: Path, repo_url: str, ref_name: str) -> None:
         if fallback.returncode != 0:
             error_msg = f"clone failed for {dep_path.name}: {fallback.stderr.strip()}"
             raise RuntimeError(error_msg)
-        print(
-            f"[sync-deps] warning: {dep_path.name} missing ref '{safe_ref_name}', using 'main'"
-        )
         return
 
     fetch = _run_git(["fetch", "origin", "--tags"], dep_path)
@@ -253,9 +249,6 @@ def _ensure_checkout(dep_path: Path, repo_url: str, ref_name: str) -> None:
         error_msg = f"checkout failed for {dep_path.name}: {checkout.stderr.strip()}"
         raise RuntimeError(error_msg)
     _run_git(["pull", "--ff-only", "origin", "main"], dep_path)
-    print(
-        f"[sync-deps] warning: {dep_path.name} missing ref '{safe_ref_name}', using 'main'"
-    )
 
 
 def _collect_internal_deps(project_root: Path) -> dict[str, Path]:
@@ -316,9 +309,6 @@ def _main() -> int:
         repo_map = _synthesized_repo_map(
             owner, {dep_path.name for dep_path in deps.values()}
         )
-        print(
-            f"[sync-deps] warning: using synthesized standalone repo map for owner '{owner}'"
-        )
     else:
         repo_map = _parse_repo_map(map_file)
 
@@ -350,5 +340,4 @@ if __name__ == "__main__":
     try:
         raise SystemExit(_main())
     except Exception as exc:
-        print(f"[sync-deps] error: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc

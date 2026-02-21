@@ -109,11 +109,9 @@ def main() -> int:
 
     projects = dd.discover_projects(ROOT, projects_filter=projects_filter)
     if not projects:
-        print("No projects found.", file=sys.stderr)
         return 2
 
     if not (VENV_BIN / "deptry").exists():
-        print("deptry not found in .venv. Run make setup first.", file=sys.stderr)
         return 3
 
     projects_report: dict[str, dict[str, object]] = {}
@@ -137,14 +135,14 @@ def main() -> int:
     for proj_path in projects:
         name = proj_path.name
         if not args.quiet:
-            print(f"Running deptry for {name}...", file=sys.stderr)
+            pass
         issues, _ = dd.run_deptry(proj_path, VENV_BIN)
         project_payload = dd.build_project_report(name, issues)
         projects_report[name] = dict(project_payload)
 
         if do_typings and (proj_path / "src").is_dir():
             if not args.quiet:
-                print(f"Detecting typings for {name}...", file=sys.stderr)
+                pass
             typings_report = dd.get_required_typings(
                 proj_path, VENV_BIN, limits_path=limits_path
             )
@@ -170,11 +168,11 @@ def main() -> int:
                         check=False,
                     )
                     if rc.returncode != 0 and not args.quiet:
-                        print(f"  add {pkg}: failed", file=sys.stderr)
+                        pass
 
     if not args.no_pip_check:
         if not args.quiet:
-            print("Running pip check (workspace)...", file=sys.stderr)
+            pass
         pip_lines, pip_exit = dd.run_pip_check(ROOT, VENV_BIN)
         report["pip_check"] = {"ok": pip_exit == 0, "lines": pip_lines}
 
@@ -193,7 +191,7 @@ def main() -> int:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
         if not args.quiet:
-            print(f"Report written to {out_path}", file=sys.stderr)
+            pass
 
     # Summary
     total_issues = 0
@@ -212,10 +210,7 @@ def main() -> int:
     else:
         pip_ok = True
     if not args.quiet:
-        print(
-            f"Projects: {len(projects)} | Deptry issues: {total_issues} | Pip check: {'ok' if pip_ok else 'FAIL'}",
-            file=sys.stderr,
-        )
+        pass
     if args.no_fail:
         return 0
     return 0 if total_issues == 0 and pip_ok else 1

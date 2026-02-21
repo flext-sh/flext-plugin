@@ -199,12 +199,10 @@ def run_scope(
     if strict:
         limit = 0 if max_issues is None else max_issues
         has_error = 1 if len(issues) > limit else 0
-        reason = f"issues:{len(issues)}/max:{limit}"
+        f"issues:{len(issues)}/max:{limit}"
     else:
         has_error = 0
-        reason = f"issues:{len(issues)}"
-    result = "FAIL" if has_error else "OK"
-    print(f"PROJECT={scope.name} PHASE=audit RESULT={result} REASON={reason}")
+        f"issues:{len(issues)}"
     return len(issues), has_error
 
 

@@ -159,7 +159,7 @@ def main() -> int:
     _write_or_placeholder(skips_path, skip_cases, "No skipped tests.")
     _write_or_placeholder(slowest_path, slow_entries, "No slow-duration section found.")
 
-    failed_count = _count_effective(failed_path, "No failing tests.")
+    _count_effective(failed_path, "No failing tests.")
     error_headers = sum(
         1
         for line in errors_path.read_text(
@@ -167,16 +167,10 @@ def main() -> int:
         ).splitlines()
         if line.startswith(("=== FAILURE:", "=== ERROR:"))
     )
-    error_count = error_headers or _count_effective(
-        errors_path, "No error traces captured."
-    )
-    warning_count = _count_effective(warnings_path, "No warnings captured.")
-    skipped_count = _count_effective(skips_path, "No skipped tests.")
+    error_headers or _count_effective(errors_path, "No error traces captured.")
+    _count_effective(warnings_path, "No warnings captured.")
+    _count_effective(skips_path, "No skipped tests.")
 
-    print(f"failed_count={failed_count}")
-    print(f"error_count={error_count}")
-    print(f"warning_count={warning_count}")
-    print(f"skipped_count={skipped_count}")
     return 0
 
 

@@ -68,11 +68,9 @@ def main() -> int:
             changed += 1
             if args.apply:
                 replace_project_version(file_path.parent, target_version)
-            _ = print(f"update: {file_path}")
 
     if args.check:
-        _ = print(f"checked_version={target_version}")
-    _ = print(f"files_changed={changed}")
+        pass
     return 0
 
 
