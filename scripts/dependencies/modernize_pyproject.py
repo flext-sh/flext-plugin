@@ -27,6 +27,7 @@ from pathlib import Path
 
 import tomlkit
 from tomlkit.items import Table
+from typing import cast
 
 _TableLike = Table | MutableMapping[str, object]
 
@@ -281,7 +282,7 @@ def fix_duplicate_poetry_metadata(doc: tomlkit.TOMLDocument) -> str | None:
     tool = doc.get("tool")
     if not project or not tool:
         return None
-    poetry: dict[str, object] | None = tool.get("poetry")  # type: ignore[assignment]
+    poetry = cast(dict[str, object] | None, tool.get("poetry"))
     if not poetry:
         return None
     changed = False
@@ -320,13 +321,13 @@ def fix_deptry_ignores(
     tool = doc.get("tool")
     if not tool:
         return None
-    deptry = tool.get("deptry")  # type: ignore[union-attr]
-    if not deptry:
+    deptry_obj = tool.get("deptry")
+    if not isinstance(deptry_obj, MutableMapping):
         return None
-    per_rule = deptry.get("per_rule_ignores")
-    if not per_rule:
+    per_rule_obj = deptry_obj.get("per_rule_ignores")
+    if not isinstance(per_rule_obj, MutableMapping):
         return None
-    dep002 = per_rule.get("DEP002")
+    dep002 = per_rule_obj.get("DEP002")
     if not dep002:
         return None
     removed_set = set(removed_pkgs)
@@ -398,7 +399,7 @@ def fix_coverage_config(doc: tomlkit.TOMLDocument, spec: ProjectSpec) -> str | N
         report_table["fail_under"] = spec.min_coverage
         report_table["precision"] = 2
         cov.add("report", report_table)
-        tool.add("coverage", cov)  # type: ignore[union-attr]
+        cast(MutableMapping[str, object], tool)["coverage"] = cov
         return f"coverage: added run.source=[{spec.coverage_source}] fail_under={spec.min_coverage}"
 
     cov_obj = tool["coverage"]
@@ -451,7 +452,7 @@ def fix_pytest_section(doc: tomlkit.TOMLDocument) -> str | None:
     ini = tomlkit.table()
     ini["addopts"] = list(standard_addopts)
     pt.add("ini_options", ini)
-    tool.add("pytest", pt)  # type: ignore[union-attr]
+    cast(MutableMapping[str, object], tool)["pytest"] = pt
     return "pytest: added standard ini_options"
 
 
@@ -583,7 +584,7 @@ def fix_bandit_skips(doc: tomlkit.TOMLDocument, spec: ProjectSpec) -> str | None
     if bandit is None:
         bandit = tomlkit.table()
         bandit["skips"] = list(standard_skips)
-        tool.add("bandit", bandit)  # type: ignore[union-attr]
+        cast(MutableMapping[str, object], tool)["bandit"] = bandit
         return "bandit: added [tool.bandit] from workspace SSOT"
     skips = bandit.get("skips")
     if not skips or not isinstance(skips, list):
@@ -946,11 +947,14 @@ def run_pyproject_fmt(paths: list[Path], *, dry_run: bool = False) -> int:
     """Run pyproject-fmt over safe files and return exit code."""
     fmt_bin = VENV_BIN / "pyproject-fmt"
     if not fmt_bin.exists():
+        print(f"  ⚠ pyproject-fmt not found at {fmt_bin}")
         return 1
     safe = [p for p in paths if not _has_array_of_tables(p)]
     skipped = len(paths) - len(safe)
     if skipped:
-        pass
+        print(
+            f"  ⚠ Skipping {skipped} files with [[array.of.tables]] (pyproject-fmt corrupts them)"
+        )
     if not safe:
         return 0
     args = [str(fmt_bin)]
@@ -958,8 +962,10 @@ def run_pyproject_fmt(paths: list[Path], *, dry_run: bool = False) -> int:
         args.append("--check")
     args.extend(str(p) for p in safe)
     result = subprocess.run(args, capture_output=True, text=True, check=False)
-    if (result.returncode != 0 and dry_run) or result.returncode == 0:
-        pass
+    if result.returncode != 0 and dry_run:
+        print(f"  ℹ {len(safe)} files would be reformatted")
+    elif result.returncode == 0:
+        print(f"  ✓ {len(safe)} files formatted")
     return result.returncode
 
 
@@ -996,9 +1002,16 @@ def main() -> int:
     skip_fmt = "--skip-fmt" in sys.argv
     skip_check = "--skip-check" in sys.argv
 
+    mode = "[AUDIT]" if audit else ("[DRY RUN]" if dry_run else "")
+    print(f"{mode} Modernizing pyproject.toml files...".strip())
+    print(f"  Root: {ROOT}")
+
     files = find_pyproject_files()
+    print(f"  Found {len(files)} pyproject.toml files\n")
 
     # Phase 1: ProjectSpec-driven fixes
+    print("Phase 1: Declarative fixes (ProjectSpec-driven)")
+    print("=" * 60)
     total_fixes = 0
     violations: dict[str, list[str]] = {}
 
@@ -1009,34 +1022,57 @@ def main() -> int:
             rel = str(path.relative_to(ROOT))
             total_fixes += len(fixes)
             violations[rel] = fixes
-            for _fix in fixes:
-                pass
+            marker = "⚠" if audit else "✓"
+            print(f"\n  {rel}:")
+            for fix in fixes:
+                print(f"    {marker} {fix}")
 
     if total_fixes == 0:
-        pass
+        print("  ✓ All projects comply with spec.")
+    else:
+        word = "violations" if audit else "fixes"
+        print(f"\n  Total: {total_fixes} {word} across {len(violations)} files")
 
     # Phase 1b: Makefile cleanup (remove legacy coverage var/COV_DIR)
+    print("\n\nPhase 1b: Makefile cleanup")
+    print("=" * 60)
     mk_fixes = cleanup_makefiles(dry_run=dry_run)
     if mk_fixes:
-        pass
+        marker = "⚠" if audit else "✓"
+        print(
+            f"  {marker} Removed legacy coverage var/COV_DIR from: {', '.join(mk_fixes)}"
+        )
+    else:
+        print("  ✓ All Makefiles clean.")
 
     if audit and (total_fixes > 0 or mk_fixes):
-        total_fixes + len(mk_fixes)
+        total = total_fixes + len(mk_fixes)
+        print(f"\n✗ Audit failed: {total} violations found.")
+        print("  Run without --audit to auto-fix.")
         return 1
 
     # Phase 2: pyproject-fmt
     if not skip_fmt:
+        label = "(check only)" if dry_run else "(apply)"
+        print(f"\n\nPhase 2: pyproject-fmt {label}")
+        print("=" * 60)
         run_pyproject_fmt(files, dry_run=dry_run)
 
     # Phase 3: poetry check
     if not skip_check and not dry_run:
+        print("\n\nPhase 3: poetry check")
+        print("=" * 60)
         warnings = run_poetry_check(files)
         if warnings:
-            for _project, warns in sorted(warnings.items()):
-                for _w in warns:
-                    pass
+            print(f"\n  ⚠ {len(warnings)} projects have warnings:\n")
+            for project, warns in sorted(warnings.items()):
+                print(f"  {project}:")
+                for w in warns:
+                    print(f"    {w}")
             return 1
+        print(f"  ✓ All {len(files)} projects pass poetry check")
 
+    print("\n✓ Done.")
     return 0
 
 
