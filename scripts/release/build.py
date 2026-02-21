@@ -83,7 +83,6 @@ def main() -> int:
             "exit_code": code,
             "log": str(log),
         })
-        _ = print(f"[{name}] build exit={code}")
 
     report = {
         "version": args.version,
@@ -94,7 +93,6 @@ def main() -> int:
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    _ = print(f"report: {report_path}")
     return 1 if failures else 0
 
 

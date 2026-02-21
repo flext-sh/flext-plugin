@@ -91,9 +91,6 @@ def main() -> int:
     for scope in scopes:
         result = run_mkdocs(scope)
         write_reports(scope, result)
-        print(
-            f"PROJECT={scope.name} PHASE=build RESULT={result.result} REASON={result.reason}"
-        )
         if result.result == "FAIL":
             failures += 1
     return 1 if failures else 0

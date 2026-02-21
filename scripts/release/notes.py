@@ -104,7 +104,6 @@ def main() -> int:
     ])
 
     output_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    _ = print(f"wrote: {output_path}")
     return 0
 
 
