@@ -239,7 +239,7 @@ class FlextPluginEntities:
             final_metadata = metadata or FlextPluginEntities.PluginMetadata()
 
             return cls(
-                id=final_id,
+                unique_id=final_id,
                 config=final_config,
                 metadata=final_metadata,
                 status="discovered",
@@ -356,7 +356,7 @@ class FlextPluginEntities:
             New PluginRegistry instance
 
             """
-            return cls(id=registry_id or str(uuid4()), name=name)
+            return cls(unique_id=registry_id or str(uuid4()), name=name)
 
         def register_plugin(
             self,

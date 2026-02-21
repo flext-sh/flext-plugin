@@ -52,9 +52,12 @@ class FlextPluginApi:
 
     def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path."""
-        return self.platform.load_plugin(_plugin_path).map(
-            lambda p: (self.logger.info(f"Loaded plugin: {p.name}"), p)[1]
-        )
+        result = self.platform.load_plugin(_plugin_path)
+        if result.is_failure:
+            return r[FlextPluginPlatform.Plugin].fail(result.error or "Load failed")
+        plugin = result.value
+        self.logger.info(f"Loaded plugin: {plugin.name}")
+        return r[FlextPluginPlatform.Plugin].ok(plugin)
 
     def execute_plugin(
         self,

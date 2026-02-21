@@ -66,7 +66,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> r[list[FlextPluginModels.PluginMetadata]]:
+        ) -> r[list[FlextPluginModels.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
@@ -79,7 +79,7 @@ class FlextPluginUtilities(u):
             try:
                 search_path = Path(directory)
                 if not search_path.exists():
-                    return r[list[FlextPluginModels.PluginMetadata]].fail(
+                    return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}",
                     )
 
@@ -88,23 +88,25 @@ class FlextPluginUtilities(u):
                     if (
                         plugin_file.is_file()
                         and plugin_file.suffix
-                        in FlextPluginUtilities.PluginDiscovery.PLUGIN_FILE_EXTENSIONS
+                        in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
                     ):
                         validation_result = (
-                            FlextPluginUtilities.PluginDiscovery.validate_plugin_file(
+                            FlextPluginUtilities.Plugin.validate_plugin_file(
                                 plugin_file,
                             )
                         )
                         if validation_result.is_success:
-                            metadata_result = FlextPluginUtilities.PluginDiscovery.extract_plugin_metadata(
-                                plugin_file,
+                            metadata_result = (
+                                FlextPluginUtilities.Plugin.extract_plugin_metadata(
+                                    plugin_file,
+                                )
                             )
                             if metadata_result.is_success:
                                 plugins.append(metadata_result.value)
 
-                return r[list[FlextPluginModels.PluginMetadata]].ok(plugins)
+                return r[list[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
             except Exception as e:
-                return r[list[FlextPluginModels.PluginMetadata]].fail(
+                return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
                     f"Plugin discovery failed: {e}",
                 )
 
@@ -127,12 +129,9 @@ class FlextPluginUtilities(u):
 
                 # Check file size
                 file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
-                if (
-                    file_size_mb
-                    > FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB
-                ):
+                if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
                     return r[None].fail(
-                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB}MB",
+                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
                     )
 
                 # Basic security check for Python files
@@ -158,7 +157,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def extract_plugin_metadata(
             plugin_path: Path,
-        ) -> r[FlextPluginModels.PluginMetadata]:
+        ) -> r[FlextPluginModels.Plugin.PluginMetadata]:
             """Extract metadata from plugin file.
 
             Args:
@@ -190,7 +189,7 @@ class FlextPluginUtilities(u):
                     if doc_match:
                         description = doc_match.group(1).strip()
 
-                metadata = FlextPluginModels.PluginMetadata(
+                metadata = FlextPluginModels.Plugin.PluginMetadata(
                     name=plugin_path.stem,
                     version=version,
                     description=description,
@@ -201,9 +200,9 @@ class FlextPluginUtilities(u):
                     metadata={"discovered_at": datetime.now(UTC).isoformat()},
                 )
 
-                return r[FlextPluginModels.PluginMetadata].ok(metadata)
+                return r[FlextPluginModels.Plugin.PluginMetadata].ok(metadata)
             except Exception as e:
-                return r[FlextPluginModels.PluginMetadata].fail(
+                return r[FlextPluginModels.Plugin.PluginMetadata].fail(
                     f"Metadata extraction failed: {e}",
                 )
 
@@ -219,7 +218,7 @@ class FlextPluginUtilities(u):
 
             """
             if not re.match(
-                FlextPluginUtilities.PluginDiscovery.PLUGIN_NAME_PATTERN,
+                FlextPluginUtilities.Plugin.PLUGIN_NAME_PATTERN,
                 name,
             ):
                 return r[None].fail(
@@ -256,7 +255,7 @@ class FlextPluginUtilities(u):
                         f"Watch path does not exist: {path}",
                     )
 
-                watcher_config = {
+                watcher_config: dict[str, t.GeneralValueType] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
                     if callback_function
@@ -267,7 +266,7 @@ class FlextPluginUtilities(u):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return r[dict[str, t.GeneralValueType]].ok(dict(watcher_config))
+                return r[dict[str, t.GeneralValueType]].ok(watcher_config)
             except Exception as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"File watcher creation failed: {e}",
@@ -297,7 +296,7 @@ class FlextPluginUtilities(u):
                     if (
                         file_path.is_file()
                         and file_path.suffix
-                        in FlextPluginUtilities.PluginDiscovery.PLUGIN_FILE_EXTENSIONS
+                        in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
                     ):
                         file_key = str(file_path)
                         current_mtime = file_path.stat().st_mtime
@@ -331,10 +330,8 @@ class FlextPluginUtilities(u):
             """
             try:
                 # Check if plugin exists and is valid
-                validation_result = (
-                    FlextPluginUtilities.PluginDiscovery.validate_plugin_file(
-                        plugin_path,
-                    )
+                validation_result = FlextPluginUtilities.Plugin.validate_plugin_file(
+                    plugin_path,
                 )
                 if validation_result.is_failure:
                     return r[None].fail(
@@ -458,7 +455,7 @@ class FlextPluginUtilities(u):
 
             """
             try:
-                sandbox_config = {
+                sandbox_config: dict[str, t.GeneralValueType] = {
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
@@ -472,7 +469,7 @@ class FlextPluginUtilities(u):
                     "created_at": datetime.now(UTC).isoformat(),
                 }
 
-                return r[dict[str, t.GeneralValueType]].ok(dict(sandbox_config))
+                return r[dict[str, t.GeneralValueType]].ok(sandbox_config)
             except Exception as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Sandbox configuration creation failed: {e}",
@@ -584,10 +581,8 @@ class FlextPluginUtilities(u):
                         )
 
                 # Validate plugin name
-                name_validation = (
-                    FlextPluginUtilities.PluginDiscovery.validate_plugin_name(
-                        str(config["name"]),
-                    )
+                name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
+                    str(config["name"]),
                 )
                 if name_validation.is_failure:
                     return r[None].fail(
@@ -624,14 +619,11 @@ class FlextPluginUtilities(u):
                 merged_config = base_config.copy()
 
                 for key, value in override_config.items():
-                    if (
-                        isinstance(value, dict)
-                        and key in merged_config
-                        and isinstance(merged_config[key], dict)
-                    ):
+                    existing_value = merged_config.get(key)
+                    if isinstance(value, dict) and isinstance(existing_value, dict):
                         # Recursively merge nested dictionaries
-                        base_nested_config = merged_config[key].copy()
-                        override_value = value.copy() if isinstance(value, dict) else {}
+                        base_nested_config = existing_value.copy()
+                        override_value = value.copy()
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
                             override_value,
@@ -814,13 +806,13 @@ class FlextPluginUtilities(u):
                 path = Path(registry_path)
                 if not path.exists():
                     # Create empty registry
-                    registry = {
+                    registry: dict[str, t.GeneralValueType] = {
                         "version": "1.0",
                         "plugins": {},
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return r[dict[str, t.GeneralValueType]].ok(dict(registry))
+                    return r[dict[str, t.GeneralValueType]].ok(registry)
 
                 # Check file size
                 file_size_mb = path.stat().st_size / (1024 * 1024)
@@ -884,7 +876,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def register_plugin(
             registry: dict[str, t.GeneralValueType],
-            plugin_metadata: FlextPluginModels.PluginMetadata,
+            plugin_metadata: FlextPluginModels.Plugin.PluginMetadata,
         ) -> r[dict[str, t.GeneralValueType]]:
             """Register plugin in registry.
 
@@ -967,7 +959,7 @@ class FlextPluginUtilities(u):
         """Validate the complete utilities configuration."""
         # Validate that all nested classes are accessible
         required_classes = [
-            "PluginDiscovery",
+            "Plugin",
             "HotReloadManager",
             "SecurityValidation",
             "ConfigurationManager",

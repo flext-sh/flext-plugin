@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import inspect
 from datetime import UTC, datetime
+from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel
 
 from flext_plugin.typings import t
 
@@ -156,12 +158,18 @@ class FlextPluginHandlers:
                 return FlextResult.ok([])
 
             # Execute handlers
-            results = []
+            results: list[t.GeneralValueType] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
-                    results.append(result)
+                    if result is None or isinstance(
+                        result,
+                        (str, int, float, bool, datetime, Path, BaseModel, list, dict),
+                    ):
+                        results.append(result)
+                    else:
+                        results.append(str(result))
                 except Exception as e:
                     self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append({"error": str(e), "success": False})

@@ -45,13 +45,15 @@ class FlextPluginLoader:
         self.logger = FlextLogger(__name__)
         self._loaded_plugins: dict[str, object] = {}
         self._loader_strategies: list[
-            Callable[[Path], FlextPluginModels.LoadData | None]
+            Callable[[Path], FlextPluginModels.Plugin.LoadData | None]
         ] = [
             self.FilePluginLoader(self.logger).load,
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
-    def load_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.LoadData]:
+    def load_plugin(
+        self, plugin_path: str
+    ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -131,7 +133,7 @@ class FlextPluginLoader:
     def reload_plugin(
         self,
         plugin_name: str,
-    ) -> FlextResult[FlextPluginModels.LoadData]:
+    ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
         """Reload a plugin by name.
 
         Args:
@@ -267,7 +269,7 @@ class FlextPluginLoader:
             """Initialize file loader with logger."""
             self.logger = logger
 
-        def load(self, path: Path) -> FlextPluginModels.LoadData | None:
+        def load(self, path: Path) -> FlextPluginModels.Plugin.LoadData | None:
             """Load a single file plugin safely.
 
             Uses importlib.util.spec_from_file_location for safe loading
@@ -291,7 +293,7 @@ class FlextPluginLoader:
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                return FlextPluginModels.LoadData(
+                return FlextPluginModels.Plugin.LoadData(
                     name=path.stem,
                     version=getattr(module, "__version__", "1.0.0"),
                     path=path,
@@ -310,7 +312,7 @@ class FlextPluginLoader:
             """Initialize directory loader with logger."""
             self.logger = logger
 
-        def load(self, path: Path) -> FlextPluginModels.LoadData | None:
+        def load(self, path: Path) -> FlextPluginModels.Plugin.LoadData | None:
             """Load a directory-based plugin.
 
             Searches for __init__.py or main.py entry files.
@@ -339,7 +341,7 @@ class FlextPluginLoader:
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                return FlextPluginModels.LoadData(
+                return FlextPluginModels.Plugin.LoadData(
                     name=path.name,
                     version=getattr(module, "__version__", "1.0.0"),
                     path=path,

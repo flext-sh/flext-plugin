@@ -557,7 +557,9 @@ class FlextPluginImplementations:
             self._logger.info("Unregistered plugin %s", plugin_name)
             return r[None].ok(None)
 
-        def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin | None:
+        def get_plugin(
+            self, plugin_name: str
+        ) -> FlextPluginModels.Plugin.Plugin | None:
             """Get plugin by name.
 
             Args:
@@ -569,7 +571,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> list[FlextPluginModels.Plugin]:
+        def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
             """List all registered plugin names.
 
             Returns:

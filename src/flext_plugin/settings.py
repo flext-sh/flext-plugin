@@ -66,7 +66,7 @@ class FlextPluginSettings(FlextSettings):
     priority: int = Field(default=100, description="Plugin execution priority")
     max_memory_mb: int = Field(default=512, description="Maximum memory usage in MB")
     max_cpu_percent: int = Field(default=50, description="Maximum CPU usage percentage")
-    timeout_seconds: int = Field(default=30, description="Plugin execution timeout")
+    timeout_seconds: float = Field(default=30.0, description="Plugin execution timeout")
     created_at: datetime = Field(
         default_factory=datetime.now,
         description="Configuration creation timestamp",

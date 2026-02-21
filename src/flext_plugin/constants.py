@@ -157,6 +157,18 @@ class FlextPluginConstants(FlextConstants):
             STATUS_UNHEALTHY: Final[str] = "unhealthy"
             # Additional status constants from platform.py
             STATUS_UNLOADED: Final[str] = "unloaded"
+            PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
+                "unknown",
+                "discovered",
+                "loaded",
+                "active",
+                "inactive",
+                "loading",
+                "error",
+                "disabled",
+                "healthy",
+                "unhealthy",
+            })
 
         # Entity constants
         class Entities:
@@ -411,13 +423,6 @@ class FlextPluginConstants(FlextConstants):
         # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)
         # ═══════════════════════════════════════════════════════════════════
         # PluginStatusLiteral moved to typings.py (t.Plugin.PluginStatusLiteral)
-
-        # Set PLUGIN_LIFECYCLE_STATES after PluginStatus is defined
-        # Generated from PluginStatus StrEnum (DRY principle)
-        Lifecycle.PLUGIN_LIFECYCLE_STATES = frozenset(
-            member.value for member in PluginStatus.__members__.values()
-        )
-        """Plugin lifecycle states - generated from PluginStatus StrEnum."""
 
         # Generate plugin type frozensets from PluginType StrEnum (DRY principle)
         Types.SINGER_PLUGIN_TYPES = frozenset({
