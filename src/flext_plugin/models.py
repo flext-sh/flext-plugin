@@ -743,18 +743,7 @@ class FlextPluginModels(FlextModels):
                 description="Registry creation timestamp",
             )
 
-    # Top-level aliases for convenience
-    LoadData = Plugin.LoadData
-    DiscoveryData = Plugin.DiscoveryData
-    PluginMetadata = Plugin.PluginMetadata
-    PluginEntity = Plugin.Plugin
-    ExecutionResult = Plugin.ExecutionResult
-    PluginConfig = Plugin.PluginConfig
-    Registry = Plugin.Registry
-    ValidationResult = Plugin.ValidationResult
-
 
 m = FlextPluginModels
-m_plugin = FlextPluginModels
 
-__all__ = ["FlextPluginModels", "m", "m_plugin"]
+__all__ = ["FlextPluginModels", "m"]
