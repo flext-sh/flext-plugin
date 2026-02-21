@@ -16,7 +16,7 @@ from typing import Self
 from flext_core import FlextModels
 from flext_core.result import r
 from flext_core.typings import FlextTypes
-from flext_core.utilities import u as flext_u
+from flext_core.utilities import u
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import FlextPluginConstants as c_constants
@@ -36,7 +36,7 @@ class FlextPluginModels(FlextModels):
     def __init_subclass__(cls, **kwargs: object) -> None:
         """Warn when FlextPluginModels is subclassed directly."""
         super().__init_subclass__(**kwargs)
-        flext_u.Deprecation.warn_once(
+        u.Deprecation.warn_once(
             f"subclass:{cls.__name__}",
             "Subclassing FlextPluginModels is deprecated. Use FlextModels directly with composition instead.",
         )

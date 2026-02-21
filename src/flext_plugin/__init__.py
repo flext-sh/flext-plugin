@@ -23,7 +23,7 @@ from flext_plugin.loader import FlextPluginLoader
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.services import FlextPluginService
-from flext_plugin.typings import FlextPluginTypes
+from flext_plugin.typings import FlextPluginTypes, t
 
 __all__ = [
     "FlextPluginApi",
@@ -38,4 +38,5 @@ __all__ = [
     "FlextPluginTypes",
     "__version__",
     "__version_info__",
+    "t",
 ]

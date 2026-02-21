@@ -19,7 +19,8 @@ from typing import Protocol
 
 import pytest
 from anyio import Path as AnyioPath
-from flext_core import FlextTypes as t, FlextContainer, FlextExceptions, FlextService
+from flext_plugin import t
+from flext_core import FlextContainer, FlextExceptions, FlextService
 
 from flext_plugin import (
     FlextPluginModels,

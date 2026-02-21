@@ -238,6 +238,9 @@ def run_scope(scope: Scope, *, apply: bool, workspace_root: Path) -> int:
             f"Source: {source}",
         ],
     )
+    result = "OK" if apply else "WARN"
+    reason = f"generated:{generated}" if apply else "dry-run"
+    print(f"PROJECT={scope.name} PHASE=generate RESULT={result} REASON={reason}")
     return 0
 
 

@@ -13,7 +13,7 @@ import importlib.util
 from collections.abc import Callable, Mapping
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextTypes as t, T, r
+from flext_core import FlextLogger, T, r, t
 
 from flext_plugin.models import m
 from flext_plugin.protocols import p

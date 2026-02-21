@@ -114,6 +114,7 @@ def main() -> int:
             changed += 1
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
+    print(f"files_changed={changed}")
     return 0
 
 

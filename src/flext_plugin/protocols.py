@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_core import FlextResult as r
+from flext_core import r
 from flext_core.protocols import FlextProtocols
 from flext_core.typings import FlextTypes
 

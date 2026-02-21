@@ -14,7 +14,7 @@ Docker Usage:
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextTypes as t
+from flext_core import FlextContainer, t
 
 from flext_plugin import (
     FlextPluginApi,

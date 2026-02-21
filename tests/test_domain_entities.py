@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_core import FlextTypes as t
+from flext_plugin import t
 
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.models import FlextPluginModels

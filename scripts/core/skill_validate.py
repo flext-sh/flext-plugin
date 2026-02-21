@@ -45,6 +45,7 @@ class SkillInfraError(Exception):
 
 def eprint(message: str) -> None:
     """Print an error message to stderr."""
+    print(message, file=sys.stderr)
 
 
 def run_cmd(
@@ -106,6 +107,10 @@ def normalize_exclude_globs(
             prefix = proj + "/"
             if pat.startswith(prefix):
                 stripped = pat[len(prefix) :]
+                print(
+                    f"  Warning: exclude '{pat}' stripped to '{stripped}' (project-relative)",
+                    file=sys.stderr,
+                )
                 break
         result.append(stripped)
     return result
@@ -757,6 +762,12 @@ def validate_skill(
     counts: dict[str, int] = {}
     per_project_counts: dict[str, dict[str, int]] = {}
 
+    print(f"\n{'=' * 72}")
+    print(f"Skill: {skill_name}")
+    print(f"Mode: {mode}")
+    print(f"Projects: {', '.join(selected_projects)}")
+    print(f"{'=' * 72}")
+
     for project_name in selected_projects:
         project_path = project_lookup[project_name].resolve()
         tracked = get_tracked_files(project_path)
@@ -764,6 +775,9 @@ def validate_skill(
             tracked, include_globs, exclude_globs, project_path
         )
         allowed_files = set(selected_files)
+
+        print(f"\n  Project: {project_name}")
+        print(f"    tracked={len(tracked)} selected={len(selected_files)}")
 
         project_groups: dict[str, int] = {}
 
@@ -781,7 +795,7 @@ def validate_skill(
             group = str(rule_obj.get("group", rule_id)).strip() or rule_id
 
             if rule_type == "ast-grep":
-                grouped, _raw = run_ast_grep_rule(
+                grouped, raw = run_ast_grep_rule(
                     rule=rule_obj,
                     skill_dir=skill_dir,
                     project_name=project_name,
@@ -793,6 +807,7 @@ def validate_skill(
                 for key, amount in grouped.items():
                     counts[key] = counts.get(key, 0) + amount
                     project_groups[key] = project_groups.get(key, 0) + amount
+                print(f"    [{rule_id}] ast-grep matches={raw}")
 
             elif rule_type == "custom":
                 custom_count = run_custom_rule(
@@ -803,6 +818,7 @@ def validate_skill(
                 )
                 counts[group] = counts.get(group, 0) + custom_count
                 project_groups[group] = project_groups.get(group, 0) + custom_count
+                print(f"    [{rule_id}] custom violations={custom_count}")
 
             else:
                 msg = f"Unsupported rule type '{rule_type}' in rule '{rule_id}'"
@@ -821,6 +837,7 @@ def validate_skill(
             project_groups["custom_validate"] = (
                 project_groups.get("custom_validate", 0) + cv_count
             )
+            print(f"    [custom_validate] violations={cv_count}")
 
         per_project_counts[project_name] = dict(sorted(project_groups.items()))
 
@@ -841,6 +858,7 @@ def validate_skill(
         write_json(baseline_path, baseline_payload)
         baseline_data = baseline_payload
         baseline_exists = True
+        print(f"\n  Baseline updated: {baseline_path}")
 
     baseline_initialized = False
     if mode == "baseline" and not baseline_exists:
@@ -855,6 +873,7 @@ def validate_skill(
         baseline_data = baseline_payload
         baseline_exists = True
         baseline_initialized = True
+        print(f"\n  Baseline initialized: {baseline_path}")
 
     raw_baseline_counts = baseline_data.get("counts", {}) if baseline_data else {}
     if raw_baseline_counts and not isinstance(raw_baseline_counts, dict):
@@ -909,6 +928,9 @@ def validate_skill(
     }
 
     write_json(report_path, report)
+    print(f"\n  Report: {report_path}")
+    print(f"  Total violations: {total}")
+    print(f"  Result: {'PASS' if passed else 'FAIL'}")
 
     return passed, report
 
@@ -917,16 +939,20 @@ def list_skills(skills_dir: Path) -> int:
     """List skills and their configured rule metadata."""
     skills = discover_skills(skills_dir)
     if not skills:
+        print("No skills with rules.yml found")
         return EXIT_PASS
 
-    for _skill_name, rules_path in skills:
+    print(f"{'Skill':<40} {'Rules':<7} {'Custom':<7}")
+    print("-" * 62)
+    for skill_name, rules_path in skills:
         try:
             rules = load_rules_yml(rules_path)
             rules_obj = rules.get("rules", [])
-            len(rules_obj) if isinstance(rules_obj, list) else 0
-            "yes" if rules.get("custom_validate") else "no"
-        except (SkillUsageError, SkillInfraError):
-            pass
+            count = len(rules_obj) if isinstance(rules_obj, list) else 0
+            has_custom = "yes" if rules.get("custom_validate") else "no"
+            print(f"{skill_name:<40} {count:<7} {has_custom:<7}")
+        except (SkillUsageError, SkillInfraError) as exc:
+            print(f"{skill_name:<40} {'ERR':<7} {'ERR':<7} {exc}")
     return EXIT_PASS
 
 
@@ -946,10 +972,14 @@ def list_projects(root: Path) -> int:
         else []
     )
 
-    for _name in flext:
-        pass
-    for _name in external:
-        pass
+    print(f"Root project: {discovered.get('root', '.')}")
+    print(f"FLEXT projects ({len(flext)}):")
+    for name in flext:
+        print(f"  {name}")
+    print(f"External projects ({len(external)}):")
+    for name in external:
+        print(f"  {name}")
+    print(f"Total scan targets (including root): {1 + len(flext) + len(external)}")
     return EXIT_PASS
 
 
@@ -1040,6 +1070,7 @@ def run_main(argv: list[str]) -> int:
     if args.all:
         skills = discover_skills(skills_dir)
         if not skills:
+            print("No skills with rules.yml found")
             return EXIT_PASS
     else:
         skill_name = str(args.skill)
@@ -1078,23 +1109,33 @@ def run_main(argv: list[str]) -> int:
             pass_map[skill_name] = False
             infra_errors.append(f"{skill_name}: {exc}")
 
+    print(f"\n{'=' * 72}")
+    print(f"Validation summary: {len(skills)} skill(s)")
     for skill_name, _rules_path in skills:
-        "PASS" if pass_map.get(skill_name) else "FAIL"
+        status = "PASS" if pass_map.get(skill_name) else "FAIL"
+        total = 0
         for report in reports:
             if report.get("skill") == skill_name:
                 maybe_total = report.get("total", 0)
                 if isinstance(maybe_total, int):
-                    pass
+                    total = maybe_total
                 break
+        print(f"  {skill_name}: {status} total={total}")
 
     if failed_skills:
-        pass
+        print(f"Failed skills: {', '.join(failed_skills)}")
     if usage_errors:
-        for _item in usage_errors:
-            pass
+        print("Usage/config errors:")
+        for item in usage_errors:
+            print(f"  {item}")
     if infra_errors:
-        for _item in infra_errors:
-            pass
+        print("Infra/runtime errors:")
+        for item in infra_errors:
+            print(f"  {item}")
+
+    overall_pass = not failed_skills and not usage_errors and not infra_errors
+    print(f"Overall: {'PASS' if overall_pass else 'FAIL'}")
+    print(f"{'=' * 72}")
 
     if infra_errors:
         return EXIT_INFRA
