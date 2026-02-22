@@ -184,6 +184,7 @@ dependencies.flext-observability.develop = true
 dependencies.flext-observability.path = "../flext-observability"
 packages = [ { from = "src", include = "flext_plugin" } ]
 
+# [MANAGED] ruff
 [tool.ruff]
 extend = "../ruff-shared.toml"
 lint.isort.known-first-party = [
