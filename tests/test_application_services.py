@@ -820,7 +820,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        config = FlextPluginModels.PluginConfig(plugin_name="test")
+        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test")
         result = service.update_plugin_config("", config)
         assert not result.is_success
         assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
@@ -831,7 +831,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test update_plugin_config with mismatched plugin name fails."""
         # Create config for one plugin but try to update a different one
-        config = FlextPluginModels.PluginConfig(plugin_name="different-plugin")
+        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="different-plugin")
         result = service.update_plugin_config("test-plugin", config)
         # Should fail because plugin doesn't exist or names mismatch
         assert not result.is_success
@@ -841,7 +841,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
-        config = FlextPluginModels.PluginConfig(plugin_name="real-test-plugin")
+        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="real-test-plugin")
         result = service.update_plugin_config("real-test-plugin", config)
 
         # Accept either success or failure - depends on plugin being loaded
@@ -1369,7 +1369,7 @@ class TestServiceErrorHandling:
         service = FlextPluginService(container=container)
 
         # Operations should work with fallback implementations even with real files
-        result = service.discover_plugins(str(temp_plugin_dir))
+        result = service.discover_plugins([str(temp_plugin_dir)])
 
         # Check for expected infrastructure failures - these are acceptable
         if result.is_failure and ("not configured" in str(result.error)):
@@ -1436,12 +1436,12 @@ class TestServiceErrorHandling:
         service = FlextPluginService()
 
         # Test with empty path (handled gracefully, returns success with list)
-        result = service.discover_plugins("")
+        result = service.discover_plugins([""])
         assert result.is_success or result.is_failure
 
         # Test with very long invalid path (should handle gracefully)
         invalid_path = "/" + "x" * 500  # Very long path
-        result2 = service.discover_plugins(invalid_path)
+        result2 = service.discover_plugins([invalid_path])
         # Should either succeed (empty result) or fail gracefully
         assert isinstance(result2.is_success, bool)
 
@@ -1498,7 +1498,7 @@ class TestBackwardsCompatibilityAliasesReal:
         # Test REAL functionality through alias
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            result = service.discover_plugins(temp_dir)
+            result = service.discover_plugins([temp_dir])
 
             # Check for expected infrastructure failures - these are acceptable
             if result.is_failure and ("not configured" in str(result.error)):

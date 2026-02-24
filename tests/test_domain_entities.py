@@ -136,7 +136,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
-        config = FlextPluginModels.PluginConfig(
+        config = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={
                 "enabled": True,
@@ -150,7 +150,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginModels.Config default values."""
-        config = FlextPluginModels.PluginConfig(plugin_name="test-plugin")
+        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test-plugin")
 
         assert config.plugin_name == "test-plugin"
         assert config.settings == {}
@@ -163,7 +163,7 @@ class TestFlextPluginSettings:
             "timeout_seconds": 300,
             "nested": {"deep": "value"},
         }
-        config = FlextPluginModels.PluginConfig(
+        config = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings=settings,
         )
@@ -174,11 +174,11 @@ class TestFlextPluginSettings:
 
 
 class TestFlextPluginExecution:
-    """Test FlextPluginModels.ExecutionResult entity functionality."""
+    """Test FlextPluginModels.Plugin.ExecutionResult entity functionality."""
 
     def test_execution_result_success(self) -> None:
         """Test creating successful ExecutionResult."""
-        result = FlextPluginModels.ExecutionResult(
+        result = FlextPluginModels.Plugin.ExecutionResult(
             success=True,
             data={"output": "test data"},
             execution_time_ms=150.5,
@@ -191,7 +191,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_failure(self) -> None:
         """Test creating failed ExecutionResult."""
-        result = FlextPluginModels.ExecutionResult(
+        result = FlextPluginModels.Plugin.ExecutionResult(
             success=False,
             error="Plugin execution failed",
             execution_time_ms=50.0,
@@ -204,7 +204,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_defaults(self) -> None:
         """Test ExecutionResult default values."""
-        result = FlextPluginModels.ExecutionResult(success=True)
+        result = FlextPluginModels.Plugin.ExecutionResult(success=True)
 
         assert result.success is True
         assert result.data == {}
@@ -217,7 +217,7 @@ class TestFlextPluginExecution:
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
-        result = FlextPluginModels.ExecutionResult(
+        result = FlextPluginModels.Plugin.ExecutionResult(
             success=True,
             data=complex_data,
             execution_time_ms=100.0,
@@ -229,11 +229,11 @@ class TestFlextPluginExecution:
 
 
 class TestFlextPluginRegistryEntity:
-    """Test FlextPluginModels.Registry domain entity functionality."""
+    """Test FlextPluginModels.Plugin.Registry domain entity functionality."""
 
     def test_registry_creation(self) -> None:
-        """Test creating FlextPluginModels.Registry entity."""
-        registry = FlextPluginModels.Registry()
+        """Test creating FlextPluginModels.Plugin.Registry entity."""
+        registry = FlextPluginModels.Plugin.Registry()
 
         assert registry.plugins == {}
         assert registry.last_updated is not None
@@ -245,7 +245,7 @@ class TestFlextPluginRegistryEntity:
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }
-        registry = FlextPluginModels.Registry(plugins=plugins)
+        registry = FlextPluginModels.Plugin.Registry(plugins=plugins)
 
         assert len(registry.plugins) == 2
         assert "plugin1" in registry.plugins
@@ -253,7 +253,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_timestamps(self) -> None:
         """Test registry timestamps."""
-        registry = FlextPluginModels.Registry()
+        registry = FlextPluginModels.Plugin.Registry()
 
         # Timestamps should be set on creation
         assert registry.last_updated is not None
@@ -261,11 +261,11 @@ class TestFlextPluginRegistryEntity:
 
 
 class TestFlextPluginMetadata:
-    """Test FlextPluginModels.PluginMetadata functionality."""
+    """Test FlextPluginModels.Plugin.PluginMetadata functionality."""
 
     def test_metadata_creation(self) -> None:
-        """Test creating FlextPluginModels.PluginMetadata."""
-        metadata = FlextPluginModels.PluginMetadata(
+        """Test creating FlextPluginModels.Plugin.PluginMetadata."""
+        metadata = FlextPluginModels.Plugin.PluginMetadata(
             name="test-plugin",
             version="1.0.0",
             entry_point="test.entry:main",
@@ -284,7 +284,7 @@ class TestFlextPluginMetadata:
 
     def test_metadata_defaults(self) -> None:
         """Test PluginMetadata default values."""
-        metadata = FlextPluginModels.PluginMetadata(
+        metadata = FlextPluginModels.Plugin.PluginMetadata(
             name="minimal-plugin",
             version="1.0.0",
             entry_point="minimal.entry:main",
@@ -298,7 +298,7 @@ class TestFlextPluginMetadata:
 
     def test_metadata_with_all_fields(self) -> None:
         """Test PluginMetadata with all fields."""
-        metadata = FlextPluginModels.PluginMetadata(
+        metadata = FlextPluginModels.Plugin.PluginMetadata(
             name="full-plugin",
             version="2.0.0",
             entry_point="full.entry:main",

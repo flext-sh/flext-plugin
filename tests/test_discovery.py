@@ -86,7 +86,7 @@ class TestFlextPluginDiscovery:
         # Create minimal valid plugin data instead of None
         from pathlib import Path
         from flext_plugin.models import FlextPluginModels
-        plugin_data = FlextPluginModels.DiscoveryData(
+        plugin_data = FlextPluginModels.Plugin.DiscoveryData(
             name="test_plugin",
             version="1.0.0",
             path=Path("test_path"),

@@ -65,7 +65,7 @@ class TestFlextPluginHandlers:
         assert len(handlers._handlers["priority_event"]) == 2
         # Check that handlers are sorted by priority (highest first)
         first_handler = handlers._handlers["priority_event"][0]
-        assert first_handler["priority"] == 10
+        assert first_handler.priority == 10
 
     def test_register_multiple_handlers(self, handlers: FlextPluginHandlers) -> None:
         """Test registering multiple handlers for different events."""

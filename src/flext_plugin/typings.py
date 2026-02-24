@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Literal, TypeVar
 
 from flext_core.typings import FlextTypes
@@ -29,7 +29,7 @@ class FlextPluginTypes(FlextTypes):
     # Alias for projects expecting t.Core.* (JsonDict, GeneralValueType)
     class _Core:
         JsonDict = FlextTypes.JsonDict
-        GeneralValueType = FlextTypes.GeneralValueType
+        GeneralValueType = FlextTypes.JsonValue
 
     Core = _Core
 
@@ -37,8 +37,8 @@ class FlextPluginTypes(FlextTypes):
         """Event handler type definitions."""
 
         type EventHandler = Callable[
-            [dict[str, FlextTypes.GeneralValueType]],
-            Awaitable[FlextTypes.GeneralValueType],
+            [Mapping[str, FlextTypes.JsonValue]],
+            Awaitable[FlextTypes.JsonValue],
         ]
 
         class HandlerInfo(BaseModel):
@@ -55,9 +55,9 @@ class FlextPluginTypes(FlextTypes):
         # Collections
         type StringList = list[str]
         type StringSet = set[str]
-        type StringDict = dict[str, str]
-        type IntDict = dict[str, int]
-        type FloatDict = dict[str, float]
+        type StringDict = Mapping[str, str]
+        type IntDict = Mapping[str, int]
+        type FloatDict = Mapping[str, float]
 
         # Plugin types - Using JsonDict from FlextTypes for JSON-like data
         type PluginList = list[FlextTypes.JsonDict]
@@ -144,7 +144,7 @@ class FlextPluginTypes(FlextTypes):
 
         type DiscoveryPath = str
         type DiscoveryResult = FlextTypes.JsonDict
-        type PluginLoader = FlextTypes.GeneralValueType
+        type PluginLoader = FlextTypes.JsonValue
         type EntryPoint = str
 
     class Execution:
@@ -172,7 +172,7 @@ class FlextPluginTypes(FlextTypes):
 
         type WatchConfig = FlextTypes.JsonDict
         type ReloadEvent = FlextTypes.JsonDict
-        type FileWatcher = FlextTypes.GeneralValueType
+        type FileWatcher = FlextTypes.JsonValue
 
 
 # Shorthand alias for convenient use throughout ecosystem

@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 
 from flext_core import r, u
 from flext_core.settings import FlextSettings
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_plugin.typings import t
@@ -50,12 +50,12 @@ class FlextPluginSettings(FlextSettings):
         default="",
         description="Name of the plugin this config belongs to",
     )
-    config_data: dict[str, t.GeneralValueType] = Field(
+    config_data: t.Plugin.ConfigDict = Field(
         default_factory=dict,
         description="Plugin configuration data",
     )
     enabled: bool = Field(default=True, description="Whether plugin is enabled")
-    settings: dict[str, t.GeneralValueType] = Field(
+    settings: t.Plugin.SettingsDict = Field(
         default_factory=dict,
         description="Plugin settings",
     )
@@ -76,43 +76,52 @@ class FlextPluginSettings(FlextSettings):
         description="Configuration last update timestamp",
     )
 
+    class CreateOptions(BaseModel):
+        """Options for strict plugin settings creation."""
+
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        version: str = "1"
+        entity_metadata: t.Plugin.MetadataDict = Field(default_factory=dict)
+        enabled: bool = True
+        settings: t.Plugin.SettingsDict = Field(default_factory=dict)
+        dependencies: list[str] = Field(default_factory=list)
+        priority: int = 100
+        max_memory_mb: int = 512
+        max_cpu_percent: int = 50
+        timeout_seconds: float = 30.0
+        created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+        updated_at: datetime | None = None
+
     @classmethod
     def create(
         cls,
         *,
         plugin_name: str,
         entity_id: str | None = None,
-        config_data: dict[str, t.GeneralValueType] | None = None,
-        **kwargs: object,
+        config_data: t.Plugin.ConfigDict | None = None,
+        options: CreateOptions | None = None,
     ) -> FlextPluginSettings:
         """Create plugin config entity with proper validation."""
         entity_id = entity_id or u.generate("entity")
+        create_options = options if options is not None else cls.CreateOptions()
 
         # Create instance data
-        instance_data: dict[str, object] = {
+        instance_data = {
             "id": entity_id,
-            "version": kwargs.get("version", "1"),
-            "metadata": kwargs.get("entity_metadata", {}),
+            "version": create_options.version,
+            "metadata": create_options.entity_metadata,
             "plugin_name": plugin_name,
             "config_data": config_data or {},
-            "enabled": kwargs.get("enabled", True),
-            "settings": kwargs.get("settings", {}),
-            "dependencies": kwargs.get("dependencies", []),
-            "priority": kwargs.get("priority", 100),
-            "max_memory_mb": kwargs.get(
-                "max_memory_mb",
-                512,
-            ),
-            "max_cpu_percent": kwargs.get(
-                "max_cpu_percent",
-                50,
-            ),
-            "timeout_seconds": kwargs.get(
-                "timeout_seconds",
-                30,
-            ),
-            "created_at": kwargs.get("created_at", datetime.now(UTC)),
-            "updated_at": kwargs.get("updated_at"),
+            "enabled": create_options.enabled,
+            "settings": create_options.settings,
+            "dependencies": create_options.dependencies,
+            "priority": create_options.priority,
+            "max_memory_mb": create_options.max_memory_mb,
+            "max_cpu_percent": create_options.max_cpu_percent,
+            "timeout_seconds": create_options.timeout_seconds,
+            "created_at": create_options.created_at,
+            "updated_at": create_options.updated_at,
         }
 
         return cls.model_validate(instance_data)

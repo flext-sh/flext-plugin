@@ -131,7 +131,7 @@ class TestFlextPluginModels:
 
     def test_execution_result_creation(self) -> None:
         """Test ExecutionResult creation."""
-        result = FlextPluginModels.ExecutionResult(
+        result = FlextPluginModels.Plugin.ExecutionResult(
             success=True,
             data={"output": "result"},
             error="",
@@ -145,7 +145,7 @@ class TestFlextPluginModels:
 
     def test_execution_result_failure(self) -> None:
         """Test ExecutionResult failure case."""
-        result = FlextPluginModels.ExecutionResult(
+        result = FlextPluginModels.Plugin.ExecutionResult(
             success=False,
             data={},
             error="Plugin execution failed",
@@ -159,7 +159,7 @@ class TestFlextPluginModels:
         """Test DiscoveryData creation."""
         from pathlib import Path
 
-        discovery = FlextPluginModels.DiscoveryData(
+        discovery = FlextPluginModels.Plugin.DiscoveryData(
             name="test-plugin",
             version="1.0.0",
             path=Path("/path/to/plugin"),
@@ -175,7 +175,7 @@ class TestFlextPluginModels:
 
     def test_plugin_metadata_creation(self) -> None:
         """Test PluginMetadata creation."""
-        metadata = FlextPluginModels.PluginMetadata(
+        metadata = FlextPluginModels.Plugin.PluginMetadata(
             name="test-plugin",
             version="1.0.0",
             entry_point="test_plugin:main",
@@ -190,7 +190,7 @@ class TestFlextPluginModels:
 
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
-        result = FlextPluginModels.ValidationResult(
+        result = FlextPluginModels.Plugin.ValidationResult(
             is_valid=True,
             errors=[],
             warnings=[],
@@ -202,7 +202,7 @@ class TestFlextPluginModels:
 
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
-        result = FlextPluginModels.ValidationResult(
+        result = FlextPluginModels.Plugin.ValidationResult(
             is_valid=False,
             errors=["Error 1", "Error 2"],
             warnings=["Warning 1"],
@@ -214,7 +214,7 @@ class TestFlextPluginModels:
 
     def test_config_creation(self) -> None:
         """Test Config model creation."""
-        config = FlextPluginModels.PluginConfig(
+        config = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={"key": "value"},
         )
@@ -224,7 +224,7 @@ class TestFlextPluginModels:
 
     def test_registry_creation(self) -> None:
         """Test Registry model creation."""
-        registry = FlextPluginModels.Registry(
+        registry = FlextPluginModels.Plugin.Registry(
             plugins={"plugin1": {}},
         )
 

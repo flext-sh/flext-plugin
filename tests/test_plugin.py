@@ -137,7 +137,7 @@ class TestPluginRegistry:
         plugin: Plugin,
     ) -> None:
         """Test successful plugin registration."""
-        result = registry.register(plugin)
+        result = registry.register(plugin.name, plugin)
 
         assert result.is_success
         assert result.value is True
@@ -153,7 +153,7 @@ class TestPluginRegistry:
         plugin: Plugin,
     ) -> None:
         """Test successful plugin unregistration."""
-        registry.register(plugin)
+        registry.register(plugin.name, plugin)
 
         # Verify registered
         plugins_result = registry.list_plugins()
@@ -182,7 +182,7 @@ class TestPluginRegistry:
         ]
 
         for plugin in plugins:
-            result = registry.register(plugin)
+            result = registry.register(plugin.name, plugin)
             assert result.is_success
 
         plugins_result = registry.list_plugins()
