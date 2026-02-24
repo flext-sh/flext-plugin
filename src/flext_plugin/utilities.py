@@ -11,7 +11,7 @@ import hashlib
 import importlib.util
 import json
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -19,7 +19,7 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextUtilities, r
+from flext_core import FlextRuntime, FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -237,7 +237,7 @@ class FlextPluginUtilities(u):
         def create_file_watcher(
             watch_path: Path | str,
             callback_function: Callable[..., object] | None = None,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Create file system watcher for plugin hot reload.
 
             Args:
@@ -274,7 +274,7 @@ class FlextPluginUtilities(u):
 
         @staticmethod
         def detect_file_changes(
-            watcher_config: dict[str, t.GeneralValueType],
+            watcher_config: Mapping[str, t.GeneralValueType],
         ) -> r[t.Plugin.StringList]:
             """Detect file changes in watched directory.
 
@@ -288,7 +288,7 @@ class FlextPluginUtilities(u):
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified = watcher_config.get("last_modified", {})
-                if not isinstance(last_modified, dict):
+                if not u.is_dict_like(last_modified):
                     last_modified = {}
                 changed_files = []
 
@@ -308,7 +308,6 @@ class FlextPluginUtilities(u):
                             changed_files.append(file_key)
                             last_modified[file_key] = current_mtime
 
-                watcher_config["last_modified"] = last_modified
                 return r[t.Plugin.StringList].ok(
                     changed_files,
                 )
@@ -381,7 +380,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def validate_plugin_security(
             plugin_content: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Validate plugin security before execution.
 
             Args:
@@ -406,7 +405,7 @@ class FlextPluginUtilities(u):
                     if dangerous_op in plugin_content:
                         security_report["safe"] = False
                         violations = security_report["violations"]
-                        if isinstance(violations, list):
+                        if u.is_list_like(violations):
                             violations.append(
                                 f"Dangerous operation detected: {dangerous_op}",
                             )
@@ -421,18 +420,18 @@ class FlextPluginUtilities(u):
                         for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
                     ):
                         warnings = security_report["warnings"]
-                        if isinstance(warnings, list):
+                        if u.is_list_like(warnings):
                             warnings.append(f"Potentially unsafe import: {module_name}")
 
                 # Basic code analysis
                 if "network" in plugin_content.lower() or "socket" in plugin_content:
                     warnings = security_report["warnings"]
-                    if isinstance(warnings, list):
+                    if u.is_list_like(warnings):
                         warnings.append("Plugin may perform network operations")
 
                 if "file" in plugin_content.lower() or "write" in plugin_content:
                     warnings = security_report["warnings"]
-                    if isinstance(warnings, list):
+                    if u.is_list_like(warnings):
                         warnings.append("Plugin may perform file operations")
 
                 return r[dict[str, t.GeneralValueType]].ok(dict(security_report))
@@ -444,7 +443,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def create_sandbox_config(
             plugin_name: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Create sandbox configuration for plugin execution.
 
             Args:
@@ -505,7 +504,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def load_plugin_config(
             config_path: Path | str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Load plugin configuration from file.
 
             Args:
@@ -545,7 +544,7 @@ class FlextPluginUtilities(u):
 
                 # Validate schema version
                 if (
-                    isinstance(config, dict)
+                    u.is_dict_like(config)
                     and config.get("schema_version")
                     != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
                 ):
@@ -561,7 +560,7 @@ class FlextPluginUtilities(u):
 
         @staticmethod
         def validate_plugin_config(
-            config: dict[str, t.GeneralValueType],
+            config: Mapping[str, t.GeneralValueType],
         ) -> r[None]:
             """Validate plugin configuration structure and values.
 
@@ -602,9 +601,9 @@ class FlextPluginUtilities(u):
 
         @staticmethod
         def merge_plugin_configs(
-            base_config: dict[str, t.GeneralValueType],
-            override_config: dict[str, t.GeneralValueType],
-        ) -> r[dict[str, t.GeneralValueType]]:
+            base_config: Mapping[str, t.GeneralValueType],
+            override_config: Mapping[str, t.GeneralValueType],
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Merge plugin configurations with override precedence.
 
             Args:
@@ -620,10 +619,10 @@ class FlextPluginUtilities(u):
 
                 for key, value in override_config.items():
                     existing_value = merged_config.get(key)
-                    if isinstance(value, dict) and isinstance(existing_value, dict):
+                    if u.is_dict_like(value) and u.is_dict_like(existing_value):
                         # Recursively merge nested dictionaries
-                        base_nested_config = existing_value.copy()
-                        override_value = value.copy()
+                        base_nested_config = dict(existing_value)
+                        override_value = dict(value)
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
                             override_value,
@@ -661,7 +660,7 @@ class FlextPluginUtilities(u):
             plugin_module: ModuleType,
             function_name: str,
             args: list[t.GeneralValueType] | None = None,
-            kwargs: dict[str, t.GeneralValueType] | None = None,
+            kwargs: Mapping[str, t.GeneralValueType] | None = None,
         ) -> r[object]:
             """Execute a specific function within a plugin module.
 
@@ -676,12 +675,12 @@ class FlextPluginUtilities(u):
 
             """
             try:
-                if not hasattr(plugin_module, function_name):
+                plugin_function = getattr(plugin_module, function_name, None)
+                if plugin_function is None:
                     return r[object].fail(
                         f"Function '{function_name}' not found in plugin module",
                     )
 
-                plugin_function = getattr(plugin_module, function_name)
                 if not callable(plugin_function):
                     return r[object].fail(
                         f"'{function_name}' is not callable",
@@ -756,7 +755,7 @@ class FlextPluginUtilities(u):
                 missing_functions = [
                     func_name
                     for func_name in required_functions
-                    if not hasattr(plugin_module, func_name)
+                    if getattr(plugin_module, func_name, None) is None
                 ]
 
                 if missing_functions:
@@ -768,7 +767,7 @@ class FlextPluginUtilities(u):
                 non_callable = [
                     func_name
                     for func_name in required_functions
-                    if not callable(getattr(plugin_module, func_name))
+                    if not callable(getattr(plugin_module, func_name, None))
                 ]
 
                 if non_callable:
@@ -792,7 +791,7 @@ class FlextPluginUtilities(u):
         @staticmethod
         def load_plugin_registry(
             registry_path: Path | str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Load plugin registry from file.
 
             Args:
@@ -804,6 +803,7 @@ class FlextPluginUtilities(u):
             """
             try:
                 path = Path(registry_path)
+                mutable_registry: dict[str, t.GeneralValueType] = dict(registry)
                 if not path.exists():
                     # Create empty registry
                     registry: dict[str, t.GeneralValueType] = {
@@ -835,7 +835,7 @@ class FlextPluginUtilities(u):
 
         @staticmethod
         def save_plugin_registry(
-            registry: dict[str, t.GeneralValueType],
+            registry: Mapping[str, t.GeneralValueType],
             registry_path: Path | str,
         ) -> r[None]:
             """Save plugin registry to file with backup.
@@ -864,10 +864,12 @@ class FlextPluginUtilities(u):
                     )
 
                 # Update timestamp
-                registry["last_updated"] = datetime.now(UTC).isoformat()
+                mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
 
                 # Save registry
-                path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
+                path.write_text(
+                    json.dumps(mutable_registry, indent=2), encoding="utf-8"
+                )
 
                 return r[None].ok(None)
             except Exception as e:
@@ -875,9 +877,9 @@ class FlextPluginUtilities(u):
 
         @staticmethod
         def register_plugin(
-            registry: dict[str, t.GeneralValueType],
+            registry: Mapping[str, t.GeneralValueType],
             plugin_metadata: FlextPluginModels.Plugin.PluginMetadata,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.GeneralValueType]]:
             """Register plugin in registry.
 
             Args:
@@ -889,8 +891,9 @@ class FlextPluginUtilities(u):
 
             """
             try:
-                if "plugins" not in registry:
-                    registry["plugins"] = {}
+                mutable_registry: dict[str, t.GeneralValueType] = dict(registry)
+                if "plugins" not in mutable_registry:
+                    mutable_registry["plugins"] = {}
 
                 plugin_info = {
                     "name": plugin_metadata.name,
@@ -905,13 +908,13 @@ class FlextPluginUtilities(u):
                     "metadata": getattr(plugin_metadata, "metadata", {}),
                 }
 
-                plugins = registry["plugins"]
-                if isinstance(plugins, dict):
+                plugins = mutable_registry["plugins"]
+                if u.is_dict_like(plugins):
                     plugins[plugin_metadata.name] = plugin_info
 
-                return r[dict[str, t.GeneralValueType]].ok(registry)
+                return r[Mapping[str, t.GeneralValueType]].ok(mutable_registry)
             except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
+                return r[Mapping[str, t.GeneralValueType]].fail(
                     f"Plugin registration failed: {e}",
                 )
 
@@ -949,7 +952,7 @@ class FlextPluginUtilities(u):
     @classmethod
     def validate_model_config(cls, v: SettingsConfigDict) -> SettingsConfigDict:
         """Validate model configuration."""
-        if not isinstance(v, dict):
+        if not u.is_dict_like(v):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
         return v
@@ -968,7 +971,7 @@ class FlextPluginUtilities(u):
         ]
 
         for class_name in required_classes:
-            if not hasattr(self.__class__, class_name):
+            if getattr(self.__class__, class_name, None) is None:
                 msg = f"Missing required nested class: {class_name}"
                 raise ValueError(msg)
 

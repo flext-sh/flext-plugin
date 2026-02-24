@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r
+from flext_core import FlextLogger, FlextRuntime, r
 from flext_core.typings import t
 
 from flext_plugin.models import FlextPluginModels
@@ -90,7 +90,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: dict[str, t.GeneralValueType]) -> r[None]:
+        def configure(self, config: Mapping[str, t.GeneralValueType]) -> r[None]:
             """Configure component with provided settings."""
             try:
                 # Store configuration
@@ -100,13 +100,13 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
-        def get_config(self) -> dict[str, t.GeneralValueType]:
+        def get_config(self) -> Mapping[str, t.GeneralValueType]:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
         def initialize(
             self,
-            _context: dict[str, t.GeneralValueType],
+            _context: Mapping[str, t.GeneralValueType],
         ) -> r[None]:
             """Initialize plugin with context.
 
@@ -156,7 +156,7 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail(f"Shutdown failed: {e!s}")
 
-        def get_info(self) -> dict[str, t.GeneralValueType]:
+        def get_info(self) -> Mapping[str, t.GeneralValueType]:
             """Get plugin information.
 
             Returns:
@@ -182,7 +182,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            operations: dict[str, t.GeneralValueType] | None = None,
+            operations: Mapping[str, t.GeneralValueType] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
@@ -254,7 +254,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            connection_config: dict[str, t.GeneralValueType] | None = None,
+            connection_config: Mapping[str, t.GeneralValueType] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
@@ -324,7 +324,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            schema: dict[str, t.GeneralValueType] | None = None,
+            schema: Mapping[str, t.GeneralValueType] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
@@ -352,7 +352,7 @@ class FlextPluginImplementations:
             try:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
-                if not isinstance(data, dict):
+                if not u.is_dict_like(data):
                     return r[t.GeneralValueType].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
                 transformed: dict[str, t.GeneralValueType] = dict[
@@ -442,7 +442,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            _context: dict[str, t.GeneralValueType] | None = None,
+            _context: Mapping[str, t.GeneralValueType] | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -468,8 +468,8 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: FlextLogger,
-            config: dict[str, t.GeneralValueType] | None = None,
-            services: dict[str, t.GeneralValueType] | None = None,
+            config: Mapping[str, t.GeneralValueType] | None = None,
+            services: Mapping[str, t.GeneralValueType] | None = None,
         ) -> None:
             """Initialize the instance.
 
@@ -489,7 +489,7 @@ class FlextPluginImplementations:
             """Get logger for plugin."""
             return self._logger
 
-        def get_config(self) -> dict[str, t.GeneralValueType]:
+        def get_config(self) -> Mapping[str, t.GeneralValueType]:
             """Get configuration for plugin."""
             return dict(self._config)
 
@@ -628,13 +628,7 @@ class FlextPluginImplementations:
                     plugin_version=concrete_plugin.version,
                 )
                 # Register loaded plugin
-                if isinstance(
-                    self._registry,
-                    FlextPluginImplementations.ConcretePluginRegistry,
-                ):
-                    reg_result: r[None] = self._registry.register(plugin_entity)
-                else:
-                    return r[object].fail("Registry is not a ConcretePluginRegistry")
+                reg_result: r[None] = self._registry.register(plugin_entity)
                 if reg_result.is_failure:
                     return r[object].fail(
                         f"Failed to register loaded plugin: {reg_result.error}",

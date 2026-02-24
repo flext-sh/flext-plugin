@@ -8,11 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
+from collections.abc import Mapping
 from datetime import UTC, datetime
-from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
-from pydantic import BaseModel
 
 from flext_plugin.typings import t
 
@@ -129,7 +128,7 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: dict[str, t.GeneralValueType],
+        event_data: Mapping[str, t.GeneralValueType],
     ) -> FlextResult[list[t.GeneralValueType]]:
         """Trigger an event and execute all registered handlers.
 
@@ -163,13 +162,7 @@ class FlextPluginHandlers:
                 try:
                     handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
-                    if result is None or isinstance(
-                        result,
-                        (str, int, float, bool, datetime, Path, BaseModel, list, dict),
-                    ):
-                        results.append(result)
-                    else:
-                        results.append(str(result))
+                    results.append(result)
                 except Exception as e:
                     self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append({"error": str(e), "success": False})
@@ -186,7 +179,7 @@ class FlextPluginHandlers:
     async def _execute_handler(
         self,
         handler: t.Handlers.EventHandler,
-        event_data: dict[str, t.GeneralValueType],
+        event_data: Mapping[str, t.GeneralValueType],
     ) -> object:
         """Execute a single handler with proper error handling.
 
@@ -231,7 +224,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[dict[str, t.GeneralValueType]]:
+    ) -> list[Mapping[str, t.GeneralValueType]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -261,7 +254,7 @@ class FlextPluginHandlers:
         self.logger.info("Cleared %s events from history", count)
         return count
 
-    def get_registered_handlers(self) -> dict[str, int]:
+    def get_registered_handlers(self) -> Mapping[str, int]:
         """Get count of registered handlers by event type.
 
         Returns:
@@ -288,8 +281,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.GeneralValueType],
+    ) -> Mapping[str, t.GeneralValueType]:
         """Handle plugin discovered event.
 
         Args:
@@ -300,14 +293,14 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        name_str = str(plugin_name)
         self.logger.info("Plugin discovered: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_loaded(
         self,
-        event_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.GeneralValueType],
+    ) -> Mapping[str, t.GeneralValueType]:
         """Handle plugin loaded event.
 
         Args:
@@ -318,14 +311,14 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        name_str = str(plugin_name)
         self.logger.info("Plugin loaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_executed(
         self,
-        event_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.GeneralValueType],
+    ) -> Mapping[str, t.GeneralValueType]:
         """Handle plugin executed event.
 
         Args:
@@ -340,11 +333,9 @@ class FlextPluginHandlers:
         success = event_data.get("success", False)
 
         # Convert to proper types for logger
-        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
-        exec_str = (
-            str(execution_id) if not isinstance(execution_id, str) else execution_id
-        )
-        success_str = str(success) if not isinstance(success, bool) else success
+        name_str = str(plugin_name)
+        exec_str = str(execution_id)
+        success_str = str(success)
 
         self.logger.info(
             "Plugin executed: %s (execution: %s, success: %s)",
@@ -361,8 +352,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.GeneralValueType],
+    ) -> Mapping[str, t.GeneralValueType]:
         """Handle plugin error event.
 
         Args:
@@ -376,10 +367,8 @@ class FlextPluginHandlers:
         error_message = event_data.get("error_message", "Unknown error")
 
         # Convert to proper types for logger
-        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
-        error_str = (
-            str(error_message) if not isinstance(error_message, str) else error_message
-        )
+        name_str = str(plugin_name)
+        error_str = str(error_message)
 
         self.logger.error("Plugin error: %s - %s", name_str, error_str)
         return {
@@ -390,8 +379,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.GeneralValueType],
+    ) -> Mapping[str, t.GeneralValueType]:
         """Handle plugin unloaded event.
 
         Args:
@@ -402,7 +391,7 @@ class FlextPluginHandlers:
 
         """
         plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name) if not isinstance(plugin_name, str) else plugin_name
+        name_str = str(plugin_name)
         self.logger.info("Plugin unloaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
@@ -435,7 +424,7 @@ class FlextPluginHandlers:
             self.logger.exception("Failed to register default handlers")
             return FlextResult.fail(f"Default handler registration error: {e!s}")
 
-    def get_handler_status(self) -> dict[str, t.GeneralValueType]:
+    def get_handler_status(self) -> Mapping[str, t.GeneralValueType]:
         """Get the current status of the event handlers.
 
         Returns:

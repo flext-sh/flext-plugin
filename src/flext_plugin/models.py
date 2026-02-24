@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
 from typing import Self
@@ -105,17 +105,14 @@ class FlextPluginModels(FlextModels):
                 """Validate semantic version format (X.Y.Z)."""
                 min_version_parts = 2
                 max_version_parts = 3
-                if isinstance(value, str):
-                    parts = value.split(".")
-                    if (
-                        len(parts) < min_version_parts
-                        or len(parts) > max_version_parts
-                        or not all(p.isdigit() for p in parts if p)
-                    ):
-                        error_msg = (
-                            f"Version must be semantic format X.Y.Z, got: {value}"
-                        )
-                        raise ValueError(error_msg)
+                parts = value.split(".")
+                if (
+                    len(parts) < min_version_parts
+                    or len(parts) > max_version_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
                 return value
 
             @field_validator("plugin_type", mode="before")
@@ -159,7 +156,7 @@ class FlextPluginModels(FlextModels):
                 author: str = "",
                 plugin_type: str = c_constants.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: dict[str, FlextTypes.GeneralValueType] | None = None,
+                metadata: Mapping[str, FlextTypes.GeneralValueType] | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -242,23 +239,17 @@ class FlextPluginModels(FlextModels):
                 if "failure_count" not in self.metadata:
                     self.metadata["failure_count"] = 0
 
-                # Type-safe arithmetic using type narrowing
-                exec_count = self.metadata["execution_count"]
-                if isinstance(exec_count, int):
-                    self.metadata["execution_count"] = exec_count + 1
-
-                total_time = self.metadata["total_execution_time"]
-                if isinstance(total_time, (int, float)):
-                    self.metadata["total_execution_time"] = total_time + execution_time
+                exec_count = int(self.metadata.get("execution_count", 0))
+                total_time = float(self.metadata.get("total_execution_time", 0.0))
+                self.metadata["execution_count"] = exec_count + 1
+                self.metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
-                    success_count = self.metadata["success_count"]
-                    if isinstance(success_count, int):
-                        self.metadata["success_count"] = success_count + 1
+                    success_count = int(self.metadata.get("success_count", 0))
+                    self.metadata["success_count"] = success_count + 1
                 else:
-                    failure_count = self.metadata["failure_count"]
-                    if isinstance(failure_count, int):
-                        self.metadata["failure_count"] = failure_count + 1
+                    failure_count = int(self.metadata.get("failure_count", 0))
+                    self.metadata["failure_count"] = failure_count + 1
 
             def record_error(self, error_message: str) -> None:
                 """Record plugin error.
@@ -272,10 +263,8 @@ class FlextPluginModels(FlextModels):
                 if "last_error" not in self.metadata:
                     self.metadata["last_error"] = ""
 
-                # Type-safe arithmetic
-                error_count = self.metadata["error_count"]
-                if isinstance(error_count, int):
-                    self.metadata["error_count"] = error_count + 1
+                error_count = int(self.metadata.get("error_count", 0))
+                self.metadata["error_count"] = error_count + 1
                 self.metadata["last_error"] = error_message
 
             def activate(self) -> bool:
@@ -434,17 +423,14 @@ class FlextPluginModels(FlextModels):
                 """Validate semantic version format."""
                 min_parts = 2
                 max_parts = 3
-                if isinstance(value, str):
-                    parts = value.split(".")
-                    if (
-                        len(parts) < min_parts
-                        or len(parts) > max_parts
-                        or not all(p.isdigit() for p in parts if p)
-                    ):
-                        error_msg = (
-                            f"Version must be semantic format X.Y.Z, got: {value}"
-                        )
-                        raise ValueError(error_msg)
+                parts = value.split(".")
+                if (
+                    len(parts) < min_parts
+                    or len(parts) > max_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
                 return value
 
         class LoadData(FlextModels.Value):

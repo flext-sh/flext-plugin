@@ -318,7 +318,7 @@ class FlextPluginProtocols(FlextProtocols):
                 # INTERFACE
                 ...
 
-            def list_plugin_statuses(self) -> r[dict[str, str]]:
+            def list_plugin_statuses(self) -> r[Mapping[str, str]]:
                 """Get status of all plugins."""
                 # INTERFACE
                 ...

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from flext_core import r
 from flext_core.container import FlextContainer
@@ -62,7 +62,7 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: dict[str, t.GeneralValueType],
+        context: Mapping[str, t.GeneralValueType],
         execution_id: str | None = None,
     ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin by name with the given context."""

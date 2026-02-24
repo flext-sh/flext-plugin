@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_core import r, x
+from flext_core import FlextRuntime, r, x
 from flext_core.container import FlextContainer
 from flext_core.typings import t
 
@@ -103,8 +103,6 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     @property
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
-        if hasattr(self, "_container") and isinstance(self._container, FlextContainer):
-            return self._container
         return FlextContainer.get_global()
 
     def discover_and_register_plugins(
@@ -130,26 +128,27 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail(f"Discovery failed: {discovery_result.error}")
 
             # Type narrowing - discovery returns list of DiscoveryData or dicts
-            if not isinstance(discovery_result.value, list):
+            if not u.is_list_like(discovery_result.value):
                 return r.fail("Discovery did not return a list")
             registered_plugins: list[FlextPluginModels.Plugin.Plugin] = []
 
             for plugin_data in discovery_result.value:
                 # Support both DiscoveryData model and dict (adapter may return either)
-                if isinstance(plugin_data, FlextPluginModels.Plugin.DiscoveryData):
-                    name = plugin_data.name
-                    version = plugin_data.version
-                    metadata = plugin_data.metadata
-                elif isinstance(plugin_data, Mapping):
+                if u.is_dict_like(plugin_data):
                     name = str(plugin_data.get("name", ""))
                     version = str(plugin_data.get("version", "1.0.0"))
                     metadata_value = plugin_data.get("metadata")
                     metadata = (
-                        dict(metadata_value)
-                        if isinstance(metadata_value, Mapping)
-                        else {}
+                        dict(metadata_value) if u.is_dict_like(metadata_value) else {}
                     )
                 else:
+                    name = str(getattr(plugin_data, "name", ""))
+                    version = str(getattr(plugin_data, "version", "1.0.0"))
+                    metadata_value = getattr(plugin_data, "metadata", {})
+                    metadata = (
+                        dict(metadata_value) if u.is_dict_like(metadata_value) else {}
+                    )
+                if not name:
                     continue
                 # Create plugin entity
                 # Note: discovery_type is how plugin was found (file/entry_point)
@@ -247,24 +246,11 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
             # Loader may return LoadData (FlextPluginLoader) or dict (adapter)
             value = load_result.value
-            if isinstance(value, FlextPluginModels.Plugin.LoadData):
-                plugin_data = value
-                plugin = FlextPluginModels.Plugin.Plugin.create(
-                    name=plugin_data.name,
-                    plugin_version=plugin_data.version,
-                    description=plugin_data.module.__doc__ or "",
-                    author="",
-                    plugin_type=c.Plugin.PluginType.UTILITY,
-                    metadata={
-                        "module": plugin_data.module.__name__,
-                        "path": str(plugin_data.path),
-                    },
-                )
-            elif isinstance(value, Mapping):
+            if u.is_dict_like(value):
                 data = value
                 metadata_value = data.get("metadata")
                 metadata = (
-                    dict(metadata_value) if isinstance(metadata_value, Mapping) else {}
+                    dict(metadata_value) if u.is_dict_like(metadata_value) else {}
                 )
                 plugin = FlextPluginModels.Plugin.Plugin.create(
                     name=str(data.get("name", "")),
@@ -275,7 +261,25 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                     metadata=metadata,
                 )
             else:
-                return r.fail("Loader did not return LoadData")
+                plugin_name = str(getattr(value, "name", ""))
+                if not plugin_name:
+                    return r.fail("Loader did not return valid load data")
+                plugin_version = str(getattr(value, "version", "1.0.0"))
+                module = getattr(value, "module", None)
+                module_doc = str(getattr(module, "__doc__", "") or "")
+                module_name = str(getattr(module, "__name__", ""))
+                module_path = str(getattr(value, "path", ""))
+                plugin = FlextPluginModels.Plugin.Plugin.create(
+                    name=plugin_name,
+                    plugin_version=plugin_version,
+                    description=module_doc,
+                    author="",
+                    plugin_type=c.Plugin.PluginType.UTILITY,
+                    metadata={
+                        "module": module_name,
+                        "path": module_path,
+                    },
+                )
 
             # Validate plugin
             validation_result = plugin.validate_business_rules()
@@ -369,7 +373,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             # Mark execution as completed
             execution.mark_completed(success=True)
             # Type narrowing - executor returns dict result
-            if isinstance(exec_result.value, dict):
+            if u.is_dict_like(exec_result.value):
                 execution.result = dict(exec_result.value)
 
             # Record execution metrics
@@ -481,7 +485,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[dict[str, t.GeneralValueType]]:
+    ) -> r[Mapping[str, t.GeneralValueType]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -503,7 +507,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail(
                     f"Metrics retrieval failed: {metrics_result.error}",
                 )
-            if not isinstance(metrics_result.value, Mapping):
+            if not u.is_dict_like(metrics_result.value):
                 return r.fail("Metrics response is not a mapping")
             return r.ok(dict(metrics_result.value))
 
@@ -514,7 +518,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[dict[str, t.GeneralValueType]]:
+    ) -> r[Mapping[str, t.GeneralValueType]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -534,7 +538,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             health_result = self._monitoring.get_plugin_health(plugin_name)
             if health_result.is_failure:
                 return r.fail(f"Health check failed: {health_result.error}")
-            if not isinstance(health_result.value, Mapping):
+            if not u.is_dict_like(health_result.value):
                 return r.fail("Health response is not a mapping")
             return r.ok(dict(health_result.value))
 
@@ -542,7 +546,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return r.fail(f"Health check error: {e!s}")
 
-    def get_service_status(self) -> dict[str, t.GeneralValueType]:
+    def get_service_status(self) -> Mapping[str, t.GeneralValueType]:
         """Get the current status of the plugin service.
 
         Returns:
@@ -703,7 +707,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         config_data = plugin.metadata.get("config", {})
         # Type narrowing - config should be a dict
         settings: dict[str, t.GeneralValueType] = (
-            config_data if isinstance(config_data, dict) else {}
+            dict(config_data) if u.is_dict_like(config_data) else {}
         )
         config = FlextPluginModels.PluginConfig(
             plugin_name=plugin.name, settings=settings
@@ -713,7 +717,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        config: dict[str, t.GeneralValueType],
+        config: Mapping[str, t.GeneralValueType],
     ) -> r[bool]:
         """Update configuration for a plugin.
 
@@ -731,9 +735,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
         # Assuming Plugin model has config field
         existing_config = plugin.metadata.get("config")
-        merged_config = (
-            dict(existing_config) if isinstance(existing_config, dict) else {}
-        )
+        merged_config = dict(existing_config) if u.is_dict_like(existing_config) else {}
         merged_config.update(config)
         plugin.metadata["config"] = merged_config
         return r.ok(True)

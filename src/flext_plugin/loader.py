@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -150,11 +150,12 @@ class FlextPluginLoader:
 
             # Get original plugin module for path extraction
             module = self._loaded_plugins.get(plugin_name)
-            if not module or not hasattr(module, "__file__"):
+            module_file = getattr(module, "__file__", None)
+            if not module or module_file is None:
                 error_msg = f"No path information for plugin: {plugin_name}"
                 return FlextResult.fail(error_msg)
 
-            plugin_path = getattr(module, "__file__", None)
+            plugin_path = module_file
             if not plugin_path:
                 error_msg = f"Cannot determine plugin path for: {plugin_name}"
                 return FlextResult.fail(error_msg)
@@ -196,12 +197,14 @@ class FlextPluginLoader:
             # Check for required attributes
             required_attrs = ["__version__", "__name__"]
             for attr in required_attrs:
-                if not hasattr(module, attr):
+                if getattr(module, attr, None) is None:
                     return FlextResult.fail(f"Missing required attribute: {attr}")
 
             # Check for plugin-specific attributes
             plugin_attrs = ["execute", "initialize", "cleanup"]
-            available_attrs = [attr for attr in plugin_attrs if hasattr(module, attr)]
+            available_attrs = [
+                attr for attr in plugin_attrs if getattr(module, attr, None) is not None
+            ]
 
             if not available_attrs:
                 self.logger.warning(
@@ -218,7 +221,7 @@ class FlextPluginLoader:
 
     def get_plugin_info(
         self, plugin_name: str
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
         """Get detailed information about a loaded plugin.
 
         Args:
