@@ -13,7 +13,6 @@ from collections.abc import Mapping
 from flext_core import (
     FlextContainer,
     FlextRegistry,
-    FlextRuntime,
     FlextResult,
     FlextService,
     FlextSettings,

@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel, ConfigDict, Field
 from watchdog.events import (
     DirModifiedEvent,
     FileModifiedEvent,
@@ -19,7 +20,6 @@ from watchdog.events import (
 )
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
-from pydantic import BaseModel, ConfigDict, Field
 
 from flext_plugin.models import FlextPluginModels
 

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_core import FlextRuntime, r, x
+from flext_core import r, u, x
 from flext_core.container import FlextContainer
 from flext_core.typings import t
 

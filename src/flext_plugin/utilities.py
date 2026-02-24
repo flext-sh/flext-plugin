@@ -19,7 +19,7 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextRuntime, FlextUtilities, r
+from flext_core import FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -803,7 +803,6 @@ class FlextPluginUtilities(u):
             """
             try:
                 path = Path(registry_path)
-                mutable_registry: dict[str, t.GeneralValueType] = dict(registry)
                 if not path.exists():
                     # Create empty registry
                     registry: dict[str, t.GeneralValueType] = {
@@ -864,6 +863,7 @@ class FlextPluginUtilities(u):
                     )
 
                 # Update timestamp
+                mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
 
                 # Save registry

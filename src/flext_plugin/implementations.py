@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, FlextRuntime, r
+from flext_core import FlextLogger, r, u
 from flext_core.typings import t
 
 from flext_plugin.models import FlextPluginModels

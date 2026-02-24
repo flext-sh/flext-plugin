@@ -37,4 +37,4 @@ class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
 p = TestsFlextPluginProtocols
 p = TestsFlextPluginProtocols
 
-__all__ = ["TestsFlextPluginProtocols", "p", "p"]
+__all__ = ["TestsFlextPluginProtocols", "p"]
