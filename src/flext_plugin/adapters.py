@@ -31,6 +31,7 @@ class FlextPluginAdapters:
 
         def __init__(self) -> None:
             """Initialize base adapter with logger."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
 
         def _execute_safe(
@@ -51,7 +52,7 @@ class FlextPluginAdapters:
             try:
                 result = operation()
                 return r.ok(result)
-            except Exception as e:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
                 self.logger.exception(error_context)
                 return r.fail(f"{error_context}: {e!s}")
 
@@ -189,6 +190,10 @@ class FlextPluginAdapters:
     class DynamicLoaderAdapter(BaseAdapter, p.Plugin.PluginLoader):
         """Dynamic plugin loading - synchronous."""
 
+        def __init__(self) -> None:
+            super().__init__()
+            self._loaded_plugins: dict[str, object] = {}
+
         def load_plugin(
             self,
             _plugin_path: str,
@@ -231,6 +236,7 @@ class FlextPluginAdapters:
         ) -> Mapping[str, t.GeneralValueType]:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
+            self._loaded_plugins[data.name] = data.module
             return {
                 "name": data.name,
                 "version": data.version,
@@ -240,16 +246,23 @@ class FlextPluginAdapters:
             }
 
         def unload_plugin(self, _plugin_name: str) -> r[bool]:
-            """Unload plugin by name (placeholder implementation)."""
-            return r.ok(True)
+            def _unload() -> bool:
+                if _plugin_name not in self._loaded_plugins:
+                    error_msg = f"Plugin not loaded: {_plugin_name}"
+                    raise ValueError(error_msg)
+                del self._loaded_plugins[_plugin_name]
+                return True
+
+            return self._execute_safe(
+                _unload, f"Failed to unload plugin {_plugin_name}"
+            )
 
         def is_plugin_loaded(self, _plugin_name: str) -> bool:
-            """Check if plugin is loaded (placeholder)."""
-            return False
+            return _plugin_name in self._loaded_plugins
 
         def get_loaded_plugins(self) -> list[str]:
             """Get list of loaded plugins."""
-            return []
+            return list(self._loaded_plugins.keys())
 
     class PluginExecutorAdapter(BaseAdapter, p.Plugin.PluginExecution):
         """Plugin execution - synchronous."""

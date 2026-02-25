@@ -9,9 +9,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
+from collections.abc import Mapping
+
 import pytest
+from flext_core import r
+from flext_core.typings import t
 
 from flext_plugin import FlextPluginService
+from flext_plugin.adapters import FlextPluginAdapters
 
 
 class TestFlextPluginService:
@@ -31,3 +37,231 @@ class TestFlextPluginService:
         """Test that FlextPluginService class exists and is callable."""
         assert FlextPluginService is not None
         assert callable(FlextPluginService)
+
+
+class TestFlextPluginServiceStubBridges:
+    def test_discovery_calls_security_registry_and_monitoring(self) -> None:
+        class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
+            def discover_plugins(
+                self,
+                paths: list[str],
+            ) -> r[list[Mapping[str, t.GeneralValueType]]]:
+                _ = paths
+                return r.ok([
+                    {
+                        "name": "stub_plugin",
+                        "version": "1.0.0",
+                        "metadata": {"plugin_type": "utility"},
+                    }
+                ])
+
+        class Security(FlextPluginAdapters.PluginSecurityAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.calls = 0
+
+            def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
+                self.calls += 1
+                return r.ok(True)
+
+        class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.registered: list[str] = []
+
+            def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
+                if isinstance(_plugin, Mapping):
+                    self.registered.append(str(_plugin.get("name", "")))
+                else:
+                    self.registered.append(str(getattr(_plugin, "name", "")))
+                return r.ok(True)
+
+        class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.started: list[str] = []
+
+            def start_monitoring(self, _plugin_name: str) -> r[bool]:
+                self.started.append(_plugin_name)
+                return r.ok(True)
+
+        security = Security()
+        registry = Registry()
+        monitoring = Monitoring()
+        service = FlextPluginService(
+            discovery=Discovery(),
+            security=security,
+            registry=registry,
+            monitoring=monitoring,
+        )
+
+        result = service.discover_and_register_plugins(["/tmp"])
+
+        assert result.is_success
+        assert len(result.unwrap()) == 1
+        assert security.calls == 1
+        assert registry.registered == ["stub_plugin"]
+        assert monitoring.started == ["stub_plugin"]
+
+    def test_load_plugin_calls_security_registry_and_monitoring(self) -> None:
+        class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
+            def load_plugin(
+                self,
+                _plugin_path: str,
+            ) -> r[Mapping[str, t.GeneralValueType]]:
+                _ = _plugin_path
+                return r.ok(
+                    {
+                        "name": "stub_plugin",
+                        "version": "1.0.0",
+                        "metadata": {"plugin_type": "utility"},
+                    },
+                )
+
+        class Security(FlextPluginAdapters.PluginSecurityAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.calls = 0
+
+            def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
+                self.calls += 1
+                return r.ok(True)
+
+        class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.registered: list[str] = []
+
+            def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
+                if isinstance(_plugin, Mapping):
+                    self.registered.append(str(_plugin.get("name", "")))
+                else:
+                    self.registered.append(str(getattr(_plugin, "name", "")))
+                return r.ok(True)
+
+        class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.started: list[str] = []
+
+            def start_monitoring(self, _plugin_name: str) -> r[bool]:
+                self.started.append(_plugin_name)
+                return r.ok(True)
+
+        security = Security()
+        registry = Registry()
+        monitoring = Monitoring()
+        service = FlextPluginService(
+            loader=Loader(),
+            security=security,
+            registry=registry,
+            monitoring=monitoring,
+        )
+
+        result = service.load_plugin("/tmp/stub_plugin.py")
+
+        assert result.is_success
+        assert security.calls == 1
+        assert registry.registered == ["stub_plugin"]
+        assert monitoring.started == ["stub_plugin"]
+
+    def test_execute_plugin_uses_executor_adapter_result(self) -> None:
+        class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
+            def load_plugin(
+                self,
+                _plugin_path: str,
+            ) -> r[Mapping[str, t.GeneralValueType]]:
+                _ = _plugin_path
+                return r.ok(
+                    {
+                        "name": "stub_plugin",
+                        "version": "1.0.0",
+                        "metadata": {"plugin_type": "utility"},
+                    },
+                )
+
+        class Executor(FlextPluginAdapters.PluginExecutorAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.calls: list[str] = []
+
+            def execute_plugin(
+                self,
+                _plugin_name: str,
+                _context: Mapping[str, t.GeneralValueType],
+            ) -> r[Mapping[str, t.GeneralValueType]]:
+                self.calls.append(_plugin_name)
+                return r.ok({"status": "executed", "plugin": _plugin_name})
+
+        executor = Executor()
+        service = FlextPluginService(loader=Loader(), executor=executor)
+
+        load_result = service.load_plugin("/tmp/stub_plugin.py")
+        assert load_result.is_success
+
+        result = service.execute_plugin("stub_plugin", {})
+
+        assert result.is_success
+        execution = result.unwrap()
+        assert execution.result == {"status": "executed", "plugin": "stub_plugin"}
+        assert executor.calls == ["stub_plugin"]
+
+    def test_unload_plugin_calls_monitoring_registry_and_loader(self) -> None:
+        class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.unloaded: list[str] = []
+
+            def load_plugin(
+                self,
+                _plugin_path: str,
+            ) -> r[Mapping[str, t.GeneralValueType]]:
+                _ = _plugin_path
+                self._loaded_plugins["stub_plugin"] = True
+                return r.ok(
+                    {
+                        "name": "stub_plugin",
+                        "version": "1.0.0",
+                        "metadata": {"plugin_type": "utility"},
+                    },
+                )
+
+            def unload_plugin(self, _plugin_name: str) -> r[bool]:
+                self.unloaded.append(_plugin_name)
+                return super().unload_plugin(_plugin_name)
+
+        class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.unregistered: list[str] = []
+
+            def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+                self.unregistered.append(_plugin_name)
+                return r.ok(True)
+
+        class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
+            def __init__(self) -> None:
+                super().__init__()
+                self.stopped: list[str] = []
+
+            def stop_monitoring(self, _plugin_name: str) -> r[bool]:
+                self.stopped.append(_plugin_name)
+                return r.ok(True)
+
+        loader = Loader()
+        registry = Registry()
+        monitoring = Monitoring()
+        service = FlextPluginService(
+            loader=loader, registry=registry, monitoring=monitoring
+        )
+
+        load_result = service.load_plugin("/tmp/stub_plugin.py")
+        assert load_result.is_success
+
+        unload_result = asyncio.run(service.unload_plugin("stub_plugin"))
+
+        assert unload_result.is_success
+        assert monitoring.stopped == ["stub_plugin"]
+        assert registry.unregistered == ["stub_plugin"]
+        assert loader.unloaded == ["stub_plugin"]
+        assert service.is_plugin_loaded("stub_plugin") is False

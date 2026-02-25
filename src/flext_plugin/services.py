@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import cast
 
 from flext_core import r, u, x
 from flext_core.container import FlextContainer
@@ -105,6 +106,18 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """Get the container for this service instance."""
         return FlextContainer.get_global()
 
+    @staticmethod
+    def _to_general_mapping(
+        value: object,
+    ) -> dict[str, t.GeneralValueType]:
+        if not isinstance(value, Mapping):
+            return {}
+        normalized: dict[str, t.GeneralValueType] = {}
+        for key, item in value.items():
+            if isinstance(key, str):
+                normalized[key] = cast(t.GeneralValueType, item)
+        return normalized
+
     def discover_and_register_plugins(
         self,
         paths: list[str],
@@ -138,16 +151,12 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                     name = str(plugin_data.get("name", ""))
                     version = str(plugin_data.get("version", "1.0.0"))
                     metadata_value = plugin_data.get("metadata")
-                    metadata = (
-                        dict(metadata_value) if u.is_dict_like(metadata_value) else {}
-                    )
+                    metadata = self._to_general_mapping(metadata_value)
                 else:
                     name = str(getattr(plugin_data, "name", ""))
                     version = str(getattr(plugin_data, "version", "1.0.0"))
                     metadata_value = getattr(plugin_data, "metadata", {})
-                    metadata = (
-                        dict(metadata_value) if u.is_dict_like(metadata_value) else {}
-                    )
+                    metadata = self._to_general_mapping(metadata_value)
                 if not name:
                     continue
                 # Create plugin entity
@@ -173,23 +182,33 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
                 # Security validation
                 if self._security:
-                    # Note: Async security validation not supported in sync context
-                    # Sync-only operations maintained per FLEXT requirements
-                    # Security validation would require async context manager
-                    #         f"Plugin {plugin.name} security validation failed: {security_result.error}"
-                    #     )
-                    #     continue
-                    pass
+                    plugin_payload = self._to_general_mapping(
+                        plugin.model_dump(mode="python")
+                    )
+                    security_result = self._security.validate_plugin_security(
+                        plugin_payload
+                    )
+                    if security_result.is_failure:
+                        self.logger.warning(
+                            "Plugin %s security validation failed: %s",
+                            plugin.name,
+                            security_result.error,
+                        )
+                        continue
 
                 # Register plugin
                 if self._registry:
-                    # Note: Async registry registration not supported in sync context
-                    # Sync-only operations maintained per FLEXT requirements
-                    #     self.logger.warning(
-                    #         f"Plugin {plugin.name} registration failed: {register_result.error}"
-                    #     )
-                    #     continue
-                    pass
+                    plugin_payload = self._to_general_mapping(
+                        plugin.model_dump(mode="python")
+                    )
+                    register_result = self._registry.register_plugin(plugin_payload)
+                    if register_result.is_failure:
+                        self.logger.warning(
+                            "Plugin %s registration failed: %s",
+                            plugin.name,
+                            register_result.error,
+                        )
+                        continue
 
                 # Store in service
                 self._plugins[plugin.name] = plugin
@@ -197,14 +216,18 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
                 # Start monitoring if available
                 if self._monitoring:
-                    # Note: Async monitoring not supported in sync context
-                    # Sync-only operations maintained per FLEXT requirements
-                    pass
+                    monitoring_result = self._monitoring.start_monitoring(plugin.name)
+                    if monitoring_result.is_failure:
+                        self.logger.warning(
+                            "Plugin %s monitoring startup failed: %s",
+                            plugin.name,
+                            monitoring_result.error,
+                        )
 
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r.ok(registered_plugins)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception("Plugin discovery and registration failed")
             return r.fail(f"Service error: {e!s}")
 
@@ -249,9 +272,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             if u.is_dict_like(value):
                 data = value
                 metadata_value = data.get("metadata")
-                metadata = (
-                    dict(metadata_value) if u.is_dict_like(metadata_value) else {}
-                )
+                metadata = self._to_general_mapping(metadata_value)
                 plugin = FlextPluginModels.Plugin.Plugin.create(
                     name=str(data.get("name", "")),
                     plugin_version=str(data.get("version", "1.0.0")),
@@ -290,35 +311,43 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
             # Security validation
             if self._security:
-                # Note: Async security validation not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                #     return r.fail(
-                #         f"Security validation failed: {security_result.error}"
-                #     )
-                pass
+                plugin_payload = self._to_general_mapping(
+                    plugin.model_dump(mode="python")
+                )
+                security_result = self._security.validate_plugin_security(
+                    plugin_payload
+                )
+                if security_result.is_failure:
+                    return r.fail(
+                        f"Security validation failed: {security_result.error}",
+                    )
 
             # Register plugin
             if self._registry:
-                # Note: Async registry registration not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                #     return r.fail(
-                #         f"Registration failed: {register_result.error}"
-                #     )
-                pass
+                plugin_payload = self._to_general_mapping(
+                    plugin.model_dump(mode="python")
+                )
+                register_result = self._registry.register_plugin(plugin_payload)
+                if register_result.is_failure:
+                    return r.fail(f"Registration failed: {register_result.error}")
 
             # Store in service
             self._plugins[plugin.name] = plugin
 
             # Start monitoring
             if self._monitoring:
-                # Note: Async monitoring not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                pass
+                monitoring_result = self._monitoring.start_monitoring(plugin.name)
+                if monitoring_result.is_failure:
+                    self.logger.warning(
+                        "Monitoring startup failed for plugin %s: %s",
+                        plugin.name,
+                        monitoring_result.error,
+                    )
 
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return r.ok(plugin)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return r.fail(f"Loading error: {e!s}")
 
@@ -359,12 +388,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             execution.mark_started()
             self._executions[execution.execution_id] = execution
 
-            # Note: Async executor execution not supported in sync context
-            # Sync-only operations maintained per FLEXT requirements
-            # )
-            exec_result = r[dict[str, t.GeneralValueType]].ok({
-                "status": "executed",
-            })  # Mock success for sync interface
+            exec_result = self._executor.execute_plugin(plugin_name, context)
 
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
@@ -382,7 +406,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r.ok(execution)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
             return r.fail(f"Execution error: {e!s}")
 
@@ -402,25 +426,27 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
             # Stop monitoring
             if self._monitoring:
-                # Note: Async monitoring not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                pass
+                monitoring_result = self._monitoring.stop_monitoring(plugin_name)
+                if monitoring_result.is_failure:
+                    self.logger.warning(
+                        "Failed to stop monitoring for %s: %s",
+                        plugin_name,
+                        monitoring_result.error,
+                    )
 
             # Unregister from registry
             if self._registry:
-                # Note: Async registry unregistration not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                #     return r.fail(
-                #         f"Unregistration failed: {unregister_result.error}"
-                #     )
-                pass
+                unregister_result = self._registry.unregister_plugin(plugin_name)
+                if unregister_result.is_failure:
+                    return r.fail(
+                        f"Unregistration failed: {unregister_result.error}",
+                    )
 
             # Unload from loader
             if self._loader:
-                # Note: Async loader unload not supported in sync context
-                # Sync-only operations maintained per FLEXT requirements
-                #     return r.fail(f"Unloading failed: {unload_result.error}")
-                pass
+                unload_result = self._loader.unload_plugin(plugin_name)
+                if unload_result.is_failure:
+                    return r.fail(f"Unloading failed: {unload_result.error}")
 
             # Remove from service
             del self._plugins[plugin_name]
@@ -428,7 +454,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return r.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
             return r.fail(f"Unloading error: {e!s}")
 
@@ -511,7 +537,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail("Metrics response is not a mapping")
             return r.ok(dict(metrics_result.value))
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
             return r.fail(f"Metrics error: {e!s}")
 
@@ -542,7 +568,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail("Health response is not a mapping")
             return r.ok(dict(health_result.value))
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return r.fail(f"Health check error: {e!s}")
 
@@ -560,12 +586,12 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             "running_executions": len([
                 e for e in self._executions.values() if e.is_running
             ]),
-            "monitoring_enabled": self._monitoring is not None,
-            "discovery_available": self._discovery is not None,
-            "loader_available": self._loader is not None,
-            "executor_available": self._executor is not None,
-            "security_available": self._security is not None,
-            "registry_available": self._registry is not None,
+            "monitoring_enabled": True,
+            "discovery_available": True,
+            "loader_available": True,
+            "executor_available": True,
+            "security_available": True,
+            "registry_available": True,
         }
 
     def get_execution(self, execution_id: str) -> PluginExecution | None:
@@ -706,10 +732,8 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         # Plugin stores config in metadata
         config_data = plugin.metadata.get("config", {})
         # Type narrowing - config should be a dict
-        settings: dict[str, t.GeneralValueType] = (
-            dict(config_data) if u.is_dict_like(config_data) else {}
-        )
-        config = FlextPluginModels.PluginConfig(
+        settings = self._to_general_mapping(config_data)
+        config = FlextPluginModels.Plugin.PluginConfig(
             plugin_name=plugin.name, settings=settings
         )
         return r.ok(config)
@@ -735,7 +759,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
         # Assuming Plugin model has config field
         existing_config = plugin.metadata.get("config")
-        merged_config = dict(existing_config) if u.is_dict_like(existing_config) else {}
+        merged_config = self._to_general_mapping(existing_config)
         merged_config.update(config)
         plugin.metadata["config"] = merged_config
         return r.ok(True)

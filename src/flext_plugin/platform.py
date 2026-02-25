@@ -154,7 +154,7 @@ class FlextPluginPlatform:
                         result.value
                     )
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
-                except Exception:
+                except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
                     return r[FlextPluginModels.Plugin.Plugin].fail(
                         "Plugin is not a valid Plugin type"
                     )

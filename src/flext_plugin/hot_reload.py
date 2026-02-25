@@ -214,7 +214,7 @@ class FlextPluginHotReload:
 
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception("Failed to start hot reload watching")
             return FlextResult.fail(f"Start watching error: {e!s}")
 
@@ -243,7 +243,7 @@ class FlextPluginHotReload:
             self.logger.info("Stopped hot reload monitoring")
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception("Failed to stop hot reload watching")
             return FlextResult.fail(f"Stop watching error: {e!s}")
 
@@ -268,7 +268,7 @@ class FlextPluginHotReload:
             for callback in self._reload_callbacks:
                 try:
                     callback(plugin_name)
-                except Exception:
+                except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
                     self.logger.exception(f"Reload callback failed for {plugin_name}")
 
             # Record reload in history
@@ -283,7 +283,7 @@ class FlextPluginHotReload:
             self.logger.info("Reloaded plugin: %s", plugin_name)
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
             return FlextResult.fail(f"Reload error: {e!s}")
 
@@ -414,7 +414,7 @@ class FlextPluginHotReload:
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
             return FlextResult.ok(ReloadBatchResult(plugin_results=reload_results))
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception("Failed to force reload all plugins")
             return FlextResult.fail(f"Force reload error: {e!s}")
 
@@ -439,7 +439,7 @@ class FlextPluginHotReload:
             self.logger.info("Added watch path: %s", path)
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to add watch path: {path}")
             return FlextResult.fail(f"Add watch path error: {e!s}")
 
@@ -462,7 +462,7 @@ class FlextPluginHotReload:
                 return FlextResult.ok(True)
             return FlextResult.fail(f"Path not being watched: {path}")
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to remove watch path: {path}")
             return FlextResult.fail(f"Remove watch path error: {e!s}")
 

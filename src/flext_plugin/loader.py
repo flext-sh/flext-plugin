@@ -80,7 +80,7 @@ class FlextPluginLoader:
             error_msg = f"Invalid plugin path type: {plugin_path}"
             return FlextResult.fail(error_msg)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return FlextResult.fail(f"Loading error: {e!s}")
 
@@ -105,7 +105,7 @@ class FlextPluginLoader:
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to unload plugin {plugin_name}")
             return FlextResult.fail(f"Unloading error: {e!s}")
 
@@ -173,7 +173,7 @@ class FlextPluginLoader:
             self.logger.info("Reloaded plugin: %s", plugin_name)
             return load_result
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to reload plugin {plugin_name}")
             return FlextResult.fail(f"Reload error: {e!s}")
 
@@ -215,7 +215,7 @@ class FlextPluginLoader:
             self.logger.info("Plugin dependencies validated: %s", plugin_name)
             return FlextResult.ok(True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to validate dependencies for {plugin_name}")
             return FlextResult.fail(f"Dependency validation error: {e!s}")
 
@@ -261,7 +261,7 @@ class FlextPluginLoader:
 
             return FlextResult.ok(plugin_info)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
             self.logger.exception(f"Failed to get plugin info for {plugin_name}")
             return FlextResult.fail(f"Plugin info error: {e!s}")
 
@@ -304,7 +304,7 @@ class FlextPluginLoader:
                     load_type="file",
                     loaded_at=datetime.now(UTC),
                 )
-            except Exception:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
                 self.logger.exception(f"Failed to load file plugin: {path}")
                 return None
 
@@ -353,7 +353,7 @@ class FlextPluginLoader:
                     loaded_at=datetime.now(UTC),
                     entry_file=entry_file,
                 )
-            except Exception:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
                 self.logger.exception(f"Failed to load directory plugin: {path}")
                 return None
 
