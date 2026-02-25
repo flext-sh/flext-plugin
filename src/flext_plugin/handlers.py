@@ -82,7 +82,15 @@ class FlextPluginHandlers:
             self.logger.debug("Registered handler for event type: %s", event_type)
             return FlextResult.ok(True)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to register handler for {event_type}")
             return FlextResult.fail(f"Handler registration error: {e!s}")
 
@@ -121,7 +129,15 @@ class FlextPluginHandlers:
             self.logger.debug("Unregistered handler for event type: %s", event_type)
             return FlextResult.ok(True)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to unregister handler for {event_type}")
             return FlextResult.fail(f"Handler unregistration error: {e!s}")
 
@@ -163,7 +179,15 @@ class FlextPluginHandlers:
                     handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
                     results.append(result)
-                except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
                     self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append({"error": str(e), "success": False})
 
@@ -172,7 +196,15 @@ class FlextPluginHandlers:
             )
             return FlextResult.ok(results)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to trigger event {event_type}")
             return FlextResult.fail(f"Event triggering error: {e!s}")
 
@@ -195,7 +227,15 @@ class FlextPluginHandlers:
             # Handler is always async now
             async_result = handler(event_data)
             return await async_result
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ):
             self.logger.exception("Handler execution failed")
             raise
 
@@ -420,7 +460,15 @@ class FlextPluginHandlers:
             self.logger.info("Registered default event handlers")
             return FlextResult.ok(True)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception("Failed to register default handlers")
             return FlextResult.fail(f"Default handler registration error: {e!s}")
 

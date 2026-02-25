@@ -105,7 +105,15 @@ class FlextPluginUtilities(u):
                                 plugins.append(metadata_result.value)
 
                 return r[list[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
                     f"Plugin discovery failed: {e}",
                 )
@@ -151,7 +159,15 @@ class FlextPluginUtilities(u):
                             )
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Plugin file validation failed: {e}")
 
         @staticmethod
@@ -201,7 +217,15 @@ class FlextPluginUtilities(u):
                 )
 
                 return r[FlextPluginModels.Plugin.PluginMetadata].ok(metadata)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[FlextPluginModels.Plugin.PluginMetadata].fail(
                     f"Metadata extraction failed: {e}",
                 )
@@ -267,7 +291,15 @@ class FlextPluginUtilities(u):
                 }
 
                 return r[dict[str, t.GeneralValueType]].ok(watcher_config)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"File watcher creation failed: {e}",
                 )
@@ -311,7 +343,15 @@ class FlextPluginUtilities(u):
                 return r[t.Plugin.StringList].ok(
                     changed_files,
                 )
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[t.Plugin.StringList].fail(
                     f"File change detection failed: {e}",
                 )
@@ -349,7 +389,15 @@ class FlextPluginUtilities(u):
                         )
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Reload safety validation failed: {e}")
 
     class SecurityValidation:
@@ -435,7 +483,15 @@ class FlextPluginUtilities(u):
                         warnings.append("Plugin may perform file operations")
 
                 return r[dict[str, t.GeneralValueType]].ok(dict(security_report))
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Security validation failed: {e}",
                 )
@@ -469,7 +525,15 @@ class FlextPluginUtilities(u):
                 }
 
                 return r[dict[str, t.GeneralValueType]].ok(sandbox_config)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Sandbox configuration creation failed: {e}",
                 )
@@ -491,7 +555,15 @@ class FlextPluginUtilities(u):
                 plugin_hash = hash_object.hexdigest()
 
                 return r[str].ok(plugin_hash)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[str].fail(f"Plugin hash calculation failed: {e}")
 
     class ConfigurationManager:
@@ -553,7 +625,15 @@ class FlextPluginUtilities(u):
                     )
 
                 return r[dict[str, t.GeneralValueType]].ok(config)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Configuration loading failed: {e}",
                 )
@@ -596,7 +676,15 @@ class FlextPluginUtilities(u):
                     )
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Configuration validation failed: {e}")
 
         @staticmethod
@@ -637,7 +725,15 @@ class FlextPluginUtilities(u):
                         merged_config[key] = value
 
                 return r[dict[str, t.GeneralValueType]].ok(merged_config)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Configuration merge failed: {e}",
                 )
@@ -692,7 +788,15 @@ class FlextPluginUtilities(u):
 
                 result = plugin_function(*execution_args, **execution_kwargs)
                 return r[object].ok(result)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[object].fail(
                     f"Plugin function execution failed: {e}",
                 )
@@ -731,7 +835,15 @@ class FlextPluginUtilities(u):
                 spec.loader.exec_module(module)
 
                 return r[ModuleType].ok(module)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[ModuleType].fail(
                     f"Plugin module loading failed: {e}",
                 )
@@ -776,7 +888,15 @@ class FlextPluginUtilities(u):
                     )
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(
                     f"Plugin interface validation failed: {e}",
                 )
@@ -827,7 +947,15 @@ class FlextPluginUtilities(u):
                 registry = json.loads(content)
 
                 return r[dict[str, t.GeneralValueType]].ok(registry)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[dict[str, t.GeneralValueType]].fail(
                     f"Registry loading failed: {e}",
                 )
@@ -872,7 +1000,15 @@ class FlextPluginUtilities(u):
                 )
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Registry save failed: {e}")
 
         @staticmethod
@@ -913,7 +1049,15 @@ class FlextPluginUtilities(u):
                     plugins[plugin_metadata.name] = plugin_info
 
                 return r[Mapping[str, t.GeneralValueType]].ok(mutable_registry)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[Mapping[str, t.GeneralValueType]].fail(
                     f"Plugin registration failed: {e}",
                 )
@@ -944,7 +1088,15 @@ class FlextPluginUtilities(u):
                     backup_file.unlink()
 
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Registry backup cleanup failed: {e}")
 
     # Pydantic 2.11+ field validators

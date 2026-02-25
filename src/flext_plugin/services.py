@@ -115,7 +115,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         normalized: dict[str, t.GeneralValueType] = {}
         for key, item in value.items():
             if isinstance(key, str):
-                normalized[key] = cast(t.GeneralValueType, item)
+                normalized[key] = cast("t.GeneralValueType", item)
         return normalized
 
     def discover_and_register_plugins(
@@ -227,7 +227,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r.ok(registered_plugins)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception("Plugin discovery and registration failed")
             return r.fail(f"Service error: {e!s}")
 
@@ -347,7 +355,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return r.ok(plugin)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return r.fail(f"Loading error: {e!s}")
 
@@ -406,7 +422,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r.ok(execution)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
             return r.fail(f"Execution error: {e!s}")
 
@@ -454,7 +478,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return r.ok(True)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
             return r.fail(f"Unloading error: {e!s}")
 
@@ -537,7 +569,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail("Metrics response is not a mapping")
             return r.ok(dict(metrics_result.value))
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
             return r.fail(f"Metrics error: {e!s}")
 
@@ -568,7 +608,15 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 return r.fail("Health response is not a mapping")
             return r.ok(dict(health_result.value))
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
             return r.fail(f"Health check error: {e!s}")
 

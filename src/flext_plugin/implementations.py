@@ -96,7 +96,15 @@ class FlextPluginImplementations:
                 # Store configuration
                 self._config.update(config)
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
@@ -129,7 +137,15 @@ class FlextPluginImplementations:
                     self.logger.info(f"Plugin entity {self.name} activated")
                 self._initialized = True
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Failed to initialize plugin {self.name}")
                 return r[None].fail(f"Initialization failed: {e!s}")
 
@@ -152,7 +168,15 @@ class FlextPluginImplementations:
                         )
                 self._initialized = False
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail(f"Shutdown failed: {e!s}")
 
@@ -226,7 +250,15 @@ class FlextPluginImplementations:
                 # Execute operation (simplified for example)
                 result = self._operations[operation]
                 return r[t.GeneralValueType].ok(result)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Operation {operation} failed")
                 # Record error in entity if present
                 if self._entity:
@@ -307,7 +339,15 @@ class FlextPluginImplementations:
                 # Actual connection test would go here
                 self._connection_valid = True
                 return r[None].ok(None)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception("Connection test failed")
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
@@ -361,7 +401,15 @@ class FlextPluginImplementations:
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[t.GeneralValueType].ok(transformed)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception("Transformation failed")
                 return r[t.GeneralValueType].fail(f"Transform failed: {e!s}")
 
@@ -634,7 +682,15 @@ class FlextPluginImplementations:
                         f"Failed to register loaded plugin: {reg_result.error}",
                     )
                 return r[object].ok(concrete_plugin)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Failed to load plugin from {plugin_path}")
                 return r[object].fail(f"Load failed: {e!s}")
 
@@ -660,7 +716,15 @@ class FlextPluginImplementations:
                     f"{search_path}/plugin2",
                 ]
                 return r[list[str]].ok(discovered)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(f"Plugin discovery failed in {search_path}")
                 return r[list[str]].fail(
                     f"Discovery failed: {e!s}",

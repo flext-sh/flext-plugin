@@ -154,7 +154,15 @@ class FlextPluginPlatform:
                         result.value
                     )
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
-                except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError):
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ):
                     return r[FlextPluginModels.Plugin.Plugin].fail(
                         "Plugin is not a valid Plugin type"
                     )
@@ -522,7 +530,7 @@ class FlextPluginPlatform:
                 del self._executions[eid]
             return len(completed_ids)
 
-        # Hot reload placeholders
+        # Hot reload hooks — triggered on plugin configuration changes
         def start_hot_reload(self, paths: list[str]) -> FlextResult[bool]:
             """Start hot reload for given paths."""
             _ = paths

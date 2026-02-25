@@ -59,7 +59,15 @@ class FlextPluginDiscovery:
             self.logger.info(f"Discovered {len(discovered)} unique plugins")
             return FlextResult.ok(list(discovered.values()))
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception("Plugin discovery failed")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
@@ -94,7 +102,15 @@ class FlextPluginDiscovery:
 
             return FlextResult.fail(f"Plugin not found at: {plugin_path}")
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception(f"Failed to discover plugin at {plugin_path}")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
@@ -118,7 +134,15 @@ class FlextPluginDiscovery:
             # DiscoveryData instance, it's already valid
             self.logger.debug(f"Plugin validation passed: {plugin_data.name}")
             return FlextResult.ok(True)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             self.logger.exception("Plugin validation failed")
             return FlextResult.fail(f"Validation error: {e!s}")
 
@@ -155,7 +179,15 @@ class FlextPluginDiscovery:
                 )
                 return FlextResult.ok(discovered)
 
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception("File system discovery failed")
                 return FlextResult.fail(f"File discovery error: {e!s}")
 
@@ -244,7 +276,15 @@ class FlextPluginDiscovery:
                 )
                 return FlextResult.ok(discovered)
 
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception("Entry point discovery failed")
                 return FlextResult.fail(f"Entry point discovery error: {e!s}")
 

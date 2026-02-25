@@ -52,7 +52,15 @@ class FlextPluginAdapters:
             try:
                 result = operation()
                 return r.ok(result)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 self.logger.exception(error_context)
                 return r.fail(f"{error_context}: {e!s}")
 
