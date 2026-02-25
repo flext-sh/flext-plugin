@@ -213,7 +213,7 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            paths: list[str],  # noqa: ARG002
+            paths: list[str],
         ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             try:

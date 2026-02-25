@@ -325,7 +325,7 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = false
-mypy_path = [ "..", "../typings", "../typings/generated", "src", "../flext-core/src", "../flext-observability/src" ]
+mypy_path = [ "..", "typings", "typings/generated", "src", "../flext-core/src", "../flext-observability/src" ]
 
 # [MANAGED] pyrefly
 [tool.pyrefly]
@@ -334,8 +334,6 @@ search-path = [
   "..",
   "../flext-core/src",
   "../flext-observability/src",
-  "../typings",
-  "../typings/generated",
   "src",
   "tests",
   "examples",
@@ -350,8 +348,8 @@ extraPaths = [
   "tests",
   "examples",
   "scripts",
-  "../typings",
-  "../typings/generated",
+  "typings",
+  "typings/generated",
   "../flext-core/src",
   "../flext-observability/src",
 ]

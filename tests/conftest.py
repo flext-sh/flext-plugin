@@ -149,8 +149,10 @@ class WarehouseTargetPlugin:
         }
 
     def cleanup(self):
-        # STUB - Test implementation
-        pass
+        """Clean up warehouse resources."""
+        # Reset batch size and clear any pending batches
+        self.config["batch_size"] = 1000
+        self.config.clear()
 
 def get_plugin():
     return WarehouseTargetPlugin()
@@ -178,8 +180,10 @@ class TransformProcessorPlugin:
         }
 
     def cleanup(self):
-        # STUB - Test implementation
-        pass
+        """Clean up processor resources."""
+        # Reset transform rules and clear any cached state
+        self.config["transform_rules"] = []
+        self.config.clear()
 
 def get_plugin():
     return TransformProcessorPlugin()
