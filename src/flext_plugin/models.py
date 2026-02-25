@@ -16,7 +16,6 @@ from typing import Self
 from flext_core import FlextModels
 from flext_core.result import r
 from flext_core.typings import FlextTypes
-from flext_core.utilities import u
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import FlextPluginConstants as c_constants
@@ -32,14 +31,6 @@ class FlextPluginModels(FlextModels):
     All models inherit flext-core validation and patterns following
     Railway-Oriented Programming with r[T] error handling.
     """
-
-    def __init_subclass__(cls, **kwargs: object) -> None:
-        """Warn when FlextPluginModels is subclassed directly."""
-        super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextPluginModels is deprecated. Use FlextModels directly with composition instead.",
-        )
 
     # Re-export PluginType enum from constants for convenience
     PluginType = c_constants.Plugin.PluginType
