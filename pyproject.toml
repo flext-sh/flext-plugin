@@ -5,7 +5,7 @@
 # [MANAGED] build system
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=2"]
+requires = [ "poetry-core>=2" ]
 
 # [CUSTOM] project metadata
 [project]
@@ -13,10 +13,10 @@ name = "flext-plugin"
 version = "0.12.0-dev"
 description = "FLEXT Plugin - Plugin System for FLEXT Platform"
 readme = "README.md"
-keywords = ["architecture", "enterprise", "extensions", "flext", "plugins", "typed"]
+keywords = [ "architecture", "enterprise", "extensions", "flext", "plugins", "typed" ]
 license = "MIT"
-maintainers = [{ email = "team@flext.sh", name = "FLEXT Team" }]
-authors = [{ email = "team@flext.sh", name = "FLEXT Team" }]
+maintainers = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
+authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
 requires-python = ">=3.13,<3.14"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
   "anyio>=4",
-  "flext-core @ ../flext-core",
+  "flext-core  @ file:../flext-core",
   "jsonschema>=4.25",
   "psutil>=7",
   "pydantic>=2.12.3",
@@ -100,24 +100,25 @@ optional-dependencies.dev = [
   "types-toml>=0.10.8.20240310",
   "vulture>=2.13",
 ]
-urls = { Documentation = "https://github.com/flext-sh/flext/blob/main/README.md", Homepage = "https://github.com/flext-sh/flext", Repository = "https://github.com/flext-sh/flext" }
-scripts = { "flext-plugin" = "flext_plugin.cli:main" }
+urls = {Documentation = "https://github.com/flext-sh/flext/blob/main/README.md", Homepage = "https://github.com/flext-sh/flext", Repository = "https://github.com/flext-sh/flext"}
+scripts = {"flext-plugin" = "flext_plugin.cli:main"}
 
 [dependency-groups]
-dev = []
+dev = [  ]
 
 [tool.poetry]
 dependencies.flext-core.develop = true
 dependencies.flext-core.path = "../flext-core"
 dependencies.flext-observability.develop = true
 dependencies.flext-observability.path = "../flext-observability"
-packages = [{ from = "src", include = "flext_plugin" }]
+packages = [ {from = "src", include = "flext_plugin"} ]
 
 # [MANAGED] ruff
 
+# [CUSTOM] poetry dev extensions
 [tool.ruff]
 extend = "../ruff-shared.toml"
-lint.isort.known-first-party = ["flext_plugin"]
+lint.isort.known-first-party = [ "flext_plugin" ]
 
 # [MANAGED] codespell
 [tool.codespell]
@@ -129,8 +130,29 @@ skip = """\
 
 # [MANAGED] deptry
 [tool.deptry]
-known_first_party = ["flext", "flext_quality"]
-pep621_dev_dependency_groups = ["dev"]
+exclude = [
+  ".archive",
+  ".git",
+  ".meltano",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  ".venv",
+  "__pycache__",
+  "build",
+  "dist",
+  "htmlcov",
+  "node_modules",
+  "reports",
+  "scripts",
+  "tests",
+  "typings",
+  "vendor",
+  "venv",
+]
+extend_exclude = [ "flexcore/", "flext-.*/" ]
+known_first_party = [ "flext", "flext_quality" ]
+pep621_dev_dependency_groups = [ "dev" ]
 per_rule_ignores.DEP002 = [
   # CLI tools (invoked from command line, not imported)
   "autoflake",
@@ -165,35 +187,14 @@ per_rule_ignores.DEP002 = [
   "pydantic-core",
   "watchdog",
 ]
-exclude = [
-  ".archive",
-  ".git",
-  ".meltano",
-  ".mypy_cache",
-  ".pytest_cache",
-  ".ruff_cache",
-  ".venv",
-  "__pycache__",
-  "build",
-  "dist",
-  "htmlcov",
-  "node_modules",
-  "reports",
-  "scripts",
-  "tests",
-  "typings",
-  "vendor",
-  "venv",
-]
-extend_exclude = ["flexcore/", "flext-.*/"]
 
 # [MANAGED] pytest
 [tool.pytest]
 [tool.pytest.ini_options]
 tool.pytest.ini_options.minversion = "8.0"
-tool.pytest.ini_options.python_classes = ["Test*"]
-tool.pytest.ini_options.python_files = ["*_test.py", "*_tests.py", "test_*.py"]
-tool.pytest.ini_options.addopts = ["--strict-markers"]
+tool.pytest.ini_options.python_classes = [ "Test*" ]
+tool.pytest.ini_options.python_files = [ "*_test.py", "*_tests.py", "test_*.py" ]
+tool.pytest.ini_options.addopts = [ "--strict-markers" ]
 tool.pytest.ini_options.markers = [
   "unit: unit tests",
   "integration: integration tests",
@@ -206,13 +207,32 @@ tool.pytest.ini_options.markers = [
   "resilience: resilience tests",
 ]
 
-
 # [MANAGED] coverage
+minversion = "8.0"
+python_classes = [
+  "Test*",
+]
+python_files = [
+  "*_test.py",
+  "*_tests.py",
+  "test_*.py",
+]
+addopts = [
+  "--strict-markers",
+]
+markers = [
+  "unit: unit tests",
+  "integration: integration tests",
+  "performance: performance and benchmark tests",
+  "slow: slow-running tests",
+  "docker: tests requiring Docker",
+  "e2e: end-to-end integration tests",
+  "edge_cases: edge case tests",
+  "stress: stress tests",
+  "resilience: resilience tests",
+]
 [tool.coverage]
-run.branch = true
-run.omit = ["*/__pycache__/*", "*/_pb2*.py", "*/conftest.py", "*/tests/*"]
-run.relative_files = true
-run.source = ["src/flext_plugin"]
+html.directory = "htmlcov"
 report.exclude_lines = [
   "@abstractmethod",
   "^\\s*\\.\\.\\.\\s*$",
@@ -225,11 +245,14 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 report.fail_under = 0
-report.partial_branches = ["pragma: no branch"]
+report.partial_branches = [ "pragma: no branch" ]
 report.precision = 2
 report.show_missing = true
 report.skip_empty = true
-html.directory = "htmlcov"
+run.branch = true
+run.omit = [ "*/__pycache__/*", "*/_pb2*.py", "*/conftest.py", "*/tests/*" ]
+run.relative_files = true
+run.source = [ "src/flext_plugin" ]
 xml.output = "coverage.xml"
 
 # [MANAGED] mypy
@@ -271,6 +294,14 @@ follow_imports = "normal"
 follow_imports_for_stubs = true
 incremental = true
 local_partial_types = true
+mypy_path = [
+  ".",
+  "typings",
+  "typings/generated",
+  "src",
+  "../flext-core/src",
+  "../flext-observability/src",
+]
 namespace_packages = true
 no_implicit_optional = true
 no_implicit_reexport = true
@@ -291,13 +322,31 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = false
-mypy_path = [
-  "..",
-  "typings",
-  "typings/generated",
-  "src",
-  "../flext-core/src",
-  "../flext-observability/src",
-]
 
 # [MANAGED] pyrefly
+
+[tool.pyrefly]
+ignore-errors-in-generated-code = true
+project-excludes = [
+  "**/_pb2.py",
+  "**/_pb2_grpc.py",
+]
+python-version = "3.13"
+search-path = [
+  ".",
+]
+
+[tool.pyrefly.errors]
+deprecated = true
+implicit-abstract-class = true
+implicit-any = true
+implicitly-defined-attribute = true
+missing-override-decorator = true
+missing-source = true
+not-required-key-access = true
+open-unpacking = true
+protocol-implicitly-defined-attribute = true
+redundant-cast = true
+unannotated-attribute = true
+unannotated-parameter = true
+unannotated-return = true

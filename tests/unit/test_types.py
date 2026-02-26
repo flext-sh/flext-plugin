@@ -60,4 +60,3 @@ class TestFlextPluginTypes:
         """Test Registry type aliases exist."""
         assert hasattr(FlextPluginTypes.Registry, "RegistryConfig")
         assert hasattr(FlextPluginTypes.Registry, "RegistryEntry")
-

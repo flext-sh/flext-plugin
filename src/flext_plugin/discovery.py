@@ -248,6 +248,7 @@ class FlextPluginDiscovery:
             paths: list[str],
         ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
+            _ = paths
             try:
                 discovered = []
 

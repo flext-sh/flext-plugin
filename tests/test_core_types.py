@@ -23,9 +23,7 @@ class TestFlextPluginConstantsPluginType:
     def test_plugin_type_values(self) -> None:
         """Test all plugin type enum values."""
         if FlextPluginConstants.Plugin.PluginType.TAP.value != "tap":
-            error_message = (
-                f"Expected {'tap'}, got {FlextPluginConstants.Plugin.PluginType.TAP.value}"
-            )
+            error_message = f"Expected {'tap'}, got {FlextPluginConstants.Plugin.PluginType.TAP.value}"
             raise AssertionError(error_message)
         assert FlextPluginConstants.Plugin.PluginType.TARGET.value == "target"
         if FlextPluginConstants.Plugin.PluginType.TRANSFORM.value != "transform":
@@ -80,9 +78,7 @@ class TestFlextPluginConstantsLifecycle:
             )
         assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE.value == "active"
         if FlextPluginConstants.Plugin.PluginStatus.ERROR.value != "error":
-            msg = (
-                f"Expected {'error'}, got {FlextPluginConstants.Plugin.PluginStatus.ERROR.value}"
-            )
+            msg = f"Expected {'error'}, got {FlextPluginConstants.Plugin.PluginStatus.ERROR.value}"
             raise AssertionError(msg)
 
     def test_plugin_status_from_string(self) -> None:

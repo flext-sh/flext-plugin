@@ -11,20 +11,18 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-import fnmatch
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-from anyio import Path as AnyioPath
-from flext_plugin import t
-from flext_core import FlextContainer, FlextExceptions, FlextService
+from flext_core import FlextContainer, FlextExceptions
 
 from flext_plugin import (
     FlextPluginModels,
     FlextPluginService,
+    t,
 )
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.discovery import FlextPluginDiscovery
@@ -246,10 +244,10 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))
 
     container.with_service(
-        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
     )
     container.with_service(
-        "plugin_loader_port", cast(t.RegisterableService, loader_adapter)
+        "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
     )
     # container.register("plugin_manager_port", manager_adapter)
 
@@ -266,7 +264,7 @@ def real_discovery_service_with_adapters(
     # Register REAL discovery implementation
     discovery_adapter = FlextPluginDiscovery()
     container.with_service(
-        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
     )
 
     return FlextPluginService(container=container)

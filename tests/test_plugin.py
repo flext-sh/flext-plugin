@@ -14,7 +14,6 @@ import pytest
 from flext_plugin import FlextPluginModels
 from flext_plugin.platform import Plugin, PluginRegistry
 
-
 # Entity with create/enable/disable is FlextPluginModels.Plugin.Plugin
 PluginEntity = FlextPluginModels.Plugin.Plugin
 
@@ -178,9 +177,7 @@ class TestPluginRegistry:
 
     def test_register_multiple_plugins(self, registry: PluginRegistry) -> None:
         """Test registering multiple plugins."""
-        plugins = [
-            Plugin(name=f"plugin-{i}", plugin_version="1.0.0") for i in range(3)
-        ]
+        plugins = [Plugin(name=f"plugin-{i}", plugin_version="1.0.0") for i in range(3)]
 
         for plugin in plugins:
             result = registry.register(plugin.name, plugin)

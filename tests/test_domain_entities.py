@@ -11,8 +11,10 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_plugin import t
 
+import pytest
+
+from flext_plugin import t
 from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.models import FlextPluginModels
 
@@ -81,14 +83,14 @@ class TestFlextPlugin:
         # Record successful execution
         plugin.record_execution(150.5, success=True)
         assert plugin.metadata["execution_count"] == 1
-        assert plugin.metadata["total_execution_time"] == 150.5
+        assert plugin.metadata["total_execution_time"] == pytest.approx(150.5)
         assert plugin.metadata["success_count"] == 1
         assert plugin.metadata["failure_count"] == 0
 
         # Record another successful execution
         plugin.record_execution(200.0, success=True)
         assert plugin.metadata["execution_count"] == 2
-        assert plugin.metadata["total_execution_time"] == 350.5
+        assert plugin.metadata["total_execution_time"] == pytest.approx(350.5)
         assert plugin.metadata["success_count"] == 2
 
         # Record a failed execution
@@ -187,7 +189,7 @@ class TestFlextPluginExecution:
         assert result.success is True
         assert result.data == {"output": "test data"}
         assert result.error == ""
-        assert result.execution_time_ms == 150.5
+        assert result.execution_time_ms == pytest.approx(150.5)
 
     def test_execution_result_failure(self) -> None:
         """Test creating failed ExecutionResult."""
@@ -200,7 +202,7 @@ class TestFlextPluginExecution:
         assert result.success is False
         assert result.error == "Plugin execution failed"
         assert result.data == {}
-        assert result.execution_time_ms == 50.0
+        assert result.execution_time_ms == pytest.approx(50.0)
 
     def test_execution_result_defaults(self) -> None:
         """Test ExecutionResult default values."""
@@ -209,7 +211,7 @@ class TestFlextPluginExecution:
         assert result.success is True
         assert result.data == {}
         assert result.error == ""
-        assert result.execution_time_ms == 0.0
+        assert result.execution_time_ms == pytest.approx(0.0)
 
     def test_execution_result_with_complex_data(self) -> None:
         """Test ExecutionResult with complex output data."""
@@ -225,7 +227,7 @@ class TestFlextPluginExecution:
 
         assert result.success is True
         assert result.data == complex_data
-        assert result.execution_time_ms == 100.0
+        assert result.execution_time_ms == pytest.approx(100.0)
 
 
 class TestFlextPluginRegistryEntity:

@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin.adapters import FlextPluginAdapters
 from flext_plugin import FlextPluginLoader
+from flext_plugin.adapters import FlextPluginAdapters
 
 
 class TestFlextPluginLoader:
@@ -37,6 +37,8 @@ class TestFlextPluginLoader:
 
 
 class TestDynamicLoaderAdapter:
+    """Tests for DynamicLoaderAdapter class."""
+
     @pytest.fixture
     def plugin_file(self, tmp_path: Path) -> Path:
         plugin_path = tmp_path / "sample_plugin.py"

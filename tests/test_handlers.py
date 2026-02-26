@@ -9,8 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Mapping
-from typing import Callable
+from collections.abc import Mapping
 
 import pytest
 from flext_core.typings import t

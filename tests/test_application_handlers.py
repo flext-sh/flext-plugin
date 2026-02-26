@@ -7,8 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Mapping
-from typing import Never
+from collections.abc import Mapping
 
 import pytest
 

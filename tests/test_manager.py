@@ -40,6 +40,8 @@ class TestFlextPluginService:
 
 
 class TestFlextPluginServiceStubBridges:
+    """Tests for FlextPluginService stub bridges."""
+
     def test_discovery_calls_security_registry_and_monitoring(self) -> None:
         class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
             def discover_plugins(

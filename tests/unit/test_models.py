@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -141,7 +142,7 @@ class TestFlextPluginModels:
         assert result.success is True
         assert result.data == {"output": "result"}
         assert not result.error
-        assert result.execution_time_ms == 1500.0
+        assert result.execution_time_ms == pytest.approx(1500.0)
 
     def test_execution_result_failure(self) -> None:
         """Test ExecutionResult failure case."""
@@ -157,8 +158,6 @@ class TestFlextPluginModels:
 
     def test_discovery_data_creation(self) -> None:
         """Test DiscoveryData creation."""
-        from pathlib import Path
-
         discovery = FlextPluginModels.Plugin.DiscoveryData(
             name="test-plugin",
             version="1.0.0",
@@ -231,4 +230,3 @@ class TestFlextPluginModels:
         assert "plugin1" in registry.plugins
         assert isinstance(registry.last_updated, datetime)
         assert isinstance(registry.created_at, datetime)
-

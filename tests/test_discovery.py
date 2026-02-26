@@ -16,13 +16,14 @@ from pathlib import Path
 import pytest
 
 from flext_plugin.discovery import FlextPluginDiscovery
+from flext_plugin.models import FlextPluginModels
 
 
 class TestFlextPluginDiscovery:
     """Tests for FlextPluginDiscovery class."""
 
     @pytest.fixture
-    def temp_dir(self) -> Generator[Path, None, None]:
+    def temp_dir(self) -> Generator[Path]:
         """Create temporary directory for testing."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             yield Path(tmp_dir)
@@ -83,16 +84,12 @@ class TestFlextPluginDiscovery:
         discovery: FlextPluginDiscovery,
     ) -> None:
         """Test validate_plugin with None data."""
-        # Create minimal valid plugin data instead of None
-        from pathlib import Path
-        from flext_plugin.models import FlextPluginModels
         plugin_data = FlextPluginModels.Plugin.DiscoveryData(
             name="test_plugin",
             version="1.0.0",
             path=Path("test_path"),
             discovery_type="file",
-            discovery_method="file_system"
+            discovery_method="file_system",
         )
         result = discovery.validate_plugin(plugin_data=plugin_data)
         assert result.is_success
-
