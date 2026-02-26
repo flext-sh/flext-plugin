@@ -15,7 +15,7 @@ import fnmatch
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, cast
 
 import pytest
 from anyio import Path as AnyioPath
@@ -50,7 +50,9 @@ class PluginInterface(Protocol):
 
     def initialize(self) -> dict[str, t.GeneralValueType]: ...
 
-    def execute(self, data: dict[str, t.GeneralValueType] | None = None) -> dict[str, t.GeneralValueType]: ...
+    def execute(
+        self, data: dict[str, t.GeneralValueType] | None = None
+    ) -> dict[str, t.GeneralValueType]: ...
 
     def cleanup(self) -> dict[str, t.GeneralValueType]: ...
 
@@ -243,8 +245,12 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     loader_adapter = FlextPluginLoader()
     # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))
 
-    container.with_service("plugin_discovery_port", discovery_adapter)
-    container.with_service("plugin_loader_port", loader_adapter)
+    container.with_service(
+        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+    )
+    container.with_service(
+        "plugin_loader_port", cast(t.RegisterableService, loader_adapter)
+    )
     # container.register("plugin_manager_port", manager_adapter)
 
     return FlextPluginService(container=container)
@@ -259,7 +265,9 @@ def real_discovery_service_with_adapters(
 
     # Register REAL discovery implementation
     discovery_adapter = FlextPluginDiscovery()
-    container.with_service("plugin_discovery_port", discovery_adapter)
+    container.with_service(
+        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+    )
 
     return FlextPluginService(container=container)
 
@@ -321,7 +329,9 @@ class TestRealPluginDiscoveryAndExecution:
         target_plugin_file = temp_plugin_dir / "target_warehouse.py"
         target_result = real_plugin_loader.load_plugin(str(target_plugin_file))
 
-        assert target_result.is_success, f"Failed to load target plugin: {target_result.error}"
+        assert target_result.is_success, (
+            f"Failed to load target plugin: {target_result.error}"
+        )
         target_load_data = target_result.unwrap()
         target = target_load_data.module.get_plugin()
         assert target.name == "warehouse-target"
@@ -440,7 +450,7 @@ class TestFlextPluginServiceWithRealAdapters:
         assert len(discover_result.data) > 0
 
         # Get a real plugin entity
-        tap_plugin: FlextPluginModels.Plugin | None = None
+        tap_plugin: FlextPluginModels.Plugin.Plugin | None = None
         for plugin in discover_result.data:
             if plugin.name == "tap_database":
                 tap_plugin = plugin
@@ -634,7 +644,7 @@ class TestFlextPluginServiceReal:
         )
 
         # Test loading with real plugin entity
-        result = service.load_plugin(plugin)
+        result = service.load_plugin(plugin.name)
 
         # Check for expected infrastructure failures - these are acceptable
         if result.is_failure and ("not configured" in str(result.error)):
@@ -652,7 +662,9 @@ class TestFlextPluginServiceReal:
         if not result.is_success:
             # Expected if load_plugin doesn't support Plugin entity
             error_msg = str(result.error).lower()
-            assert "loading" in error_msg or "failed" in error_msg or "error" in error_msg
+            assert (
+                "loading" in error_msg or "failed" in error_msg or "error" in error_msg
+            )
 
     def test_load_plugin_with_different_types_real(
         self,
@@ -674,7 +686,7 @@ class TestFlextPluginServiceReal:
                 plugin_type=plugin_type.value,
             )
 
-            result = service.load_plugin(plugin)
+            result = service.load_plugin(plugin.name)
             assert isinstance(result.is_success, bool)
             # If result is success, we have a plugin; if failure, we have an error
             assert result.is_success or result.is_failure
@@ -747,7 +759,10 @@ class TestFlextPluginServiceReal:
         """Test uninstall_plugin with empty name fails."""
         result = service.uninstall_plugin("")
         assert not result.is_success
-        assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
+        assert (
+            "not found" in str(result.error).lower()
+            or "plugin" in str(result.error).lower()
+        )
 
     def test_uninstall_plugin_valid_name_real(
         self,
@@ -762,7 +777,10 @@ class TestFlextPluginServiceReal:
         """Test enable_plugin with empty name fails."""
         result = service.enable_plugin("")
         assert not result.is_success
-        assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
+        assert (
+            "not found" in str(result.error).lower()
+            or "plugin" in str(result.error).lower()
+        )
 
     def test_enable_plugin_valid_name_real(
         self,
@@ -777,7 +795,10 @@ class TestFlextPluginServiceReal:
         """Test disable_plugin with empty name fails."""
         result = service.disable_plugin("")
         assert not result.is_success
-        assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
+        assert (
+            "not found" in str(result.error).lower()
+            or "plugin" in str(result.error).lower()
+        )
 
     def test_disable_plugin_valid_name_real(
         self,
@@ -821,9 +842,12 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test update_plugin_config with empty name fails."""
         config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test")
-        result = service.update_plugin_config("", config)
+        result = service.update_plugin_config("", config.model_dump())
         assert not result.is_success
-        assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
+        assert (
+            "not found" in str(result.error).lower()
+            or "plugin" in str(result.error).lower()
+        )
 
     def test_update_plugin_config_mismatched_name_fails(
         self,
@@ -832,7 +856,7 @@ class TestFlextPluginServiceReal:
         """Test update_plugin_config with mismatched plugin name fails."""
         # Create config for one plugin but try to update a different one
         config = FlextPluginModels.Plugin.PluginConfig(plugin_name="different-plugin")
-        result = service.update_plugin_config("test-plugin", config)
+        result = service.update_plugin_config("test-plugin", config.model_dump())
         # Should fail because plugin doesn't exist or names mismatch
         assert not result.is_success
 
@@ -842,7 +866,7 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
         config = FlextPluginModels.Plugin.PluginConfig(plugin_name="real-test-plugin")
-        result = service.update_plugin_config("real-test-plugin", config)
+        result = service.update_plugin_config("real-test-plugin", config.model_dump())
 
         # Accept either success or failure - depends on plugin being loaded
         assert result.is_success or result.is_failure
@@ -1053,7 +1077,7 @@ class TestRealPluginIntegrationWorkflow:
 
         # Step 2: Load tap plugin and Execute workflow
         tap_file = temp_plugin_dir / "tap_database.py"
-        tap_result = real_plugin_loader.load_plugin(tap_file)
+        tap_result = real_plugin_loader.load_plugin(str(tap_file))
 
         # Verify plugin loaded
         assert tap_result.is_success, f"Failed to load tap plugin: {tap_result.error}"
@@ -1072,7 +1096,7 @@ class TestRealPluginIntegrationWorkflow:
 
         # Step 5: Load target plugin for pipeline
         target_file = temp_plugin_dir / "target_warehouse.py"
-        target_result = real_plugin_loader.load_plugin(target_file)
+        target_result = real_plugin_loader.load_plugin(str(target_file))
 
         # Unwrap target plugin
         assert target_result.is_success, f"Failed to load target: {target_result.error}"
@@ -1109,14 +1133,16 @@ class TestRealPluginIntegrationWorkflow:
         processor_file = temp_plugin_dir / "processor_transform.py"
 
         # Load plugins into registry
-        tap_result = real_plugin_loader.load_plugin(tap_file)
-        target_result = real_plugin_loader.load_plugin(target_file)
+        tap_result = real_plugin_loader.load_plugin(str(tap_file))
+        target_result = real_plugin_loader.load_plugin(str(target_file))
         processor_result = real_plugin_loader.load_plugin(str(processor_file))
 
         # Unwrap plugin results and get instances
         assert tap_result.is_success, f"Failed to load tap: {tap_result.error}"
         assert target_result.is_success, f"Failed to load target: {target_result.error}"
-        assert processor_result.is_success, f"Failed to load processor: {processor_result.error}"
+        assert processor_result.is_success, (
+            f"Failed to load processor: {processor_result.error}"
+        )
         tap = tap_result.unwrap().module.get_plugin()
         target = target_result.unwrap().module.get_plugin()
         processor = processor_result.unwrap().module.get_plugin()
@@ -1339,7 +1365,7 @@ class BadPlugin:
 
         # Test that loader handles syntax errors gracefully
         # load_plugin returns FlextResult - should return failure for syntax errors
-        load_result = real_plugin_loader.load_plugin(bad_plugin_file)
+        load_result = real_plugin_loader.load_plugin(str(bad_plugin_file))
         assert not load_result.is_success, "Expected failure for syntax error plugin"
 
     def test_real_plugin_file_not_found_error(
@@ -1352,7 +1378,7 @@ class BadPlugin:
         nonexistent_file = temp_plugin_dir / "does_not_exist.py"
 
         # load_plugin returns FlextResult - should return failure for missing file
-        load_result = real_plugin_loader.load_plugin(nonexistent_file)
+        load_result = real_plugin_loader.load_plugin(str(nonexistent_file))
         assert not load_result.is_success, "Expected failure for non-existent file"
 
 
@@ -1453,7 +1479,10 @@ class TestServiceErrorHandling:
         # Test with empty plugin name (should handle gracefully)
         result = await service.unload_plugin("")
         assert not result.is_success
-        assert "not found" in str(result.error).lower() or "plugin" in str(result.error).lower()
+        assert (
+            "not found" in str(result.error).lower()
+            or "plugin" in str(result.error).lower()
+        )
 
         # Test with very long plugin name (should handle gracefully)
         long_name = "x" * 1000  # Very long name

@@ -204,13 +204,13 @@ def real_container_with_adapters() -> FlextContainer:
     manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
 
     container.with_service(
-        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
     )
     container.with_service(
-        "plugin_loader_port", cast(t.RegisterableService, loader_adapter)
+        "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
     )
     container.with_service(
-        "plugin_manager_port", cast(t.RegisterableService, manager_adapter)
+        "plugin_manager_port", cast("t.RegisterableService", manager_adapter)
     )
 
     return container

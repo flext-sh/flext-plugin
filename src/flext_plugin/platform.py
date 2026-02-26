@@ -141,7 +141,7 @@ class FlextPluginPlatform:
             """
             _ = metadata
             return self.register_class_plugin(
-                self.PLUGINS, name, cast(t.RegistrablePlugin, service)
+                self.PLUGINS, name, cast("t.RegistrablePlugin", service)
             )
 
         def unregister(self, plugin_name: str) -> r[bool]:
