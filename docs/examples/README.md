@@ -495,7 +495,6 @@ Comprehensive test coverage for all plugin functionality:
    ```
 
 1. **Follow Template Structure**:
-
    - `plugin.py` - Main plugin implementation
    - `test_plugin.py` - Comprehensive tests
    - `config.json` - Configuration example
@@ -524,6 +523,6 @@ Comprehensive test coverage for all plugin functionality:
 - **Error Handling**: Proper FlextResult pattern usage
 - **Resource Management**: Clean initialization and cleanup
 
-______________________________________________________________________
+---
 
 **Next Steps**: Browse individual example directories for detailed implementations and run the examples to see FLEXT Plugin system in action.

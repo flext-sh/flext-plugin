@@ -27,7 +27,7 @@
 
 **FLEXT Plugin System Architecture**
 
-______________________________________________________________________
+---
 
 ## Clean Architecture Overview
 
@@ -64,7 +64,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-______________________________________________________________________
+---
 
 ## Domain Layer
 
@@ -105,7 +105,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
 
 Plugin-specific business logic that doesn't belong to a single entity.
 
-______________________________________________________________________
+---
 
 ## Application Layer
 
@@ -134,7 +134,7 @@ class FlextPluginPlatform:
 - **FlextPluginDiscoveryService**: Plugin discovery and validation
 - **Hot Reload Services**: File watching and reload logic
 
-______________________________________________________________________
+---
 
 ## Infrastructure Layer
 
@@ -160,7 +160,7 @@ class WatchdogHotReload:
         """Monitor directory for changes"""
 ```
 
-______________________________________________________________________
+---
 
 ## Integration Patterns
 
@@ -204,7 +204,7 @@ class SingerTapPlugin(FlextPlugin):
         """Create Singer tap instance"""
 ```
 
-______________________________________________________________________
+---
 
 ## Current Architecture Status ✅ COMPLIANT
 
@@ -225,7 +225,7 @@ All modules follow the FLEXT single-class-per-module standard with nested helper
 - ✅ **Type Safety**: Complete MyPy compliance with Python 3.13+ features
 - ✅ **Railway Pattern**: FlextResult[T] throughout for composable error handling
 
-______________________________________________________________________
+---
 
 ## Future Architecture Enhancements
 
@@ -250,7 +250,7 @@ ______________________________________________________________________
 - **flext-api**: REST API for plugin operations
 - **Singer Projects**: Plugin framework for data pipeline components
 
-______________________________________________________________________
+---
 
 This architecture enables the plugin system to serve as reliable infrastructure for the entire FLEXT ecosystem while maintaining clean separation of concerns and integration with FLEXT-core patterns.
 

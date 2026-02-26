@@ -36,7 +36,7 @@
 
 **C4 Model Level 2**: Containers | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 🏗️ Container Architecture Overview
 
@@ -49,7 +49,7 @@ FLEXT Plugin operates as a **Python library package** with **optional CLI compon
 - **Container Agnostic**: Deployable in any Python environment (Docker, Podman, Kubernetes, bare metal)
 - **Dependency Injection**: Clean separation through FLEXT container patterns
 
-______________________________________________________________________
+---
 
 ## 📦 Container Diagram
 
@@ -113,7 +113,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 🐳 Container Descriptions
 
@@ -199,7 +199,7 @@ ______________________________________________________________________
   - Temporary configuration files
   - Performance optimization metadata
 
-______________________________________________________________________
+---
 
 ## 🔗 Container Communication Patterns
 
@@ -253,7 +253,7 @@ platform = FlextPluginPlatform()
 | All       | Kubernetes      | kubectl/API | Orchestration and deployment     |
 | Core      | File System     | POSIX       | Local plugin storage and caching |
 
-______________________________________________________________________
+---
 
 ## 🚀 Deployment and Technology Choices
 
@@ -334,7 +334,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 - **Packaging**: Build and publish packages
 - **Documentation**: Generate and validate docs
 
-______________________________________________________________________
+---
 
 ## 📊 Container Quality Attributes
 
@@ -394,7 +394,7 @@ ______________________________________________________________________
 - **Access Control**: Role-based plugin execution permissions
 - **Integrity Checks**: Plugin code and data integrity validation
 
-______________________________________________________________________
+---
 
 ## 🔧 Container Management and Operations
 
@@ -447,7 +447,7 @@ ______________________________________________________________________
 - **Caching Strategy**: Optimize for available memory
 - **Performance Tuning**: Configurable thread pools and timeouts
 
-______________________________________________________________________
+---
 
 ## 🧪 Testing Strategy by Container
 
@@ -472,7 +472,7 @@ ______________________________________________________________________
 - **Scalability Testing**: Multi-container deployments
 - **Benchmarking**: Performance regression detection
 
-______________________________________________________________________
+---
 
 ## 📋 Container Interface Contracts
 
@@ -505,6 +505,6 @@ POST /api/v1/plugins/{name}/execute
 GET /api/v1/plugins/{name}/status
 ```
 
-______________________________________________________________________
+---
 
 **Container Architecture** - Technology stack, deployment patterns, and container interactions for FLEXT Plugin system.

@@ -5,9 +5,7 @@
 # [MANAGED] build system
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = [
-  "poetry-core>=2",
-]
+requires = ["poetry-core>=2"]
 
 # [CUSTOM] project metadata
 [project]
@@ -15,17 +13,10 @@ name = "flext-plugin"
 version = "0.12.0-dev"
 description = "FLEXT Plugin - Plugin System for FLEXT Platform"
 readme = "README.md"
-keywords = [
-  "architecture",
-  "enterprise",
-  "extensions",
-  "flext",
-  "plugins",
-  "typed",
-]
+keywords = ["architecture", "enterprise", "extensions", "flext", "plugins", "typed"]
 license = "MIT"
-maintainers = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
-authors = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
+maintainers = [{ email = "team@flext.sh", name = "FLEXT Team" }]
+authors = [{ email = "team@flext.sh", name = "FLEXT Team" }]
 requires-python = ">=3.13,<3.14"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -120,15 +111,13 @@ dependencies.flext-core.develop = true
 dependencies.flext-core.path = "../flext-core"
 dependencies.flext-observability.develop = true
 dependencies.flext-observability.path = "../flext-observability"
-packages = [ { from = "src", include = "flext_plugin" } ]
+packages = [{ from = "src", include = "flext_plugin" }]
 
 # [MANAGED] ruff
 
 [tool.ruff]
 extend = "../ruff-shared.toml"
-lint.isort.known-first-party = [
-  "flext_plugin",
-]
+lint.isort.known-first-party = ["flext_plugin"]
 
 # [MANAGED] codespell
 [tool.codespell]
@@ -140,13 +129,8 @@ skip = """\
 
 # [MANAGED] deptry
 [tool.deptry]
-known_first_party = [
-  "flext",
-  "flext_quality",
-]
-pep621_dev_dependency_groups = [
-  "dev",
-]
+known_first_party = ["flext", "flext_quality"]
+pep621_dev_dependency_groups = ["dev"]
 per_rule_ignores.DEP002 = [
   # CLI tools (invoked from command line, not imported)
   "autoflake",
@@ -201,50 +185,34 @@ exclude = [
   "vendor",
   "venv",
 ]
-extend_exclude = [
-  "flexcore/",
-  "flext-.*/",
-]
+extend_exclude = ["flexcore/", "flext-.*/"]
 
 # [MANAGED] pytest
 [tool.pytest]
 [tool.pytest.ini_options]
 tool.pytest.ini_options.minversion = "8.0"
-tool.pytest.ini_options.python_classes = [
-    "Test*",
-]
-tool.pytest.ini_options.python_files = [
-    "*_test.py",
-    "*_tests.py",
-    "test_*.py",
-]
-tool.pytest.ini_options.addopts = [
-    "--strict-markers",
-]
+tool.pytest.ini_options.python_classes = ["Test*"]
+tool.pytest.ini_options.python_files = ["*_test.py", "*_tests.py", "test_*.py"]
+tool.pytest.ini_options.addopts = ["--strict-markers"]
 tool.pytest.ini_options.markers = [
-    "unit: unit tests",
-    "integration: integration tests",
-    "performance: performance and benchmark tests",
-    "slow: slow-running tests",
-    "docker: tests requiring Docker",
-    "e2e: end-to-end integration tests",
-    "edge_cases: edge case tests",
-    "stress: stress tests",
-    "resilience: resilience tests",
+  "unit: unit tests",
+  "integration: integration tests",
+  "performance: performance and benchmark tests",
+  "slow: slow-running tests",
+  "docker: tests requiring Docker",
+  "e2e: end-to-end integration tests",
+  "edge_cases: edge case tests",
+  "stress: stress tests",
+  "resilience: resilience tests",
 ]
 
 
 # [MANAGED] coverage
 [tool.coverage]
 run.branch = true
-run.omit = [
-  "*/__pycache__/*",
-  "*/_pb2*.py",
-  "*/conftest.py",
-  "*/tests/*",
-]
+run.omit = ["*/__pycache__/*", "*/_pb2*.py", "*/conftest.py", "*/tests/*"]
 run.relative_files = true
-run.source = [ "src/flext_plugin" ]
+run.source = ["src/flext_plugin"]
 report.exclude_lines = [
   "@abstractmethod",
   "^\\s*\\.\\.\\.\\s*$",
@@ -257,9 +225,7 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 report.fail_under = 0
-report.partial_branches = [
-  "pragma: no branch",
-]
+report.partial_branches = ["pragma: no branch"]
 report.precision = 2
 report.show_missing = true
 report.skip_empty = true
@@ -325,19 +291,19 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = false
-mypy_path = [ "..", "typings", "typings/generated", "src", "../flext-core/src", "../flext-observability/src" ]
+mypy_path = [
+  "..",
+  "typings",
+  "typings/generated",
+  "src",
+  "../flext-core/src",
+  "../flext-observability/src",
+]
 
 # [MANAGED] pyrefly
 [tool.pyrefly]
-project-excludes = [ "**/*_pb2*.py", "**/*_pb2_grpc*.py" ]
-search-path = [
-  "..",
-  "../flext-core/src",
-  "../flext-observability/src",
-  "src",
-  "tests",
-  "examples",
-]
+project-excludes = ["**/*_pb2*.py", "**/*_pb2_grpc*.py"]
+search-path = ["..", "../flext-core/src", "../flext-observability/src", "src", "tests", "examples"]
 
 # [MANAGED] pyright
 [tool.pyright]
@@ -353,7 +319,7 @@ extraPaths = [
   "../flext-core/src",
   "../flext-observability/src",
 ]
-include = [ "src", "scripts", "tests", "examples" ]
+include = ["src", "scripts", "tests", "examples"]
 exclude = [
   "**/*.pb2.py",
   "**/*.pb2_grpc.py",
@@ -438,13 +404,7 @@ strictSetInference = true
 useLibraryCodeForTypes = true
 
 [tool.bandit]
-skips = [
-  "B404",
-  "B603",
-  "B607",
-  "B105",
-  "B608",
-]
+skips = ["B404", "B603", "B607", "B105", "B608"]
 exclude_dirs = [
   ".git",
   ".mypy_cache",
@@ -484,9 +444,6 @@ exclude = [
   "vendor/",
 ]
 min_confidence = 80
-paths = [
-  "**/src",
-  "src",
-]
+paths = ["**/src", "src"]
 sort_by_size = true
 verbose = false

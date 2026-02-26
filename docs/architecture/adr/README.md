@@ -51,7 +51,7 @@
 
 **Framework**: ADR | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 📋 ADR Overview
 
@@ -64,7 +64,7 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 - **Share Knowledge**: Enable team members to understand historical decisions
 - **Guide Evolution**: Inform future architectural changes and refactoring
 
-______________________________________________________________________
+---
 
 ## 📊 ADR Index
 
@@ -96,7 +96,7 @@ ______________________________________________________________________
 | ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
 | ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
 
-______________________________________________________________________
+---
 
 ## 📝 ADR Template
 
@@ -136,7 +136,7 @@ All ADRs follow a standardized template for consistency and completeness.
 [object additional information or implementation details]
 ```
 
-______________________________________________________________________
+---
 
 ## 🔄 ADR Workflow
 
@@ -167,7 +167,7 @@ Rejected   Deprecated → Superseded
 - **Deprecated**: Decision no longer recommended but may still be in use
 - **Superseded**: Decision replaced by a newer ADR
 
-______________________________________________________________________
+---
 
 ## 🏷️ ADR Categories
 
@@ -207,7 +207,7 @@ ______________________________________________________________________
 - Test organization and coverage goals
 - Quality assurance approaches
 
-______________________________________________________________________
+---
 
 ## 📚 ADR Best Practices
 
@@ -264,7 +264,7 @@ ______________________________________________________________________
 - Document any deviations from decisions
 - Record lessons learned during implementation
 
-______________________________________________________________________
+---
 
 ## 🛠️ ADR Tools and Automation
 
@@ -307,7 +307,7 @@ make adr-summary
 make adr-export
 ```
 
-______________________________________________________________________
+---
 
 ## 📊 ADR Metrics and Analytics
 
@@ -325,7 +325,7 @@ ______________________________________________________________________
 - **Implementation Alignment**: Percentage of implementations matching ADR decisions
 - **Knowledge Sharing**: Usage of ADRs in new decision-making
 
-______________________________________________________________________
+---
 
 ## 🔗 Related Documentation
 
@@ -348,7 +348,7 @@ ______________________________________________________________________
 - **Quality Attributes** - Performance, scalability, reliability
 - **Testing Strategy** - Testing approach and framework (_Documentation coming soon_)
 
-______________________________________________________________________
+---
 
 ## 🤝 Contributing to ADRs
 
@@ -374,6 +374,6 @@ ______________________________________________________________________
 1. **Implementation Tracking**: Link ADRs to implementation work and outcomes
 1. **Lessons Learned**: Document what worked and what didn't during implementation
 
-______________________________________________________________________
+---
 
 **Architecture Decision Records** - Comprehensive documentation of architectural decisions, rationale, and consequences for FLEXT Plugin system.
