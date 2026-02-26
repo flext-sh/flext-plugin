@@ -199,6 +199,7 @@ class FlextPluginAdapters:
         """Dynamic plugin loading - synchronous."""
 
         def __init__(self) -> None:
+            """Initialize the synchronous plugin adapter."""
             super().__init__()
             self._loaded_plugins: dict[str, object] = {}
 
@@ -254,6 +255,8 @@ class FlextPluginAdapters:
             }
 
         def unload_plugin(self, _plugin_name: str) -> r[bool]:
+            """Unload a plugin by name."""
+
             def _unload() -> bool:
                 if _plugin_name not in self._loaded_plugins:
                     error_msg = f"Plugin not loaded: {_plugin_name}"
@@ -266,6 +269,7 @@ class FlextPluginAdapters:
             )
 
         def is_plugin_loaded(self, _plugin_name: str) -> bool:
+            """Check if a plugin is loaded."""
             return _plugin_name in self._loaded_plugins
 
         def get_loaded_plugins(self) -> list[str]:

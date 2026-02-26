@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import cast
 
 from flext_core import r, u, x
 from flext_core.container import FlextContainer
@@ -112,11 +111,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     ) -> dict[str, t.GeneralValueType]:
         if not isinstance(value, Mapping):
             return {}
-        normalized: dict[str, t.GeneralValueType] = {}
-        for key, item in value.items():
-            if isinstance(key, str):
-                normalized[key] = cast("t.GeneralValueType", item)
-        return normalized
+        return {key: item for key, item in value.items() if isinstance(key, str)}
 
     def discover_and_register_plugins(
         self,
