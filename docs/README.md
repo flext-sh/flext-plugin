@@ -196,6 +196,6 @@ make plugin-discovery      # Test plugin discovery mechanisms
 
 Enterprise support and consulting available through [team@flext.sh](mailto:team@flext.sh).
 
----
+______________________________________________________________________
 
 **Next Steps**: Start with the Quick Start Guide or explore the Architecture Overview to understand the system design.

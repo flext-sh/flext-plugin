@@ -31,7 +31,7 @@
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 🏗️ Component Architecture Overview
 
@@ -56,7 +56,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Interface Segregation**: Small, focused interfaces for better testability
 - **Railway Pattern**: FlextResult[T] for composable error handling throughout
 
----
+______________________________________________________________________
 
 ## 📦 Component Diagram
 
@@ -131,7 +131,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 @enduml
 ```
 
----
+______________________________________________________________________
 
 ## 🔧 Component Descriptions
 
@@ -395,7 +395,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
   - `FlextPluginExecutionError`: Execution failures
 - **Dependencies**: Domain types, standard exception hierarchy
 
----
+______________________________________________________________________
 
 ## 🔗 Component Relationships and Dependencies
 
@@ -454,7 +454,7 @@ adapter = FilesystemAdapter()
 content = adapter.read_file(path)  # External system access
 ```
 
----
+______________________________________________________________________
 
 ## 📊 Component Quality Attributes
 
@@ -516,7 +516,7 @@ content = adapter.read_file(path)  # External system access
 - **Integration Testable**: Clear component boundaries for integration testing
 - **Performance Testable**: Isolated components for performance benchmarking
 
----
+______________________________________________________________________
 
 ## 🧪 Component Testing Strategy
 
@@ -538,7 +538,7 @@ content = adapter.read_file(path)  # External system access
 - **Error Scenarios**: Failure handling and recovery
 - **Performance Testing**: Load testing and benchmarking
 
----
+______________________________________________________________________
 
 ## 🔧 Component Evolution and Maintenance
 
@@ -584,6 +584,6 @@ content = adapter.read_file(path)  # External system access
 1. Provide migration guides and examples
 1. Remove component after migration period
 
----
+______________________________________________________________________
 
 **Component Architecture** - Detailed component structure, responsibilities, and interactions within the Clean Architecture framework.

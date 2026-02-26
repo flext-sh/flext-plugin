@@ -36,7 +36,7 @@
 
 **Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October 2025
 
----
+______________________________________________________________________
 
 ## 📋 Documentation Structure
 
@@ -54,7 +54,7 @@ This architecture documentation follows a comprehensive framework combining **C4
 | **6. Requirements** | Arc42     | System requirements and constraints   | Architects, developers                  |
 | **7. Risks**        | Arc42     | Technical risks and mitigation        | Architects, product owners              |
 
----
+______________________________________________________________________
 
 ## 🗂️ Architecture Documentation Index
 
@@ -97,7 +97,7 @@ This architecture documentation follows a comprehensive framework combining **C4
 | **Security Architecture**   | PlantUML | PlantUML | Security boundaries   |
 | **Deployment Architecture** | PlantUML | PlantUML | Infrastructure view   |
 
----
+______________________________________________________________________
 
 ## 🏗️ Architecture Frameworks Used
 
@@ -154,7 +154,7 @@ Consequences: [Impact and implications]
 Alternatives: [Other options considered]
 ```
 
----
+______________________________________________________________________
 
 ## 📊 Architecture Metrics
 
@@ -181,7 +181,7 @@ Alternatives: [Other options considered]
 - **Entry Points**: File-based discovery only (entry points planned)
 - **Documentation**: Synchronized but could be more comprehensive
 
----
+______________________________________________________________________
 
 ## 🚀 Architecture Evolution
 
@@ -207,7 +207,7 @@ Alternatives: [Other options considered]
 - 📋 Multi-format discovery (entry points + file-based)
 - 📋 Enterprise hardening (production-grade security)
 
----
+______________________________________________________________________
 
 ## 🛠️ Documentation Tools and Workflow
 
@@ -238,7 +238,7 @@ make architecture-audit
 - ✅ ADRs complete for all major decisions
 - ✅ Cross-references maintained between documents
 
----
+______________________________________________________________________
 
 ## 📖 Reading Guide
 
@@ -267,7 +267,7 @@ make architecture-audit
 1. Component Architecture → Quality Attributes
 1. Security Architecture → Data Architecture
 
----
+______________________________________________________________________
 
 ## 🤝 Contributing to Architecture Documentation
 
@@ -293,6 +293,6 @@ make architecture-audit
 1. Cross-references validated
 1. Documentation reviewed by architects
 
----
+______________________________________________________________________
 
 **FLEXT Plugin Architecture Documentation** - Comprehensive system documentation using modern frameworks and best practices for enterprise-grade plugin management.

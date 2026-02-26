@@ -34,7 +34,7 @@
 
 **Contributing to FLEXT Plugin**
 
----
+______________________________________________________________________
 
 ## Development Setup
 
@@ -59,7 +59,7 @@ make info                  # Project information
 python -c "import flext_plugin; print('Setup successful')"
 ```
 
----
+______________________________________________________________________
 
 ## Code Standards
 
@@ -82,7 +82,7 @@ make test                  # Full test suite (85% coverage target)
 make coverage-html         # Detailed coverage report
 ```
 
----
+______________________________________________________________________
 
 ## Architecture Compliance
 
@@ -111,7 +111,7 @@ class FlextPluginModels:
         """Nested helper class for domain logic"""
 ```
 
----
+______________________________________________________________________
 
 ## Testing
 
@@ -144,7 +144,7 @@ pytest -m "not slow"   # Skip slow tests
 - Test FlextResult success and failure paths
 - Maintain 85% minimum coverage
 
----
+______________________________________________________________________
 
 ## Plugin Development
 
@@ -182,7 +182,7 @@ export FLEXT_PLUGIN_HOT_RELOAD=true
 export FLEXT_PLUGIN_WATCH_INTERVAL=2
 ```
 
----
+______________________________________________________________________
 
 ## Contributing Process
 
@@ -210,7 +210,7 @@ make test             # 85% coverage required
 - Reference related issues
 - Pass all CI checks
 
----
+______________________________________________________________________
 
 ## Debugging
 
@@ -248,7 +248,7 @@ make plugin-validate
 ls -la plugins/
 ```
 
----
+______________________________________________________________________
 
 ## Release Process
 
@@ -265,7 +265,7 @@ ls -la plugins/
 - Architecture compliance verified
 - Documentation updated
 
----
+______________________________________________________________________
 
 ## Getting Help
 
@@ -273,6 +273,6 @@ ls -la plugins/
 - **Issues**: [GitHub Issues](https://github.com/flext-sh/flext/issues)
 - **Code Review**: Submit PRs for review and feedback
 
----
+______________________________________________________________________
 
 For specific plugin development patterns and examples, see examples/ directory.

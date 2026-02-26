@@ -564,6 +564,6 @@ ls -la ./
 - **Issues**: [Report bugs](https://github.com/flext-sh/flext/issues)
 - **Discussions**: [Ask questions](https://github.com/flext-sh/flext/discussions)
 
----
+______________________________________________________________________
 
 🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue with the Plugin Development Guide to learn advanced patterns and best practices.
