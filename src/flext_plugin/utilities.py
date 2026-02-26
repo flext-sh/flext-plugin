@@ -12,7 +12,6 @@ import importlib.util
 import json
 import re
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -30,7 +29,6 @@ from flext_plugin.typings import t
 u = FlextUtilities
 
 
-@dataclass
 class FlextPluginUtilities(u):
     """composition-based utilities using Python 3.13+ patterns."""
 
