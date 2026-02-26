@@ -1104,7 +1104,7 @@ class FlextPluginUtilities(u):
     @classmethod
     def validate_model_config(cls, v: SettingsConfigDict) -> SettingsConfigDict:
         """Validate model configuration."""
-        if not u.is_dict_like(v):
+        if not isinstance(v, dict):
             msg = "model_config must be a SettingsConfigDict instance"
             raise TypeError(msg)
         return v

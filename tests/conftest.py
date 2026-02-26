@@ -18,6 +18,7 @@ import os
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import cast
 
 import pytest
 from flext_core import FlextContainer, t
@@ -202,17 +203,23 @@ def real_container_with_adapters() -> FlextContainer:
     loader_adapter = FlextPluginAdapters.DynamicLoaderAdapter()
     manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
 
-    container.with_service("plugin_discovery_port", discovery_adapter)
-    container.with_service("plugin_loader_port", loader_adapter)
-    container.with_service("plugin_manager_port", manager_adapter)
+    container.with_service(
+        "plugin_discovery_port", cast(t.RegisterableService, discovery_adapter)
+    )
+    container.with_service(
+        "plugin_loader_port", cast(t.RegisterableService, loader_adapter)
+    )
+    container.with_service(
+        "plugin_manager_port", cast(t.RegisterableService, manager_adapter)
+    )
 
     return container
 
 
 @pytest.fixture
-def real_plugin_entity() -> FlextPluginModels.Plugin:
+def real_plugin_entity() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL FlextPluginModels.Plugin for testing."""
-    return FlextPluginModels.Plugin(
+    return FlextPluginModels.Plugin.Plugin(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
@@ -287,9 +294,9 @@ def pytest_configure(config: pytest.Config) -> None:
 
 # REAL Plugin Entity fixtures
 @pytest.fixture
-def real_tap_plugin() -> FlextPluginModels.Plugin:
+def real_tap_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL tap plugin entity."""
-    return FlextPluginModels.Plugin(
+    return FlextPluginModels.Plugin.Plugin(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
@@ -298,9 +305,9 @@ def real_tap_plugin() -> FlextPluginModels.Plugin:
 
 
 @pytest.fixture
-def real_target_plugin() -> FlextPluginModels.Plugin:
+def real_target_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL target plugin entity."""
-    return FlextPluginModels.Plugin(
+    return FlextPluginModels.Plugin.Plugin(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
@@ -309,9 +316,9 @@ def real_target_plugin() -> FlextPluginModels.Plugin:
 
 
 @pytest.fixture
-def real_processor_plugin() -> FlextPluginModels.Plugin:
+def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL processor plugin entity."""
-    return FlextPluginModels.Plugin(
+    return FlextPluginModels.Plugin.Plugin(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",

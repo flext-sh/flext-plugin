@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Mapping
+from typing import cast
 
 from flext_core import (
     FlextContainer,
@@ -139,7 +140,9 @@ class FlextPluginPlatform:
 
             """
             _ = metadata
-            return self.register_class_plugin(self.PLUGINS, name, service)
+            return self.register_class_plugin(
+                self.PLUGINS, name, cast(t.RegistrablePlugin, service)
+            )
 
         def unregister(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from class-level storage."""

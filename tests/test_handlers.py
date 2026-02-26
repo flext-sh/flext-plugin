@@ -13,6 +13,7 @@ from collections.abc import Awaitable, Mapping
 from typing import Callable
 
 import pytest
+from flext_core.typings import t
 
 from flext_plugin import FlextPluginHandlers
 
@@ -88,9 +89,7 @@ class TestFlextPluginHandlers:
         assert FlextPluginHandlers is not None
         assert callable(FlextPluginHandlers)
 
-    def test_handlers_has_expected_methods(
-        self, handlers: FlextPluginHandlers
-    ) -> None:
+    def test_handlers_has_expected_methods(self, handlers: FlextPluginHandlers) -> None:
         """Test that handlers has expected methods."""
         assert hasattr(handlers, "register_handler")
         assert callable(handlers.register_handler)
