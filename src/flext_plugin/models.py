@@ -231,19 +231,35 @@ class FlextPluginModels(FlextModels):
                     self.metadata["failure_count"] = 0
 
                 exec_count_val = self.metadata.get("execution_count", 0)
-                exec_count = int(exec_count_val) if isinstance(exec_count_val, (int, float, str)) else 0
+                exec_count = (
+                    int(exec_count_val)
+                    if isinstance(exec_count_val, (int, float, str))
+                    else 0
+                )
                 total_time_val = self.metadata.get("total_execution_time", 0.0)
-                total_time = float(total_time_val) if isinstance(total_time_val, (int, float, str)) else 0.0
+                total_time = (
+                    float(total_time_val)
+                    if isinstance(total_time_val, (int, float, str))
+                    else 0.0
+                )
                 self.metadata["execution_count"] = exec_count + 1
                 self.metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
                     success_count_val = self.metadata.get("success_count", 0)
-                    success_count = int(success_count_val) if isinstance(success_count_val, (int, float, str)) else 0
+                    success_count = (
+                        int(success_count_val)
+                        if isinstance(success_count_val, (int, float, str))
+                        else 0
+                    )
                     self.metadata["success_count"] = success_count + 1
                 else:
                     failure_count_val = self.metadata.get("failure_count", 0)
-                    failure_count = int(failure_count_val) if isinstance(failure_count_val, (int, float, str)) else 0
+                    failure_count = (
+                        int(failure_count_val)
+                        if isinstance(failure_count_val, (int, float, str))
+                        else 0
+                    )
                     self.metadata["failure_count"] = failure_count + 1
 
             def record_error(self, error_message: str) -> None:
@@ -259,7 +275,11 @@ class FlextPluginModels(FlextModels):
                     self.metadata["last_error"] = ""
 
                 error_count_val = self.metadata.get("error_count", 0)
-                error_count = int(error_count_val) if isinstance(error_count_val, (int, float, str)) else 0
+                error_count = (
+                    int(error_count_val)
+                    if isinstance(error_count_val, (int, float, str))
+                    else 0
+                )
                 self.metadata["error_count"] = error_count + 1
                 self.metadata["last_error"] = error_message
 

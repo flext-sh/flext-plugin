@@ -25,6 +25,7 @@ class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
 
     pass
 
+
 # Runtime aliases
 p = TestsFlextPluginProtocols
 p = TestsFlextPluginProtocols
