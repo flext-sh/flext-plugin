@@ -6,13 +6,13 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_plugin import t
 
+from collections.abc import Awaitable, Mapping
 from typing import Never
 
 import pytest
 
-from flext_plugin import FlextPluginHandlers
+from flext_plugin import FlextPluginHandlers, t
 
 
 class TestFlextPluginHandlers:
@@ -29,7 +29,7 @@ class TestFlextPluginHandlers:
         """Test registering event handlers."""
         handlers = FlextPluginHandlers()
 
-        def test_handler(event_data: dict[str, t.GeneralValueType]) -> str:
+        async def test_handler(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return f"processed: {event_data}"
 
         result = handlers.register_handler("test_event", test_handler)
@@ -46,7 +46,7 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def test_handler(event_data: dict[str, t.GeneralValueType]) -> str:
+        async def test_handler(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             results.append(event_data)
             return "handled"
 
@@ -82,11 +82,13 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler_low(event_data: dict[str, t.GeneralValueType]) -> None:
+        async def handler_low(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             results.append("low")
+            return "low"
 
-        def handler_high(event_data: dict[str, t.GeneralValueType]) -> None:
+        async def handler_high(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             results.append("high")
+            return "high"
 
         # Register with different priorities (higher number = higher priority)
         handlers.register_handler("test", handler_low, priority=1)
@@ -104,11 +106,13 @@ class TestFlextPluginHandlers:
 
         results = []
 
-        def handler1(event_data: dict[str, t.GeneralValueType]) -> None:
+        async def handler1(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             results.append("handler1")
+            return "handler1"
 
-        def handler2(event_data: dict[str, t.GeneralValueType]) -> None:
+        async def handler2(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             results.append("handler2")
+            return "handler2"
 
         handlers.register_handler("test_event", handler1)
         handlers.register_handler("test_event", handler2)
@@ -144,11 +148,11 @@ class TestFlextPluginHandlers:
         """Test error handling in event handlers."""
         handlers = FlextPluginHandlers()
 
-        def failing_handler(event_data: dict[str, t.GeneralValueType]) -> Never:
+        async def failing_handler(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             msg = "Handler failed"
             raise ValueError(msg)
 
-        def working_handler(event_data: dict[str, t.GeneralValueType]) -> str:
+        async def working_handler(event_data: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return "success"
 
         handlers.register_handler("test", failing_handler)

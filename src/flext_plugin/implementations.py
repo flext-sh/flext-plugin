@@ -299,7 +299,7 @@ class FlextPluginImplementations:
 
             """
             super().__init__(name, version, entity)
-            self._connection_config = connection_config or {}
+            self._connection_config = dict(connection_config) if connection_config else {}
             self._connection_valid = False
 
         def validate_config(self, config: Mapping[str, t.GeneralValueType]) -> r[None]:
@@ -529,7 +529,7 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: dict[str, t.GeneralValueType] = config or {}
+            self._config: dict[str, t.GeneralValueType] = dict(config) if config else {}
             self._services = services or {}
 
         @property

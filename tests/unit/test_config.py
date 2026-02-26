@@ -37,8 +37,7 @@ class TestFlextPluginSettings:
 
     def test_create_config_with_custom_values(self) -> None:
         """Test config creation with custom values."""
-        config = FlextPluginSettings.create(
-            plugin_name="custom-plugin",
+        options = FlextPluginSettings.CreateOptions(
             enabled=False,
             priority=50,
             max_memory_mb=1024,
@@ -46,7 +45,11 @@ class TestFlextPluginSettings:
             timeout_seconds=60,
             dependencies=["dep1", "dep2"],
             settings={"key": "value"},
+        )
+        config = FlextPluginSettings.create(
+            plugin_name="custom-plugin",
             config_data={"data_key": "data_value"},
+            options=options,
         )
 
         assert config.plugin_name == "custom-plugin"

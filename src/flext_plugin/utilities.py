@@ -453,7 +453,7 @@ class FlextPluginUtilities(u):
                     if dangerous_op in plugin_content:
                         security_report["safe"] = False
                         violations = security_report["violations"]
-                        if u.is_list_like(violations):
+                        if u.is_list_like(violations) and isinstance(violations, list):
                             violations.append(
                                 f"Dangerous operation detected: {dangerous_op}",
                             )
@@ -468,18 +468,18 @@ class FlextPluginUtilities(u):
                         for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
                     ):
                         warnings = security_report["warnings"]
-                        if u.is_list_like(warnings):
+                        if u.is_list_like(warnings) and isinstance(warnings, list):
                             warnings.append(f"Potentially unsafe import: {module_name}")
 
                 # Basic code analysis
                 if "network" in plugin_content.lower() or "socket" in plugin_content:
                     warnings = security_report["warnings"]
-                    if u.is_list_like(warnings):
+                    if u.is_list_like(warnings) and isinstance(warnings, list):
                         warnings.append("Plugin may perform network operations")
 
                 if "file" in plugin_content.lower() or "write" in plugin_content:
                     warnings = security_report["warnings"]
-                    if u.is_list_like(warnings):
+                    if u.is_list_like(warnings) and isinstance(warnings, list):
                         warnings.append("Plugin may perform file operations")
 
                 return r[dict[str, t.GeneralValueType]].ok(dict(security_report))
@@ -703,7 +703,7 @@ class FlextPluginUtilities(u):
 
             """
             try:
-                merged_config = base_config.copy()
+                merged_config = dict(base_config)
 
                 for key, value in override_config.items():
                     existing_value = merged_config.get(key)

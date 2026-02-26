@@ -212,11 +212,11 @@ def real_container_with_adapters() -> FlextContainer:
 @pytest.fixture
 def real_plugin_entity() -> FlextPluginModels.Plugin:
     """Create REAL FlextPluginModels.Plugin for testing."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
-        plugin_type=FlextPluginModels.PluginType.UTILITY,
+        plugin_type="utility",
     )
 
 
@@ -289,7 +289,7 @@ def pytest_configure(config: pytest.Config) -> None:
 @pytest.fixture
 def real_tap_plugin() -> FlextPluginModels.Plugin:
     """Create REAL tap plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
@@ -300,7 +300,7 @@ def real_tap_plugin() -> FlextPluginModels.Plugin:
 @pytest.fixture
 def real_target_plugin() -> FlextPluginModels.Plugin:
     """Create REAL target plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
@@ -311,7 +311,7 @@ def real_target_plugin() -> FlextPluginModels.Plugin:
 @pytest.fixture
 def real_processor_plugin() -> FlextPluginModels.Plugin:
     """Create REAL processor plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",

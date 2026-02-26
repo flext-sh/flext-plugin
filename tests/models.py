@@ -28,13 +28,6 @@ class TestsFlextPluginModels(FlextTestsModels, FlextPluginModels):
     - FlextTestsModels.Tests.* - Generic test utilities
     """
 
-    class Tests:
-        """Test fixtures namespace for flext-plugin.
-
-        Contains test-specific models and fixtures that should not
-        be part of production code.
-        """
-
 
 # Short aliases for tests
 tm = TestsFlextPluginModels

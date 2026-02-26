@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import Mapping
+from typing import cast
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger, FlextResult
@@ -212,7 +213,7 @@ class FlextPluginHandlers:
         self,
         handler: t.Handlers.EventHandler,
         event_data: Mapping[str, t.GeneralValueType],
-    ) -> object:
+    ) -> t.JsonValue:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -225,7 +226,9 @@ class FlextPluginHandlers:
         """
         try:
             # Handler is always async now
-            async_result = handler(event_data)
+            # Cast event_data to JsonValue mapping for handler compatibility
+            json_event_data = cast(Mapping[str, t.JsonValue], event_data)
+            async_result = handler(json_event_data)
             return await async_result
         except (
             ValueError,
@@ -280,7 +283,7 @@ class FlextPluginHandlers:
         if event_type:
             history = [e for e in history if e["event_type"] == event_type]
 
-        return history[-limit:] if limit > 0 else history
+        return cast(list[Mapping[str, t.GeneralValueType]], history[-limit:] if limit > 0 else history)
 
     def clear_event_history(self) -> int:
         """Clear event history.

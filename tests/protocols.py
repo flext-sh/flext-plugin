@@ -23,15 +23,7 @@ class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
     - p.Plugin.* (from FlextPluginProtocols)
     """
 
-    class Tests:
-        """Project-specific test protocols.
-
-        Extends FlextTestsProtocols.Tests with Plugin-specific protocols.
-        """
-
-        class Plugin:
-            """Plugin-specific test protocols."""
-
+    pass
 
 # Runtime aliases
 p = TestsFlextPluginProtocols

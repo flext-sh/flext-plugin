@@ -8,9 +8,8 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_plugin import t
 
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Mapping
 from typing import Callable
 
 import pytest
@@ -38,8 +37,8 @@ class TestFlextPluginHandlers:
     def test_register_handler_success(self, handlers: FlextPluginHandlers) -> None:
         """Test successful handler registration."""
 
-        async def sample_handler(event: dict[str, t.GeneralValueType]) -> object:
-            return event
+        async def sample_handler(event: Mapping[str, t.JsonValue]) -> t.JsonValue:
+            return event.get("key", "default")
 
         result = handlers.register_handler("test_event", sample_handler)
         assert result.is_success
@@ -52,10 +51,10 @@ class TestFlextPluginHandlers:
     ) -> None:
         """Test handler registration with priority."""
 
-        async def handler1(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler1(event: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return "handler1"
 
-        async def handler2(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler2(event: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return "handler2"
 
         handlers.register_handler("priority_event", handler1, priority=1)
@@ -70,10 +69,10 @@ class TestFlextPluginHandlers:
     def test_register_multiple_handlers(self, handlers: FlextPluginHandlers) -> None:
         """Test registering multiple handlers for different events."""
 
-        async def handler_a(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler_a(event: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return "a"
 
-        async def handler_b(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler_b(event: Mapping[str, t.JsonValue]) -> t.JsonValue:
             return "b"
 
         handlers.register_handler("event_a", handler_a)

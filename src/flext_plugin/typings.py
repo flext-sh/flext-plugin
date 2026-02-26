@@ -28,7 +28,7 @@ class FlextPluginTypes(FlextTypes):
 
     # Alias for projects expecting t.Core.* (JsonDict, GeneralValueType)
     class _Core:
-        JsonDict = FlextTypes.JsonDict
+        JsonDict = Mapping[str, FlextTypes.JsonValue]
         GeneralValueType = FlextTypes.JsonValue
 
     Core = _Core
@@ -60,14 +60,14 @@ class FlextPluginTypes(FlextTypes):
         type FloatDict = Mapping[str, float]
 
         # Plugin types - Using JsonDict from FlextTypes for JSON-like data
-        type PluginList = list[FlextTypes.JsonDict]
-        type PluginDict = FlextTypes.JsonDict
-        type ConfigDict = FlextTypes.JsonDict
-        type SettingsDict = FlextTypes.JsonDict
-        type MetadataDict = FlextTypes.JsonDict
-        type InputDict = FlextTypes.JsonDict
-        type OutputDict = FlextTypes.JsonDict
-        type PluginEntity = FlextTypes.JsonDict
+        type PluginList = list[Mapping[str, FlextTypes.JsonValue]]
+        type PluginDict = Mapping[str, FlextTypes.JsonValue]
+        type ConfigDict = Mapping[str, FlextTypes.JsonValue]
+        type SettingsDict = Mapping[str, FlextTypes.JsonValue]
+        type MetadataDict = Mapping[str, FlextTypes.JsonValue]
+        type InputDict = Mapping[str, FlextTypes.JsonValue]
+        type OutputDict = Mapping[str, FlextTypes.JsonValue]
+        type PluginEntity = Mapping[str, FlextTypes.JsonValue]
 
         # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -126,7 +126,7 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = FlextTypes.JsonDict
+        type SecurityConfig = Mapping[str, FlextTypes.JsonValue]
 
         # Literal type for security levels
         type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
@@ -135,32 +135,32 @@ class FlextPluginTypes(FlextTypes):
     class Performance:
         """Performance metrics and monitoring type aliases."""
 
-        type Metrics = FlextTypes.JsonDict
-        type PerformanceData = FlextTypes.JsonDict
-        type ResourceUsage = FlextTypes.JsonDict
+        type Metrics = Mapping[str, FlextTypes.JsonValue]
+        type PerformanceData = Mapping[str, FlextTypes.JsonValue]
+        type ResourceUsage = Mapping[str, FlextTypes.JsonValue]
 
     class Discovery:
         """Plugin discovery type aliases."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = FlextTypes.JsonDict
+        type DiscoveryResult = Mapping[str, FlextTypes.JsonValue]
         type PluginLoader = FlextTypes.JsonValue
         type EntryPoint = str
 
     class Execution:
         """Plugin execution type aliases."""
 
-        type ExecutionContext = FlextTypes.JsonDict
-        type ExecutionResult = FlextTypes.JsonDict
+        type ExecutionContext = Mapping[str, FlextTypes.JsonValue]
+        type ExecutionResult = Mapping[str, FlextTypes.JsonValue]
         type ExecutionError = str
-        type ResourceLimits = FlextTypes.JsonDict
+        type ResourceLimits = Mapping[str, FlextTypes.JsonValue]
 
     class Registry:
         """Plugin registry type aliases."""
 
-        type RegistryConfig = FlextTypes.JsonDict
-        type RegistryEntry = FlextTypes.JsonDict
-        type RegistrySync = FlextTypes.JsonDict
+        type RegistryConfig = Mapping[str, FlextTypes.JsonValue]
+        type RegistryEntry = Mapping[str, FlextTypes.JsonValue]
+        type RegistrySync = Mapping[str, FlextTypes.JsonValue]
 
         # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -170,8 +170,8 @@ class FlextPluginTypes(FlextTypes):
     class HotReload:
         """Hot reload and file watching type aliases."""
 
-        type WatchConfig = FlextTypes.JsonDict
-        type ReloadEvent = FlextTypes.JsonDict
+        type WatchConfig = Mapping[str, FlextTypes.JsonValue]
+        type ReloadEvent = Mapping[str, FlextTypes.JsonValue]
         type FileWatcher = FlextTypes.JsonValue
 
 
