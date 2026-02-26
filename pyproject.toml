@@ -378,7 +378,7 @@ reportConstantRedefinition = "error"
 reportDuplicateImport = "error"
 reportFunctionMemberAccess = "error"
 reportGeneralTypeIssues = "error"
-reportImplicitRelativeImport = false
+
 reportImplicitStringConcatenation = "warning"
 reportImportCycles = "error"
 reportIncompatibleMethodOverride = "error"
