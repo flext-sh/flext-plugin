@@ -231,6 +231,7 @@ markers = [
   "stress: stress tests",
   "resilience: resilience tests",
 ]
+enable_assertion_pass_hook = true
 [tool.coverage]
 html.directory = "htmlcov"
 report.exclude_lines = [
@@ -326,10 +327,13 @@ warn_unused_ignores = false
 # [MANAGED] pyrefly
 
 [tool.pyrefly]
+
 ignore-errors-in-generated-code = true
 project-excludes = [
   "**/_pb2.py",
   "**/_pb2_grpc.py",
+  "**/*_pb2*.py",
+  "**/*_pb2_grpc*.py",
 ]
 python-version = "3.13"
 search-path = [
