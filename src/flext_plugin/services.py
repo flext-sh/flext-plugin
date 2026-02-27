@@ -14,7 +14,7 @@ from flext_core.container import FlextContainer
 from flext_core.typings import t
 
 from flext_plugin.adapters import FlextPluginAdapters
-from flext_plugin.constants import FlextPluginConstants as c
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import PluginExecution
 from flext_plugin.protocols import FlextPluginProtocols

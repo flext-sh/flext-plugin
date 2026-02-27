@@ -23,7 +23,7 @@ from flext_core import (
 from flext_core.utilities import u
 from pydantic import PrivateAttr
 
-from flext_plugin.constants import FlextPluginConstants as c
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
 from flext_plugin.settings import FlextPluginSettings

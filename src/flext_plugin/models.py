@@ -176,7 +176,9 @@ class FlextPluginModels(FlextModels):
                         author=author,
                         plugin_type=plugin_type,
                         is_enabled=is_enabled,
-                        metadata=cast(dict[str, t_types.GeneralValueType], metadata or {}),
+                        metadata=cast(
+                            "dict[str, t_types.GeneralValueType]", metadata or {}
+                        ),
                     )
                 return cls(
                     name=name,
@@ -185,7 +187,9 @@ class FlextPluginModels(FlextModels):
                     author=author,
                     plugin_type=plugin_type,
                     is_enabled=is_enabled,
-                    metadata=cast(dict[str, t_types.GeneralValueType], metadata or {}),
+                    metadata=cast(
+                        "dict[str, t_types.GeneralValueType]", metadata or {}
+                    ),
                 )
 
             def enable(self) -> r[bool]:
