@@ -12,6 +12,7 @@ from __future__ import annotations
 import importlib.util
 from collections.abc import Callable, Mapping
 from pathlib import Path
+from typing import override
 
 from flext_core import FlextLogger, T, r, t
 
@@ -67,6 +68,7 @@ class FlextPluginAdapters:
     class FileSystemDiscoveryAdapter(BaseAdapter, p.Plugin.PluginDiscovery):
         """File system plugin discovery - synchronous."""
 
+        @override
         def discover_plugins(
             self,
             paths: list[str],
@@ -101,6 +103,7 @@ class FlextPluginAdapters:
             self.logger.info(f"Discovered {len(discovered)} plugins")
             return discovered
 
+        @override
         def discover_plugin(
             self,
             _plugin_path: str,
@@ -142,6 +145,7 @@ class FlextPluginAdapters:
                 "discovery_method": data.discovery_method,
             }
 
+        @override
         def validate_plugin(
             self,
             _plugin_data: Mapping[str, t.GeneralValueType],
@@ -203,6 +207,7 @@ class FlextPluginAdapters:
             super().__init__()
             self._loaded_plugins: dict[str, object] = {}
 
+        @override
         def load_plugin(
             self,
             _plugin_path: str,
@@ -254,6 +259,7 @@ class FlextPluginAdapters:
                 "loaded_at": data.loaded_at.isoformat(),
             }
 
+        @override
         def unload_plugin(self, _plugin_name: str) -> r[bool]:
             """Unload a plugin by name."""
 
@@ -268,10 +274,12 @@ class FlextPluginAdapters:
                 _unload, f"Failed to unload plugin {_plugin_name}"
             )
 
+        @override
         def is_plugin_loaded(self, _plugin_name: str) -> bool:
             """Check if a plugin is loaded."""
             return _plugin_name in self._loaded_plugins
 
+        @override
         def get_loaded_plugins(self) -> list[str]:
             """Get list of loaded plugins."""
             return list(self._loaded_plugins.keys())
@@ -279,6 +287,7 @@ class FlextPluginAdapters:
     class PluginExecutorAdapter(BaseAdapter, p.Plugin.PluginExecution):
         """Plugin execution - synchronous."""
 
+        @override
         def execute_plugin(
             self,
             _plugin_name: str,
@@ -290,14 +299,17 @@ class FlextPluginAdapters:
                 f"Execution error: {_plugin_name}",
             )
 
+        @override
         def stop_execution(self, _execution_id: str) -> r[bool]:
             """Stop plugin execution."""
             return r.ok(True)
 
+        @override
         def get_execution_status(self, _execution_id: str) -> r[str]:
             """Get execution status."""
             return r.ok("completed")
 
+        @override
         def list_running_executions(self) -> list[str]:
             """List running executions."""
             return []
@@ -305,10 +317,12 @@ class FlextPluginAdapters:
     class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
         """Plugin security validation - synchronous."""
 
+        @override
         def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
             """Validate plugin for security."""
             return r.ok(True)
 
+        @override
         def check_permissions(
             self,
             _plugin_name: str,
@@ -317,6 +331,7 @@ class FlextPluginAdapters:
             """Check plugin permissions."""
             return r.ok(True)
 
+        @override
         def scan_plugin_security(
             self,
             _plugin_path: str,
@@ -324,6 +339,7 @@ class FlextPluginAdapters:
             """Scan plugin for security issues."""
             return r.ok({"security_level": "medium"})
 
+        @override
         def get_security_level(self, _plugin_name: str) -> r[str]:
             """Get security level."""
             return r.ok("medium")
@@ -336,22 +352,27 @@ class FlextPluginAdapters:
             super().__init__()
             self._plugins: dict[str, t.GeneralValueType] = {}
 
+        @override
         def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
             """Register plugin in registry."""
             return r.ok(True)
 
+        @override
         def unregister_plugin(self, _plugin_name: str) -> r[bool]:
             """Unregister plugin from registry."""
             return r.ok(True)
 
+        @override
         def get_plugin(self, _plugin_name: str) -> r[t.GeneralValueType | None]:
             """Get plugin from registry."""
             return r.ok(None)
 
+        @override
         def list_plugins(self) -> r[list[Mapping[str, t.GeneralValueType]]]:
             """List all plugins in registry."""
             return r.ok([])
 
+        @override
         def is_plugin_registered(self, _plugin_name: str) -> bool:
             """Check if plugin is registered."""
             return False
@@ -359,14 +380,17 @@ class FlextPluginAdapters:
     class PluginMonitoringAdapter(BaseAdapter, p.Plugin.PluginMonitoring):
         """Plugin monitoring - synchronous."""
 
+        @override
         def start_monitoring(self, _plugin_name: str) -> r[bool]:
             """Start monitoring plugin."""
             return r.ok(True)
 
+        @override
         def stop_monitoring(self, _plugin_name: str) -> r[bool]:
             """Stop monitoring plugin."""
             return r.ok(True)
 
+        @override
         def get_plugin_metrics(
             self,
             _plugin_name: str,
@@ -374,6 +398,7 @@ class FlextPluginAdapters:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 
+        @override
         def get_plugin_health(
             self,
             _plugin_name: str,
@@ -381,6 +406,7 @@ class FlextPluginAdapters:
             """Get plugin health information."""
             return r.ok({"status": "healthy"})
 
+        @override
         def is_monitoring(self, _plugin_name: str) -> bool:
             """Check if plugin is being monitored."""
             return False

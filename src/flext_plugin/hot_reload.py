@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import override
 
 from flext_core import FlextLogger, FlextResult
 from pydantic import BaseModel, ConfigDict, Field
@@ -79,6 +80,7 @@ class FileChangeHandler(FileSystemEventHandler):
         self.watched_paths = watched_paths
         self.logger = logger
 
+    @override
     def on_modified(self, event: FileModifiedEvent | DirModifiedEvent) -> None:
         """Handle file modification event.
 

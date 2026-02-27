@@ -11,7 +11,7 @@ import types
 from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
-from typing import Self
+from typing import Self, cast
 
 from flext_core import FlextModels
 from flext_core.result import r
@@ -176,7 +176,7 @@ class FlextPluginModels(FlextModels):
                         author=author,
                         plugin_type=plugin_type,
                         is_enabled=is_enabled,
-                        metadata=metadata or {},
+                        metadata=cast(dict[str, t_types.GeneralValueType], metadata or {}),
                     )
                 return cls(
                     name=name,
@@ -185,7 +185,7 @@ class FlextPluginModels(FlextModels):
                     author=author,
                     plugin_type=plugin_type,
                     is_enabled=is_enabled,
-                    metadata=metadata or {},
+                    metadata=cast(dict[str, t_types.GeneralValueType], metadata or {}),
                 )
 
             def enable(self) -> r[bool]:

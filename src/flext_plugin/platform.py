@@ -18,6 +18,7 @@ from flext_core import (
     FlextService,
     FlextSettings,
     r,
+    t as core_t,
 )
 from flext_core.utilities import u
 from pydantic import PrivateAttr
@@ -125,7 +126,7 @@ class FlextPluginPlatform:
         def register(
             self,
             name: str,
-            service: t.GeneralValueType,
+            service: core_t.RegistrablePlugin,
             metadata: t.GeneralValueType | None = None,
         ) -> r[bool]:
             """Register plugin using class-level storage.

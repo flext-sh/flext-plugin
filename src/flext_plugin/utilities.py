@@ -318,7 +318,7 @@ class FlextPluginUtilities(u):
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified = watcher_config.get("last_modified", {})
-                if not u.is_dict_like(last_modified):
+                if not isinstance(last_modified, dict):
                     last_modified = {}
                 changed_files = []
 
@@ -705,10 +705,10 @@ class FlextPluginUtilities(u):
 
                 for key, value in override_config.items():
                     existing_value = merged_config.get(key)
-                    if u.is_dict_like(value) and u.is_dict_like(existing_value):
+                    if isinstance(value, dict) and isinstance(existing_value, dict):
                         # Recursively merge nested dictionaries
-                        base_nested_config = dict(existing_value)
-                        override_value = dict(value)
+                        base_nested_config = existing_value
+                        override_value = value
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
                             override_value,
@@ -1043,7 +1043,7 @@ class FlextPluginUtilities(u):
                 }
 
                 plugins = mutable_registry["plugins"]
-                if u.is_dict_like(plugins):
+                if isinstance(plugins, dict):
                     plugins[plugin_metadata.name] = plugin_info
 
                 return r[Mapping[str, t.GeneralValueType]].ok(mutable_registry)

@@ -394,12 +394,10 @@ class FlextPluginImplementations:
             try:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
-                if not u.is_dict_like(data):
+                if not isinstance(data, dict):
                     return r[t.GeneralValueType].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
-                transformed: dict[str, t.GeneralValueType] = dict[
-                    str, t.GeneralValueType
-                ](data)
+                transformed: dict[str, t.GeneralValueType] = dict(data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[t.GeneralValueType].ok(transformed)
@@ -434,6 +432,7 @@ class FlextPluginImplementations:
             """Initialize with FlextLogger instance."""
             self.logger = logger  # Simple adapter, no super() needed
 
+        @override
         def critical(
             self,
             message: str,
@@ -443,6 +442,7 @@ class FlextPluginImplementations:
             """Log critical message."""
             self.logger.critical(message)
 
+        @override
         def error(
             self,
             message: str,
@@ -452,6 +452,7 @@ class FlextPluginImplementations:
             """Log error message."""
             self.logger.error(message)
 
+        @override
         def warning(
             self,
             message: str,
@@ -461,6 +462,7 @@ class FlextPluginImplementations:
             """Log warning message."""
             self.logger.warning(message)
 
+        @override
         def info(
             self,
             message: str,
@@ -470,6 +472,7 @@ class FlextPluginImplementations:
             """Log info message."""
             self.logger.info(message)
 
+        @override
         def debug(
             self,
             message: str,
