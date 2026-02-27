@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Layer 0: Constants & Types (Foundation only - no services/api imports)
 from flext_core.decorators import FlextDecorators
 from flext_core.exceptions import FlextExceptions
 from flext_core.handlers import FlextHandlers
@@ -14,14 +13,9 @@ from flext_core.mixins import FlextMixins
 from flext_core.result import FlextResult
 from flext_core.service import FlextService
 
-# Version - acceptable exception for __init__.py (foundation module importing version)
 from flext_plugin.__version__ import __version__, __version_info__
-
-# Layer 3: Application Facade
 from flext_plugin.api import FlextPluginApi
 from flext_plugin.constants import FlextPluginConstants
-
-# Layer 1: Domain Models
 from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.handlers import FlextPluginHandlers
 from flext_plugin.hot_reload import FlextPluginHotReload
