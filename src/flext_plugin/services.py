@@ -107,7 +107,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     @staticmethod
     def _to_general_mapping(
-        value: object,
+        value: t.GeneralValueType,
     ) -> dict[str, t.GeneralValueType]:
         if not isinstance(value, Mapping):
             return {}

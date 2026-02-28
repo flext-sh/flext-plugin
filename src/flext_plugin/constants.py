@@ -102,42 +102,11 @@ class FlextPluginConstants(FlextConstants):
         class Types:
             """Plugin type constants."""
 
-            # Plugin type frozensets (backward compatibility)
-            # Note: Values MUST match PluginType StrEnum values exactly.
-            # For new code, use PluginType enum directly (e.g., PluginType.TAP).
-            # Generated from PluginType StrEnum members (DRY principle) - will be set after enum definition
             SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]]
             ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]]
             INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
             UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
             ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
-
-            # PluginTypeLiteral moved to Plugin level - see below
-
-            # Type values as constants (backward compatibility)
-            # Note: These values MUST match PluginType StrEnum values exactly.
-            # For new code, use PluginType enum directly (e.g., PluginType.TAP.value).
-            TYPE_TAP: Final[str] = "tap"
-            TYPE_TARGET: Final[str] = "target"
-            TYPE_TRANSFORM: Final[str] = "transform"
-            TYPE_EXTENSION: Final[str] = "extension"
-            TYPE_SERVICE: Final[str] = "service"
-            TYPE_MIDDLEWARE: Final[str] = "middleware"
-            TYPE_TRANSFORMER: Final[str] = "transformer"
-            TYPE_API: Final[str] = "api"
-            TYPE_DATABASE: Final[str] = "database"
-            TYPE_NOTIFICATION: Final[str] = "notification"
-            TYPE_AUTHENTICATION: Final[str] = "authentication"
-            TYPE_AUTHORIZATION: Final[str] = "authorization"
-            TYPE_UTILITY: Final[str] = "utility"
-            TYPE_TOOL: Final[str] = "tool"
-            TYPE_HANDLER: Final[str] = "handler"
-            TYPE_PROCESSOR: Final[str] = "processor"
-            TYPE_CORE: Final[str] = "core"
-            TYPE_ADDON: Final[str] = "addon"
-            TYPE_THEME: Final[str] = "theme"
-            TYPE_LANGUAGE: Final[str] = "language"
-
         # Lifecycle constants
         class Lifecycle:
             """Plugin lifecycle state constants."""
@@ -148,21 +117,6 @@ class FlextPluginConstants(FlextConstants):
             MIN_PLUGIN_WORKERS: Final[int] = 1
             DEFAULT_WORKERS: Final[int] = 4
 
-            # Status values as constants (backward compatibility)
-            # Note: These values MUST match PluginStatus StrEnum values exactly.
-            # For new code, use PluginStatus enum directly (e.g., PluginStatus.UNKNOWN.value).
-            STATUS_UNKNOWN: Final[str] = "unknown"
-            STATUS_DISCOVERED: Final[str] = "discovered"
-            STATUS_LOADED: Final[str] = "loaded"
-            STATUS_ACTIVE: Final[str] = "active"
-            STATUS_INACTIVE: Final[str] = "inactive"
-            STATUS_LOADING: Final[str] = "loading"
-            STATUS_ERROR: Final[str] = "error"
-            STATUS_DISABLED: Final[str] = "disabled"
-            STATUS_HEALTHY: Final[str] = "healthy"
-            STATUS_UNHEALTHY: Final[str] = "unhealthy"
-            # Additional status constants from platform.py
-            STATUS_UNLOADED: Final[str] = "unloaded"
             PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
                 "unknown",
                 "discovered",
