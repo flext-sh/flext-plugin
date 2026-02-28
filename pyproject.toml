@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
   "anyio>=4",
-  "flext-core @ file://../flext-core",
+  "flext-core @ file:../flext-core",
   "jsonschema>=4.25",
   "psutil>=7",
   "pydantic>=2.12.3",
