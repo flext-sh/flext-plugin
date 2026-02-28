@@ -16,6 +16,7 @@ from typing import override
 
 from flext_core import FlextLogger, T, r, t
 
+from flext_plugin.constants import c
 from flext_plugin.models import m
 from flext_plugin.protocols import p
 
@@ -167,10 +168,10 @@ class FlextPluginAdapters:
             try:
                 return m.Plugin.DiscoveryData(
                     name=path.stem,
-                    version="1.0.0",
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
-                    discovery_type="file",
-                    discovery_method="file_system",
+                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
+                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
                 )
             except ValueError:
                 self.logger.exception(f"Failed to create discovery data for {path}")
@@ -236,10 +237,10 @@ class FlextPluginAdapters:
 
             return m.Plugin.LoadData(
                 name=path.stem,
-                version=getattr(module, "__version__", "1.0.0"),
+                version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
                 path=path,
                 module=module,
-                load_type="file",
+                load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
                 loaded_at=__import__("datetime").datetime.now(
                     __import__("datetime").UTC,
                 ),
@@ -307,7 +308,7 @@ class FlextPluginAdapters:
         @override
         def get_execution_status(self, _execution_id: str) -> r[str]:
             """Get execution status."""
-            return r.ok("completed")
+            return r.ok(c.Plugin.Execution.STATE_COMPLETED)
 
         @override
         def list_running_executions(self) -> list[str]:
@@ -337,12 +338,12 @@ class FlextPluginAdapters:
             _plugin_path: str,
         ) -> r[Mapping[str, t.GeneralValueType]]:
             """Scan plugin for security issues."""
-            return r.ok({"security_level": "medium"})
+            return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
 
         @override
         def get_security_level(self, _plugin_name: str) -> r[str]:
             """Get security level."""
-            return r.ok("medium")
+            return r.ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
 
     class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
         """In-memory plugin registry - synchronous."""
@@ -404,7 +405,7 @@ class FlextPluginAdapters:
             _plugin_name: str,
         ) -> r[Mapping[str, t.GeneralValueType]]:
             """Get plugin health information."""
-            return r.ok({"status": "healthy"})
+            return r.ok({"status": c.Plugin.Lifecycle.STATUS_HEALTHY})
 
         @override
         def is_monitoring(self, _plugin_name: str) -> bool:

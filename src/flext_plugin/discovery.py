@@ -14,6 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
 
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import p
 
@@ -202,10 +203,10 @@ class FlextPluginDiscovery:
             try:
                 return FlextPluginModels.Plugin.DiscoveryData(
                     name=path.stem,
-                    version="1.0.0",
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
-                    discovery_type="file",
-                    discovery_method="file_system",
+                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
+                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
                 )
             except ValueError:
                 self.logger.exception(f"Failed to create discovery data for {path}")
@@ -259,10 +260,10 @@ class FlextPluginDiscovery:
                     try:
                         data = FlextPluginModels.Plugin.DiscoveryData(
                             name=entry_point.name,
-                            version=getattr(entry_point.dist, "version", "1.0.0"),
+                            version=getattr(entry_point.dist, "version", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
                             path=Path(getattr(entry_point.dist, "_path", "")),
-                            discovery_type="entry_point",
-                            discovery_method="entry_points",
+                            discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
+                            discovery_method=c.Plugin.Discovery.METHOD_ENTRY_POINTS,
                             metadata={
                                 "entry_point": f"{entry_point.module}:{entry_point.attr}",
                             },

@@ -49,6 +49,12 @@ class FlextPluginConstants(FlextConstants):
             METHOD_FILE_SYSTEM: Final[str] = "file_system"
             METHOD_ENTRY_POINTS: Final[str] = "entry_points"
             METHOD_PACKAGE_SCAN: Final[str] = "package_scan"
+            # Discovery type constants
+            DISCOVERY_TYPE_FILE: Final[str] = "file"
+            DISCOVERY_TYPE_DIRECTORY: Final[str] = "directory"
+            DISCOVERY_TYPE_ENTRY_POINT: Final[str] = "entry_point"
+            # Default version for plugins without explicit version
+            DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
 
         class PluginType(StrEnum):
             """Plugin type enumeration.
@@ -241,6 +247,12 @@ class FlextPluginConstants(FlextConstants):
             STATE_COMPLETED: Final[str] = "completed"
             STATE_FAILED: Final[str] = "failed"
             STATE_CANCELLED: Final[str] = "cancelled"
+            # Execution result constants
+            RESULT_EXECUTED: Final[str] = "executed"
+            # Load type constants
+            LOAD_TYPE_FILE: Final[str] = "file"
+            LOAD_TYPE_DIRECTORY: Final[str] = "directory"
+            LOAD_TYPE_ENTRY_POINT: Final[str] = "entry_point"
 
         # Registry constants
         class Registry:

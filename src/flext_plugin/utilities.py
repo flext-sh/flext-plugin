@@ -1128,6 +1128,7 @@ class FlextPluginUtilities(FlextUtilities):
 
 __all__ = [
     "FlextPluginUtilities",
+    "u",
 ]
 
 
