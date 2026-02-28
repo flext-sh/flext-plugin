@@ -110,7 +110,7 @@ class FlextPluginAdapters:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
-                    self._discover_single(_plugin_path)
+                    self._discover_single(_plugin_path),
                 ),
                 f"Failed to discover plugin at {_plugin_path}",
             )
@@ -172,7 +172,7 @@ class FlextPluginAdapters:
                     discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
         def _discover_directory(
@@ -194,7 +194,7 @@ class FlextPluginAdapters:
                     elif item.is_dir() and not item.name.startswith("__"):
                         discovered.extend(self._discover_directory(item))
             except (OSError, PermissionError):
-                self.logger.exception(f"Failed to discover directory {path}")
+                self.logger.exception("Failed to discover directory %s", path)
 
             return discovered
 
@@ -236,7 +236,9 @@ class FlextPluginAdapters:
             return m.Plugin.LoadData(
                 name=path.stem,
                 version=getattr(
-                    module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                    module,
+                    "__version__",
+                    c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                 ),
                 path=path,
                 module=module,
@@ -247,7 +249,8 @@ class FlextPluginAdapters:
             )
 
         def _load_module_as_dict(
-            self, plugin_path: str
+            self,
+            plugin_path: str,
         ) -> Mapping[str, t.GeneralValueType]:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
@@ -272,7 +275,8 @@ class FlextPluginAdapters:
                 return True
 
             return self._execute_safe(
-                _unload, f"Failed to unload plugin {_plugin_name}"
+                _unload,
+                f"Failed to unload plugin {_plugin_name}",
             )
 
         @override

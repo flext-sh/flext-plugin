@@ -52,7 +52,7 @@ class TestFlextPluginServiceStubBridges:
                         "name": "stub_plugin",
                         "version": "1.0.0",
                         "metadata": {"plugin_type": "utility"},
-                    }
+                    },
                 ])
 
         class Security(FlextPluginAdapters.PluginSecurityAdapter):
@@ -252,7 +252,9 @@ class TestFlextPluginServiceStubBridges:
         registry = Registry()
         monitoring = Monitoring()
         service = FlextPluginService(
-            loader=loader, registry=registry, monitoring=monitoring
+            loader=loader,
+            registry=registry,
+            monitoring=monitoring,
         )
 
         load_result = service.load_plugin("/tmp/stub_plugin.py")

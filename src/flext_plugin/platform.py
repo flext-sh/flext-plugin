@@ -157,7 +157,7 @@ class FlextPluginPlatform:
             if result.is_success:
                 try:
                     plugin = FlextPluginModels.Plugin.Plugin.model_validate(
-                        result.value
+                        result.value,
                     )
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
                 except (
@@ -170,7 +170,7 @@ class FlextPluginPlatform:
                     ImportError,
                 ):
                     return r[FlextPluginModels.Plugin.Plugin].fail(
-                        "Plugin is not a valid Plugin type"
+                        "Plugin is not a valid Plugin type",
                     )
             if result.is_failure:
                 return r[FlextPluginModels.Plugin.Plugin].fail(result.error)
@@ -208,20 +208,20 @@ class FlextPluginPlatform:
 
         # Use PrivateAttr for instance variables that are not model fields
         _plugins: dict[str, FlextPluginPlatform.Plugin] = PrivateAttr(
-            default_factory=dict
+            default_factory=dict,
         )
         _executions: dict[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
-            default_factory=dict
+            default_factory=dict,
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
         _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(
-            default=None
+            default=None,
         )
         _loader: FlextPluginProtocols.Plugin.PluginLoader | None = PrivateAttr(
-            default=None
+            default=None,
         )
         _executor: FlextPluginProtocols.Plugin.PluginExecution | None = PrivateAttr(
-            default=None
+            default=None,
         )
 
         @override
@@ -276,7 +276,8 @@ class FlextPluginPlatform:
 
         @discovery.setter
         def discovery(
-            self, value: FlextPluginProtocols.Plugin.PluginDiscovery | None
+            self,
+            value: FlextPluginProtocols.Plugin.PluginDiscovery | None,
         ) -> None:
             """Set discovery protocol."""
             self._discovery = value
@@ -288,7 +289,8 @@ class FlextPluginPlatform:
 
         @loader.setter
         def loader(
-            self, value: FlextPluginProtocols.Plugin.PluginLoader | None
+            self,
+            value: FlextPluginProtocols.Plugin.PluginLoader | None,
         ) -> None:
             """Set loader protocol."""
             self._loader = value
@@ -300,7 +302,8 @@ class FlextPluginPlatform:
 
         @executor.setter
         def executor(
-            self, value: FlextPluginProtocols.Plugin.PluginExecution | None
+            self,
+            value: FlextPluginProtocols.Plugin.PluginExecution | None,
         ) -> None:
             """Set executor protocol."""
             self._executor = value
@@ -313,7 +316,8 @@ class FlextPluginPlatform:
 
         # Core plugin operations with advanced composition
         def discover_plugins(
-            self, paths: list[str]
+            self,
+            paths: list[str],
         ) -> FlextResult[list[FlextPluginPlatform.Plugin]]:
             """Discover plugins with railway composition."""
 
@@ -338,7 +342,9 @@ class FlextPluginPlatform:
                         path = getattr(item, "path", "")
                         discovery_type = getattr(item, "discovery_type", "file")
                         discovery_method = getattr(
-                            item, "discovery_method", "file_system"
+                            item,
+                            "discovery_method",
+                            "file_system",
                         )
                         metadata = getattr(item, "metadata", {})
                         if u.is_dict_like(metadata):
@@ -369,7 +375,8 @@ class FlextPluginPlatform:
             )
 
         def load_plugin(
-            self, plugin_path: str
+            self,
+            plugin_path: str,
         ) -> FlextResult[FlextPluginPlatform.Plugin]:
             """Load single plugin with composition."""
 
@@ -400,7 +407,7 @@ class FlextPluginPlatform:
                         return FlextResult.ok(plugin_dict)
                     return FlextResult.fail("Invalid load data format")
                 return FlextResult[dict[str, t.GeneralValueType]].fail(
-                    load_result.error or "Load failed"
+                    load_result.error or "Load failed",
                 )
 
             def create_plugin_from_load_data(
@@ -453,7 +460,8 @@ class FlextPluginPlatform:
 
         # Plugin management with functional patterns
         def register_plugin(
-            self, plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin
+            self,
+            plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin,
         ) -> FlextResult[bool]:
             """Register plugin with validation chain."""
 
@@ -466,7 +474,7 @@ class FlextPluginPlatform:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
                 plugin_entity = FlextPluginPlatform.Plugin.model_validate(
-                    plugin.model_dump()
+                    plugin.model_dump(),
                 )
                 return self._add_to_plugins(plugin_entity)
 
@@ -605,11 +613,12 @@ class FlextPluginPlatform:
             if validation_result.is_success:
                 return FlextResult.ok(plugin)
             return FlextResult.fail(
-                validation_result.error or "Plugin validation failed"
+                validation_result.error or "Plugin validation failed",
             )
 
         def _register_all(
-            self, plugins: list[FlextPluginPlatform.Plugin]
+            self,
+            plugins: list[FlextPluginPlatform.Plugin],
         ) -> list[FlextPluginPlatform.Plugin]:
             """Register multiple plugins."""
             for plugin in plugins:
@@ -618,7 +627,8 @@ class FlextPluginPlatform:
             return plugins
 
         def _register_single(
-            self, plugin: FlextPluginPlatform.Plugin
+            self,
+            plugin: FlextPluginPlatform.Plugin,
         ) -> FlextPluginPlatform.Plugin:
             """Register single plugin."""
             self._plugins[plugin.name] = plugin

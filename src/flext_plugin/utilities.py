@@ -993,7 +993,8 @@ class FlextPluginUtilities(FlextUtilities):
 
                 # Save registry
                 path.write_text(
-                    json.dumps(mutable_registry, indent=2), encoding="utf-8"
+                    json.dumps(mutable_registry, indent=2),
+                    encoding="utf-8",
                 )
 
                 return r[None].ok(None)

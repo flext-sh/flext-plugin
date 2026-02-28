@@ -110,7 +110,7 @@ class FlextPluginDiscovery:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
+            self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return FlextResult.fail(f"Discovery error: {e!s}")
 
     def validate_plugin(
@@ -207,7 +207,7 @@ class FlextPluginDiscovery:
                     discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
         def _discover_directory(
@@ -231,7 +231,7 @@ class FlextPluginDiscovery:
                         discovered.extend(self._discover_directory(item))
 
             except (OSError, PermissionError):
-                self.logger.exception(f"Failed to discover directory {path}")
+                self.logger.exception("Failed to discover directory %s", path)
 
             return discovered
 

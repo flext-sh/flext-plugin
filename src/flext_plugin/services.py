@@ -180,10 +180,10 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 # Security validation
                 if self._security:
                     plugin_payload = self._to_general_mapping(
-                        plugin.model_dump(mode="python")
+                        plugin.model_dump(mode="python"),
                     )
                     security_result = self._security.validate_plugin_security(
-                        plugin_payload
+                        plugin_payload,
                     )
                     if security_result.is_failure:
                         self.logger.warning(
@@ -196,7 +196,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 # Register plugin
                 if self._registry:
                     plugin_payload = self._to_general_mapping(
-                        plugin.model_dump(mode="python")
+                        plugin.model_dump(mode="python"),
                     )
                     register_result = self._registry.register_plugin(plugin_payload)
                     if register_result.is_failure:
@@ -317,10 +317,10 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             # Security validation
             if self._security:
                 plugin_payload = self._to_general_mapping(
-                    plugin.model_dump(mode="python")
+                    plugin.model_dump(mode="python"),
                 )
                 security_result = self._security.validate_plugin_security(
-                    plugin_payload
+                    plugin_payload,
                 )
                 if security_result.is_failure:
                     return r.fail(
@@ -330,7 +330,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             # Register plugin
             if self._registry:
                 plugin_payload = self._to_general_mapping(
-                    plugin.model_dump(mode="python")
+                    plugin.model_dump(mode="python"),
                 )
                 register_result = self._registry.register_plugin(plugin_payload)
                 if register_result.is_failure:
@@ -361,7 +361,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to load plugin from {plugin_path}")
+            self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r.fail(f"Loading error: {e!s}")
 
     def execute_plugin(
@@ -428,7 +428,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to execute plugin '{plugin_name}'")
+            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
             return r.fail(f"Execution error: {e!s}")
 
     async def unload_plugin(self, plugin_name: str) -> r[bool]:
@@ -484,7 +484,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to unload plugin '{plugin_name}'")
+            self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return r.fail(f"Unloading error: {e!s}")
 
     def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin.Plugin | None:
@@ -575,7 +575,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to get metrics for plugin '{plugin_name}'")
+            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
             return r.fail(f"Metrics error: {e!s}")
 
     async def get_plugin_health(
@@ -614,7 +614,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to get health for plugin '{plugin_name}'")
+            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
             return r.fail(f"Health check error: {e!s}")
 
     def get_service_status(self) -> Mapping[str, t.GeneralValueType]:
@@ -779,7 +779,8 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         # Type narrowing - config should be a dict
         settings = self._to_general_mapping(config_data)
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name=plugin.name, settings=settings
+            plugin_name=plugin.name,
+            settings=settings,
         )
         return r.ok(config)
 

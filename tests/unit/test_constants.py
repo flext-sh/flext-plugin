@@ -101,16 +101,20 @@ class TestFlextPluginConstants:
         """Test that constants are immutable."""
         # Test that constants are Final
         assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int
+            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS,
+            int,
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int
+            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS,
+            int,
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int
+            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS,
+            int,
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int
+            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX,
+            int,
         )
 
     def test_plugin_type_consistency(self) -> None:

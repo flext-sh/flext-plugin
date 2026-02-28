@@ -28,7 +28,7 @@ class FlextPluginApi:
         """
         self.logger = FlextLogger(__name__)
         self.platform = FlextPluginPlatform.PluginPlatformService(
-            container=container or FlextContainer()
+            container=container or FlextContainer(),
         )
 
     # Core operations with logging composition
@@ -43,7 +43,7 @@ class FlextPluginApi:
             self.logger.info(f"Discovered {len(plugins)} plugins")
             return r[list[FlextPluginPlatform.Plugin]].ok(plugins)
         return r[list[FlextPluginPlatform.Plugin]].fail(
-            result.error or "Discovery failed"
+            result.error or "Discovery failed",
         )
 
     def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:

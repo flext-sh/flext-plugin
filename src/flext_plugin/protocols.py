@@ -114,7 +114,8 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def get_plugin(
-                self, _plugin_name: str
+                self,
+                _plugin_name: str,
             ) -> FlextResult[t.GeneralValueType | None]:
                 """Get a registered plugin by name."""
                 # INTERFACE
@@ -165,7 +166,8 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin security operations."""
 
             def validate_plugin_security(
-                self, _plugin: t.GeneralValueType
+                self,
+                _plugin: t.GeneralValueType,
             ) -> FlextResult[bool]:
                 """Validate plugin security compliance."""
                 # INTERFACE
@@ -457,7 +459,8 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin loader interface."""
 
             def load_plugin(
-                self, plugin_path: str | t.GeneralValueType
+                self,
+                plugin_path: str | t.GeneralValueType,
             ) -> FlextResult[t.GeneralValueType]:
                 """Load plugin from path."""
                 # INTERFACE

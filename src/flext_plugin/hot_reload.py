@@ -295,7 +295,7 @@ class FlextPluginHotReload:
                     RuntimeError,
                     ImportError,
                 ):
-                    self.logger.exception(f"Reload callback failed for {plugin_name}")
+                    self.logger.exception("Reload callback failed for %s", plugin_name)
 
             # Record reload in history
             reload_record = FlextPluginModels.Plugin.ReloadRecord(
@@ -318,7 +318,7 @@ class FlextPluginHotReload:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to reload plugin {plugin_name}")
+            self.logger.exception("Failed to reload plugin %s", plugin_name)
             return FlextResult.fail(f"Reload error: {e!s}")
 
     def is_watching(self) -> bool:
@@ -431,7 +431,7 @@ class FlextPluginHotReload:
                         PluginReloadOutcome(
                             plugin_name=plugin_name,
                             success=result.is_success,
-                        )
+                        ),
                     )
                 elif watched_path.is_dir():
                     for py_file in watched_path.rglob("*.py"):
@@ -442,7 +442,7 @@ class FlextPluginHotReload:
                                 PluginReloadOutcome(
                                     plugin_name=plugin_name,
                                     success=result.is_success,
-                                )
+                                ),
                             )
 
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
@@ -490,7 +490,7 @@ class FlextPluginHotReload:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to add watch path: {path}")
+            self.logger.exception("Failed to add watch path: %s", path)
             return FlextResult.fail(f"Add watch path error: {e!s}")
 
     def remove_watch_path(self, path: str) -> FlextResult[bool]:
@@ -521,7 +521,7 @@ class FlextPluginHotReload:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to remove watch path: {path}")
+            self.logger.exception("Failed to remove watch path: %s", path)
             return FlextResult.fail(f"Remove watch path error: {e!s}")
 
     def _resolve_watch_path(self, path_str: str) -> Path:

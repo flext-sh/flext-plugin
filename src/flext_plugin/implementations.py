@@ -257,7 +257,7 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception(f"Operation {operation} failed")
+                self.logger.exception("Operation %s failed", operation)
                 # Record error in entity if present
                 if self._entity:
                     self._entity.record_error(str(e))
@@ -609,7 +609,8 @@ class FlextPluginImplementations:
             return r[None].ok(None)
 
         def get_plugin(
-            self, plugin_name: str
+            self,
+            plugin_name: str,
         ) -> FlextPluginModels.Plugin.Plugin | None:
             """Get plugin by name.
 
@@ -694,7 +695,7 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception(f"Failed to load plugin from {plugin_path}")
+                self.logger.exception("Failed to load plugin from %s", plugin_path)
                 return r[object].fail(f"Load failed: {e!s}")
 
         def discover_plugins(
@@ -728,7 +729,7 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception(f"Plugin discovery failed in {search_path}")
+                self.logger.exception("Plugin discovery failed in %s", search_path)
                 return r[list[str]].fail(
                     f"Discovery failed: {e!s}",
                 )

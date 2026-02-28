@@ -289,7 +289,7 @@ class FlextPluginEntities:
             # Basic semantic version validation (X.Y.Z)
             version_parts = self.config.plugin_version.split(".")
             if len(
-                version_parts
+                version_parts,
             ) != c.Plugin.Entities.SEMANTIC_VERSION_PARTS or not all(
                 p.isdigit() for p in version_parts
             ):

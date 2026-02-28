@@ -91,7 +91,7 @@ class FlextPluginHandlers:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to register handler for {event_type}")
+            self.logger.exception("Failed to register handler for %s", event_type)
             return FlextResult.fail(f"Handler registration error: {e!s}")
 
     def unregister_handler(
@@ -138,7 +138,7 @@ class FlextPluginHandlers:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to unregister handler for {event_type}")
+            self.logger.exception("Failed to unregister handler for %s", event_type)
             return FlextResult.fail(f"Handler unregistration error: {e!s}")
 
     async def trigger_event(
@@ -188,7 +188,7 @@ class FlextPluginHandlers:
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    self.logger.exception(f"Handler execution failed for {event_type}")
+                    self.logger.exception("Handler execution failed for %s", event_type)
                     results.append({"error": str(e), "success": False})
 
             self.logger.debug(
@@ -205,7 +205,7 @@ class FlextPluginHandlers:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to trigger event {event_type}")
+            self.logger.exception("Failed to trigger event %s", event_type)
             return FlextResult.fail(f"Event triggering error: {e!s}")
 
     async def _execute_handler(

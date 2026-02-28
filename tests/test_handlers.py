@@ -47,7 +47,8 @@ class TestFlextPluginHandlers:
         assert len(handlers._handlers["test_event"]) == 1
 
     def test_register_handler_with_priority(
-        self, handlers: FlextPluginHandlers
+        self,
+        handlers: FlextPluginHandlers,
     ) -> None:
         """Test handler registration with priority."""
 

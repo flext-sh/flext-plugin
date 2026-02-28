@@ -45,7 +45,8 @@ class PluginInterface(Protocol):
     def initialize(self) -> dict[str, t.GeneralValueType]: ...
 
     def execute(
-        self, data: dict[str, t.GeneralValueType] | None = None
+        self,
+        data: dict[str, t.GeneralValueType] | None = None,
     ) -> dict[str, t.GeneralValueType]: ...
 
     def cleanup(self) -> dict[str, t.GeneralValueType]: ...
@@ -240,10 +241,12 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     # manager_adapter = RealPluginManagerAdapter(str(temp_plugin_dir))
 
     container.with_service(
-        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
+        "plugin_discovery_port",
+        cast("t.RegisterableService", discovery_adapter),
     )
     container.with_service(
-        "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
+        "plugin_loader_port",
+        cast("t.RegisterableService", loader_adapter),
     )
     # container.register("plugin_manager_port", manager_adapter)
 
@@ -260,7 +263,8 @@ def real_discovery_service_with_adapters(
     # Register REAL discovery implementation
     discovery_adapter = FlextPluginDiscovery()
     container.with_service(
-        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
+        "plugin_discovery_port",
+        cast("t.RegisterableService", discovery_adapter),
     )
 
     return FlextPluginService(container=container)
