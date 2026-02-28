@@ -26,10 +26,7 @@ from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 
 # Import base utilities for inheritance
-u = FlextUtilities
-
-
-class FlextPluginUtilities(u):
+class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
     # Constants using advanced type syntax
@@ -1131,3 +1128,6 @@ class FlextPluginUtilities(u):
 __all__ = [
     "FlextPluginUtilities",
 ]
+
+
+u = FlextPluginUtilities
