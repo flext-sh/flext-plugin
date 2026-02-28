@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Mapping
+from typing import override
 
 from flext_core import (
     FlextContainer,
@@ -102,6 +103,7 @@ class FlextPluginPlatform:
             """Initialize plugin registry."""
             super().__init__()
 
+        @override
         @classmethod
         def create(
             cls,
@@ -122,6 +124,7 @@ class FlextPluginPlatform:
             _ = dispatcher, auto_discover_handlers
             return cls()
 
+        @override
         def register(
             self,
             name: str,
@@ -173,6 +176,7 @@ class FlextPluginPlatform:
                 return r[FlextPluginModels.Plugin.Plugin].fail(result.error)
             return r[FlextPluginModels.Plugin.Plugin].fail("Plugin not found")
 
+        @override
         def list_plugins(self, category: str = "plugins") -> r[list[str]]:
             """List all registered plugin names.
 
@@ -220,6 +224,7 @@ class FlextPluginPlatform:
             default=None
         )
 
+        @override
         @classmethod
         def _get_service_config_type(cls) -> type[FlextSettings]:
             """Return FlextPluginSettings as the config type for this service."""
@@ -301,6 +306,7 @@ class FlextPluginPlatform:
             """Set executor protocol."""
             self._executor = value
 
+        @override
         def execute(self) -> FlextResult[None]:
             """Execute main platform initialization (FlextService protocol)."""
             # Platform is always ready - no specific initialization needed

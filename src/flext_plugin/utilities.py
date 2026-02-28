@@ -316,9 +316,9 @@ class FlextPluginUtilities(FlextUtilities):
             """
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
-                last_modified = watcher_config.get("last_modified", {})
-                if not isinstance(last_modified, dict):
-                    last_modified = {}
+                last_modified_raw = watcher_config.get("last_modified", {})
+                last_modified: dict[str, object] = last_modified_raw if isinstance(last_modified_raw, dict) else {}
+
                 changed_files = []
 
                 for file_path in watch_path.rglob("*"):
@@ -438,8 +438,8 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 security_report: dict[str, t.GeneralValueType] = {
                     "safe": True,
-                    "violations": [],
-                    "warnings": [],
+                    "violations": list[str](),
+                    "warnings": list[str](),
                     "analysis_time": datetime.now(UTC).isoformat(),
                 }
 
@@ -1026,7 +1026,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 mutable_registry: dict[str, t.GeneralValueType] = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = {}
+                    mutable_registry["plugins"] = dict[str, t.GeneralValueType]()
 
                 plugin_info = {
                     "name": plugin_metadata.name,

@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import override
 
 from flext_core import FlextContainer, r, t, u, x
 
@@ -98,6 +99,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         self._plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
         self._executions: dict[str, PluginExecution] = {}
 
+    @override
     @property
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
