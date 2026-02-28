@@ -12,12 +12,14 @@ from typing import override
 
 from flext_core import FlextContainer, r, t, u, x
 
-from flext_plugin.adapters import FlextPluginAdapters
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.platform import PluginExecution
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.typings import FlextPluginTypes
+from flext_plugin import (
+    FlextPluginAdapters,
+    FlextPluginModels,
+    FlextPluginProtocols,
+    FlextPluginTypes,
+    PluginExecution,
+    c,
+)
 
 
 class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):

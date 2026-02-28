@@ -14,9 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.protocols import p
+from flext_plugin import FlextPluginModels, c, p
 
 
 class FlextPluginDiscovery:
@@ -260,7 +258,11 @@ class FlextPluginDiscovery:
                     try:
                         data = FlextPluginModels.Plugin.DiscoveryData(
                             name=entry_point.name,
-                            version=getattr(entry_point.dist, "version", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
+                            version=getattr(
+                                entry_point.dist,
+                                "version",
+                                c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                            ),
                             path=Path(getattr(entry_point.dist, "_path", "")),
                             discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
                             discovery_method=c.Plugin.Discovery.METHOD_ENTRY_POINTS,

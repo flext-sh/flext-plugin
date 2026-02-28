@@ -14,7 +14,7 @@ from __future__ import annotations
 import pytest
 from flext_core import FlextExceptions
 
-from flext_plugin.constants import FlextPluginConstants
+from flext_plugin import FlextPluginConstants
 
 
 class TestFlextPluginConstantsPluginType:

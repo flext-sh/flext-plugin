@@ -11,8 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import FlextPluginModels
-from flext_plugin.platform import Plugin, PluginRegistry
+from flext_plugin import FlextPluginModels, Plugin, PluginRegistry
 
 # Entity with create/enable/disable is FlextPluginModels.Plugin.Plugin
 PluginEntity = FlextPluginModels.Plugin.Plugin

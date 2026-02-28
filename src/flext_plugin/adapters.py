@@ -16,9 +16,7 @@ from typing import override
 
 from flext_core import FlextLogger, T, r, t
 
-from flext_plugin.constants import c
-from flext_plugin.models import m
-from flext_plugin.protocols import p
+from flext_plugin import c, m, p
 
 
 class FlextPluginAdapters:
@@ -237,7 +235,9 @@ class FlextPluginAdapters:
 
             return m.Plugin.LoadData(
                 name=path.stem,
-                version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
+                version=getattr(
+                    module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                ),
                 path=path,
                 module=module,
                 load_type=c.Plugin.Execution.LOAD_TYPE_FILE,

@@ -16,8 +16,10 @@ from typing import Self
 from flext_core import FlextModels, FlextTypes, r
 from pydantic import Field, field_validator
 
-from flext_plugin.constants import FlextPluginConstants as c_constants
-from flext_plugin.typings import FlextPluginTypes as t_types
+from flext_plugin import (
+    FlextPluginConstants as c_constants,
+    FlextPluginTypes as t_types,
+)
 
 
 class FlextPluginModels(FlextModels):

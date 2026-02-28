@@ -391,7 +391,7 @@ from flext_plugin.domain.entities import FlextPlugin, _private_method
 from flext_plugin import FlextPlugin as Plugin  # Confusing across ecosystem
 
 # ❌ Don't bypass the main API
-from flext_plugin.platform import _InternalPlatformManager
+from flext_plugin import _InternalPlatformManager
 ```
 
 ______________________________________________________________________

@@ -14,9 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import t
-from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginConstants, FlextPluginModels, t
 
 
 class TestFlextPlugin:

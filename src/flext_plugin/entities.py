@@ -27,8 +27,7 @@ from uuid import uuid4
 from flext_core import FlextResult, m, r
 from pydantic import Field
 
-from flext_plugin.constants import c
-from flext_plugin.typings import t
+from flext_plugin import c, t
 
 # Constants moved to constants.py - use c.Plugin.Entities.SEMANTIC_VERSION_PARTS
 

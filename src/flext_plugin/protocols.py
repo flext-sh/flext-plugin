@@ -10,11 +10,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols
-from flext_core.result import FlextResult
+from flext_core import FlextProtocols, FlextResult
 
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.typings import t
+from flext_plugin import FlextPluginModels, t
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -29,7 +27,7 @@ class FlextPluginProtocols(FlextProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_plugin.protocols import p
+    from flext_plugin import p
 
     # Foundation protocols (inherited)
     result: p.Result[str]

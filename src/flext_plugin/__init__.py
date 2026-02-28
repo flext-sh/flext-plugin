@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core import (
@@ -20,18 +20,25 @@ if TYPE_CHECKING:
         FlextService as s,
     )
 
-    from flext_plugin.__version__ import __version__, __version_info__
-    from flext_plugin.api import FlextPluginApi
-    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
-    from flext_plugin.discovery import FlextPluginDiscovery
-    from flext_plugin.handlers import FlextPluginHandlers
-    from flext_plugin.hot_reload import FlextPluginHotReload
-    from flext_plugin.loader import FlextPluginLoader
-    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-    from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
-    from flext_plugin.services import FlextPluginService
-    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
-    from flext_plugin.utilities import FlextPluginUtilities as u
+    from flext_plugin import (
+        FlextPluginApi,
+        FlextPluginConstants,
+        FlextPluginConstants as c,
+        FlextPluginDiscovery,
+        FlextPluginHandlers,
+        FlextPluginHotReload,
+        FlextPluginLoader,
+        FlextPluginModels,
+        FlextPluginModels as m,
+        FlextPluginProtocols,
+        FlextPluginProtocols as p,
+        FlextPluginService,
+        FlextPluginTypes,
+        FlextPluginTypes as t,
+        FlextPluginUtilities as u,
+        __version__,
+        __version_info__,
+    )
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {

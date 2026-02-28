@@ -16,9 +16,7 @@ from typing import override
 
 from flext_core import FlextLogger, r, t
 
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
 
 # Protocol references moved to avoid root aliases - use FlextPluginProtocols.Plugin.* directly
 

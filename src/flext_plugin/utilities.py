@@ -22,9 +22,7 @@ from flext_core import FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.typings import t
+from flext_plugin import FlextPluginModels, c, t
 
 
 # Import base utilities for inheritance
@@ -317,7 +315,9 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
-                last_modified: dict[str, object] = last_modified_raw if isinstance(last_modified_raw, dict) else {}
+                last_modified: dict[str, object] = (
+                    last_modified_raw if isinstance(last_modified_raw, dict) else {}
+                )
 
                 changed_files = []
 

@@ -14,9 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.typings import t
+from flext_plugin import FlextPluginModels, c, t
 
 
 class FlextPluginLoader:
@@ -339,7 +337,9 @@ class FlextPluginLoader:
 
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.stem,
-                    version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
+                    version=getattr(
+                        module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                    ),
                     path=path,
                     module=module,
                     load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
@@ -395,7 +395,9 @@ class FlextPluginLoader:
 
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.name,
-                    version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
+                    version=getattr(
+                        module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                    ),
                     path=path,
                     module=module,
                     load_type=c.Plugin.Execution.LOAD_TYPE_DIRECTORY,

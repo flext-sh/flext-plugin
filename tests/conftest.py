@@ -23,8 +23,7 @@ from typing import cast
 import pytest
 from flext_core import FlextContainer, t
 
-from flext_plugin.adapters import FlextPluginAdapters
-from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginAdapters, FlextPluginModels
 
 
 # Test environment setup

@@ -11,9 +11,7 @@ from collections.abc import Mapping, Sequence
 
 from flext_core import FlextContainer, FlextLogger, r
 
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.platform import FlextPluginPlatform
-from flext_plugin.typings import t
+from flext_plugin import FlextPluginModels, FlextPluginPlatform, t
 
 
 class FlextPluginApi:

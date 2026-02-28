@@ -436,7 +436,7 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files change:
 
 ```python
-from flext_plugin.hot_reload import enable_hot_reload
+from flext_plugin import enable_hot_reload
 from flext_plugin import create_flext_plugin_platform
 
 def development_server():

@@ -167,7 +167,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_plugin.entities import FlextPluginModels
+from flext_plugin import FlextPluginModels
 from typing import List, Protocol
 
 class FlextPluginServices:
@@ -270,7 +270,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin import FlextPluginProtocols
 import os
 from pathlib import Path
 from typing import List, Dict, object
@@ -384,7 +384,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_plugin.entities import FlextPluginModels
+from flext_plugin import FlextPluginModels
 
 class FlextPluginProtocols:
     """Protocol definitions for plugin system interfaces."""
@@ -446,7 +446,7 @@ class FlextPluginProtocols:
 
 ```python
 # Example protocol implementation
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin import FlextPluginProtocols
 
 class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
     """Concrete implementation of plugin discovery protocol."""
@@ -540,7 +540,7 @@ ______________________________________________________________________
 ```python
 # tests/unit/test_entities.py
 import pytest
-from flext_plugin.entities import FlextPluginModels
+from flext_plugin import FlextPluginModels
 
 class TestPluginEntity:
     """Test plugin domain entity business rules."""
@@ -606,7 +606,7 @@ class TestPluginEntity:
 # tests/unit/test_services.py
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from flext_plugin.services import FlextPluginServices
+from flext_plugin import FlextPluginServices
 
 class TestPluginServices:
     """Test application services."""
@@ -853,12 +853,12 @@ from flext_core import t
 from flext_core import u
 
 # Local imports (after FLEXT imports)
-from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.types import FlextPluginTypes
+from flext_plugin import FlextPluginConstants
+from flext_plugin import FlextPluginTypes
 
 # Type checking imports
 if TYPE_CHECKING:
-    from flext_plugin.entities import FlextPluginModels
+    from flext_plugin import FlextPluginModels
 
 class FlextPlugin[ModuleName]:
     """Single main class following FLEXT naming convention.
@@ -977,7 +977,7 @@ def _handle_error(
 # flext_plugin/config.py
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
-from flext_plugin.constants import FlextPluginConstants
+from flext_plugin import FlextPluginConstants
 
 class FlextPluginSettings:
     """Plugin system configuration using Pydantic."""
@@ -1394,7 +1394,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_plugin.entities import FlextPluginModels
+from flext_plugin import FlextPluginModels
 
 class FlextPluginExecutor:
     """Asynchronous plugin execution with concurrency control."""

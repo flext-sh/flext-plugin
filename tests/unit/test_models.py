@@ -12,8 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginConstants, FlextPluginModels
 
 
 class TestFlextPluginModels:
@@ -39,7 +38,9 @@ class TestFlextPluginModels:
         assert FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY == "unhealthy"
 
         # Test class methods
-        operational_statuses = FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
+        operational_statuses = (
+            FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
+        )
         assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE in operational_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.HEALTHY in operational_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.LOADED in operational_statuses

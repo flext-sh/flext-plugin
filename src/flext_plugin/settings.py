@@ -13,7 +13,7 @@ from flext_core import FlextSettings, r, u
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_plugin.typings import t
+from flext_plugin import t
 
 
 @FlextSettings.auto_register("plugin")

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin.settings import FlextPluginSettings
+from flext_plugin import FlextPluginSettings
 
 
 class TestFlextPluginSettings:

@@ -103,7 +103,7 @@ tap_plugin = create_flext_plugin(
 ### Hot Reload Development
 
 ```python
-from flext_plugin.hot_reload import enable_hot_reload
+from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
 enable_hot_reload(

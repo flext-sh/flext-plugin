@@ -13,8 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import FlextPluginLoader
-from flext_plugin.adapters import FlextPluginAdapters
+from flext_plugin import FlextPluginAdapters, FlextPluginLoader
 
 
 class TestFlextPluginLoader:

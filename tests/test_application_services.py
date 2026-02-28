@@ -20,13 +20,13 @@ import pytest
 from flext_core import FlextContainer, FlextExceptions
 
 from flext_plugin import (
+    FlextPluginConstants,
+    FlextPluginDiscovery,
+    FlextPluginLoader,
     FlextPluginModels,
     FlextPluginService,
     t,
 )
-from flext_plugin.constants import FlextPluginConstants
-from flext_plugin.discovery import FlextPluginDiscovery
-from flext_plugin.loader import FlextPluginLoader
 
 
 class PluginInterface(Protocol):

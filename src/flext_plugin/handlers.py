@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_plugin.typings import t
+from flext_plugin import t
 
 
 class FlextPluginHandlers:
@@ -282,7 +282,9 @@ class FlextPluginHandlers:
             history = [e for e in history if e["event_type"] == event_type]
 
         return [
-            e for e in self._event_history if limit <= 0 or e in self._event_history[-limit:]
+            e
+            for e in self._event_history
+            if limit <= 0 or e in self._event_history[-limit:]
         ]
 
     def clear_event_history(self) -> int:

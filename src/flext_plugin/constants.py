@@ -18,7 +18,7 @@ class FlextPluginConstants(FlextConstants):
 
     Usage:
     ```python
-    from flext_plugin.constants import FlextPluginConstants
+    from flext_plugin import FlextPluginConstants
 
     timeout = FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS
     plugin_type = FlextPluginConstants.Plugin.PluginType.TAP
@@ -107,6 +107,7 @@ class FlextPluginConstants(FlextConstants):
             INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
             UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
             ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
+
         # Lifecycle constants
         class Lifecycle:
             """Plugin lifecycle state constants."""

@@ -23,11 +23,13 @@ from flext_core import (
 )
 from pydantic import PrivateAttr
 
-from flext_plugin.constants import c
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.settings import FlextPluginSettings
-from flext_plugin.typings import t
+from flext_plugin import (
+    FlextPluginModels,
+    FlextPluginProtocols,
+    FlextPluginSettings,
+    c,
+    t,
+)
 
 # =========================================================================
 # PLUGIN DOMAIN CLASSES - SOLID Plugin Architecture
@@ -143,9 +145,7 @@ class FlextPluginPlatform:
 
             """
             _ = metadata
-            return self.register_class_plugin(
-                self.PLUGINS, name, service
-            )
+            return self.register_class_plugin(self.PLUGINS, name, service)
 
         def unregister(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from class-level storage."""
@@ -198,16 +198,10 @@ class FlextPluginPlatform:
 
         @property
         def status(self) -> str:
-        @property
-        def status(self) -> str:
             """Get plugin status."""
             if not self.is_enabled:
                 return c.Plugin.PluginStatus.INACTIVE
             return c.Plugin.PluginStatus.ACTIVE
-
-            if not self.is_enabled:
-                return c.Plugin.Lifecycle.STATUS_INACTIVE
-            return c.Plugin.Lifecycle.STATUS_ACTIVE
 
     class PluginPlatformService(FlextService[None]):
         """railway-oriented plugin platform with functional composition."""
@@ -254,7 +248,7 @@ class FlextPluginPlatform:
             self._loader = None
             self._executor = None
 
-                @property
+        @property
         def plugins(self) -> Mapping[str, FlextPluginPlatform.Plugin]:
             """Plugin storage."""
             return self._plugins

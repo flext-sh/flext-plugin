@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_plugin.constants import FlextPluginConstants
+from flext_plugin import FlextPluginConstants
 
 
 class TestFlextPluginConstants:
