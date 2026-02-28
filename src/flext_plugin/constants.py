@@ -309,6 +309,8 @@ class FlextPluginConstants(FlextConstants):
             DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
             DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
             DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
+            DEFAULT_CONFIG_FILE: Final[str] = "plugin.yaml"
+            CONFIG_SCHEMA_VERSION: Final[str] = "1.0"
 
         # Validation constants
         class PluginValidation:

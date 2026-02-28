@@ -16,6 +16,7 @@ from typing import override
 
 from flext_core import FlextLogger, r, t
 
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.protocols import FlextPluginProtocols
 
@@ -672,7 +673,7 @@ class FlextPluginImplementations:
                 # dynamically import and instantiate plugin
                 concrete_plugin = FlextPluginImplementations.ConcretePlugin(
                     name=f"loaded-from-{plugin_path}",
-                    version="1.0.0",
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                 )
                 # Create FlextPluginModels.Plugin for registration
                 plugin_entity = FlextPluginModels.Plugin.Plugin.create(

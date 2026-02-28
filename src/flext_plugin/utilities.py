@@ -22,6 +22,7 @@ from flext_core import FlextUtilities, r
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 
@@ -181,7 +182,7 @@ class FlextPluginUtilities(FlextUtilities):
             """
             try:
                 # Default values
-                version = "1.0.0"
+                version = c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
                 description = f"Plugin from {plugin_path.name}"
 
                 # Try to extract metadata from Python files
@@ -565,8 +566,8 @@ class FlextPluginUtilities(FlextUtilities):
     class ConfigurationManager:
         """Plugin configuration management utilities."""
 
-        DEFAULT_CONFIG_FILE: ClassVar[str] = "plugin.yaml"
-        CONFIG_SCHEMA_VERSION: ClassVar[str] = "1.0"
+        DEFAULT_CONFIG_FILE: ClassVar[str] = c.Plugin.Files.DEFAULT_CONFIG_FILE
+        CONFIG_SCHEMA_VERSION: ClassVar[str] = c.Plugin.Files.CONFIG_SCHEMA_VERSION
         MAX_CONFIG_SIZE_KB: ClassVar[int] = 1024
 
         @staticmethod
@@ -922,7 +923,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if not path.exists():
                     # Create empty registry
                     registry: dict[str, t.GeneralValueType] = {
-                        "version": "1.0",
+                        "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
                         "plugins": {},
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),

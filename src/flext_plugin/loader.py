@@ -14,6 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult
 
+from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 
@@ -338,10 +339,10 @@ class FlextPluginLoader:
 
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.stem,
-                    version=getattr(module, "__version__", "1.0.0"),
+                    version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
                     path=path,
                     module=module,
-                    load_type="file",
+                    load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
                     loaded_at=datetime.now(UTC),
                 )
             except (
@@ -394,10 +395,10 @@ class FlextPluginLoader:
 
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.name,
-                    version=getattr(module, "__version__", "1.0.0"),
+                    version=getattr(module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION),
                     path=path,
                     module=module,
-                    load_type="directory",
+                    load_type=c.Plugin.Execution.LOAD_TYPE_DIRECTORY,
                     loaded_at=datetime.now(UTC),
                     entry_file=entry_file,
                 )
