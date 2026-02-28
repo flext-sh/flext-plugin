@@ -31,7 +31,7 @@ class FlextPluginModels(FlextModels):
     """
 
     # Re-export PluginType enum from constants for convenience
-    PluginType = c_constants.Plugin.PluginType
+    PluginType: type[str] = c_constants.Plugin.PluginType
 
     class Plugin:
         """Plugin domain namespace."""
