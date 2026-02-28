@@ -19,8 +19,8 @@ from flext_core import (
     FlextSettings,
     r,
     t as core_t,
+    u,
 )
-from flext_core.utilities import u
 from pydantic import PrivateAttr
 
 from flext_plugin.constants import c

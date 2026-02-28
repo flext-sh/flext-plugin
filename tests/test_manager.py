@@ -13,8 +13,7 @@ import asyncio
 from collections.abc import Mapping
 
 import pytest
-from flext_core import r
-from flext_core.typings import t
+from flext_core import r, t
 
 from flext_plugin import FlextPluginService
 from flext_plugin.adapters import FlextPluginAdapters

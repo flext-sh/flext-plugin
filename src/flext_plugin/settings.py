@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import r, u
-from flext_core.settings import FlextSettings
+from flext_core import FlextSettings, r, u
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import SettingsConfigDict
 

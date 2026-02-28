@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Mapping
 from typing import Literal, TypeVar
 
-from flext_core.typings import FlextTypes
+from flext_core import FlextTypes
 from pydantic import BaseModel, ConfigDict
 
 from .constants import FlextPluginConstants as c_plugin

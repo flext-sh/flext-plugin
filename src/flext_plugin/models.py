@@ -13,9 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Self, cast
 
-from flext_core import FlextModels
-from flext_core.result import r
-from flext_core.typings import FlextTypes
+from flext_core import FlextModels, FlextTypes, r
 from pydantic import Field, field_validator
 
 from flext_plugin.constants import FlextPluginConstants as c_constants

@@ -24,8 +24,7 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import uuid4
 
-from flext_core import FlextResult, r
-from flext_core.models import m
+from flext_core import FlextResult, m, r
 from pydantic import Field
 
 from flext_plugin.constants import c
