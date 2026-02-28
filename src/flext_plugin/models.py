@@ -285,30 +285,6 @@ class FlextPluginModels(FlextModels):
                 self.metadata["error_count"] = error_count + 1
                 self.metadata["last_error"] = error_message
 
-            def activate(self) -> bool:
-                """Activate the plugin (legacy method).
-
-                Returns:
-                    True if activated, False if already active
-
-                """
-                if self.is_enabled:
-                    return False
-                self.is_enabled = True
-                return True
-
-            def deactivate(self) -> bool:
-                """Deactivate the plugin (legacy method).
-
-                Returns:
-                    True if deactivated, False if already inactive
-
-                """
-                if not self.is_enabled:
-                    return False
-                self.is_enabled = False
-                return True
-
             def validate_business_rules(self) -> r[bool]:
                 """Validate plugin business rules.
 
