@@ -15,9 +15,9 @@ from flext_core import FlextContainer, r, t, u, x
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginModels,
+    FlextPluginPlatform,
     FlextPluginProtocols,
     FlextPluginTypes,
-    PluginExecution,
     c,
 )
 
@@ -99,7 +99,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
         # Internal state
         self._plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
-        self._executions: dict[str, PluginExecution] = {}
+        self._executions: dict[str, FlextPluginPlatform.PluginExecution] = {}
 
     @override
     @property
@@ -369,7 +369,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         plugin_name: str,
         context: FlextPluginTypes.Execution.ExecutionContext,
         execution_id: str | None = None,
-    ) -> r[PluginExecution]:
+    ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -391,7 +391,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             plugin = self._plugins[plugin_name]
 
             # Create execution entity
-            execution = PluginExecution.create(
+            execution = FlextPluginPlatform.PluginExecution.create(
                 plugin_name=plugin_name,
                 execution_config={"input_data": context, "status": "pending"},
                 execution_id=execution_id,
@@ -639,7 +639,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             "registry_available": True,
         }
 
-    def get_execution(self, execution_id: str) -> PluginExecution | None:
+    def get_execution(
+        self, execution_id: str
+    ) -> FlextPluginPlatform.PluginExecution | None:
         """Get an execution by ID.
 
         Args:
@@ -651,7 +653,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return self._executions.get(execution_id)
 
-    def list_executions(self) -> list[PluginExecution]:
+    def list_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
         """List all executions.
 
         Returns:
@@ -660,7 +662,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return list(self._executions.values())
 
-    def get_running_executions(self) -> list[PluginExecution]:
+    def get_running_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
         """Get all currently running executions.
 
         Returns:
