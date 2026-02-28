@@ -16,6 +16,7 @@ from flext_plugin.constants import c
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.platform import PluginExecution
 from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.typings import FlextPluginTypes
 
 
 class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
@@ -104,7 +105,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     @staticmethod
     def _to_general_mapping(
-        value: t.GeneralValueType,
+        value: object,
     ) -> dict[str, t.GeneralValueType]:
         if not isinstance(value, Mapping):
             return {}

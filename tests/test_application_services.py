@@ -29,7 +29,6 @@ from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.loader import FlextPluginLoader
 
 
-
 class PluginInterface(Protocol):
     """Protocol for plugin instances loaded by PluginLoader.
 
@@ -272,7 +271,7 @@ class TestRealPluginDiscoveryAndExecution:
 
     def test_real_plugin_discovery_with_actual_files(
         self,
-        real_plugin_discovery: PluginDiscovery,
+        real_plugin_discovery: FlextPluginDiscovery,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL plugin discovery with actual Python files."""
@@ -300,7 +299,7 @@ class TestRealPluginDiscoveryAndExecution:
 
     def test_real_plugin_loading_and_execution(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL plugin loading and execution with actual Python modules."""
@@ -338,7 +337,7 @@ class TestRealPluginDiscoveryAndExecution:
 
     def test_real_plugin_processor_execution(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL processor plugin with data transformation."""
@@ -372,7 +371,7 @@ class TestRealPluginDiscoveryAndExecution:
 
     def test_real_plugin_error_handling(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL error handling with actual plugin exceptions."""
@@ -1053,8 +1052,8 @@ class TestRealPluginIntegrationWorkflow:
 
     def test_complete_plugin_workflow_real(
         self,
-        real_plugin_loader: PluginLoader,
-        real_plugin_discovery: PluginDiscovery,
+        real_plugin_loader: FlextPluginLoader,
+        real_plugin_discovery: FlextPluginDiscovery,
         temp_plugin_dir: Path,
     ) -> None:
         """Test complete REAL workflow: discover -> load -> execute -> cleanup."""
@@ -1118,7 +1117,7 @@ class TestRealPluginIntegrationWorkflow:
 
     def test_real_plugin_loader_registry_management(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL plugin registry management with actual plugins."""
@@ -1163,7 +1162,7 @@ class TestRealPluginIntegrationWorkflow:
 
     def test_real_plugin_lifecycle_management(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL plugin lifecycle with loading/unloading."""
@@ -1306,7 +1305,7 @@ class TestRealPluginErrorScenarios:
 
     def test_real_plugin_execution_error_handling(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL error handling with plugin that actually throws exceptions."""
@@ -1337,7 +1336,7 @@ class TestRealPluginErrorScenarios:
 
     def test_real_plugin_file_loading_errors(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL file loading errors with malformed plugin files."""
@@ -1365,7 +1364,7 @@ class BadPlugin:
 
     def test_real_plugin_file_not_found_error(
         self,
-        real_plugin_loader: PluginLoader,
+        real_plugin_loader: FlextPluginLoader,
         temp_plugin_dir: Path,
     ) -> None:
         """Test REAL file not found error handling."""

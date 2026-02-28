@@ -26,7 +26,6 @@ class FlextPluginTypes(FlextTypes):
     - t.Core.JsonDict, t.Core.GeneralValueType via Core alias
     """
 
-
     class Handlers:
         """Event handler type definitions."""
 
