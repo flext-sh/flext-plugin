@@ -198,7 +198,13 @@ class FlextPluginPlatform:
 
         @property
         def status(self) -> str:
+        @property
+        def status(self) -> str:
             """Get plugin status."""
+            if not self.is_enabled:
+                return c.Plugin.PluginStatus.INACTIVE
+            return c.Plugin.PluginStatus.ACTIVE
+
             if not self.is_enabled:
                 return c.Plugin.Lifecycle.STATUS_INACTIVE
             return c.Plugin.Lifecycle.STATUS_ACTIVE
