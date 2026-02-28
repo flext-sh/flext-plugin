@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from flext_plugin.services import FlextPluginService
     from flext_plugin.settings import FlextPluginSettings
     from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
-    from flext_plugin.utilities import FlextPluginUtilities as u
+    from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -51,6 +51,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginService": ("flext_plugin.services", "FlextPluginService"),
     "FlextPluginSettings": ("flext_plugin.settings", "FlextPluginSettings"),
     "FlextPluginTypes": ("flext_plugin.typings", "FlextPluginTypes"),
+    "FlextPluginUtilities": ("flext_plugin.utilities", "FlextPluginUtilities"),
     "__version__": ("flext_plugin.__version__", "__version__"),
     "__version_info__": ("flext_plugin.__version__", "__version_info__"),
     "c": ("flext_plugin.constants", "FlextPluginConstants"),
@@ -80,6 +81,7 @@ __all__ = [
     "FlextPluginService",
     "FlextPluginSettings",
     "FlextPluginTypes",
+    "FlextPluginUtilities",
     "__version__",
     "__version_info__",
     "c",
