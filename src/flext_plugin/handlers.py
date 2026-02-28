@@ -10,7 +10,6 @@ from __future__ import annotations
 import inspect
 from collections.abc import Mapping
 from datetime import UTC, datetime
-from typing import cast
 
 from flext_core import FlextLogger, FlextResult
 
@@ -226,9 +225,8 @@ class FlextPluginHandlers:
         """
         try:
             # Handler is always async now
-            # Cast event_data to JsonValue mapping for handler compatibility
-            json_event_data = cast("Mapping[str, t.JsonValue]", event_data)
-            async_result = handler(json_event_data)
+            # event_data is already Mapping[str, t.GeneralValueType]
+            async_result = handler(event_data)
             return await async_result
         except (
             ValueError,
@@ -242,7 +240,7 @@ class FlextPluginHandlers:
             self.logger.exception("Handler execution failed")
             raise
 
-    def _is_async_function(self, func: object) -> bool:
+    def _is_async_function(self, func: t.GeneralValueType) -> bool:
         """Check if a function is async.
 
         Args:
@@ -283,10 +281,9 @@ class FlextPluginHandlers:
         if event_type:
             history = [e for e in history if e["event_type"] == event_type]
 
-        return cast(
-            "list[Mapping[str, t.GeneralValueType]]",
-            history[-limit:] if limit > 0 else history,
-        )
+        return [
+            e for e in self._event_history if limit <= 0 or e in self._event_history[-limit:]
+        ]
 
     def clear_event_history(self) -> int:
         """Clear event history.

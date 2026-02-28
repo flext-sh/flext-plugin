@@ -11,7 +11,7 @@ import types
 from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
-from typing import Self, cast
+from typing import Self
 
 from flext_core import FlextModels, FlextTypes, r
 from pydantic import Field, field_validator
@@ -174,9 +174,7 @@ class FlextPluginModels(FlextModels):
                         author=author,
                         plugin_type=plugin_type,
                         is_enabled=is_enabled,
-                        metadata=cast(
-                            "dict[str, t_types.GeneralValueType]", metadata or {}
-                        ),
+                        metadata=dict(metadata or {}),
                     )
                 return cls(
                     name=name,
@@ -185,9 +183,7 @@ class FlextPluginModels(FlextModels):
                     author=author,
                     plugin_type=plugin_type,
                     is_enabled=is_enabled,
-                    metadata=cast(
-                        "dict[str, t_types.GeneralValueType]", metadata or {}
-                    ),
+                    metadata=dict(metadata or {}),
                 )
 
             def enable(self) -> r[bool]:

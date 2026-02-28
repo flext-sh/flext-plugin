@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Mapping
-from typing import cast
 
 from flext_core import (
     FlextContainer,
@@ -106,7 +105,7 @@ class FlextPluginPlatform:
         @classmethod
         def create(
             cls,
-            dispatcher: object | None = None,
+            dispatcher: t.GeneralValueType | None = None,
             *,
             auto_discover_handlers: bool = False,
         ) -> FlextPluginPlatform.PluginRegistry:
@@ -141,8 +140,11 @@ class FlextPluginPlatform:
 
             """
             _ = metadata
+            if not isinstance(service, core_t.RegistrablePlugin):
+                error_msg = "Service is not a RegistrablePlugin"
+                raise TypeError(error_msg)
             return self.register_class_plugin(
-                self.PLUGINS, name, cast("t.RegistrablePlugin", service)
+                self.PLUGINS, name, service
             )
 
         def unregister(self, plugin_name: str) -> r[bool]:
@@ -314,7 +316,7 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: object,
+                _checked: t.GeneralValueType,
             ) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
                 # Handle None discovery protocol
                 if not self.discovery:
@@ -370,7 +372,7 @@ class FlextPluginPlatform:
             """Load single plugin with composition."""
 
             def load_and_validate(
-                _checked: object,
+                _checked: t.GeneralValueType,
             ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
                 # Handle None loader protocol
                 if not self.loader:
@@ -453,10 +455,10 @@ class FlextPluginPlatform:
         ) -> FlextResult[bool]:
             """Register plugin with validation chain."""
 
-            def validate_plugin_result(_: object) -> FlextResult[bool]:
+            def validate_plugin_result(_: t.GeneralValueType) -> FlextResult[bool]:
                 return self.registry.register(plugin.name, plugin)
 
-            def add_to_plugins_result(_registry_result: object) -> bool:
+            def add_to_plugins_result(_registry_result: t.GeneralValueType) -> bool:
                 # Use _registry_result for validation
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
@@ -476,7 +478,7 @@ class FlextPluginPlatform:
         def unregister_plugin(self, plugin_name: str) -> FlextResult[bool]:
             """Unregister with cleanup chain."""
 
-            def unregister_from_registry(_registry_result: object) -> bool:
+            def unregister_from_registry(_registry_result: t.GeneralValueType) -> bool:
                 # Use _registry_result for validation
                 if _registry_result is not True:
                     error_msg = "Plugin unregistration failed"
@@ -562,9 +564,8 @@ class FlextPluginPlatform:
         # Private composition helpers
         def _check_protocol(
             self,
-            protocol: object | None,
+            protocol: t.GeneralValueType | None,
             name: str,
-        ) -> FlextResult[bool]:
             """Protocol validation helper."""
             return (
                 FlextResult[bool].ok(True)

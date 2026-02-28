@@ -98,19 +98,6 @@ class FlextPluginConstants(FlextConstants):
         # PluginTypeLiteral moved to typings.py (t.Plugin.PluginTypeLiteral)
         # PluginStatusLiteral defined after PluginStatus class - see below
 
-        # Plugin types with frozensets
-        class Types:
-            """Plugin type constants."""
-
-            # Plugin type frozensets (backward compatibility)
-            # Note: Values MUST match PluginType StrEnum values exactly.
-            # For new code, use PluginType enum directly (e.g., PluginType.TAP).
-            # Generated from PluginType StrEnum members (DRY principle) - will be set after enum definition
-            SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
 
             # PluginTypeLiteral moved to Plugin level - see below
 

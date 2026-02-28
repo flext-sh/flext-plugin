@@ -28,9 +28,6 @@ from flext_plugin.constants import FlextPluginConstants
 from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.loader import FlextPluginLoader
 
-# Type aliases for compatibility with old test code
-PluginDiscovery = FlextPluginDiscovery
-PluginLoader = FlextPluginLoader
 
 
 class PluginInterface(Protocol):
