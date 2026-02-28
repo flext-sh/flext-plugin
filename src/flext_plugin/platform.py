@@ -254,8 +254,7 @@ class FlextPluginPlatform:
             self._loader = None
             self._executor = None
 
-        # Properties for backward compatibility with public-like access
-        @property
+                @property
         def plugins(self) -> Mapping[str, FlextPluginPlatform.Plugin]:
             """Plugin storage."""
             return self._plugins
