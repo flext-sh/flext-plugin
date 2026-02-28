@@ -448,6 +448,18 @@ class FlextPluginConstants(FlextConstants):
         )
         """All plugin types - union of all plugin type frozensets."""
 
+        # Generate plugin status frozensets from PluginStatus StrEnum (DRY principle)
+        OPERATIONAL_STATUSES: ClassVar[frozenset[str]] = frozenset({
+            PluginStatus.ACTIVE,
+            PluginStatus.HEALTHY,
+            PluginStatus.LOADED,
+        })
+        ERROR_STATUSES: ClassVar[frozenset[str]] = frozenset({
+            PluginStatus.ERROR,
+            PluginStatus.UNHEALTHY,
+            PluginStatus.DISABLED,
+        })
+
 
 c = FlextPluginConstants
 
