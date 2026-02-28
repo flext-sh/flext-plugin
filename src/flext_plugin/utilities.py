@@ -25,6 +25,7 @@ from pydantic_settings import SettingsConfigDict
 from flext_plugin.models import FlextPluginModels
 from flext_plugin.typings import t
 
+
 # Import base utilities for inheritance
 class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
