@@ -30,8 +30,8 @@ class FlextPluginTypes(FlextTypes):
         """Event handler type definitions."""
 
         type EventHandler = Callable[
-            [Mapping[str, FlextTypes.JsonValue]],
-            Awaitable[FlextTypes.JsonValue],
+            [Mapping[str, FlextTypes.GeneralValueType]],
+            Awaitable[FlextTypes.GeneralValueType],
         ]
 
         class HandlerInfo(BaseModel):

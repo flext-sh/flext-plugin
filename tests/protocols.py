@@ -25,7 +25,6 @@ class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
 
 
 # Runtime aliases
-p = TestsFlextPluginProtocols
-p = TestsFlextPluginProtocols
+p: type[TestsFlextPluginProtocols] = TestsFlextPluginProtocols
 
 __all__ = ["TestsFlextPluginProtocols", "p"]

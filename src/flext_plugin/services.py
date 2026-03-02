@@ -101,8 +101,8 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         self._plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
         self._executions: dict[str, FlextPluginPlatform.PluginExecution] = {}
 
-    @override
     @property
+    @override
     def container(self) -> FlextContainer:
         """Get the container for this service instance."""
         return FlextContainer.get_global()

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Mapping
+from typing import override
 
 import pytest
 from flext_core import r, t
@@ -42,6 +43,7 @@ class TestFlextPluginServiceStubBridges:
 
     def test_discovery_calls_security_registry_and_monitoring(self) -> None:
         class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
+            @override
             def discover_plugins(
                 self,
                 paths: list[str],
@@ -60,6 +62,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.calls = 0
 
+            @override
             def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
@@ -69,6 +72,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.registered: list[str] = []
 
+            @override
             def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
@@ -81,6 +85,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.started: list[str] = []
 
+            @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.started.append(_plugin_name)
                 return r.ok(True)
@@ -105,6 +110,7 @@ class TestFlextPluginServiceStubBridges:
 
     def test_load_plugin_calls_security_registry_and_monitoring(self) -> None:
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
+            @override
             def load_plugin(
                 self,
                 _plugin_path: str,
@@ -123,6 +129,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.calls = 0
 
+            @override
             def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
@@ -132,6 +139,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.registered: list[str] = []
 
+            @override
             def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
@@ -144,6 +152,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.started: list[str] = []
 
+            @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.started.append(_plugin_name)
                 return r.ok(True)
@@ -167,6 +176,7 @@ class TestFlextPluginServiceStubBridges:
 
     def test_execute_plugin_uses_executor_adapter_result(self) -> None:
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
+            @override
             def load_plugin(
                 self,
                 _plugin_path: str,
@@ -185,6 +195,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.calls: list[str] = []
 
+            @override
             def execute_plugin(
                 self,
                 _plugin_name: str,
@@ -212,6 +223,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.unloaded: list[str] = []
 
+            @override
             def load_plugin(
                 self,
                 _plugin_path: str,
@@ -226,6 +238,7 @@ class TestFlextPluginServiceStubBridges:
                     },
                 )
 
+            @override
             def unload_plugin(self, _plugin_name: str) -> r[bool]:
                 self.unloaded.append(_plugin_name)
                 return super().unload_plugin(_plugin_name)
@@ -235,6 +248,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.unregistered: list[str] = []
 
+            @override
             def unregister_plugin(self, _plugin_name: str) -> r[bool]:
                 self.unregistered.append(_plugin_name)
                 return r.ok(True)
@@ -244,6 +258,7 @@ class TestFlextPluginServiceStubBridges:
                 super().__init__()
                 self.stopped: list[str] = []
 
+            @override
             def stop_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.stopped.append(_plugin_name)
                 return r.ok(True)

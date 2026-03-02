@@ -158,12 +158,8 @@ class FlextPluginImplementations:
                 self.logger.info(f"Shutting down plugin {self.name}")
                 # Deactivate entity if present
                 if self._entity:
-                    if self._entity.deactivate():
-                        self.logger.info(f"Plugin entity {self.name} deactivated")
-                    else:
-                        self.logger.warning(
-                            f"Plugin entity {self.name} already inactive",
-                        )
+                    self._entity.is_enabled = False
+                    self.logger.info(f"Plugin entity {self.name} deactivated")
                 self._initialized = False
                 return r[None].ok(None)
             except (

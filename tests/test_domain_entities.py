@@ -57,7 +57,7 @@ class TestFlextPlugin:
         # Disable plugin
         result = plugin.disable()
         assert result.is_success
-        assert plugin.is_enabled is False
+        assert not plugin.is_enabled
 
         # Re-enable plugin
         result = plugin.enable()

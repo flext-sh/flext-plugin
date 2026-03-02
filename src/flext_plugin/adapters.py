@@ -409,7 +409,7 @@ class FlextPluginAdapters:
             _plugin_name: str,
         ) -> r[Mapping[str, t.GeneralValueType]]:
             """Get plugin health information."""
-            return r.ok({"status": c.Plugin.Lifecycle.STATUS_HEALTHY})
+            return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
         def is_monitoring(self, _plugin_name: str) -> bool:

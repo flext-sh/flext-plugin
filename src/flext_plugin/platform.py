@@ -28,6 +28,7 @@ from flext_plugin import (
     FlextPluginProtocols,
     FlextPluginSettings,
     c,
+    p,
     t,
 )
 
@@ -109,7 +110,7 @@ class FlextPluginPlatform:
         @classmethod
         def create(
             cls,
-            dispatcher: t.GeneralValueType | None = None,
+            dispatcher: p.CommandBus | None = None,
             *,
             auto_discover_handlers: bool = False,
         ) -> FlextPluginPlatform.PluginRegistry:
@@ -574,7 +575,7 @@ class FlextPluginPlatform:
         # Private composition helpers
         def _check_protocol(
             self,
-            protocol: t.GeneralValueType | None,
+            protocol: object | None,
             name: str,
         ) -> FlextResult[bool]:
             """Protocol validation helper."""

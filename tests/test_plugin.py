@@ -25,7 +25,7 @@ class TestPluginModel:
         )
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
-        assert plugin.is_enabled is True
+        assert plugin.is_enabled
 
     def test_plugin_enable(self) -> None:
         """Test plugin enable method."""
@@ -34,11 +34,11 @@ class TestPluginModel:
             plugin_version="1.0.0",
             is_enabled=False,
         )
-        assert plugin.is_enabled is False
+        assert not plugin.is_enabled
 
         result = plugin.enable()
         assert result.is_success
-        assert plugin.is_enabled is True
+        assert plugin.is_enabled
 
     def test_plugin_enable_already_enabled(self) -> None:
         """Test enabling already enabled plugin."""
@@ -59,11 +59,11 @@ class TestPluginModel:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        assert plugin.is_enabled is True
+        assert plugin.is_enabled
 
         result = plugin.disable()
         assert result.is_success
-        assert plugin.is_enabled is False
+        assert not plugin.is_enabled
 
     def test_plugin_disable_already_disabled(self) -> None:
         """Test disabling already disabled plugin."""
@@ -88,7 +88,7 @@ class TestPluginPlatform:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        assert plugin.is_active() is True
+        assert plugin.is_active()
 
     def test_plugin_is_active_when_disabled(self) -> None:
         """Test is_active returns False when plugin is disabled."""
@@ -97,7 +97,7 @@ class TestPluginPlatform:
             plugin_version="1.0.0",
             is_enabled=False,
         )
-        assert plugin.is_active() is False
+        assert not plugin.is_active()
 
     def test_plugin_status_active(self) -> None:
         """Test status property when active."""
@@ -153,7 +153,7 @@ class TestPluginRegistry:
         result = registry.register(plugin.name, plugin)
 
         assert result.is_success
-        assert result.value is True
+        assert result.value
 
         # Verify using API methods
         get_result = registry.get(plugin.name)
@@ -175,7 +175,7 @@ class TestPluginRegistry:
         result = registry.unregister(plugin.name)
 
         assert result.is_success
-        assert result.value is True
+        assert result.value
 
         # Verify unregistered
         plugins_result = registry.list_plugins()

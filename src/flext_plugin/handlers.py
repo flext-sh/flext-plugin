@@ -212,7 +212,7 @@ class FlextPluginHandlers:
         self,
         handler: t.Handlers.EventHandler,
         event_data: Mapping[str, t.GeneralValueType],
-    ) -> t.JsonValue:
+    ) -> t.GeneralValueType:
         """Execute a single handler with proper error handling.
 
         Args:
