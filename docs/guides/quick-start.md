@@ -478,20 +478,6 @@ FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
 # Install development dependencies
 poetry add --group dev ruff mypy pytest pytest-cov bandit
 
-# Create basic pyproject.toml configuration
-cat > pyproject.toml << EOF
-extend = "../.ruff-shared.toml"
-lint.isort.known-first-party = ["flext_plugin"]
-
-[tool.mypy]
-python_version = "3.13"
-strict = true
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "--cov=. --cov-report=term-missing"
-EOF
-
 # Run quality checks
 ruff check .          # Linting
 mypy .
