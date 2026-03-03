@@ -23,15 +23,15 @@ class FlextPluginTypes(FlextTypes):
 
     Follows FLEXT ecosystem namespace conventions:
     - t.Plugin.* for plugin-specific types
-    - t.Core.JsonDict, t.Core.GeneralValueType via Core alias
+    - t.Core.JsonDict, t.Core.ContainerValue via Core alias
     """
 
     class Handlers:
         """Event handler type definitions."""
 
         type EventHandler = Callable[
-            [Mapping[str, FlextTypes.GeneralValueType]],
-            Awaitable[FlextTypes.GeneralValueType],
+            [Mapping[str, FlextTypes.ContainerValue]],
+            Awaitable[FlextTypes.ContainerValue],
         ]
 
         class HandlerInfo(BaseModel):

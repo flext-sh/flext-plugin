@@ -43,7 +43,7 @@ class FlextPluginHandlers:
         super().__init__()
         self.logger = FlextLogger(__name__)
         self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
-        self._event_history: list[dict[str, t.GeneralValueType]] = []
+        self._event_history: list[dict[str, t.ContainerValue]] = []
 
     def register_handler(
         self,
@@ -144,8 +144,8 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> FlextResult[list[t.GeneralValueType]]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> FlextResult[list[t.ContainerValue]]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -158,7 +158,7 @@ class FlextPluginHandlers:
         """
         try:
             # Record event in history regardless of whether handlers exist
-            event_record: dict[str, t.GeneralValueType] = {
+            event_record: dict[str, t.ContainerValue] = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -173,7 +173,7 @@ class FlextPluginHandlers:
                 return FlextResult.ok([])
 
             # Execute handlers
-            results: list[t.GeneralValueType] = []
+            results: list[t.ContainerValue] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
@@ -211,8 +211,8 @@ class FlextPluginHandlers:
     async def _execute_handler(
         self,
         handler: t.Handlers.EventHandler,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> t.GeneralValueType:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> t.ContainerValue:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -225,7 +225,7 @@ class FlextPluginHandlers:
         """
         try:
             # Handler is always async now
-            # event_data is already Mapping[str, t.GeneralValueType]
+            # event_data is already Mapping[str, t.ContainerValue]
             async_result = handler(event_data)
             return await async_result
         except (
@@ -240,7 +240,7 @@ class FlextPluginHandlers:
             self.logger.exception("Handler execution failed")
             raise
 
-    def _is_async_function(self, func: t.GeneralValueType) -> bool:
+    def _is_async_function(self, func: t.ContainerValue) -> bool:
         """Check if a function is async.
 
         Args:
@@ -265,7 +265,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[Mapping[str, t.GeneralValueType]]:
+    ) -> list[Mapping[str, t.ContainerValue]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -326,8 +326,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> Mapping[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
         """Handle plugin discovered event.
 
         Args:
@@ -344,8 +344,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> Mapping[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
         """Handle plugin loaded event.
 
         Args:
@@ -362,8 +362,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> Mapping[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
         """Handle plugin executed event.
 
         Args:
@@ -397,8 +397,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> Mapping[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
         """Handle plugin error event.
 
         Args:
@@ -424,8 +424,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: Mapping[str, t.GeneralValueType],
-    ) -> Mapping[str, t.GeneralValueType]:
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
         """Handle plugin unloaded event.
 
         Args:
@@ -477,7 +477,7 @@ class FlextPluginHandlers:
             self.logger.exception("Failed to register default handlers")
             return FlextResult.fail(f"Default handler registration error: {e!s}")
 
-    def get_handler_status(self) -> Mapping[str, t.GeneralValueType]:
+    def get_handler_status(self) -> Mapping[str, t.ContainerValue]:
         """Get the current status of the event handlers.
 
         Returns:

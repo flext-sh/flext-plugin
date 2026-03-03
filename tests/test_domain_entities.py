@@ -157,7 +157,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_with_complex_settings(self) -> None:
         """Test configuration with complex settings."""
-        settings: dict[str, t.GeneralValueType] = {
+        settings: dict[str, t.ContainerValue] = {
             "max_memory_mb": 800,
             "max_cpu_percent": 75,
             "timeout_seconds": 300,
@@ -213,7 +213,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_with_complex_data(self) -> None:
         """Test ExecutionResult with complex output data."""
-        complex_data: dict[str, t.GeneralValueType] = {
+        complex_data: dict[str, t.ContainerValue] = {
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
@@ -241,7 +241,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_with_plugins(self) -> None:
         """Test registry with plugins."""
-        plugins: dict[str, t.GeneralValueType] = {
+        plugins: dict[str, t.ContainerValue] = {
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }

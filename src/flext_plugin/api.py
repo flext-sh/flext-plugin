@@ -58,7 +58,7 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Mapping[str, t.GeneralValueType],
+        context: Mapping[str, t.ContainerValue],
         execution_id: str | None = None,
     ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin by name with the given context."""

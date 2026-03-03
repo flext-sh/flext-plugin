@@ -29,7 +29,7 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
 
         async def test_handler(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             return f"processed: {event_data}"
 
@@ -45,10 +45,10 @@ class TestFlextPluginHandlers:
         """Test triggering events."""
         handlers = FlextPluginHandlers()
 
-        results: list[Mapping[str, t.GeneralValueType]] = []
+        results: list[Mapping[str, t.ContainerValue]] = []
 
         async def test_handler(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             results.append(event_data)
             return "handled"
@@ -86,13 +86,13 @@ class TestFlextPluginHandlers:
         results: list[str] = []
 
         async def handler_low(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             results.append("low")
             return "low"
 
         async def handler_high(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             results.append("high")
             return "high"
@@ -113,11 +113,11 @@ class TestFlextPluginHandlers:
 
         results: list[str] = []
 
-        async def handler1(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def handler1(event_data: Mapping[str, t.ContainerValue]) -> t.JsonValue:
             results.append("handler1")
             return "handler1"
 
-        async def handler2(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def handler2(event_data: Mapping[str, t.ContainerValue]) -> t.JsonValue:
             results.append("handler2")
             return "handler2"
 
@@ -156,13 +156,13 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
 
         async def failing_handler(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             msg = "Handler failed"
             raise ValueError(msg)
 
         async def working_handler(
-            event_data: Mapping[str, t.GeneralValueType],
+            event_data: Mapping[str, t.ContainerValue],
         ) -> t.JsonValue:
             return "success"
 

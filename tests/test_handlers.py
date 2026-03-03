@@ -38,8 +38,8 @@ class TestFlextPluginHandlers:
         """Test successful handler registration."""
 
         async def sample_handler(
-            event: Mapping[str, t.GeneralValueType],
-        ) -> t.GeneralValueType:
+            event: Mapping[str, t.ContainerValue],
+        ) -> t.ContainerValue:
             return event.get("key", "default")
 
         result = handlers.register_handler("test_event", sample_handler)
@@ -55,13 +55,13 @@ class TestFlextPluginHandlers:
         """Test handler registration with priority."""
 
         async def handler1(
-            event: Mapping[str, t.GeneralValueType],
-        ) -> t.GeneralValueType:
+            event: Mapping[str, t.ContainerValue],
+        ) -> t.ContainerValue:
             return "handler1"
 
         async def handler2(
-            event: Mapping[str, t.GeneralValueType],
-        ) -> t.GeneralValueType:
+            event: Mapping[str, t.ContainerValue],
+        ) -> t.ContainerValue:
             return "handler2"
 
         handlers.register_handler("priority_event", handler1, priority=1)
@@ -77,13 +77,13 @@ class TestFlextPluginHandlers:
         """Test registering multiple handlers for different events."""
 
         async def handler_a(
-            event: Mapping[str, t.GeneralValueType],
-        ) -> t.GeneralValueType:
+            event: Mapping[str, t.ContainerValue],
+        ) -> t.ContainerValue:
             return "a"
 
         async def handler_b(
-            event: Mapping[str, t.GeneralValueType],
-        ) -> t.GeneralValueType:
+            event: Mapping[str, t.ContainerValue],
+        ) -> t.ContainerValue:
             return "b"
 
         handlers.register_handler("event_a", handler_a)

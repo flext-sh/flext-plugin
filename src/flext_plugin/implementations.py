@@ -76,7 +76,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = FlextLogger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: dict[str, t.GeneralValueType] = {}
+            self._config: dict[str, t.ContainerValue] = {}
 
         @property
         def name(self) -> str:
@@ -88,7 +88,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: Mapping[str, t.GeneralValueType]) -> r[None]:
+        def configure(self, config: Mapping[str, t.ContainerValue]) -> r[None]:
             """Configure component with provided settings."""
             try:
                 # Store configuration
@@ -106,13 +106,13 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
-        def get_config(self) -> Mapping[str, t.GeneralValueType]:
+        def get_config(self) -> Mapping[str, t.ContainerValue]:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
         def initialize(
             self,
-            _context: Mapping[str, t.GeneralValueType],
+            _context: Mapping[str, t.ContainerValue],
         ) -> r[None]:
             """Initialize plugin with context.
 
@@ -174,7 +174,7 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail(f"Shutdown failed: {e!s}")
 
-        def get_info(self) -> Mapping[str, t.GeneralValueType]:
+        def get_info(self) -> Mapping[str, t.ContainerValue]:
             """Get plugin information.
 
             Returns:
@@ -200,7 +200,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            operations: Mapping[str, t.GeneralValueType] | None = None,
+            operations: Mapping[str, t.ContainerValue] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
@@ -218,8 +218,8 @@ class FlextPluginImplementations:
         def execute(
             self,
             operation: str,
-            _params: Mapping[str, t.GeneralValueType],
-        ) -> r[t.GeneralValueType]:
+            _params: Mapping[str, t.ContainerValue],
+        ) -> r[t.ContainerValue]:
             """Execute a plugin operation.
 
             Args:
@@ -231,9 +231,9 @@ class FlextPluginImplementations:
 
             """
             if not self._initialized:
-                return r[t.GeneralValueType].fail("Plugin not initialized")
+                return r[t.ContainerValue].fail("Plugin not initialized")
             if operation not in self._operations:
-                return r[t.GeneralValueType].fail(f"Unsupported operation: {operation}")
+                return r[t.ContainerValue].fail(f"Unsupported operation: {operation}")
             try:
                 self.logger.info(
                     f"Executing operation {operation} on plugin {self.name}",
@@ -243,7 +243,7 @@ class FlextPluginImplementations:
                     self._entity.record_execution(0.0, success=True)
                 # Execute operation (simplified for example)
                 result = self._operations[operation]
-                return r[t.GeneralValueType].ok(result)
+                return r[t.ContainerValue].ok(result)
             except (
                 ValueError,
                 TypeError,
@@ -257,7 +257,7 @@ class FlextPluginImplementations:
                 # Record error in entity if present
                 if self._entity:
                     self._entity.record_error(str(e))
-                return r[t.GeneralValueType].fail(f"Operation failed: {e!s}")
+                return r[t.ContainerValue].fail(f"Operation failed: {e!s}")
 
         def get_supported_operations(self) -> list[str]:
             """Get list of supported operations.
@@ -280,7 +280,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            connection_config: Mapping[str, t.GeneralValueType] | None = None,
+            connection_config: Mapping[str, t.ContainerValue] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
@@ -298,7 +298,7 @@ class FlextPluginImplementations:
             )
             self._connection_valid = False
 
-        def validate_config(self, config: Mapping[str, t.GeneralValueType]) -> r[None]:
+        def validate_config(self, config: Mapping[str, t.ContainerValue]) -> r[None]:
             """Validate plugin configuration.
 
             Args:
@@ -360,7 +360,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            schema: Mapping[str, t.GeneralValueType] | None = None,
+            schema: Mapping[str, t.ContainerValue] | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
@@ -375,7 +375,7 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def transform(self, data: t.GeneralValueType) -> r[t.GeneralValueType]:
+        def transform(self, data: t.ContainerValue) -> r[t.ContainerValue]:
             """Transform input data.
 
             Args:
@@ -389,12 +389,12 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 # Simplified transformation logic
                 if not isinstance(data, dict):
-                    return r[t.GeneralValueType].fail("Input data must be a dictionary")
+                    return r[t.ContainerValue].fail("Input data must be a dictionary")
                 # Apply transformation based on schema
-                transformed: dict[str, t.GeneralValueType] = dict(data)
+                transformed: dict[str, t.ContainerValue] = dict(data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
-                return r[t.GeneralValueType].ok(transformed)
+                return r[t.ContainerValue].ok(transformed)
             except (
                 ValueError,
                 TypeError,
@@ -405,9 +405,9 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Transformation failed")
-                return r[t.GeneralValueType].fail(f"Transform failed: {e!s}")
+                return r[t.ContainerValue].fail(f"Transform failed: {e!s}")
 
-        def get_schema(self) -> r[Mapping[str, t.GeneralValueType]]:
+        def get_schema(self) -> r[Mapping[str, t.ContainerValue]]:
             """Get transformation schema.
 
             Returns:
@@ -415,8 +415,8 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[Mapping[str, t.GeneralValueType]].fail("No schema defined")
-            return r[Mapping[str, t.GeneralValueType]].ok(self._schema)
+                return r[t.ConfigurationMapping].fail("No schema defined")
+            return r[t.ConfigurationMapping].ok(self._schema)
 
     class LoggerAdapter(FlextPluginProtocols.Plugin.LoggerProtocol):
         """Adapter to make FlextLogger compatible with LoggerProtocol."""
@@ -430,8 +430,8 @@ class FlextPluginImplementations:
         def critical(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log critical message."""
             self.logger.critical(message)
@@ -440,8 +440,8 @@ class FlextPluginImplementations:
         def error(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log error message."""
             self.logger.error(message)
@@ -450,8 +450,8 @@ class FlextPluginImplementations:
         def warning(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log warning message."""
             self.logger.warning(message)
@@ -460,8 +460,8 @@ class FlextPluginImplementations:
         def info(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log info message."""
             self.logger.info(message)
@@ -470,8 +470,8 @@ class FlextPluginImplementations:
         def debug(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log debug message."""
             self.logger.debug(message)
@@ -479,8 +479,8 @@ class FlextPluginImplementations:
         def trace(
             self,
             message: str,
-            *_args: t.GeneralValueType,
-            **_kwargs: t.GeneralValueType,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log trace message."""
             self.logger.debug(message)  # structlog doesn't have trace, use debug
@@ -489,7 +489,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            _context: Mapping[str, t.GeneralValueType] | None = None,
+            _context: Mapping[str, t.ContainerValue] | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -499,7 +499,7 @@ class FlextPluginImplementations:
             message: str,
             *,
             _exc_info: bool = True,
-            **_kwargs: t.GeneralValueType,
+            **_kwargs: t.ContainerValue,
         ) -> None:
             """Log exception message."""
             self.logger.error(message)
@@ -515,8 +515,8 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: FlextLogger,
-            config: Mapping[str, t.GeneralValueType] | None = None,
-            services: Mapping[str, t.GeneralValueType] | None = None,
+            config: Mapping[str, t.ContainerValue] | None = None,
+            services: Mapping[str, t.ContainerValue] | None = None,
         ) -> None:
             """Initialize the instance.
 
@@ -528,7 +528,7 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: dict[str, t.GeneralValueType] = dict(config) if config else {}
+            self._config: dict[str, t.ContainerValue] = dict(config) if config else {}
             self._services = services or {}
 
         @property
@@ -536,7 +536,7 @@ class FlextPluginImplementations:
             """Get logger for plugin."""
             return self._logger
 
-        def get_config(self) -> Mapping[str, t.GeneralValueType]:
+        def get_config(self) -> Mapping[str, t.ContainerValue]:
             """Get configuration for plugin."""
             return dict(self._config)
 
@@ -544,7 +544,7 @@ class FlextPluginImplementations:
             """Get logger instance for plugin."""
             return FlextPluginImplementations.LoggerAdapter(self.logger)
 
-        def get_service(self, service_name: str) -> r[t.GeneralValueType]:
+        def get_service(self, service_name: str) -> r[t.ContainerValue]:
             """Get service by name from container.
 
             Args:

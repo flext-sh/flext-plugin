@@ -93,7 +93,7 @@ class FlextPluginEntities:
             max_length=c.Plugin.Entities.PLUGIN_VERSION_MAX_LENGTH,
         )
         enabled: bool = Field(default=True, description="Whether plugin is enabled")
-        metadata: dict[str, t.GeneralValueType] = Field(
+        metadata: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Additional configuration metadata",
         )
@@ -149,7 +149,7 @@ class FlextPluginEntities:
         """
 
         success: bool = Field(description="Whether execution succeeded")
-        result_data: dict[str, t.GeneralValueType] = Field(
+        result_data: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Execution result data",
         )
@@ -201,7 +201,7 @@ class FlextPluginEntities:
             default=None,
             description="Last update timestamp",
         )
-        domain_data: dict[str, t.GeneralValueType] = Field(
+        domain_data: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Extensible domain-specific data for composition",
         )

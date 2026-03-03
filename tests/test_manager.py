@@ -47,7 +47,7 @@ class TestFlextPluginServiceStubBridges:
             def discover_plugins(
                 self,
                 paths: list[str],
-            ) -> r[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> r[list[Mapping[str, t.ContainerValue]]]:
                 _ = paths
                 return r.ok([
                     {
@@ -63,7 +63,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
+            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -73,7 +73,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
+            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -114,7 +114,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[Mapping[str, t.GeneralValueType]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
                 return r.ok(
                     {
@@ -130,7 +130,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.GeneralValueType) -> r[bool]:
+            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -140,7 +140,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.GeneralValueType) -> r[bool]:
+            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -180,7 +180,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[Mapping[str, t.GeneralValueType]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
                 return r.ok(
                     {
@@ -199,8 +199,8 @@ class TestFlextPluginServiceStubBridges:
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: Mapping[str, t.GeneralValueType],
-            ) -> r[Mapping[str, t.GeneralValueType]]:
+                _context: Mapping[str, t.ContainerValue],
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 self.calls.append(_plugin_name)
                 return r.ok({"status": "executed", "plugin": _plugin_name})
 
@@ -227,7 +227,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[Mapping[str, t.GeneralValueType]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
                 self._loaded_plugins["stub_plugin"] = True
                 return r.ok(

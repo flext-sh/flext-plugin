@@ -109,8 +109,8 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     @staticmethod
     def _to_general_mapping(
-        value: t.GeneralValueType,
-    ) -> dict[str, t.GeneralValueType]:
+        value: t.ContainerValue,
+    ) -> dict[str, t.ContainerValue]:
         if not isinstance(value, Mapping):
             return {}
         return {key: item for key, item in value.items() if isinstance(key, str)}
@@ -540,7 +540,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[Mapping[str, t.GeneralValueType]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -581,7 +581,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[Mapping[str, t.GeneralValueType]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -617,7 +617,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
             return r.fail(f"Health check error: {e!s}")
 
-    def get_service_status(self) -> Mapping[str, t.GeneralValueType]:
+    def get_service_status(self) -> Mapping[str, t.ContainerValue]:
         """Get the current status of the plugin service.
 
         Returns:
@@ -789,7 +789,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        config: Mapping[str, t.GeneralValueType],
+        config: Mapping[str, t.ContainerValue],
     ) -> r[bool]:
         """Update configuration for a plugin.
 

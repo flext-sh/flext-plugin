@@ -48,7 +48,7 @@ class FlextPluginProtocols(FlextProtocols):
             def load_plugin(
                 self,
                 _plugin_path: str,
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Load a plugin from the specified path."""
                 # INTERFACE
                 # INTERFACE
@@ -78,7 +78,7 @@ class FlextPluginProtocols(FlextProtocols):
             def discover_plugins(
                 self,
                 paths: list[str],
-            ) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextResult[list[Mapping[str, t.ContainerValue]]]:
                 """Discover plugins at the given paths."""
                 # INTERFACE
                 ...
@@ -86,14 +86,14 @@ class FlextPluginProtocols(FlextProtocols):
             def discover_plugin(
                 self,
                 _plugin_path: str,
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Discover a single plugin at the specified path."""
                 # INTERFACE
                 ...
 
             def validate_plugin(
                 self,
-                _plugin_data: Mapping[str, t.GeneralValueType],
+                _plugin_data: Mapping[str, t.ContainerValue],
             ) -> FlextResult[bool]:
                 """Validate plugin discovery data."""
                 # INTERFACE
@@ -103,7 +103,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def register_plugin(self, _plugin: t.GeneralValueType) -> FlextResult[bool]:
+            def register_plugin(self, _plugin: t.ContainerValue) -> FlextResult[bool]:
                 """Register a plugin."""
                 # INTERFACE
                 ...
@@ -116,14 +116,14 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin(
                 self,
                 _plugin_name: str,
-            ) -> FlextResult[t.GeneralValueType | None]:
+            ) -> FlextResult[t.ContainerValue | None]:
                 """Get a registered plugin by name."""
                 # INTERFACE
                 ...
 
             def list_plugins(
                 self,
-            ) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextResult[list[Mapping[str, t.ContainerValue]]]:
                 """List all registered plugins."""
                 # INTERFACE
                 ...
@@ -140,8 +140,8 @@ class FlextPluginProtocols(FlextProtocols):
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: Mapping[str, t.GeneralValueType],
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+                _context: Mapping[str, t.ContainerValue],
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Execute a plugin with the given context."""
                 # INTERFACE
                 ...
@@ -167,7 +167,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def validate_plugin_security(
                 self,
-                _plugin: t.GeneralValueType,
+                _plugin: t.ContainerValue,
             ) -> FlextResult[bool]:
                 """Validate plugin security compliance."""
                 # INTERFACE
@@ -185,7 +185,7 @@ class FlextPluginProtocols(FlextProtocols):
             def scan_plugin_security(
                 self,
                 _plugin_path: str,
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Scan plugin for security vulnerabilities."""
                 # INTERFACE
                 ...
@@ -241,7 +241,7 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin_metrics(
                 self,
                 _plugin_name: str,
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Get metrics for a plugin."""
                 # INTERFACE
                 ...
@@ -249,7 +249,7 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin_health(
                 self,
                 _plugin_name: str,
-            ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
                 """Get health status of a plugin."""
                 # INTERFACE
                 ...
@@ -402,8 +402,8 @@ class FlextPluginProtocols(FlextProtocols):
             def critical(
                 self,
                 message: str,
-                *args: t.GeneralValueType,
-                **kwargs: t.GeneralValueType,
+                *args: t.ContainerValue,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Log critical message."""
                 # INTERFACE
@@ -412,8 +412,8 @@ class FlextPluginProtocols(FlextProtocols):
             def error(
                 self,
                 message: str,
-                *args: t.GeneralValueType,
-                **kwargs: t.GeneralValueType,
+                *args: t.ContainerValue,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Log error message."""
                 # INTERFACE
@@ -422,8 +422,8 @@ class FlextPluginProtocols(FlextProtocols):
             def warning(
                 self,
                 message: str,
-                *args: t.GeneralValueType,
-                **kwargs: t.GeneralValueType,
+                *args: t.ContainerValue,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Log warning message."""
                 # INTERFACE
@@ -432,8 +432,8 @@ class FlextPluginProtocols(FlextProtocols):
             def info(
                 self,
                 message: str,
-                *args: t.GeneralValueType,
-                **kwargs: t.GeneralValueType,
+                *args: t.ContainerValue,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Log info message."""
                 # INTERFACE
@@ -442,8 +442,8 @@ class FlextPluginProtocols(FlextProtocols):
             def debug(
                 self,
                 message: str,
-                *args: t.GeneralValueType,
-                **kwargs: t.GeneralValueType,
+                *args: t.ContainerValue,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Log debug message."""
                 # INTERFACE
@@ -460,8 +460,8 @@ class FlextPluginProtocols(FlextProtocols):
 
             def load_plugin(
                 self,
-                plugin_path: str | t.GeneralValueType,
-            ) -> FlextResult[t.GeneralValueType]:
+                plugin_path: str | t.ContainerValue,
+            ) -> FlextResult[t.ContainerValue]:
                 """Load plugin from path."""
                 # INTERFACE
                 ...
@@ -470,12 +470,12 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistryProtocol(Protocol):
             """Protocol for plugin registry interface."""
 
-            def register(self, plugin: t.GeneralValueType) -> FlextResult[None]:
+            def register(self, plugin: t.ContainerValue) -> FlextResult[None]:
                 """Register a plugin."""
                 # INTERFACE
                 ...
 
-            def get_plugin(self, plugin_name: str) -> FlextResult[t.GeneralValueType]:
+            def get_plugin(self, plugin_name: str) -> FlextResult[t.ContainerValue]:
                 """Get plugin by name."""
                 # INTERFACE
                 ...

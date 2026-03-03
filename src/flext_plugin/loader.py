@@ -254,7 +254,7 @@ class FlextPluginLoader:
     def get_plugin_info(
         self,
         plugin_name: str,
-    ) -> FlextResult[Mapping[str, t.GeneralValueType]]:
+    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
         """Get detailed information about a loaded plugin.
 
         Args:
