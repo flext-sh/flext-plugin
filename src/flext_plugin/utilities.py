@@ -316,7 +316,9 @@ class FlextPluginUtilities(FlextUtilities):
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: dict[str, object] = (
-                    dict(last_modified_raw) if isinstance(last_modified_raw, dict) else {}
+                    dict(last_modified_raw)
+                    if isinstance(last_modified_raw, dict)
+                    else {}
                 )
 
                 changed_files = []

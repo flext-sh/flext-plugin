@@ -28,7 +28,9 @@ class TestFlextPluginHandlers:
         """Test registering event handlers."""
         handlers = FlextPluginHandlers()
 
-        async def test_handler(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def test_handler(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             return f"processed: {event_data}"
 
         result = handlers.register_handler("test_event", test_handler)
@@ -45,7 +47,9 @@ class TestFlextPluginHandlers:
 
         results: list[Mapping[str, t.GeneralValueType]] = []
 
-        async def test_handler(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def test_handler(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             results.append(event_data)
             return "handled"
 
@@ -81,11 +85,15 @@ class TestFlextPluginHandlers:
 
         results: list[str] = []
 
-        async def handler_low(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def handler_low(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             results.append("low")
             return "low"
 
-        async def handler_high(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def handler_high(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             results.append("high")
             return "high"
 
@@ -147,11 +155,15 @@ class TestFlextPluginHandlers:
         """Test error handling in event handlers."""
         handlers = FlextPluginHandlers()
 
-        async def failing_handler(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def failing_handler(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             msg = "Handler failed"
             raise ValueError(msg)
 
-        async def working_handler(event_data: Mapping[str, t.GeneralValueType]) -> t.JsonValue:
+        async def working_handler(
+            event_data: Mapping[str, t.GeneralValueType],
+        ) -> t.JsonValue:
             return "success"
 
         handlers.register_handler("test", failing_handler)

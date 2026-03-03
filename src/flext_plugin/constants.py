@@ -383,6 +383,7 @@ class FlextPluginConstants(FlextConstants):
             def is_error_state(self) -> bool:
                 """Check if status is an error state."""
                 return self in self.get_error_statuses()
+
         # ═══════════════════════════════════════════════════════════════════
         # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)
         # ═══════════════════════════════════════════════════════════════════
