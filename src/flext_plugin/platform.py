@@ -407,7 +407,7 @@ class FlextPluginPlatform:
                         }
                         return FlextResult.ok(plugin_dict)
                     return FlextResult.fail("Invalid load data format")
-                return FlextResult[dict[str, t.ContainerValue]].fail(
+                return FlextResult[t.ConfigurationMapping].fail(
                     load_result.error or "Load failed",
                 )
 
