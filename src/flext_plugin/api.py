@@ -46,15 +46,6 @@ class FlextPluginApi:
             result.error or "Discovery failed",
         )
 
-    def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
-        """Load a plugin from the given path."""
-        result = self.platform.load_plugin(_plugin_path)
-        if result.is_failure:
-            return r[FlextPluginPlatform.Plugin].fail(result.error or "Load failed")
-        plugin = result.value
-        self.logger.info(f"Loaded plugin: {plugin.name}")
-        return r[FlextPluginPlatform.Plugin].ok(plugin)
-
     def execute_plugin(
         self,
         plugin_name: str,
@@ -64,14 +55,36 @@ class FlextPluginApi:
         """Execute a plugin by name with the given context."""
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 
+    # Plugin accessors
+    def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
+        """Get a plugin by name."""
+        return self.platform.get_plugin(_plugin_name)
+
+    def get_plugin_status(self, _plugin_name: str) -> str | None:
+        """Get the status of a plugin by name."""
+        return self.platform.get_plugin_status(_plugin_name)
+
+    def is_plugin_active(self, _plugin_name: str) -> bool:
+        """Check if a plugin is active."""
+        return self.platform.is_plugin_active(_plugin_name)
+
+    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
+        """List all registered plugins."""
+        return self.platform.list_plugins()
+
+    def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
+        """Load a plugin from the given path."""
+        result = self.platform.load_plugin(_plugin_path)
+        if result.is_failure:
+            return r[FlextPluginPlatform.Plugin].fail(result.error or "Load failed")
+        plugin = result.value
+        self.logger.info(f"Loaded plugin: {plugin.name}")
+        return r[FlextPluginPlatform.Plugin].ok(plugin)
+
     # Direct delegation with railway patterns
     def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin) -> r[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
-
-    def unregister_plugin(self, _plugin_name: str) -> r[bool]:
-        """Unregister a plugin by name."""
-        return self.platform.unregister_plugin(_plugin_name)
 
     # Hot reload operations
     def start_hot_reload(self, paths: list[str]) -> r[bool]:
@@ -82,19 +95,6 @@ class FlextPluginApi:
         """Stop hot reload monitoring."""
         return self.platform.stop_hot_reload()
 
-    # Plugin accessors
-    def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
-        """Get a plugin by name."""
-        return self.platform.get_plugin(_plugin_name)
-
-    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
-        """List all registered plugins."""
-        return self.platform.list_plugins()
-
-    def get_plugin_status(self, _plugin_name: str) -> str | None:
-        """Get the status of a plugin by name."""
-        return self.platform.get_plugin_status(_plugin_name)
-
-    def is_plugin_active(self, _plugin_name: str) -> bool:
-        """Check if a plugin is active."""
-        return self.platform.is_plugin_active(_plugin_name)
+    def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+        """Unregister a plugin by name."""
+        return self.platform.unregister_plugin(_plugin_name)

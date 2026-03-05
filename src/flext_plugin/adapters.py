@@ -68,6 +68,19 @@ class FlextPluginAdapters:
         """File system plugin discovery - synchronous."""
 
         @override
+        def discover_plugin(
+            self,
+            _plugin_path: str,
+        ) -> r[Mapping[str, t.ContainerValue]]:
+            """Discover single plugin at path."""
+            return self._execute_safe(
+                lambda: self._discovery_data_to_dict(
+                    self._discover_single(_plugin_path),
+                ),
+                f"Failed to discover plugin at {_plugin_path}",
+            )
+
+        @override
         def discover_plugins(
             self,
             paths: list[str],
@@ -78,6 +91,17 @@ class FlextPluginAdapters:
                     self._discovery_data_to_dict(d) for d in self._discover_all(paths)
                 ],
                 "Plugin discovery failed",
+            )
+
+        @override
+        def validate_plugin(
+            self,
+            _plugin_data: Mapping[str, t.ContainerValue],
+        ) -> r[bool]:
+            """Validate discovered plugin data."""
+            return self._execute_safe(
+                lambda: True,  # Validates if convertible to model
+                "Plugin validation failed",
             )
 
         def _discover_all(
@@ -102,79 +126,6 @@ class FlextPluginAdapters:
             self.logger.info(f"Discovered {len(discovered)} plugins")
             return discovered
 
-        @override
-        def discover_plugin(
-            self,
-            _plugin_path: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
-            """Discover single plugin at path."""
-            return self._execute_safe(
-                lambda: self._discovery_data_to_dict(
-                    self._discover_single(_plugin_path),
-                ),
-                f"Failed to discover plugin at {_plugin_path}",
-            )
-
-        def _discover_single(
-            self,
-            plugin_path: str,
-        ) -> m.Plugin.DiscoveryData:
-            """Internal: discover single plugin."""
-            path_obj = Path(plugin_path).expanduser().resolve()
-            if not path_obj.exists():
-                error_msg = f"Plugin path does not exist: {plugin_path}"
-                raise FileNotFoundError(error_msg)
-
-            data = self._discover_single_file(path_obj)
-            if not data:
-                error_msg = f"Failed to discover plugin at: {plugin_path}"
-                raise ValueError(error_msg)
-            return data
-
-        def _discovery_data_to_dict(
-            self,
-            data: m.Plugin.DiscoveryData,
-        ) -> Mapping[str, t.ContainerValue]:
-            """Convert DiscoveryData model to JsonDict."""
-            return {
-                "name": data.name,
-                "version": data.version,
-                "path": str(data.path),
-                "discovery_type": data.discovery_type,
-                "discovery_method": data.discovery_method,
-            }
-
-        @override
-        def validate_plugin(
-            self,
-            _plugin_data: Mapping[str, t.ContainerValue],
-        ) -> r[bool]:
-            """Validate discovered plugin data."""
-            return self._execute_safe(
-                lambda: True,  # Validates if convertible to model
-                "Plugin validation failed",
-            )
-
-        def _discover_single_file(
-            self,
-            path: Path,
-        ) -> m.Plugin.DiscoveryData | None:
-            """Internal: discover single file."""
-            if path.suffix != ".py":
-                return None
-
-            try:
-                return m.Plugin.DiscoveryData(
-                    name=path.stem,
-                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
-                    path=path,
-                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
-                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
-                )
-            except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
-                return None
-
         def _discover_directory(
             self,
             path: Path,
@@ -198,6 +149,55 @@ class FlextPluginAdapters:
 
             return discovered
 
+        def _discover_single(
+            self,
+            plugin_path: str,
+        ) -> m.Plugin.DiscoveryData:
+            """Internal: discover single plugin."""
+            path_obj = Path(plugin_path).expanduser().resolve()
+            if not path_obj.exists():
+                error_msg = f"Plugin path does not exist: {plugin_path}"
+                raise FileNotFoundError(error_msg)
+
+            data = self._discover_single_file(path_obj)
+            if not data:
+                error_msg = f"Failed to discover plugin at: {plugin_path}"
+                raise ValueError(error_msg)
+            return data
+
+        def _discover_single_file(
+            self,
+            path: Path,
+        ) -> m.Plugin.DiscoveryData | None:
+            """Internal: discover single file."""
+            if path.suffix != ".py":
+                return None
+
+            try:
+                return m.Plugin.DiscoveryData(
+                    name=path.stem,
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    path=path,
+                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
+                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                )
+            except ValueError:
+                self.logger.exception("Failed to create discovery data for %s", path)
+                return None
+
+        def _discovery_data_to_dict(
+            self,
+            data: m.Plugin.DiscoveryData,
+        ) -> Mapping[str, t.ContainerValue]:
+            """Convert DiscoveryData model to JsonDict."""
+            return {
+                "name": data.name,
+                "version": data.version,
+                "path": str(data.path),
+                "discovery_type": data.discovery_type,
+                "discovery_method": data.discovery_method,
+            }
+
     class DynamicLoaderAdapter(BaseAdapter, p.Plugin.PluginLoader):
         """Dynamic plugin loading - synchronous."""
 
@@ -205,6 +205,16 @@ class FlextPluginAdapters:
             """Initialize the synchronous plugin adapter."""
             super().__init__()
             self._loaded_plugins: dict[str, object] = {}
+
+        @override
+        def get_loaded_plugins(self) -> list[str]:
+            """Get list of loaded plugins."""
+            return list(self._loaded_plugins.keys())
+
+        @override
+        def is_plugin_loaded(self, _plugin_name: str) -> bool:
+            """Check if a plugin is loaded."""
+            return _plugin_name in self._loaded_plugins
 
         @override
         def load_plugin(
@@ -215,6 +225,22 @@ class FlextPluginAdapters:
             return self._execute_safe(
                 lambda: self._load_module_as_dict(_plugin_path),
                 f"Loading error: {_plugin_path}",
+            )
+
+        @override
+        def unload_plugin(self, _plugin_name: str) -> r[bool]:
+            """Unload a plugin by name."""
+
+            def _unload() -> bool:
+                if _plugin_name not in self._loaded_plugins:
+                    error_msg = f"Plugin not loaded: {_plugin_name}"
+                    raise ValueError(error_msg)
+                del self._loaded_plugins[_plugin_name]
+                return True
+
+            return self._execute_safe(
+                _unload,
+                f"Failed to unload plugin {_plugin_name}",
             )
 
         def _load_module(self, _plugin_path: str) -> m.Plugin.LoadData:
@@ -263,32 +289,6 @@ class FlextPluginAdapters:
                 "loaded_at": data.loaded_at.isoformat(),
             }
 
-        @override
-        def unload_plugin(self, _plugin_name: str) -> r[bool]:
-            """Unload a plugin by name."""
-
-            def _unload() -> bool:
-                if _plugin_name not in self._loaded_plugins:
-                    error_msg = f"Plugin not loaded: {_plugin_name}"
-                    raise ValueError(error_msg)
-                del self._loaded_plugins[_plugin_name]
-                return True
-
-            return self._execute_safe(
-                _unload,
-                f"Failed to unload plugin {_plugin_name}",
-            )
-
-        @override
-        def is_plugin_loaded(self, _plugin_name: str) -> bool:
-            """Check if a plugin is loaded."""
-            return _plugin_name in self._loaded_plugins
-
-        @override
-        def get_loaded_plugins(self) -> list[str]:
-            """Get list of loaded plugins."""
-            return list(self._loaded_plugins.keys())
-
     class PluginExecutorAdapter(BaseAdapter, p.Plugin.PluginExecution):
         """Plugin execution - synchronous."""
 
@@ -305,11 +305,6 @@ class FlextPluginAdapters:
             )
 
         @override
-        def stop_execution(self, _execution_id: str) -> r[bool]:
-            """Stop plugin execution."""
-            return r.ok(True)
-
-        @override
         def get_execution_status(self, _execution_id: str) -> r[str]:
             """Get execution status."""
             return r.ok(c.Plugin.Execution.STATE_COMPLETED)
@@ -319,13 +314,13 @@ class FlextPluginAdapters:
             """List running executions."""
             return []
 
+        @override
+        def stop_execution(self, _execution_id: str) -> r[bool]:
+            """Stop plugin execution."""
+            return r.ok(True)
+
     class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
         """Plugin security validation - synchronous."""
-
-        @override
-        def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
-            """Validate plugin for security."""
-            return r.ok(True)
 
         @override
         def check_permissions(
@@ -337,6 +332,11 @@ class FlextPluginAdapters:
             return r.ok(True)
 
         @override
+        def get_security_level(self, _plugin_name: str) -> r[str]:
+            """Get security level."""
+            return r.ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
+
+        @override
         def scan_plugin_security(
             self,
             _plugin_path: str,
@@ -345,9 +345,9 @@ class FlextPluginAdapters:
             return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
 
         @override
-        def get_security_level(self, _plugin_name: str) -> r[str]:
-            """Get security level."""
-            return r.ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
+        def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
+            """Validate plugin for security."""
+            return r.ok(True)
 
     class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
         """In-memory plugin registry - synchronous."""
@@ -356,6 +356,21 @@ class FlextPluginAdapters:
             """Initialize registry adapter."""
             super().__init__()
             self._plugins: dict[str, t.ContainerValue] = {}
+
+        @override
+        def get_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
+            """Get plugin from registry."""
+            return r.ok(None)
+
+        @override
+        def is_plugin_registered(self, _plugin_name: str) -> bool:
+            """Check if plugin is registered."""
+            return False
+
+        @override
+        def list_plugins(self) -> r[list[Mapping[str, t.ContainerValue]]]:
+            """List all plugins in registry."""
+            return r.ok([])
 
         @override
         def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
@@ -367,41 +382,8 @@ class FlextPluginAdapters:
             """Unregister plugin from registry."""
             return r.ok(True)
 
-        @override
-        def get_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
-            """Get plugin from registry."""
-            return r.ok(None)
-
-        @override
-        def list_plugins(self) -> r[list[Mapping[str, t.ContainerValue]]]:
-            """List all plugins in registry."""
-            return r.ok([])
-
-        @override
-        def is_plugin_registered(self, _plugin_name: str) -> bool:
-            """Check if plugin is registered."""
-            return False
-
     class PluginMonitoringAdapter(BaseAdapter, p.Plugin.PluginMonitoring):
         """Plugin monitoring - synchronous."""
-
-        @override
-        def start_monitoring(self, _plugin_name: str) -> r[bool]:
-            """Start monitoring plugin."""
-            return r.ok(True)
-
-        @override
-        def stop_monitoring(self, _plugin_name: str) -> r[bool]:
-            """Stop monitoring plugin."""
-            return r.ok(True)
-
-        @override
-        def get_plugin_metrics(
-            self,
-            _plugin_name: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
-            """Get plugin metrics."""
-            return r.ok({"execution_count": 0, "error_count": 0})
 
         @override
         def get_plugin_health(
@@ -412,9 +394,27 @@ class FlextPluginAdapters:
             return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
+        def get_plugin_metrics(
+            self,
+            _plugin_name: str,
+        ) -> r[Mapping[str, t.ContainerValue]]:
+            """Get plugin metrics."""
+            return r.ok({"execution_count": 0, "error_count": 0})
+
+        @override
         def is_monitoring(self, _plugin_name: str) -> bool:
             """Check if plugin is being monitored."""
             return False
+
+        @override
+        def start_monitoring(self, _plugin_name: str) -> r[bool]:
+            """Start monitoring plugin."""
+            return r.ok(True)
+
+        @override
+        def stop_monitoring(self, _plugin_name: str) -> r[bool]:
+            """Stop monitoring plugin."""
+            return r.ok(True)
 
 
 __all__ = ["FlextPluginAdapters"]

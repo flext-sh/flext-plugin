@@ -45,6 +45,238 @@ class FlextPluginHandlers:
         self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
         self._event_history: list[dict[str, t.ContainerValue]] = []
 
+    def clear_event_history(self) -> int:
+        """Clear event history.
+
+        Returns:
+        Number of events cleared
+
+        """
+        count = len(self._event_history)
+        self._event_history.clear()
+        self.logger.info("Cleared %s events from history", count)
+        return count
+
+    def get_event_history(
+        self,
+        event_type: str | None = None,
+        limit: int = 100,
+    ) -> list[Mapping[str, t.ContainerValue]]:
+        """Get event history, optionally filtered by event type.
+
+        Args:
+        event_type: Optional event type to filter by
+        limit: Maximum number of events to return
+
+        Returns:
+        List of event records
+
+        """
+        history = self._event_history
+
+        if event_type:
+            history = [e for e in history if e["event_type"] == event_type]
+
+        return [
+            e
+            for e in self._event_history
+            if limit <= 0 or e in self._event_history[-limit:]
+        ]
+
+    def get_handler_count(self, event_type: str) -> int:
+        """Get count of handlers for a specific event type.
+
+        Args:
+        event_type: Type of event
+
+        Returns:
+        Number of handlers registered for the event type
+
+        """
+        return len(self._handlers.get(event_type, []))
+
+    def get_handler_status(self) -> Mapping[str, t.ContainerValue]:
+        """Get the current status of the event handlers.
+
+        Returns:
+        Dictionary containing handler status information
+
+        """
+        return {
+            "total_event_types": len(self._handlers),
+            "total_handlers": sum(
+                len(handlers) for handlers in self._handlers.values()
+            ),
+            "event_history_size": len(self._event_history),
+            "registered_handlers": self.get_registered_handlers(),
+        }
+
+    def get_registered_handlers(self) -> Mapping[str, int]:
+        """Get count of registered handlers by event type.
+
+        Returns:
+        Dictionary mapping event types to handler counts
+
+        """
+        return {
+            event_type: len(handlers) for event_type, handlers in self._handlers.items()
+        }
+
+    # Built-in event handlers for common plugin operations
+
+    async def handle_plugin_discovered(
+        self,
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
+        """Handle plugin discovered event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", "unknown")
+        name_str = str(plugin_name)
+        self.logger.info("Plugin discovered: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    async def handle_plugin_error(
+        self,
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
+        """Handle plugin error event.
+
+        Args:
+        event_data: Event data containing error information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", "unknown")
+        error_message = event_data.get("error_message", "Unknown error")
+
+        # Convert to proper types for logger
+        name_str = str(plugin_name)
+        error_str = str(error_message)
+
+        self.logger.error("Plugin error: %s - %s", name_str, error_str)
+        return {
+            "success": True,
+            "plugin_name": plugin_name,
+            "error_message": error_message,
+        }
+
+    async def handle_plugin_executed(
+        self,
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
+        """Handle plugin executed event.
+
+        Args:
+        event_data: Event data containing execution information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", "unknown")
+        execution_id = event_data.get("execution_id", "unknown")
+        success = event_data.get("success", False)
+
+        # Convert to proper types for logger
+        name_str = str(plugin_name)
+        exec_str = str(execution_id)
+        success_str = str(success)
+
+        self.logger.info(
+            "Plugin executed: %s (execution: %s, success: %s)",
+            name_str,
+            exec_str,
+            success_str,
+        )
+        return {
+            "success": True,
+            "plugin_name": plugin_name,
+            "execution_id": execution_id,
+            "execution_success": success,
+        }
+
+    async def handle_plugin_loaded(
+        self,
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
+        """Handle plugin loaded event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", "unknown")
+        name_str = str(plugin_name)
+        self.logger.info("Plugin loaded: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    async def handle_plugin_unloaded(
+        self,
+        event_data: Mapping[str, t.ContainerValue],
+    ) -> Mapping[str, t.ContainerValue]:
+        """Handle plugin unloaded event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", "unknown")
+        name_str = str(plugin_name)
+        self.logger.info("Plugin unloaded: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    def register_default_handlers(self) -> FlextResult[bool]:
+        """Register default event handlers for common plugin operations.
+
+        Returns:
+        FlextResult indicating success or failure
+
+        """
+        try:
+            # Register built-in handlers
+            handlers_to_register = [
+                ("plugin_discovered", self.handle_plugin_discovered),
+                ("plugin_loaded", self.handle_plugin_loaded),
+                ("plugin_executed", self.handle_plugin_executed),
+                ("plugin_error", self.handle_plugin_error),
+                ("plugin_unloaded", self.handle_plugin_unloaded),
+            ]
+
+            for event_type, handler in handlers_to_register:
+                result = self.register_handler(event_type, handler)
+                if result.is_failure:
+                    return FlextResult.fail(f"Failed to register {event_type} handler")
+
+            self.logger.info("Registered default event handlers")
+            return FlextResult.ok(True)
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to register default handlers")
+            return FlextResult.fail(f"Default handler registration error: {e!s}")
+
     def register_handler(
         self,
         event_type: str,
@@ -93,53 +325,6 @@ class FlextPluginHandlers:
         ) as e:
             self.logger.exception("Failed to register handler for %s", event_type)
             return FlextResult.fail(f"Handler registration error: {e!s}")
-
-    def unregister_handler(
-        self,
-        event_type: str,
-        handler: t.Handlers.EventHandler,
-    ) -> FlextResult[bool]:
-        """Unregister an event handler.
-
-        Args:
-        event_type: Type of event
-        handler: Handler function to unregister
-
-        Returns:
-        FlextResult indicating success or failure
-
-        """
-        try:
-            if event_type not in self._handlers:
-                return FlextResult.fail(
-                    f"No handlers registered for event type: {event_type}",
-                )
-
-            # Find and remove handler
-            original_count = len(self._handlers[event_type])
-            self._handlers[event_type] = [
-                h for h in self._handlers[event_type] if h.handler != handler
-            ]
-
-            if len(self._handlers[event_type]) == original_count:
-                return FlextResult.fail(
-                    f"Handler not found for event type: {event_type}",
-                )
-
-            self.logger.debug("Unregistered handler for event type: %s", event_type)
-            return FlextResult.ok(True)
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to unregister handler for %s", event_type)
-            return FlextResult.fail(f"Handler unregistration error: {e!s}")
 
     async def trigger_event(
         self,
@@ -208,6 +393,53 @@ class FlextPluginHandlers:
             self.logger.exception("Failed to trigger event %s", event_type)
             return FlextResult.fail(f"Event triggering error: {e!s}")
 
+    def unregister_handler(
+        self,
+        event_type: str,
+        handler: t.Handlers.EventHandler,
+    ) -> FlextResult[bool]:
+        """Unregister an event handler.
+
+        Args:
+        event_type: Type of event
+        handler: Handler function to unregister
+
+        Returns:
+        FlextResult indicating success or failure
+
+        """
+        try:
+            if event_type not in self._handlers:
+                return FlextResult.fail(
+                    f"No handlers registered for event type: {event_type}",
+                )
+
+            # Find and remove handler
+            original_count = len(self._handlers[event_type])
+            self._handlers[event_type] = [
+                h for h in self._handlers[event_type] if h.handler != handler
+            ]
+
+            if len(self._handlers[event_type]) == original_count:
+                return FlextResult.fail(
+                    f"Handler not found for event type: {event_type}",
+                )
+
+            self.logger.debug("Unregistered handler for event type: %s", event_type)
+            return FlextResult.ok(True)
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to unregister handler for %s", event_type)
+            return FlextResult.fail(f"Handler unregistration error: {e!s}")
+
     async def _execute_handler(
         self,
         handler: t.Handlers.EventHandler,
@@ -240,6 +472,15 @@ class FlextPluginHandlers:
             self.logger.exception("Handler execution failed")
             raise
 
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp as ISO string.
+
+        Returns:
+        Current timestamp as ISO string
+
+        """
+        return datetime.now(UTC).isoformat()
+
     def _is_async_function(self, func: t.ContainerValue) -> bool:
         """Check if a function is async.
 
@@ -251,247 +492,6 @@ class FlextPluginHandlers:
 
         """
         return inspect.iscoroutinefunction(func)
-
-    def _get_current_timestamp(self) -> str:
-        """Get current timestamp as ISO string.
-
-        Returns:
-        Current timestamp as ISO string
-
-        """
-        return datetime.now(UTC).isoformat()
-
-    def get_event_history(
-        self,
-        event_type: str | None = None,
-        limit: int = 100,
-    ) -> list[Mapping[str, t.ContainerValue]]:
-        """Get event history, optionally filtered by event type.
-
-        Args:
-        event_type: Optional event type to filter by
-        limit: Maximum number of events to return
-
-        Returns:
-        List of event records
-
-        """
-        history = self._event_history
-
-        if event_type:
-            history = [e for e in history if e["event_type"] == event_type]
-
-        return [
-            e
-            for e in self._event_history
-            if limit <= 0 or e in self._event_history[-limit:]
-        ]
-
-    def clear_event_history(self) -> int:
-        """Clear event history.
-
-        Returns:
-        Number of events cleared
-
-        """
-        count = len(self._event_history)
-        self._event_history.clear()
-        self.logger.info("Cleared %s events from history", count)
-        return count
-
-    def get_registered_handlers(self) -> Mapping[str, int]:
-        """Get count of registered handlers by event type.
-
-        Returns:
-        Dictionary mapping event types to handler counts
-
-        """
-        return {
-            event_type: len(handlers) for event_type, handlers in self._handlers.items()
-        }
-
-    def get_handler_count(self, event_type: str) -> int:
-        """Get count of handlers for a specific event type.
-
-        Args:
-        event_type: Type of event
-
-        Returns:
-        Number of handlers registered for the event type
-
-        """
-        return len(self._handlers.get(event_type, []))
-
-    # Built-in event handlers for common plugin operations
-
-    async def handle_plugin_discovered(
-        self,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> Mapping[str, t.ContainerValue]:
-        """Handle plugin discovered event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name)
-        self.logger.info("Plugin discovered: %s", name_str)
-        return {"success": True, "plugin_name": plugin_name}
-
-    async def handle_plugin_loaded(
-        self,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> Mapping[str, t.ContainerValue]:
-        """Handle plugin loaded event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name)
-        self.logger.info("Plugin loaded: %s", name_str)
-        return {"success": True, "plugin_name": plugin_name}
-
-    async def handle_plugin_executed(
-        self,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> Mapping[str, t.ContainerValue]:
-        """Handle plugin executed event.
-
-        Args:
-        event_data: Event data containing execution information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", "unknown")
-        execution_id = event_data.get("execution_id", "unknown")
-        success = event_data.get("success", False)
-
-        # Convert to proper types for logger
-        name_str = str(plugin_name)
-        exec_str = str(execution_id)
-        success_str = str(success)
-
-        self.logger.info(
-            "Plugin executed: %s (execution: %s, success: %s)",
-            name_str,
-            exec_str,
-            success_str,
-        )
-        return {
-            "success": True,
-            "plugin_name": plugin_name,
-            "execution_id": execution_id,
-            "execution_success": success,
-        }
-
-    async def handle_plugin_error(
-        self,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> Mapping[str, t.ContainerValue]:
-        """Handle plugin error event.
-
-        Args:
-        event_data: Event data containing error information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", "unknown")
-        error_message = event_data.get("error_message", "Unknown error")
-
-        # Convert to proper types for logger
-        name_str = str(plugin_name)
-        error_str = str(error_message)
-
-        self.logger.error("Plugin error: %s - %s", name_str, error_str)
-        return {
-            "success": True,
-            "plugin_name": plugin_name,
-            "error_message": error_message,
-        }
-
-    async def handle_plugin_unloaded(
-        self,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> Mapping[str, t.ContainerValue]:
-        """Handle plugin unloaded event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", "unknown")
-        name_str = str(plugin_name)
-        self.logger.info("Plugin unloaded: %s", name_str)
-        return {"success": True, "plugin_name": plugin_name}
-
-    def register_default_handlers(self) -> FlextResult[bool]:
-        """Register default event handlers for common plugin operations.
-
-        Returns:
-        FlextResult indicating success or failure
-
-        """
-        try:
-            # Register built-in handlers
-            handlers_to_register = [
-                ("plugin_discovered", self.handle_plugin_discovered),
-                ("plugin_loaded", self.handle_plugin_loaded),
-                ("plugin_executed", self.handle_plugin_executed),
-                ("plugin_error", self.handle_plugin_error),
-                ("plugin_unloaded", self.handle_plugin_unloaded),
-            ]
-
-            for event_type, handler in handlers_to_register:
-                result = self.register_handler(event_type, handler)
-                if result.is_failure:
-                    return FlextResult.fail(f"Failed to register {event_type} handler")
-
-            self.logger.info("Registered default event handlers")
-            return FlextResult.ok(True)
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to register default handlers")
-            return FlextResult.fail(f"Default handler registration error: {e!s}")
-
-    def get_handler_status(self) -> Mapping[str, t.ContainerValue]:
-        """Get the current status of the event handlers.
-
-        Returns:
-        Dictionary containing handler status information
-
-        """
-        return {
-            "total_event_types": len(self._handlers),
-            "total_handlers": sum(
-                len(handlers) for handlers in self._handlers.values()
-            ),
-            "event_history_size": len(self._event_history),
-            "registered_handlers": self.get_registered_handlers(),
-        }
 
 
 __all__ = ["FlextPluginHandlers"]

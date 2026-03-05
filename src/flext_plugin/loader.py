@@ -50,6 +50,82 @@ class FlextPluginLoader:
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
+    def get_loaded_plugins(self) -> list[str]:
+        """Get list of currently loaded plugin names.
+
+        Returns:
+        List of loaded plugin names
+
+        """
+        return list(self._loaded_plugins.keys())
+
+    def get_plugin_info(
+        self,
+        plugin_name: str,
+    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+        """Get detailed information about a loaded plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        FlextResult containing plugin information
+
+        """
+        try:
+            if plugin_name not in self._loaded_plugins:
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
+
+            module = self._loaded_plugins[plugin_name]
+
+            # Extract module information
+            module_info = {
+                "name": getattr(module, "__name__", plugin_name),
+                "version": getattr(module, "__version__", "1.0.0"),
+                "doc": getattr(module, "__doc__", ""),
+                "file": getattr(module, "__file__", ""),
+                "package": getattr(module, "__package__", ""),
+            }
+
+            # Get available methods and attributes
+            methods = [name for name in dir(module) if not name.startswith("_")]
+            callable_methods = [
+                name for name in methods if callable(getattr(module, name))
+            ]
+
+            plugin_info = {
+                **module_info,
+                "available_methods": callable_methods,
+                "all_attributes": methods,
+            }
+
+            return FlextResult.ok(plugin_info)
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to get plugin info for %s", plugin_name)
+            return FlextResult.fail(f"Plugin info error: {e!s}")
+
+    def is_plugin_loaded(self, plugin_name: str) -> bool:
+        """Check if a plugin is currently loaded.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        True if plugin is loaded, False otherwise
+
+        """
+        return plugin_name in self._loaded_plugins
+
     def load_plugin(
         self,
         plugin_path: str,
@@ -91,60 +167,6 @@ class FlextPluginLoader:
         ) as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return FlextResult.fail(f"Loading error: {e!s}")
-
-    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
-        """Unload a plugin by name.
-
-        Args:
-        plugin_name: Name of the plugin to unload
-
-        Returns:
-        FlextResult indicating success or failure
-
-        """
-        try:
-            if plugin_name not in self._loaded_plugins:
-                error_msg = f"Plugin not loaded: {plugin_name}"
-                return FlextResult.fail(error_msg)
-
-            # Remove from tracking
-            del self._loaded_plugins[plugin_name]
-
-            self.logger.info("Unloaded plugin: %s", plugin_name)
-            return FlextResult.ok(True)
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to unload plugin %s", plugin_name)
-            return FlextResult.fail(f"Unloading error: {e!s}")
-
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
-        """Check if a plugin is currently loaded.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        True if plugin is loaded, False otherwise
-
-        """
-        return plugin_name in self._loaded_plugins
-
-    def get_loaded_plugins(self) -> list[str]:
-        """Get list of currently loaded plugin names.
-
-        Returns:
-        List of loaded plugin names
-
-        """
-        return list(self._loaded_plugins.keys())
 
     def reload_plugin(
         self,
@@ -201,6 +223,39 @@ class FlextPluginLoader:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
             return FlextResult.fail(f"Reload error: {e!s}")
 
+    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+        """Unload a plugin by name.
+
+        Args:
+        plugin_name: Name of the plugin to unload
+
+        Returns:
+        FlextResult indicating success or failure
+
+        """
+        try:
+            if plugin_name not in self._loaded_plugins:
+                error_msg = f"Plugin not loaded: {plugin_name}"
+                return FlextResult.fail(error_msg)
+
+            # Remove from tracking
+            del self._loaded_plugins[plugin_name]
+
+            self.logger.info("Unloaded plugin: %s", plugin_name)
+            return FlextResult.ok(True)
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to unload plugin %s", plugin_name)
+            return FlextResult.fail(f"Unloading error: {e!s}")
+
     def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
         """Validate dependencies for a loaded plugin.
 
@@ -250,61 +305,6 @@ class FlextPluginLoader:
         ) as e:
             self.logger.exception("Failed to validate dependencies for %s", plugin_name)
             return FlextResult.fail(f"Dependency validation error: {e!s}")
-
-    def get_plugin_info(
-        self,
-        plugin_name: str,
-    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
-        """Get detailed information about a loaded plugin.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        FlextResult containing plugin information
-
-        """
-        try:
-            if plugin_name not in self._loaded_plugins:
-                error_msg = f"Plugin not loaded: {plugin_name}"
-                return FlextResult.fail(error_msg)
-
-            module = self._loaded_plugins[plugin_name]
-
-            # Extract module information
-            module_info = {
-                "name": getattr(module, "__name__", plugin_name),
-                "version": getattr(module, "__version__", "1.0.0"),
-                "doc": getattr(module, "__doc__", ""),
-                "file": getattr(module, "__file__", ""),
-                "package": getattr(module, "__package__", ""),
-            }
-
-            # Get available methods and attributes
-            methods = [name for name in dir(module) if not name.startswith("_")]
-            callable_methods = [
-                name for name in methods if callable(getattr(module, name))
-            ]
-
-            plugin_info = {
-                **module_info,
-                "available_methods": callable_methods,
-                "all_attributes": methods,
-            }
-
-            return FlextResult.ok(plugin_info)
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return FlextResult.fail(f"Plugin info error: {e!s}")
 
     class FilePluginLoader:
         """File-based plugin loader using safe spec-based module loading."""

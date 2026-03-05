@@ -32,44 +32,6 @@ class FlextPluginDiscovery:
             self.EntryPointStrategy(self.logger),
         ]
 
-    def discover_plugins(
-        self,
-        paths: list[str],
-    ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
-        """Discover plugins using all strategies.
-
-        Args:
-        paths: List of paths to search for plugins
-
-        Returns:
-        FlextResult containing list of discovered plugins
-
-        """
-        try:
-            discovered: dict[str, FlextPluginModels.Plugin.DiscoveryData] = {}
-
-            for strategy in self.strategies:
-                result = strategy.discover(paths)
-                if result.is_success:
-                    for data in result.value:
-                        if data.name not in discovered:
-                            discovered[data.name] = data
-
-            self.logger.info(f"Discovered {len(discovered)} unique plugins")
-            return FlextResult.ok(list(discovered.values()))
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Plugin discovery failed")
-            return FlextResult.fail(f"Discovery error: {e!s}")
-
     def discover_plugin(
         self,
         plugin_path: str,
@@ -111,6 +73,44 @@ class FlextPluginDiscovery:
             ImportError,
         ) as e:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
+            return FlextResult.fail(f"Discovery error: {e!s}")
+
+    def discover_plugins(
+        self,
+        paths: list[str],
+    ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
+        """Discover plugins using all strategies.
+
+        Args:
+        paths: List of paths to search for plugins
+
+        Returns:
+        FlextResult containing list of discovered plugins
+
+        """
+        try:
+            discovered: dict[str, FlextPluginModels.Plugin.DiscoveryData] = {}
+
+            for strategy in self.strategies:
+                result = strategy.discover(paths)
+                if result.is_success:
+                    for data in result.value:
+                        if data.name not in discovered:
+                            discovered[data.name] = data
+
+            self.logger.info(f"Discovered {len(discovered)} unique plugins")
+            return FlextResult.ok(list(discovered.values()))
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Plugin discovery failed")
             return FlextResult.fail(f"Discovery error: {e!s}")
 
     def validate_plugin(
@@ -190,26 +190,6 @@ class FlextPluginDiscovery:
                 self.logger.exception("File system discovery failed")
                 return FlextResult.fail(f"File discovery error: {e!s}")
 
-        def _discover_file(
-            self,
-            path: Path,
-        ) -> FlextPluginModels.Plugin.DiscoveryData | None:
-            """Discover single Python file as plugin."""
-            if path.suffix != ".py":
-                return None
-
-            try:
-                return FlextPluginModels.Plugin.DiscoveryData(
-                    name=path.stem,
-                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
-                    path=path,
-                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
-                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
-                )
-            except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
-                return None
-
         def _discover_directory(
             self,
             path: Path,
@@ -234,6 +214,26 @@ class FlextPluginDiscovery:
                 self.logger.exception("Failed to discover directory %s", path)
 
             return discovered
+
+        def _discover_file(
+            self,
+            path: Path,
+        ) -> FlextPluginModels.Plugin.DiscoveryData | None:
+            """Discover single Python file as plugin."""
+            if path.suffix != ".py":
+                return None
+
+            try:
+                return FlextPluginModels.Plugin.DiscoveryData(
+                    name=path.stem,
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    path=path,
+                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
+                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                )
+            except ValueError:
+                self.logger.exception("Failed to create discovery data for %s", path)
+                return None
 
     class EntryPointStrategy:
         """Entry point-based plugin discovery strategy."""

@@ -356,6 +356,24 @@ class FlextPluginEntities:
             """
             return cls(unique_id=registry_id or str(uuid4()), name=name)
 
+        def get_plugin(
+            self,
+            plugin_name: str,
+        ) -> FlextResult[FlextPluginEntities.Plugin | None]:
+            """Retrieve a plugin from the registry.
+
+            Args:
+            plugin_name: Name of plugin to retrieve
+
+            Returns:
+            FlextResult with plugin or None if not found
+
+            """
+            plugin = self.plugins.get(plugin_name)
+            if not plugin:
+                return r.fail(f"Plugin '{plugin_name}' not found")
+            return r.ok(plugin)
+
         def register_plugin(
             self,
             _plugin: FlextPluginEntities.Plugin,
@@ -401,24 +419,6 @@ class FlextPluginEntities:
 
             plugin = self.plugins.pop(_plugin_name)
             self.updated_at = datetime.now(UTC)
-            return r.ok(plugin)
-
-        def get_plugin(
-            self,
-            plugin_name: str,
-        ) -> FlextResult[FlextPluginEntities.Plugin | None]:
-            """Retrieve a plugin from the registry.
-
-            Args:
-            plugin_name: Name of plugin to retrieve
-
-            Returns:
-            FlextResult with plugin or None if not found
-
-            """
-            plugin = self.plugins.get(plugin_name)
-            if not plugin:
-                return r.fail(f"Plugin '{plugin_name}' not found")
             return r.ok(plugin)
 
         def validate_business_rules(self) -> FlextResult[bool]:

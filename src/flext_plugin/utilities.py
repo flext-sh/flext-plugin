@@ -114,58 +114,6 @@ class FlextPluginUtilities(FlextUtilities):
                 )
 
         @staticmethod
-        def validate_plugin_file(plugin_path: Path) -> r[None]:
-            """Validate plugin file structure and safety.
-
-            Args:
-            plugin_path: Path to the plugin file
-
-            Returns:
-            r indicating validation success or failure
-
-            """
-            try:
-                if not plugin_path.exists():
-                    return r[None].fail(
-                        f"Plugin file does not exist: {plugin_path}",
-                    )
-
-                # Check file size
-                file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
-                if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
-                    return r[None].fail(
-                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
-                    )
-
-                # Basic security check for Python files
-                if plugin_path.suffix == ".py":
-                    content = plugin_path.read_text(encoding="utf-8")
-                    dangerous_patterns = [
-                        "exec(",
-                        "eval(",
-                        "__import__",
-                        "subprocess",
-                        "os.system",
-                    ]
-                    for pattern in dangerous_patterns:
-                        if pattern in content:
-                            return r[None].fail(
-                                f"Plugin contains potentially dangerous code: {pattern}",
-                            )
-
-                return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[None].fail(f"Plugin file validation failed: {e}")
-
-        @staticmethod
         def extract_plugin_metadata(
             plugin_path: Path,
         ) -> r[FlextPluginModels.Plugin.PluginMetadata]:
@@ -224,6 +172,58 @@ class FlextPluginUtilities(FlextUtilities):
                 return r[FlextPluginModels.Plugin.PluginMetadata].fail(
                     f"Metadata extraction failed: {e}",
                 )
+
+        @staticmethod
+        def validate_plugin_file(plugin_path: Path) -> r[None]:
+            """Validate plugin file structure and safety.
+
+            Args:
+            plugin_path: Path to the plugin file
+
+            Returns:
+            r indicating validation success or failure
+
+            """
+            try:
+                if not plugin_path.exists():
+                    return r[None].fail(
+                        f"Plugin file does not exist: {plugin_path}",
+                    )
+
+                # Check file size
+                file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
+                if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
+                    return r[None].fail(
+                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
+                    )
+
+                # Basic security check for Python files
+                if plugin_path.suffix == ".py":
+                    content = plugin_path.read_text(encoding="utf-8")
+                    dangerous_patterns = [
+                        "exec(",
+                        "eval(",
+                        "__import__",
+                        "subprocess",
+                        "os.system",
+                    ]
+                    for pattern in dangerous_patterns:
+                        if pattern in content:
+                            return r[None].fail(
+                                f"Plugin contains potentially dangerous code: {pattern}",
+                            )
+
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[None].fail(f"Plugin file validation failed: {e}")
 
         @staticmethod
         def validate_plugin_name(name: str) -> r[None]:
@@ -425,6 +425,76 @@ class FlextPluginUtilities(FlextUtilities):
         MAX_EXECUTION_TIME_SECONDS: ClassVar[int] = 300
 
         @staticmethod
+        def calculate_plugin_hash(plugin_content: str) -> r[str]:
+            """Calculate secure hash of plugin content for integrity verification.
+
+            Args:
+            plugin_content: Plugin source code content
+
+            Returns:
+            r containing SHA-256 hash of plugin content
+
+            """
+            try:
+                content_bytes = plugin_content.encode("utf-8")
+                hash_object = hashlib.sha256(content_bytes)
+                plugin_hash = hash_object.hexdigest()
+
+                return r[str].ok(plugin_hash)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[str].fail(f"Plugin hash calculation failed: {e}")
+
+        @staticmethod
+        def create_sandbox_config(
+            plugin_name: str,
+        ) -> r[Mapping[str, t.ContainerValue]]:
+            """Create sandbox configuration for plugin execution.
+
+            Args:
+            plugin_name: Name of the plugin to sandbox
+
+            Returns:
+            r containing sandbox configuration
+
+            """
+            try:
+                sandbox_config: dict[str, t.ContainerValue] = {
+                    "plugin_name": plugin_name,
+                    "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
+                    "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
+                    "allowed_modules": FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS.copy(),
+                    "network_access": False,
+                    "file_system_access": "read-only",
+                    "environment_variables": {
+                        "PYTHONDONTWRITEBYTECODE": "1",
+                        "PYTHONUNBUFFERED": "1",
+                    },
+                    "created_at": datetime.now(UTC).isoformat(),
+                }
+
+                return r[t.ConfigurationMapping].ok(sandbox_config)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[t.ConfigurationMapping].fail(
+                    f"Sandbox configuration creation failed: {e}",
+                )
+
+        @staticmethod
         def validate_plugin_security(
             plugin_content: str,
         ) -> r[Mapping[str, t.ContainerValue]]:
@@ -494,76 +564,6 @@ class FlextPluginUtilities(FlextUtilities):
                 return r[t.ConfigurationMapping].fail(
                     f"Security validation failed: {e}",
                 )
-
-        @staticmethod
-        def create_sandbox_config(
-            plugin_name: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
-            """Create sandbox configuration for plugin execution.
-
-            Args:
-            plugin_name: Name of the plugin to sandbox
-
-            Returns:
-            r containing sandbox configuration
-
-            """
-            try:
-                sandbox_config: dict[str, t.ContainerValue] = {
-                    "plugin_name": plugin_name,
-                    "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
-                    "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
-                    "allowed_modules": FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS.copy(),
-                    "network_access": False,
-                    "file_system_access": "read-only",
-                    "environment_variables": {
-                        "PYTHONDONTWRITEBYTECODE": "1",
-                        "PYTHONUNBUFFERED": "1",
-                    },
-                    "created_at": datetime.now(UTC).isoformat(),
-                }
-
-                return r[t.ConfigurationMapping].ok(sandbox_config)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[t.ConfigurationMapping].fail(
-                    f"Sandbox configuration creation failed: {e}",
-                )
-
-        @staticmethod
-        def calculate_plugin_hash(plugin_content: str) -> r[str]:
-            """Calculate secure hash of plugin content for integrity verification.
-
-            Args:
-            plugin_content: Plugin source code content
-
-            Returns:
-            r containing SHA-256 hash of plugin content
-
-            """
-            try:
-                content_bytes = plugin_content.encode("utf-8")
-                hash_object = hashlib.sha256(content_bytes)
-                plugin_hash = hash_object.hexdigest()
-
-                return r[str].ok(plugin_hash)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[str].fail(f"Plugin hash calculation failed: {e}")
 
     class ConfigurationManager:
         """Plugin configuration management utilities."""
@@ -638,55 +638,6 @@ class FlextPluginUtilities(FlextUtilities):
                 )
 
         @staticmethod
-        def validate_plugin_config(
-            config: Mapping[str, t.ContainerValue],
-        ) -> r[None]:
-            """Validate plugin configuration structure and values.
-
-            Args:
-            config: Plugin configuration to validate
-
-            Returns:
-            r indicating validation success or failure
-
-            """
-            try:
-                required_fields = ["name", "version", "description", "entry_point"]
-                for field in required_fields:
-                    if field not in config:
-                        return r[None].fail(
-                            f"Missing required configuration field: {field}",
-                        )
-
-                # Validate plugin name
-                name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
-                    str(config["name"]),
-                )
-                if name_validation.is_failure:
-                    return r[None].fail(
-                        name_validation.error or "Plugin name validation failed",
-                    )
-
-                # Validate version format
-                version_pattern = r"^\d+\.\d+\.\d+$"
-                if not re.match(version_pattern, str(config["version"])):
-                    return r[None].fail(
-                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)",
-                    )
-
-                return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[None].fail(f"Configuration validation failed: {e}")
-
-        @staticmethod
         def merge_plugin_configs(
             base_config: Mapping[str, t.ContainerValue],
             override_config: Mapping[str, t.ContainerValue],
@@ -736,6 +687,55 @@ class FlextPluginUtilities(FlextUtilities):
                 return r[t.ConfigurationMapping].fail(
                     f"Configuration merge failed: {e}",
                 )
+
+        @staticmethod
+        def validate_plugin_config(
+            config: Mapping[str, t.ContainerValue],
+        ) -> r[None]:
+            """Validate plugin configuration structure and values.
+
+            Args:
+            config: Plugin configuration to validate
+
+            Returns:
+            r indicating validation success or failure
+
+            """
+            try:
+                required_fields = ["name", "version", "description", "entry_point"]
+                for field in required_fields:
+                    if field not in config:
+                        return r[None].fail(
+                            f"Missing required configuration field: {field}",
+                        )
+
+                # Validate plugin name
+                name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
+                    str(config["name"]),
+                )
+                if name_validation.is_failure:
+                    return r[None].fail(
+                        name_validation.error or "Plugin name validation failed",
+                    )
+
+                # Validate version format
+                version_pattern = r"^\d+\.\d+\.\d+$"
+                if not re.match(version_pattern, str(config["version"])):
+                    return r[None].fail(
+                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)",
+                    )
+
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[None].fail(f"Configuration validation failed: {e}")
 
     class PluginExecution:
         """Plugin execution and lifecycle management utilities."""
@@ -908,6 +908,43 @@ class FlextPluginUtilities(FlextUtilities):
         MAX_REGISTRY_SIZE_MB: ClassVar[int] = 10
 
         @staticmethod
+        def cleanup_registry_backups(
+            registry_directory: Path,
+        ) -> r[None]:
+            """Clean up old registry backup files.
+
+            Args:
+            registry_directory: Directory containing registry backups
+
+            Returns:
+            r indicating cleanup success or failure
+
+            """
+            try:
+                backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
+                backup_files = list(registry_directory.glob(backup_pattern))
+
+                # Sort by modification time and keep only recent backups
+                backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+
+                for backup_file in backup_files[
+                    FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
+                ]:
+                    backup_file.unlink()
+
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[None].fail(f"Registry backup cleanup failed: {e}")
+
+        @staticmethod
         def load_plugin_registry(
             registry_path: Path | str,
         ) -> r[Mapping[str, t.ContainerValue]]:
@@ -958,58 +995,6 @@ class FlextPluginUtilities(FlextUtilities):
                 return r[t.ConfigurationMapping].fail(
                     f"Registry loading failed: {e}",
                 )
-
-        @staticmethod
-        def save_plugin_registry(
-            registry: Mapping[str, t.ContainerValue],
-            registry_path: Path | str,
-        ) -> r[None]:
-            """Save plugin registry to file with backup.
-
-            Args:
-            registry: Plugin registry data to save
-            registry_path: Path to save registry file
-
-            Returns:
-            r indicating save success or failure
-
-            """
-            try:
-                path = Path(registry_path)
-
-                # Create backup if registry exists
-                if path.exists():
-                    backup_path = path.with_suffix(
-                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
-                    )
-                    path.rename(backup_path)
-
-                    # Clean up old backups
-                    FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
-                        path.parent,
-                    )
-
-                # Update timestamp
-                mutable_registry = dict(registry)
-                mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
-
-                # Save registry
-                path.write_text(
-                    json.dumps(mutable_registry, indent=2),
-                    encoding="utf-8",
-                )
-
-                return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[None].fail(f"Registry save failed: {e}")
 
         @staticmethod
         def register_plugin(
@@ -1063,29 +1048,44 @@ class FlextPluginUtilities(FlextUtilities):
                 )
 
         @staticmethod
-        def cleanup_registry_backups(
-            registry_directory: Path,
+        def save_plugin_registry(
+            registry: Mapping[str, t.ContainerValue],
+            registry_path: Path | str,
         ) -> r[None]:
-            """Clean up old registry backup files.
+            """Save plugin registry to file with backup.
 
             Args:
-            registry_directory: Directory containing registry backups
+            registry: Plugin registry data to save
+            registry_path: Path to save registry file
 
             Returns:
-            r indicating cleanup success or failure
+            r indicating save success or failure
 
             """
             try:
-                backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
-                backup_files = list(registry_directory.glob(backup_pattern))
+                path = Path(registry_path)
 
-                # Sort by modification time and keep only recent backups
-                backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+                # Create backup if registry exists
+                if path.exists():
+                    backup_path = path.with_suffix(
+                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
+                    )
+                    path.rename(backup_path)
 
-                for backup_file in backup_files[
-                    FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
-                ]:
-                    backup_file.unlink()
+                    # Clean up old backups
+                    FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
+                        path.parent,
+                    )
+
+                # Update timestamp
+                mutable_registry = dict(registry)
+                mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
+
+                # Save registry
+                path.write_text(
+                    json.dumps(mutable_registry, indent=2),
+                    encoding="utf-8",
+                )
 
                 return r[None].ok(None)
             except (
@@ -1097,7 +1097,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[None].fail(f"Registry backup cleanup failed: {e}")
+                return r[None].fail(f"Registry save failed: {e}")
 
     # Pydantic 2.11+ field validators
     @field_validator("model_config")

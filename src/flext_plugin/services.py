@@ -115,6 +115,41 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             return {}
         return {key: item for key, item in value.items() if isinstance(key, str)}
 
+    def cleanup_executions(self) -> int:
+        """Clean up completed executions to free memory.
+
+        Returns:
+        Number of executions cleaned up
+
+        """
+        completed_executions = [
+            eid for eid, execution in self._executions.items() if execution.is_completed
+        ]
+
+        for eid in completed_executions:
+            del self._executions[eid]
+
+        self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
+        return len(completed_executions)
+
+    def disable_plugin(self, plugin_name: str) -> r[bool]:
+        """Disable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to disable
+
+        Returns:
+            r indicating success or failure
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return r.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin model has is_enabled field
+        plugin.is_enabled = False
+        return r.ok(True)
+
     def discover_and_register_plugins(
         self,
         paths: list[str],
@@ -253,6 +288,321 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return self.discover_and_register_plugins(paths)
 
+    def enable_plugin(self, plugin_name: str) -> r[bool]:
+        """Enable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to enable
+
+        Returns:
+            r indicating success or failure
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return r.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin model has is_enabled field
+        plugin.is_enabled = True
+        return r.ok(True)
+
+    def execute_plugin(
+        self,
+        plugin_name: str,
+        context: FlextPluginTypes.Execution.ExecutionContext,
+        execution_id: str | None = None,
+    ) -> r[FlextPluginPlatform.PluginExecution]:
+        """Execute a plugin with the given context.
+
+        Args:
+        plugin_name: Name of the plugin to execute
+        context: Execution context data
+        execution_id: Optional execution ID (generated if not provided)
+
+        Returns:
+        r containing the execution result
+
+        """
+        try:
+            if plugin_name not in self._plugins:
+                return r.fail(f"Plugin '{plugin_name}' not found")
+
+            if not self._executor:
+                return r.fail("Plugin executor not available")
+
+            plugin = self._plugins[plugin_name]
+
+            # Create execution entity
+            execution = FlextPluginPlatform.PluginExecution.create(
+                plugin_name=plugin_name,
+                execution_config={"input_data": context, "status": "pending"},
+                execution_id=execution_id,
+            )
+
+            # Start execution
+            execution.mark_started()
+            self._executions[execution.execution_id] = execution
+
+            exec_result = self._executor.execute_plugin(plugin_name, context)
+
+            if exec_result.is_failure:
+                execution.mark_completed(success=False, error_message=exec_result.error)
+                return r.fail(f"Execution failed: {exec_result.error}")
+
+            # Mark execution as completed
+            execution.mark_completed(success=True)
+            # Type narrowing - executor returns dict result
+            if u.is_dict_like(exec_result.value):
+                execution.result = dict(exec_result.value)
+
+            # Record execution metrics
+            plugin.record_execution(0.0, success=True)
+
+            self.logger.info("Executed plugin '%s' successfully", plugin_name)
+            return r.ok(execution)
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
+            return r.fail(f"Execution error: {e!s}")
+
+    def get_execution(
+        self, execution_id: str
+    ) -> FlextPluginPlatform.PluginExecution | None:
+        """Get an execution by ID.
+
+        Args:
+        execution_id: ID of the execution to retrieve
+
+        Returns:
+        Execution entity if found, None otherwise
+
+        """
+        return self._executions.get(execution_id)
+
+    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin.Plugin | None:
+        """Get a plugin by name.
+
+        Args:
+        plugin_name: Name of the plugin to retrieve
+
+        Returns:
+        Plugin entity if found, None otherwise
+
+        """
+        return self._plugins.get(plugin_name)
+
+    def get_plugin_config(
+        self,
+        plugin_name: str,
+    ) -> r[FlextPluginModels.Plugin.PluginConfig]:
+        """Get configuration for a plugin.
+
+        Args:
+            plugin_name: Name of the plugin
+
+        Returns:
+            r containing plugin configuration
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return r.fail(f"Plugin '{plugin_name}' not found")
+
+        # Plugin stores config in metadata
+        config_data = plugin.metadata.get("config", {})
+        # Type narrowing - config should be a dict
+        settings = self._to_general_mapping(config_data)
+        config = FlextPluginModels.Plugin.PluginConfig(
+            plugin_name=plugin.name,
+            settings=settings,
+        )
+        return r.ok(config)
+
+    async def get_plugin_health(
+        self,
+        plugin_name: str,
+    ) -> r[Mapping[str, t.ContainerValue]]:
+        """Get health status for a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        r containing plugin health information
+
+        """
+        try:
+            if not self._monitoring:
+                return r.fail("Plugin monitoring not available")
+
+            if plugin_name not in self._plugins:
+                return r.fail(f"Plugin '{plugin_name}' not found")
+
+            health_result = self._monitoring.get_plugin_health(plugin_name)
+            if health_result.is_failure:
+                return r.fail(f"Health check failed: {health_result.error}")
+            if not u.is_dict_like(health_result.value):
+                return r.fail("Health response is not a mapping")
+            return r.ok(dict(health_result.value))
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
+            return r.fail(f"Health check error: {e!s}")
+
+    async def get_plugin_metrics(
+        self,
+        plugin_name: str,
+    ) -> r[Mapping[str, t.ContainerValue]]:
+        """Get metrics for a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        r containing plugin metrics
+
+        """
+        try:
+            if not self._monitoring:
+                return r.fail("Plugin monitoring not available")
+
+            if plugin_name not in self._plugins:
+                return r.fail(f"Plugin '{plugin_name}' not found")
+
+            metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
+            if metrics_result.is_failure:
+                return r.fail(
+                    f"Metrics retrieval failed: {metrics_result.error}",
+                )
+            if not u.is_dict_like(metrics_result.value):
+                return r.fail("Metrics response is not a mapping")
+            return r.ok(dict(metrics_result.value))
+
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
+            return r.fail(f"Metrics error: {e!s}")
+
+    def get_plugin_status(self, plugin_name: str) -> str | None:
+        """Get the status of a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        Plugin status if found, None otherwise
+
+        """
+        plugin = self.get_plugin(plugin_name)
+        if plugin is None:
+            return None
+        if plugin.is_enabled:
+            return c.Plugin.PluginStatus.ACTIVE
+        return c.Plugin.PluginStatus.INACTIVE
+
+    def get_running_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+        """Get all currently running executions.
+
+        Returns:
+        List of running execution entities
+
+        """
+        return [e for e in self._executions.values() if e.is_running]
+
+    def get_service_status(self) -> Mapping[str, t.ContainerValue]:
+        """Get the current status of the plugin service.
+
+        Returns:
+        Dictionary containing service status information
+
+        """
+        return {
+            "total_plugins": len(self._plugins),
+            "active_plugins": len([p for p in self._plugins.values() if p.is_enabled]),
+            "total_executions": len(self._executions),
+            "running_executions": len([
+                e for e in self._executions.values() if e.is_running
+            ]),
+            "monitoring_enabled": True,
+            "discovery_available": True,
+            "loader_available": True,
+            "executor_available": True,
+            "security_available": True,
+            "registry_available": True,
+        }
+
+    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.Plugin]:
+        """Install a plugin from the specified path.
+
+        This loads and registers the plugin.
+
+        Args:
+            plugin_path: Path to the plugin to install
+
+        Returns:
+            r containing the installed plugin
+
+        """
+        result = self.load_plugin(plugin_path)
+        if result.is_success:
+            plugin = result.value
+            self._plugins[plugin.name] = plugin
+            return r.ok(plugin)
+        return r.fail(result.error or "Plugin installation failed")
+
+    def is_plugin_loaded(self, plugin_name: str) -> bool:
+        """Check if a plugin is currently loaded.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        True if plugin is loaded, False otherwise
+
+        """
+        return plugin_name in self._plugins
+
+    def list_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+        """List all executions.
+
+        Returns:
+        List of all execution entities
+
+        """
+        return list(self._executions.values())
+
+    def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
+        """List all loaded plugins.
+
+        Returns:
+        List of all loaded plugin entities
+
+        """
+        return list(self._plugins.values())
+
     def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.Plugin]:
         """Load a single plugin from the specified path.
 
@@ -364,72 +714,21 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r.fail(f"Loading error: {e!s}")
 
-    def execute_plugin(
-        self,
-        plugin_name: str,
-        context: FlextPluginTypes.Execution.ExecutionContext,
-        execution_id: str | None = None,
-    ) -> r[FlextPluginPlatform.PluginExecution]:
-        """Execute a plugin with the given context.
+    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
+        """Uninstall a plugin by name.
 
         Args:
-        plugin_name: Name of the plugin to execute
-        context: Execution context data
-        execution_id: Optional execution ID (generated if not provided)
+            plugin_name: Name of the plugin to uninstall
 
         Returns:
-        r containing the execution result
+            r indicating success or failure
 
         """
-        try:
-            if plugin_name not in self._plugins:
-                return r.fail(f"Plugin '{plugin_name}' not found")
+        if plugin_name not in self._plugins:
+            return r.fail(f"Plugin '{plugin_name}' not found")
 
-            if not self._executor:
-                return r.fail("Plugin executor not available")
-
-            plugin = self._plugins[plugin_name]
-
-            # Create execution entity
-            execution = FlextPluginPlatform.PluginExecution.create(
-                plugin_name=plugin_name,
-                execution_config={"input_data": context, "status": "pending"},
-                execution_id=execution_id,
-            )
-
-            # Start execution
-            execution.mark_started()
-            self._executions[execution.execution_id] = execution
-
-            exec_result = self._executor.execute_plugin(plugin_name, context)
-
-            if exec_result.is_failure:
-                execution.mark_completed(success=False, error_message=exec_result.error)
-                return r.fail(f"Execution failed: {exec_result.error}")
-
-            # Mark execution as completed
-            execution.mark_completed(success=True)
-            # Type narrowing - executor returns dict result
-            if u.is_dict_like(exec_result.value):
-                execution.result = dict(exec_result.value)
-
-            # Record execution metrics
-            plugin.record_execution(0.0, success=True)
-
-            self.logger.info("Executed plugin '%s' successfully", plugin_name)
-            return r.ok(execution)
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
-            return r.fail(f"Execution error: {e!s}")
+        del self._plugins[plugin_name]
+        return r.ok(True)
 
     async def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin from the service.
@@ -486,305 +785,6 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         ) as e:
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return r.fail(f"Unloading error: {e!s}")
-
-    def get_plugin(self, plugin_name: str) -> FlextPluginModels.Plugin.Plugin | None:
-        """Get a plugin by name.
-
-        Args:
-        plugin_name: Name of the plugin to retrieve
-
-        Returns:
-        Plugin entity if found, None otherwise
-
-        """
-        return self._plugins.get(plugin_name)
-
-    def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
-        """List all loaded plugins.
-
-        Returns:
-        List of all loaded plugin entities
-
-        """
-        return list(self._plugins.values())
-
-    def get_plugin_status(self, plugin_name: str) -> str | None:
-        """Get the status of a specific plugin.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        Plugin status if found, None otherwise
-
-        """
-        plugin = self.get_plugin(plugin_name)
-        if plugin is None:
-            return None
-        if plugin.is_enabled:
-            return c.Plugin.PluginStatus.ACTIVE
-        return c.Plugin.PluginStatus.INACTIVE
-
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
-        """Check if a plugin is currently loaded.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        True if plugin is loaded, False otherwise
-
-        """
-        return plugin_name in self._plugins
-
-    async def get_plugin_metrics(
-        self,
-        plugin_name: str,
-    ) -> r[Mapping[str, t.ContainerValue]]:
-        """Get metrics for a specific plugin.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        r containing plugin metrics
-
-        """
-        try:
-            if not self._monitoring:
-                return r.fail("Plugin monitoring not available")
-
-            if plugin_name not in self._plugins:
-                return r.fail(f"Plugin '{plugin_name}' not found")
-
-            metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
-            if metrics_result.is_failure:
-                return r.fail(
-                    f"Metrics retrieval failed: {metrics_result.error}",
-                )
-            if not u.is_dict_like(metrics_result.value):
-                return r.fail("Metrics response is not a mapping")
-            return r.ok(dict(metrics_result.value))
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
-            return r.fail(f"Metrics error: {e!s}")
-
-    async def get_plugin_health(
-        self,
-        plugin_name: str,
-    ) -> r[Mapping[str, t.ContainerValue]]:
-        """Get health status for a specific plugin.
-
-        Args:
-        plugin_name: Name of the plugin
-
-        Returns:
-        r containing plugin health information
-
-        """
-        try:
-            if not self._monitoring:
-                return r.fail("Plugin monitoring not available")
-
-            if plugin_name not in self._plugins:
-                return r.fail(f"Plugin '{plugin_name}' not found")
-
-            health_result = self._monitoring.get_plugin_health(plugin_name)
-            if health_result.is_failure:
-                return r.fail(f"Health check failed: {health_result.error}")
-            if not u.is_dict_like(health_result.value):
-                return r.fail("Health response is not a mapping")
-            return r.ok(dict(health_result.value))
-
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
-            return r.fail(f"Health check error: {e!s}")
-
-    def get_service_status(self) -> Mapping[str, t.ContainerValue]:
-        """Get the current status of the plugin service.
-
-        Returns:
-        Dictionary containing service status information
-
-        """
-        return {
-            "total_plugins": len(self._plugins),
-            "active_plugins": len([p for p in self._plugins.values() if p.is_enabled]),
-            "total_executions": len(self._executions),
-            "running_executions": len([
-                e for e in self._executions.values() if e.is_running
-            ]),
-            "monitoring_enabled": True,
-            "discovery_available": True,
-            "loader_available": True,
-            "executor_available": True,
-            "security_available": True,
-            "registry_available": True,
-        }
-
-    def get_execution(
-        self, execution_id: str
-    ) -> FlextPluginPlatform.PluginExecution | None:
-        """Get an execution by ID.
-
-        Args:
-        execution_id: ID of the execution to retrieve
-
-        Returns:
-        Execution entity if found, None otherwise
-
-        """
-        return self._executions.get(execution_id)
-
-    def list_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
-        """List all executions.
-
-        Returns:
-        List of all execution entities
-
-        """
-        return list(self._executions.values())
-
-    def get_running_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
-        """Get all currently running executions.
-
-        Returns:
-        List of running execution entities
-
-        """
-        return [e for e in self._executions.values() if e.is_running]
-
-    def cleanup_executions(self) -> int:
-        """Clean up completed executions to free memory.
-
-        Returns:
-        Number of executions cleaned up
-
-        """
-        completed_executions = [
-            eid for eid, execution in self._executions.items() if execution.is_completed
-        ]
-
-        for eid in completed_executions:
-            del self._executions[eid]
-
-        self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
-        return len(completed_executions)
-
-    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.Plugin]:
-        """Install a plugin from the specified path.
-
-        This loads and registers the plugin.
-
-        Args:
-            plugin_path: Path to the plugin to install
-
-        Returns:
-            r containing the installed plugin
-
-        """
-        result = self.load_plugin(plugin_path)
-        if result.is_success:
-            plugin = result.value
-            self._plugins[plugin.name] = plugin
-            return r.ok(plugin)
-        return r.fail(result.error or "Plugin installation failed")
-
-    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
-        """Uninstall a plugin by name.
-
-        Args:
-            plugin_name: Name of the plugin to uninstall
-
-        Returns:
-            r indicating success or failure
-
-        """
-        if plugin_name not in self._plugins:
-            return r.fail(f"Plugin '{plugin_name}' not found")
-
-        del self._plugins[plugin_name]
-        return r.ok(True)
-
-    def enable_plugin(self, plugin_name: str) -> r[bool]:
-        """Enable a plugin by name.
-
-        Args:
-            plugin_name: Name of the plugin to enable
-
-        Returns:
-            r indicating success or failure
-
-        """
-        plugin = self.get_plugin(plugin_name)
-        if plugin is None:
-            return r.fail(f"Plugin '{plugin_name}' not found")
-
-        # Plugin model has is_enabled field
-        plugin.is_enabled = True
-        return r.ok(True)
-
-    def disable_plugin(self, plugin_name: str) -> r[bool]:
-        """Disable a plugin by name.
-
-        Args:
-            plugin_name: Name of the plugin to disable
-
-        Returns:
-            r indicating success or failure
-
-        """
-        plugin = self.get_plugin(plugin_name)
-        if plugin is None:
-            return r.fail(f"Plugin '{plugin_name}' not found")
-
-        # Plugin model has is_enabled field
-        plugin.is_enabled = False
-        return r.ok(True)
-
-    def get_plugin_config(
-        self,
-        plugin_name: str,
-    ) -> r[FlextPluginModels.Plugin.PluginConfig]:
-        """Get configuration for a plugin.
-
-        Args:
-            plugin_name: Name of the plugin
-
-        Returns:
-            r containing plugin configuration
-
-        """
-        plugin = self.get_plugin(plugin_name)
-        if plugin is None:
-            return r.fail(f"Plugin '{plugin_name}' not found")
-
-        # Plugin stores config in metadata
-        config_data = plugin.metadata.get("config", {})
-        # Type narrowing - config should be a dict
-        settings = self._to_general_mapping(config_data)
-        config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name=plugin.name,
-            settings=settings,
-        )
-        return r.ok(config)
 
     def update_plugin_config(
         self,

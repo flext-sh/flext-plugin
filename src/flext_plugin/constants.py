@@ -367,22 +367,22 @@ class FlextPluginConstants(FlextConstants):
             UNHEALTHY = "unhealthy"
 
             @classmethod
-            def get_operational_statuses(cls) -> frozenset[str]:
-                """Get operational status values."""
-                return frozenset({cls.ACTIVE, cls.HEALTHY, cls.LOADED})
-
-            @classmethod
             def get_error_statuses(cls) -> frozenset[str]:
                 """Get error status values."""
                 return frozenset({cls.ERROR, cls.UNHEALTHY, cls.DISABLED})
 
-            def is_operational(self) -> bool:
-                """Check if status is operational."""
-                return self in self.get_operational_statuses()
+            @classmethod
+            def get_operational_statuses(cls) -> frozenset[str]:
+                """Get operational status values."""
+                return frozenset({cls.ACTIVE, cls.HEALTHY, cls.LOADED})
 
             def is_error_state(self) -> bool:
                 """Check if status is an error state."""
                 return self in self.get_error_statuses()
+
+            def is_operational(self) -> bool:
+                """Check if status is operational."""
+                return self in self.get_operational_statuses()
 
         # ═══════════════════════════════════════════════════════════════════
         # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)

@@ -110,6 +110,20 @@ class FlextPluginImplementations:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
+        def get_info(self) -> Mapping[str, t.ContainerValue]:
+            """Get plugin information.
+
+            Returns:
+            Dictionary containing plugin metadata
+
+            """
+            return {
+                "name": self._name,
+                "version": self._version,
+                "initialized": self._initialized,
+                "entity_present": self._entity is not None,
+            }
+
         def initialize(
             self,
             _context: Mapping[str, t.ContainerValue],
@@ -173,20 +187,6 @@ class FlextPluginImplementations:
             ) as e:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail(f"Shutdown failed: {e!s}")
-
-        def get_info(self) -> Mapping[str, t.ContainerValue]:
-            """Get plugin information.
-
-            Returns:
-            Dictionary containing plugin metadata
-
-            """
-            return {
-                "name": self._name,
-                "version": self._version,
-                "initialized": self._initialized,
-                "entity_present": self._entity is not None,
-            }
 
     class ConcreteExecutablePlugin(ConcretePlugin):
         """Concrete implementation of executable plugin.
@@ -298,26 +298,6 @@ class FlextPluginImplementations:
             )
             self._connection_valid = False
 
-        def validate_config(self, config: Mapping[str, t.ContainerValue]) -> r[None]:
-            """Validate plugin configuration.
-
-            Args:
-                config: Configuration to validate
-
-            Returns:
-                r indicating validation success or errors
-
-            """
-            required_fields = ["host", "port", "database"]
-            missing_fields = [f for f in required_fields if f not in config]
-            if missing_fields:
-                return r[None].fail(
-                    f"Missing required fields: {missing_fields}",
-                )
-            # Additional validation logic here
-            self._connection_config.update(config)
-            return r[None].ok(None)
-
         def test_connection(self) -> r[None]:
             """Test connection to data source/destination.
 
@@ -348,6 +328,26 @@ class FlextPluginImplementations:
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
 
+        def validate_config(self, config: Mapping[str, t.ContainerValue]) -> r[None]:
+            """Validate plugin configuration.
+
+            Args:
+                config: Configuration to validate
+
+            Returns:
+                r indicating validation success or errors
+
+            """
+            required_fields = ["host", "port", "database"]
+            missing_fields = [f for f in required_fields if f not in config]
+            if missing_fields:
+                return r[None].fail(
+                    f"Missing required fields: {missing_fields}",
+                )
+            # Additional validation logic here
+            self._connection_config.update(config)
+            return r[None].ok(None)
+
     class ConcreteTransformPlugin(ConcretePlugin):
         """Concrete implementation of data transformation plugin.
 
@@ -374,6 +374,17 @@ class FlextPluginImplementations:
             """
             super().__init__(name, version, entity)
             self._schema = schema or {}
+
+        def get_schema(self) -> r[Mapping[str, t.ContainerValue]]:
+            """Get transformation schema.
+
+            Returns:
+            r containing schema definition
+
+            """
+            if not self._schema:
+                return r[t.ConfigurationMapping].fail("No schema defined")
+            return r[t.ConfigurationMapping].ok(self._schema)
 
         def transform(self, data: t.ContainerValue) -> r[t.ContainerValue]:
             """Transform input data.
@@ -407,17 +418,6 @@ class FlextPluginImplementations:
                 self.logger.exception("Transformation failed")
                 return r[t.ContainerValue].fail(f"Transform failed: {e!s}")
 
-        def get_schema(self) -> r[Mapping[str, t.ContainerValue]]:
-            """Get transformation schema.
-
-            Returns:
-            r containing schema definition
-
-            """
-            if not self._schema:
-                return r[t.ConfigurationMapping].fail("No schema defined")
-            return r[t.ConfigurationMapping].ok(self._schema)
-
     class LoggerAdapter(FlextPluginProtocols.Plugin.LoggerProtocol):
         """Adapter to make FlextLogger compatible with LoggerProtocol."""
 
@@ -437,6 +437,16 @@ class FlextPluginImplementations:
             self.logger.critical(message)
 
         @override
+        def debug(
+            self,
+            message: str,
+            *_args: t.ContainerValue,
+            **_kwargs: t.ContainerValue,
+        ) -> None:
+            """Log debug message."""
+            self.logger.debug(message)
+
+        @override
         def error(
             self,
             message: str,
@@ -446,15 +456,15 @@ class FlextPluginImplementations:
             """Log error message."""
             self.logger.error(message)
 
-        @override
-        def warning(
+        def exception(
             self,
             message: str,
-            *_args: t.ContainerValue,
+            *,
+            _exc_info: bool = True,
             **_kwargs: t.ContainerValue,
         ) -> None:
-            """Log warning message."""
-            self.logger.warning(message)
+            """Log exception message."""
+            self.logger.error(message)
 
         @override
         def info(
@@ -466,15 +476,14 @@ class FlextPluginImplementations:
             """Log info message."""
             self.logger.info(message)
 
-        @override
-        def debug(
+        def log(
             self,
+            level: str,
             message: str,
-            *_args: t.ContainerValue,
-            **_kwargs: t.ContainerValue,
+            _context: Mapping[str, t.ContainerValue] | None = None,
         ) -> None:
-            """Log debug message."""
-            self.logger.debug(message)
+            """Log a message with optional context."""
+            getattr(self.logger, level.lower(), self.logger.debug)(message)
 
         def trace(
             self,
@@ -485,24 +494,15 @@ class FlextPluginImplementations:
             """Log trace message."""
             self.logger.debug(message)  # structlog doesn't have trace, use debug
 
-        def log(
-            self,
-            level: str,
-            message: str,
-            _context: Mapping[str, t.ContainerValue] | None = None,
-        ) -> None:
-            """Log a message with optional context."""
-            getattr(self.logger, level.lower(), self.logger.debug)(message)
-
-        def exception(
+        @override
+        def warning(
             self,
             message: str,
-            *,
-            _exc_info: bool = True,
+            *_args: t.ContainerValue,
             **_kwargs: t.ContainerValue,
         ) -> None:
-            """Log exception message."""
-            self.logger.error(message)
+            """Log warning message."""
+            self.logger.warning(message)
 
     class ConcretePluginContext:
         """Concrete implementation of plugin runtime context.
@@ -569,6 +569,30 @@ class FlextPluginImplementations:
             self.plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
+        def get_plugin(
+            self,
+            plugin_name: str,
+        ) -> FlextPluginModels.Plugin.Plugin | None:
+            """Get plugin by name.
+
+            Args:
+                plugin_name: Name of plugin to retrieve
+
+            Returns:
+                Plugin instance or None if not found
+
+            """
+            return self.plugins.get(plugin_name)
+
+        def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
+            """List all registered plugin names.
+
+            Returns:
+            List of registered plugin instances
+
+            """
+            return list(self.plugins.values())
+
         def register(self, plugin: FlextPluginModels.Plugin.Plugin) -> r[None]:
             """Register a plugin.
 
@@ -604,30 +628,6 @@ class FlextPluginImplementations:
             self._logger.info("Unregistered plugin %s", plugin_name)
             return r[None].ok(None)
 
-        def get_plugin(
-            self,
-            plugin_name: str,
-        ) -> FlextPluginModels.Plugin.Plugin | None:
-            """Get plugin by name.
-
-            Args:
-                plugin_name: Name of plugin to retrieve
-
-            Returns:
-                Plugin instance or None if not found
-
-            """
-            return self.plugins.get(plugin_name)
-
-        def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
-            """List all registered plugin names.
-
-            Returns:
-            List of registered plugin instances
-
-            """
-            return list(self.plugins.values())
-
     class ConcretePluginLoader:
         """Concrete implementation of plugin loader.
 
@@ -651,6 +651,42 @@ class FlextPluginImplementations:
                 registry or FlextPluginImplementations.ConcretePluginRegistry()
             )
             self.logger = FlextLogger("plugin.loader")
+
+        def discover_plugins(
+            self,
+            search_path: str,
+        ) -> r[list[str]]:
+            """Discover available plugins in path.
+
+            Args:
+                search_path: Directory to search for plugins
+
+            Returns:
+                r containing list of discovered plugin paths
+
+            """
+            try:
+                self.logger.info("Discovering plugins in %s", search_path)
+                # Simplified discovery - actual implementation would
+                # scan directory for valid plugin packages
+                discovered = [
+                    f"{search_path}/plugin1",
+                    f"{search_path}/plugin2",
+                ]
+                return r[list[str]].ok(discovered)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Plugin discovery failed in %s", search_path)
+                return r[list[str]].fail(
+                    f"Discovery failed: {e!s}",
+                )
 
         def load_plugin(self, plugin_path: str | Path) -> r[object]:
             """Load plugin from path.
@@ -693,42 +729,6 @@ class FlextPluginImplementations:
             ) as e:
                 self.logger.exception("Failed to load plugin from %s", plugin_path)
                 return r[object].fail(f"Load failed: {e!s}")
-
-        def discover_plugins(
-            self,
-            search_path: str,
-        ) -> r[list[str]]:
-            """Discover available plugins in path.
-
-            Args:
-                search_path: Directory to search for plugins
-
-            Returns:
-                r containing list of discovered plugin paths
-
-            """
-            try:
-                self.logger.info("Discovering plugins in %s", search_path)
-                # Simplified discovery - actual implementation would
-                # scan directory for valid plugin packages
-                discovered = [
-                    f"{search_path}/plugin1",
-                    f"{search_path}/plugin2",
-                ]
-                return r[list[str]].ok(discovered)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                self.logger.exception("Plugin discovery failed in %s", search_path)
-                return r[list[str]].fail(
-                    f"Discovery failed: {e!s}",
-                )
 
 
 __all__ = [

@@ -90,53 +90,6 @@ class FlextPluginModels(FlextModels):
                 description="Extensible plugin metadata",
             )
 
-            @field_validator("plugin_version", mode="before")
-            @classmethod
-            def validate_semantic_version(cls, value: str) -> str:
-                """Validate semantic version format (X.Y.Z)."""
-                min_version_parts = 2
-                max_version_parts = 3
-                parts = value.split(".")
-                if (
-                    len(parts) < min_version_parts
-                    or len(parts) > max_version_parts
-                    or not all(p.isdigit() for p in parts if p)
-                ):
-                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
-                    raise ValueError(error_msg)
-                return value
-
-            @field_validator("plugin_type", mode="before")
-            @classmethod
-            def validate_plugin_type(cls, value: str) -> str:
-                """Validate plugin type is a valid PluginType enum value."""
-                valid_types = {
-                    "tap",
-                    "target",
-                    "transform",
-                    "extension",
-                    "service",
-                    "middleware",
-                    "transformer",
-                    "api",
-                    "database",
-                    "notification",
-                    "authentication",
-                    "authorization",
-                    "utility",
-                    "tool",
-                    "handler",
-                    "processor",
-                    "core",
-                    "addon",
-                    "theme",
-                    "language",
-                }
-                if value not in valid_types:
-                    error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
-                    raise ValueError(error_msg)
-                return value
-
             @classmethod
             def create(
                 cls,
@@ -188,17 +141,52 @@ class FlextPluginModels(FlextModels):
                     metadata=dict(metadata or {}),
                 )
 
-            def enable(self) -> r[bool]:
-                """Enable the plugin.
+            @field_validator("plugin_type", mode="before")
+            @classmethod
+            def validate_plugin_type(cls, value: str) -> str:
+                """Validate plugin type is a valid PluginType enum value."""
+                valid_types = {
+                    "tap",
+                    "target",
+                    "transform",
+                    "extension",
+                    "service",
+                    "middleware",
+                    "transformer",
+                    "api",
+                    "database",
+                    "notification",
+                    "authentication",
+                    "authorization",
+                    "utility",
+                    "tool",
+                    "handler",
+                    "processor",
+                    "core",
+                    "addon",
+                    "theme",
+                    "language",
+                }
+                if value not in valid_types:
+                    error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
+                    raise ValueError(error_msg)
+                return value
 
-                Returns:
-                r[bool] indicating success or failure
-
-                """
-                if self.is_enabled:
-                    return r[bool].fail("Plugin is already enabled")
-                self.is_enabled = True
-                return r[bool].ok(value=True)
+            @field_validator("plugin_version", mode="before")
+            @classmethod
+            def validate_semantic_version(cls, value: str) -> str:
+                """Validate semantic version format (X.Y.Z)."""
+                min_version_parts = 2
+                max_version_parts = 3
+                parts = value.split(".")
+                if (
+                    len(parts) < min_version_parts
+                    or len(parts) > max_version_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
+                return value
 
             def disable(self) -> r[bool]:
                 """Disable the plugin.
@@ -211,6 +199,39 @@ class FlextPluginModels(FlextModels):
                     return r[bool].fail("Plugin is already disabled")
                 self.is_enabled = False
                 return r[bool].ok(value=True)
+
+            def enable(self) -> r[bool]:
+                """Enable the plugin.
+
+                Returns:
+                r[bool] indicating success or failure
+
+                """
+                if self.is_enabled:
+                    return r[bool].fail("Plugin is already enabled")
+                self.is_enabled = True
+                return r[bool].ok(value=True)
+
+            def record_error(self, error_message: str) -> None:
+                """Record plugin error.
+
+                Args:
+                    error_message: Error message to record
+
+                """
+                if "error_count" not in self.metadata:
+                    self.metadata["error_count"] = 0
+                if "last_error" not in self.metadata:
+                    self.metadata["last_error"] = ""
+
+                error_count_val = self.metadata.get("error_count", 0)
+                error_count = (
+                    int(error_count_val)
+                    if isinstance(error_count_val, (int, float, str))
+                    else 0
+                )
+                self.metadata["error_count"] = error_count + 1
+                self.metadata["last_error"] = error_message
 
             def record_execution(self, execution_time: float, *, success: bool) -> None:
                 """Record plugin execution metrics.
@@ -261,27 +282,6 @@ class FlextPluginModels(FlextModels):
                         else 0
                     )
                     self.metadata["failure_count"] = failure_count + 1
-
-            def record_error(self, error_message: str) -> None:
-                """Record plugin error.
-
-                Args:
-                    error_message: Error message to record
-
-                """
-                if "error_count" not in self.metadata:
-                    self.metadata["error_count"] = 0
-                if "last_error" not in self.metadata:
-                    self.metadata["last_error"] = ""
-
-                error_count_val = self.metadata.get("error_count", 0)
-                error_count = (
-                    int(error_count_val)
-                    if isinstance(error_count_val, (int, float, str))
-                    else 0
-                )
-                self.metadata["error_count"] = error_count + 1
-                self.metadata["last_error"] = error_message
 
             def validate_business_rules(self) -> r[bool]:
                 """Validate plugin business rules.
