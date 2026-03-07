@@ -255,7 +255,7 @@ For issues with examples:
 
 1. Check test suite: `python -m pytest tests/test_examples.py -v`
 1. Verify Docker services: `docker-compose ps`
-1. Review main project documentation: `../README.md` and `../CLAUDE.md`
+1. Review main project documentation: `../README.md` and `../AGENTS.md`
 1. Check integration with workspace: `..README.md`
 
 ______________________________________________________________________
