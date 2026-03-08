@@ -307,7 +307,7 @@ class FlextPluginUtilities(FlextUtilities):
                             file_key not in last_modified
                             or last_modified[file_key] != current_mtime
                         ):
-                            changed_files.append(file_key)
+                            changed_files.append(file_path.as_posix())
                             last_modified[file_key] = current_mtime
                 return r[t.Plugin.StringList].ok(changed_files)
             except (
@@ -343,7 +343,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if plugin_path.suffix == ".py":
                     try:
                         content = plugin_path.read_text(encoding="utf-8")
-                        compile(content, str(plugin_path), "exec")
+                        _ = compile(content, str(plugin_path), "exec")
                     except SyntaxError as e:
                         return r[None].fail(f"Python syntax error in plugin: {e}")
                 return r[None].ok(None)
@@ -959,13 +959,13 @@ class FlextPluginUtilities(FlextUtilities):
                     backup_path = path.with_suffix(
                         f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
                     )
-                    path.rename(backup_path)
-                    FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
+                    _ = path.rename(backup_path)
+                    _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
                         path.parent
                     )
                 mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
-                path.write_text(
+                _ = path.write_text(
                     json.dumps(mutable_registry, indent=2), encoding="utf-8"
                 )
                 return r[None].ok(None)
