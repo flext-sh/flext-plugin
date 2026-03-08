@@ -42,11 +42,11 @@ class TestFlextPluginServiceStubBridges:
     """Tests for FlextPluginService stub bridges."""
 
     def test_discovery_calls_security_registry_and_monitoring(self) -> None:
+
         class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
             @override
             def discover_plugins(
-                self,
-                paths: list[str],
+                self, paths: list[str]
             ) -> r[list[Mapping[str, t.ContainerValue]]]:
                 _ = paths
                 return r.ok([
@@ -54,7 +54,7 @@ class TestFlextPluginServiceStubBridges:
                         "name": "stub_plugin",
                         "version": "1.0.0",
                         "metadata": {"plugin_type": "utility"},
-                    },
+                    }
                 ])
 
         class Security(FlextPluginAdapters.PluginSecurityAdapter):
@@ -99,9 +99,7 @@ class TestFlextPluginServiceStubBridges:
             registry=registry,
             monitoring=monitoring,
         )
-
         result = service.discover_and_register_plugins(["/tmp"])
-
         assert result.is_success
         assert len(result.unwrap()) == 1
         assert security.calls == 1
@@ -109,20 +107,18 @@ class TestFlextPluginServiceStubBridges:
         assert monitoring.started == ["stub_plugin"]
 
     def test_load_plugin_calls_security_registry_and_monitoring(self) -> None:
+
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
             def load_plugin(
-                self,
-                _plugin_path: str,
+                self, _plugin_path: str
             ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
-                return r.ok(
-                    {
-                        "name": "stub_plugin",
-                        "version": "1.0.0",
-                        "metadata": {"plugin_type": "utility"},
-                    },
-                )
+                return r.ok({
+                    "name": "stub_plugin",
+                    "version": "1.0.0",
+                    "metadata": {"plugin_type": "utility"},
+                })
 
         class Security(FlextPluginAdapters.PluginSecurityAdapter):
             def __init__(self) -> None:
@@ -161,34 +157,27 @@ class TestFlextPluginServiceStubBridges:
         registry = Registry()
         monitoring = Monitoring()
         service = FlextPluginService(
-            loader=Loader(),
-            security=security,
-            registry=registry,
-            monitoring=monitoring,
+            loader=Loader(), security=security, registry=registry, monitoring=monitoring
         )
-
         result = service.load_plugin("/tmp/stub_plugin.py")
-
         assert result.is_success
         assert security.calls == 1
         assert registry.registered == ["stub_plugin"]
         assert monitoring.started == ["stub_plugin"]
 
     def test_execute_plugin_uses_executor_adapter_result(self) -> None:
+
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
             def load_plugin(
-                self,
-                _plugin_path: str,
+                self, _plugin_path: str
             ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
-                return r.ok(
-                    {
-                        "name": "stub_plugin",
-                        "version": "1.0.0",
-                        "metadata": {"plugin_type": "utility"},
-                    },
-                )
+                return r.ok({
+                    "name": "stub_plugin",
+                    "version": "1.0.0",
+                    "metadata": {"plugin_type": "utility"},
+                })
 
         class Executor(FlextPluginAdapters.PluginExecutorAdapter):
             def __init__(self) -> None:
@@ -197,27 +186,23 @@ class TestFlextPluginServiceStubBridges:
 
             @override
             def execute_plugin(
-                self,
-                _plugin_name: str,
-                _context: Mapping[str, t.ContainerValue],
+                self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
             ) -> r[Mapping[str, t.ContainerValue]]:
                 self.calls.append(_plugin_name)
                 return r.ok({"status": "executed", "plugin": _plugin_name})
 
         executor = Executor()
         service = FlextPluginService(loader=Loader(), executor=executor)
-
         load_result = service.load_plugin("/tmp/stub_plugin.py")
         assert load_result.is_success
-
         result = service.execute_plugin("stub_plugin", {})
-
         assert result.is_success
         execution = result.unwrap()
         assert execution.result == {"status": "executed", "plugin": "stub_plugin"}
         assert executor.calls == ["stub_plugin"]
 
     def test_unload_plugin_calls_monitoring_registry_and_loader(self) -> None:
+
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             def __init__(self) -> None:
                 super().__init__()
@@ -225,18 +210,15 @@ class TestFlextPluginServiceStubBridges:
 
             @override
             def load_plugin(
-                self,
-                _plugin_path: str,
+                self, _plugin_path: str
             ) -> r[Mapping[str, t.ContainerValue]]:
                 _ = _plugin_path
                 self._loaded_plugins["stub_plugin"] = True
-                return r.ok(
-                    {
-                        "name": "stub_plugin",
-                        "version": "1.0.0",
-                        "metadata": {"plugin_type": "utility"},
-                    },
-                )
+                return r.ok({
+                    "name": "stub_plugin",
+                    "version": "1.0.0",
+                    "metadata": {"plugin_type": "utility"},
+                })
 
             @override
             def unload_plugin(self, _plugin_name: str) -> r[bool]:
@@ -267,16 +249,11 @@ class TestFlextPluginServiceStubBridges:
         registry = Registry()
         monitoring = Monitoring()
         service = FlextPluginService(
-            loader=loader,
-            registry=registry,
-            monitoring=monitoring,
+            loader=loader, registry=registry, monitoring=monitoring
         )
-
         load_result = service.load_plugin("/tmp/stub_plugin.py")
         assert load_result.is_success
-
         unload_result = asyncio.run(service.unload_plugin("stub_plugin"))
-
         assert unload_result.is_success
         assert monitoring.stopped == ["stub_plugin"]
         assert registry.unregistered == ["stub_plugin"]

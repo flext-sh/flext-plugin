@@ -32,7 +32,6 @@ class FlextPluginConstants(FlextConstants):
         organization and to enable composition with other domain constants.
         """
 
-        # Discovery constants
         class Discovery:
             """Discovery-related constants."""
 
@@ -45,15 +44,13 @@ class FlextPluginConstants(FlextConstants):
             ]
             MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
-            VALID_PLUGIN_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
+            VALID_PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
             METHOD_FILE_SYSTEM: Final = "file_system"
             METHOD_ENTRY_POINTS: Final = "entry_points"
             METHOD_PACKAGE_SCAN: Final[str] = "package_scan"
-            # Discovery type constants
             DISCOVERY_TYPE_FILE: Final = "file"
             DISCOVERY_TYPE_DIRECTORY: Final = "directory"
             DISCOVERY_TYPE_ENTRY_POINT: Final = "entry_point"
-            # Default version for plugins without explicit version
             DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
 
         class PluginType(StrEnum):
@@ -64,41 +61,27 @@ class FlextPluginConstants(FlextConstants):
                 or PluginType.TAP directly - no base strings needed.
             """
 
-            # Singer platform types
             TAP = "tap"
             TARGET = "target"
             TRANSFORM = "transform"
-            # Architecture types
             EXTENSION = "extension"
             SERVICE = "service"
             MIDDLEWARE = "middleware"
             TRANSFORMER = "transformer"
-            # Integration types
             API = "api"
             DATABASE = "database"
             NOTIFICATION = "notification"
             AUTHENTICATION = "authentication"
             AUTHORIZATION = "authorization"
-            # Utility types
             UTILITY = "utility"
             TOOL = "tool"
             HANDLER = "handler"
             PROCESSOR = "processor"
-            # Other types
             CORE = "core"
             ADDON = "addon"
             THEME = "theme"
             LANGUAGE = "language"
 
-        # ═══════════════════════════════════════════════════════════════════
-        # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)
-        # ═══════════════════════════════════════════════════════════════════
-        # All Literal types reference StrEnum members - NO string duplication!
-
-        # PluginTypeLiteral moved to typings.py (t.Plugin.PluginTypeLiteral)
-        # PluginStatusLiteral defined after PluginStatus class - see below
-
-        # Plugin types with frozensets
         class Types:
             """Plugin type constants."""
 
@@ -108,16 +91,12 @@ class FlextPluginConstants(FlextConstants):
             UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
             ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
 
-        # Lifecycle constants
         class Lifecycle:
             """Plugin lifecycle state constants."""
-
-            # PluginStatusLiteral moved to Plugin level - see below
 
             MAX_PLUGIN_WORKERS: Final[int] = 10
             MIN_PLUGIN_WORKERS: Final[int] = 1
             DEFAULT_WORKERS: Final[int] = 4
-
             PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
                 "unknown",
                 "discovered",
@@ -131,38 +110,28 @@ class FlextPluginConstants(FlextConstants):
                 "unhealthy",
             })
 
-        # Entity constants
         class Entities:
             """Entity-related constants."""
 
             SEMANTIC_VERSION_PARTS: Final[int] = 3
-            # Field validation constants
             PLUGIN_NAME_MAX_LENGTH: Final[int] = 255
             PLUGIN_VERSION_MAX_LENGTH: Final[int] = 50
             PLUGIN_VERSION_MIN_LENGTH: Final[int] = 1
-
-            # Generated from PluginStatus StrEnum (DRY principle)
-            # Note: PluginStatus enum is defined later in the file, generated after definition
             PLUGIN_LIFECYCLE_STATES: ClassVar[frozenset[str]]
 
-        # Security constants
         class PluginSecurity:
             """Plugin security level constants."""
 
             SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
             DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
-            # SecurityLevelLiteral moved to typings.py (t.Security.SecurityLevelLiteral)
-
             SECURITY_LOW: Final[str] = "low"
             SECURITY_MEDIUM: Final[str] = "medium"
             SECURITY_HIGH: Final[str] = "high"
             SECURITY_CRITICAL: Final[str] = "critical"
-
             PERMISSION_NETWORK: Final[str] = "network"
             PERMISSION_FILESYSTEM: Final[str] = "filesystem"
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
-
             SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
             DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
             DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
@@ -172,7 +141,6 @@ class FlextPluginConstants(FlextConstants):
                 "importlib",
             ]
 
-        # Performance constants
         class PluginPerformance:
             """Plugin performance metric constants."""
 
@@ -193,7 +161,6 @@ class FlextPluginConstants(FlextConstants):
             DEFAULT_MAX_CPU_PERCENT: Final[int] = 50
             DEFAULT_MAX_CONCURRENT_PLUGINS: Final[int] = 10
 
-        # Execution constants
         class Execution:
             """Execution state constants."""
 
@@ -202,14 +169,11 @@ class FlextPluginConstants(FlextConstants):
             STATE_COMPLETED: Final[str] = "completed"
             STATE_FAILED: Final[str] = "failed"
             STATE_CANCELLED: Final[str] = "cancelled"
-            # Execution result constants
             RESULT_EXECUTED: Final[str] = "executed"
-            # Load type constants
             LOAD_TYPE_FILE: Final = "file"
             LOAD_TYPE_DIRECTORY: Final = "directory"
             LOAD_TYPE_ENTRY_POINT: Final = "entry_point"
 
-        # Registry constants
         class Registry:
             """Registry type constants."""
 
@@ -218,7 +182,6 @@ class FlextPluginConstants(FlextConstants):
             TYPE_HYBRID: Final[str] = "hybrid"
             DEFAULT_SYNC_INTERVAL: Final[int] = 3600
 
-        # Hot reload constants
         class HotReload:
             """Hot reload configuration constants."""
 
@@ -230,7 +193,6 @@ class FlextPluginConstants(FlextConstants):
             EVENT_DELETED: Final[str] = "deleted"
             EVENT_MOVED: Final[str] = "moved"
 
-        # Monitoring constants
         class Monitoring:
             """Monitoring configuration constants."""
 
@@ -242,9 +204,8 @@ class FlextPluginConstants(FlextConstants):
                 "CRITICAL",
             ]
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-            # Log level literal - reuse from flext-core (no duplication)
             type LogLevelLiteral = FlextConstants.Literals.LogLevelLiteral
-            """Log level literal - references flext-core."""
+            "Log level literal - references flext-core."
             DEFAULT_RETENTION_DAYS: Final[int] = 30
             MIN_RETENTION_DAYS: Final[int] = 1
             MAX_RETENTION_DAYS: Final[int] = 365
@@ -253,7 +214,6 @@ class FlextPluginConstants(FlextConstants):
             DEFAULT_ERROR_RATE_THRESHOLD: Final[float] = 5.0
             DEFAULT_RESPONSE_TIME_THRESHOLD: Final[float] = 5000.0
 
-        # Files constants
         class Files:
             """File extension constants."""
 
@@ -267,14 +227,13 @@ class FlextPluginConstants(FlextConstants):
             DEFAULT_CONFIG_FILE: Final[str] = "plugin.yaml"
             CONFIG_SCHEMA_VERSION: Final[str] = "1.0"
 
-        # Validation constants
         class PluginValidation:
             """Plugin validation pattern constants."""
 
-            PLUGIN_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-            VERSION_PATTERN: Final[str] = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
-            SECURITY_LEVEL_PATTERN: Final[str] = r"^(low|medium|high|critical)$"
-            LOG_LEVEL_PATTERN: Final[str] = r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
+            PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
+            VERSION_PATTERN: Final[str] = "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$"
+            SECURITY_LEVEL_PATTERN: Final[str] = "^(low|medium|high|critical)$"
+            LOG_LEVEL_PATTERN: Final[str] = "^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
             MAX_DEPENDENCIES: Final[int] = 50
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
             MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
@@ -283,7 +242,6 @@ class FlextPluginConstants(FlextConstants):
             MIN_PRIORITY: Final[int] = 0
             MAX_PRIORITY: Final[int] = 100
 
-        # Message constants
         class PluginMessages:
             """Plugin error message constants."""
 
@@ -384,12 +342,6 @@ class FlextPluginConstants(FlextConstants):
                 """Check if status is operational."""
                 return self in self.get_operational_statuses()
 
-        # ═══════════════════════════════════════════════════════════════════
-        # LITERAL TYPES: PEP 695 strict type aliases (Python 3.13+)
-        # ═══════════════════════════════════════════════════════════════════
-        # PluginStatusLiteral moved to typings.py (t.Plugin.PluginStatusLiteral)
-
-        # Generate plugin type frozensets from PluginType StrEnum (DRY principle)
         Types.SINGER_PLUGIN_TYPES = frozenset({
             PluginType.TAP.value,
             PluginType.TARGET.value,
@@ -419,9 +371,7 @@ class FlextPluginConstants(FlextConstants):
             | Types.INTEGRATION_PLUGIN_TYPES
             | Types.UTILITY_PLUGIN_TYPES
         )
-        """All plugin types - union of all plugin type frozensets."""
-
-        # Generate plugin status frozensets from PluginStatus StrEnum (DRY principle)
+        "All plugin types - union of all plugin type frozensets."
         OPERATIONAL_STATUSES: ClassVar[frozenset[str]] = frozenset({
             PluginStatus.ACTIVE,
             PluginStatus.HEALTHY,
@@ -435,5 +385,4 @@ class FlextPluginConstants(FlextConstants):
 
 
 c = FlextPluginConstants
-
 __all__ = ["FlextPluginConstants", "c"]

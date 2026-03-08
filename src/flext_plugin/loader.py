@@ -60,8 +60,7 @@ class FlextPluginLoader:
         return list(self._loaded_plugins.keys())
 
     def get_plugin_info(
-        self,
-        plugin_name: str,
+        self, plugin_name: str
     ) -> FlextResult[Mapping[str, t.ContainerValue]]:
         """Get detailed information about a loaded plugin.
 
@@ -76,10 +75,7 @@ class FlextPluginLoader:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
             module = self._loaded_plugins[plugin_name]
-
-            # Extract module information
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
                 "version": getattr(module, "__version__", "1.0.0"),
@@ -87,21 +83,16 @@ class FlextPluginLoader:
                 "file": getattr(module, "__file__", ""),
                 "package": getattr(module, "__package__", ""),
             }
-
-            # Get available methods and attributes
             methods = [name for name in dir(module) if not name.startswith("_")]
             callable_methods = [
                 name for name in methods if callable(getattr(module, name))
             ]
-
             plugin_info = {
                 **module_info,
                 "available_methods": callable_methods,
                 "all_attributes": methods,
             }
-
             return FlextResult.ok(plugin_info)
-
         except (
             ValueError,
             TypeError,
@@ -127,8 +118,7 @@ class FlextPluginLoader:
         return plugin_name in self._loaded_plugins
 
     def load_plugin(
-        self,
-        plugin_path: str,
+        self, plugin_path: str
     ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
         """Load a plugin from the specified path.
 
@@ -141,21 +131,16 @@ class FlextPluginLoader:
         """
         try:
             path_obj = Path(plugin_path).expanduser().resolve()
-
             if not path_obj.exists():
                 error_msg = f"Plugin path does not exist: {plugin_path}"
                 return FlextResult.fail(error_msg)
-
-            # Try each loader strategy
             for loader_strategy in self._loader_strategies:
                 load_data = loader_strategy(path_obj)
                 if load_data:
                     self._loaded_plugins[load_data.name] = load_data.module
                     return FlextResult.ok(load_data)
-
             error_msg = f"Invalid plugin path type: {plugin_path}"
             return FlextResult.fail(error_msg)
-
         except (
             ValueError,
             TypeError,
@@ -169,8 +154,7 @@ class FlextPluginLoader:
             return FlextResult.fail(f"Loading error: {e!s}")
 
     def reload_plugin(
-        self,
-        plugin_name: str,
+        self, plugin_name: str
     ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
         """Reload a plugin by name.
 
@@ -185,32 +169,24 @@ class FlextPluginLoader:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
-            # Get original plugin module for path extraction
             module = self._loaded_plugins.get(plugin_name)
             module_file = getattr(module, "__file__", None)
             if not module or module_file is None:
                 error_msg = f"No path information for plugin: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
             plugin_path = module_file
             if not plugin_path:
                 error_msg = f"Cannot determine plugin path for: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
-            # Unload and reload
             unload_result = self.unload_plugin(plugin_name)
             if unload_result.is_failure:
                 error_msg = f"Failed to unload plugin for reload: {unload_result.error}"
                 return FlextResult.fail(error_msg)
-
             load_result = self.load_plugin(str(plugin_path))
             if load_result.is_failure:
                 return FlextResult.fail(f"Failed to reload plugin: {load_result.error}")
-
             self.logger.info("Reloaded plugin: %s", plugin_name)
             return load_result
-
         except (
             ValueError,
             TypeError,
@@ -237,13 +213,9 @@ class FlextPluginLoader:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
-            # Remove from tracking
             del self._loaded_plugins[plugin_name]
-
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return FlextResult.ok(True)
-
         except (
             ValueError,
             TypeError,
@@ -270,30 +242,21 @@ class FlextPluginLoader:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
                 return FlextResult.fail(error_msg)
-
             module = self._loaded_plugins[plugin_name]
-
-            # Check for required attributes
             required_attrs = ["__version__", "__name__"]
             for attr in required_attrs:
                 if getattr(module, attr, None) is None:
                     return FlextResult.fail(f"Missing required attribute: {attr}")
-
-            # Check for plugin-specific attributes
             plugin_attrs = ["execute", "initialize", "cleanup"]
             available_attrs = [
                 attr for attr in plugin_attrs if getattr(module, attr, None) is not None
             ]
-
             if not available_attrs:
                 self.logger.warning(
-                    "Plugin %s has no standard plugin methods",
-                    plugin_name,
+                    "Plugin %s has no standard plugin methods", plugin_name
                 )
-
             self.logger.info("Plugin dependencies validated: %s", plugin_name)
             return FlextResult.ok(True)
-
         except (
             ValueError,
             TypeError,
@@ -328,21 +291,16 @@ class FlextPluginLoader:
             """
             if not path.is_file() or path.suffix != ".py":
                 return None
-
             try:
                 spec = importlib.util.spec_from_file_location(path.stem, path)
                 if not spec or not spec.loader:
                     return None
-
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.stem,
                     version=getattr(
-                        module,
-                        "__version__",
-                        c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                        module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
                     ),
                     path=path,
                     module=module,
@@ -382,27 +340,19 @@ class FlextPluginLoader:
             """
             if not path.is_dir():
                 return None
-
             try:
-                # Find entry file
                 entry_file = self._find_entry_file(path)
                 if not entry_file:
                     return None
-
-                # Load using spec-based approach
                 spec = importlib.util.spec_from_file_location(path.name, entry_file)
                 if not spec or not spec.loader:
                     return None
-
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-
                 return FlextPluginModels.Plugin.LoadData(
                     name=path.name,
                     version=getattr(
-                        module,
-                        "__version__",
-                        c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                        module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
                     ),
                     path=path,
                     module=module,
@@ -434,7 +384,6 @@ class FlextPluginLoader:
             """
             init_file = path / "__init__.py"
             main_file = path / "main.py"
-
             if init_file.exists():
                 return init_file
             if main_file.exists():

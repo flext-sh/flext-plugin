@@ -36,14 +36,11 @@ class FlextPluginTypes(FlextTypes):
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        # Collections
         type StringList = list[str]
         type StringSet = set[str]
         type StringDict = Mapping[str, str]
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
-
-        # Plugin types - Using JsonDict from FlextTypes for JSON-like data
         type PluginList = list[Mapping[str, FlextTypes.JsonValue]]
         type PluginDict = Mapping[str, FlextTypes.JsonValue]
         type ConfigDict = Mapping[str, FlextTypes.JsonValue]
@@ -52,13 +49,9 @@ class FlextPluginTypes(FlextTypes):
         type InputDict = Mapping[str, FlextTypes.JsonValue]
         type OutputDict = Mapping[str, FlextTypes.JsonValue]
         type PluginEntity = Mapping[str, FlextTypes.JsonValue]
-
-        # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
-
-        # Literal types referencing StrEnum members (DRY principle)
         type PluginTypeLiteral = Literal[
             c_plugin.Plugin.PluginType.TAP,
             c_plugin.Plugin.PluginType.TARGET,
@@ -81,8 +74,7 @@ class FlextPluginTypes(FlextTypes):
             c_plugin.Plugin.PluginType.THEME,
             c_plugin.Plugin.PluginType.LANGUAGE,
         ]
-        """Plugin type literal - references PluginType StrEnum members."""
-
+        "Plugin type literal - references PluginType StrEnum members."
         type PluginStatusLiteral = Literal[
             c_plugin.Plugin.PluginStatus.UNKNOWN,
             c_plugin.Plugin.PluginStatus.DISCOVERED,
@@ -95,7 +87,7 @@ class FlextPluginTypes(FlextTypes):
             c_plugin.Plugin.PluginStatus.HEALTHY,
             c_plugin.Plugin.PluginStatus.UNHEALTHY,
         ]
-        """Plugin status literal - references PluginStatus StrEnum members."""
+        "Plugin status literal - references PluginStatus StrEnum members."
 
     class Lifecycle:
         """Plugin lifecycle and status type aliases."""
@@ -111,10 +103,8 @@ class FlextPluginTypes(FlextTypes):
         type SecurityLevel = str
         type Permission = str
         type SecurityConfig = Mapping[str, FlextTypes.JsonValue]
-
-        # Literal type for security levels
         type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
-        """Security level literal - no corresponding StrEnum."""
+        "Security level literal - no corresponding StrEnum."
 
     class Performance:
         """Performance metrics and monitoring type aliases."""
@@ -145,8 +135,6 @@ class FlextPluginTypes(FlextTypes):
         type RegistryConfig = Mapping[str, FlextTypes.JsonValue]
         type RegistryEntry = Mapping[str, FlextTypes.JsonValue]
         type RegistrySync = Mapping[str, FlextTypes.JsonValue]
-
-        # Literal types for plugin operations
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -159,7 +147,5 @@ class FlextPluginTypes(FlextTypes):
         type FileWatcher = FlextTypes.JsonValue
 
 
-# Shorthand alias for convenient use throughout ecosystem
 t = FlextPluginTypes
-
 __all__ = ["FlextPluginTypes", "t"]

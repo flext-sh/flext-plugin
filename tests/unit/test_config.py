@@ -22,7 +22,6 @@ class TestFlextPluginSettings:
     def test_create_config_with_defaults(self) -> None:
         """Test that config has sensible defaults."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
-
         assert config.enabled is True
         assert config.priority == 100
         assert config.max_memory_mb == 512
@@ -48,7 +47,6 @@ class TestFlextPluginSettings:
             config_data={"data_key": "data_value"},
             options=options,
         )
-
         assert config.plugin_name == "custom-plugin"
         assert config.enabled is False
         assert config.priority == 50
@@ -63,7 +61,6 @@ class TestFlextPluginSettings:
         """Test update_timestamp method."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
         assert config.updated_at is None
-
         config.update_timestamp()
         assert config.updated_at is not None
 
@@ -112,6 +109,5 @@ class TestFlextPluginSettings:
 
     def test_config_model_validation(self) -> None:
         """Test that Pydantic validates the model."""
-        # Valid config should work
         config = FlextPluginSettings.create(plugin_name="valid-plugin")
         assert config.plugin_name == "valid-plugin"

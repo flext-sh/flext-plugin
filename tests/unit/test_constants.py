@@ -99,22 +99,17 @@ class TestFlextPluginConstants:
 
     def test_constants_immutability(self) -> None:
         """Test that constants are immutable."""
-        # Test that constants are Final
         assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS,
-            int,
+            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS,
-            int,
+            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS,
-            int,
+            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int
         )
         assert isinstance(
-            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX,
-            int,
+            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int
         )
 
     def test_plugin_type_consistency(self) -> None:
@@ -124,14 +119,10 @@ class TestFlextPluginConstants:
         arch_types = FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES
         integration_types = FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES
         utility_types = FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES
-
-        # Check that all individual type sets are subsets of all types
         assert singer_types.issubset(all_types)
         assert arch_types.issubset(all_types)
         assert integration_types.issubset(all_types)
         assert utility_types.issubset(all_types)
-
-        # Check that there are no overlaps between type categories
         assert singer_types.isdisjoint(arch_types)
         assert singer_types.isdisjoint(integration_types)
         assert singer_types.isdisjoint(utility_types)
@@ -145,9 +136,8 @@ class TestFlextPluginConstants:
         default_level = (
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL
         )
-
         assert default_level in security_levels
-        assert len(security_levels) == 4  # LOW, MEDIUM, HIGH, CRITICAL
+        assert len(security_levels) == 4
         assert "LOW" in security_levels
         assert "MEDIUM" in security_levels
         assert "HIGH" in security_levels
@@ -156,7 +146,6 @@ class TestFlextPluginConstants:
     def test_lifecycle_states_consistency(self) -> None:
         """Test that lifecycle states are consistent."""
         states = FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES
-        # Values are lowercase (from PluginStatus StrEnum values)
         expected_states = {
             "unknown",
             "discovered",
@@ -169,6 +158,5 @@ class TestFlextPluginConstants:
             "healthy",
             "unhealthy",
         }
-
         assert states == expected_states
         assert len(states) == 10

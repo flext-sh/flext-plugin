@@ -20,8 +20,7 @@ class TestPluginModel:
     def test_plugin_create(self) -> None:
         """Test plugin creation with factory method."""
         plugin = FlextPluginModels.Plugin.Plugin.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
+            name="test-plugin", plugin_version="1.0.0"
         )
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
@@ -30,12 +29,9 @@ class TestPluginModel:
     def test_plugin_enable(self) -> None:
         """Test plugin enable method."""
         plugin = FlextPluginModels.Plugin.Plugin.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
         )
         assert not plugin.is_enabled
-
         result = plugin.enable()
         assert result.is_success
         assert plugin.is_enabled
@@ -43,9 +39,7 @@ class TestPluginModel:
     def test_plugin_enable_already_enabled(self) -> None:
         """Test enabling already enabled plugin."""
         plugin = FlextPluginModels.Plugin.Plugin.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=True,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=True
         )
         result = plugin.enable()
         assert result.is_failure
@@ -55,12 +49,9 @@ class TestPluginModel:
     def test_plugin_disable(self) -> None:
         """Test plugin disable method."""
         plugin = FlextPluginModels.Plugin.Plugin.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=True,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=True
         )
         assert plugin.is_enabled
-
         result = plugin.disable()
         assert result.is_success
         assert not plugin.is_enabled
@@ -68,9 +59,7 @@ class TestPluginModel:
     def test_plugin_disable_already_disabled(self) -> None:
         """Test disabling already disabled plugin."""
         plugin = FlextPluginModels.Plugin.Plugin.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
         )
         result = plugin.disable()
         assert result.is_failure
@@ -84,36 +73,28 @@ class TestPluginPlatform:
     def test_plugin_is_active_when_enabled(self) -> None:
         """Test is_active returns True when plugin is enabled."""
         plugin = FlextPluginPlatform.Plugin(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=True,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=True
         )
         assert plugin.is_active()
 
     def test_plugin_is_active_when_disabled(self) -> None:
         """Test is_active returns False when plugin is disabled."""
         plugin = FlextPluginPlatform.Plugin(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
         )
         assert not plugin.is_active()
 
     def test_plugin_status_active(self) -> None:
         """Test status property when active."""
         plugin = FlextPluginPlatform.Plugin(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=True,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=True
         )
         assert plugin.status == "active"
 
     def test_plugin_status_inactive(self) -> None:
         """Test status property when inactive."""
         plugin = FlextPluginPlatform.Plugin(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
         )
         assert plugin.status == "inactive"
 
@@ -136,8 +117,7 @@ class TestPluginRegistry:
         return FlextPluginPlatform.Plugin(name="test-plugin", plugin_version="1.0.0")
 
     def test_registry_initialization(
-        self,
-        registry: FlextPluginPlatform.PluginRegistry,
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """Test registry initialization."""
         plugins_result = registry.list_plugins()
@@ -151,11 +131,8 @@ class TestPluginRegistry:
     ) -> None:
         """Test successful plugin registration."""
         result = registry.register(plugin.name, plugin)
-
         assert result.is_success
         assert result.value
-
-        # Verify using API methods
         get_result = registry.get(plugin.name)
         assert get_result.is_success
         assert get_result.value.name == plugin.name
@@ -167,44 +144,32 @@ class TestPluginRegistry:
     ) -> None:
         """Test successful plugin unregistration."""
         registry.register(plugin.name, plugin)
-
-        # Verify registered
         plugins_result = registry.list_plugins()
         assert plugin.name in plugins_result.value
-
         result = registry.unregister(plugin.name)
-
         assert result.is_success
         assert result.value
-
-        # Verify unregistered
         plugins_result = registry.list_plugins()
         assert plugin.name not in plugins_result.value
 
     def test_unregister_nonexistent_plugin(
-        self,
-        registry: FlextPluginPlatform.PluginRegistry,
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """Test unregistering plugin that doesn't exist."""
         result = registry.unregister("nonexistent-plugin")
-
-        # Should fail - plugin not registered
         assert result.is_failure
 
     def test_register_multiple_plugins(
-        self,
-        registry: FlextPluginPlatform.PluginRegistry,
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """Test registering multiple plugins."""
         plugins = [
             FlextPluginPlatform.Plugin(name=f"plugin-{i}", plugin_version="1.0.0")
             for i in range(3)
         ]
-
         for plugin in plugins:
             result = registry.register(plugin.name, plugin)
             assert result.is_success
-
         plugins_result = registry.list_plugins()
         assert len(plugins_result.value) == 3
         for plugin in plugins:

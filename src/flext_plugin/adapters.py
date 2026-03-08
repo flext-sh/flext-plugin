@@ -34,11 +34,7 @@ class FlextPluginAdapters:
             super().__init__()
             self.logger = FlextLogger(__name__)
 
-        def _execute_safe(
-            self,
-            operation: Callable[[], T],
-            error_context: str,
-        ) -> r[T]:
+        def _execute_safe(self, operation: Callable[[], T], error_context: str) -> r[T]:
             """Execute operation with safe error handling.
 
             Args:
@@ -69,21 +65,19 @@ class FlextPluginAdapters:
 
         @override
         def discover_plugin(
-            self,
-            _plugin_path: str,
+            self, _plugin_path: str
         ) -> r[Mapping[str, t.ContainerValue]]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
-                    self._discover_single(_plugin_path),
+                    self._discover_single(_plugin_path)
                 ),
                 f"Failed to discover plugin at {_plugin_path}",
             )
 
         @override
         def discover_plugins(
-            self,
-            paths: list[str],
+            self, paths: list[str]
         ) -> r[list[Mapping[str, t.ContainerValue]]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
@@ -95,19 +89,12 @@ class FlextPluginAdapters:
 
         @override
         def validate_plugin(
-            self,
-            _plugin_data: Mapping[str, t.ContainerValue],
+            self, _plugin_data: Mapping[str, t.ContainerValue]
         ) -> r[bool]:
             """Validate discovered plugin data."""
-            return self._execute_safe(
-                lambda: True,  # Validates if convertible to model
-                "Plugin validation failed",
-            )
+            return self._execute_safe(lambda: True, "Plugin validation failed")
 
-        def _discover_all(
-            self,
-            paths: list[str],
-        ) -> list[m.Plugin.DiscoveryData]:
+        def _discover_all(self, paths: list[str]) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered = []
             for path in paths:
@@ -115,21 +102,16 @@ class FlextPluginAdapters:
                 if not path_obj.exists():
                     self.logger.warning("Path does not exist: %s", path)
                     continue
-
                 if path_obj.is_file():
                     data = self._discover_single_file(path_obj)
                     if data:
                         discovered.append(data)
                 elif path_obj.is_dir():
                     discovered.extend(self._discover_directory(path_obj))
-
             self.logger.info(f"Discovered {len(discovered)} plugins")
             return discovered
 
-        def _discover_directory(
-            self,
-            path: Path,
-        ) -> list[m.Plugin.DiscoveryData]:
+        def _discover_directory(self, path: Path) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
             discovered = []
             try:
@@ -137,42 +119,33 @@ class FlextPluginAdapters:
                     if (
                         item.is_file()
                         and item.suffix == ".py"
-                        and not item.name.startswith("_")
+                        and (not item.name.startswith("_"))
                     ):
                         data = self._discover_single_file(item)
                         if data:
                             discovered.append(data)
-                    elif item.is_dir() and not item.name.startswith("__"):
+                    elif item.is_dir() and (not item.name.startswith("__")):
                         discovered.extend(self._discover_directory(item))
             except (OSError, PermissionError):
                 self.logger.exception("Failed to discover directory %s", path)
-
             return discovered
 
-        def _discover_single(
-            self,
-            plugin_path: str,
-        ) -> m.Plugin.DiscoveryData:
+        def _discover_single(self, plugin_path: str) -> m.Plugin.DiscoveryData:
             """Internal: discover single plugin."""
             path_obj = Path(plugin_path).expanduser().resolve()
             if not path_obj.exists():
                 error_msg = f"Plugin path does not exist: {plugin_path}"
                 raise FileNotFoundError(error_msg)
-
             data = self._discover_single_file(path_obj)
             if not data:
                 error_msg = f"Failed to discover plugin at: {plugin_path}"
                 raise ValueError(error_msg)
             return data
 
-        def _discover_single_file(
-            self,
-            path: Path,
-        ) -> m.Plugin.DiscoveryData | None:
+        def _discover_single_file(self, path: Path) -> m.Plugin.DiscoveryData | None:
             """Internal: discover single file."""
             if path.suffix != ".py":
                 return None
-
             try:
                 return m.Plugin.DiscoveryData(
                     name=path.stem,
@@ -186,8 +159,7 @@ class FlextPluginAdapters:
                 return None
 
         def _discovery_data_to_dict(
-            self,
-            data: m.Plugin.DiscoveryData,
+            self, data: m.Plugin.DiscoveryData
         ) -> Mapping[str, t.ContainerValue]:
             """Convert DiscoveryData model to JsonDict."""
             return {
@@ -217,10 +189,7 @@ class FlextPluginAdapters:
             return _plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(
-            self,
-            _plugin_path: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        def load_plugin(self, _plugin_path: str) -> r[Mapping[str, t.ContainerValue]]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(_plugin_path),
@@ -239,8 +208,7 @@ class FlextPluginAdapters:
                 return True
 
             return self._execute_safe(
-                _unload,
-                f"Failed to unload plugin {_plugin_name}",
+                _unload, f"Failed to unload plugin {_plugin_name}"
             )
 
         def _load_module(self, _plugin_path: str) -> m.Plugin.LoadData:
@@ -249,34 +217,27 @@ class FlextPluginAdapters:
             if not path.exists():
                 error_msg = f"Plugin path does not exist: {_plugin_path}"
                 raise FileNotFoundError(error_msg)
-
-            # Use spec-based loading for safety (no sys.path pollution)
             spec = importlib.util.spec_from_file_location(path.stem, path)
             if not spec or not spec.loader:
                 error_msg = f"Cannot load spec from {path}"
                 raise ImportError(error_msg)
-
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-
             return m.Plugin.LoadData(
                 name=path.stem,
                 version=getattr(
-                    module,
-                    "__version__",
-                    c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    module, "__version__", c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
                 ),
                 path=path,
                 module=module,
                 load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
                 loaded_at=__import__("datetime").datetime.now(
-                    __import__("datetime").UTC,
+                    __import__("datetime").UTC
                 ),
             )
 
         def _load_module_as_dict(
-            self,
-            plugin_path: str,
+            self, plugin_path: str
         ) -> Mapping[str, t.ContainerValue]:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
@@ -294,9 +255,7 @@ class FlextPluginAdapters:
 
         @override
         def execute_plugin(
-            self,
-            _plugin_name: str,
-            _context: Mapping[str, t.ContainerValue],
+            self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
         ) -> r[Mapping[str, t.ContainerValue]]:
             """Execute plugin."""
             return self._execute_safe(
@@ -324,9 +283,7 @@ class FlextPluginAdapters:
 
         @override
         def check_permissions(
-            self,
-            _plugin_name: str,
-            _permissions: list[str],
+            self, _plugin_name: str, _permissions: list[str]
         ) -> r[bool]:
             """Check plugin permissions."""
             return r.ok(True)
@@ -338,8 +295,7 @@ class FlextPluginAdapters:
 
         @override
         def scan_plugin_security(
-            self,
-            _plugin_path: str,
+            self, _plugin_path: str
         ) -> r[Mapping[str, t.ContainerValue]]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
@@ -387,16 +343,14 @@ class FlextPluginAdapters:
 
         @override
         def get_plugin_health(
-            self,
-            _plugin_name: str,
+            self, _plugin_name: str
         ) -> r[Mapping[str, t.ContainerValue]]:
             """Get plugin health information."""
             return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
         def get_plugin_metrics(
-            self,
-            _plugin_name: str,
+            self, _plugin_name: str
         ) -> r[Mapping[str, t.ContainerValue]]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})

@@ -40,8 +40,7 @@ class TestFlextPluginDiscovery:
         assert len(discovery.strategies) == 2
 
     def test_discover_plugins_empty_paths(
-        self,
-        discovery: FlextPluginDiscovery,
+        self, discovery: FlextPluginDiscovery
     ) -> None:
         """Test discover_plugins with empty paths."""
         result = discovery.discover_plugins(paths=[])
@@ -50,8 +49,7 @@ class TestFlextPluginDiscovery:
         assert len(result.value) == 0
 
     def test_discover_plugins_nonexistent_path(
-        self,
-        discovery: FlextPluginDiscovery,
+        self, discovery: FlextPluginDiscovery
     ) -> None:
         """Test discover_plugins with nonexistent path."""
         result = discovery.discover_plugins(paths=["/nonexistent/path"])
@@ -59,9 +57,7 @@ class TestFlextPluginDiscovery:
         assert result.value is not None
 
     def test_discover_plugins_with_temp_directory(
-        self,
-        discovery: FlextPluginDiscovery,
-        temp_dir: Path,
+        self, discovery: FlextPluginDiscovery, temp_dir: Path
     ) -> None:
         """Test discover_plugins with actual temporary directory."""
         result = discovery.discover_plugins(paths=[str(temp_dir)])
@@ -69,19 +65,12 @@ class TestFlextPluginDiscovery:
         assert result.value is not None
         assert isinstance(result.value, list)
 
-    def test_discover_plugin_nonexistent(
-        self,
-        discovery: FlextPluginDiscovery,
-    ) -> None:
+    def test_discover_plugin_nonexistent(self, discovery: FlextPluginDiscovery) -> None:
         """Test discover_plugin with nonexistent path."""
         result = discovery.discover_plugin(plugin_path="/nonexistent/plugin")
-        # Should fail for nonexistent path
         assert result.is_failure or (result.is_success and result.value is None)
 
-    def test_validate_plugin_none_data(
-        self,
-        discovery: FlextPluginDiscovery,
-    ) -> None:
+    def test_validate_plugin_none_data(self, discovery: FlextPluginDiscovery) -> None:
         """Test validate_plugin with None data."""
         plugin_data = FlextPluginModels.Plugin.DiscoveryData(
             name="test_plugin",

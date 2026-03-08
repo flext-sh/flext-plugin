@@ -42,7 +42,6 @@ modules_to_test = [
     "flext_plugin.core.types",
     "flext_plugin.domain.entities",
 ]
-
 for module in modules_to_test:
     with contextlib.suppress(Exception):
         __import__(module)

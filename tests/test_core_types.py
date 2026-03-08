@@ -56,7 +56,7 @@ class TestFlextPluginConstantsPluginType:
 
     def test_plugin_type_invalid(self) -> None:
         """Test invalid plugin type raises error."""
-        with pytest.raises(ValueError, match=r".*invalid_type.*"):
+        with pytest.raises(ValueError, match=".*invalid_type.*"):
             FlextPluginConstants.Plugin.PluginType("invalid_type")
 
 
@@ -67,15 +67,11 @@ class TestFlextPluginConstantsLifecycle:
         """Test all plugin status enum values."""
         if FlextPluginConstants.Plugin.PluginStatus.UNKNOWN.value != "unknown":
             msg = f"Expected {'unknown'}, got {FlextPluginConstants.Plugin.PluginStatus.UNKNOWN.value}"
-            raise AssertionError(
-                msg,
-            )
+            raise AssertionError(msg)
         assert FlextPluginConstants.Plugin.PluginStatus.DISCOVERED.value == "discovered"
         if FlextPluginConstants.Plugin.PluginStatus.LOADED.value != "loaded":
             msg = f"Expected {'loaded'}, got {FlextPluginConstants.Plugin.PluginStatus.LOADED.value}"
-            raise AssertionError(
-                msg,
-            )
+            raise AssertionError(msg)
         assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE.value == "active"
         if FlextPluginConstants.Plugin.PluginStatus.ERROR.value != "error":
             msg = f"Expected {'error'}, got {FlextPluginConstants.Plugin.PluginStatus.ERROR.value}"
@@ -88,9 +84,7 @@ class TestFlextPluginConstantsLifecycle:
             != FlextPluginConstants.Plugin.PluginStatus.UNKNOWN
         ):
             msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.UNKNOWN}, got {FlextPluginConstants.Plugin.PluginStatus('unknown')}"
-            raise AssertionError(
-                msg,
-            )
+            raise AssertionError(msg)
         assert (
             FlextPluginConstants.Plugin.PluginStatus("discovered")
             == FlextPluginConstants.Plugin.PluginStatus.DISCOVERED
@@ -100,9 +94,7 @@ class TestFlextPluginConstantsLifecycle:
             != FlextPluginConstants.Plugin.PluginStatus.LOADED
         ):
             msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.LOADED}, got {FlextPluginConstants.Plugin.PluginStatus('loaded')}"
-            raise AssertionError(
-                msg,
-            )
+            raise AssertionError(msg)
         assert (
             FlextPluginConstants.Plugin.PluginStatus("active")
             == FlextPluginConstants.Plugin.PluginStatus.ACTIVE
@@ -112,9 +104,7 @@ class TestFlextPluginConstantsLifecycle:
             != FlextPluginConstants.Plugin.PluginStatus.ERROR
         ):
             msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.ERROR}, got {FlextPluginConstants.Plugin.PluginStatus('error')}"
-            raise AssertionError(
-                msg,
-            )
+            raise AssertionError(msg)
 
 
 class TestPluginError:
@@ -122,27 +112,19 @@ class TestPluginError:
 
     def test_plugin_error_creation(self) -> None:
         """Test creating PluginError with message."""
-        # Use FlextExceptions.BaseError as PluginError equivalent
         error = FlextExceptions.BaseError("Test error message")
-        # Real implementation includes error code prefix
         assert "Test error message" in str(error)
         assert isinstance(error, Exception)
 
     def test_plugin_error_with_plugin_id(self) -> None:
         """Test PluginError with plugin_id."""
-        # Use FlextExceptions.BaseError as PluginError equivalent
-        # FlextExceptions.BaseError doesn't have plugin_id, test basic functionality
         error = FlextExceptions.BaseError("Test error")
-        # Real implementation includes error code prefix
         assert "Test error" in str(error)
         assert isinstance(error, Exception)
 
     def test_plugin_error_with_error_code(self) -> None:
         """Test PluginError with error_code."""
-        # Use FlextExceptions.BaseError as PluginError equivalent
-        # FlextExceptions.BaseError includes error code prefix in string
         error = FlextExceptions.BaseError("Test error")
-        # Real implementation includes error code prefix
         assert "Test error" in str(error)
         assert isinstance(error, Exception)
 

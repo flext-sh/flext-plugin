@@ -33,7 +33,6 @@ class TestFlextPlugin:
             description="Test plugin",
             author="Test Author",
         )
-
         assert plugin.unique_id == "test-id"
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
@@ -50,21 +49,13 @@ class TestFlextPlugin:
             description="Test plugin",
             author="Test Author",
         )
-
-        # Initially enabled
         assert plugin.is_enabled is True
-
-        # Disable plugin
         result = plugin.disable()
         assert result.is_success
         assert not plugin.is_enabled
-
-        # Re-enable plugin
         result = plugin.enable()
         assert result.is_success
         assert plugin.is_enabled is True
-
-        # Enable already enabled returns failure
         result = plugin.enable()
         assert result.is_failure
 
@@ -77,21 +68,15 @@ class TestFlextPlugin:
             description="Test plugin",
             author="Test Author",
         )
-
-        # Record successful execution
         plugin.record_execution(150.5, success=True)
         assert plugin.metadata["execution_count"] == 1
         assert plugin.metadata["total_execution_time"] == pytest.approx(150.5)
         assert plugin.metadata["success_count"] == 1
         assert plugin.metadata["failure_count"] == 0
-
-        # Record another successful execution
         plugin.record_execution(200.0, success=True)
         assert plugin.metadata["execution_count"] == 2
         assert plugin.metadata["total_execution_time"] == pytest.approx(350.5)
         assert plugin.metadata["success_count"] == 2
-
-        # Record a failed execution
         plugin.record_execution(50.0, success=False)
         assert plugin.metadata["execution_count"] == 3
         assert plugin.metadata["failure_count"] == 1
@@ -105,13 +90,9 @@ class TestFlextPlugin:
             description="Test plugin",
             author="Test Author",
         )
-
-        # Record error
         plugin.record_error("Test error message")
         assert plugin.metadata["error_count"] == 1
         assert plugin.metadata["last_error"] == "Test error message"
-
-        # Record another error
         plugin.record_error("Second error")
         assert plugin.metadata["error_count"] == 2
         assert plugin.metadata["last_error"] == "Second error"
@@ -125,8 +106,6 @@ class TestFlextPlugin:
             description="Valid plugin",
             author="Test Author",
         )
-
-        # Valid plugin passes business rules
         result = plugin.validate_business_rules()
         assert result.is_success
 
@@ -137,13 +116,8 @@ class TestFlextPluginSettings:
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            settings={
-                "enabled": True,
-                "key": "value",
-            },
+            plugin_name="test-plugin", settings={"enabled": True, "key": "value"}
         )
-
         assert config.plugin_name == "test-plugin"
         assert config.settings["enabled"] is True
         assert config.settings["key"] == "value"
@@ -151,7 +125,6 @@ class TestFlextPluginSettings:
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginModels.Config default values."""
         config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test-plugin")
-
         assert config.plugin_name == "test-plugin"
         assert config.settings == {}
 
@@ -164,10 +137,8 @@ class TestFlextPluginSettings:
             "nested": {"deep": "value"},
         }
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            settings=settings,
+            plugin_name="test-plugin", settings=settings
         )
-
         assert config.settings["max_memory_mb"] == 800
         assert config.settings["max_cpu_percent"] == 75
         assert config.settings["timeout_seconds"] == 300
@@ -179,11 +150,8 @@ class TestFlextPluginExecution:
     def test_execution_result_success(self) -> None:
         """Test creating successful ExecutionResult."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True,
-            data={"output": "test data"},
-            execution_time_ms=150.5,
+            success=True, data={"output": "test data"}, execution_time_ms=150.5
         )
-
         assert result.success is True
         assert result.data == {"output": "test data"}
         assert result.error == ""
@@ -192,11 +160,8 @@ class TestFlextPluginExecution:
     def test_execution_result_failure(self) -> None:
         """Test creating failed ExecutionResult."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=False,
-            error="Plugin execution failed",
-            execution_time_ms=50.0,
+            success=False, error="Plugin execution failed", execution_time_ms=50.0
         )
-
         assert result.success is False
         assert result.error == "Plugin execution failed"
         assert result.data == {}
@@ -205,7 +170,6 @@ class TestFlextPluginExecution:
     def test_execution_result_defaults(self) -> None:
         """Test ExecutionResult default values."""
         result = FlextPluginModels.Plugin.ExecutionResult(success=True)
-
         assert result.success is True
         assert result.data == {}
         assert result.error == ""
@@ -218,11 +182,8 @@ class TestFlextPluginExecution:
             "metadata": {"count": 3, "type": "test"},
         }
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True,
-            data=complex_data,
-            execution_time_ms=100.0,
+            success=True, data=complex_data, execution_time_ms=100.0
         )
-
         assert result.success is True
         assert result.data == complex_data
         assert result.execution_time_ms == pytest.approx(100.0)
@@ -234,7 +195,6 @@ class TestFlextPluginRegistryEntity:
     def test_registry_creation(self) -> None:
         """Test creating FlextPluginModels.Plugin.Registry entity."""
         registry = FlextPluginModels.Plugin.Registry()
-
         assert registry.plugins == {}
         assert registry.last_updated is not None
         assert registry.created_at is not None
@@ -246,7 +206,6 @@ class TestFlextPluginRegistryEntity:
             "plugin2": {"name": "test-plugin-2"},
         }
         registry = FlextPluginModels.Plugin.Registry(plugins=plugins)
-
         assert len(registry.plugins) == 2
         assert "plugin1" in registry.plugins
         assert "plugin2" in registry.plugins
@@ -254,8 +213,6 @@ class TestFlextPluginRegistryEntity:
     def test_registry_timestamps(self) -> None:
         """Test registry timestamps."""
         registry = FlextPluginModels.Plugin.Registry()
-
-        # Timestamps should be set on creation
         assert registry.last_updated is not None
         assert registry.created_at is not None
 
@@ -273,7 +230,6 @@ class TestFlextPluginMetadata:
             description="Test extractor plugin",
             dependencies=["requests", "pydantic"],
         )
-
         assert metadata.name == "test-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.entry_point == "test.entry:main"
@@ -285,11 +241,8 @@ class TestFlextPluginMetadata:
     def test_metadata_defaults(self) -> None:
         """Test PluginMetadata default values."""
         metadata = FlextPluginModels.Plugin.PluginMetadata(
-            name="minimal-plugin",
-            version="1.0.0",
-            entry_point="minimal.entry:main",
+            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
         )
-
         assert metadata.name == "minimal-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.description == ""
@@ -308,7 +261,6 @@ class TestFlextPluginMetadata:
             dependencies=["dep1", "dep2"],
             metadata={"key": "value"},
         )
-
         assert metadata.name == "full-plugin"
         assert metadata.version == "2.0.0"
         assert metadata.author == "Test Author"

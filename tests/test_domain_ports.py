@@ -18,17 +18,10 @@ class TestFlextPluginDiscovery:
 
     def test_is_valid_class(self) -> None:
         """Test that FlextPluginDiscovery is a valid class."""
-        # Apenas verificar que a classe existe e é importável
         assert FlextPluginDiscovery is not None
         assert hasattr(FlextPluginDiscovery, "__name__")
 
     def test_class_exists(self) -> None:
         """Test that FlextPluginDiscovery exists and is callable."""
-        # Testar que a classe existe e pode ser referenciada
         assert FlextPluginDiscovery is not None
         assert callable(FlextPluginDiscovery)
-
-
-# NOTA: Este arquivo foi completamente reescrito para testar apenas a REALIDADE.
-# Todos os testes de classes inexistentes foram removidos para evitar import errors
-# e focar apenas no que realmente funciona no código.

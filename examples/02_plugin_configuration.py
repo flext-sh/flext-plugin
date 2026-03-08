@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Plugin Configuration Example - Demonstrates advanced plugin configuration patterns.
 
 This example shows how to create plugins with complex configurations,
@@ -16,9 +15,7 @@ from __future__ import annotations
 
 from flext_core import FlextContainer, t
 
-from flext_plugin import (
-    FlextPluginApi,
-)
+from flext_plugin import FlextPluginApi
 
 
 def create_database_plugin_config() -> dict[str, t.ContainerValue]:
@@ -29,7 +26,7 @@ def create_database_plugin_config() -> dict[str, t.ContainerValue]:
             "port": 5432,
             "database": "flext_dev",
             "username": "flext",
-            "password": "flext_pass",  # In production, use environment variables
+            "password": "flext_pass",
             "pool_size": 5,
             "pool_recycle": 3600,
         },
@@ -38,11 +35,7 @@ def create_database_plugin_config() -> dict[str, t.ContainerValue]:
             "retry_delay": 1.0,
             "exponential_backoff": True,
         },
-        "logging": {
-            "level": "INFO",
-            "format": "json",
-            "include_sql": False,
-        },
+        "logging": {"level": "INFO", "format": "json", "include_sql": False},
         "features": {
             "enable_metrics": True,
             "enable_tracing": True,
@@ -69,24 +62,15 @@ def create_ldap_plugin_config() -> dict[str, t.ContainerValue]:
             "attributes": ["cn", "mail", "memberOf"],
             "page_size": 1000,
         },
-        "cache": {
-            "enabled": True,
-            "ttl_seconds": 300,
-            "max_entries": 10000,
-        },
+        "cache": {"enabled": True, "ttl_seconds": 300, "max_entries": 10000},
     }
 
 
 def main() -> None:
     """Demonstrate plugin configuration patterns."""
-    # 1. Create a database plugin with complex configuration
     create_database_plugin_config()
-
-    # Initialize plugin API
     container = FlextContainer()
     FlextPluginApi(container)
-
-    # 2. Create LDAP plugin with service configuration
     create_ldap_plugin_config()
 
 

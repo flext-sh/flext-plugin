@@ -28,14 +28,10 @@ class FlextPluginApi:
         """
         self.logger = FlextLogger(__name__)
         self.platform = FlextPluginPlatform.PluginPlatformService(
-            container=container or FlextContainer(),
+            container=container or FlextContainer()
         )
 
-    # Core operations with logging composition
-    def discover_plugins(
-        self,
-        paths: list[str],
-    ) -> r[list[FlextPluginPlatform.Plugin]]:
+    def discover_plugins(self, paths: list[str]) -> r[list[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
         if result.is_success:
@@ -43,7 +39,7 @@ class FlextPluginApi:
             self.logger.info(f"Discovered {len(plugins)} plugins")
             return r[list[FlextPluginPlatform.Plugin]].ok(plugins)
         return r[list[FlextPluginPlatform.Plugin]].fail(
-            result.error or "Discovery failed",
+            result.error or "Discovery failed"
         )
 
     def execute_plugin(
@@ -55,7 +51,6 @@ class FlextPluginApi:
         """Execute a plugin by name with the given context."""
         return self.platform.execute_plugin(plugin_name, context, execution_id)
 
-    # Plugin accessors
     def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
         """Get a plugin by name."""
         return self.platform.get_plugin(_plugin_name)
@@ -81,12 +76,10 @@ class FlextPluginApi:
         self.logger.info(f"Loaded plugin: {plugin.name}")
         return r[FlextPluginPlatform.Plugin].ok(plugin)
 
-    # Direct delegation with railway patterns
     def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin) -> r[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
-    # Hot reload operations
     def start_hot_reload(self, paths: list[str]) -> r[bool]:
         """Start hot reload monitoring for the given paths."""
         return self.platform.start_hot_reload(paths)

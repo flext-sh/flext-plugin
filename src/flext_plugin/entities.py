@@ -20,8 +20,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Constants moved to constants.py - use c.Plugin.Entities.SEMANTIC_VERSION_PARTS
-
 
 class FlextPluginEntities:
     """Domain entities for plugin system following Domain-Driven Design patterns.
@@ -53,22 +51,6 @@ class FlextPluginEntities:
     - 100% type safety with Pyrefly strict mode
 
     """
-
-    # ========================================================================
-    # VALUE OBJECTS - Immutable domain values
-    # ========================================================================
-
-    # ========================================================================
-    # ENTITIES - Domain objects with identity and lifecycle
-    # ========================================================================
-
-    # ========================================================================
-    # AGGREGATE ROOTS - Consistency boundaries
-    # ========================================================================
-
-    # ========================================================================
-    # DOMAIN EVENTS - Event sourcing events
-    # ========================================================================
 
     class DomainEvents:
         """Significant plugin domain events for event sourcing.

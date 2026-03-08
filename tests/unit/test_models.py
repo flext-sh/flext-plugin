@@ -25,7 +25,6 @@ class TestFlextPluginModels:
 
     def test_plugin_status_enum(self) -> None:
         """Test PluginStatus enum values and methods."""
-        # Test enum values
         assert FlextPluginConstants.Plugin.PluginStatus.UNKNOWN == "unknown"
         assert FlextPluginConstants.Plugin.PluginStatus.DISCOVERED == "discovered"
         assert FlextPluginConstants.Plugin.PluginStatus.LOADED == "loaded"
@@ -36,21 +35,16 @@ class TestFlextPluginModels:
         assert FlextPluginConstants.Plugin.PluginStatus.DISABLED == "disabled"
         assert FlextPluginConstants.Plugin.PluginStatus.HEALTHY == "healthy"
         assert FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY == "unhealthy"
-
-        # Test class methods
         operational_statuses = (
             FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
         )
         assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE in operational_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.HEALTHY in operational_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.LOADED in operational_statuses
-
         error_statuses = FlextPluginConstants.Plugin.PluginStatus.get_error_statuses()
         assert FlextPluginConstants.Plugin.PluginStatus.ERROR in error_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY in error_statuses
         assert FlextPluginConstants.Plugin.PluginStatus.DISABLED in error_statuses
-
-        # Test instance methods
         assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational()
         assert not FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational()
         assert FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state()
@@ -58,31 +52,22 @@ class TestFlextPluginModels:
 
     def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values."""
-        # Test ETL types
         assert FlextPluginConstants.Plugin.PluginType.TAP == "tap"
         assert FlextPluginConstants.Plugin.PluginType.TARGET == "target"
         assert FlextPluginConstants.Plugin.PluginType.TRANSFORM == "transform"
-
-        # Test architecture types
         assert FlextPluginConstants.Plugin.PluginType.EXTENSION == "extension"
         assert FlextPluginConstants.Plugin.PluginType.SERVICE == "service"
         assert FlextPluginConstants.Plugin.PluginType.MIDDLEWARE == "middleware"
         assert FlextPluginConstants.Plugin.PluginType.TRANSFORMER == "transformer"
-
-        # Test integration types
         assert FlextPluginConstants.Plugin.PluginType.API == "api"
         assert FlextPluginConstants.Plugin.PluginType.DATABASE == "database"
         assert FlextPluginConstants.Plugin.PluginType.NOTIFICATION == "notification"
         assert FlextPluginConstants.Plugin.PluginType.AUTHENTICATION == "authentication"
         assert FlextPluginConstants.Plugin.PluginType.AUTHORIZATION == "authorization"
-
-        # Test utility types
         assert FlextPluginConstants.Plugin.PluginType.UTILITY == "utility"
         assert FlextPluginConstants.Plugin.PluginType.TOOL == "tool"
         assert FlextPluginConstants.Plugin.PluginType.HANDLER == "handler"
         assert FlextPluginConstants.Plugin.PluginType.PROCESSOR == "processor"
-
-        # Test additional types
         assert FlextPluginConstants.Plugin.PluginType.CORE == "core"
         assert FlextPluginConstants.Plugin.PluginType.ADDON == "addon"
         assert FlextPluginConstants.Plugin.PluginType.THEME == "theme"
@@ -95,7 +80,6 @@ class TestFlextPluginModels:
             plugin_version="1.0.0",
             plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
         )
-
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
         assert plugin.plugin_type == FlextPluginConstants.Plugin.PluginType.UTILITY
@@ -103,39 +87,30 @@ class TestFlextPluginModels:
 
     def test_plugin_model_validation(self) -> None:
         """Test Plugin model validation rules."""
-        # Test valid plugin
         plugin = FlextPluginModels.Plugin.Plugin(
             name="valid-plugin",
             plugin_version="1.0.0",
             plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
         )
         assert plugin.name == "valid-plugin"
-
-        # Test invalid plugin name
         with pytest.raises(ValueError):
             FlextPluginModels.Plugin.Plugin(
-                name="",  # Empty name should fail
+                name="",
                 plugin_version="1.0.0",
                 plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
             )
-
-        # Test invalid version format
         with pytest.raises(ValueError):
             FlextPluginModels.Plugin.Plugin(
                 name="test-plugin",
-                plugin_version="invalid-version",  # Invalid format
+                plugin_version="invalid-version",
                 plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
             )
 
     def test_execution_result_creation(self) -> None:
         """Test ExecutionResult creation."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True,
-            data={"output": "result"},
-            error="",
-            execution_time_ms=1500.0,
+            success=True, data={"output": "result"}, error="", execution_time_ms=1500.0
         )
-
         assert result.success is True
         assert result.data == {"output": "result"}
         assert not result.error
@@ -149,7 +124,6 @@ class TestFlextPluginModels:
             error="Plugin execution failed",
             execution_time_ms=500.0,
         )
-
         assert result.success is False
         assert result.error == "Plugin execution failed"
 
@@ -162,7 +136,6 @@ class TestFlextPluginModels:
             discovery_type="file",
             discovery_method="file_system",
         )
-
         assert discovery.name == "test-plugin"
         assert discovery.version == "1.0.0"
         assert discovery.path == Path("/path/to/plugin")
@@ -178,7 +151,6 @@ class TestFlextPluginModels:
             author="Test Author",
             description="Test plugin description",
         )
-
         assert metadata.name == "test-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.author == "Test Author"
@@ -187,11 +159,8 @@ class TestFlextPluginModels:
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
         result = FlextPluginModels.Plugin.ValidationResult(
-            is_valid=True,
-            errors=[],
-            warnings=[],
+            is_valid=True, errors=[], warnings=[]
         )
-
         assert result.is_valid is True
         assert result.errors == []
         assert result.warnings == []
@@ -199,11 +168,8 @@ class TestFlextPluginModels:
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
         result = FlextPluginModels.Plugin.ValidationResult(
-            is_valid=False,
-            errors=["Error 1", "Error 2"],
-            warnings=["Warning 1"],
+            is_valid=False, errors=["Error 1", "Error 2"], warnings=["Warning 1"]
         )
-
         assert result.is_valid is False
         assert len(result.errors) == 2
         assert len(result.warnings) == 1
@@ -211,19 +177,14 @@ class TestFlextPluginModels:
     def test_config_creation(self) -> None:
         """Test Config model creation."""
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            settings={"key": "value"},
+            plugin_name="test-plugin", settings={"key": "value"}
         )
-
         assert config.plugin_name == "test-plugin"
         assert config.settings == {"key": "value"}
 
     def test_registry_creation(self) -> None:
         """Test Registry model creation."""
-        registry = FlextPluginModels.Plugin.Registry(
-            plugins={"plugin1": {}},
-        )
-
+        registry = FlextPluginModels.Plugin.Registry(plugins={"plugin1": {}})
         assert "plugin1" in registry.plugins
         assert isinstance(registry.last_updated, datetime)
         assert isinstance(registry.created_at, datetime)
