@@ -127,7 +127,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="FLEXT Plugin Docker Integration Example"
     )
-    parser.add_argument(
+    _ = parser.add_argument(
         "--test-connections",
         action="store_true",
         help="Test connectivity to Docker services before creating plugins",
