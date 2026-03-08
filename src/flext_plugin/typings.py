@@ -11,7 +11,6 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import Literal, TypeVar
 
 from flext_core import FlextTypes
-from pydantic import BaseModel, ConfigDict
 
 from .constants import FlextPluginConstants as c_plugin
 
@@ -33,14 +32,6 @@ class FlextPluginTypes(FlextTypes):
             [Mapping[str, FlextTypes.ContainerValue]],
             Awaitable[FlextTypes.ContainerValue],
         ]
-
-        class HandlerInfo(BaseModel):
-            """Handler registration info."""
-
-            model_config = ConfigDict(frozen=False, extra="forbid")
-
-            handler: FlextPluginTypes.Handlers.EventHandler
-            priority: int
 
     class Plugin:
         """Core collection and plugin type aliases."""

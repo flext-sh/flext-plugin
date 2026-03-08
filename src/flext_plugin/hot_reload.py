@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, FlextResult
-from pydantic import BaseModel, ConfigDict, Field
 from watchdog.events import (
     DirModifiedEvent,
     FileModifiedEvent,
@@ -23,39 +22,6 @@ from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
 from flext_plugin import FlextPluginModels
-
-
-class HotReloadStatus(BaseModel):
-    """Snapshot of hot-reload runtime state."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    is_watching: bool
-    watched_paths: list[str] = Field(default_factory=list)
-    watch_interval: float
-    debounce_ms: int
-    max_retries: int
-    total_reloads: int
-    recent_reloads: int
-    callback_count: int
-    using_watchdog: bool
-
-
-class ReloadBatchResult(BaseModel):
-    """Batch force-reload results by plugin name."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    plugin_results: list[PluginReloadOutcome] = Field(default_factory=list)
-
-
-class PluginReloadOutcome(BaseModel):
-    """Per-plugin force-reload result."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    plugin_name: str
-    success: bool
 
 
 class FileChangeHandler(FileSystemEventHandler):
