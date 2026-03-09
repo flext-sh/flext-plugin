@@ -19,8 +19,7 @@ from typing import ClassVar
 
 import yaml
 from flext_core import FlextUtilities, r
-from pydantic import field_validator, model_validator
-from pydantic_settings import SettingsConfigDict
+from pydantic import model_validator
 
 from flext_plugin import FlextPluginModels, c, t
 
@@ -979,15 +978,6 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[None].fail(f"Registry save failed: {e}")
-
-    @field_validator("model_config")
-    @classmethod
-    def validate_model_config(cls, v: SettingsConfigDict) -> SettingsConfigDict:
-        """Validate model configuration."""
-        if not isinstance(v, dict):
-            msg = "model_config must be a SettingsConfigDict instance"
-            raise TypeError(msg)
-        return v
 
     @model_validator(mode="after")
     def validate_utilities_configuration(self) -> FlextPluginUtilities:
