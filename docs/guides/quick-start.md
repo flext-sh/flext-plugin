@@ -81,10 +81,7 @@ hello_plugin = create_flext_plugin(
     name="hello-world",
     version="0.9.9",
     plugin_type=PluginType.UTILITY,
-    config={
-        "description": "My first FLEXT plugin",
-        "author": "Your Name"
-    }
+    config={"description": "My first FLEXT plugin", "author": "Your Name"},
 )
 
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
@@ -114,17 +111,14 @@ Create `platform_example.py`:
 from flext_plugin import create_flext_plugin_platform, create_flext_plugin
 from flext_plugin.core.types import PluginType
 
+
 def main():
     # Create plugin platform
-    platform = create_flext_plugin_platform(config={
-        "debug": True
-    })
+    platform = create_flext_plugin_platform(config={"debug": True})
 
     # Create plugin
     plugin = create_flext_plugin(
-        name="hello-world",
-        version="0.9.9",
-        plugin_type=PluginType.UTILITY
+        name="hello-world", version="0.9.9", plugin_type=PluginType.UTILITY
     )
 
     try:
@@ -153,6 +147,7 @@ def main():
     finally:
         # Cleanup
         platform.shutdown()
+
 
 # Run the example
 run(main())
@@ -329,6 +324,7 @@ FLEXT Plugin can automatically discover plugins in directories:
 ```python
 from flext_plugin.application.services import FlextPluginDiscoveryService
 
+
 def discover_plugins():
     """Discover plugins in current directory."""
     discovery = FlextPluginDiscoveryService()
@@ -344,6 +340,7 @@ def discover_plugins():
     else:
         print(f"Discovery failed: {result.error}")
 
+
 # Run discovery
 run(discover_plugins())
 ```
@@ -356,6 +353,7 @@ Create `test_greeting_plugin.py`:
 import pytest
 from custom_plugin import GreetingPlugin
 from flext_plugin import create_flext_plugin_platform
+
 
 class TestGreetingPlugin:
     """Test suite for GreetingPlugin."""
@@ -410,11 +408,11 @@ class TestGreetingPlugin:
 
         # Execute through platform
         execute_result = platform.execute_plugin(
-            plugin.name,
-            {"name": "Platform", "language": "english"}
+            plugin.name, {"name": "Platform", "language": "english"}
         )
         assert execute_result.success()
         assert "Hello, Platform!" in str(execute_result.data)
+
 
 # Run tests
 if __name__ == "__main__":
@@ -439,20 +437,18 @@ For development, you can enable hot reload to automatically reload plugins when 
 from flext_plugin import enable_hot_reload
 from flext_plugin import create_flext_plugin_platform
 
+
 def development_server():
     """Development server with hot reload."""
 
     # Enable hot reload
     enable_hot_reload(
         watch_paths=["./"],  # Watch current directory
-        reload_on_change=True
+        reload_on_change=True,
     )
 
     # Create platform
-    platform = create_flext_plugin_platform(config={
-        "hot_reload": True,
-        "debug": True
-    })
+    platform = create_flext_plugin_platform(config={"hot_reload": True, "debug": True})
 
     print("🔥 Hot reload enabled!")
     print("Modify plugin files to see live updates...")
@@ -465,6 +461,7 @@ def development_server():
     except KeyboardInterrupt:
         print("\nShutting down development server...")
         platform.shutdown()
+
 
 # Run development server
 run(development_server())

@@ -69,17 +69,23 @@ class FlextPluginPlatform:
         """Check if plugin is currently loaded"""
 
     # Discovery
-    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
+    def scan_directory(
+        self, directory_path: str
+    ) -> FlextResult[list[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
     def validate_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-    def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginModels.Config]:
+    def get_plugin_config(
+        self, plugin_name: str
+    ) -> FlextResult[FlextPluginModels.Config]:
         """Get plugin configuration"""
 
-    def update_plugin_config(self, plugin_name: str, config: FlextPluginModels.Config) -> FlextResult[bool]:
+    def update_plugin_config(
+        self, plugin_name: str, config: FlextPluginModels.Config
+    ) -> FlextResult[bool]:
         """Update plugin configuration"""
 ```
 
@@ -92,11 +98,11 @@ class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
     # Properties
-    name: str                           # Plugin identifier
-    plugin_version: str                 # Plugin version
-    status: PluginStatus               # Current lifecycle status
-    config: t.Dict             # Plugin configuration
-    metadata: FlextPluginModels.Metadata      # Plugin metadata
+    name: str  # Plugin identifier
+    plugin_version: str  # Plugin version
+    status: PluginStatus  # Current lifecycle status
+    config: t.Dict  # Plugin configuration
+    metadata: FlextPluginModels.Metadata  # Plugin metadata
 
     # Business Methods
     def activate(self) -> bool:
@@ -137,10 +143,11 @@ ______________________________________________________________________
 ```python
 class PluginStatus(str, Enum):
     """Plugin lifecycle status"""
-    INACTIVE = "INACTIVE"              # Plugin created but not loaded
-    LOADED = "LOADED"                  # Plugin loaded but not active
-    ACTIVE = "ACTIVE"                  # Plugin active and running
-    ERROR = "ERROR"                    # Plugin in error state
+
+    INACTIVE = "INACTIVE"  # Plugin created but not loaded
+    LOADED = "LOADED"  # Plugin loaded but not active
+    ACTIVE = "ACTIVE"  # Plugin active and running
+    ERROR = "ERROR"  # Plugin in error state
 ```
 
 ### PluginType
@@ -148,12 +155,13 @@ class PluginStatus(str, Enum):
 ```python
 class PluginType(str, Enum):
     """Plugin type classification"""
-    UTILITY = "UTILITY"                # General utility plugin
-    SERVICE = "SERVICE"                # Service plugin
-    MIDDLEWARE = "MIDDLEWARE"          # Middleware plugin
-    TAP = "TAP"                       # Singer tap plugin
-    TARGET = "TARGET"                 # Singer target plugin
-    TRANSFORM = "TRANSFORM"           # DBT transform plugin
+
+    UTILITY = "UTILITY"  # General utility plugin
+    SERVICE = "SERVICE"  # Service plugin
+    MIDDLEWARE = "MIDDLEWARE"  # Middleware plugin
+    TAP = "TAP"  # Singer tap plugin
+    TARGET = "TARGET"  # Singer target plugin
+    TRANSFORM = "TRANSFORM"  # DBT transform plugin
 ```
 
 ______________________________________________________________________
@@ -168,7 +176,7 @@ def create_flext_plugin(
     version: str,
     config: t.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
-    **kwargs
+    **kwargs,
 ) -> FlextPluginModels.Entity:
     """Create a new plugin entity"""
 ```
@@ -176,9 +184,7 @@ def create_flext_plugin(
 ### create_flext_plugin_platform
 
 ```python
-def create_flext_plugin_platform(
-    config: t.Dict | None = None
-) -> FlextPluginPlatform:
+def create_flext_plugin_platform(config: t.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
 
@@ -195,7 +201,9 @@ class FlextPluginDiscoveryService:
     def scan_directory(self, path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+    def validate_plugin_integrity(
+        self, plugin: FlextPluginModels.Entity
+    ) -> FlextResult[bool]:
         """Validate plugin integrity"""
 ```
 
@@ -207,8 +215,8 @@ ______________________________________________________________________
 
 ```python
 # Environment variables for hot reload
-FLEXT_PLUGIN_HOT_RELOAD=true          # Enable hot reload
-FLEXT_PLUGIN_WATCH_INTERVAL=2         # Watch interval in seconds
+FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
+FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
 ```
 
 ______________________________________________________________________
@@ -234,11 +242,14 @@ else:
 class FlextPluginError(Exception):
     """Base plugin system error"""
 
+
 class FlextPluginSettingsurationError(FlextPluginError):
     """Plugin configuration error"""
 
+
 class FlextPluginLoadingError(FlextPluginError):
     """Plugin loading error"""
+
 
 class FlextPluginExecutionError(FlextPluginError):
     """Plugin execution error"""
@@ -273,12 +284,14 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 def plugin_operation() -> FlextResult[bool]:
     try:
         # Plugin operation
         return FlextResult[bool].ok(True)
     except Exception as e:
         return FlextResult[bool].fail(str(e))
+
 
 # Use dependency injection
 from flext_core import FlextBus
@@ -312,13 +325,14 @@ platform = FlextPluginPlatform(container)
 # Singer tap plugin example
 from flext_plugin import FlextPlugin, PluginType
 
+
 class MyTapPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="tap-my-source",
             version="0.9.9",
             config={"plugin_type": PluginType.TAP},
-            **kwargs
+            **kwargs,
         )
 ```
 

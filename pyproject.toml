@@ -117,32 +117,6 @@ pep621_dev_dependency_groups = [
   "dev",
 ]
 
-[tool.pytest.ini_options]
-addopts = [
-  "--strict-markers",
-]
-markers = [
-  "docker: tests requiring Docker",
-  "e2e: end-to-end integration tests",
-  "edge_cases: edge case tests",
-  "integration: integration tests",
-  "performance: performance and benchmark tests",
-  "resilience: resilience tests",
-  "slow: slow-running tests",
-  "stress: stress tests",
-  "unit: unit tests",
-]
-minversion = "8.0"
-python_classes = [
-  "Test*",
-]
-python_files = [
-  "*_test.py",
-  "*_tests.py",
-  "test_*.py",
-]
-
-# [MANAGED] pyrefly
 [tool.pyrefly]
 ignore-errors-in-generated-code = true
 project-excludes = [
@@ -575,279 +549,30 @@ split-on-trailing-comma = true
 "**/typings.py" = [
   "RUF036",
 ]
-[lint.per-file-ignores]
-"**/.vulture_whitelist.py" = [
-  "ALL",
+
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-markers",
 ]
-"**/*_pb2*.py" = [
-  "ALL",
+markers = [
+  "docker: tests requiring Docker",
+  "e2e: end-to-end integration tests",
+  "edge_cases: edge case tests",
+  "integration: integration tests",
+  "performance: performance and benchmark tests",
+  "resilience: resilience tests",
+  "slow: slow-running tests",
+  "stress: stress tests",
+  "unit: unit tests",
 ]
-"**/*docs*" = [
-  "INP001",
-  "S404",
-  "S603",
-  "T201",
+minversion = "8.0"
+python_classes = [
+  "Test*",
 ]
-"**/*examples*" = [
-  "ANN401",
-  "C901",
-  "D103",
-  "EXE001",
-  "FBT001",
-  "FBT002",
-  "FIX002",
-  "INP001",
-  "N999",
-  "PLR2004",
-  "S105",
-  "S106",
-  "S112",
-  "S404",
-  "S603",
-  "T201",
-  "TID252",
-]
-"**/*exceptions*" = [
-  "A001",
-  "S105",
-  "SLF001",
-]
-"**/*instrumentation*" = [
-  "C901",
-  "FBT001",
-  "SLF001",
-]
-"**/*loggings*" = [
-  "PLR0904",
-  "PLW0603",
-]
-"**/*middleware*" = [
-  "ANN401",
-  "FBT001",
-  "FBT002",
-  "PLC2801",
-  "S107",
-]
-"**/*models*" = [
-  "ANN401",
-  "F821",
-  "FBT001",
-  "PLC2701",
-  "PLR0206",
-  "PLW0603",
-]
-"**/*oracle*" = [
-  "DTZ007",
-]
-"**/*result*" = [
-  "PLC2701",
-  "SLF001",
-]
-"**/*scripts*" = [
-  "EXE001",
-  "FIX002",
-  "INP001",
-  "PLR0911",
-  "PLR0912",
-  "PLR0915",
-  "PLR2004",
-  "PLW2901",
-  "S105",
-  "S107",
-  "S404",
-  "S603",
-  "T201",
-  "TID252",
-]
-"**/*service*" = [
-  "N815",
-  "PLC2801",
-  "S404",
-  "S603",
-  "SLF001",
-]
-"**/*subprocess_utils*" = [
-  "S404",
-  "S603",
-]
-"**/*tests*" = [
-  "ARG001",
-  "ARG002",
-  "ARG004",
-  "ARG005",
-  "B009",
-  "B010",
-  "B018",
-  "B903",
-  "C901",
-  "D102",
-  "D103",
-  "EM102",
-  "F822",
-  "FBT001",
-  "FBT003",
-  "FURB118",
-  "INP001",
-  "N818",
-  "N999",
-  "PLC0206",
-  "PLC1901",
-  "PLC2701",
-  "PLC2801",
-  "PLR0904",
-  "PLR0912",
-  "PLR0913",
-  "PLR0914",
-  "PLR0915",
-  "PLR0917",
-  "PLR1704",
-  "PLR2004",
-  "PLR6301",
-  "PLW1641",
-  "PLW2901",
-  "PT011",
-  "PT018",
-  "PT019",
-  "RUF029",
-  "S101",
-  "S103",
-  "S104",
-  "S105",
-  "S106",
-  "S107",
-  "S108",
-  "S110",
-  "S112",
-  "S311",
-  "S404",
-  "S603",
-  "S608",
-  "SIM105",
-  "SIM117",
-  "SLF001",
-  "TD002",
-  "TD003",
-  "TID252",
-  "TRY003",
-  "TRY004",
-]
-"**/*typings*" = [
-  "ANN401",
-]
-"**/*utilities*" = [
-  "C901",
-  "PLW1510",
-  "S404",
-  "S603",
-]
-"**/__init__.py" = [
-  "D107",
-  "F822",
-  "N999",
-  "RUF067",
-]
-"**/_utilities/parser.py" = [
-  "ARG004",
-  "FBT001",
-]
-"**/config.py" = [
-  "ANN401",
-  "FBT001",
-  "SLF001",
-]
-"**/constants.py" = [
-  "S105",
-]
-"**/container.py" = [
-  "ANN401",
-  "SLF001",
-]
-"**/file_tools.py" = [
-  "D102",
-]
-"**/managers.py" = [
-  "S105",
-]
-"**/models.py" = [
-  "PLC2801",
-  "S102",
-]
-"**/output.py" = [
-  "FBT001",
-]
-"**/plugins/*.py" = [
-  "FBT001",
-  "FBT002",
-  "S404",
-  "S603",
-  "S607",
-  "TID252",
-]
-"**/providers/*.py" = [
-  "S106",
-  "S107",
-]
-"**/services/prompts.py" = [
-  "D102",
-  "D107",
-]
-"**/settings.py" = [
-  "ANN401",
-]
-"**/singer/*.py" = [
-  "S404",
-  "S603",
-]
-"**/subprocess.py" = [
-  "S404",
-  "S603",
-]
-"**/tools/*.py" = [
-  "FBT001",
-  "FBT002",
-  "N802",
-  "S404",
-  "S603",
-  "S607",
-  "T201",
-]
-"**/tools/**/*.py" = [
-  "FBT001",
-  "FBT002",
-  "N802",
-  "S404",
-  "S603",
-  "S607",
-  "T201",
-]
-"**/typings.py" = [
-  "RUF036",
+python_files = [
+  "*_test.py",
+  "*_tests.py",
+  "test_*.py",
 ]
 
-# [MANAGED] codespell
-exclude = [
-  ".git",
-  ".mypy_cache",
-  ".pytest_cache",
-  ".ruff_cache",
-  ".venv",
-  "__pycache__",
-  "archive",
-  "backup",
-  "build",
-  "dist",
-  "htmlcov",
-  "temp-backup",
-  "typings",
-  "vendor",
-  "venv",
-]
-fix = true
-line-length = 88
-preview = true
-respect-gitignore = true
-show-fixes = true
-src = [
-  "src",
-]
-target-version = "py313"
+# [MANAGED] pyrefly

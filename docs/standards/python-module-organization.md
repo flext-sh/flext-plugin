@@ -163,8 +163,12 @@ class CustomPlugin(FlextPlugin):
 **Service Pattern**:
 
 ```python
-from flext_plugin.application.services import FlextPluginService, FlextPluginDiscoveryService
+from flext_plugin.application.services import (
+    FlextPluginService,
+    FlextPluginDiscoveryService,
+)
 from flext_plugin.application.handlers import FlextPluginHandler
+
 
 class PluginWorkflow:
     def __init__(self, service: FlextPluginService):
@@ -173,7 +177,8 @@ class PluginWorkflow:
     def deploy_plugin(self, plugin_config: dict) -> FlextResult[FlextPlugin]:
         """Complete plugin deployment workflow"""
         return (
-            self.service.validate_plugin_config(plugin_config)
+            self.service
+            .validate_plugin_config(plugin_config)
             .flat_map(lambda config: self.service.create_plugin(config))
             .flat_map(lambda plugin: self.service.register_plugin(plugin))
             .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
@@ -218,8 +223,10 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class PluginSystemSettings(FlextSettings):
     """Plugin system configuration with environment support"""
+
     discovery_paths: t.StringList = ["./plugins", "~/.flext/plugins"]
     hot_reload_enabled: bool = True
     watch_interval: int = 2
@@ -229,6 +236,7 @@ class PluginSystemSettings(FlextSettings):
     class Config:
         env_prefix = "FLEXT_PLUGIN_"
         env_file = ".env"
+
 
 # Environment variables:
 # FLEXT_PLUGIN_DISCOVERY_PATHS=/opt/plugins:/usr/local/plugins
@@ -246,22 +254,22 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 
 ```python
 # Core plugin patterns
-FlextPlugin                  # Main plugin entity
-FlextPluginModels.Config           # Plugin configuration entity
-FlextPluginModels.Metadata         # Plugin metadata value object
-FlextPluginModels.Registry         # Plugin collection aggregate
-FlextPluginPlatform         # Main platform orchestrator
+FlextPlugin  # Main plugin entity
+FlextPluginModels.Config  # Plugin configuration entity
+FlextPluginModels.Metadata  # Plugin metadata value object
+FlextPluginModels.Registry  # Plugin collection aggregate
+FlextPluginPlatform  # Main platform orchestrator
 
 # Plugin management patterns
-FlextPluginService          # Core plugin management service
-FlextPluginDiscoveryService # Plugin discovery and scanning
-FlextPluginHandler          # CQRS command/query handler
-FlextPlugins.Manager      # Plugin management interface
+FlextPluginService  # Core plugin management service
+FlextPluginDiscoveryService  # Plugin discovery and scanning
+FlextPluginHandler  # CQRS command/query handler
+FlextPlugins.Manager  # Plugin management interface
 
 # Plugin lifecycle patterns
-FlextPluginLoader           # Dynamic plugin loading
-FlextPluginWatcher          # File system watching
-FlextPluginReloader         # Hot-reload management
+FlextPluginLoader  # Dynamic plugin loading
+FlextPluginWatcher  # File system watching
+FlextPluginReloader  # Hot-reload management
 ```
 
 **Rationale**: Clear namespace separation prevents conflicts across FLEXT's 32 projects.
@@ -270,18 +278,18 @@ FlextPluginReloader         # Hot-reload management
 
 ```python
 # Core functionality modules
-types.py                    # Plugin types, enums, and result objects
-entities.py                 # Domain entities (FlextPlugin, FlextPluginModels.Registry)
-ports.py                    # Domain interfaces and contracts
-services.py                 # Application services and business logic
-handlers.py                 # CQRS command and query handlers
+types.py  # Plugin types, enums, and result objects
+entities.py  # Domain entities (FlextPlugin, FlextPluginModels.Registry)
+ports.py  # Domain interfaces and contracts
+services.py  # Application services and business logic
+handlers.py  # CQRS command and query handlers
 
 # Platform integration modules
-platform.py                 # Main platform orchestration
-simple_api.py               # Factory functions and utilities
-hot_reload.py               # Hot-reload system integration
-discovery.py                # High-level plugin discovery
-loader.py                   # Dynamic plugin loading mechanisms
+platform.py  # Main platform orchestration
+simple_api.py  # Factory functions and utilities
+hot_reload.py  # Hot-reload system integration
+discovery.py  # High-level plugin discovery
+loader.py  # Dynamic plugin loading mechanisms
 ```
 
 **Pattern**: One primary concern per module with cohesive functionality.
@@ -290,24 +298,24 @@ loader.py                   # Dynamic plugin loading mechanisms
 
 ```python
 # Singer ETL plugin types (Meltano integration)
-PluginType.TAP              # Data extraction from sources
-PluginType.TARGET           # Data loading to destinations
-PluginType.TRANSFORM        # DBT-based transformations
+PluginType.TAP  # Data extraction from sources
+PluginType.TARGET  # Data loading to destinations
+PluginType.TRANSFORM  # DBT-based transformations
 
 # Architecture plugin types
-PluginType.SERVICE          # Microservice components
-PluginType.MIDDLEWARE       # Request/response processing
-PluginType.EXTENSION        # Platform extensions
+PluginType.SERVICE  # Microservice components
+PluginType.MIDDLEWARE  # Request/response processing
+PluginType.EXTENSION  # Platform extensions
 
 # Integration plugin types
-PluginType.API              # REST/GraphQL endpoints
-PluginType.DATABASE         # Database connectivity
-PluginType.AUTHENTICATION   # Auth providers and strategies
+PluginType.API  # REST/GraphQL endpoints
+PluginType.DATABASE  # Database connectivity
+PluginType.AUTHENTICATION  # Auth providers and strategies
 
 # Utility plugin types
-PluginType.UTILITY          # General-purpose utilities
-PluginType.TOOL             # Development and REDACTED_LDAP_BIND_PASSWORD tools
-PluginType.PROCESSOR        # Data processing components
+PluginType.UTILITY  # General-purpose utilities
+PluginType.TOOL  # Development and REDACTED_LDAP_BIND_PASSWORD tools
+PluginType.PROCESSOR  # Data processing components
 ```
 
 ______________________________________________________________________
@@ -323,17 +331,16 @@ ______________________________________________________________________
 from flext_plugin import (
     FlextPluginPlatform,
     create_flext_plugin,
-    create_flext_plugin_platform
+    create_flext_plugin_platform,
 )
 from flext_plugin.core.types import PluginStatus, PluginType
+
 
 # Use patterns directly
 def deploy_plugin():
     platform = create_flext_plugin_platform()
     plugin = create_flext_plugin(
-        name="data-processor",
-        version="0.9.9",
-        plugin_type=PluginType.PROCESSOR
+        name="data-processor", version="0.9.9", plugin_type=PluginType.PROCESSOR
     )
     return platform.register_plugin(plugin)
 ```
@@ -359,7 +366,7 @@ from flext_plugin import (
     create_flext_plugin,
     create_flext_plugin_config,
     create_flext_plugin_metadata,
-    create_flext_plugin_registry
+    create_flext_plugin_registry,
 )
 
 # Simplified plugin creation
@@ -370,8 +377,8 @@ plugin = create_flext_plugin(
     config={
         "description": "API Gateway plugin",
         "author": "FLEXT Team",
-        "endpoints": ["/api/v1/*", "/api/v2/*"]
-    }
+        "endpoints": ["/api/v1/*", "/api/v2/*"],
+    },
 )
 ```
 
@@ -503,11 +510,10 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 # Factory pattern for plugin creation
 def create_singer_tap_plugin(
-    name: str,
-    version: str,
-    tap_config: t.Dict
+    name: str, version: str, tap_config: t.Dict
 ) -> FlextResult[FlextPlugin]:
     """Create Singer tap plugin with validation."""
     try:
@@ -518,20 +524,21 @@ def create_singer_tap_plugin(
             config={
                 **tap_config,
                 "singer_spec": "0.9.9",
-                "description": f"Singer tap for {name} data extraction"
-            }
+                "description": f"Singer tap for {name} data extraction",
+            },
         )
         return FlextResult[bool].ok(plugin)
     except Exception as e:
         return FlextResult[bool].fail(f"Failed to create tap plugin: {e}")
 
+
 # Usage with railway-oriented chaining
 def deploy_tap_plugin(config: dict) -> FlextResult[FlextPlugin]:
     return (
         validate_tap_config(config)
-        .flat_map(lambda cfg: create_singer_tap_plugin(
-            cfg["name"], cfg["version"], cfg
-        ))
+        .flat_map(
+            lambda cfg: create_singer_tap_plugin(cfg["name"], cfg["version"], cfg)
+        )
         .flat_map(lambda plugin: register_plugin(plugin))
         .flat_map(lambda plugin: activate_plugin(plugin.id))
     )
@@ -562,6 +569,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 
 class PluginLifecycleManager:
     """Manages plugin lifecycle with state transitions."""
@@ -671,6 +679,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class AdvancedPluginDiscovery:
     """Advanced plugin discovery with filtering and validation."""
 
@@ -679,9 +688,7 @@ class AdvancedPluginDiscovery:
         self.core_discovery = PluginDiscovery()
 
     def discover_plugins_by_type(
-        self,
-        plugin_type: PluginType,
-        paths: t.StringList
+        self, plugin_type: PluginType, paths: t.StringList
     ) -> FlextResult[List[FlextPlugin]]:
         """Discover plugins filtered by type."""
         try:
@@ -692,8 +699,9 @@ class AdvancedPluginDiscovery:
                 if result.success:
                     # Filter by type
                     typed_plugins = [
-                        p for p in result.data
-                        if hasattr(p, 'plugin_type') and p.plugin_type == plugin_type
+                        p
+                        for p in result.data
+                        if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
                     ]
                     all_plugins.extend(typed_plugins)
 
@@ -702,7 +710,9 @@ class AdvancedPluginDiscovery:
         except Exception as e:
             return FlextResult[bool].fail(f"Plugin discovery failed: {e}")
 
-    def discover_singer_plugins(self, meltano_path: str) -> FlextResult[dict[str, List[FlextPlugin]]]:
+    def discover_singer_plugins(
+        self, meltano_path: str
+    ) -> FlextResult[dict[str, List[FlextPlugin]]]:
         """Discover Singer plugins from Meltano project structure."""
         try:
             meltano_yml_path = Path(meltano_path) / "meltano.yml"
@@ -715,8 +725,12 @@ class AdvancedPluginDiscovery:
             # Discover by Singer plugin type
             singer_plugins = {
                 "taps": self.discover_plugins_by_type(PluginType.TAP, [meltano_path]),
-                "targets": self.discover_plugins_by_type(PluginType.TARGET, [meltano_path]),
-                "transforms": self.discover_plugins_by_type(PluginType.TRANSFORM, [meltano_path])
+                "targets": self.discover_plugins_by_type(
+                    PluginType.TARGET, [meltano_path]
+                ),
+                "transforms": self.discover_plugins_by_type(
+                    PluginType.TRANSFORM, [meltano_path]
+                ),
             }
 
             # Validate against meltano.yml
@@ -724,10 +738,11 @@ class AdvancedPluginDiscovery:
             for category, plugins_result in singer_plugins.items():
                 if plugins_result.success:
                     validated = self._validate_against_meltano_config(
-                        plugins_result.data,
-                        meltano_config.get(category, [])
+                        plugins_result.data, meltano_config.get(category, [])
                     )
-                    validated_plugins[category] = validated.data if validated.success else []
+                    validated_plugins[category] = (
+                        validated.data if validated.success else []
+                    )
 
             return FlextResult[bool].ok(validated_plugins)
 
@@ -766,6 +781,7 @@ from flext_core import t
 from flext_core import u
 from typing import List, Dict
 from datetime import datetime
+
 
 class FlextPlugin(FlextModels.Entity):
     """
@@ -807,7 +823,9 @@ class FlextPlugin(FlextModels.Entity):
             return FlextResult[bool].fail("Plugin already active")
 
         if self.status not in [PluginStatus.LOADED, PluginStatus.INACTIVE]:
-            return FlextResult[bool].fail(f"Cannot activate plugin in {self.status} state")
+            return FlextResult[bool].fail(
+                f"Cannot activate plugin in {self.status} state"
+            )
 
         # Check dependencies
         if not self._validate_dependencies():
@@ -831,7 +849,7 @@ class FlextPlugin(FlextModels.Entity):
             "plugin_id": str(self.id),
             "plugin_name": self.name,
             "timestamp": self.last_activated.isoformat(),
-            "plugin_type": self.plugin_type.value
+            "plugin_type": self.plugin_type.value,
         })
 
         return FlextResult[bool].ok(data=True)
@@ -850,7 +868,7 @@ class FlextPlugin(FlextModels.Entity):
             "plugin_id": str(self.id),
             "success": success,
             "execution_time": execution_time,
-            "timestamp": self.last_executed.isoformat()
+            "timestamp": self.last_executed.isoformat(),
         })
 
     def get_health_status(self) -> t.Dict:
@@ -858,15 +876,23 @@ class FlextPlugin(FlextModels.Entity):
         if self.execution_count == 0:
             success_rate = 0.0
         else:
-            success_rate = (self.execution_count - self.error_count) / self.execution_count
+            success_rate = (
+                self.execution_count - self.error_count
+            ) / self.execution_count
 
         return {
             "status": self.status.value,
             "execution_count": self.execution_count,
             "error_count": self.error_count,
             "success_rate": success_rate,
-            "last_executed": self.last_executed.isoformat() if self.last_executed else None,
-            "health": "healthy" if success_rate > 0.9 else "degraded" if success_rate > 0.5 else "unhealthy"
+            "last_executed": self.last_executed.isoformat()
+            if self.last_executed
+            else None,
+            "health": "healthy"
+            if success_rate > 0.9
+            else "degraded"
+            if success_rate > 0.5
+            else "unhealthy",
         }
 
     def _validate_dependencies(self) -> bool:
@@ -1122,6 +1148,7 @@ ______________________________________________________________________
 from functools import cached_property
 from typing import Optional, Dict
 
+
 class LazyPluginLoader:
     """Lazy loading pattern for plugin resources."""
 
@@ -1150,16 +1177,14 @@ class LazyPluginLoader:
     @cached_property
     def plugin_class(self) -> FlextResult[type]:
         """Lazy load plugin class."""
-        return (
-            self.plugin_module
-            .flat_map(lambda module: self._extract_plugin_class(module))
+        return self.plugin_module.flat_map(
+            lambda module: self._extract_plugin_class(module)
         )
 
     def create_instance(self, *args, **kwargs) -> FlextResult[FlextPlugin]:
         """Create plugin instance with lazy loading."""
-        return (
-            self.plugin_class
-            .flat_map(lambda cls: self._instantiate_plugin(cls, *args, **kwargs))
+        return self.plugin_class.flat_map(
+            lambda cls: self._instantiate_plugin(cls, *args, **kwargs)
         )
 
     def _extract_plugin_class(self, module: object) -> FlextResult[type]:
@@ -1167,17 +1192,23 @@ class LazyPluginLoader:
         class_name = self.plugin_config.get("class_name", "Plugin")
 
         if not hasattr(module, class_name):
-            return FlextResult[bool].fail(f"Plugin class '{class_name}' not found in module")
+            return FlextResult[bool].fail(
+                f"Plugin class '{class_name}' not found in module"
+            )
 
         plugin_class = getattr(module, class_name)
 
         # Validate plugin class
         if not issubclass(plugin_class, FlextPlugin):
-            return FlextResult[bool].fail(f"Class '{class_name}' is not a FlextPlugin subclass")
+            return FlextResult[bool].fail(
+                f"Class '{class_name}' is not a FlextPlugin subclass"
+            )
 
         return FlextResult[bool].ok(plugin_class)
 
-    def _instantiate_plugin(self, plugin_class: type, *args, **kwargs) -> FlextResult[FlextPlugin]:
+    def _instantiate_plugin(
+        self, plugin_class: type, *args, **kwargs
+    ) -> FlextResult[FlextPlugin]:
         """Instantiate plugin with error handling."""
         try:
             instance = plugin_class(*args, **kwargs)
@@ -1195,6 +1226,7 @@ from typing import Callable, Optional
 import hashlib
 import json
 
+
 class PluginCache:
     """Plugin-aware caching system."""
 
@@ -1206,9 +1238,10 @@ class PluginCache:
     def cache_plugin_result(
         self,
         cache_key_func: Callable[..., str],
-        invalidate_on_plugin_change: bool = True
+        invalidate_on_plugin_change: bool = True,
     ):
         """Decorator for caching plugin operation results."""
+
         def decorator(func: Callable[..., FlextResult[object]]):
             @wraps(func)
             def wrapper(*args, **kwargs) -> FlextResult[object]:
@@ -1225,13 +1258,16 @@ class PluginCache:
 
                 # Cache successful results
                 if result.success:
-                    self._cache_result(cache_key, result.data, {
-                        "invalidate_on_plugin_change": invalidate_on_plugin_change
-                    })
+                    self._cache_result(
+                        cache_key,
+                        result.data,
+                        {"invalidate_on_plugin_change": invalidate_on_plugin_change},
+                    )
 
                 return result
 
             return wrapper
+
         return decorator
 
     def invalidate_plugin_cache(self, plugin_id: str) -> None:
@@ -1255,6 +1291,7 @@ class PluginCache:
 
         # Check TTL
         import time
+
         if time.time() - cache_entry["timestamp"] > self.ttl:
             del self._cache[cache_key]
             return None
@@ -1267,21 +1304,27 @@ class PluginCache:
 
         # Implement LRU eviction if needed
         if len(self._cache) >= self.max_size:
-            oldest_key = min(self._cache.keys(), key=lambda k: self._cache[k]["timestamp"])
+            oldest_key = min(
+                self._cache.keys(), key=lambda k: self._cache[k]["timestamp"]
+            )
             del self._cache[oldest_key]
 
         self._cache[cache_key] = {
             "data": data,
             "timestamp": time.time(),
-            "metadata": metadata
+            "metadata": metadata,
         }
+
 
 # Usage example
 plugin_cache = PluginCache()
 
+
 @plugin_cache.cache_plugin_result(
-    cache_key_func=lambda plugin_id, config: f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}",
-    invalidate_on_plugin_change=True
+    cache_key_func=lambda plugin_id, config: (
+        f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}"
+    ),
+    invalidate_on_plugin_change=True,
 )
 def execute_plugin_cached(plugin_id: str, config: t.Dict) -> FlextResult[object]:
     """Execute plugin with caching."""
@@ -1320,6 +1363,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class PluginInterface(Protocol):
     """Protocol defining plugin interface with complete type safety."""
 
@@ -1335,15 +1379,17 @@ class PluginInterface(Protocol):
         """Cleanup plugin resources."""
         ...
 
+
 # ✅ Generic plugin handler with type safety
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
+
 
 def process_plugin_data(
     plugin: PluginInterface,
     data: t.Dict,
     transformer: Callable[[t.Dict], T],
-    validator: Callable[[T], FlextResult[U]]
+    validator: Callable[[T], FlextResult[U]],
 ) -> FlextResult[U]:
     """Process plugin data with complete type safety."""
     execution_result = plugin.execute(data)
@@ -1357,6 +1403,7 @@ def process_plugin_data(
     except Exception as e:
         return FlextResult[bool].fail(f"Data processing failed: {e}")
 
+
 # ❌ Avoid untyped plugin interfaces
 def execute_plugin(plugin, data):  # Missing types
     return plugin.execute(data)
@@ -1367,6 +1414,7 @@ def execute_plugin(plugin, data):  # Missing types
 ```python
 # ✅ Plugin-specific error handling with FlextResult
 from flext_plugin.core.types import PluginError
+
 
 def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
     """Plugin operation with comprehensive error handling."""
@@ -1389,7 +1437,7 @@ def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
                 "Plugin execution failed",
                 plugin_name=plugin.name,
                 plugin_version=plugin.plugin_version,
-                error=result.error
+                error=result.error,
             )
             return result
 
@@ -1400,25 +1448,36 @@ def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
         return FlextResult[bool].fail(f"Plugin error: {e}")
     except Exception as e:
         # Handle unexpected errors
-        logger.exception("Unexpected error in plugin operation", plugin_name=plugin.name)
+        logger.exception(
+            "Unexpected error in plugin operation", plugin_name=plugin.name
+        )
         return FlextResult[bool].fail(f"Unexpected error: {e}")
+
 
 # ✅ Plugin error hierarchy
 class PluginError(FlextExceptions.ProcessingError):
     """Base plugin error."""
+
     pass
+
 
 class PluginConfigurationError(PluginError):
     """Plugin configuration error."""
+
     pass
+
 
 class PluginDependencyError(PluginError):
     """Plugin dependency error."""
+
     pass
+
 
 class PluginExecutionError(PluginError):
     """Plugin execution error."""
+
     pass
+
 
 # ❌ Avoid raising exceptions in plugin business logic
 def bad_plugin_operation(plugin: FlextPlugin) -> None:
@@ -1469,10 +1528,7 @@ class DataProcessorPlugin(FlextPlugin):
         ```
 
     Example:
-        >>> config = FlextPluginModels.Config({
-        ...     "batch_size": 500,
-        ...     "formats": ["json"]
-        ... })
+        >>> config = FlextPluginModels.Config({"batch_size": 500, "formats": ["json"]})
         >>> plugin = DataProcessorPlugin(config=config)
         >>> plugin.initialize()
         >>> result = plugin.execute({"data": [...]})
@@ -1501,7 +1557,7 @@ class DataProcessorPlugin(FlextPlugin):
         self,
         config: Optional[FlextPluginModels.Config] = None,
         metadata: Optional[FlextPluginModels.Metadata] = None,
-        **kwargs: object
+        **kwargs: object,
     ) -> None:
         """
         Initialize data processor plugin with configuration.
@@ -1524,7 +1580,7 @@ class DataProcessorPlugin(FlextPlugin):
             >>> config = FlextPluginModels.Config({
             ...     "batch_size": 1000,
             ...     "timeout_seconds": 60,
-            ...     "formats": ["json", "parquet"]
+            ...     "formats": ["json", "parquet"],
             ... })
             >>> plugin = DataProcessorPlugin(config=config)
         """
@@ -1533,13 +1589,10 @@ class DataProcessorPlugin(FlextPlugin):
             version="2.1.0",
             config=config,
             metadata=metadata,
-            **kwargs
+            **kwargs,
         )
 
-    def execute(
-        self,
-        data: t.Dict
-    ) -> FlextResult[t.Dict]:
+    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
         """
         Execute data processing pipeline on input data.
 
@@ -1590,10 +1643,10 @@ class DataProcessorPlugin(FlextPlugin):
             >>> input_data = {
             ...     "payload": [
             ...         {"name": "John Doe", "email": "john@example.com"},
-            ...         {"name": "Jane Smith", "email": "jane@example.com"}
+            ...         {"name": "Jane Smith", "email": "jane@example.com"},
             ...     ],
             ...     "format": "json",
-            ...     "batch_mode": True
+            ...     "batch_mode": True,
             ... }
             >>> result = plugin.execute(input_data)
             >>> if result.success:
@@ -1677,33 +1730,40 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 # Oracle WMS plugin (flext-oracle-wms project)
 def create_oracle_wms_plugin(config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
-    return FlextResult[bool].ok(create_flext_plugin(
-        name="oracle-wms-connector",
-        version="0.9.9",
-        plugin_type=PluginType.DATABASE,
-        config={
-            **config,
-            "description": "Oracle WMS database connector plugin",
-            "dependencies": ["flext-core>=0.9.9", "flext-db-oracle>=0.9.9"]
-        }
-    ))
+    return FlextResult[bool].ok(
+        create_flext_plugin(
+            name="oracle-wms-connector",
+            version="0.9.9",
+            plugin_type=PluginType.DATABASE,
+            config={
+                **config,
+                "description": "Oracle WMS database connector plugin",
+                "dependencies": ["flext-core>=0.9.9", "flext-db-oracle>=0.9.9"],
+            },
+        )
+    )
+
 
 # Singer tap plugin (flext-tap-oracle project)
 def create_oracle_tap_plugin(tap_config: t.Dict) -> FlextResult[FlextPlugin]:
     """Create Oracle Singer tap plugin."""
-    return FlextResult[bool].ok(create_flext_plugin(
-        name=f"tap-oracle-{tap_config.get('schema', 'default')}",
-        version="0.9.9",
-        plugin_type=PluginType.TAP,
-        config={
-            **tap_config,
-            "singer_spec": "0.9.9",
-            "description": f"Oracle tap for {tap_config.get('schema')} schema"
-        }
-    ))
+    return FlextResult[bool].ok(
+        create_flext_plugin(
+            name=f"tap-oracle-{tap_config.get('schema', 'default')}",
+            version="0.9.9",
+            plugin_type=PluginType.TAP,
+            config={
+                **tap_config,
+                "singer_spec": "0.9.9",
+                "description": f"Oracle tap for {tap_config.get('schema')} schema",
+            },
+        )
+    )
+
 
 # ❌ Don't create custom plugin systems per project
 class OracleCustomPlugin:  # Creates ecosystem fragmentation
@@ -1736,8 +1796,10 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class OraclePluginSettings(FlextSettings):
     """Oracle plugin configuration extending FLEXT patterns."""
+
     connection_string: str
     schema: str = "HR"
     pool_size: int = 10
@@ -1746,8 +1808,10 @@ class OraclePluginSettings(FlextSettings):
     class Config:
         env_prefix = "ORACLE_PLUGIN_"
 
+
 class ProjectPluginConfig(PluginSystemSettings):
     """Project plugin configuration composing ecosystem settings."""
+
     oracle: OraclePluginSettings = field(default_factory=OraclePluginSettings)
     ldap: LdapPluginSettings = field(default_factory=LdapPluginSettings)
 

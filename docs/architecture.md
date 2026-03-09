@@ -75,6 +75,7 @@ ______________________________________________________________________
 ```python
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
+
     name: str
     plugin_version: str
     status: PluginStatus
@@ -124,7 +125,9 @@ class FlextPluginPlatform:
     def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
+    def discover_plugins(
+        self, path: str
+    ) -> FlextResult[list[FlextPluginModels.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -187,8 +190,7 @@ Uses FlextContainer for service management:
 def _setup_services(self) -> None:
     """Register services in DI container"""
     self.container.register(
-        "plugin_service",
-        FlextPluginService(container=self.container)
+        "plugin_service", FlextPluginService(container=self.container)
     )
 ```
 

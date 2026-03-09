@@ -413,9 +413,10 @@ ______________________________________________________________________
 from pydantic import BaseModel, Field
 from typing import List, Dict, object
 
+
 class FlextPluginSettings(BaseModel):
     name: str = Field(min_length=1, max_length=100)
-    version: str = Field(pattern=r'^\d+\.\d+\.\d+$')
+    version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = Field(default_factory=list)
     config: Dict[str, object] = Field(default_factory=dict)
 

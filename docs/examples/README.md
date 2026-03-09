@@ -71,9 +71,7 @@ from flext_plugin.core.types import PluginType
 
 # Create simple plugin
 plugin = create_flext_plugin(
-    name="hello-world",
-    version="0.9.9",
-    plugin_type=PluginType.UTILITY
+    name="hello-world", version="0.9.9", plugin_type=PluginType.UTILITY
 )
 
 # Create platform and register plugin
@@ -95,8 +93,8 @@ tap_plugin = create_flext_plugin(
     config={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
-        "singer_spec": "0.9.9"
-    }
+        "singer_spec": "0.9.9",
+    },
 )
 ```
 
@@ -106,10 +104,7 @@ tap_plugin = create_flext_plugin(
 from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
-enable_hot_reload(
-    watch_paths=["./plugins", "./custom-plugins"],
-    reload_on_change=True
-)
+enable_hot_reload(watch_paths=["./plugins", "./custom-plugins"], reload_on_change=True)
 
 print("Hot reload enabled - modify plugin files to see changes")
 ```
@@ -120,12 +115,14 @@ print("Hot reload enabled - modify plugin files to see changes")
 import pytest
 from flext_plugin import create_flext_plugin_platform
 
+
 @pytest.fixture
 def platform():
     """Test platform fixture."""
     platform = create_flext_plugin_platform(config={"test_mode": True})
     yield platform
     platform.shutdown()
+
 
 def test_plugin_activation(platform):
     """Test plugin activation."""
@@ -242,6 +239,7 @@ from flext_core import t
 from flext_core import u
 from typing import Dict
 
+
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
 
@@ -252,9 +250,9 @@ class ExamplePlugin(FlextPlugin):
             config={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Example plugin template",
-                "author": "Your Name"
+                "author": "Your Name",
             },
-            **kwargs
+            **kwargs,
         )
 
     def initialize(self) -> FlextResult[bool]:
@@ -308,6 +306,7 @@ import pytest
 from flext_plugin import create_flext_plugin_platform
 from your_plugin import ExamplePlugin
 
+
 class TestExamplePlugin:
     """Test suite template for plugins."""
 
@@ -358,10 +357,7 @@ class TestExamplePlugin:
         assert activate_result.success()
 
         # Execute plugin
-        execute_result = platform.execute_plugin(
-            plugin.name,
-            {"test": "data"}
-        )
+        execute_result = platform.execute_plugin(plugin.name, {"test": "data"})
         assert execute_result.success()
 
         # Deactivate plugin
@@ -427,10 +423,10 @@ Proper resource cleanup in plugin lifecycle:
 def cleanup(self) -> FlextResult[bool]:
     """Cleanup with error handling."""
     try:
-        if hasattr(self, '_connection') and self._connection:
+        if hasattr(self, "_connection") and self._connection:
             self._connection.close()
 
-        if hasattr(self, '_temp_files'):
+        if hasattr(self, "_temp_files"):
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
@@ -466,10 +462,8 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-def process_data(
-    self,
-    data: t.Dict
-) -> FlextResult[t.Dict]:
+
+def process_data(self, data: t.Dict) -> FlextResult[t.Dict]:
     """Type-safe data processing."""
     pass
 ```

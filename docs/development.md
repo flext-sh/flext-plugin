@@ -153,13 +153,14 @@ ______________________________________________________________________
 ```python
 from flext_plugin import FlextPlugin, PluginType
 
+
 class MyPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="my-plugin",
             version="0.9.9",
             config={"plugin_type": PluginType.UTILITY},
-            **kwargs
+            **kwargs,
         )
 
     def execute(self, data: dict) -> FlextResult[t.Dict]:
