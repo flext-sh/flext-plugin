@@ -74,7 +74,7 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}"
                     )
-                plugins = []
+                plugins: list[FlextPluginModels.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
                     if (
                         plugin_file.is_file()
@@ -293,7 +293,7 @@ class FlextPluginUtilities(FlextUtilities):
                     if isinstance(last_modified_raw, dict)
                     else {}
                 )
-                changed_files = []
+                changed_files: list[str] = []
                 for file_path in watch_path.rglob("*"):
                     if (
                         file_path.is_file()
@@ -908,7 +908,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 mutable_registry: dict[str, t.ContainerValue] = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = t.ConfigurationMapping()
+                    mutable_registry["plugins"] = {}
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
