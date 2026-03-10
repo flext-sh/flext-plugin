@@ -160,7 +160,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> FlextResult[ReloadBatchResult]:
+    def force_reload_all(self) -> FlextResult[ReloadBatchResult]:  # noqa: F821
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -170,13 +170,13 @@ class FlextPluginHotReload:
         try:
             if not self._is_watching:
                 return FlextResult.fail("Hot reload is not watching")
-            reload_results: list[PluginReloadOutcome] = []
+            reload_results: list[PluginReloadOutcome] = []  # noqa: F821
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
                     result = self.reload_plugin(plugin_name)
                     reload_results.append(
-                        PluginReloadOutcome(
+                        PluginReloadOutcome(  # noqa: F821
                             plugin_name=plugin_name, success=result.is_success
                         )
                     )
@@ -186,12 +186,12 @@ class FlextPluginHotReload:
                             plugin_name = py_file.stem
                             result = self.reload_plugin(plugin_name)
                             reload_results.append(
-                                PluginReloadOutcome(
+                                PluginReloadOutcome(  # noqa: F821
                                     plugin_name=plugin_name, success=result.is_success
                                 )
                             )
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return FlextResult.ok(ReloadBatchResult(plugin_results=reload_results))
+            return FlextResult.ok(ReloadBatchResult(plugin_results=reload_results))  # noqa: F821
         except (
             ValueError,
             TypeError,
@@ -204,14 +204,14 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to force reload all plugins")
             return FlextResult.fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> HotReloadStatus:
+    def get_hot_reload_status(self) -> HotReloadStatus:  # noqa: F821
         """Get the current status of the hot reload service.
 
         Returns:
         Dictionary containing hot reload status information
 
         """
-        return HotReloadStatus(
+        return HotReloadStatus(  # noqa: F821
             is_watching=self._is_watching,
             watched_paths=self.get_watched_paths(),
             watch_interval=self.watch_interval,

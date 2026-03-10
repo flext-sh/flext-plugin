@@ -56,7 +56,7 @@ class TestFlextPluginConstantsPluginType:
 
     def test_plugin_type_invalid(self) -> None:
         """Test invalid plugin type raises error."""
-        with pytest.raises(ValueError, match=".*invalid_type.*"):
+        with pytest.raises(ValueError, match=r".*invalid_type.*"):
             FlextPluginConstants.Plugin.PluginType("invalid_type")
 
 
