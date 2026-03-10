@@ -706,28 +706,32 @@ class FlextPluginUtilities(FlextUtilities):
             r containing function execution result
 
             """
-            try:
-                plugin_function = getattr(plugin_module, function_name, None)
-                if plugin_function is None:
-                    return r[object].fail(
-                        f"Function '{function_name}' not found in plugin module"
-                    )
-                if not callable(plugin_function):
-                    return r[object].fail(f"'{function_name}' is not callable")
+            plugin_function = getattr(plugin_module, function_name, None)
+            if plugin_function is None:
+                return r[object].fail(
+                    f"Function '{function_name}' not found in plugin module"
+                )
+            if not callable(plugin_function):
+                return r[object].fail(f"'{function_name}' is not callable")
+            callable_plugin: Callable[..., object] = plugin_function
+
+            def _execute_plugin_function() -> object:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
-                result = plugin_function(*execution_args, **execution_kwargs)
-                return r[object].ok(result)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[object].fail(f"Plugin function execution failed: {e}")
+                return callable_plugin(*execution_args, **execution_kwargs)
+
+            return FlextPluginUtilities.try_(
+                _execute_plugin_function,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin function execution failed: {e}")
 
         @staticmethod
         def load_plugin_module(plugin_path: Path | str) -> r[ModuleType]:
@@ -781,36 +785,39 @@ class FlextPluginUtilities(FlextUtilities):
             r indicating interface validation success or failure
 
             """
-            try:
+
+            def _validate_plugin_interface() -> None:
                 missing_functions = [
                     func_name
                     for func_name in required_functions
                     if getattr(plugin_module, func_name, None) is None
                 ]
                 if missing_functions:
-                    return r[None].fail(
+                    missing_msg = (
                         f"Plugin missing required functions: {missing_functions}"
                     )
+                    raise ValueError(missing_msg)
                 non_callable = [
                     func_name
                     for func_name in required_functions
                     if not callable(getattr(plugin_module, func_name, None))
                 ]
                 if non_callable:
-                    return r[None].fail(
-                        f"Plugin attributes not callable: {non_callable}"
-                    )
-                return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[None].fail(f"Plugin interface validation failed: {e}")
+                    non_callable_msg = f"Plugin attributes not callable: {non_callable}"
+                    raise ValueError(non_callable_msg)
+
+            return FlextPluginUtilities.try_(
+                _validate_plugin_interface,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin interface validation failed: {e}")
 
     class RegistryOperations:
         """Plugin registry management utilities."""
@@ -830,7 +837,8 @@ class FlextPluginUtilities(FlextUtilities):
             r indicating cleanup success or failure
 
             """
-            try:
+
+            def _cleanup_registry_backups() -> None:
                 backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
                 backup_files = list(registry_directory.glob(backup_pattern))
                 backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
@@ -838,17 +846,19 @@ class FlextPluginUtilities(FlextUtilities):
                     FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
                 ]:
                     backup_file.unlink()
-                return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[None].fail(f"Registry backup cleanup failed: {e}")
+
+            return FlextPluginUtilities.try_(
+                _cleanup_registry_backups,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Registry backup cleanup failed: {e}")
 
         @staticmethod
         def load_plugin_registry(
