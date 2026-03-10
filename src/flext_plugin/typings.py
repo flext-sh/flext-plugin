@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping
-from typing import Literal, TypeVar
+from typing import Literal, TypeAlias, TypeVar
 
 from flext_core import FlextTypes
 
@@ -28,10 +28,31 @@ class FlextPluginTypes(FlextTypes):
     class Handlers:
         """Event handler type definitions."""
 
-        type EventHandler = Callable[
+        EventHandler: TypeAlias = Callable[
             [Mapping[str, FlextTypes.ContainerValue]],
             Awaitable[FlextTypes.ContainerValue],
         ]
+
+        class HandlerInfo:
+            """Handler metadata container."""
+
+            def __init__(
+                self,
+                handler: Callable[
+                    [Mapping[str, FlextTypes.ContainerValue]],
+                    Awaitable[FlextTypes.ContainerValue],
+                ],
+                priority: int = 0,
+            ) -> None:
+                """Initialize handler info.
+
+                Args:
+                    handler: Event handler function
+                    priority: Handler execution priority (higher = first)
+
+                """
+                self.handler = handler
+                self.priority = priority
 
     class Plugin:
         """Core collection and plugin type aliases."""

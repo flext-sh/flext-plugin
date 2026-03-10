@@ -58,7 +58,8 @@ class FlextPluginAdapters:
                 ImportError,
             ) as e:
                 self.logger.exception(error_context)
-                return r.fail(f"{error_context}: {e!s}")
+                error_msg = f"{error_context}: {e!s}"
+                return r[T].fail(error_msg)
 
     class FileSystemDiscoveryAdapter(BaseAdapter, p.Plugin.PluginDiscovery):
         """File system plugin discovery - synchronous."""
@@ -96,7 +97,7 @@ class FlextPluginAdapters:
 
         def _discover_all(self, paths: list[str]) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
-            discovered = []
+            discovered: list[m.Plugin.DiscoveryData] = []
             for path in paths:
                 path_obj = Path(path).expanduser().resolve()
                 if not path_obj.exists():
@@ -113,7 +114,7 @@ class FlextPluginAdapters:
 
         def _discover_directory(self, path: Path) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
-            discovered = []
+            discovered: list[m.Plugin.DiscoveryData] = []
             try:
                 for item in path.iterdir():
                     if (
