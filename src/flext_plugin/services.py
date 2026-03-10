@@ -101,7 +101,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     def _to_general_mapping(value: t.ContainerValue) -> dict[str, t.ContainerValue]:
         if not isinstance(value, Mapping):
             return {}
-        return {key: item for key, item in value.items()}
+        return dict(value.items())
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.
