@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, r, t
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
@@ -132,10 +132,10 @@ class FlextPluginHotReload:
             path_obj = self._resolve_watch_path(path)
             if not path_obj.exists():
                 error_msg = f"Path does not exist: {path}"
-                return FlextResult.fail(error_msg)
+                return r[bool].fail(error_msg)
             self._watched_paths.add(path_obj)
             self.logger.info("Added watch path: %s", path)
-            return FlextResult.ok(True)
+            return r.ok(True)
         except (
             ValueError,
             TypeError,
@@ -146,7 +146,7 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to add watch path: %s", path)
-            return FlextResult.fail(f"Add watch path error: {e!s}")
+            return r[bool].fail(f"Add watch path error: {e!s}")
 
     def clear_reload_history(self) -> int:
         """Clear reload history.
@@ -160,7 +160,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> FlextResult[ReloadBatchResult]:  # noqa: F821
+    def force_reload_all(self) -> FlextResult[dict[str, t.ContainerValue]]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -169,29 +169,30 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return FlextResult.fail("Hot reload is not watching")
-            reload_results: list[PluginReloadOutcome] = []  # noqa: F821
+                return r[dict[str, t.ContainerValue]].fail("Hot reload is not watching")
+            reload_results: list[dict[str, t.ContainerValue]] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
                     result = self.reload_plugin(plugin_name)
-                    reload_results.append(
-                        PluginReloadOutcome(  # noqa: F821
-                            plugin_name=plugin_name, success=result.is_success
-                        )
-                    )
+                    reload_results.append({
+                        "plugin_name": plugin_name,
+                        "success": result.is_success,
+                    })
                 elif watched_path.is_dir():
                     for py_file in watched_path.rglob("*.py"):
                         if not py_file.name.startswith("_"):
                             plugin_name = py_file.stem
                             result = self.reload_plugin(plugin_name)
-                            reload_results.append(
-                                PluginReloadOutcome(  # noqa: F821
-                                    plugin_name=plugin_name, success=result.is_success
-                                )
-                            )
+                            reload_results.append({
+                                "plugin_name": plugin_name,
+                                "success": result.is_success,
+                            })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return FlextResult.ok(ReloadBatchResult(plugin_results=reload_results))  # noqa: F821
+            return r.ok({
+                "plugin_results": reload_results,
+                "count": len(reload_results),
+            })
         except (
             ValueError,
             TypeError,
@@ -202,26 +203,26 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return FlextResult.fail(f"Force reload error: {e!s}")
+            return r[dict[str, t.ContainerValue]].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> HotReloadStatus:  # noqa: F821
+    def get_hot_reload_status(self) -> dict[str, t.ContainerValue]:
         """Get the current status of the hot reload service.
 
         Returns:
         Dictionary containing hot reload status information
 
         """
-        return HotReloadStatus(  # noqa: F821
-            is_watching=self._is_watching,
-            watched_paths=self.get_watched_paths(),
-            watch_interval=self.watch_interval,
-            debounce_ms=self.debounce_ms,
-            max_retries=self.max_retries,
-            total_reloads=len(self._reload_history),
-            recent_reloads=len([rec for rec in self._reload_history if rec.success]),
-            callback_count=len(self._reload_callbacks),
-            using_watchdog=self._observer is not None,
-        )
+        return {
+            "is_watching": self._is_watching,
+            "watched_paths": self.get_watched_paths(),
+            "watch_interval": self.watch_interval,
+            "debounce_ms": self.debounce_ms,
+            "max_retries": self.max_retries,
+            "total_reloads": len(self._reload_history),
+            "recent_reloads": len([rec for rec in self._reload_history if rec.success]),
+            "callback_count": len(self._reload_callbacks),
+            "using_watchdog": self._observer is not None,
+        }
 
     def get_reload_history(
         self, limit: int = 100
@@ -269,7 +270,7 @@ class FlextPluginHotReload:
             plugin_path = self._find_plugin_path(plugin_name)
             if not plugin_path:
                 error_msg = f"Plugin file not found: {plugin_name}"
-                return FlextResult.fail(error_msg)
+                return r[bool].fail(error_msg)
             for callback in self._reload_callbacks:
                 try:
                     callback(plugin_name)
@@ -291,7 +292,7 @@ class FlextPluginHotReload:
             )
             self._reload_history.append(reload_record)
             self.logger.info("Reloaded plugin: %s", plugin_name)
-            return FlextResult.ok(True)
+            return r.ok(True)
         except (
             ValueError,
             TypeError,
@@ -302,7 +303,7 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
-            return FlextResult.fail(f"Reload error: {e!s}")
+            return r[bool].fail(f"Reload error: {e!s}")
 
     def remove_reload_callback(self, callback: Callable[[str], None]) -> bool:
         """Remove a reload callback.
@@ -336,7 +337,7 @@ class FlextPluginHotReload:
                 self._watched_paths.remove(path_obj)
                 self.logger.info("Removed watch path: %s", path)
                 return FlextResult.ok(True)
-            return FlextResult.fail(f"Path not being watched: {path}")
+            return r[bool].fail(f"Path not being watched: {path}")
         except (
             ValueError,
             TypeError,
@@ -347,7 +348,7 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to remove watch path: %s", path)
-            return FlextResult.fail(f"Remove watch path error: {e!s}")
+            return r[bool].fail(f"Remove watch path error: {e!s}")
 
     def start_watching(self, paths: list[str]) -> FlextResult[bool]:
         """Start watching the given paths for changes.
@@ -361,8 +362,8 @@ class FlextPluginHotReload:
         """
         try:
             if self._is_watching:
-                return FlextResult.fail("Hot reload is already watching")
-            watched_paths = set()
+                return r[bool].fail("Hot reload is already watching")
+            watched_paths: set[Path] = set()
             for path_str in paths:
                 path_obj = self._resolve_watch_path(path_str)
                 if path_obj.exists():
@@ -370,7 +371,7 @@ class FlextPluginHotReload:
                 else:
                     self.logger.warning("Watched path does not exist: %s", path_str)
             if not watched_paths:
-                return FlextResult.fail("No valid paths to watch")
+                return r[bool].fail("No valid paths to watch")
             self._watched_paths = watched_paths
             self._is_watching = True
             self._event_handler = FileChangeHandler(
@@ -395,7 +396,7 @@ class FlextPluginHotReload:
             self.logger.info(
                 f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths"
             )
-            return FlextResult.ok(True)
+            return r.ok(True)
         except (
             ValueError,
             TypeError,
@@ -406,7 +407,7 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to start hot reload watching")
-            return FlextResult.fail(f"Start watching error: {e!s}")
+            return r[bool].fail(f"Start watching error: {e!s}")
 
     def stop_watching(self) -> FlextResult[bool]:
         """Stop watching for changes.
@@ -417,7 +418,7 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return FlextResult.fail("Hot reload is not watching")
+                return r[bool].fail("Hot reload is not watching")
             obs = self._observer
             if obs is not None:
                 obs.stop()
@@ -427,7 +428,7 @@ class FlextPluginHotReload:
             self._is_watching = False
             self._watched_paths.clear()
             self.logger.info("Stopped hot reload monitoring")
-            return FlextResult.ok(True)
+            return r.ok(True)
         except (
             ValueError,
             TypeError,
@@ -438,7 +439,7 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to stop hot reload watching")
-            return FlextResult.fail(f"Stop watching error: {e!s}")
+            return r[bool].fail(f"Stop watching error: {e!s}")
 
     def _find_plugin_path(self, plugin_name: str) -> Path | None:
         """Find plugin file by name in watched paths.

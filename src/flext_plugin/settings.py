@@ -6,3 +6,12 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+from flext_core import FlextSettings
+
+
+class FlextPluginSettings(FlextSettings):
+    pass
+
+
+__all__ = ["FlextPluginSettings"]

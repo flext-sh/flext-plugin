@@ -507,8 +507,8 @@ class FlextPluginImplementations:
 
             """
             if service_name not in self._services:
-                return r[object].fail(f"Service not found: {service_name}")
-            return r[object].ok(self._services[service_name])
+                return r[t.ContainerValue].fail(f"Service not found: {service_name}")
+            return r[t.ContainerValue].ok(self._services[service_name])
 
     class ConcretePluginRegistry:
         """Concrete implementation of plugin registry.
