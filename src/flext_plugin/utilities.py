@@ -393,21 +393,24 @@ class FlextPluginUtilities(FlextUtilities):
             r containing SHA-256 hash of plugin content
 
             """
-            try:
+
+            def _calculate_plugin_hash() -> str:
                 content_bytes = plugin_content.encode("utf-8")
                 hash_object = hashlib.sha256(content_bytes)
-                plugin_hash = hash_object.hexdigest()
-                return r[str].ok(plugin_hash)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[str].fail(f"Plugin hash calculation failed: {e}")
+                return hash_object.hexdigest()
+
+            return FlextPluginUtilities.try_(
+                _calculate_plugin_hash,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin hash calculation failed: {e}")
 
         @staticmethod
         def create_sandbox_config(
@@ -422,7 +425,8 @@ class FlextPluginUtilities(FlextUtilities):
             r containing sandbox configuration
 
             """
-            try:
+
+            def _create_sandbox_config() -> Mapping[str, t.ContainerValue]:
                 sandbox_config: dict[str, t.ContainerValue] = {
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
@@ -436,19 +440,20 @@ class FlextPluginUtilities(FlextUtilities):
                     },
                     "created_at": datetime.now(UTC).isoformat(),
                 }
-                return r[t.ConfigurationMapping].ok(sandbox_config)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
-                return r[t.ConfigurationMapping].fail(
-                    f"Sandbox configuration creation failed: {e}"
-                )
+                return sandbox_config
+
+            return FlextPluginUtilities.try_(
+                _create_sandbox_config,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Sandbox configuration creation failed: {e}")
 
         @staticmethod
         def validate_plugin_security(
@@ -908,7 +913,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 mutable_registry: dict[str, t.ContainerValue] = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = {}
+                    mutable_registry["plugins"] = dict[str, t.ContainerValue]()
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
