@@ -154,7 +154,7 @@ class FlextPluginPlatform:
                 Result containing list of plugin names
 
             """
-            return super().list_plugins(category, scope="class" if scope else "class")
+            return super().list_plugins(category, scope="class")
 
         @override
         def register(

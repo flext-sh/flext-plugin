@@ -11,6 +11,8 @@ from flext_core import FlextSettings
 
 
 class FlextPluginSettings(FlextSettings):
+    """Plugin system configuration settings."""
+
     pass
 
 
