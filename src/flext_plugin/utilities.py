@@ -127,7 +127,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if plugin_path.suffix == ".py":
                     content = plugin_path.read_text(encoding="utf-8")
                     version_match = re.search(
-                        "__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']", content
+                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']", content
                     )
                     if version_match:
                         version = version_match.group(1)
