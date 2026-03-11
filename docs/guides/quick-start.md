@@ -191,7 +191,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -213,18 +213,18 @@ class GreetingPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> r[bool]:
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return FlextResult[bool].ok(data=True)
+        return r[bool].ok(data=True)
 
-    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
+    def execute(self, data: t.Dict) -> r[t.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[bool].fail("Plugin not active")
+                return r[bool].fail("Plugin not active")
 
             # Extract name from input
             name = data.get("name", "World")
@@ -249,15 +249,15 @@ class GreetingPlugin(FlextPlugin):
                 "version": self.plugin_version
             }
 
-            return FlextResult[bool].ok(result)
+            return r[bool].ok(result)
 
         except Exception as e:
-            return FlextResult[bool].fail(f"Execution failed: {e}")
+            return r[bool].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> r[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return FlextResult[bool].ok(data=True)
+        return r[bool].ok(data=True)
 
 # Usage example
 def demo_custom_plugin():

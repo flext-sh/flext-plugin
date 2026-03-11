@@ -227,7 +227,7 @@ class FlextPluginHandlers:
         """Register default event handlers for common plugin operations.
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
@@ -267,7 +267,7 @@ class FlextPluginHandlers:
             priority: Handler priority (higher numbers execute first)
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         try:
@@ -304,7 +304,7 @@ class FlextPluginHandlers:
         event_data: Data to pass to handlers
 
         Returns:
-        FlextResult containing list of handler results
+        r containing list of handler results
 
         """
         try:
@@ -362,7 +362,7 @@ class FlextPluginHandlers:
         handler: Handler function to unregister
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:

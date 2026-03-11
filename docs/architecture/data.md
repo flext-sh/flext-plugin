@@ -400,7 +400,7 @@ ______________________________________________________________________
 
 #### **Data Processing**
 
-- **Railway Pattern**: FlextResult[T] for composable data operations
+- **Railway Pattern**: r[T] for composable data operations
 - **Functional Programming**: Immutable data transformations
 - **Streaming Processing**: Memory-efficient large data handling
 
@@ -438,13 +438,13 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> dict[str, object
 
 ```python
 # Runtime data validation
-def validate_plugin_config(config_data: dict) -> FlextResult[FlextPluginSettings]:
+def validate_plugin_config(config_data: dict) -> r[FlextPluginSettings]:
     """Validate plugin configuration data."""
     try:
         config = FlextPluginSettings(**config_data)
-        return FlextResult.ok(config)
+        return r.ok(config)
     except ValidationError as e:
-        return FlextResult.fail(f"Configuration validation failed: {e}")
+        return r.fail(f"Configuration validation failed: {e}")
 ```
 
 ______________________________________________________________________

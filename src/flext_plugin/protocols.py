@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, r
 
 from flext_plugin import FlextPluginModels, t
 
@@ -55,11 +55,11 @@ class FlextPluginProtocols(FlextProtocols):
 
             def load_plugin(
                 self, _plugin_path: str
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Load a plugin from the specified path."""
                 ...
 
-            def unload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def unload_plugin(self, _plugin_name: str) -> r[bool]:
                 """Unload a previously loaded plugin."""
                 ...
 
@@ -69,19 +69,19 @@ class FlextPluginProtocols(FlextProtocols):
 
             def discover_plugin(
                 self, _plugin_path: str
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self, paths: list[str]
-            ) -> FlextResult[list[Mapping[str, t.ContainerValue]]]:
+            ) -> r[list[Mapping[str, t.ContainerValue]]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
                 self, _plugin_data: Mapping[str, t.ContainerValue]
-            ) -> FlextResult[bool]:
+            ) -> r[bool]:
                 """Validate plugin discovery data."""
                 ...
 
@@ -89,9 +89,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(
-                self, _plugin_name: str
-            ) -> FlextResult[t.ContainerValue | None]:
+            def get_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
                 """Get a registered plugin by name."""
                 ...
 
@@ -99,15 +97,15 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if a plugin is registered."""
                 ...
 
-            def list_plugins(self) -> FlextResult[list[Mapping[str, t.ContainerValue]]]:
+            def list_plugins(self) -> r[list[Mapping[str, t.ContainerValue]]]:
                 """List all registered plugins."""
                 ...
 
-            def register_plugin(self, _plugin: t.ContainerValue) -> FlextResult[bool]:
+            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
                 """Register a plugin."""
                 ...
 
-            def unregister_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def unregister_plugin(self, _plugin_name: str) -> r[bool]:
                 """Unregister a plugin."""
                 ...
 
@@ -117,11 +115,11 @@ class FlextPluginProtocols(FlextProtocols):
 
             def execute_plugin(
                 self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Execute a plugin with the given context."""
                 ...
 
-            def get_execution_status(self, _execution_id: str) -> FlextResult[str]:
+            def get_execution_status(self, _execution_id: str) -> r[str]:
                 """Get the status of an execution."""
                 ...
 
@@ -129,7 +127,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """List all currently running execution IDs."""
                 ...
 
-            def stop_execution(self, _execution_id: str) -> FlextResult[bool]:
+            def stop_execution(self, _execution_id: str) -> r[bool]:
                 """Stop a running execution."""
                 ...
 
@@ -139,23 +137,21 @@ class FlextPluginProtocols(FlextProtocols):
 
             def check_permissions(
                 self, _plugin_name: str, _permissions: list[str]
-            ) -> FlextResult[bool]:
+            ) -> r[bool]:
                 """Check if plugin has specified permissions."""
                 ...
 
-            def get_security_level(self, _plugin_name: str) -> FlextResult[str]:
+            def get_security_level(self, _plugin_name: str) -> r[str]:
                 """Get security level of a plugin."""
                 ...
 
             def scan_plugin_security(
                 self, _plugin_path: str
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Scan plugin for security vulnerabilities."""
                 ...
 
-            def validate_plugin_security(
-                self, _plugin: t.ContainerValue
-            ) -> FlextResult[bool]:
+            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
                 """Validate plugin security compliance."""
                 ...
 
@@ -171,15 +167,15 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if currently watching for changes."""
                 ...
 
-            def reload_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def reload_plugin(self, _plugin_name: str) -> r[bool]:
                 """Reload a plugin."""
                 ...
 
-            def start_watching(self, paths: list[str]) -> FlextResult[bool]:
+            def start_watching(self, paths: list[str]) -> r[bool]:
                 """Start watching paths for plugin changes."""
                 ...
 
-            def stop_watching(self) -> FlextResult[bool]:
+            def stop_watching(self) -> r[bool]:
                 """Stop watching for plugin changes."""
                 ...
 
@@ -189,13 +185,13 @@ class FlextPluginProtocols(FlextProtocols):
 
             def get_plugin_health(
                 self, _plugin_name: str
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Get health status of a plugin."""
                 ...
 
             def get_plugin_metrics(
                 self, _plugin_name: str
-            ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, t.ContainerValue]]:
                 """Get metrics for a plugin."""
                 ...
 
@@ -203,11 +199,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if a plugin is being monitored."""
                 ...
 
-            def start_monitoring(self, _plugin_name: str) -> FlextResult[bool]:
+            def start_monitoring(self, _plugin_name: str) -> r[bool]:
                 """Start monitoring a plugin."""
                 ...
 
-            def stop_monitoring(self, _plugin_name: str) -> FlextResult[bool]:
+            def stop_monitoring(self, _plugin_name: str) -> r[bool]:
                 """Stop monitoring a plugin."""
                 ...
 
@@ -215,21 +211,19 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def get_default_config(self, plugin_type: str) -> FlextResult[t.JsonDict]:
+            def get_default_config(self, plugin_type: str) -> r[t.JsonDict]:
                 """Get default configuration for a plugin type."""
                 ...
 
-            def load_config(self, _plugin_name: str) -> FlextResult[t.JsonDict]:
+            def load_config(self, _plugin_name: str) -> r[t.JsonDict]:
                 """Load configuration for a plugin."""
                 ...
 
-            def save_config(
-                self, _plugin_name: str, config: t.JsonDict
-            ) -> FlextResult[bool]:
+            def save_config(self, _plugin_name: str, config: t.JsonDict) -> r[bool]:
                 """Save configuration for a plugin."""
                 ...
 
-            def validate_config(self, config: t.JsonDict) -> FlextResult[bool]:
+            def validate_config(self, config: t.JsonDict) -> r[bool]:
                 """Validate plugin configuration."""
                 ...
 
@@ -237,27 +231,27 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginLifecycle(Protocol):
             """Protocol for plugin lifecycle operations."""
 
-            def activate_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def activate_plugin(self, _plugin_name: str) -> r[bool]:
                 """Activate a plugin."""
                 ...
 
-            def deactivate_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def deactivate_plugin(self, _plugin_name: str) -> r[bool]:
                 """Deactivate a plugin."""
                 ...
 
-            def destroy_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def destroy_plugin(self, _plugin_name: str) -> r[bool]:
                 """Destroy a plugin."""
                 ...
 
-            def get_plugin_status(self, _plugin_name: str) -> FlextResult[str]:
+            def get_plugin_status(self, _plugin_name: str) -> r[str]:
                 """Get the status of a plugin."""
                 ...
 
-            def initialize_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def initialize_plugin(self, _plugin_name: str) -> r[bool]:
                 """Initialize a plugin."""
                 ...
 
-            def list_plugin_statuses(self) -> FlextResult[Mapping[str, str]]:
+            def list_plugin_statuses(self) -> r[Mapping[str, str]]:
                 """Get status of all plugins."""
                 ...
 
@@ -265,27 +259,19 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginValidation(Protocol):
             """Protocol for plugin validation operations."""
 
-            def validate_plugin_compatibility(
-                self, _plugin_name: str
-            ) -> FlextResult[bool]:
+            def validate_plugin_compatibility(self, _plugin_name: str) -> r[bool]:
                 """Validate plugin compatibility."""
                 ...
 
-            def validate_plugin_dependencies(
-                self, _plugin_name: str
-            ) -> FlextResult[bool]:
+            def validate_plugin_dependencies(self, _plugin_name: str) -> r[bool]:
                 """Validate plugin dependencies."""
                 ...
 
-            def validate_plugin_permissions(
-                self, _plugin_name: str
-            ) -> FlextResult[bool]:
+            def validate_plugin_permissions(self, _plugin_name: str) -> r[bool]:
                 """Validate plugin permissions."""
                 ...
 
-            def validate_plugin_structure(
-                self, _plugin_data: t.JsonDict
-            ) -> FlextResult[bool]:
+            def validate_plugin_structure(self, _plugin_data: t.JsonDict) -> r[bool]:
                 """Validate plugin structure."""
                 ...
 
@@ -293,11 +279,11 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginStorage(Protocol):
             """Protocol for plugin storage operations."""
 
-            def delete_plugin(self, _plugin_name: str) -> FlextResult[bool]:
+            def delete_plugin(self, _plugin_name: str) -> r[bool]:
                 """Delete stored plugin."""
                 ...
 
-            def list_stored_plugins(self) -> FlextResult[list[str]]:
+            def list_stored_plugins(self) -> r[list[str]]:
                 """List all stored plugin names."""
                 ...
 
@@ -305,13 +291,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if plugin is stored."""
                 ...
 
-            def retrieve_plugin(
-                self, _plugin_name: str
-            ) -> FlextResult[t.JsonDict | None]:
+            def retrieve_plugin(self, _plugin_name: str) -> r[t.JsonDict | None]:
                 """Retrieve stored plugin data."""
                 ...
 
-            def store_plugin(self, _plugin_data: t.JsonDict) -> FlextResult[bool]:
+            def store_plugin(self, _plugin_data: t.JsonDict) -> r[bool]:
                 """Store plugin data."""
                 ...
 
@@ -355,7 +339,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def load_plugin(
                 self, plugin_path: str | t.ContainerValue
-            ) -> FlextResult[t.ContainerValue]:
+            ) -> r[t.ContainerValue]:
                 """Load plugin from path."""
                 ...
 
@@ -363,11 +347,11 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistryProtocol(Protocol):
             """Protocol for plugin registry interface."""
 
-            def get_plugin(self, plugin_name: str) -> FlextResult[t.ContainerValue]:
+            def get_plugin(self, plugin_name: str) -> r[t.ContainerValue]:
                 """Get plugin by name."""
                 ...
 
-            def register(self, plugin: t.ContainerValue) -> FlextResult[None]:
+            def register(self, plugin: t.ContainerValue) -> r[None]:
                 """Register a plugin."""
                 ...
 
@@ -377,7 +361,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def discover(
                 self, paths: list[str]
-            ) -> FlextResult[list[FlextPluginModels.Plugin.DiscoveryData]]:
+            ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...
 

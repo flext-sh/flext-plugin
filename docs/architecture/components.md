@@ -54,7 +54,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Single Responsibility**: Each component has one primary responsibility
 - **Dependency Inversion**: Components depend on abstractions, not concretions
 - **Interface Segregation**: Small, focused interfaces for better testability
-- **Railway Pattern**: FlextResult[T] for composable error handling throughout
+- **Railway Pattern**: r[T] for composable error handling throughout
 
 ______________________________________________________________________
 
@@ -142,7 +142,7 @@ ______________________________________________________________________
 - **Purpose**: Unified API facade providing single entry point for all plugin operations
 - **Responsibilities**:
   - Orchestrate complex plugin operations across multiple components
-  - Provide consistent error handling via FlextResult[T]
+  - Provide consistent error handling via r[T]
   - Manage plugin lifecycle from discovery to execution
   - Coordinate between application and domain layers
 - **Key Methods**:
@@ -488,7 +488,7 @@ ______________________________________________________________________
 
 #### **Error Handling**
 
-- **FlextResult Coverage**: 100% of public APIs return FlextResult[T]
+- **r Coverage**: 100% of public APIs return r[T]
 - **Exception Boundaries**: Infrastructure exceptions converted to domain errors
 - **Graceful Degradation**: System continues operating with partial failures
 - **Recovery Mechanisms**: Automatic retry for transient failures

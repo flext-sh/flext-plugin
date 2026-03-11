@@ -24,7 +24,7 @@ from __future__ import annotations
 class FlextPluginEntities:
     """Domain entities for plugin system following Domain-Driven Design patterns.
 
-    Provides core domain entities with Pydantic validation and FlextResult error
+    Provides core domain entities with Pydantic validation and r error
     handling. All entities follow railway-oriented programming patterns and are
     designed for composition and extensibility.
 
@@ -47,7 +47,7 @@ class FlextPluginEntities:
     - Immutable value objects with frozen Pydantic models
     - Aggregate root for consistency boundaries
     - Domain events for event sourcing
-    - FlextResult[T] for composable error handling
+    - r[T] for composable error handling
     - 100% type safety with Pyrefly strict mode
 
     """

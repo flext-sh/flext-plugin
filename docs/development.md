@@ -65,7 +65,7 @@ ______________________________________________________________________
 
 ### FLEXT-Core Compliance
 
-- **FlextResult<T>**: All operations must return FlextResult
+- **r<T>**: All operations must return r
 - **Single Class Per Module**: Each module has one main class with nested helpers
 - **Clean Architecture**: Proper layer separation
 - **Type Safety**: 100% MyPy compliance
@@ -141,7 +141,7 @@ pytest -m "not slow"   # Skip slow tests
 
 - Use real dependencies over mocks when possible
 - Follow AAA pattern (Arrange, Act, Assert)
-- Test FlextResult success and failure paths
+- Test r success and failure paths
 - Maintain 85% minimum coverage
 
 ______________________________________________________________________
@@ -163,13 +163,13 @@ class MyPlugin(FlextPlugin):
             **kwargs,
         )
 
-    def execute(self, data: dict) -> FlextResult[t.Dict]:
+    def execute(self, data: dict) -> r[t.Dict]:
         """Plugin business logic"""
         try:
             # Process data
-            return FlextResult[t.Dict].ok(processed_data)
+            return r[t.Dict].ok(processed_data)
         except Exception as e:
-            return FlextResult[t.Dict].fail(str(e))
+            return r[t.Dict].fail(str(e))
 ```
 
 ### Hot Reload Development

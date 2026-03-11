@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import override
 
-from flext_core import FlextContainer, FlextResult, r, t, u, x
+from flext_core import FlextContainer, r, t, u, x
 
 from flext_plugin import (
     FlextPluginAdapters,
@@ -118,7 +118,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def disable_plugin(self, plugin_name: str) -> r[bool]:
         """Disable a plugin by name.
 
         Args:
@@ -136,7 +136,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     def discover_and_register_plugins(
         self, paths: list[str]
-    ) -> FlextResult[list[FlextPluginModels.Plugin.Plugin]]:
+    ) -> r[list[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -257,7 +257,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return self.discover_and_register_plugins(paths)
 
-    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def enable_plugin(self, plugin_name: str) -> r[bool]:
         """Enable a plugin by name.
 
         Args:
@@ -278,7 +278,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         plugin_name: str,
         context: FlextPluginTypes.Execution.ExecutionContext,
         execution_id: str | None = None,
-    ) -> FlextResult[FlextPluginPlatform.PluginExecution]:
+    ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -361,7 +361,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     def get_plugin_config(
         self, plugin_name: str
-    ) -> FlextResult[FlextPluginModels.Plugin.PluginConfig]:
+    ) -> r[FlextPluginModels.Plugin.PluginConfig]:
         """Get configuration for a plugin.
 
         Args:
@@ -385,7 +385,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     async def get_plugin_health(
         self, plugin_name: str
-    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -428,7 +428,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     async def get_plugin_metrics(
         self, plugin_name: str
-    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -517,9 +517,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             "registry_available": True,
         }
 
-    def install_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginModels.Plugin.Plugin]:
+    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -570,9 +568,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return list(self._plugins.values())
 
-    def load_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginModels.Plugin.Plugin]:
+    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -672,7 +668,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[FlextPluginModels.Plugin.Plugin].fail(f"Loading error: {e!s}")
 
-    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
         """Uninstall a plugin by name.
 
         Args:
@@ -687,7 +683,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         del self._plugins[plugin_name]
         return r.ok(True)
 
-    async def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    async def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin from the service.
 
         Args:
@@ -735,7 +731,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
 
     def update_plugin_config(
         self, plugin_name: str, config: Mapping[str, t.ContainerValue]
-    ) -> FlextResult[bool]:
+    ) -> r[bool]:
         """Update configuration for a plugin.
 
         Args:

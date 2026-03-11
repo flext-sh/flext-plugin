@@ -12,7 +12,7 @@ from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, r
+from flext_core import FlextLogger, r
 
 from flext_plugin import FlextPluginModels, c, t
 
@@ -59,16 +59,14 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(
-        self, plugin_name: str
-    ) -> FlextResult[Mapping[str, t.ContainerValue]]:
+    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, t.ContainerValue]]:
         """Get detailed information about a loaded plugin.
 
         Args:
         plugin_name: Name of the plugin
 
         Returns:
-        FlextResult containing plugin information
+        r containing plugin information
 
         """
         try:
@@ -117,16 +115,14 @@ class FlextPluginLoader:
         """
         return plugin_name in self._loaded_plugins
 
-    def load_plugin(
-        self, plugin_path: str
-    ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
+    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
             plugin_path: Path to the plugin to load
 
         Returns:
-            FlextResult containing loaded plugin data
+            r containing loaded plugin data
 
         """
         try:
@@ -153,16 +149,14 @@ class FlextPluginLoader:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[FlextPluginModels.Plugin.LoadData].fail(f"Loading error: {e!s}")
 
-    def reload_plugin(
-        self, plugin_name: str
-    ) -> FlextResult[FlextPluginModels.Plugin.LoadData]:
+    def reload_plugin(self, plugin_name: str) -> r[FlextPluginModels.Plugin.LoadData]:
         """Reload a plugin by name.
 
         Args:
         plugin_name: Name of the plugin to reload
 
         Returns:
-        FlextResult containing reloaded plugin data
+        r containing reloaded plugin data
 
         """
         try:
@@ -201,14 +195,14 @@ class FlextPluginLoader:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
             return r[FlextPluginModels.Plugin.LoadData].fail(f"Reload error: {e!s}")
 
-    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin by name.
 
         Args:
         plugin_name: Name of the plugin to unload
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
@@ -230,14 +224,14 @@ class FlextPluginLoader:
             self.logger.exception("Failed to unload plugin %s", plugin_name)
             return r[bool].fail(f"Unloading error: {e!s}")
 
-    def validate_plugin_dependencies(self, plugin_name: str) -> FlextResult[bool]:
+    def validate_plugin_dependencies(self, plugin_name: str) -> r[bool]:
         """Validate dependencies for a loaded plugin.
 
         Args:
         plugin_name: Name of the plugin to validate
 
         Returns:
-        FlextResult indicating validation success or failure
+        r indicating validation success or failure
 
         """
         try:

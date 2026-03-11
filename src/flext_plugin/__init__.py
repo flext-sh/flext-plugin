@@ -16,8 +16,8 @@ if TYPE_CHECKING:
         FlextExceptions as e,
         FlextHandlers as h,
         FlextMixins as x,
-        FlextResult as r,
         FlextService as s,
+        r as r,
     )
 
     from flext_plugin.__version__ import __version__, __version_info__
@@ -60,7 +60,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "h": ("flext_core", "FlextHandlers"),
     "m": ("flext_plugin.models", "FlextPluginModels"),
     "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
-    "r": ("flext_core", "FlextResult"),
+    "r": ("flext_core", "r"),
     "s": ("flext_core", "FlextService"),
     "t": ("flext_plugin.typings", "FlextPluginTypes"),
     "u": ("flext_plugin.utilities", "FlextPluginUtilities"),

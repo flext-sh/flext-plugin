@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, FlextResult, r, t
+from flext_core import FlextLogger, r, t
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
@@ -118,14 +118,14 @@ class FlextPluginHotReload:
         """
         self._reload_callbacks.append(callback)
 
-    def add_watch_path(self, path: str) -> FlextResult[bool]:
+    def add_watch_path(self, path: str) -> r[bool]:
         """Add a new path to watch.
 
         Args:
         path: Path to add to watch list
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
@@ -160,11 +160,11 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> FlextResult[dict[str, t.ContainerValue]]:
+    def force_reload_all(self) -> r[dict[str, t.ContainerValue]]:
         """Force reload all plugins in watched paths.
 
         Returns:
-        FlextResult containing reload results for each plugin
+        r containing reload results for each plugin
 
         """
         try:
@@ -256,14 +256,14 @@ class FlextPluginHotReload:
         """
         return self._is_watching
 
-    def reload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def reload_plugin(self, plugin_name: str) -> r[bool]:
         """Reload a specific plugin.
 
         Args:
         plugin_name: Name of the plugin to reload
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
@@ -321,14 +321,14 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def remove_watch_path(self, path: str) -> FlextResult[bool]:
+    def remove_watch_path(self, path: str) -> r[bool]:
         """Remove a path from watch list.
 
         Args:
         path: Path to remove from watch list
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:
@@ -336,7 +336,7 @@ class FlextPluginHotReload:
             if path_obj in self._watched_paths:
                 self._watched_paths.remove(path_obj)
                 self.logger.info("Removed watch path: %s", path)
-                return FlextResult.ok(True)
+                return r.ok(True)
             return r[bool].fail(f"Path not being watched: {path}")
         except (
             ValueError,
@@ -350,14 +350,14 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to remove watch path: %s", path)
             return r[bool].fail(f"Remove watch path error: {e!s}")
 
-    def start_watching(self, paths: list[str]) -> FlextResult[bool]:
+    def start_watching(self, paths: list[str]) -> r[bool]:
         """Start watching the given paths for changes.
 
         Args:
             paths: List of paths to monitor for changes
 
         Returns:
-            FlextResult indicating success or failure
+            r indicating success or failure
 
         """
         try:
@@ -409,11 +409,11 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to start hot reload watching")
             return r[bool].fail(f"Start watching error: {e!s}")
 
-    def stop_watching(self) -> FlextResult[bool]:
+    def stop_watching(self) -> r[bool]:
         """Stop watching for changes.
 
         Returns:
-        FlextResult indicating success or failure
+        r indicating success or failure
 
         """
         try:

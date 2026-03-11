@@ -84,7 +84,7 @@ class FlextPlugin(FlextModels.Entity):
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""
 
-    def validate_business_rules(self) -> FlextResult[bool]:
+    def validate_business_rules(self) -> r[bool]:
         """Domain validation logic"""
 ```
 
@@ -122,12 +122,10 @@ class FlextPluginPlatform:
         self.container = container or FlextContainer()
         self._setup_services()
 
-    def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(
-        self, path: str
-    ) -> FlextResult[list[FlextPluginModels.Entity]]:
+    def discover_plugins(self, path: str) -> r[list[FlextPluginModels.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -149,7 +147,7 @@ ______________________________________________________________________
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
-    def scan_directory(self, path: str) -> FlextResult[list[PluginInfo]]:
+    def scan_directory(self, path: str) -> r[list[PluginInfo]]:
         """Scan directory for plugin files"""
 ```
 
@@ -169,17 +167,17 @@ ______________________________________________________________________
 
 ### FLEXT-Core Integration
 
-#### FlextResult Pattern
+#### r Pattern
 
-All operations return `FlextResult[T]` for railway-oriented programming:
+All operations return `r[T]` for railway-oriented programming:
 
 ```python
-def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
     try:
         # Plugin loading logic
-        return FlextResult[bool].ok(True)
+        return r[bool].ok(True)
     except Exception as e:
-        return FlextResult[bool].fail(f"Loading failed: {e}")
+        return r[bool].fail(f"Loading failed: {e}")
 ```
 
 #### Dependency Injection
@@ -225,7 +223,7 @@ All modules follow the FLEXT single-class-per-module standard with nested helper
 - ✅ **Domain-Driven Design**: Entities with business rules and validation
 - ✅ **FLEXT Compliance**: Single-class-per-module standard achieved across all modules
 - ✅ **Type Safety**: Complete MyPy compliance with Python 3.13+ features
-- ✅ **Railway Pattern**: FlextResult[T] throughout for composable error handling
+- ✅ **Railway Pattern**: r[T] throughout for composable error handling
 
 ______________________________________________________________________
 

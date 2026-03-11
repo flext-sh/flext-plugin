@@ -41,7 +41,7 @@ class FlextPluginDiscovery:
         plugin_path: Path to the plugin
 
         Returns:
-        FlextResult containing plugin data
+        r containing plugin data
 
         """
         try:
@@ -81,7 +81,7 @@ class FlextPluginDiscovery:
         paths: List of paths to search for plugins
 
         Returns:
-        FlextResult containing list of discovered plugins
+        r containing list of discovered plugins
 
         """
         try:
@@ -119,7 +119,7 @@ class FlextPluginDiscovery:
         plugin_data: Plugin data to validate
 
         Returns:
-        FlextResult indicating validation success
+        r indicating validation success
 
         """
         try:

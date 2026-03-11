@@ -277,7 +277,7 @@ Infrastructure Layer (External Systems/Databases)
 ### Implementation Considerations
 
 - **Dependency Injection**: Use FLEXT Container for service management
-- **Error Handling**: Railway pattern (FlextResult) throughout layers
+- **Error Handling**: Railway pattern (r) throughout layers
 - **Testing**: Each layer testable in isolation with mocks/stubs
 - **Documentation**: Comprehensive docs for each layer and interface
 
