@@ -345,13 +345,6 @@ class FlextPluginPlatform:
                 .map(self._register_all)
             )
 
-        @discovery.setter
-        def discovery(
-            self, value: FlextPluginProtocols.Plugin.PluginDiscovery | None
-        ) -> None:
-            """Set discovery protocol."""
-            self._discovery = value
-
         @override
         def execute(self) -> FlextResult[None]:
             """Execute main platform initialization (FlextService protocol)."""
@@ -391,13 +384,6 @@ class FlextPluginPlatform:
                 .flat_map(prepare_execution_result)
                 .flat_map(execute_with_executor_result)
             )
-
-        @executor.setter
-        def executor(
-            self, value: FlextPluginProtocols.Plugin.PluginExecution | None
-        ) -> None:
-            """Set executor protocol."""
-            self._executor = value
 
         def get_execution(self, eid: str) -> FlextPluginPlatform.PluginExecution | None:
             """Get execution by ID."""
@@ -481,13 +467,6 @@ class FlextPluginPlatform:
                 .flat_map(create_plugin_from_load_data)
                 .map(self._register_single)
             )
-
-        @loader.setter
-        def loader(
-            self, value: FlextPluginProtocols.Plugin.PluginLoader | None
-        ) -> None:
-            """Set loader protocol."""
-            self._loader = value
 
         def register_plugin(
             self, plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin
