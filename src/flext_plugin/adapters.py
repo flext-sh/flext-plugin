@@ -14,7 +14,7 @@ from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, T, r, t
+from flext_core import FlextLogger, T, r
 
 from flext_plugin import c, m, p
 
@@ -65,9 +65,7 @@ class FlextPluginAdapters:
         """File system plugin discovery - synchronous."""
 
         @override
-        def discover_plugin(
-            self, _plugin_path: str
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        def discover_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
@@ -77,9 +75,7 @@ class FlextPluginAdapters:
             )
 
         @override
-        def discover_plugins(
-            self, paths: list[str]
-        ) -> r[list[Mapping[str, t.ContainerValue]]]:
+        def discover_plugins(self, paths: list[str]) -> r[list[Mapping[str, object]]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
@@ -89,9 +85,7 @@ class FlextPluginAdapters:
             )
 
         @override
-        def validate_plugin(
-            self, _plugin_data: Mapping[str, t.ContainerValue]
-        ) -> r[bool]:
+        def validate_plugin(self, _plugin_data: Mapping[str, object]) -> r[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(lambda: True, "Plugin validation failed")
 
@@ -161,7 +155,7 @@ class FlextPluginAdapters:
 
         def _discovery_data_to_dict(
             self, data: m.Plugin.DiscoveryData
-        ) -> Mapping[str, t.ContainerValue]:
+        ) -> Mapping[str, object]:
             """Convert DiscoveryData model to JsonDict."""
             return {
                 "name": data.name,
@@ -190,7 +184,7 @@ class FlextPluginAdapters:
             return _plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(self, _plugin_path: str) -> r[Mapping[str, t.ContainerValue]]:
+        def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(_plugin_path),
@@ -237,9 +231,7 @@ class FlextPluginAdapters:
                 ),
             )
 
-        def _load_module_as_dict(
-            self, plugin_path: str
-        ) -> Mapping[str, t.ContainerValue]:
+        def _load_module_as_dict(self, plugin_path: str) -> Mapping[str, object]:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
             self._loaded_plugins[data.name] = data.module
@@ -256,8 +248,8 @@ class FlextPluginAdapters:
 
         @override
         def execute_plugin(
-            self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
-        ) -> r[Mapping[str, t.ContainerValue]]:
+            self, _plugin_name: str, _context: Mapping[str, object]
+        ) -> r[Mapping[str, object]]:
             """Execute plugin."""
             return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
@@ -295,14 +287,12 @@ class FlextPluginAdapters:
             return r.ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
 
         @override
-        def scan_plugin_security(
-            self, _plugin_path: str
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        def scan_plugin_security(self, _plugin_path: str) -> r[Mapping[str, object]]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
 
         @override
-        def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
+        def validate_plugin_security(self, _plugin: object) -> r[bool]:
             """Validate plugin for security."""
             return r.ok(True)
 
@@ -312,10 +302,10 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: dict[str, t.ContainerValue] = {}
+            self._plugins: dict[str, object] = {}
 
         @override
-        def get_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
+        def get_plugin(self, _plugin_name: str) -> r[object | None]:
             """Get plugin from registry."""
             return r.ok(None)
 
@@ -325,12 +315,12 @@ class FlextPluginAdapters:
             return False
 
         @override
-        def list_plugins(self) -> r[list[Mapping[str, t.ContainerValue]]]:
+        def list_plugins(self) -> r[list[Mapping[str, object]]]:
             """List all plugins in registry."""
             return r.ok([])
 
         @override
-        def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
+        def register_plugin(self, _plugin: object) -> r[bool]:
             """Register plugin in registry."""
             return r.ok(True)
 
@@ -343,16 +333,12 @@ class FlextPluginAdapters:
         """Plugin monitoring - synchronous."""
 
         @override
-        def get_plugin_health(
-            self, _plugin_name: str
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        def get_plugin_health(self, _plugin_name: str) -> r[Mapping[str, object]]:
             """Get plugin health information."""
             return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
-        def get_plugin_metrics(
-            self, _plugin_name: str
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        def get_plugin_metrics(self, _plugin_name: str) -> r[Mapping[str, object]]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 

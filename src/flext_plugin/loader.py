@@ -14,7 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, r
 
-from flext_plugin import FlextPluginModels, c, t
+from flext_plugin import FlextPluginModels, c
 
 
 class FlextPluginLoader:
@@ -59,7 +59,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, t.ContainerValue]]:
+    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, object]]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -72,7 +72,7 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[Mapping[str, t.ContainerValue]].fail(error_msg)
+                return r[Mapping[str, object]].fail(error_msg)
             module = self._loaded_plugins[plugin_name]
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
@@ -101,7 +101,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return r[Mapping[str, t.ContainerValue]].fail(f"Plugin info error: {e!s}")
+            return r[Mapping[str, object]].fail(f"Plugin info error: {e!s}")
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.

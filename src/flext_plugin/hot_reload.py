@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
@@ -160,7 +160,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> r[dict[str, t.ContainerValue]]:
+    def force_reload_all(self) -> r[dict[str, object]]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -169,8 +169,8 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[dict[str, t.ContainerValue]].fail("Hot reload is not watching")
-            reload_results: list[dict[str, t.ContainerValue]] = []
+                return r[dict[str, object]].fail("Hot reload is not watching")
+            reload_results: list[dict[str, object]] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -203,9 +203,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[dict[str, t.ContainerValue]].fail(f"Force reload error: {e!s}")
+            return r[dict[str, object]].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> dict[str, t.ContainerValue]:
+    def get_hot_reload_status(self) -> dict[str, object]:
         """Get the current status of the hot reload service.
 
         Returns:

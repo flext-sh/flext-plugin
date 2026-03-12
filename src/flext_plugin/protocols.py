@@ -53,9 +53,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if a plugin is currently loaded."""
                 ...
 
-            def load_plugin(
-                self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
                 """Load a plugin from the specified path."""
                 ...
 
@@ -67,21 +65,17 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginDiscovery(Protocol):
             """Protocol for plugin discovery operations."""
 
-            def discover_plugin(
-                self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def discover_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self, paths: list[str]
-            ) -> r[list[Mapping[str, t.ContainerValue]]]:
+            ) -> r[list[Mapping[str, object]]]:
                 """Discover plugins at the given paths."""
                 ...
 
-            def validate_plugin(
-                self, _plugin_data: Mapping[str, t.ContainerValue]
-            ) -> r[bool]:
+            def validate_plugin(self, _plugin_data: Mapping[str, object]) -> r[bool]:
                 """Validate plugin discovery data."""
                 ...
 
@@ -89,7 +83,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
+            def get_plugin(self, _plugin_name: str) -> r[object | None]:
                 """Get a registered plugin by name."""
                 ...
 
@@ -97,11 +91,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if a plugin is registered."""
                 ...
 
-            def list_plugins(self) -> r[list[Mapping[str, t.ContainerValue]]]:
+            def list_plugins(self) -> r[list[Mapping[str, object]]]:
                 """List all registered plugins."""
                 ...
 
-            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
+            def register_plugin(self, _plugin: object) -> r[bool]:
                 """Register a plugin."""
                 ...
 
@@ -114,8 +108,8 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin execution operations."""
 
             def execute_plugin(
-                self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
-            ) -> r[Mapping[str, t.ContainerValue]]:
+                self, _plugin_name: str, _context: Mapping[str, object]
+            ) -> r[Mapping[str, object]]:
                 """Execute a plugin with the given context."""
                 ...
 
@@ -147,11 +141,11 @@ class FlextPluginProtocols(FlextProtocols):
 
             def scan_plugin_security(
                 self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            ) -> r[Mapping[str, object]]:
                 """Scan plugin for security vulnerabilities."""
                 ...
 
-            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
+            def validate_plugin_security(self, _plugin: object) -> r[bool]:
                 """Validate plugin security compliance."""
                 ...
 
@@ -183,15 +177,11 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginMonitoring(Protocol):
             """Protocol for plugin monitoring operations."""
 
-            def get_plugin_health(
-                self, _plugin_name: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def get_plugin_health(self, _plugin_name: str) -> r[Mapping[str, object]]:
                 """Get health status of a plugin."""
                 ...
 
-            def get_plugin_metrics(
-                self, _plugin_name: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def get_plugin_metrics(self, _plugin_name: str) -> r[Mapping[str, object]]:
                 """Get metrics for a plugin."""
                 ...
 
@@ -303,33 +293,23 @@ class FlextPluginProtocols(FlextProtocols):
         class LoggerProtocol(Protocol):
             """Protocol for logging operations."""
 
-            def critical(
-                self, message: str, *args: t.ContainerValue, **kwargs: t.ContainerValue
-            ) -> None:
+            def critical(self, message: str, *args: object, **kwargs: object) -> None:
                 """Log critical message."""
                 ...
 
-            def debug(
-                self, message: str, *args: t.ContainerValue, **kwargs: t.ContainerValue
-            ) -> None:
+            def debug(self, message: str, *args: object, **kwargs: object) -> None:
                 """Log debug message."""
                 ...
 
-            def error(
-                self, message: str, *args: t.ContainerValue, **kwargs: t.ContainerValue
-            ) -> None:
+            def error(self, message: str, *args: object, **kwargs: object) -> None:
                 """Log error message."""
                 ...
 
-            def info(
-                self, message: str, *args: t.ContainerValue, **kwargs: t.ContainerValue
-            ) -> None:
+            def info(self, message: str, *args: object, **kwargs: object) -> None:
                 """Log info message."""
                 ...
 
-            def warning(
-                self, message: str, *args: t.ContainerValue, **kwargs: t.ContainerValue
-            ) -> None:
+            def warning(self, message: str, *args: object, **kwargs: object) -> None:
                 """Log warning message."""
                 ...
 
@@ -337,9 +317,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginLoaderProtocol(Protocol):
             """Protocol for plugin loader interface."""
 
-            def load_plugin(
-                self, plugin_path: str | t.ContainerValue
-            ) -> r[t.ContainerValue]:
+            def load_plugin(self, plugin_path: str | object) -> r[object]:
                 """Load plugin from path."""
                 ...
 
@@ -347,11 +325,11 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistryProtocol(Protocol):
             """Protocol for plugin registry interface."""
 
-            def get_plugin(self, plugin_name: str) -> r[t.ContainerValue]:
+            def get_plugin(self, plugin_name: str) -> r[object]:
                 """Get plugin by name."""
                 ...
 
-            def register(self, plugin: t.ContainerValue) -> r[None]:
+            def register(self, plugin: object) -> r[None]:
                 """Register a plugin."""
                 ...
 

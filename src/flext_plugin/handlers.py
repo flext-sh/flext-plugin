@@ -43,7 +43,7 @@ class FlextPluginHandlers:
         super().__init__()
         self.logger = FlextLogger(__name__)
         self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
-        self._event_history: list[dict[str, t.ContainerValue]] = []
+        self._event_history: list[dict[str, object]] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -59,7 +59,7 @@ class FlextPluginHandlers:
 
     def get_event_history(
         self, event_type: str | None = None, limit: int = 100
-    ) -> list[Mapping[str, t.ContainerValue]]:
+    ) -> list[Mapping[str, object]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -91,7 +91,7 @@ class FlextPluginHandlers:
         """
         return len(self._handlers.get(event_type, []))
 
-    def get_handler_status(self) -> Mapping[str, t.ContainerValue]:
+    def get_handler_status(self) -> Mapping[str, object]:
         """Get the current status of the event handlers.
 
         Returns:
@@ -119,8 +119,8 @@ class FlextPluginHandlers:
         }
 
     async def handle_plugin_discovered(
-        self, event_data: Mapping[str, t.ContainerValue]
-    ) -> Mapping[str, t.ContainerValue]:
+        self, event_data: Mapping[str, object]
+    ) -> Mapping[str, object]:
         """Handle plugin discovered event.
 
         Args:
@@ -136,8 +136,8 @@ class FlextPluginHandlers:
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_error(
-        self, event_data: Mapping[str, t.ContainerValue]
-    ) -> Mapping[str, t.ContainerValue]:
+        self, event_data: Mapping[str, object]
+    ) -> Mapping[str, object]:
         """Handle plugin error event.
 
         Args:
@@ -159,8 +159,8 @@ class FlextPluginHandlers:
         }
 
     async def handle_plugin_executed(
-        self, event_data: Mapping[str, t.ContainerValue]
-    ) -> Mapping[str, t.ContainerValue]:
+        self, event_data: Mapping[str, object]
+    ) -> Mapping[str, object]:
         """Handle plugin executed event.
 
         Args:
@@ -190,8 +190,8 @@ class FlextPluginHandlers:
         }
 
     async def handle_plugin_loaded(
-        self, event_data: Mapping[str, t.ContainerValue]
-    ) -> Mapping[str, t.ContainerValue]:
+        self, event_data: Mapping[str, object]
+    ) -> Mapping[str, object]:
         """Handle plugin loaded event.
 
         Args:
@@ -207,8 +207,8 @@ class FlextPluginHandlers:
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_unloaded(
-        self, event_data: Mapping[str, t.ContainerValue]
-    ) -> Mapping[str, t.ContainerValue]:
+        self, event_data: Mapping[str, object]
+    ) -> Mapping[str, object]:
         """Handle plugin unloaded event.
 
         Args:
@@ -295,8 +295,8 @@ class FlextPluginHandlers:
             return r[bool].fail(f"Handler registration error: {e!s}")
 
     async def trigger_event(
-        self, event_type: str, event_data: Mapping[str, t.ContainerValue]
-    ) -> r[list[t.ContainerValue]]:
+        self, event_type: str, event_data: Mapping[str, object]
+    ) -> r[list[object]]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -308,7 +308,7 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: dict[str, t.ContainerValue] = {
+            event_record: dict[str, object] = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -319,7 +319,7 @@ class FlextPluginHandlers:
                     "No handlers registered for event type: %s", event_type
                 )
                 return r.ok([])
-            results: list[t.ContainerValue] = []
+            results: list[object] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
@@ -350,7 +350,7 @@ class FlextPluginHandlers:
             ImportError,
         ) as e:
             self.logger.exception("Failed to trigger event %s", event_type)
-            return r[list[t.ContainerValue]].fail(f"Event triggering error: {e!s}")
+            return r[list[object]].fail(f"Event triggering error: {e!s}")
 
     def unregister_handler(
         self, event_type: str, handler: t.Handlers.EventHandler
@@ -393,8 +393,8 @@ class FlextPluginHandlers:
     async def _execute_handler(
         self,
         handler: t.Handlers.EventHandler,
-        event_data: Mapping[str, t.ContainerValue],
-    ) -> t.ContainerValue:
+        event_data: Mapping[str, object],
+    ) -> object:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -429,7 +429,7 @@ class FlextPluginHandlers:
         """
         return datetime.now(UTC).isoformat()
 
-    def _is_async_function(self, func: t.ContainerValue) -> bool:
+    def _is_async_function(self, func: object) -> bool:
         """Check if a function is async.
 
         Args:

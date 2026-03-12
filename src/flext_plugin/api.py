@@ -11,7 +11,7 @@ from collections.abc import Mapping, Sequence
 
 from flext_core import FlextContainer, FlextLogger, r
 
-from flext_plugin import FlextPluginModels, FlextPluginPlatform, t
+from flext_plugin import FlextPluginModels, FlextPluginPlatform
 
 
 class FlextPluginApi:
@@ -45,7 +45,7 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Mapping[str, t.ContainerValue],
+        context: Mapping[str, object],
         execution_id: str | None = None,
     ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin by name with the given context."""

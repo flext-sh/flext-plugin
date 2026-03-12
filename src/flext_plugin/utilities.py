@@ -231,7 +231,7 @@ class FlextPluginUtilities(FlextUtilities):
         def create_file_watcher(
             watch_path: Path | str,
             callback_function: Callable[..., object] | None = None,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Create file system watcher for plugin hot reload.
 
             Args:
@@ -248,7 +248,7 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[t.ConfigurationMapping].fail(
                         f"Watch path does not exist: {path}"
                     )
-                watcher_config: dict[str, t.ContainerValue] = {
+                watcher_config: dict[str, object] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
                     if callback_function
@@ -274,7 +274,7 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def detect_file_changes(
-            watcher_config: Mapping[str, t.ContainerValue],
+            watcher_config: Mapping[str, object],
         ) -> r[t.Plugin.StringList]:
             """Detect file changes in watched directory.
 
@@ -415,7 +415,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def create_sandbox_config(
             plugin_name: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Create sandbox configuration for plugin execution.
 
             Args:
@@ -426,8 +426,8 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
 
-            def _create_sandbox_config() -> Mapping[str, t.ContainerValue]:
-                sandbox_config: dict[str, t.ContainerValue] = {
+            def _create_sandbox_config() -> Mapping[str, object]:
+                sandbox_config: dict[str, object] = {
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
@@ -458,7 +458,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def validate_plugin_security(
             plugin_content: str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Validate plugin security before execution.
 
             Args:
@@ -469,7 +469,7 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                security_report: dict[str, t.ContainerValue] = {
+                security_report: dict[str, object] = {
                     "safe": True,
                     "violations": list[str](),
                     "warnings": list[str](),
@@ -530,7 +530,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def load_plugin_config(
             config_path: Path | str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Load plugin configuration from file.
 
             Args:
@@ -587,9 +587,9 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def merge_plugin_configs(
-            base_config: Mapping[str, t.ContainerValue],
-            override_config: Mapping[str, t.ContainerValue],
-        ) -> r[Mapping[str, t.ContainerValue]]:
+            base_config: Mapping[str, object],
+            override_config: Mapping[str, object],
+        ) -> r[Mapping[str, object]]:
             """Merge plugin configurations with override precedence.
 
             Args:
@@ -633,7 +633,7 @@ class FlextPluginUtilities(FlextUtilities):
                 )
 
         @staticmethod
-        def validate_plugin_config(config: Mapping[str, t.ContainerValue]) -> r[None]:
+        def validate_plugin_config(config: Mapping[str, object]) -> r[None]:
             """Validate plugin configuration structure and values.
 
             Args:
@@ -691,8 +691,8 @@ class FlextPluginUtilities(FlextUtilities):
         def execute_plugin_function(
             plugin_module: ModuleType,
             function_name: str,
-            args: list[t.ContainerValue] | None = None,
-            kwargs: Mapping[str, t.ContainerValue] | None = None,
+            args: list[object] | None = None,
+            kwargs: Mapping[str, object] | None = None,
         ) -> r[object]:
             """Execute a specific function within a plugin module.
 
@@ -863,7 +863,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def load_plugin_registry(
             registry_path: Path | str,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Load plugin registry from file.
 
             Args:
@@ -876,7 +876,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(registry_path)
                 if not path.exists():
-                    registry: dict[str, t.ContainerValue] = {
+                    registry: dict[str, object] = {
                         "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
                         "plugins": {},
                         "last_updated": datetime.now(UTC).isoformat(),
@@ -907,9 +907,9 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def register_plugin(
-            registry: Mapping[str, t.ContainerValue],
+            registry: Mapping[str, object],
             plugin_metadata: FlextPluginModels.Plugin.PluginMetadata,
-        ) -> r[Mapping[str, t.ContainerValue]]:
+        ) -> r[Mapping[str, object]]:
             """Register plugin in registry.
 
             Args:
@@ -921,9 +921,9 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                mutable_registry: dict[str, t.ContainerValue] = dict(registry)
+                mutable_registry: dict[str, object] = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = dict[str, t.ContainerValue]()
+                    mutable_registry["plugins"] = dict[str, object]()
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
@@ -955,7 +955,7 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def save_plugin_registry(
-            registry: Mapping[str, t.ContainerValue], registry_path: Path | str
+            registry: Mapping[str, object], registry_path: Path | str
         ) -> r[None]:
             """Save plugin registry to file with backup.
 

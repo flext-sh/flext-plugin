@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import override
 
-from flext_core import FlextContainer, r, t, u, x
+from flext_core import FlextContainer, r, u, x
 
 from flext_plugin import (
     FlextPluginAdapters,
@@ -98,7 +98,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         return FlextContainer.get_global()
 
     @staticmethod
-    def _to_general_mapping(value: t.ContainerValue) -> dict[str, t.ContainerValue]:
+    def _to_general_mapping(value: object) -> dict[str, object]:
         if not isinstance(value, Mapping):
             return {}
         return dict(value.items())
@@ -383,9 +383,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         )
         return r.ok(config)
 
-    async def get_plugin_health(
-        self, plugin_name: str
-    ) -> r[Mapping[str, t.ContainerValue]]:
+    async def get_plugin_health(self, plugin_name: str) -> r[Mapping[str, object]]:
         """Get health status for a specific plugin.
 
         Args:
@@ -397,22 +395,16 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         try:
             if not self._monitoring:
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    "Plugin monitoring not available"
-                )
+                return r[Mapping[str, object]].fail("Plugin monitoring not available")
             if plugin_name not in self._plugins:
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    f"Plugin '{plugin_name}' not found"
-                )
+                return r[Mapping[str, object]].fail(f"Plugin '{plugin_name}' not found")
             health_result = self._monitoring.get_plugin_health(plugin_name)
             if health_result.is_failure:
-                return r[Mapping[str, t.ContainerValue]].fail(
+                return r[Mapping[str, object]].fail(
                     f"Health check failed: {health_result.error}"
                 )
             if not u.is_dict_like(health_result.value):
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    "Health response is not a mapping"
-                )
+                return r[Mapping[str, object]].fail("Health response is not a mapping")
             return r.ok(dict(health_result.value))
         except (
             ValueError,
@@ -424,11 +416,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             ImportError,
         ) as e:
             self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
-            return r[Mapping[str, t.ContainerValue]].fail(f"Health check error: {e!s}")
+            return r[Mapping[str, object]].fail(f"Health check error: {e!s}")
 
-    async def get_plugin_metrics(
-        self, plugin_name: str
-    ) -> r[Mapping[str, t.ContainerValue]]:
+    async def get_plugin_metrics(self, plugin_name: str) -> r[Mapping[str, object]]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -440,22 +430,16 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         try:
             if not self._monitoring:
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    "Plugin monitoring not available"
-                )
+                return r[Mapping[str, object]].fail("Plugin monitoring not available")
             if plugin_name not in self._plugins:
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    f"Plugin '{plugin_name}' not found"
-                )
+                return r[Mapping[str, object]].fail(f"Plugin '{plugin_name}' not found")
             metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
             if metrics_result.is_failure:
-                return r[Mapping[str, t.ContainerValue]].fail(
+                return r[Mapping[str, object]].fail(
                     f"Metrics retrieval failed: {metrics_result.error}"
                 )
             if not u.is_dict_like(metrics_result.value):
-                return r[Mapping[str, t.ContainerValue]].fail(
-                    "Metrics response is not a mapping"
-                )
+                return r[Mapping[str, object]].fail("Metrics response is not a mapping")
             return r.ok(dict(metrics_result.value))
         except (
             ValueError,
@@ -467,7 +451,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             ImportError,
         ) as e:
             self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
-            return r[Mapping[str, t.ContainerValue]].fail(f"Metrics error: {e!s}")
+            return r[Mapping[str, object]].fail(f"Metrics error: {e!s}")
 
     def get_plugin_status(self, plugin_name: str) -> str | None:
         """Get the status of a specific plugin.
@@ -495,7 +479,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
         """
         return [e for e in self._executions.values() if e.is_running]
 
-    def get_service_status(self) -> Mapping[str, t.ContainerValue]:
+    def get_service_status(self) -> Mapping[str, object]:
         """Get the current status of the plugin service.
 
         Returns:
@@ -730,7 +714,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             return r[bool].fail(f"Unloading error: {e!s}")
 
     def update_plugin_config(
-        self, plugin_name: str, config: Mapping[str, t.ContainerValue]
+        self, plugin_name: str, config: Mapping[str, object]
     ) -> r[bool]:
         """Update configuration for a plugin.
 

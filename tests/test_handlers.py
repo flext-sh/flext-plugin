@@ -12,7 +12,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 import pytest
-from flext_core import t
 
 from flext_plugin import FlextPluginHandlers
 
@@ -38,8 +37,8 @@ class TestFlextPluginHandlers:
         """Test successful handler registration."""
 
         async def sample_handler(
-            event: Mapping[str, t.ContainerValue],
-        ) -> t.ContainerValue:
+            event: Mapping[str, object],
+        ) -> object:
             return event.get("key", "default")
 
         result = handlers.register_handler("test_event", sample_handler)
@@ -53,10 +52,10 @@ class TestFlextPluginHandlers:
     ) -> None:
         """Test handler registration with priority."""
 
-        async def handler1(event: Mapping[str, t.ContainerValue]) -> t.ContainerValue:
+        async def handler1(event: Mapping[str, object]) -> object:
             return "handler1"
 
-        async def handler2(event: Mapping[str, t.ContainerValue]) -> t.ContainerValue:
+        async def handler2(event: Mapping[str, object]) -> object:
             return "handler2"
 
         handlers.register_handler("priority_event", handler1, priority=1)
@@ -68,10 +67,10 @@ class TestFlextPluginHandlers:
     def test_register_multiple_handlers(self, handlers: FlextPluginHandlers) -> None:
         """Test registering multiple handlers for different events."""
 
-        async def handler_a(event: Mapping[str, t.ContainerValue]) -> t.ContainerValue:
+        async def handler_a(event: Mapping[str, object]) -> object:
             return "a"
 
-        async def handler_b(event: Mapping[str, t.ContainerValue]) -> t.ContainerValue:
+        async def handler_b(event: Mapping[str, object]) -> object:
             return "b"
 
         handlers.register_handler("event_a", handler_a)

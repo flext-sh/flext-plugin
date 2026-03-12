@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from typing import override
 
 import pytest
-from flext_core import r, t
+from flext_core import r
 
 from flext_plugin import FlextPluginAdapters, FlextPluginService
 
@@ -47,7 +47,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def discover_plugins(
                 self, paths: list[str]
-            ) -> r[list[Mapping[str, t.ContainerValue]]]:
+            ) -> r[list[Mapping[str, object]]]:
                 _ = paths
                 return r.ok([
                     {
@@ -63,7 +63,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
+            def validate_plugin_security(self, _plugin: object) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -73,7 +73,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
+            def register_plugin(self, _plugin: object) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -110,9 +110,7 @@ class TestFlextPluginServiceStubBridges:
 
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
-            def load_plugin(
-                self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
                 _ = _plugin_path
                 return r.ok({
                     "name": "stub_plugin",
@@ -126,7 +124,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.ContainerValue) -> r[bool]:
+            def validate_plugin_security(self, _plugin: object) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -136,7 +134,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.ContainerValue) -> r[bool]:
+            def register_plugin(self, _plugin: object) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -169,9 +167,7 @@ class TestFlextPluginServiceStubBridges:
 
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
-            def load_plugin(
-                self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
                 _ = _plugin_path
                 return r.ok({
                     "name": "stub_plugin",
@@ -186,8 +182,8 @@ class TestFlextPluginServiceStubBridges:
 
             @override
             def execute_plugin(
-                self, _plugin_name: str, _context: Mapping[str, t.ContainerValue]
-            ) -> r[Mapping[str, t.ContainerValue]]:
+                self, _plugin_name: str, _context: Mapping[str, object]
+            ) -> r[Mapping[str, object]]:
                 self.calls.append(_plugin_name)
                 return r.ok({"status": "executed", "plugin": _plugin_name})
 
@@ -209,9 +205,7 @@ class TestFlextPluginServiceStubBridges:
                 self.unloaded: list[str] = []
 
             @override
-            def load_plugin(
-                self, _plugin_path: str
-            ) -> r[Mapping[str, t.ContainerValue]]:
+            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
                 _ = _plugin_path
                 self._loaded_plugins["stub_plugin"] = True
                 return r.ok({
