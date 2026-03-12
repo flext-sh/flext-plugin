@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, r
+from flext_core import FlextProtocols, r, t
 
 from flext_plugin import FlextPluginModels
 
@@ -293,23 +293,23 @@ class FlextPluginProtocols(FlextProtocols):
         class LoggerProtocol(Protocol):
             """Protocol for logging operations."""
 
-            def critical(self, message: str, *args: object, **kwargs: object) -> None:
+            def critical(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log critical message."""
                 ...
 
-            def debug(self, message: str, *args: object, **kwargs: object) -> None:
+            def debug(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log debug message."""
                 ...
 
-            def error(self, message: str, *args: object, **kwargs: object) -> None:
+            def error(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log error message."""
                 ...
 
-            def info(self, message: str, *args: object, **kwargs: object) -> None:
+            def info(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log info message."""
                 ...
 
-            def warning(self, message: str, *args: object, **kwargs: object) -> None:
+            def warning(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log warning message."""
                 ...
 

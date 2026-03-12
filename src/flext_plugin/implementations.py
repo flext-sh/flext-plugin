@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r
+from flext_core import FlextLogger, r, t
 
 from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
 
@@ -399,28 +399,28 @@ class FlextPluginImplementations:
             self.logger = logger
 
         @override
-        def critical(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def critical(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log critical message."""
             self.logger.critical(message)
 
         @override
-        def debug(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def debug(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log debug message."""
             self.logger.debug(message)
 
         @override
-        def error(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def error(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log error message."""
             self.logger.error(message)
 
         def exception(
-            self, message: str, *, _exc_info: bool = True, **_kwargs: object
+            self, message: str, *, _exc_info: bool = True, **_kwargs: t.Scalar
         ) -> None:
             """Log exception message."""
             self.logger.error(message)
 
         @override
-        def info(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def info(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log info message."""
             self.logger.info(message)
 
@@ -433,12 +433,12 @@ class FlextPluginImplementations:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
 
-        def trace(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def trace(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log trace message."""
             self.logger.debug(message)
 
         @override
-        def warning(self, message: str, *_args: object, **_kwargs: object) -> None:
+        def warning(self, message: str, *_args: object, **_kwargs: t.Scalar) -> None:
             """Log warning message."""
             self.logger.warning(message)
 
