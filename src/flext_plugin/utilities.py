@@ -245,9 +245,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(watch_path)
                 if not path.exists():
-                    return r[object].fail(
-                        f"Watch path does not exist: {path}"
-                    )
+                    return r[object].fail(f"Watch path does not exist: {path}")
                 watcher_config: dict[str, object] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
@@ -268,9 +266,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(
-                    f"File watcher creation failed: {e}"
-                )
+                return r[object].fail(f"File watcher creation failed: {e}")
 
         @staticmethod
         def detect_file_changes(
@@ -516,9 +512,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(
-                    f"Security validation failed: {e}"
-                )
+                return r[object].fail(f"Security validation failed: {e}")
 
     class ConfigurationManager:
         """Plugin configuration management utilities."""
@@ -543,9 +537,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(config_path)
                 if not path.exists():
-                    return r[object].fail(
-                        f"Configuration file not found: {path}"
-                    )
+                    return r[object].fail(f"Configuration file not found: {path}")
                 file_size_kb = path.stat().st_size / 1024
                 if (
                     file_size_kb
@@ -581,9 +573,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(
-                    f"Configuration loading failed: {e}"
-                )
+                return r[object].fail(f"Configuration loading failed: {e}")
 
         @staticmethod
         def merge_plugin_configs(
@@ -628,9 +618,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(
-                    f"Configuration merge failed: {e}"
-                )
+                return r[object].fail(f"Configuration merge failed: {e}")
 
         @staticmethod
         def validate_plugin_config(config: Mapping[str, object]) -> r[None]:
@@ -949,9 +937,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(
-                    f"Plugin registration failed: {e}"
-                )
+                return r[object].fail(f"Plugin registration failed: {e}")
 
         @staticmethod
         def save_plugin_registry(

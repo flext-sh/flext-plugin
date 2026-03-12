@@ -28,7 +28,6 @@ from flext_plugin import (
     FlextPluginSettings,
     c,
     p,
-    t,
 )
 
 
@@ -446,9 +445,7 @@ class FlextPluginPlatform:
                         }
                         return r.ok(plugin_dict)
                     return r[Mapping[str, object]].fail("Invalid load data format")
-                return r[object].fail(
-                    load_result.error or "Load failed"
-                )
+                return r[object].fail(load_result.error or "Load failed")
 
             def create_plugin_from_load_data(
                 data: Mapping[str, object],
