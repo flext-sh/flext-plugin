@@ -327,7 +327,7 @@ class FlextPluginPlatform:
                                 "metadata": dict(metadata),
                             })
                     return r.ok(plugin_dicts)
-                return r[list[t.ConfigurationMapping]].fail(
+                return r[list[object]].fail(
                     discovery_result.error or "Discovery failed"
                 )
 
@@ -446,7 +446,7 @@ class FlextPluginPlatform:
                         }
                         return r.ok(plugin_dict)
                     return r[Mapping[str, object]].fail("Invalid load data format")
-                return r[t.ConfigurationMapping].fail(
+                return r[object].fail(
                     load_result.error or "Load failed"
                 )
 

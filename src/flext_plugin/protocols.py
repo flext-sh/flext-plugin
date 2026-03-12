@@ -12,7 +12,7 @@ from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r
 
-from flext_plugin import FlextPluginModels, t
+from flext_plugin import FlextPluginModels
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -201,19 +201,19 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def get_default_config(self, plugin_type: str) -> r[t.JsonDict]:
+            def get_default_config(self, plugin_type: str) -> r[object]:
                 """Get default configuration for a plugin type."""
                 ...
 
-            def load_config(self, _plugin_name: str) -> r[t.JsonDict]:
+            def load_config(self, _plugin_name: str) -> r[object]:
                 """Load configuration for a plugin."""
                 ...
 
-            def save_config(self, _plugin_name: str, config: t.JsonDict) -> r[bool]:
+            def save_config(self, _plugin_name: str, config: object) -> r[bool]:
                 """Save configuration for a plugin."""
                 ...
 
-            def validate_config(self, config: t.JsonDict) -> r[bool]:
+            def validate_config(self, config: object) -> r[bool]:
                 """Validate plugin configuration."""
                 ...
 
@@ -261,7 +261,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Validate plugin permissions."""
                 ...
 
-            def validate_plugin_structure(self, _plugin_data: t.JsonDict) -> r[bool]:
+            def validate_plugin_structure(self, _plugin_data: object) -> r[bool]:
                 """Validate plugin structure."""
                 ...
 
@@ -281,11 +281,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if plugin is stored."""
                 ...
 
-            def retrieve_plugin(self, _plugin_name: str) -> r[t.JsonDict | None]:
+            def retrieve_plugin(self, _plugin_name: str) -> r[object | None]:
                 """Retrieve stored plugin data."""
                 ...
 
-            def store_plugin(self, _plugin_data: t.JsonDict) -> r[bool]:
+            def store_plugin(self, _plugin_data: object) -> r[bool]:
                 """Store plugin data."""
                 ...
 

@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Self
 
-from flext_core import FlextModels, FlextTypes, r
+from flext_core import FlextModels, r
 from pydantic import Field, field_validator
 
 from flext_plugin import (
@@ -85,7 +85,7 @@ class FlextPluginModels(FlextModels):
                 description="Plugin type classification",
             )
             is_enabled: bool = Field(default=True, description="Plugin enabled state")
-            metadata: dict[str, FlextTypes.ContainerValue] = Field(
+            metadata: dict[str, object] = Field(
                 default_factory=dict,
                 description="Extensible plugin metadata",
             )
@@ -100,7 +100,7 @@ class FlextPluginModels(FlextModels):
                 author: str = "",
                 plugin_type: str = c_constants.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: Mapping[str, FlextTypes.ContainerValue] | None = None,
+                metadata: Mapping[str, object] | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -357,7 +357,7 @@ class FlextPluginModels(FlextModels):
             """
 
             success: bool = Field(description="Whether execution succeeded")
-            data: dict[str, FlextTypes.ContainerValue] = Field(
+            data: dict[str, object] = Field(
                 default_factory=dict,
                 description="Execution output data",
             )
@@ -404,7 +404,7 @@ class FlextPluginModels(FlextModels):
             discovery_method: t_types.Plugin.DiscoveryMethodLiteral = Field(
                 description="Discovery method used",
             )
-            metadata: dict[str, FlextTypes.ContainerValue] = Field(
+            metadata: dict[str, object] = Field(
                 default_factory=dict,
                 description="Extensible discovery metadata",
             )
@@ -522,7 +522,7 @@ class FlextPluginModels(FlextModels):
                 default_factory=list,
                 description="List of plugin dependencies",
             )
-            metadata: dict[str, FlextTypes.ContainerValue] = Field(
+            metadata: dict[str, object] = Field(
                 default_factory=dict,
                 description="Additional metadata",
             )
@@ -544,7 +544,7 @@ class FlextPluginModels(FlextModels):
             event_type: str = Field(description="Type of event")
             plugin_name: str = Field(description="Associated plugin name")
             timestamp: datetime = Field(description="When event occurred")
-            data: dict[str, FlextTypes.ContainerValue] = Field(
+            data: dict[str, object] = Field(
                 default_factory=dict,
                 description="Event-specific data",
             )
@@ -572,7 +572,7 @@ class FlextPluginModels(FlextModels):
                 default_factory=list,
                 description="List of validation warnings",
             )
-            details: dict[str, FlextTypes.ContainerValue] = Field(
+            details: dict[str, object] = Field(
                 default_factory=dict,
                 description="Additional validation details",
             )
@@ -625,7 +625,7 @@ class FlextPluginModels(FlextModels):
                 description="Callback function reference",
             )
             active: bool = Field(default=False, description="Whether watcher is active")
-            last_modified: dict[str, FlextTypes.ContainerValue] = Field(
+            last_modified: dict[str, object] = Field(
                 default_factory=dict,
                 description="File modification tracking",
             )
@@ -677,7 +677,7 @@ class FlextPluginModels(FlextModels):
             """
 
             version: str = Field(description="Registry schema version")
-            plugins: dict[str, FlextTypes.ContainerValue] = Field(
+            plugins: dict[str, object] = Field(
                 default_factory=dict,
                 description="Dictionary of registered plugins",
             )
@@ -697,7 +697,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugin_name: str = Field(description="Plugin name")
-            settings: dict[str, FlextTypes.ContainerValue] = Field(
+            settings: dict[str, object] = Field(
                 default_factory=dict,
                 description="Configuration settings",
             )
@@ -708,7 +708,7 @@ class FlextPluginModels(FlextModels):
             Represents a registry of plugins with metadata.
             """
 
-            plugins: dict[str, FlextTypes.ContainerValue] = Field(
+            plugins: dict[str, object] = Field(
                 default_factory=dict,
                 description="Dictionary of registered plugins",
             )

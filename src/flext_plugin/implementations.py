@@ -357,8 +357,8 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[t.ConfigurationMapping].fail("No schema defined")
-            return r[t.ConfigurationMapping].ok(self._schema)
+                return r[object].fail("No schema defined")
+            return r[object].ok(self._schema)
 
         def transform(self, data: object) -> r[object]:
             """Transform input data.
