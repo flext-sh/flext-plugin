@@ -73,12 +73,12 @@ class FlextPluginPlatform:
             self.is_completed = True
             self.success = success
             self.error_message = error_message
-            self.completed_at = u.Generators.generate_iso_timestamp()
+            self.completed_at = u.generate_iso_timestamp()
 
         def mark_started(self) -> None:
             """Mark execution as started."""
             self.is_running = True
-            self.started_at = u.Generators.generate_iso_timestamp()
+            self.started_at = u.generate_iso_timestamp()
 
     class PluginRegistry(FlextRegistry):
         """Plugin registry for managing plugin lifecycle.
