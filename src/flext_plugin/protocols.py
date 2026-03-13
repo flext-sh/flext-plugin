@@ -290,7 +290,7 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
-        class LoggerProtocol(Protocol):
+        class Logger(Protocol):
             """Protocol for logging operations."""
 
             def critical(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
@@ -314,7 +314,7 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
-        class PluginLoaderProtocol(Protocol):
+        class PluginLoader(Protocol):
             """Protocol for plugin loader interface."""
 
             def load_plugin(self, plugin_path: str | object) -> r[object]:
@@ -322,7 +322,7 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
-        class PluginRegistryProtocol(Protocol):
+        class PluginRegistry(Protocol):
             """Protocol for plugin registry interface."""
 
             def get_plugin(self, plugin_name: str) -> r[object]:
@@ -334,7 +334,7 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
-        class DiscoveryStrategyProtocol(Protocol):
+        class DiscoveryStrategy(Protocol):
             """Strategy protocol for plugin discovery."""
 
             def discover(

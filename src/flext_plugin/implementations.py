@@ -30,9 +30,8 @@ class FlextPluginImplementations:
     per module while preserving existing API surface for seamless migration.
     """
 
-    FlextPluginLoaderProtocol = FlextPluginProtocols.Plugin.PluginLoaderProtocol
-    FlextPluginRegistryProtocol = FlextPluginProtocols.Plugin.PluginRegistryProtocol
-    FlextPluginLoader = FlextPluginProtocols.Plugin.PluginLoaderProtocol
+    FlextPluginLoader = FlextPluginProtocols.Plugin.PluginLoader
+    FlextPluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
 
     class ConcretePlugin:
         """Concrete implementation of the FlextPlugin interface.
@@ -390,8 +389,8 @@ class FlextPluginImplementations:
                 self.logger.exception("Transformation failed")
                 return r[object].fail(f"Transform failed: {e!s}")
 
-    class LoggerAdapter(FlextPluginProtocols.Plugin.LoggerProtocol):
-        """Adapter to make FlextLogger compatible with LoggerProtocol."""
+    class LoggerAdapter(FlextPluginProtocols.Plugin.Logger):
+        """Adapter to make FlextLogger compatible with Logger."""
 
         @override
         def __init__(self, logger: FlextLogger) -> None:
@@ -478,7 +477,7 @@ class FlextPluginImplementations:
             """Get configuration for plugin."""
             return dict(self._config)
 
-        def get_logger(self) -> FlextPluginProtocols.Plugin.LoggerProtocol:
+        def get_logger(self) -> FlextPluginProtocols.Plugin.Logger:
             """Get logger instance for plugin."""
             return FlextPluginImplementations.LoggerAdapter(self.logger)
 
@@ -567,13 +566,13 @@ class FlextPluginImplementations:
         """Concrete implementation of plugin loader.
 
         Handles dynamic plugin loading and discovery.
-        Implements FlextPluginLoaderProtocol.
+        Implements FlextPluginLoader.
         """
 
         @override
         def __init__(
             self,
-            registry: FlextPluginProtocols.Plugin.PluginRegistryProtocol | None = None,
+            registry: FlextPluginProtocols.Plugin.PluginRegistry | None = None,
         ) -> None:
             """Initialize plugin loader.
 

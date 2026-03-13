@@ -6,7 +6,7 @@
   - [Implementation Philosophy](#implementation-philosophy)
 - [🏗️ Architecture Implementation Patterns](#architecture-implementation-patterns)
   - [Clean Architecture Layer Implementation](#clean-architecture-layer-implementation)
-  - [Protocol-Based Architecture Implementation](#protocol-based-architecture-implementation)
+  - [-Based Architecture Implementation](#protocol-based-architecture-implementation)
   - [Railway Pattern Implementation](#railway-pattern-implementation)
 - [🧪 Testing Implementation Patterns](#testing-implementation-patterns)
   - [Unit Testing Patterns](#unit-testing-patterns)

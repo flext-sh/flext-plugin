@@ -27,7 +27,7 @@ class FlextPluginDiscovery:
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""
         self.logger = FlextLogger(__name__)
-        self.strategies: list[p.Plugin.DiscoveryStrategyProtocol] = [
+        self.strategies: list[p.Plugin.DiscoveryStrategy] = [
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),
         ]
