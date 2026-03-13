@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
-import json
 import re
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
@@ -19,7 +18,7 @@ from typing import ClassVar
 
 import yaml
 from flext_core import FlextUtilities, r
-from pydantic import model_validator
+from pydantic import TypeAdapter, model_validator
 
 from flext_plugin import FlextPluginModels, c, t
 
@@ -550,7 +549,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if path.suffix in {".yaml", ".yml"}:
                     config = yaml.safe_load(content)
                 elif path.suffix == ".json":
-                    config = json.loads(content)
+                    config = TypeAdapter(dict[str, object]).validate_json(content)
                 else:
                     return r[object].fail(
                         f"Unsupported configuration format: {path.suffix}"
@@ -880,7 +879,7 @@ class FlextPluginUtilities(FlextUtilities):
                         f"Registry file too large: {file_size_mb:.1f}MB"
                     )
                 content = path.read_text(encoding="utf-8")
-                registry = json.loads(content)
+                registry = TypeAdapter(dict[str, object]).validate_json(content)
                 return r[object].ok(registry)
             except (
                 ValueError,
@@ -966,7 +965,10 @@ class FlextPluginUtilities(FlextUtilities):
                 mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
                 _ = path.write_text(
-                    json.dumps(mutable_registry, indent=2), encoding="utf-8"
+                    TypeAdapter(dict[str, object])
+                    .dump_json(mutable_registry, indent=2)
+                    .decode("utf-8"),
+                    encoding="utf-8",
                 )
                 return r[None].ok(None)
             except (
