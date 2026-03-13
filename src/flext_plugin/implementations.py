@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, r, t
+from pydantic import TypeAdapter
 
 from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
 
@@ -356,8 +357,8 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[object].fail("No schema defined")
-            return r[object].ok(self._schema)
+                return r[Mapping[str, object]].fail("No schema defined")
+            return r[Mapping[str, object]].ok(self._schema)
 
         def transform(self, data: object) -> r[object]:
             """Transform input data.
@@ -373,7 +374,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[object].fail("Input data must be a dictionary")
-                transformed: dict[str, object] = dict(data)
+                transformed = TypeAdapter(dict[str, object]).validate_python(data)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[object].ok(transformed)

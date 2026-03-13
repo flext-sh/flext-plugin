@@ -244,7 +244,9 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(watch_path)
                 if not path.exists():
-                    return r[object].fail(f"Watch path does not exist: {path}")
+                    return r[Mapping[str, object]].fail(
+                        f"Watch path does not exist: {path}"
+                    )
                 watcher_config: dict[str, object] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
@@ -255,7 +257,7 @@ class FlextPluginUtilities(FlextUtilities):
                     "active": False,
                     "created_at": datetime.now(UTC).isoformat(),
                 }
-                return r[object].ok(watcher_config)
+                return r[Mapping[str, object]].ok(watcher_config)
             except (
                 ValueError,
                 TypeError,
@@ -265,7 +267,9 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"File watcher creation failed: {e}")
+                return r[Mapping[str, object]].fail(
+                    f"File watcher creation failed: {e}"
+                )
 
         @staticmethod
         def detect_file_changes(
@@ -284,8 +288,8 @@ class FlextPluginUtilities(FlextUtilities):
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: dict[str, object] = (
-                    dict(last_modified_raw)
-                    if isinstance(last_modified_raw, dict)
+                    TypeAdapter(dict[str, object]).validate_python(last_modified_raw)
+                    if u.is_dict_like(last_modified_raw)
                     else {}
                 )
                 changed_files: list[str] = []
@@ -501,7 +505,7 @@ class FlextPluginUtilities(FlextUtilities):
                     warnings = security_report["warnings"]
                     if u.is_list_like(warnings) and isinstance(warnings, list):
                         warnings.append("Plugin may perform file operations")
-                return r[object].ok(dict(security_report))
+                return r[Mapping[str, object]].ok(dict(security_report))
             except (
                 ValueError,
                 TypeError,
@@ -511,7 +515,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"Security validation failed: {e}")
+                return r[Mapping[str, object]].fail(f"Security validation failed: {e}")
 
     class ConfigurationManager:
         """Plugin configuration management utilities."""
@@ -536,13 +540,15 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(config_path)
                 if not path.exists():
-                    return r[object].fail(f"Configuration file not found: {path}")
+                    return r[Mapping[str, object]].fail(
+                        f"Configuration file not found: {path}"
+                    )
                 file_size_kb = path.stat().st_size / 1024
                 if (
                     file_size_kb
                     > FlextPluginUtilities.ConfigurationManager.MAX_CONFIG_SIZE_KB
                 ):
-                    return r[object].fail(
+                    return r[Mapping[str, object]].fail(
                         f"Configuration file too large: {file_size_kb:.1f}KB"
                     )
                 content = path.read_text(encoding="utf-8")
@@ -551,7 +557,7 @@ class FlextPluginUtilities(FlextUtilities):
                 elif path.suffix == ".json":
                     config = TypeAdapter(dict[str, object]).validate_json(content)
                 else:
-                    return r[object].fail(
+                    return r[Mapping[str, object]].fail(
                         f"Unsupported configuration format: {path.suffix}"
                     )
                 if (
@@ -559,10 +565,11 @@ class FlextPluginUtilities(FlextUtilities):
                     and config.get("schema_version")
                     != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
                 ):
-                    return r[object].fail(
+                    return r[Mapping[str, object]].fail(
                         f"Unsupported configuration schema version: {config.get('schema_version')}"
                     )
-                return r[object].ok(config)
+                config_mapping = TypeAdapter(dict[str, object]).validate_python(config)
+                return r[Mapping[str, object]].ok(config_mapping)
             except (
                 ValueError,
                 TypeError,
@@ -572,7 +579,9 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"Configuration loading failed: {e}")
+                return r[Mapping[str, object]].fail(
+                    f"Configuration loading failed: {e}"
+                )
 
         @staticmethod
         def merge_plugin_configs(
@@ -594,20 +603,24 @@ class FlextPluginUtilities(FlextUtilities):
                 for key, value in override_config.items():
                     existing_value = merged_config.get(key)
                     if isinstance(value, dict) and isinstance(existing_value, dict):
-                        base_nested_config = existing_value
-                        override_value = value
+                        base_nested_config = TypeAdapter(
+                            dict[str, object]
+                        ).validate_python(existing_value)
+                        override_value = TypeAdapter(dict[str, object]).validate_python(
+                            value
+                        )
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config, override_value
                         )
                         if nested_merge.is_success:
                             merged_config[key] = nested_merge.value
                         else:
-                            return r[object].fail(
+                            return r[Mapping[str, object]].fail(
                                 f"Failed to merge nested config for key '{key}': {nested_merge.error}"
                             )
                     else:
                         merged_config[key] = value
-                return r[object].ok(merged_config)
+                return r[Mapping[str, object]].ok(merged_config)
             except (
                 ValueError,
                 TypeError,
@@ -617,7 +630,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"Configuration merge failed: {e}")
+                return r[Mapping[str, object]].fail(f"Configuration merge failed: {e}")
 
         @staticmethod
         def validate_plugin_config(config: Mapping[str, object]) -> r[None]:
@@ -869,18 +882,18 @@ class FlextPluginUtilities(FlextUtilities):
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return r[object].ok(registry)
+                    return r[Mapping[str, object]].ok(registry)
                 file_size_mb = path.stat().st_size / (1024 * 1024)
                 if (
                     file_size_mb
                     > FlextPluginUtilities.RegistryOperations.MAX_REGISTRY_SIZE_MB
                 ):
-                    return r[object].fail(
+                    return r[Mapping[str, object]].fail(
                         f"Registry file too large: {file_size_mb:.1f}MB"
                     )
                 content = path.read_text(encoding="utf-8")
                 registry = TypeAdapter(dict[str, object]).validate_json(content)
-                return r[object].ok(registry)
+                return r[Mapping[str, object]].ok(registry)
             except (
                 ValueError,
                 TypeError,
@@ -890,7 +903,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"Registry loading failed: {e}")
+                return r[Mapping[str, object]].fail(f"Registry loading failed: {e}")
 
         @staticmethod
         def register_plugin(
@@ -926,7 +939,7 @@ class FlextPluginUtilities(FlextUtilities):
                 plugins = mutable_registry["plugins"]
                 if isinstance(plugins, dict):
                     plugins[plugin_metadata.name] = plugin_info
-                return r[object].ok(mutable_registry)
+                return r[Mapping[str, object]].ok(mutable_registry)
             except (
                 ValueError,
                 TypeError,
@@ -936,7 +949,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[object].fail(f"Plugin registration failed: {e}")
+                return r[Mapping[str, object]].fail(f"Plugin registration failed: {e}")
 
         @staticmethod
         def save_plugin_registry(

@@ -11,6 +11,7 @@ from collections.abc import Mapping
 from typing import override
 
 from flext_core import FlextContainer, r, u, x
+from pydantic import TypeAdapter
 
 from flext_plugin import (
     FlextPluginAdapters,
@@ -22,7 +23,7 @@ from flext_plugin import (
 )
 
 
-class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
+class FlextPluginService(x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
 
     This service provides high-level operations for plugin management,
@@ -79,9 +80,13 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
             monitoring: Plugin monitoring implementation
 
         """
+        super().__init__(
+            config_type=None,
+            config_overrides=None,
+            initial_context=None,
+        )
         if container is not None:
             self._container = container
-        x.__init__(self)
         self._discovery = discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter()
         self._loader = loader or FlextPluginAdapters.DynamicLoaderAdapter()
         self._executor = executor or FlextPluginAdapters.PluginExecutorAdapter()
@@ -101,7 +106,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
     def _to_general_mapping(value: object) -> dict[str, object]:
         if not isinstance(value, Mapping):
             return {}
-        return dict(value.items())
+        return TypeAdapter(dict[str, object]).validate_python(value)
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.
@@ -200,7 +205,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                         self.logger.warning(
                             "Plugin %s security validation failed: %s",
                             plugin.name,
-                            security_result.error,
+                            security_result.error
+                            if security_result.error is not None
+                            else "",
                         )
                         continue
                 if self._registry:
@@ -212,7 +219,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                         self.logger.warning(
                             "Plugin %s registration failed: %s",
                             plugin.name,
-                            register_result.error,
+                            register_result.error
+                            if register_result.error is not None
+                            else "",
                         )
                         continue
                 self._plugins[plugin.name] = plugin
@@ -223,7 +232,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                         self.logger.warning(
                             "Plugin %s monitoring startup failed: %s",
                             plugin.name,
-                            monitoring_result.error,
+                            monitoring_result.error
+                            if monitoring_result.error is not None
+                            else "",
                         )
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r.ok(registered_plugins)
@@ -315,7 +326,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 )
             execution.mark_completed(success=True)
             if u.is_dict_like(exec_result.value):
-                execution.result = dict(exec_result.value)
+                execution.result = self._to_general_mapping(exec_result.value)
             plugin.record_execution(0.0, success=True)
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r.ok(execution)
@@ -405,7 +416,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 )
             if not u.is_dict_like(health_result.value):
                 return r[Mapping[str, object]].fail("Health response is not a mapping")
-            return r.ok(dict(health_result.value))
+            return r.ok(self._to_general_mapping(health_result.value))
         except (
             ValueError,
             TypeError,
@@ -440,7 +451,7 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                 )
             if not u.is_dict_like(metrics_result.value):
                 return r[Mapping[str, object]].fail("Metrics response is not a mapping")
-            return r.ok(dict(metrics_result.value))
+            return r.ok(self._to_general_mapping(metrics_result.value))
         except (
             ValueError,
             TypeError,
@@ -636,7 +647,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                     self.logger.warning(
                         "Monitoring startup failed for plugin %s: %s",
                         plugin.name,
-                        monitoring_result.error,
+                        monitoring_result.error
+                        if monitoring_result.error is not None
+                        else "",
                     )
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return r.ok(plugin)
@@ -686,7 +699,9 @@ class FlextPluginService(FlextPluginModels.ArbitraryTypesModel, x):
                     self.logger.warning(
                         "Failed to stop monitoring for %s: %s",
                         plugin_name,
-                        monitoring_result.error,
+                        monitoring_result.error
+                        if monitoring_result.error is not None
+                        else "",
                     )
             if self._registry:
                 unregister_result = self._registry.unregister_plugin(plugin_name)

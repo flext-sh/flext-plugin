@@ -17,9 +17,10 @@ from flext_core import (
     FlextService,
     FlextSettings,
     r,
+    t,
     u,
 )
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, TypeAdapter
 
 from flext_plugin import (
     FlextPluginModels,
@@ -90,7 +91,20 @@ class FlextPluginPlatform:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            super().__init__()
+            super().__init__(
+                config_type=None,
+                config_overrides=None,
+                initial_context=None,
+                subproject="",
+                services=None,
+                factories=None,
+                resources=None,
+                container_overrides=None,
+                wire_modules=None,
+                wire_packages=None,
+                wire_classes=None,
+                dispatcher=None,
+            )
 
         @override
         @classmethod
@@ -118,7 +132,9 @@ class FlextPluginPlatform:
             result = self.get_plugin(self.PLUGINS, plugin_name, scope="class")
             if result.is_success:
                 try:
-                    plugin = FlextPluginModels.Plugin.Plugin(result.value)
+                    plugin = FlextPluginModels.Plugin.Plugin.model_validate(
+                        result.value
+                    )
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
                 except (
                     ValueError,
@@ -155,7 +171,7 @@ class FlextPluginPlatform:
         def register(
             self,
             name: str,
-            service: core_p.RegistrablePlugin,
+            service: t.RegistrablePlugin,
             metadata: object | None = None,
         ) -> r[bool]:
             """Register plugin using class-level storage.
@@ -210,9 +226,28 @@ class FlextPluginPlatform:
             default=None
         )
 
+        @staticmethod
+        def _to_general_mapping(value: object) -> dict[str, object]:
+            """Convert mapping-like values to a typed dict."""
+            if not u.is_dict_like(value):
+                return {}
+            return TypeAdapter(dict[str, object]).validate_python(value)
+
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
-            super().__init__()
+            super().__init__(
+                config_type=None,
+                config_overrides=None,
+                initial_context=None,
+                subproject="",
+                services=None,
+                factories=None,
+                resources=None,
+                container_overrides=None,
+                wire_modules=None,
+                wire_packages=None,
+                wire_classes=None,
+            )
             if container is not None:
                 self._container = container
             self._plugins = {}
@@ -303,7 +338,7 @@ class FlextPluginPlatform:
                     plugin_dicts: list[Mapping[str, object]] = []
                     for item in discovered_items:
                         if u.is_dict_like(item):
-                            plugin_dicts.append(dict(item))
+                            plugin_dicts.append(self._to_general_mapping(item))
                             continue
                         name = getattr(item, "name", "")
                         version = getattr(item, "version", "1.0.0")
@@ -320,10 +355,10 @@ class FlextPluginPlatform:
                                 "path": str(path),
                                 "discovery_type": str(discovery_type),
                                 "discovery_method": str(discovery_method),
-                                "metadata": dict(metadata),
+                                "metadata": self._to_general_mapping(metadata),
                             })
                     return r.ok(plugin_dicts)
-                return r[list[object]].fail(
+                return r[list[Mapping[str, object]]].fail(
                     discovery_result.error or "Discovery failed"
                 )
 
@@ -428,7 +463,7 @@ class FlextPluginPlatform:
                 if load_result.is_success:
                     load_data = load_result.value
                     if u.is_dict_like(load_data):
-                        return r.ok(dict(load_data))
+                        return r.ok(self._to_general_mapping(load_data))
                     if getattr(load_data, "name", None):
                         plugin_dict: dict[str, object] = {
                             "name": str(getattr(load_data, "name", "")),
@@ -442,7 +477,7 @@ class FlextPluginPlatform:
                         }
                         return r.ok(plugin_dict)
                     return r[Mapping[str, object]].fail("Invalid load data format")
-                return r[object].fail(load_result.error or "Load failed")
+                return r[Mapping[str, object]].fail(load_result.error or "Load failed")
 
             def create_plugin_from_load_data(
                 data: Mapping[str, object],
@@ -469,7 +504,9 @@ class FlextPluginPlatform:
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
-                plugin_entity = FlextPluginPlatform.Plugin(plugin.model_dump())
+                plugin_entity = FlextPluginPlatform.Plugin.model_validate(
+                    plugin.model_dump(mode="python")
+                )
                 return self._add_to_plugins(plugin_entity)
 
             return (
@@ -547,7 +584,7 @@ class FlextPluginPlatform:
                 error_message=result.error if result.is_failure else None,
             )
             if result.is_success:
-                execution.result = dict(result.value)
+                execution.result = self._to_general_mapping(result.value)
             if result.is_success:
                 return r.ok(execution)
             return r[FlextPluginPlatform.PluginExecution].fail(

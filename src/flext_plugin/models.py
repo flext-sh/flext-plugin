@@ -139,31 +139,21 @@ class FlextPluginModels(FlextModels):
                 New Plugin entity instance
 
                 """
-                # Create instance directly with proper types
-                if entity_id is not None:
-                    return cls(
-                        {
-                            "unique_id": entity_id,
-                            "name": name,
-                            "plugin_version": plugin_version,
-                            "description": description,
-                            "author": author,
-                            "plugin_type": plugin_type,
-                            "is_enabled": is_enabled,
-                            "metadata": dict(metadata or {}),
-                        },
-                    )
-                return cls(
-                    {
-                        "name": name,
-                        "plugin_version": plugin_version,
-                        "description": description,
-                        "author": author,
-                        "plugin_type": plugin_type,
-                        "is_enabled": is_enabled,
-                        "metadata": dict(metadata or {}),
-                    },
+                metadata_payload: dict[str, object] = (
+                    dict(metadata.items()) if metadata else {}
                 )
+                payload: dict[str, object] = {
+                    "name": name,
+                    "plugin_version": plugin_version,
+                    "description": description,
+                    "author": author,
+                    "plugin_type": plugin_type,
+                    "is_enabled": is_enabled,
+                    "metadata": metadata_payload,
+                }
+                if entity_id is not None:
+                    payload["unique_id"] = entity_id
+                return cls.model_validate(payload)
 
             @field_validator("plugin_type", mode="before")
             @classmethod

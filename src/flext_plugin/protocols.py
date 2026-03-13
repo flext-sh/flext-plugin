@@ -49,15 +49,15 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get list of all currently loaded plugin names."""
                 ...
 
-            def is_plugin_loaded(self, _plugin_name: str) -> bool:
+            def is_plugin_loaded(self, plugin_name: str) -> bool:
                 """Check if a plugin is currently loaded."""
                 ...
 
-            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
+            def load_plugin(self, plugin_path: str) -> r[Mapping[str, object]]:
                 """Load a plugin from the specified path."""
                 ...
 
-            def unload_plugin(self, _plugin_name: str) -> r[bool]:
+            def unload_plugin(self, plugin_name: str) -> r[bool]:
                 """Unload a previously loaded plugin."""
                 ...
 
@@ -83,11 +83,11 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(self, _plugin_name: str) -> r[object | None]:
+            def get_plugin(self, plugin_name: str) -> r[object | None]:
                 """Get a registered plugin by name."""
                 ...
 
-            def is_plugin_registered(self, _plugin_name: str) -> bool:
+            def is_plugin_registered(self, plugin_name: str) -> bool:
                 """Check if a plugin is registered."""
                 ...
 
@@ -99,7 +99,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Register a plugin."""
                 ...
 
-            def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+            def register(self, plugin: object) -> r[None]:
+                """Register a plugin with normalized API."""
+                ...
+
+            def unregister_plugin(self, plugin_name: str) -> r[bool]:
                 """Unregister a plugin."""
                 ...
 
@@ -311,26 +315,6 @@ class FlextPluginProtocols(FlextProtocols):
 
             def warning(self, message: str, *args: object, **kwargs: t.Scalar) -> None:
                 """Log warning message."""
-                ...
-
-        @runtime_checkable
-        class PluginLoader(Protocol):
-            """Protocol for plugin loader interface."""
-
-            def load_plugin(self, plugin_path: str | object) -> r[object]:
-                """Load plugin from path."""
-                ...
-
-        @runtime_checkable
-        class PluginRegistry(Protocol):
-            """Protocol for plugin registry interface."""
-
-            def get_plugin(self, plugin_name: str) -> r[object]:
-                """Get plugin by name."""
-                ...
-
-            def register(self, plugin: object) -> r[None]:
-                """Register a plugin."""
                 ...
 
         @runtime_checkable

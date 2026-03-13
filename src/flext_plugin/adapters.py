@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, T, r
+from pydantic import TypeAdapter
 
 from flext_plugin import c, m, p
 
@@ -148,6 +149,7 @@ class FlextPluginAdapters:
                     path=path,
                     discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
                     discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                    metadata={},
                 )
             except ValueError:
                 self.logger.exception("Failed to create discovery data for %s", path)
@@ -179,32 +181,30 @@ class FlextPluginAdapters:
             return list(self._loaded_plugins.keys())
 
         @override
-        def is_plugin_loaded(self, _plugin_name: str) -> bool:
+        def is_plugin_loaded(self, plugin_name: str) -> bool:
             """Check if a plugin is loaded."""
-            return _plugin_name in self._loaded_plugins
+            return plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
+        def load_plugin(self, plugin_path: str) -> r[Mapping[str, object]]:
             """Load plugin from path."""
             return self._execute_safe(
-                lambda: self._load_module_as_dict(_plugin_path),
-                f"Loading error: {_plugin_path}",
+                lambda: self._load_module_as_dict(plugin_path),
+                f"Loading error: {plugin_path}",
             )
 
         @override
-        def unload_plugin(self, _plugin_name: str) -> r[bool]:
+        def unload_plugin(self, plugin_name: str) -> r[bool]:
             """Unload a plugin by name."""
 
             def _unload() -> bool:
-                if _plugin_name not in self._loaded_plugins:
-                    error_msg = f"Plugin not loaded: {_plugin_name}"
+                if plugin_name not in self._loaded_plugins:
+                    error_msg = f"Plugin not loaded: {plugin_name}"
                     raise ValueError(error_msg)
-                del self._loaded_plugins[_plugin_name]
+                del self._loaded_plugins[plugin_name]
                 return True
 
-            return self._execute_safe(
-                _unload, f"Failed to unload plugin {_plugin_name}"
-            )
+            return self._execute_safe(_unload, f"Failed to unload plugin {plugin_name}")
 
         def _load_module(self, _plugin_path: str) -> m.Plugin.LoadData:
             """Internal: load module using spec."""
@@ -229,6 +229,7 @@ class FlextPluginAdapters:
                 loaded_at=__import__("datetime").datetime.now(
                     __import__("datetime").UTC
                 ),
+                entry_file=None,
             )
 
         def _load_module_as_dict(self, plugin_path: str) -> Mapping[str, object]:
@@ -305,14 +306,14 @@ class FlextPluginAdapters:
             self._plugins: dict[str, object] = {}
 
         @override
-        def get_plugin(self, _plugin_name: str) -> r[object | None]:
+        def get_plugin(self, plugin_name: str) -> r[object | None]:
             """Get plugin from registry."""
-            return r.ok(None)
+            return r.ok(self._plugins.get(plugin_name))
 
         @override
-        def is_plugin_registered(self, _plugin_name: str) -> bool:
+        def is_plugin_registered(self, plugin_name: str) -> bool:
             """Check if plugin is registered."""
-            return False
+            return plugin_name in self._plugins
 
         @override
         def list_plugins(self) -> r[list[Mapping[str, object]]]:
@@ -320,13 +321,28 @@ class FlextPluginAdapters:
             return r.ok([])
 
         @override
+        def register(self, plugin: object) -> r[None]:
+            if not isinstance(plugin, Mapping):
+                return r[None].fail("Plugin payload must be a mapping")
+            plugin_payload = TypeAdapter(dict[str, object]).validate_python(plugin)
+            plugin_name = plugin_payload.get("name")
+            if not isinstance(plugin_name, str) or not plugin_name:
+                return r[None].fail("Plugin payload missing valid 'name'")
+            self._plugins[plugin_name] = plugin_payload
+            return r[None].ok(None)
+
+        @override
         def register_plugin(self, _plugin: object) -> r[bool]:
             """Register plugin in registry."""
+            registration_result = self.register(_plugin)
+            if registration_result.is_failure:
+                return r[bool].fail(registration_result.error or "Registration failed")
             return r.ok(True)
 
         @override
-        def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+        def unregister_plugin(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from registry."""
+            self._plugins.pop(plugin_name, None)
             return r.ok(True)
 
     class PluginMonitoringAdapter(BaseAdapter, p.Plugin.PluginMonitoring):
