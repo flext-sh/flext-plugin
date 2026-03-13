@@ -11,7 +11,7 @@ import types
 from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
-from typing import Self
+from typing import Annotated, Self
 
 from flext_core import FlextModels, r
 from pydantic import Field, field_validator
@@ -58,37 +58,57 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            name: str = Field(
-                ...,
-                min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
-                description="Plugin unique identifier name",
-            )
-            plugin_version: str = Field(
-                default="1.0.0",
-                pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
-                description="Plugin semantic version (X.Y.Z)",
-            )
-            description: str = Field(
-                default="",
-                max_length=c_constants.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
-                description="Plugin functionality description",
-            )
-            author: str = Field(
-                default="",
-                max_length=c_constants.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
-                description="Plugin author/maintainer",
-            )
-            plugin_type: str = Field(
-                default=c_constants.Plugin.PluginType.UTILITY,
-                description="Plugin type classification",
-            )
-            is_enabled: bool = Field(default=True, description="Plugin enabled state")
-            metadata: dict[str, object] = Field(
-                default_factory=dict,
-                description="Extensible plugin metadata",
-            )
+            name: Annotated[
+                str,
+                Field(
+                    ...,
+                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            plugin_version: Annotated[
+                str,
+                Field(
+                    default="1.0.0",
+                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ]
+            description: Annotated[
+                str,
+                Field(
+                    default="",
+                    max_length=c_constants.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
+                    description="Plugin functionality description",
+                ),
+            ]
+            author: Annotated[
+                str,
+                Field(
+                    default="",
+                    max_length=c_constants.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
+                    description="Plugin author/maintainer",
+                ),
+            ]
+            plugin_type: Annotated[
+                str,
+                Field(
+                    default=c_constants.Plugin.PluginType.UTILITY,
+                    description="Plugin type classification",
+                ),
+            ]
+            is_enabled: Annotated[
+                bool, Field(default=True, description="Plugin enabled state")
+            ]
+            metadata: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Extensible plugin metadata",
+                ),
+            ]
 
             @classmethod
             def create(
@@ -356,20 +376,29 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            success: bool = Field(description="Whether execution succeeded")
-            data: dict[str, object] = Field(
-                default_factory=dict,
-                description="Execution output data",
-            )
-            error: str = Field(
-                default="",
-                description="Error message if execution failed",
-            )
-            execution_time_ms: float = Field(
-                default=0.0,
-                ge=0,
-                description="Execution time in milliseconds",
-            )
+            success: Annotated[bool, Field(description="Whether execution succeeded")]
+            data: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Execution output data",
+                ),
+            ]
+            error: Annotated[
+                str,
+                Field(
+                    default="",
+                    description="Error message if execution failed",
+                ),
+            ]
+            execution_time_ms: Annotated[
+                float,
+                Field(
+                    default=0.0,
+                    ge=0,
+                    description="Execution time in milliseconds",
+                ),
+            ]
 
         class DiscoveryData(FlextModels.Value):
             """Plugin discovery data - immutable discovery result.
@@ -387,27 +416,42 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            name: str = Field(
-                min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
-                description="Plugin unique identifier name",
-            )
-            version: str = Field(
-                pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
-                description="Plugin semantic version (X.Y.Z)",
-            )
-            path: Path = Field(description="File system path to plugin")
-            discovery_type: t_types.Plugin.DiscoveryTypeLiteral = Field(
-                description="Type of discovered plugin",
-            )
-            discovery_method: t_types.Plugin.DiscoveryMethodLiteral = Field(
-                description="Discovery method used",
-            )
-            metadata: dict[str, object] = Field(
-                default_factory=dict,
-                description="Extensible discovery metadata",
-            )
+            name: Annotated[
+                str,
+                Field(
+                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            version: Annotated[
+                str,
+                Field(
+                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ]
+            path: Annotated[Path, Field(description="File system path to plugin")]
+            discovery_type: Annotated[
+                t_types.Plugin.DiscoveryTypeLiteral,
+                Field(
+                    description="Type of discovered plugin",
+                ),
+            ]
+            discovery_method: Annotated[
+                t_types.Plugin.DiscoveryMethodLiteral,
+                Field(
+                    description="Discovery method used",
+                ),
+            ]
+            metadata: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Extensible discovery metadata",
+                ),
+            ]
 
             @field_validator("version", mode="before")
             @classmethod
@@ -442,27 +486,44 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            name: str = Field(
-                min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                description="Plugin unique identifier name",
-            )
-            version: str = Field(
-                pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
-                description="Plugin semantic version (X.Y.Z)",
-            )
-            path: Path = Field(description="File system path to plugin")
-            module: types.ModuleType = Field(
-                description="The loaded Python module object",
-            )
-            load_type: t_types.Plugin.LoadTypeLiteral = Field(
-                description="Type of loaded plugin",
-            )
-            loaded_at: datetime = Field(description="Timestamp when plugin was loaded")
-            entry_file: Path | None = Field(
-                default=None,
-                description="Entry file path for directory-based plugins",
-            )
+            name: Annotated[
+                str,
+                Field(
+                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            version: Annotated[
+                str,
+                Field(
+                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ]
+            path: Annotated[Path, Field(description="File system path to plugin")]
+            module: Annotated[
+                types.ModuleType,
+                Field(
+                    description="The loaded Python module object",
+                ),
+            ]
+            load_type: Annotated[
+                t_types.Plugin.LoadTypeLiteral,
+                Field(
+                    description="Type of loaded plugin",
+                ),
+            ]
+            loaded_at: Annotated[
+                datetime, Field(description="Timestamp when plugin was loaded")
+            ]
+            entry_file: Annotated[
+                Path | None,
+                Field(
+                    default=None,
+                    description="Entry file path for directory-based plugins",
+                ),
+            ]
 
         class ReloadRecord(FlextModels.Value):
             """Plugin reload record - immutable reload history entry.
@@ -480,19 +541,25 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            plugin_name: str = Field(description="Name of reloaded plugin")
-            plugin_path: Path = Field(description="Path to reloaded plugin")
-            timestamp: datetime = Field(description="When reload occurred")
-            success: bool = Field(description="Whether reload succeeded")
-            error: str | None = Field(
-                default=None,
-                description="Error message if reload failed",
-            )
-            duration_ms: float = Field(
-                default=0.0,
-                ge=0,
-                description="Reload duration in milliseconds",
-            )
+            plugin_name: Annotated[str, Field(description="Name of reloaded plugin")]
+            plugin_path: Annotated[Path, Field(description="Path to reloaded plugin")]
+            timestamp: Annotated[datetime, Field(description="When reload occurred")]
+            success: Annotated[bool, Field(description="Whether reload succeeded")]
+            error: Annotated[
+                str | None,
+                Field(
+                    default=None,
+                    description="Error message if reload failed",
+                ),
+            ]
+            duration_ms: Annotated[
+                float,
+                Field(
+                    default=0.0,
+                    ge=0,
+                    description="Reload duration in milliseconds",
+                ),
+            ]
 
         class PluginMetadata(FlextModels.Value):
             """Plugin metadata - immutable metadata value object.
@@ -512,20 +579,32 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            name: str = Field(description="Plugin unique identifier")
-            version: str = Field(description="Plugin semantic version")
-            description: str = Field(default="", description="Plugin description")
-            author: str = Field(default="Unknown", description="Plugin author")
-            plugin_type: str = Field(default="extension", description="Type of plugin")
-            entry_point: str = Field(description="Entry point for plugin")
-            dependencies: list[str] = Field(
-                default_factory=list,
-                description="List of plugin dependencies",
-            )
-            metadata: dict[str, object] = Field(
-                default_factory=dict,
-                description="Additional metadata",
-            )
+            name: Annotated[str, Field(description="Plugin unique identifier")]
+            version: Annotated[str, Field(description="Plugin semantic version")]
+            description: Annotated[
+                str, Field(default="", description="Plugin description")
+            ]
+            author: Annotated[
+                str, Field(default="Unknown", description="Plugin author")
+            ]
+            plugin_type: Annotated[
+                str, Field(default="extension", description="Type of plugin")
+            ]
+            entry_point: Annotated[str, Field(description="Entry point for plugin")]
+            dependencies: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of plugin dependencies",
+                ),
+            ]
+            metadata: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Additional metadata",
+                ),
+            ]
 
         class EventData(FlextModels.Value):
             """Event data - immutable event information.
@@ -541,13 +620,16 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            event_type: str = Field(description="Type of event")
-            plugin_name: str = Field(description="Associated plugin name")
-            timestamp: datetime = Field(description="When event occurred")
-            data: dict[str, object] = Field(
-                default_factory=dict,
-                description="Event-specific data",
-            )
+            event_type: Annotated[str, Field(description="Type of event")]
+            plugin_name: Annotated[str, Field(description="Associated plugin name")]
+            timestamp: Annotated[datetime, Field(description="When event occurred")]
+            data: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Event-specific data",
+                ),
+            ]
 
         class ValidationResult(FlextModels.Value):
             """Validation result - immutable validation outcome.
@@ -563,19 +645,28 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            is_valid: bool = Field(description="Whether validation passed")
-            errors: list[str] = Field(
-                default_factory=list,
-                description="List of validation errors",
-            )
-            warnings: list[str] = Field(
-                default_factory=list,
-                description="List of validation warnings",
-            )
-            details: dict[str, object] = Field(
-                default_factory=dict,
-                description="Additional validation details",
-            )
+            is_valid: Annotated[bool, Field(description="Whether validation passed")]
+            errors: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of validation errors",
+                ),
+            ]
+            warnings: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of validation warnings",
+                ),
+            ]
+            details: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Additional validation details",
+                ),
+            ]
 
         class SecurityReport(FlextModels.Value):
             """Security report - immutable security scan result.
@@ -591,16 +682,26 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            is_safe: bool = Field(description="Whether plugin passed security checks")
-            violations: list[str] = Field(
-                default_factory=list,
-                description="List of security violations",
-            )
-            warnings: list[str] = Field(
-                default_factory=list,
-                description="List of security warnings",
-            )
-            analysis_time: datetime = Field(description="When analysis was performed")
+            is_safe: Annotated[
+                bool, Field(description="Whether plugin passed security checks")
+            ]
+            violations: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of security violations",
+                ),
+            ]
+            warnings: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of security warnings",
+                ),
+            ]
+            analysis_time: Annotated[
+                datetime, Field(description="When analysis was performed")
+            ]
 
         class WatcherConfig(FlextModels.Value):
             """Watcher configuration - file system monitoring config.
@@ -618,18 +719,30 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            watch_path: str = Field(description="Path being watched")
-            watch_interval: float = Field(description="Polling interval in seconds")
-            callback: Callable[..., object] | None = Field(
-                default=None,
-                description="Callback function reference",
-            )
-            active: bool = Field(default=False, description="Whether watcher is active")
-            last_modified: dict[str, object] = Field(
-                default_factory=dict,
-                description="File modification tracking",
-            )
-            created_at: datetime = Field(description="Configuration creation time")
+            watch_path: Annotated[str, Field(description="Path being watched")]
+            watch_interval: Annotated[
+                float, Field(description="Polling interval in seconds")
+            ]
+            callback: Annotated[
+                Callable[..., object] | None,
+                Field(
+                    default=None,
+                    description="Callback function reference",
+                ),
+            ]
+            active: Annotated[
+                bool, Field(default=False, description="Whether watcher is active")
+            ]
+            last_modified: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="File modification tracking",
+                ),
+            ]
+            created_at: Annotated[
+                datetime, Field(description="Configuration creation time")
+            ]
 
         class SandboxConfig(FlextModels.Value):
             """Sandbox configuration - plugin execution sandbox settings.
@@ -648,19 +761,32 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            plugin_name: str = Field(description="Name of plugin to sandbox")
-            max_memory_mb: int = Field(description="Maximum memory in MB")
-            max_execution_time: int = Field(
-                description="Maximum execution time in seconds",
-            )
-            allowed_modules: list[str] = Field(
-                description="Allowed import modules",
-            )
-            network_access: bool = Field(description="Whether network access allowed")
-            file_system_access: str = Field(description="File system access level")
-            environment_variables: dict[str, str] = Field(
-                description="Environment variable settings",
-            )
+            plugin_name: Annotated[str, Field(description="Name of plugin to sandbox")]
+            max_memory_mb: Annotated[int, Field(description="Maximum memory in MB")]
+            max_execution_time: Annotated[
+                int,
+                Field(
+                    description="Maximum execution time in seconds",
+                ),
+            ]
+            allowed_modules: Annotated[
+                list[str],
+                Field(
+                    description="Allowed import modules",
+                ),
+            ]
+            network_access: Annotated[
+                bool, Field(description="Whether network access allowed")
+            ]
+            file_system_access: Annotated[
+                str, Field(description="File system access level")
+            ]
+            environment_variables: Annotated[
+                dict[str, str],
+                Field(
+                    description="Environment variable settings",
+                ),
+            ]
 
         class PluginRegistry(FlextModels.Value):
             """Plugin registry - central plugin registry storage.
@@ -676,19 +802,28 @@ class FlextPluginModels(FlextModels):
 
             """
 
-            version: str = Field(description="Registry schema version")
-            plugins: dict[str, object] = Field(
-                default_factory=dict,
-                description="Dictionary of registered plugins",
-            )
-            last_updated: datetime = Field(
-                default_factory=datetime.now,
-                description="Last update timestamp",
-            )
-            created_at: datetime = Field(
-                default_factory=datetime.now,
-                description="Registry creation timestamp",
-            )
+            version: Annotated[str, Field(description="Registry schema version")]
+            plugins: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Dictionary of registered plugins",
+                ),
+            ]
+            last_updated: Annotated[
+                datetime,
+                Field(
+                    default_factory=datetime.now,
+                    description="Last update timestamp",
+                ),
+            ]
+            created_at: Annotated[
+                datetime,
+                Field(
+                    default_factory=datetime.now,
+                    description="Registry creation timestamp",
+                ),
+            ]
 
         class PluginConfig(FlextModels.Value):
             """Plugin configuration model.
@@ -696,11 +831,14 @@ class FlextPluginModels(FlextModels):
             Represents configuration for a plugin with key-value pairs.
             """
 
-            plugin_name: str = Field(description="Plugin name")
-            settings: dict[str, object] = Field(
-                default_factory=dict,
-                description="Configuration settings",
-            )
+            plugin_name: Annotated[str, Field(description="Plugin name")]
+            settings: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Configuration settings",
+                ),
+            ]
 
         class Registry(FlextModels.Value):
             """Plugin registry model.
@@ -708,18 +846,27 @@ class FlextPluginModels(FlextModels):
             Represents a registry of plugins with metadata.
             """
 
-            plugins: dict[str, object] = Field(
-                default_factory=dict,
-                description="Dictionary of registered plugins",
-            )
-            last_updated: datetime = Field(
-                default_factory=datetime.now,
-                description="Last update timestamp",
-            )
-            created_at: datetime = Field(
-                default_factory=datetime.now,
-                description="Registry creation timestamp",
-            )
+            plugins: Annotated[
+                dict[str, object],
+                Field(
+                    default_factory=dict,
+                    description="Dictionary of registered plugins",
+                ),
+            ]
+            last_updated: Annotated[
+                datetime,
+                Field(
+                    default_factory=datetime.now,
+                    description="Last update timestamp",
+                ),
+            ]
+            created_at: Annotated[
+                datetime,
+                Field(
+                    default_factory=datetime.now,
+                    description="Registry creation timestamp",
+                ),
+            ]
 
 
 m = FlextPluginModels
