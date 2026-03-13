@@ -141,7 +141,7 @@ class FlextPluginModels(FlextModels):
                 """
                 # Create instance directly with proper types
                 if entity_id is not None:
-                    return cls.model_validate(
+                    return cls(
                         {
                             "unique_id": entity_id,
                             "name": name,
@@ -153,7 +153,7 @@ class FlextPluginModels(FlextModels):
                             "metadata": dict(metadata or {}),
                         },
                     )
-                return cls.model_validate(
+                return cls(
                     {
                         "name": name,
                         "plugin_version": plugin_version,

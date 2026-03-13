@@ -118,9 +118,7 @@ class FlextPluginPlatform:
             result = self.get_plugin(self.PLUGINS, plugin_name, scope="class")
             if result.is_success:
                 try:
-                    plugin = FlextPluginModels.Plugin.Plugin.model_validate(
-                        result.value
-                    )
+                    plugin = FlextPluginModels.Plugin.Plugin(result.value)
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
                 except (
                     ValueError,
@@ -471,9 +469,7 @@ class FlextPluginPlatform:
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
-                plugin_entity = FlextPluginPlatform.Plugin.model_validate(
-                    plugin.model_dump()
-                )
+                plugin_entity = FlextPluginPlatform.Plugin(plugin.model_dump())
                 return self._add_to_plugins(plugin_entity)
 
             return (
