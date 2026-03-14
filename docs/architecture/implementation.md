@@ -137,7 +137,7 @@ class FlextPluginModels:
             self._start_time = datetime.now(UTC)
             self._status = ExecutionStatus.RUNNING
 
-        def mark_completed(self, result: object) -> None:
+        def mark_completed(self, result) -> None:
             """Mark execution as completed."""
             self._end_time = datetime.now(UTC)
             self._status = ExecutionStatus.COMPLETED
@@ -1298,7 +1298,7 @@ class FlextPluginCache:
 
         return None
 
-    async def set(self, key: str, value: object) -> None:
+    async def set(self, key: str, value) -> None:
         """Set item in cache with TTL."""
         async with self._lock:
             # Implement LRU eviction if needed
@@ -1423,7 +1423,7 @@ class FlextPluginExecutor:
 
     def _execute_plugin_sync(
         self, plugin: FlextPluginModels.Plugin, context: Dict[str, object]
-    ) -> object:
+    ):
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic
         # This would integrate with the plugin loading system

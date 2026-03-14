@@ -30,7 +30,7 @@ class TestFlextPluginHandlers:
 
         async def test_handler(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             return f"processed: {event_data}"
 
         result = handlers.register_handler("test_event", test_handler)
@@ -46,7 +46,7 @@ class TestFlextPluginHandlers:
 
         async def test_handler(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             results.append(event_data)
             return "handled"
 
@@ -75,13 +75,13 @@ class TestFlextPluginHandlers:
 
         async def handler_low(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             results.append("low")
             return "low"
 
         async def handler_high(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             results.append("high")
             return "high"
 
@@ -96,11 +96,11 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
         results: list[str] = []
 
-        async def handler1(event_data: Mapping[str, object]) -> object:
+        async def handler1(event_data: Mapping[str, object]):
             results.append("handler1")
             return "handler1"
 
-        async def handler2(event_data: Mapping[str, object]) -> object:
+        async def handler2(event_data: Mapping[str, object]):
             results.append("handler2")
             return "handler2"
 
@@ -131,13 +131,13 @@ class TestFlextPluginHandlers:
 
         async def failing_handler(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             msg = "Handler failed"
             raise ValueError(msg)
 
         async def working_handler(
             event_data: Mapping[str, object],
-        ) -> object:
+        ):
             return "success"
 
         handlers.register_handler("test", failing_handler)

@@ -96,7 +96,7 @@ class Execution {
     +start_time: datetime
     +end_time: datetime
     +execution_time: float
-    +result: object
+    +result
     +error: str
     +context: ExecutionContext
 }

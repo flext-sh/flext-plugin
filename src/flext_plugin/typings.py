@@ -30,7 +30,7 @@ class FlextPluginTypes(FlextTypes):
 
         EventHandler: TypeAlias = Callable[
             [Mapping[str, FlextTypes.NormalizedValue]],
-            Awaitable[object],
+            Awaitable,
         ]
 
         class HandlerInfo:
@@ -40,7 +40,7 @@ class FlextPluginTypes(FlextTypes):
                 self,
                 handler: Callable[
                     [Mapping[str, FlextTypes.NormalizedValue]],
-                    Awaitable[object],
+                    Awaitable,
                 ],
                 priority: int = 0,
             ) -> None:

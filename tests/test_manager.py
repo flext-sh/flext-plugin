@@ -63,7 +63,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: object) -> r[bool]:
+            def validate_plugin_security(self, _plugin) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -73,7 +73,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: object) -> r[bool]:
+            def register_plugin(self, _plugin) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -124,7 +124,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: object) -> r[bool]:
+            def validate_plugin_security(self, _plugin) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -134,7 +134,7 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: object) -> r[bool]:
+            def register_plugin(self, _plugin) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:

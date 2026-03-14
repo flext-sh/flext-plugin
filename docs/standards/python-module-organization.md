@@ -1109,7 +1109,7 @@ class FlextPluginModels.Config(FlextModels.Value):
         if missing_keys:
             raise ValueError(f"Missing required configuration keys: {missing_keys}")
 
-    def get_value(self, key: str, default: object = None) -> object:
+    def get_value(self, key: str, default = None):
         """Get configuration value with default fallback."""
         return self.config_data.get(key, default)
 
@@ -1185,7 +1185,7 @@ class LazyPluginLoader:
             lambda cls: self._instantiate_plugin(cls, *args, **kwargs)
         )
 
-    def _extract_plugin_class(self, module: object) -> r[type]:
+    def _extract_plugin_class(self, module) -> r[type]:
         """Extract plugin class from module."""
         class_name = self.plugin_config.get("class_name", "Plugin")
 
@@ -1292,7 +1292,7 @@ class PluginCache:
 
         return cache_entry["data"]
 
-    def _cache_result(self, cache_key: str, data: object, metadata: t.Dict) -> None:
+    def _cache_result(self, cache_key: str, data, metadata: t.Dict) -> None:
         """Cache result with metadata."""
         import time
 
@@ -1551,7 +1551,7 @@ class DataProcessorPlugin(FlextPlugin):
         self,
         config: Optional[FlextPluginModels.Config] = None,
         metadata: Optional[FlextPluginModels.Metadata] = None,
-        **kwargs: object,
+        **kwargs,
     ) -> None:
         """
         Initialize data processor plugin with configuration.
