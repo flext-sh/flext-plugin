@@ -89,7 +89,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(self, plugin_name: str) -> r[t.ContainerValue | None]:
+        def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
                 """Get a registered plugin by name."""
                 ...
 

@@ -317,7 +317,7 @@ class FlextPluginAdapters:
             self._plugins: dict[str, t.NormalizedValue] = {}
 
         @override
-        def get_plugin(self, plugin_name: str) -> r[t.ContainerValue | None]:
+        def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
             """Get plugin from registry."""
             return r.ok(self._plugins.get(plugin_name))
 
