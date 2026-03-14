@@ -49,7 +49,6 @@ if TYPE_CHECKING:
     from flext_plugin.typings import FlextPluginTypes, t
     from flext_plugin.utilities import FlextPluginUtilities, u
 
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginAdapters": ("flext_plugin.adapters", "FlextPluginAdapters"),
     "FlextPluginApi": ("flext_plugin.api", "FlextPluginApi"),
@@ -58,7 +57,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginEntities": ("flext_plugin.entities", "FlextPluginEntities"),
     "FlextPluginHandlers": ("flext_plugin.handlers", "FlextPluginHandlers"),
     "FlextPluginHotReload": ("flext_plugin.hot_reload", "FlextPluginHotReload"),
-    "FlextPluginImplementations": ("flext_plugin.implementations", "FlextPluginImplementations"),
+    "FlextPluginImplementations": (
+        "flext_plugin.implementations",
+        "FlextPluginImplementations",
+    ),
     "FlextPluginLoader": ("flext_plugin.loader", "FlextPluginLoader"),
     "FlextPluginModels": ("flext_plugin.models", "FlextPluginModels"),
     "FlextPluginPlatform": ("flext_plugin.platform", "FlextPluginPlatform"),
