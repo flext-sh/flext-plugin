@@ -85,11 +85,11 @@ class FlextPluginProtocols(FlextProtocols):
                 """Validate plugin discovery data."""
                 ...
 
-        @runtime_checkable
-        class PluginRegistry(Protocol):
-            """Protocol for plugin registry operations."""
+            @runtime_checkable
+            class PluginRegistry(Protocol):
+                """Protocol for plugin registry operations."""
 
-        def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
+            def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
                 """Get a registered plugin by name."""
                 ...
 
