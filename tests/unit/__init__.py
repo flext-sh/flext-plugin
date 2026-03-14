@@ -22,10 +22,7 @@ if TYPE_CHECKING:
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "TestFlextPluginConstants": (
-        "tests.unit.test_constants",
-        "TestFlextPluginConstants",
-    ),
+    "TestFlextPluginConstants": ("tests.unit.test_constants", "TestFlextPluginConstants"),
     "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
     "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
     "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
