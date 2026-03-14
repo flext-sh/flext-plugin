@@ -19,6 +19,7 @@ from pydantic import Field, field_validator
 from flext_plugin import (
     FlextPluginConstants as c_constants,
     FlextPluginTypes as t_types,
+    t,
 )
 
 
@@ -103,7 +104,7 @@ class FlextPluginModels(FlextModels):
                 bool, Field(default=True, description="Plugin enabled state")
             ]
             metadata: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Extensible plugin metadata",
@@ -120,7 +121,7 @@ class FlextPluginModels(FlextModels):
                 author: str = "",
                 plugin_type: str = c_constants.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: Mapping[str, object] | None = None,
+                metadata: Mapping[str, t.NormalizedValue] | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -139,10 +140,10 @@ class FlextPluginModels(FlextModels):
                 New Plugin entity instance
 
                 """
-                metadata_payload: dict[str, object] = (
+                metadata_payload: dict[str, t.NormalizedValue] = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: dict[str, object] = {
+                payload: dict[str, t.NormalizedValue] = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,
@@ -372,7 +373,7 @@ class FlextPluginModels(FlextModels):
 
             success: Annotated[bool, Field(description="Whether execution succeeded")]
             data: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Execution output data",
@@ -440,7 +441,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Extensible discovery metadata",
@@ -593,7 +594,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Additional metadata",
@@ -618,7 +619,7 @@ class FlextPluginModels(FlextModels):
             plugin_name: Annotated[str, Field(description="Associated plugin name")]
             timestamp: Annotated[datetime, Field(description="When event occurred")]
             data: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Event-specific data",
@@ -655,7 +656,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             details: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Additional validation details",
@@ -728,7 +729,7 @@ class FlextPluginModels(FlextModels):
                 bool, Field(default=False, description="Whether watcher is active")
             ]
             last_modified: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="File modification tracking",
@@ -798,7 +799,7 @@ class FlextPluginModels(FlextModels):
 
             version: Annotated[str, Field(description="Registry schema version")]
             plugins: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",
@@ -827,7 +828,7 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: Annotated[str, Field(description="Plugin name")]
             settings: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Configuration settings",
@@ -841,7 +842,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugins: Annotated[
-                dict[str, object],
+                dict[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",

@@ -151,6 +151,9 @@ disable_error_code = [
 ]
 explicit_package_bases = true
 ignore_missing_imports = true
+mypy_path = [
+  "src",
+]
 namespace_packages = true
 plugins = [
   "pydantic.mypy",
@@ -579,6 +582,7 @@ split-on-trailing-comma = true
   "RUF036",
 ]
 
+
 [tool.pytest.ini_options]
 addopts = [
   "--strict-markers",
@@ -605,6 +609,7 @@ python_files = [
 ]
 
 # [MANAGED] pyrefly
+
 
 [tool.coverage.report]
 fail_under = 15

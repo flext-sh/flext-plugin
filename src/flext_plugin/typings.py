@@ -29,7 +29,7 @@ class FlextPluginTypes(FlextTypes):
         """Event handler type definitions."""
 
         EventHandler: TypeAlias = Callable[
-            [Mapping[str, object]],
+            [Mapping[str, FlextTypes.NormalizedValue]],
             Awaitable[object],
         ]
 
@@ -39,7 +39,7 @@ class FlextPluginTypes(FlextTypes):
             def __init__(
                 self,
                 handler: Callable[
-                    [Mapping[str, object]],
+                    [Mapping[str, FlextTypes.NormalizedValue]],
                     Awaitable[object],
                 ],
                 priority: int = 0,
@@ -62,14 +62,14 @@ class FlextPluginTypes(FlextTypes):
         type StringDict = Mapping[str, str]
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
-        type PluginList = list[Mapping[str, object]]
-        type PluginDict = Mapping[str, object]
-        type ConfigDict = Mapping[str, object]
-        type SettingsDict = Mapping[str, object]
-        type MetadataDict = Mapping[str, object]
-        type InputDict = Mapping[str, object]
-        type OutputDict = Mapping[str, object]
-        type PluginEntity = Mapping[str, object]
+        type PluginList = list[Mapping[str, FlextTypes.NormalizedValue]]
+        type PluginDict = Mapping[str, FlextTypes.NormalizedValue]
+        type ConfigDict = Mapping[str, FlextTypes.NormalizedValue]
+        type SettingsDict = Mapping[str, FlextTypes.NormalizedValue]
+        type MetadataDict = Mapping[str, FlextTypes.NormalizedValue]
+        type InputDict = Mapping[str, FlextTypes.NormalizedValue]
+        type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
+        type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -123,39 +123,39 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = Mapping[str, object]
+        type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
         type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
         "Security level literal - no corresponding StrEnum."
 
     class Performance:
         """Performance metrics and monitoring type aliases."""
 
-        type Metrics = Mapping[str, object]
-        type PerformanceData = Mapping[str, object]
-        type ResourceUsage = Mapping[str, object]
+        type Metrics = Mapping[str, FlextTypes.NormalizedValue]
+        type PerformanceData = Mapping[str, FlextTypes.NormalizedValue]
+        type ResourceUsage = Mapping[str, FlextTypes.NormalizedValue]
 
     class Discovery:
         """Plugin discovery type aliases."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = Mapping[str, object]
+        type DiscoveryResult = Mapping[str, FlextTypes.NormalizedValue]
         type PluginLoader = object
         type EntryPoint = str
 
     class Execution:
         """Plugin execution type aliases."""
 
-        type ExecutionContext = Mapping[str, object]
-        type ExecutionResult = Mapping[str, object]
+        type ExecutionContext = Mapping[str, FlextTypes.NormalizedValue]
+        type ExecutionResult = Mapping[str, FlextTypes.NormalizedValue]
         type ExecutionError = str
-        type ResourceLimits = Mapping[str, object]
+        type ResourceLimits = Mapping[str, FlextTypes.NormalizedValue]
 
     class Registry:
         """Plugin registry type aliases."""
 
-        type RegistryConfig = Mapping[str, object]
-        type RegistryEntry = Mapping[str, object]
-        type RegistrySync = Mapping[str, object]
+        type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
+        type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
+        type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -163,8 +163,8 @@ class FlextPluginTypes(FlextTypes):
     class HotReload:
         """Hot reload and file watching type aliases."""
 
-        type WatchConfig = Mapping[str, object]
-        type ReloadEvent = Mapping[str, object]
+        type WatchConfig = Mapping[str, FlextTypes.NormalizedValue]
+        type ReloadEvent = Mapping[str, FlextTypes.NormalizedValue]
         type FileWatcher = object
 
 

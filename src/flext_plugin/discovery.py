@@ -197,7 +197,7 @@ class FlextPluginDiscovery:
                     elif item.is_dir() and (not item.name.startswith("__")):
                         discovered.extend(self._discover_directory(item))
             except (OSError, PermissionError):
-                self.logger.exception("Failed to discover directory %s", path)
+                self.logger.exception(f"Failed to discover directory {path}")
             return discovered
 
         def _discover_file(
@@ -213,9 +213,10 @@ class FlextPluginDiscovery:
                     path=path,
                     discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
                     discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                    metadata={},
                 )
             except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
+                self.logger.exception(f"Failed to create discovery data for {path}")
                 return None
 
     class EntryPointStrategy:

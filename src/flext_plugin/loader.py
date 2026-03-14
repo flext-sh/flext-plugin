@@ -14,7 +14,7 @@ from pathlib import Path
 
 from flext_core import FlextLogger, r
 
-from flext_plugin import FlextPluginModels, c
+from flext_plugin import FlextPluginModels, c, t
 
 
 class FlextPluginLoader:
@@ -42,7 +42,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, object] = {}
+        self._loaded_plugins: dict[str, t.NormalizedValue] = {}
         self._loader_strategies: list[
             Callable[[Path], FlextPluginModels.Plugin.LoadData | None]
         ] = [
@@ -59,7 +59,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, object]]:
+    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, t.NormalizedValue]]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -72,7 +72,7 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[Mapping[str, object]].fail(error_msg)
+                return r[Mapping[str, t.NormalizedValue]].fail(error_msg)
             module = self._loaded_plugins[plugin_name]
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
@@ -101,7 +101,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return r[Mapping[str, object]].fail(f"Plugin info error: {e!s}")
+            return r[Mapping[str, t.NormalizedValue]].fail(f"Plugin info error: {e!s}")
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
@@ -312,7 +312,7 @@ class FlextPluginLoader:
                 RuntimeError,
                 ImportError,
             ):
-                self.logger.exception("Failed to load file plugin: %s", path)
+                self.logger.exception(f"Failed to load file plugin: {path}")
                 return None
 
     class DirectoryPluginLoader:
@@ -365,7 +365,7 @@ class FlextPluginLoader:
                 RuntimeError,
                 ImportError,
             ):
-                self.logger.exception("Failed to load directory plugin: %s", path)
+                self.logger.exception(f"Failed to load directory plugin: {path}")
                 return None
 
         def _find_entry_file(self, path: Path) -> Path | None:
