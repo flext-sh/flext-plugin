@@ -1,3 +1,6 @@
+# AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
+# Regenerate with: make codegen
+#
 """FLEXT Plugin System - plugin management for FLEXT ecosystem.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -11,30 +14,38 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import (
-        FlextDecorators as d,
-        FlextExceptions as e,
-        FlextHandlers as h,
-        FlextMixins as x,
-        FlextService as s,
-        r as r,
+    from flext_plugin.__version__ import (
+        __all__,
+        __author__,
+        __author_email__,
+        __description__,
+        __license__,
+        __title__,
+        __url__,
+        __version__,
+        __version_info__,
     )
-
-    from flext_plugin.__version__ import __version__, __version_info__
     from flext_plugin.adapters import FlextPluginAdapters
     from flext_plugin.api import FlextPluginApi
-    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
+    from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.discovery import FlextPluginDiscovery
-    from flext_plugin.handlers import FlextPluginHandlers
+    from flext_plugin.entities import FlextPluginEntities
+    from flext_plugin.handlers import FlextPluginHandlers, FlextPluginHandlers as h
     from flext_plugin.hot_reload import FlextPluginHotReload
+    from flext_plugin.implementations import FlextPluginImplementations
     from flext_plugin.loader import FlextPluginLoader
-    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-    from flext_plugin.platform import FlextPluginPlatform
-    from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
-    from flext_plugin.services import FlextPluginService
+    from flext_plugin.models import FlextPluginModels, m
+    from flext_plugin.platform import (
+        FlextPluginPlatform,
+        Plugin,
+        PluginExecution,
+        PluginRegistry,
+    )
+    from flext_plugin.protocols import FlextPluginProtocols, p
+    from flext_plugin.services import FlextPluginService, FlextPluginService as s
     from flext_plugin.settings import FlextPluginSettings
-    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
-    from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
+    from flext_plugin.typings import FlextPluginTypes, t
+    from flext_plugin.utilities import FlextPluginUtilities, u
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -42,8 +53,13 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginApi": ("flext_plugin.api", "FlextPluginApi"),
     "FlextPluginConstants": ("flext_plugin.constants", "FlextPluginConstants"),
     "FlextPluginDiscovery": ("flext_plugin.discovery", "FlextPluginDiscovery"),
+    "FlextPluginEntities": ("flext_plugin.entities", "FlextPluginEntities"),
     "FlextPluginHandlers": ("flext_plugin.handlers", "FlextPluginHandlers"),
     "FlextPluginHotReload": ("flext_plugin.hot_reload", "FlextPluginHotReload"),
+    "FlextPluginImplementations": (
+        "flext_plugin.implementations",
+        "FlextPluginImplementations",
+    ),
     "FlextPluginLoader": ("flext_plugin.loader", "FlextPluginLoader"),
     "FlextPluginModels": ("flext_plugin.models", "FlextPluginModels"),
     "FlextPluginPlatform": ("flext_plugin.platform", "FlextPluginPlatform"),
@@ -52,19 +68,25 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginSettings": ("flext_plugin.settings", "FlextPluginSettings"),
     "FlextPluginTypes": ("flext_plugin.typings", "FlextPluginTypes"),
     "FlextPluginUtilities": ("flext_plugin.utilities", "FlextPluginUtilities"),
+    "Plugin": ("flext_plugin.platform", "Plugin"),
+    "PluginExecution": ("flext_plugin.platform", "PluginExecution"),
+    "PluginRegistry": ("flext_plugin.platform", "PluginRegistry"),
+    "__all__": ("flext_plugin.__version__", "__all__"),
+    "__author__": ("flext_plugin.__version__", "__author__"),
+    "__author_email__": ("flext_plugin.__version__", "__author_email__"),
+    "__description__": ("flext_plugin.__version__", "__description__"),
+    "__license__": ("flext_plugin.__version__", "__license__"),
+    "__title__": ("flext_plugin.__version__", "__title__"),
+    "__url__": ("flext_plugin.__version__", "__url__"),
     "__version__": ("flext_plugin.__version__", "__version__"),
     "__version_info__": ("flext_plugin.__version__", "__version_info__"),
-    "c": ("flext_plugin.constants", "FlextPluginConstants"),
-    "d": ("flext_core", "FlextDecorators"),
-    "e": ("flext_core", "FlextExceptions"),
-    "h": ("flext_core", "FlextHandlers"),
-    "m": ("flext_plugin.models", "FlextPluginModels"),
-    "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
-    "r": ("flext_core", "r"),
-    "s": ("flext_core", "FlextService"),
-    "t": ("flext_plugin.typings", "FlextPluginTypes"),
-    "u": ("flext_plugin.utilities", "FlextPluginUtilities"),
-    "x": ("flext_core", "FlextMixins"),
+    "c": ("flext_plugin.constants", "c"),
+    "h": ("flext_plugin.handlers", "FlextPluginHandlers"),
+    "m": ("flext_plugin.models", "m"),
+    "p": ("flext_plugin.protocols", "p"),
+    "s": ("flext_plugin.services", "FlextPluginService"),
+    "t": ("flext_plugin.typings", "t"),
+    "u": ("flext_plugin.utilities", "u"),
 }
 
 __all__ = [
@@ -72,8 +94,10 @@ __all__ = [
     "FlextPluginApi",
     "FlextPluginConstants",
     "FlextPluginDiscovery",
+    "FlextPluginEntities",
     "FlextPluginHandlers",
     "FlextPluginHotReload",
+    "FlextPluginImplementations",
     "FlextPluginLoader",
     "FlextPluginModels",
     "FlextPluginPlatform",
@@ -82,25 +106,29 @@ __all__ = [
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
+    "Plugin",
+    "PluginExecution",
+    "PluginRegistry",
+    "__all__",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
     "__version__",
     "__version_info__",
     "c",
-    "d",
-    "e",
     "h",
     "m",
     "p",
-    "r",
     "s",
     "t",
     "u",
-    "x",
 ]
 
 
-def __getattr__(
-    name: str,
-):  # JUSTIFIED: Ruff (any-type) with PEP 562 dynamic module exports — https://docs.astral.sh/ruff/rules/any-type/
+def __getattr__(name: str) -> t.ModuleExport:
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 
