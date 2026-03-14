@@ -313,7 +313,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             logger.warning(f"Failed to save statistics: {e}")
 
-    def _get_config_value(self, key: str, default = None):
+    def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
         # Access configuration from the config dict[str, object] passed during initialization
         return getattr(self, "_config", {}).get(key, default)
