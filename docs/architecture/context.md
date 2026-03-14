@@ -60,7 +60,7 @@ Person(operator, "System Operator", "Deploys and manages FLEXT applications with
 
 System(flext_plugin, "FLEXT Plugin System", "Enterprise plugin management and lifecycle system")
 
-System_Ext(flext_core, "FLEXT Core", "Foundation library with FlextResult, FlextContainer, FlextModels")
+System_Ext(flext_core, "FLEXT Core", "Foundation library with r, FlextContainer, FlextModels")
 System_Ext(flext_observability, "FLEXT Observability", "Monitoring, metrics, tracing, health checks")
 
 System_Ext(flext_cli, "FLEXT CLI", "Command-line interface (optional dependency)")
@@ -81,7 +81,7 @@ Rel(developer, flext_plugin, "Develops plugins using")
 Rel(architect, flext_plugin, "Designs plugin architectures with")
 Rel(operator, flext_plugin, "Deploys applications using")
 
-Rel(flext_plugin, flext_core, "Depends on (mandatory)", "FlextResult[T], FlextContainer")
+Rel(flext_plugin, flext_core, "Depends on (mandatory)", "r[T], FlextContainer")
 Rel(flext_plugin, flext_observability, "Integrates with (mandatory)", "metrics, tracing")
 
 Rel(flext_plugin, flext_cli, "Integrates with (optional)", "command-line interface")
@@ -287,7 +287,7 @@ result = await api.execute_plugin("plugin-name", context)
 
 #### **FLEXT Core Integration Contract**
 
-- **FlextResult[T]**: All operations return railway-oriented results
+- **r[T]**: All operations return railway-oriented results
 - **FlextContainer**: Dependency injection container integration
 - **FlextModels**: Domain model patterns and validation
 - **FlextLogger**: Structured logging integration

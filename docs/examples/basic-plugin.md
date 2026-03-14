@@ -30,7 +30,7 @@ The basic plugin example shows:
 - Creating a custom plugin class
 - Implementing plugin lifecycle methods
 - Handling configuration and metadata
-- Error handling with FlextResult pattern
+- Error handling with r pattern
 - Integration with the plugin platform
 - Comprehensive testing
 
@@ -57,7 +57,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -68,6 +68,7 @@ import json
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
 
 class BasicDataProcessorPlugin(FlextPlugin):
     """
@@ -87,33 +88,30 @@ class BasicDataProcessorPlugin(FlextPlugin):
             "plugin_type": PluginType.PROCESSOR,
             "batch_size": 100,
             "timeout_seconds": 30,
-            "enable_logging": True
+            "enable_logging": True,
         }
 
         # Merge with provided config
         final_config = {**default_config, **(config or {})}
 
         super().__init__(
-            name="basic-data-processor",
-            version="0.9.9",
-            config=final_config,
-            **kwargs
+            name="basic-data-processor", version="0.9.9", config=final_config, **kwargs
         )
 
         # Plugin-specific attributes
         self._processing_stats = {
             "total_processed": 0,
             "total_errors": 0,
-            "last_execution": None
+            "last_execution": None,
         }
         self._is_initialized = False
 
-    def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> r[bool]:
         """
         Initialize plugin resources and validate configuration.
 
         Returns:
-            FlextResult[bool]: Success/failure of initialization
+            r[bool]: Success/failure of initialization
         """
         try:
             logger.info(f"Initializing plugin: {self.name}")
@@ -133,14 +131,14 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return FlextResult[bool].ok(data=True)
+            return r[bool].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[bool].fail(error_msg)
+            return r[bool].fail(error_msg)
 
-    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
+    def execute(self, data: t.Dict) -> r[t.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -148,15 +146,15 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            FlextResult[t.Dict]: Processing results or error
+            r[t.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
             if not self._is_initialized:
-                return FlextResult[bool].fail("Plugin not initialized")
+                return r[bool].fail("Plugin not initialized")
 
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[bool].fail("Plugin not active")
+                return r[bool].fail("Plugin not active")
 
             # Validate input data
             validation_result = self._validate_input_data(data)
@@ -182,25 +180,25 @@ class BasicDataProcessorPlugin(FlextPlugin):
                     "plugin_version": self.plugin_version,
                     "processing_time": (datetime.utcnow() - start_time).total_seconds(),
                     "timestamp": start_time.isoformat(),
-                    "statistics": self._processing_stats.copy()
-                }
+                    "statistics": self._processing_stats.copy(),
+                },
             }
 
             logger.info(f"Successfully processed data in plugin {self.name}")
-            return FlextResult[bool].ok(result)
+            return r[bool].ok(result)
 
         except Exception as e:
             self._processing_stats["total_errors"] += 1
             error_msg: str = f"Execution failed in plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[bool].fail(error_msg)
+            return r[bool].fail(error_msg)
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> r[bool]:
         """
         Cleanup plugin resources and save final state.
 
         Returns:
-            FlextResult[bool]: Success/failure of cleanup
+            r[bool]: Success/failure of cleanup
         """
         try:
             logger.info(f"Cleaning up plugin: {self.name}")
@@ -215,49 +213,48 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return FlextResult[bool].ok(data=True)
+            return r[bool].ok(data=True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
             logger.error(error_msg)
-            return FlextResult[bool].fail(error_msg)
+            return r[bool].fail(error_msg)
 
     # Plugin-specific helper methods
 
-    def _validate_configuration(self) -> FlextResult[bool]:
+    def _validate_configuration(self) -> r[bool]:
         """Validate plugin configuration."""
         try:
             batch_size = self._get_config_value("batch_size", 100)
             if not isinstance(batch_size, int) or batch_size <= 0:
-                return FlextResult[bool].fail("batch_size must be a positive integer")
+                return r[bool].fail("batch_size must be a positive integer")
 
             timeout = self._get_config_value("timeout_seconds", 30)
             if not isinstance(timeout, int) or timeout <= 0:
-                return FlextResult[bool].fail("timeout_seconds must be a positive integer")
+                return r[bool].fail("timeout_seconds must be a positive integer")
 
-            return FlextResult[bool].ok(data=True)
+            return r[bool].ok(data=True)
 
         except Exception as e:
-            return FlextResult[bool].fail(f"Configuration validation failed: {e}")
+            return r[bool].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: t.Dict) -> FlextResult[bool]:
+    def _validate_input_data(self, data: t.Dict) -> r[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
-                return FlextResult[bool].fail("Input data must be a dictionary")
+                return r[bool].fail("Input data must be a dictionary")
 
             if "payload" not in data:
-                return FlextResult[bool].fail("Input data must contain 'payload' key")
+                return r[bool].fail("Input data must contain 'payload' key")
 
-            return FlextResult[bool].ok(data=True)
+            return r[bool].ok(data=True)
 
         except Exception as e:
-            return FlextResult[bool].fail(f"Input validation failed: {e}")
+            return r[bool].fail(f"Input validation failed: {e}")
 
     def _process_data(self, data: t.Dict) -> t.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
-
 
         processed_payload = {}
 
@@ -278,7 +275,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         return {
             "original_payload": payload,
             "processed_payload": processed_payload,
-            "transformation_count": len(processed_payload)
+            "transformation_count": len(processed_payload),
         }
 
     def _setup_logging(self):
@@ -310,7 +307,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         """Save processing statistics."""
         stats_file = f"{self.name}_stats.json"
         try:
-            with open(stats_file, 'w') as f:
+            with open(stats_file, "w") as f:
                 json.dump(self._processing_stats, f, indent=2, default=str)
             logger.info(f"Statistics saved to {stats_file}")
         except Exception as e:
@@ -319,7 +316,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     def _get_config_value(self, key: str, default: object = None) -> object:
         """Get configuration value with fallback."""
         # Access configuration from the config dict[str, object] passed during initialization
-        return getattr(self, '_config', {}).get(key, default)
+        return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
 
@@ -332,7 +329,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         self._processing_stats = {
             "total_processed": 0,
             "total_errors": 0,
-            "last_execution": None
+            "last_execution": None,
         }
         logger.info("Statistics reset")
 ```
@@ -348,23 +345,17 @@ from flext_plugin import create_flext_plugin_platform
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def main():
     """Demonstrate basic plugin usage."""
 
     # Create plugin with custom configuration
-    plugin_config = {
-        "batch_size": 50,
-        "timeout_seconds": 60,
-        "enable_logging": True
-    }
+    plugin_config = {"batch_size": 50, "timeout_seconds": 60, "enable_logging": True}
 
     plugin = BasicDataProcessorPlugin(config=plugin_config)
 
     # Create platform
-    platform = create_flext_plugin_platform(config={
-        "debug": True,
-        "hot_reload": False
-    })
+    platform = create_flext_plugin_platform(config={"debug": True, "hot_reload": False})
 
     try:
         # Register plugin
@@ -392,10 +383,7 @@ def main():
                 "age": 30,
                 "scores": [85, 90, 78, 92],
                 "active": True,
-                "metadata": {
-                    "source": "api",
-                    "timestamp": "2025-01-01T12:00:00Z"
-                }
+                "metadata": {"source": "api", "timestamp": "2025-01-01T12:00:00Z"},
             }
         }
 
@@ -409,10 +397,12 @@ def main():
             result_data = execution_result.data
             print("\n--- Execution Results ---")
             print(f"Success: {result_data.get('success')}")
-            print(f"Processing time: {result_data.get('metadata', {}).get('processing_time', 0):.3f}s")
+            print(
+                f"Processing time: {result_data.get('metadata', {}).get('processing_time', 0):.3f}s"
+            )
             print("\nProcessed Data:")
 
-            processed_data = result_data.get('processed_data', {})
+            processed_data = result_data.get("processed_data", {})
             for key, value in processed_data.items():
                 print(f"  {key}: {value}")
 
@@ -432,15 +422,15 @@ def main():
                 "payload": {
                     "test_id": i,
                     "message": f"test message {i}",
-                    "value": i * 10
+                    "value": i * 10,
                 }
             }
 
             result = platform.execute_plugin(plugin.name, test_data)
             if result.success():
-                logger.info(f"Execution {i+1}: Success")
+                logger.info(f"Execution {i + 1}: Success")
             else:
-                logger.error(f"Execution {i+1}: Failed - {result.error}")
+                logger.error(f"Execution {i + 1}: Failed - {result.error}")
 
         # Show final statistics
         print("\n--- Final Statistics ---")
@@ -464,6 +454,7 @@ def main():
         logger.info("Shutting down platform...")
         platform.shutdown()
 
+
 if __name__ == "__main__":
     run(main())
 ```
@@ -478,17 +469,14 @@ from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 from flext_plugin.core.types import PluginStatus, PluginType
 
+
 class TestBasicDataProcessorPlugin:
     """Comprehensive test suite for BasicDataProcessorPlugin."""
 
     @pytest.fixture
     def plugin_config(self):
         """Default plugin configuration for testing."""
-        return {
-            "batch_size": 10,
-            "timeout_seconds": 5,
-            "enable_logging": False
-        }
+        return {"batch_size": 10, "timeout_seconds": 5, "enable_logging": False}
 
     @pytest.fixture
     def plugin(self, plugin_config):
@@ -526,10 +514,12 @@ class TestBasicDataProcessorPlugin:
 
     def test_initialization_failure(self):
         """Test initialization failure with invalid config."""
-        invalid_plugin = BasicDataProcessorPlugin(config={
-            "batch_size": -1,  # Invalid
-            "timeout_seconds": 10
-        })
+        invalid_plugin = BasicDataProcessorPlugin(
+            config={
+                "batch_size": -1,  # Invalid
+                "timeout_seconds": 10,
+            }
+        )
 
         result = invalid_plugin.initialize()
         assert result.is_failure()
@@ -549,7 +539,7 @@ class TestBasicDataProcessorPlugin:
                 "name": "test user",
                 "age": 25,
                 "scores": [1, 2, 3],
-                "active": True
+                "active": True,
             }
         }
 
@@ -667,12 +657,7 @@ class TestBasicDataProcessorPlugin:
         assert activate_result.success()
 
         # Execute plugin
-        test_data = {
-            "payload": {
-                "message": "hello world",
-                "count": 5
-            }
-        }
+        test_data = {"payload": {"message": "hello world", "count": 5}}
 
         execute_result = platform.execute_plugin(plugin.name, test_data)
         assert execute_result.success()
@@ -701,12 +686,7 @@ class TestBasicDataProcessorPlugin:
 
         # Execute multiple times
         for i in range(5):
-            test_data = {
-                "payload": {
-                    "id": i,
-                    "value": f"test_{i}"
-                }
-            }
+            test_data = {"payload": {"id": i, "value": f"test_{i}"}}
 
             result = platform.execute_plugin(plugin.name, test_data)
             assert result.success()
@@ -724,7 +704,9 @@ class TestBasicDataProcessorPlugin:
         plugin.activate()
 
         # Force an error by providing non-dict data
-        with patch.object(plugin, '_process_data', side_effect=Exception("Processing error")):
+        with patch.object(
+            plugin, "_process_data", side_effect=Exception("Processing error")
+        ):
             result = plugin.execute({"payload": {"test": "data"}})
 
             assert result.is_failure()
@@ -733,6 +715,7 @@ class TestBasicDataProcessorPlugin:
             # Check error statistics
             stats = plugin.get_statistics()
             assert stats["total_errors"] == 1
+
 
 # Performance Tests
 class TestPluginPerformance:
@@ -755,7 +738,7 @@ class TestPluginPerformance:
             "payload": {
                 "large_text": "x" * 1000,  # 1KB string
                 "numbers": list(range(100)),
-                "nested": {"deep": {"data": "value"}}
+                "nested": {"deep": {"data": "value"}},
             }
         }
 
@@ -771,6 +754,7 @@ class TestPluginPerformance:
         processing_time = result.data["metadata"]["processing_time"]
         assert processing_time > 0
         assert processing_time < 1.0
+
 
 if __name__ == "__main__":
     # Run tests
@@ -881,7 +865,7 @@ Processed Data:
 
 - Clean separation of concerns with initialization, execution, and cleanup
 - Configuration management with validation
-- Error handling using FlextResult pattern
+- Error handling using r pattern
 - Statistics tracking for monitoring
 
 ### 2. Lifecycle Management

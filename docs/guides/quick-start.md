@@ -81,10 +81,7 @@ hello_plugin = create_flext_plugin(
     name="hello-world",
     version="0.9.9",
     plugin_type=PluginType.UTILITY,
-    config={
-        "description": "My first FLEXT plugin",
-        "author": "Your Name"
-    }
+    config={"description": "My first FLEXT plugin", "author": "Your Name"},
 )
 
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
@@ -114,17 +111,14 @@ Create `platform_example.py`:
 from flext_plugin import create_flext_plugin_platform, create_flext_plugin
 from flext_plugin.core.types import PluginType
 
+
 def main():
     # Create plugin platform
-    platform = create_flext_plugin_platform(config={
-        "debug": True
-    })
+    platform = create_flext_plugin_platform(config={"debug": True})
 
     # Create plugin
     plugin = create_flext_plugin(
-        name="hello-world",
-        version="0.9.9",
-        plugin_type=PluginType.UTILITY
+        name="hello-world", version="0.9.9", plugin_type=PluginType.UTILITY
     )
 
     try:
@@ -153,6 +147,7 @@ def main():
     finally:
         # Cleanup
         platform.shutdown()
+
 
 # Run the example
 run(main())
@@ -196,7 +191,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -218,18 +213,18 @@ class GreetingPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> FlextResult[bool]:
+    def initialize(self) -> r[bool]:
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return FlextResult[bool].ok(data=True)
+        return r[bool].ok(data=True)
 
-    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
+    def execute(self, data: t.Dict) -> r[t.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
             if self.status != PluginStatus.ACTIVE:
-                return FlextResult[bool].fail("Plugin not active")
+                return r[bool].fail("Plugin not active")
 
             # Extract name from input
             name = data.get("name", "World")
@@ -254,15 +249,15 @@ class GreetingPlugin(FlextPlugin):
                 "version": self.plugin_version
             }
 
-            return FlextResult[bool].ok(result)
+            return r[bool].ok(result)
 
         except Exception as e:
-            return FlextResult[bool].fail(f"Execution failed: {e}")
+            return r[bool].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> r[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return FlextResult[bool].ok(data=True)
+        return r[bool].ok(data=True)
 
 # Usage example
 def demo_custom_plugin():
@@ -329,6 +324,7 @@ FLEXT Plugin can automatically discover plugins in directories:
 ```python
 from flext_plugin.application.services import FlextPluginDiscoveryService
 
+
 def discover_plugins():
     """Discover plugins in current directory."""
     discovery = FlextPluginDiscoveryService()
@@ -344,6 +340,7 @@ def discover_plugins():
     else:
         print(f"Discovery failed: {result.error}")
 
+
 # Run discovery
 run(discover_plugins())
 ```
@@ -356,6 +353,7 @@ Create `test_greeting_plugin.py`:
 import pytest
 from custom_plugin import GreetingPlugin
 from flext_plugin import create_flext_plugin_platform
+
 
 class TestGreetingPlugin:
     """Test suite for GreetingPlugin."""
@@ -410,11 +408,11 @@ class TestGreetingPlugin:
 
         # Execute through platform
         execute_result = platform.execute_plugin(
-            plugin.name,
-            {"name": "Platform", "language": "english"}
+            plugin.name, {"name": "Platform", "language": "english"}
         )
         assert execute_result.success()
         assert "Hello, Platform!" in str(execute_result.data)
+
 
 # Run tests
 if __name__ == "__main__":
@@ -436,8 +434,9 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files change:
 
 ```python
-from flext_plugin.hot_reload import enable_hot_reload
+from flext_plugin import enable_hot_reload
 from flext_plugin import create_flext_plugin_platform
+
 
 def development_server():
     """Development server with hot reload."""
@@ -445,14 +444,11 @@ def development_server():
     # Enable hot reload
     enable_hot_reload(
         watch_paths=["./"],  # Watch current directory
-        reload_on_change=True
+        reload_on_change=True,
     )
 
     # Create platform
-    platform = create_flext_plugin_platform(config={
-        "hot_reload": True,
-        "debug": True
-    })
+    platform = create_flext_plugin_platform(config={"hot_reload": True, "debug": True})
 
     print("🔥 Hot reload enabled!")
     print("Modify plugin files to see live updates...")
@@ -466,6 +462,7 @@ def development_server():
         print("\nShutting down development server...")
         platform.shutdown()
 
+
 # Run development server
 run(development_server())
 ```
@@ -477,20 +474,6 @@ FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
 ```bash
 # Install development dependencies
 poetry add --group dev ruff mypy pytest pytest-cov bandit
-
-# Create basic pyproject.toml configuration
-cat > pyproject.toml << EOF
-extend = "../.ruff-shared.toml"
-lint.isort.known-first-party = ["flext_plugin"]
-
-[tool.mypy]
-python_version = "3.13"
-strict = true
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "--cov=. --cov-report=term-missing"
-EOF
 
 # Run quality checks
 ruff check .          # Linting

@@ -9,32 +9,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.protocols import FlextTestsProtocols
+from flext_tests import FlextTestsProtocols
 
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin import FlextPluginProtocols
 
 
 class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
     """Test protocols combining FlextTestsProtocols and FlextPluginProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.Plugin.* (from FlextPluginProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.Plugin.* (from FlextPluginProtocols)
     """
 
-    class Tests:
-        """Project-specific test protocols.
 
-        Extends FlextTestsProtocols.Tests with Plugin-specific protocols.
-        """
-
-        class Plugin:
-            """Plugin-specific test protocols."""
-
-
-# Runtime aliases
-p = TestsFlextPluginProtocols
-tp = TestsFlextPluginProtocols
-
-__all__ = ["TestsFlextPluginProtocols", "p", "tp"]
+p: type[TestsFlextPluginProtocols] = TestsFlextPluginProtocols
+__all__ = ["TestsFlextPluginProtocols", "p"]

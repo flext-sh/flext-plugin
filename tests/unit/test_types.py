@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin.typings import FlextPluginTypes, t
+from flext_plugin import FlextPluginTypes, t
 
 
 class TestFlextPluginTypes:
@@ -60,4 +60,3 @@ class TestFlextPluginTypes:
         """Test Registry type aliases exist."""
         assert hasattr(FlextPluginTypes.Registry, "RegistryConfig")
         assert hasattr(FlextPluginTypes.Registry, "RegistryEntry")
-

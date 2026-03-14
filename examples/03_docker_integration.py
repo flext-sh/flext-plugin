@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """FLEXT Plugin Docker Integration Example.
 
 This example demonstrates real-world plugin configuration with Docker services integration.
@@ -16,11 +15,7 @@ import sys
 
 from flext_core import FlextContainer
 
-from flext_plugin import (
-    FlextPluginApi,
-    FlextPluginConstants,
-    FlextPluginModels,
-)
+from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -48,8 +43,6 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, di
         "max_connections": 20,
         "connection_pool": True,
     }
-
-    # Use domain library patterns - create plugin model directly
     postgres_plugin = FlextPluginModels.Plugin.Plugin(
         name="docker-postgres-connector",
         plugin_version="1.0.0",
@@ -59,8 +52,7 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, di
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
     )
-
-    return postgres_plugin, postgres_config
+    return (postgres_plugin, postgres_config)
 
 
 def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
@@ -77,8 +69,6 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]
         "socket_keepalive_options": {socket.TCP_KEEPIDLE: 60},
         "health_check_interval": 30,
     }
-
-    # Use domain library patterns - create plugin model directly
     redis_plugin = FlextPluginModels.Plugin.Plugin(
         name="docker-redis-cache",
         plugin_version="1.0.0",
@@ -88,8 +78,7 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
     )
-
-    return redis_plugin, redis_config
+    return (redis_plugin, redis_config)
 
 
 def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
@@ -106,8 +95,6 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
         "pool_size": 10,
         "pool_lifetime": 3600,
     }
-
-    # Use domain library patterns - create plugin model directly
     ldap_plugin = FlextPluginModels.Plugin.Plugin(
         name="docker-ldap-directory",
         plugin_version="1.0.0",
@@ -117,8 +104,7 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
     )
-
-    return ldap_plugin, ldap_config
+    return (ldap_plugin, ldap_config)
 
 
 def test_connections() -> bool:
@@ -128,61 +114,46 @@ def test_connections() -> bool:
         ("Redis", "localhost", 6379),
         ("LDAP", "localhost", 389),
     ]
-
     all_available = True
     for _service_name, host, port in services:
         available = check_service_availability(host, port)
         if not available:
             all_available = False
-
     return all_available
 
 
 def main() -> None:
     """Main entry point for the Docker integration example."""
     parser = argparse.ArgumentParser(
-        description="FLEXT Plugin Docker Integration Example",
+        description="FLEXT Plugin Docker Integration Example"
     )
-    parser.add_argument(
+    _ = parser.add_argument(
         "--test-connections",
         action="store_true",
         help="Test connectivity to Docker services before creating plugins",
     )
     args = parser.parse_args()
-
-    # Test connections if requested
     if args.test_connections:
         services_available = test_connections()
         if not services_available:
             sys.exit(1)
-
     postgres_plugin, _postgres_config = create_docker_postgres_plugin()
-
     redis_plugin, _redis_config = create_docker_redis_plugin()
-
     ldap_plugin, _ldap_config = create_docker_ldap_plugin()
-
-    # Use FlextPluginApi for validation (domain library pattern)
     container = FlextContainer()
     FlextPluginApi(container)
-
-    # Validate PostgreSQL plugin configuration
     if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
         validation_result = postgres_plugin.validate_business_rules()
         if validation_result.is_success:
             pass
         else:
             sys.exit(1)
-
-    # Validate Redis plugin configuration
     if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
         validation_result = redis_plugin.validate_business_rules()
         if validation_result.is_success:
             pass
     else:
         sys.exit(1)
-
-    # Validate LDAP plugin configuration
     if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
         validation_result = ldap_plugin.validate_business_rules()
         if validation_result.is_success:

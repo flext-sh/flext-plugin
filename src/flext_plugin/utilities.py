@@ -9,10 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
-import json
 import re
-from collections.abc import Callable
-from dataclasses import dataclass
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -20,21 +18,14 @@ from typing import ClassVar
 
 import yaml
 from flext_core import FlextUtilities, r
-from pydantic import field_validator, model_validator
-from pydantic_settings import SettingsConfigDict
+from pydantic import TypeAdapter, model_validator
 
-from flext_plugin.models import FlextPluginModels
-from flext_plugin.typings import t
-
-# Import base utilities for inheritance
-u = FlextUtilities
+from flext_plugin import FlextPluginModels, c, t
 
 
-@dataclass
-class FlextPluginUtilities(u):
+class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
-    # Constants using advanced type syntax
     PLUGIN_EXTENSIONS: ClassVar[list[str]] = [".py", ".yaml", ".yml", ".json"]
     PLUGIN_MANIFESTS: ClassVar[list[str]] = [
         "plugin.yaml",
@@ -43,7 +34,7 @@ class FlextPluginUtilities(u):
         "setup.py",
     ]
     MAX_SIZE_MB: ClassVar[int] = 100
-    NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
+    NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
 
     class Plugin:
         """Plugin discovery and validation utilities."""
@@ -61,12 +52,12 @@ class FlextPluginUtilities(u):
             "setup.py",
         ]
         MAX_PLUGIN_SIZE_MB: ClassVar[int] = 100
-        PLUGIN_NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
+        PLUGIN_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
 
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> r[list[FlextPluginModels.PluginMetadata]]:
+        ) -> r[list[FlextPluginModels.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
@@ -79,33 +70,91 @@ class FlextPluginUtilities(u):
             try:
                 search_path = Path(directory)
                 if not search_path.exists():
-                    return r[list[FlextPluginModels.PluginMetadata]].fail(
-                        f"Plugin directory does not exist: {search_path}",
+                    return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                        f"Plugin directory does not exist: {search_path}"
                     )
-
-                plugins = []
+                plugins: list[FlextPluginModels.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
                     if (
                         plugin_file.is_file()
                         and plugin_file.suffix
-                        in FlextPluginUtilities.PluginDiscovery.PLUGIN_FILE_EXTENSIONS
+                        in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
                     ):
                         validation_result = (
-                            FlextPluginUtilities.PluginDiscovery.validate_plugin_file(
-                                plugin_file,
+                            FlextPluginUtilities.Plugin.validate_plugin_file(
+                                plugin_file
                             )
                         )
                         if validation_result.is_success:
-                            metadata_result = FlextPluginUtilities.PluginDiscovery.extract_plugin_metadata(
-                                plugin_file,
+                            metadata_result = (
+                                FlextPluginUtilities.Plugin.extract_plugin_metadata(
+                                    plugin_file
+                                )
                             )
                             if metadata_result.is_success:
                                 plugins.append(metadata_result.value)
+                return r[list[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                    f"Plugin discovery failed: {e}"
+                )
 
-                return r[list[FlextPluginModels.PluginMetadata]].ok(plugins)
-            except Exception as e:
-                return r[list[FlextPluginModels.PluginMetadata]].fail(
-                    f"Plugin discovery failed: {e}",
+        @staticmethod
+        def extract_plugin_metadata(
+            plugin_path: Path,
+        ) -> r[FlextPluginModels.Plugin.PluginMetadata]:
+            """Extract metadata from plugin file.
+
+            Args:
+            plugin_path: Path to the plugin file
+
+            Returns:
+            r containing plugin metadata
+
+            """
+            try:
+                version = c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                description = f"Plugin from {plugin_path.name}"
+                if plugin_path.suffix == ".py":
+                    content = plugin_path.read_text(encoding="utf-8")
+                    version_match = re.search(
+                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']", content
+                    )
+                    if version_match:
+                        version = version_match.group(1)
+                    doc_match = re.search(r'"""([^"]+)"""', content)
+                    if doc_match:
+                        description = doc_match.group(1).strip()
+                metadata = FlextPluginModels.Plugin.PluginMetadata(
+                    name=plugin_path.stem,
+                    version=version,
+                    description=description,
+                    author="Unknown",
+                    plugin_type="extension",
+                    entry_point=str(plugin_path),
+                    dependencies=[],
+                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
+                )
+                return r[FlextPluginModels.Plugin.PluginMetadata].ok(metadata)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[FlextPluginModels.Plugin.PluginMetadata].fail(
+                    f"Metadata extraction failed: {e}"
                 )
 
         @staticmethod
@@ -121,21 +170,12 @@ class FlextPluginUtilities(u):
             """
             try:
                 if not plugin_path.exists():
-                    return r[None].fail(
-                        f"Plugin file does not exist: {plugin_path}",
-                    )
-
-                # Check file size
+                    return r[None].fail(f"Plugin file does not exist: {plugin_path}")
                 file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
-                if (
-                    file_size_mb
-                    > FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB
-                ):
+                if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
                     return r[None].fail(
-                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.PluginDiscovery.MAX_PLUGIN_SIZE_MB}MB",
+                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB"
                     )
-
-                # Basic security check for Python files
                 if plugin_path.suffix == ".py":
                     content = plugin_path.read_text(encoding="utf-8")
                     dangerous_patterns = [
@@ -148,64 +188,19 @@ class FlextPluginUtilities(u):
                     for pattern in dangerous_patterns:
                         if pattern in content:
                             return r[None].fail(
-                                f"Plugin contains potentially dangerous code: {pattern}",
+                                f"Plugin contains potentially dangerous code: {pattern}"
                             )
-
                 return r[None].ok(None)
-            except Exception as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Plugin file validation failed: {e}")
-
-        @staticmethod
-        def extract_plugin_metadata(
-            plugin_path: Path,
-        ) -> r[FlextPluginModels.PluginMetadata]:
-            """Extract metadata from plugin file.
-
-            Args:
-            plugin_path: Path to the plugin file
-
-            Returns:
-            r containing plugin metadata
-
-            """
-            try:
-                # Default values
-                version = "1.0.0"
-                description = f"Plugin from {plugin_path.name}"
-
-                # Try to extract metadata from Python files
-                if plugin_path.suffix == ".py":
-                    content = plugin_path.read_text(encoding="utf-8")
-
-                    # Extract version
-                    version_match = re.search(
-                        r'__version__\s*=\s*["\']([^"\']+)["\']',
-                        content,
-                    )
-                    if version_match:
-                        version = version_match.group(1)
-
-                    # Extract description from docstring
-                    doc_match = re.search(r'"""([^"]+)"""', content)
-                    if doc_match:
-                        description = doc_match.group(1).strip()
-
-                metadata = FlextPluginModels.PluginMetadata(
-                    name=plugin_path.stem,
-                    version=version,
-                    description=description,
-                    author="Unknown",
-                    plugin_type="extension",
-                    entry_point=str(plugin_path),
-                    dependencies=[],
-                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
-                )
-
-                return r[FlextPluginModels.PluginMetadata].ok(metadata)
-            except Exception as e:
-                return r[FlextPluginModels.PluginMetadata].fail(
-                    f"Metadata extraction failed: {e}",
-                )
 
         @staticmethod
         def validate_plugin_name(name: str) -> r[None]:
@@ -218,12 +213,9 @@ class FlextPluginUtilities(u):
             r indicating validation success or failure
 
             """
-            if not re.match(
-                FlextPluginUtilities.PluginDiscovery.PLUGIN_NAME_PATTERN,
-                name,
-            ):
+            if not re.match(FlextPluginUtilities.Plugin.PLUGIN_NAME_PATTERN, name):
                 return r[None].fail(
-                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
+                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores."
                 )
             return r[None].ok(None)
 
@@ -238,7 +230,7 @@ class FlextPluginUtilities(u):
         def create_file_watcher(
             watch_path: Path | str,
             callback_function: Callable[..., object] | None = None,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.NormalizedValue]]:
             """Create file system watcher for plugin hot reload.
 
             Args:
@@ -252,11 +244,10 @@ class FlextPluginUtilities(u):
             try:
                 path = Path(watch_path)
                 if not path.exists():
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Watch path does not exist: {path}",
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Watch path does not exist: {path}"
                     )
-
-                watcher_config = {
+                watcher_config: dict[str, t.NormalizedValue] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
                     if callback_function
@@ -266,16 +257,23 @@ class FlextPluginUtilities(u):
                     "active": False,
                     "created_at": datetime.now(UTC).isoformat(),
                 }
-
-                return r[dict[str, t.GeneralValueType]].ok(dict(watcher_config))
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"File watcher creation failed: {e}",
+                return r[Mapping[str, t.NormalizedValue]].ok(watcher_config)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"File watcher creation failed: {e}"
                 )
 
         @staticmethod
         def detect_file_changes(
-            watcher_config: dict[str, t.GeneralValueType],
+            watcher_config: Mapping[str, t.NormalizedValue],
         ) -> r[t.Plugin.StringList]:
             """Detect file changes in watched directory.
 
@@ -288,35 +286,40 @@ class FlextPluginUtilities(u):
             """
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
-                last_modified = watcher_config.get("last_modified", {})
-                if not isinstance(last_modified, dict):
-                    last_modified = {}
-                changed_files = []
-
+                last_modified_raw = watcher_config.get("last_modified", {})
+                last_modified: dict[str, t.NormalizedValue] = (
+                    TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
+                        last_modified_raw
+                    )
+                    if u.is_dict_like(last_modified_raw)
+                    else {}
+                )
+                changed_files: list[str] = []
                 for file_path in watch_path.rglob("*"):
                     if (
                         file_path.is_file()
                         and file_path.suffix
-                        in FlextPluginUtilities.PluginDiscovery.PLUGIN_FILE_EXTENSIONS
+                        in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
                     ):
                         file_key = str(file_path)
                         current_mtime = file_path.stat().st_mtime
-
                         if (
                             file_key not in last_modified
                             or last_modified[file_key] != current_mtime
                         ):
-                            changed_files.append(file_key)
+                            changed_files.append(file_path.as_posix())
                             last_modified[file_key] = current_mtime
-
-                watcher_config["last_modified"] = last_modified
-                return r[t.Plugin.StringList].ok(
-                    changed_files,
-                )
-            except Exception as e:
-                return r[t.Plugin.StringList].fail(
-                    f"File change detection failed: {e}",
-                )
+                return r[t.Plugin.StringList].ok(changed_files)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[t.Plugin.StringList].fail(f"File change detection failed: {e}")
 
         @staticmethod
         def validate_reload_safety(plugin_path: Path) -> r[None]:
@@ -330,30 +333,29 @@ class FlextPluginUtilities(u):
 
             """
             try:
-                # Check if plugin exists and is valid
-                validation_result = (
-                    FlextPluginUtilities.PluginDiscovery.validate_plugin_file(
-                        plugin_path,
-                    )
+                validation_result = FlextPluginUtilities.Plugin.validate_plugin_file(
+                    plugin_path
                 )
                 if validation_result.is_failure:
                     return r[None].fail(
-                        f"Plugin validation failed: {validation_result.error}",
+                        f"Plugin validation failed: {validation_result.error}"
                     )
-
-                # Additional reload-specific checks
                 if plugin_path.suffix == ".py":
                     try:
-                        # Try to compile the Python file
                         content = plugin_path.read_text(encoding="utf-8")
-                        compile(content, str(plugin_path), "exec")
+                        _ = compile(content, str(plugin_path), "exec")
                     except SyntaxError as e:
-                        return r[None].fail(
-                            f"Python syntax error in plugin: {e}",
-                        )
-
+                        return r[None].fail(f"Python syntax error in plugin: {e}")
                 return r[None].ok(None)
-            except Exception as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Reload safety validation failed: {e}")
 
     class SecurityValidation:
@@ -382,72 +384,39 @@ class FlextPluginUtilities(u):
         MAX_EXECUTION_TIME_SECONDS: ClassVar[int] = 300
 
         @staticmethod
-        def validate_plugin_security(
-            plugin_content: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
-            """Validate plugin security before execution.
+        def calculate_plugin_hash(plugin_content: str) -> r[str]:
+            """Calculate secure hash of plugin content for integrity verification.
 
             Args:
             plugin_content: Plugin source code content
 
             Returns:
-            r containing security validation results
+            r containing SHA-256 hash of plugin content
 
             """
-            try:
-                security_report: dict[str, t.GeneralValueType] = {
-                    "safe": True,
-                    "violations": [],
-                    "warnings": [],
-                    "analysis_time": datetime.now(UTC).isoformat(),
-                }
 
-                # Check for dangerous operations
-                for (
-                    dangerous_op
-                ) in FlextPluginUtilities.SecurityValidation.DANGEROUS_OPERATIONS:
-                    if dangerous_op in plugin_content:
-                        security_report["safe"] = False
-                        violations = security_report["violations"]
-                        if isinstance(violations, list):
-                            violations.append(
-                                f"Dangerous operation detected: {dangerous_op}",
-                            )
+            def _calculate_plugin_hash() -> str:
+                content_bytes = plugin_content.encode("utf-8")
+                hash_object = hashlib.sha256(content_bytes)
+                return hash_object.hexdigest()
 
-                # Check imports
-                import_pattern = r"(?:from\s+(\w+)|import\s+(\w+))"
-                imports = re.findall(import_pattern, plugin_content)
-                for imp in imports:
-                    module_name = imp[0] or imp[1]
-                    if module_name and not any(
-                        allowed in module_name
-                        for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
-                    ):
-                        warnings = security_report["warnings"]
-                        if isinstance(warnings, list):
-                            warnings.append(f"Potentially unsafe import: {module_name}")
-
-                # Basic code analysis
-                if "network" in plugin_content.lower() or "socket" in plugin_content:
-                    warnings = security_report["warnings"]
-                    if isinstance(warnings, list):
-                        warnings.append("Plugin may perform network operations")
-
-                if "file" in plugin_content.lower() or "write" in plugin_content:
-                    warnings = security_report["warnings"]
-                    if isinstance(warnings, list):
-                        warnings.append("Plugin may perform file operations")
-
-                return r[dict[str, t.GeneralValueType]].ok(dict(security_report))
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Security validation failed: {e}",
-                )
+            return FlextPluginUtilities.try_(
+                _calculate_plugin_hash,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin hash calculation failed: {e}")
 
         @staticmethod
         def create_sandbox_config(
             plugin_name: str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.NormalizedValue]]:
             """Create sandbox configuration for plugin execution.
 
             Args:
@@ -457,8 +426,9 @@ class FlextPluginUtilities(u):
             r containing sandbox configuration
 
             """
-            try:
-                sandbox_config = {
+
+            def _create_sandbox_config() -> Mapping[str, t.NormalizedValue]:
+                sandbox_config: dict[str, t.NormalizedValue] = {
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
@@ -471,44 +441,97 @@ class FlextPluginUtilities(u):
                     },
                     "created_at": datetime.now(UTC).isoformat(),
                 }
+                return sandbox_config
 
-                return r[dict[str, t.GeneralValueType]].ok(dict(sandbox_config))
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Sandbox configuration creation failed: {e}",
-                )
+            return FlextPluginUtilities.try_(
+                _create_sandbox_config,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Sandbox configuration creation failed: {e}")
 
         @staticmethod
-        def calculate_plugin_hash(plugin_content: str) -> r[str]:
-            """Calculate secure hash of plugin content for integrity verification.
+        def validate_plugin_security(
+            plugin_content: str,
+        ) -> r[Mapping[str, t.NormalizedValue]]:
+            """Validate plugin security before execution.
 
             Args:
             plugin_content: Plugin source code content
 
             Returns:
-            r containing SHA-256 hash of plugin content
+            r containing security validation results
 
             """
             try:
-                content_bytes = plugin_content.encode("utf-8")
-                hash_object = hashlib.sha256(content_bytes)
-                plugin_hash = hash_object.hexdigest()
-
-                return r[str].ok(plugin_hash)
-            except Exception as e:
-                return r[str].fail(f"Plugin hash calculation failed: {e}")
+                security_report: dict[str, t.NormalizedValue] = {
+                    "safe": True,
+                    "violations": list[str](),
+                    "warnings": list[str](),
+                    "analysis_time": datetime.now(UTC).isoformat(),
+                }
+                for (
+                    dangerous_op
+                ) in FlextPluginUtilities.SecurityValidation.DANGEROUS_OPERATIONS:
+                    if dangerous_op in plugin_content:
+                        security_report["safe"] = False
+                        violations = security_report["violations"]
+                        if u.is_list_like(violations) and isinstance(violations, list):
+                            violations.append(
+                                f"Dangerous operation detected: {dangerous_op}"
+                            )
+                import_pattern = "(?:from\\s+(\\w+)|import\\s+(\\w+))"
+                imports = re.findall(import_pattern, plugin_content)
+                for imp in imports:
+                    module_name = imp[0] or imp[1]
+                    if module_name and (
+                        not any(
+                            allowed in module_name
+                            for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
+                        )
+                    ):
+                        warnings = security_report["warnings"]
+                        if u.is_list_like(warnings) and isinstance(warnings, list):
+                            warnings.append(f"Potentially unsafe import: {module_name}")
+                if "network" in plugin_content.lower() or "socket" in plugin_content:
+                    warnings = security_report["warnings"]
+                    if u.is_list_like(warnings) and isinstance(warnings, list):
+                        warnings.append("Plugin may perform network operations")
+                if "file" in plugin_content.lower() or "write" in plugin_content:
+                    warnings = security_report["warnings"]
+                    if u.is_list_like(warnings) and isinstance(warnings, list):
+                        warnings.append("Plugin may perform file operations")
+                return r[Mapping[str, t.NormalizedValue]].ok(dict(security_report))
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"Security validation failed: {e}"
+                )
 
     class ConfigurationManager:
         """Plugin configuration management utilities."""
 
-        DEFAULT_CONFIG_FILE: ClassVar[str] = "plugin.yaml"
-        CONFIG_SCHEMA_VERSION: ClassVar[str] = "1.0"
+        DEFAULT_CONFIG_FILE: ClassVar[str] = c.Plugin.Files.DEFAULT_CONFIG_FILE
+        CONFIG_SCHEMA_VERSION: ClassVar[str] = c.Plugin.Files.CONFIG_SCHEMA_VERSION
         MAX_CONFIG_SIZE_KB: ClassVar[int] = 1024
 
         @staticmethod
         def load_plugin_config(
             config_path: Path | str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.NormalizedValue]]:
             """Load plugin configuration from file.
 
             Args:
@@ -521,51 +544,106 @@ class FlextPluginUtilities(u):
             try:
                 path = Path(config_path)
                 if not path.exists():
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Configuration file not found: {path}",
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Configuration file not found: {path}"
                     )
-
-                # Check file size
                 file_size_kb = path.stat().st_size / 1024
                 if (
                     file_size_kb
                     > FlextPluginUtilities.ConfigurationManager.MAX_CONFIG_SIZE_KB
                 ):
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Configuration file too large: {file_size_kb:.1f}KB",
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Configuration file too large: {file_size_kb:.1f}KB"
                     )
-
                 content = path.read_text(encoding="utf-8")
-
                 if path.suffix in {".yaml", ".yml"}:
                     config = yaml.safe_load(content)
                 elif path.suffix == ".json":
-                    config = json.loads(content)
-                else:
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Unsupported configuration format: {path.suffix}",
+                    config = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
+                        content
                     )
-
-                # Validate schema version
+                else:
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Unsupported configuration format: {path.suffix}"
+                    )
                 if (
-                    isinstance(config, dict)
+                    u.is_dict_like(config)
                     and config.get("schema_version")
                     != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
                 ):
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Unsupported configuration schema version: {config.get('schema_version')}",
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Unsupported configuration schema version: {config.get('schema_version')}"
                     )
-
-                return r[dict[str, t.GeneralValueType]].ok(config)
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Configuration loading failed: {e}",
+                config_mapping = TypeAdapter(
+                    dict[str, t.NormalizedValue]
+                ).validate_python(config)
+                return r[Mapping[str, t.NormalizedValue]].ok(config_mapping)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"Configuration loading failed: {e}"
                 )
 
         @staticmethod
-        def validate_plugin_config(
-            config: dict[str, t.GeneralValueType],
-        ) -> r[None]:
+        def merge_plugin_configs(
+            base_config: Mapping[str, t.NormalizedValue],
+            override_config: Mapping[str, t.NormalizedValue],
+        ) -> r[Mapping[str, t.NormalizedValue]]:
+            """Merge plugin configurations with override precedence.
+
+            Args:
+            base_config: Base plugin configuration
+            override_config: Configuration values to override
+
+            Returns:
+            r containing merged configuration
+
+            """
+            try:
+                merged_config = dict(base_config)
+                for key, value in override_config.items():
+                    existing_value = merged_config.get(key)
+                    if isinstance(value, dict) and isinstance(existing_value, dict):
+                        base_nested_config = TypeAdapter(
+                            dict[str, t.NormalizedValue]
+                        ).validate_python(existing_value)
+                        override_value = TypeAdapter(
+                            dict[str, t.NormalizedValue]
+                        ).validate_python(value)
+                        nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
+                            base_nested_config, override_value
+                        )
+                        if nested_merge.is_success:
+                            merged_config[key] = nested_merge.value
+                        else:
+                            return r[Mapping[str, t.NormalizedValue]].fail(
+                                f"Failed to merge nested config for key '{key}': {nested_merge.error}"
+                            )
+                    else:
+                        merged_config[key] = value
+                return r[Mapping[str, t.NormalizedValue]].ok(merged_config)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"Configuration merge failed: {e}"
+                )
+
+        @staticmethod
+        def validate_plugin_config(config: Mapping[str, t.NormalizedValue]) -> r[None]:
             """Validate plugin configuration structure and values.
 
             Args:
@@ -580,76 +658,31 @@ class FlextPluginUtilities(u):
                 for field in required_fields:
                     if field not in config:
                         return r[None].fail(
-                            f"Missing required configuration field: {field}",
+                            f"Missing required configuration field: {field}"
                         )
-
-                # Validate plugin name
-                name_validation = (
-                    FlextPluginUtilities.PluginDiscovery.validate_plugin_name(
-                        str(config["name"]),
-                    )
+                name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
+                    str(config["name"])
                 )
                 if name_validation.is_failure:
                     return r[None].fail(
-                        name_validation.error or "Plugin name validation failed",
+                        name_validation.error or "Plugin name validation failed"
                     )
-
-                # Validate version format
-                version_pattern = r"^\d+\.\d+\.\d+$"
+                version_pattern = "^\\d+\\.\\d+\\.\\d+$"
                 if not re.match(version_pattern, str(config["version"])):
                     return r[None].fail(
-                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)",
+                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)"
                     )
-
                 return r[None].ok(None)
-            except Exception as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 return r[None].fail(f"Configuration validation failed: {e}")
-
-        @staticmethod
-        def merge_plugin_configs(
-            base_config: dict[str, t.GeneralValueType],
-            override_config: dict[str, t.GeneralValueType],
-        ) -> r[dict[str, t.GeneralValueType]]:
-            """Merge plugin configurations with override precedence.
-
-            Args:
-            base_config: Base plugin configuration
-            override_config: Configuration values to override
-
-            Returns:
-            r containing merged configuration
-
-            """
-            try:
-                merged_config = base_config.copy()
-
-                for key, value in override_config.items():
-                    if (
-                        isinstance(value, dict)
-                        and key in merged_config
-                        and isinstance(merged_config[key], dict)
-                    ):
-                        # Recursively merge nested dictionaries
-                        base_nested_config = merged_config[key].copy()
-                        override_value = value.copy() if isinstance(value, dict) else {}
-                        nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
-                            base_nested_config,
-                            override_value,
-                        )
-                        if nested_merge.is_success:
-                            merged_config[key] = nested_merge.value
-                        else:
-                            return r[dict[str, t.GeneralValueType]].fail(
-                                f"Failed to merge nested config for key '{key}': {nested_merge.error}",
-                            )
-                    else:
-                        merged_config[key] = value
-
-                return r[dict[str, t.GeneralValueType]].ok(merged_config)
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Configuration merge failed: {e}",
-                )
 
     class PluginExecution:
         """Plugin execution and lifecycle management utilities."""
@@ -668,9 +701,9 @@ class FlextPluginUtilities(u):
         def execute_plugin_function(
             plugin_module: ModuleType,
             function_name: str,
-            args: list[t.GeneralValueType] | None = None,
-            kwargs: dict[str, t.GeneralValueType] | None = None,
-        ) -> r[object]:
+            args: list[t.NormalizedValue] | None = None,
+            kwargs: Mapping[str, t.NormalizedValue] | None = None,
+        ) -> r[t.NormalizedValue]:
             """Execute a specific function within a plugin module.
 
             Args:
@@ -683,28 +716,32 @@ class FlextPluginUtilities(u):
             r containing function execution result
 
             """
-            try:
-                if not hasattr(plugin_module, function_name):
-                    return r[object].fail(
-                        f"Function '{function_name}' not found in plugin module",
-                    )
+            plugin_function = getattr(plugin_module, function_name, None)
+            if plugin_function is None:
+                return r[t.NormalizedValue].fail(
+                    f"Function '{function_name}' not found in plugin module"
+                )
+            if not callable(plugin_function):
+                return r[t.NormalizedValue].fail(f"'{function_name}' is not callable")
+            callable_plugin: Callable[..., object] = plugin_function
 
-                plugin_function = getattr(plugin_module, function_name)
-                if not callable(plugin_function):
-                    return r[object].fail(
-                        f"'{function_name}' is not callable",
-                    )
-
-                # Execute function with provided arguments
+            def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
+                return callable_plugin(*execution_args, **execution_kwargs)
 
-                result = plugin_function(*execution_args, **execution_kwargs)
-                return r[object].ok(result)
-            except Exception as e:
-                return r[object].fail(
-                    f"Plugin function execution failed: {e}",
-                )
+            return FlextPluginUtilities.try_(
+                _execute_plugin_function,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin function execution failed: {e}")
 
         @staticmethod
         def load_plugin_module(plugin_path: Path | str) -> r[ModuleType]:
@@ -720,35 +757,33 @@ class FlextPluginUtilities(u):
             try:
                 path = Path(plugin_path)
                 if not path.exists():
-                    return r[ModuleType].fail(
-                        f"Plugin file not found: {path}",
-                    )
-
+                    return r[ModuleType].fail(f"Plugin file not found: {path}")
                 if path.suffix != ".py":
                     return r[ModuleType].fail(
-                        f"Only Python plugins are supported: {path}",
+                        f"Only Python plugins are supported: {path}"
                     )
-
-                # Load module using importlib
                 spec = importlib.util.spec_from_file_location(path.stem, path)
                 if spec is None or spec.loader is None:
                     return r[ModuleType].fail(
-                        f"Failed to create module spec for: {path}",
+                        f"Failed to create module spec for: {path}"
                     )
-
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-
                 return r[ModuleType].ok(module)
-            except Exception as e:
-                return r[ModuleType].fail(
-                    f"Plugin module loading failed: {e}",
-                )
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[ModuleType].fail(f"Plugin module loading failed: {e}")
 
         @staticmethod
         def validate_plugin_interface(
-            plugin_module: ModuleType,
-            required_functions: t.Plugin.StringList,
+            plugin_module: ModuleType, required_functions: t.Plugin.StringList
         ) -> r[None]:
             """Validate that plugin module implements required interface.
 
@@ -760,35 +795,39 @@ class FlextPluginUtilities(u):
             r indicating interface validation success or failure
 
             """
-            try:
+
+            def _validate_plugin_interface() -> None:
                 missing_functions = [
                     func_name
                     for func_name in required_functions
-                    if not hasattr(plugin_module, func_name)
+                    if getattr(plugin_module, func_name, None) is None
                 ]
-
                 if missing_functions:
-                    return r[None].fail(
-                        f"Plugin missing required functions: {missing_functions}",
+                    missing_msg = (
+                        f"Plugin missing required functions: {missing_functions}"
                     )
-
-                # Validate that required attributes are callable
+                    raise ValueError(missing_msg)
                 non_callable = [
                     func_name
                     for func_name in required_functions
-                    if not callable(getattr(plugin_module, func_name))
+                    if not callable(getattr(plugin_module, func_name, None))
                 ]
-
                 if non_callable:
-                    return r[None].fail(
-                        f"Plugin attributes not callable: {non_callable}",
-                    )
+                    non_callable_msg = f"Plugin attributes not callable: {non_callable}"
+                    raise ValueError(non_callable_msg)
 
-                return r[None].ok(None)
-            except Exception as e:
-                return r[None].fail(
-                    f"Plugin interface validation failed: {e}",
-                )
+            return FlextPluginUtilities.try_(
+                _validate_plugin_interface,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Plugin interface validation failed: {e}")
 
     class RegistryOperations:
         """Plugin registry management utilities."""
@@ -798,9 +837,43 @@ class FlextPluginUtilities(u):
         MAX_REGISTRY_SIZE_MB: ClassVar[int] = 10
 
         @staticmethod
+        def cleanup_registry_backups(registry_directory: Path) -> r[None]:
+            """Clean up old registry backup files.
+
+            Args:
+            registry_directory: Directory containing registry backups
+
+            Returns:
+            r indicating cleanup success or failure
+
+            """
+
+            def _cleanup_registry_backups() -> None:
+                backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
+                backup_files = list(registry_directory.glob(backup_pattern))
+                backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+                for backup_file in backup_files[
+                    FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
+                ]:
+                    backup_file.unlink()
+
+            return FlextPluginUtilities.try_(
+                _cleanup_registry_backups,
+                catch=(
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ),
+            ).map_error(lambda e: f"Registry backup cleanup failed: {e}")
+
+        @staticmethod
         def load_plugin_registry(
             registry_path: Path | str,
-        ) -> r[dict[str, t.GeneralValueType]]:
+        ) -> r[Mapping[str, t.NormalizedValue]]:
             """Load plugin registry from file.
 
             Args:
@@ -813,38 +886,90 @@ class FlextPluginUtilities(u):
             try:
                 path = Path(registry_path)
                 if not path.exists():
-                    # Create empty registry
-                    registry = {
-                        "version": "1.0",
+                    registry: dict[str, t.NormalizedValue] = {
+                        "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
                         "plugins": {},
                         "last_updated": datetime.now(UTC).isoformat(),
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return r[dict[str, t.GeneralValueType]].ok(dict(registry))
-
-                # Check file size
+                    return r[Mapping[str, t.NormalizedValue]].ok(registry)
                 file_size_mb = path.stat().st_size / (1024 * 1024)
                 if (
                     file_size_mb
                     > FlextPluginUtilities.RegistryOperations.MAX_REGISTRY_SIZE_MB
                 ):
-                    return r[dict[str, t.GeneralValueType]].fail(
-                        f"Registry file too large: {file_size_mb:.1f}MB",
+                    return r[Mapping[str, t.NormalizedValue]].fail(
+                        f"Registry file too large: {file_size_mb:.1f}MB"
                     )
-
                 content = path.read_text(encoding="utf-8")
-                registry = json.loads(content)
+                registry = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
+                    content
+                )
+                return r[Mapping[str, t.NormalizedValue]].ok(registry)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"Registry loading failed: {e}"
+                )
 
-                return r[dict[str, t.GeneralValueType]].ok(registry)
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Registry loading failed: {e}",
+        @staticmethod
+        def register_plugin(
+            registry: Mapping[str, t.NormalizedValue],
+            plugin_metadata: FlextPluginModels.Plugin.PluginMetadata,
+        ) -> r[Mapping[str, t.NormalizedValue]]:
+            """Register plugin in registry.
+
+            Args:
+            registry: Plugin registry data
+            plugin_metadata: Metadata of plugin to register
+
+            Returns:
+            r containing updated registry
+
+            """
+            try:
+                mutable_registry: dict[str, t.NormalizedValue] = dict(registry)
+                if "plugins" not in mutable_registry:
+                    mutable_registry["plugins"] = dict[str, t.NormalizedValue]()
+                plugin_info = {
+                    "name": plugin_metadata.name,
+                    "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
+                    "description": plugin_metadata.description,
+                    "author": getattr(plugin_metadata, "author", ""),
+                    "plugin_type": plugin_metadata.plugin_type,
+                    "entry_point": plugin_metadata.entry_point,
+                    "dependencies": plugin_metadata.dependencies,
+                    "registered_at": datetime.now(UTC).isoformat(),
+                    "status": "registered",
+                    "metadata": getattr(plugin_metadata, "metadata", {}),
+                }
+                plugins = mutable_registry["plugins"]
+                if isinstance(plugins, dict):
+                    plugins[plugin_metadata.name] = plugin_info
+                return r[Mapping[str, t.NormalizedValue]].ok(mutable_registry)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    f"Plugin registration failed: {e}"
                 )
 
         @staticmethod
         def save_plugin_registry(
-            registry: dict[str, t.GeneralValueType],
-            registry_path: Path | str,
+            registry: Mapping[str, t.NormalizedValue], registry_path: Path | str
         ) -> r[None]:
             """Save plugin registry to file with backup.
 
@@ -858,131 +983,51 @@ class FlextPluginUtilities(u):
             """
             try:
                 path = Path(registry_path)
-
-                # Create backup if registry exists
                 if path.exists():
                     backup_path = path.with_suffix(
-                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
+                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
                     )
-                    path.rename(backup_path)
-
-                    # Clean up old backups
-                    FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
-                        path.parent,
+                    _ = path.rename(backup_path)
+                    _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
+                        path.parent
                     )
-
-                # Update timestamp
-                registry["last_updated"] = datetime.now(UTC).isoformat()
-
-                # Save registry
-                path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
-
-                return r[None].ok(None)
-            except Exception as e:
-                return r[None].fail(f"Registry save failed: {e}")
-
-        @staticmethod
-        def register_plugin(
-            registry: dict[str, t.GeneralValueType],
-            plugin_metadata: FlextPluginModels.PluginMetadata,
-        ) -> r[dict[str, t.GeneralValueType]]:
-            """Register plugin in registry.
-
-            Args:
-            registry: Plugin registry data
-            plugin_metadata: Metadata of plugin to register
-
-            Returns:
-            r containing updated registry
-
-            """
-            try:
-                if "plugins" not in registry:
-                    registry["plugins"] = {}
-
-                plugin_info = {
-                    "name": plugin_metadata.name,
-                    "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
-                    "description": plugin_metadata.description,
-                    "author": getattr(plugin_metadata, "author", ""),
-                    "plugin_type": plugin_metadata.plugin_type,
-                    "entry_point": plugin_metadata.entry_point,
-                    "dependencies": plugin_metadata.dependencies,
-                    "registered_at": datetime.now(UTC).isoformat(),
-                    "status": "registered",
-                    "metadata": getattr(plugin_metadata, "metadata", {}),
-                }
-
-                plugins = registry["plugins"]
-                if isinstance(plugins, dict):
-                    plugins[plugin_metadata.name] = plugin_info
-
-                return r[dict[str, t.GeneralValueType]].ok(registry)
-            except Exception as e:
-                return r[dict[str, t.GeneralValueType]].fail(
-                    f"Plugin registration failed: {e}",
+                mutable_registry = dict(registry)
+                mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
+                _ = path.write_text(
+                    TypeAdapter(dict[str, t.NormalizedValue])
+                    .dump_json(mutable_registry, indent=2)
+                    .decode("utf-8"),
+                    encoding="utf-8",
                 )
-
-        @staticmethod
-        def cleanup_registry_backups(
-            registry_directory: Path,
-        ) -> r[None]:
-            """Clean up old registry backup files.
-
-            Args:
-            registry_directory: Directory containing registry backups
-
-            Returns:
-            r indicating cleanup success or failure
-
-            """
-            try:
-                backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
-                backup_files = list(registry_directory.glob(backup_pattern))
-
-                # Sort by modification time and keep only recent backups
-                backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
-
-                for backup_file in backup_files[
-                    FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
-                ]:
-                    backup_file.unlink()
-
                 return r[None].ok(None)
-            except Exception as e:
-                return r[None].fail(f"Registry backup cleanup failed: {e}")
-
-    # Pydantic 2.11+ field validators
-    @field_validator("model_config")
-    @classmethod
-    def validate_model_config(cls, v: SettingsConfigDict) -> SettingsConfigDict:
-        """Validate model configuration."""
-        if not isinstance(v, dict):
-            msg = "model_config must be a SettingsConfigDict instance"
-            raise TypeError(msg)
-        return v
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[None].fail(f"Registry save failed: {e}")
 
     @model_validator(mode="after")
     def validate_utilities_configuration(self) -> FlextPluginUtilities:
         """Validate the complete utilities configuration."""
-        # Validate that all nested classes are accessible
         required_classes = [
-            "PluginDiscovery",
+            "Plugin",
             "HotReloadManager",
             "SecurityValidation",
             "ConfigurationManager",
             "PluginExecution",
             "RegistryOperations",
         ]
-
         for class_name in required_classes:
-            if not hasattr(self.__class__, class_name):
+            if getattr(self.__class__, class_name, None) is None:
                 msg = f"Missing required nested class: {class_name}"
                 raise ValueError(msg)
-
         return self
 
 
-__all__ = [
-    "FlextPluginUtilities",
-]
+__all__ = ["FlextPluginUtilities", "u"]
+u = FlextPluginUtilities

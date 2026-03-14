@@ -8,10 +8,8 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_core import FlextTypes as t
 
-from collections.abc import Awaitable
-from typing import Callable
+from collections.abc import Mapping
 
 import pytest
 
@@ -38,8 +36,10 @@ class TestFlextPluginHandlers:
     def test_register_handler_success(self, handlers: FlextPluginHandlers) -> None:
         """Test successful handler registration."""
 
-        async def sample_handler(event: dict[str, t.GeneralValueType]) -> object:
-            return event
+        async def sample_handler(
+            event: Mapping[str, object],
+        ) -> object:
+            return event.get("key", "default")
 
         result = handlers.register_handler("test_event", sample_handler)
         assert result.is_success
@@ -52,33 +52,29 @@ class TestFlextPluginHandlers:
     ) -> None:
         """Test handler registration with priority."""
 
-        async def handler1(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler1(event: Mapping[str, object]) -> object:
             return "handler1"
 
-        async def handler2(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler2(event: Mapping[str, object]) -> object:
             return "handler2"
 
         handlers.register_handler("priority_event", handler1, priority=1)
         handlers.register_handler("priority_event", handler2, priority=10)
-
-        # Higher priority handler should be first
         assert len(handlers._handlers["priority_event"]) == 2
-        # Check that handlers are sorted by priority (highest first)
         first_handler = handlers._handlers["priority_event"][0]
-        assert first_handler["priority"] == 10
+        assert first_handler.priority == 10
 
     def test_register_multiple_handlers(self, handlers: FlextPluginHandlers) -> None:
         """Test registering multiple handlers for different events."""
 
-        async def handler_a(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler_a(event: Mapping[str, object]) -> object:
             return "a"
 
-        async def handler_b(event: dict[str, t.GeneralValueType]) -> object:
+        async def handler_b(event: Mapping[str, object]) -> object:
             return "b"
 
         handlers.register_handler("event_a", handler_a)
         handlers.register_handler("event_b", handler_b)
-
         assert "event_a" in handlers._handlers
         assert "event_b" in handlers._handlers
         assert len(handlers._handlers["event_a"]) == 1
@@ -89,9 +85,7 @@ class TestFlextPluginHandlers:
         assert FlextPluginHandlers is not None
         assert callable(FlextPluginHandlers)
 
-    def test_handlers_has_expected_methods(
-        self, handlers: FlextPluginHandlers
-    ) -> None:
+    def test_handlers_has_expected_methods(self, handlers: FlextPluginHandlers) -> None:
         """Test that handlers has expected methods."""
         assert hasattr(handlers, "register_handler")
         assert callable(handlers.register_handler)

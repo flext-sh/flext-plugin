@@ -46,40 +46,42 @@ class FlextPluginPlatform:
         """Initialize platform with dependency injection container"""
 
     # Plugin Lifecycle
-    def load_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Load a plugin into the system"""
 
-    def unload_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin from the system"""
 
-    def enable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def enable_plugin(self, plugin_name: str) -> r[bool]:
         """Enable an already loaded plugin"""
 
-    def disable_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def disable_plugin(self, plugin_name: str) -> r[bool]:
         """Disable an active plugin"""
 
     # Plugin Management
-    def install_plugin(self, plugin_path: str) -> FlextResult[FlextPluginModels.Entity]:
+    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Entity]:
         """Install a plugin from file system path"""
 
-    def uninstall_plugin(self, plugin_name: str) -> FlextResult[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
         """Uninstall a plugin completely"""
 
-    def is_plugin_loaded(self, plugin_name: str) -> FlextResult[bool]:
+    def is_plugin_loaded(self, plugin_name: str) -> r[bool]:
         """Check if plugin is currently loaded"""
 
     # Discovery
-    def scan_directory(self, directory_path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
+    def scan_directory(self, directory_path: str) -> r[list[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+    def validate_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-    def get_plugin_config(self, plugin_name: str) -> FlextResult[FlextPluginModels.Config]:
+    def get_plugin_config(self, plugin_name: str) -> r[FlextPluginModels.Config]:
         """Get plugin configuration"""
 
-    def update_plugin_config(self, plugin_name: str, config: FlextPluginModels.Config) -> FlextResult[bool]:
+    def update_plugin_config(
+        self, plugin_name: str, config: FlextPluginModels.Config
+    ) -> r[bool]:
         """Update plugin configuration"""
 ```
 
@@ -92,11 +94,11 @@ class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
     # Properties
-    name: str                           # Plugin identifier
-    plugin_version: str                 # Plugin version
-    status: PluginStatus               # Current lifecycle status
-    config: t.Dict             # Plugin configuration
-    metadata: FlextPluginModels.Metadata      # Plugin metadata
+    name: str  # Plugin identifier
+    plugin_version: str  # Plugin version
+    status: PluginStatus  # Current lifecycle status
+    config: t.Dict  # Plugin configuration
+    metadata: FlextPluginModels.Metadata  # Plugin metadata
 
     # Business Methods
     def activate(self) -> bool:
@@ -105,7 +107,7 @@ class FlextPlugin(FlextModels.Entity):
     def deactivate(self) -> bool:
         """Deactivate plugin"""
 
-    def validate_business_rules(self) -> FlextResult[bool]:
+    def validate_business_rules(self) -> r[bool]:
         """Validate plugin business rules"""
 ```
 
@@ -124,7 +126,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     dependencies: t.StringList            # Plugin dependencies
     metadata: FlextPluginModels.Metadata      # Additional metadata
 
-    def validate_business_rules(self) -> FlextResult[bool]:
+    def validate_business_rules(self) -> r[bool]:
         """Validate configuration business rules"""
 ```
 
@@ -137,10 +139,11 @@ ______________________________________________________________________
 ```python
 class PluginStatus(str, Enum):
     """Plugin lifecycle status"""
-    INACTIVE = "INACTIVE"              # Plugin created but not loaded
-    LOADED = "LOADED"                  # Plugin loaded but not active
-    ACTIVE = "ACTIVE"                  # Plugin active and running
-    ERROR = "ERROR"                    # Plugin in error state
+
+    INACTIVE = "INACTIVE"  # Plugin created but not loaded
+    LOADED = "LOADED"  # Plugin loaded but not active
+    ACTIVE = "ACTIVE"  # Plugin active and running
+    ERROR = "ERROR"  # Plugin in error state
 ```
 
 ### PluginType
@@ -148,12 +151,13 @@ class PluginStatus(str, Enum):
 ```python
 class PluginType(str, Enum):
     """Plugin type classification"""
-    UTILITY = "UTILITY"                # General utility plugin
-    SERVICE = "SERVICE"                # Service plugin
-    MIDDLEWARE = "MIDDLEWARE"          # Middleware plugin
-    TAP = "TAP"                       # Singer tap plugin
-    TARGET = "TARGET"                 # Singer target plugin
-    TRANSFORM = "TRANSFORM"           # DBT transform plugin
+
+    UTILITY = "UTILITY"  # General utility plugin
+    SERVICE = "SERVICE"  # Service plugin
+    MIDDLEWARE = "MIDDLEWARE"  # Middleware plugin
+    TAP = "TAP"  # Singer tap plugin
+    TARGET = "TARGET"  # Singer target plugin
+    TRANSFORM = "TRANSFORM"  # DBT transform plugin
 ```
 
 ______________________________________________________________________
@@ -168,7 +172,7 @@ def create_flext_plugin(
     version: str,
     config: t.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
-    **kwargs
+    **kwargs,
 ) -> FlextPluginModels.Entity:
     """Create a new plugin entity"""
 ```
@@ -176,9 +180,7 @@ def create_flext_plugin(
 ### create_flext_plugin_platform
 
 ```python
-def create_flext_plugin_platform(
-    config: t.Dict | None = None
-) -> FlextPluginPlatform:
+def create_flext_plugin_platform(config: t.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
 
@@ -192,10 +194,10 @@ ______________________________________________________________________
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
-    def scan_directory(self, path: str) -> FlextResult[list[FlextPluginModels.Entity]]:
+    def scan_directory(self, path: str) -> r[list[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> FlextResult[bool]:
+    def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Validate plugin integrity"""
 ```
 
@@ -207,15 +209,15 @@ ______________________________________________________________________
 
 ```python
 # Environment variables for hot reload
-FLEXT_PLUGIN_HOT_RELOAD=true          # Enable hot reload
-FLEXT_PLUGIN_WATCH_INTERVAL=2         # Watch interval in seconds
+FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
+FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
 ```
 
 ______________________________________________________________________
 
 ## Error Handling
 
-All API methods return `FlextResult[T]` for consistent error handling:
+All API methods return `r[T]` for consistent error handling:
 
 ```python
 result = platform.load_plugin(plugin)
@@ -234,11 +236,14 @@ else:
 class FlextPluginError(Exception):
     """Base plugin system error"""
 
+
 class FlextPluginSettingsurationError(FlextPluginError):
     """Plugin configuration error"""
 
+
 class FlextPluginLoadingError(FlextPluginError):
     """Plugin loading error"""
+
 
 class FlextPluginExecutionError(FlextPluginError):
     """Plugin execution error"""
@@ -251,7 +256,7 @@ ______________________________________________________________________
 ### FLEXT-Core Integration
 
 ```python
-# Use FlextResult for all operations
+# Use r for all operations
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -267,18 +272,20 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-def plugin_operation() -> FlextResult[bool]:
+
+def plugin_operation() -> r[bool]:
     try:
         # Plugin operation
-        return FlextResult[bool].ok(True)
+        return r[bool].ok(True)
     except Exception as e:
-        return FlextResult[bool].fail(str(e))
+        return r[bool].fail(str(e))
+
 
 # Use dependency injection
 from flext_core import FlextBus
@@ -296,7 +303,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -312,13 +319,14 @@ platform = FlextPluginPlatform(container)
 # Singer tap plugin example
 from flext_plugin import FlextPlugin, PluginType
 
+
 class MyTapPlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="tap-my-source",
             version="0.9.9",
             config={"plugin_type": PluginType.TAP},
-            **kwargs
+            **kwargs,
         )
 ```
 
@@ -378,8 +386,8 @@ For complete examples and usage patterns, see the examples/ directory.
 **Across Projects**:
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
-- [flext-core Railway-Oriented Programming](https://github.com/organization/flext/tree/main/flext-core/docs/guides/railway-oriented-programming.md) - FlextResult patterns
-- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/CLAUDE.md) - Data integration and ELT orchestration
+- [flext-core Railway-Oriented Programming](https://github.com/organization/flext/tree/main/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
+- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
 
 **External Resources**:
 

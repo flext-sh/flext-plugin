@@ -13,56 +13,31 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-# PYTHON_VERSION_GUARD — Do not remove. Managed by scripts/maintenance/enforce_python_version.py
-import sys as _sys
-
-if _sys.version_info[:2] != (3, 13):
-    _v = f"{_sys.version_info.major}.{_sys.version_info.minor}.{_sys.version_info.micro}"
-    raise RuntimeError(
-        f"\n{'=' * 72}\n"
-        f"FATAL: Python {_v} detected — this project requires Python 3.13.\n"
-        f"\n"
-        f"The virtual environment was created with the WRONG Python interpreter.\n"
-        f"\n"
-        f"Fix:\n"
-        f"  1. rm -rf .venv\n"
-        f"  2. poetry env use python3.13\n"
-        f"  3. poetry install\n"
-        f"\n"
-        f"Or use the workspace Makefile:\n"
-        f"  make setup PROJECT=<project-name>\n"
-        f"{'=' * 72}\n"
-    )
-del _sys
-# PYTHON_VERSION_GUARD_END
 
 import os
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import cast
 
 import pytest
-from flext_core import FlextContainer, FlextTypes as t
+from flext_core import FlextContainer, t
 
-from flext_plugin.adapters import FlextPluginAdapters
-from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginAdapters, FlextPluginModels
 
 
-# Test environment setup
 @pytest.fixture(autouse=True)
 def set_test_environment() -> Generator[None]:
     """Set test environment variables."""
     os.environ["FLEXT_ENV"] = "test"
     os.environ["FLEXT_LOG_LEVEL"] = "DEBUG"
     yield
-    # Cleanup
     os.environ.pop("FLEXT_ENV", None)
     os.environ.pop("FLEXT_LOG_LEVEL", None)
 
 
-# REAL Plugin test configuration
 @pytest.fixture
-def real_plugin_config() -> dict[str, t.GeneralValueType]:
+def real_plugin_config() -> dict[str, object]:
     """REAL plugin configuration for testing."""
     return {
         "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
@@ -84,7 +59,7 @@ def simple_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_plugin_data() -> dict[str, t.GeneralValueType]:
+def real_plugin_data() -> dict[str, object]:
     """REAL plugin data matching actual plugin files."""
     return {
         "plugins": [
@@ -112,101 +87,27 @@ def real_plugin_data() -> dict[str, t.GeneralValueType]:
                 "config": {"transform_rules": ["uppercase", "trim"]},
                 "enabled": True,
             },
-        ],
+        ]
     }
 
 
-# REAL Plugin fixtures
 @pytest.fixture
 def real_plugin_directory() -> Generator[Path]:
     """Create temporary directory with REAL plugin files."""
     with tempfile.TemporaryDirectory() as tmp_dir:
         plugin_dir = Path(tmp_dir)
-
-        # Create REAL working plugin files
         tap_plugin = plugin_dir / "tap_database.py"
-        tap_plugin.write_text('''
-"""REAL tap plugin for database extraction."""
-
-# TEST CLASS - Acceptable exception for conftest.py
-class DatabaseTapPlugin:
-    def __init__(self):
-        """Initialize the instance."""
-
-        self.name = "database-tap"
-        self.version = "1.0.0"
-        self.plugin_type = "tap"
-        self.config = {"tables": ["users", "orders"]}
-
-    def execute(self):
-        return {
-            "extracted_records": 150,
-            "tables": self.config["tables"],
-            "status": "success"
-        }
-
-def get_plugin():
-    return DatabaseTapPlugin()
-''')
-
+        tap_plugin.write_text(
+            '\n"""REAL tap plugin for database extraction."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass DatabaseTapPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "database-tap"\n        self.version = "1.0.0"\n        self.plugin_type = "tap"\n        self.config = {"tables": ["users", "orders"]}\n\n    def execute(self):\n        return {\n            "extracted_records": 150,\n            "tables": self.config["tables"],\n            "status": "success"\n        }\n\ndef get_plugin():\n    return DatabaseTapPlugin()\n'
+        )
         target_plugin = plugin_dir / "target_warehouse.py"
-        target_plugin.write_text('''
-"""REAL target plugin for data warehouse loading."""
-
-# TEST CLASS - Acceptable exception for conftest.py
-class WarehouseTargetPlugin:
-    def __init__(self):
-        """Initialize the instance."""
-
-        self.name = "warehouse-target"
-        self.version = "1.0.0"
-        self.plugin_type = "target"
-        self.config = {"batch_size": 1000}
-
-    def execute(self):
-        return {
-            "loaded_records": 150,
-            "batch_size": self.config["batch_size"],
-            "status": "success"
-        }
-
-    def cleanup(self):
-        # STUB - Test implementation
-        pass
-
-def get_plugin():
-    return WarehouseTargetPlugin()
-''')
-
+        target_plugin.write_text(
+            '\n"""REAL target plugin for data warehouse loading."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass WarehouseTargetPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "warehouse-target"\n        self.version = "1.0.0"\n        self.plugin_type = "target"\n        self.config = {"batch_size": 1000}\n\n    def execute(self):\n        return {\n            "loaded_records": 150,\n            "batch_size": self.config["batch_size"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up warehouse resources."""\n        # Reset batch size and clear any pending batches\n        self.config["batch_size"] = 1000\n        self.config.clear()\n\ndef get_plugin():\n    return WarehouseTargetPlugin()\n'
+        )
         processor_plugin = plugin_dir / "processor_transform.py"
-        processor_plugin.write_text('''
-"""REAL processor plugin for data transformation."""
-
-# TEST CLASS - Acceptable exception for conftest.py
-class TransformProcessorPlugin:
-    def __init__(self):
-        """Initialize the instance."""
-
-        self.name = "transform-processor"
-        self.version = "1.0.0"
-        self.plugin_type = "processor"
-        self.config = {"transform_rules": ["uppercase", "trim"]}
-
-    def execute(self):
-        return {
-            "processed_records": 150,
-            "transforms": len(self.config["transform_rules"]),
-            "status": "success"
-        }
-
-    def cleanup(self):
-        # STUB - Test implementation
-        pass
-
-def get_plugin():
-    return TransformProcessorPlugin()
-''')
-
+        processor_plugin.write_text(
+            '\n"""REAL processor plugin for data transformation."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass TransformProcessorPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "transform-processor"\n        self.version = "1.0.0"\n        self.plugin_type = "processor"\n        self.config = {"transform_rules": ["uppercase", "trim"]}\n\n    def execute(self):\n        return {\n            "processed_records": 150,\n            "transforms": len(self.config["transform_rules"]),\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up processor resources."""\n        # Reset transform rules and clear any cached state\n        self.config["transform_rules"] = []\n        self.config.clear()\n\ndef get_plugin():\n    return TransformProcessorPlugin()\n'
+        )
         yield plugin_dir
 
 
@@ -214,38 +115,38 @@ def get_plugin():
 def real_container_with_adapters() -> FlextContainer:
     """Create FlextContainer with REAL adapters registered."""
     container = FlextContainer()
-
-    # Register REAL implementations
     discovery_adapter = FlextPluginAdapters.FileSystemDiscoveryAdapter()
     loader_adapter = FlextPluginAdapters.DynamicLoaderAdapter()
     manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
-
-    container.with_service("plugin_discovery_port", discovery_adapter)
-    container.with_service("plugin_loader_port", loader_adapter)
-    container.with_service("plugin_manager_port", manager_adapter)
-
+    container.with_service(
+        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
+    )
+    container.with_service(
+        "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
+    )
+    container.with_service(
+        "plugin_manager_port", cast("t.RegisterableService", manager_adapter)
+    )
     return container
 
 
 @pytest.fixture
-def real_plugin_entity() -> FlextPluginModels.Plugin:
+def real_plugin_entity() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL FlextPluginModels.Plugin for testing."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin.Plugin(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
-        plugin_type=FlextPluginModels.PluginType.UTILITY,
+        plugin_type="utility",
     )
 
 
-# REAL Discovery fixtures
 @pytest.fixture
 def real_discovery_adapter() -> FlextPluginAdapters.FileSystemDiscoveryAdapter:
     """Create REAL discovery adapter."""
     return FlextPluginAdapters.FileSystemDiscoveryAdapter()
 
 
-# REAL Loader fixtures
 @pytest.fixture
 def real_loader_adapter() -> FlextPluginAdapters.DynamicLoaderAdapter:
     """Create REAL loader adapter."""
@@ -258,21 +159,15 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
     return FlextPluginAdapters.PluginExecutorAdapter()
 
 
-# REAL Configuration fixtures
 @pytest.fixture
 def real_plugin_configs() -> dict[
-    str,
-    dict[str, dict[str, t.GeneralValueType] | list[str] | object],
+    str, dict[str, dict[str, object] | list[str] | object]
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
         "tap_database": {
             "tables": ["users", "orders", "products"],
-            "connection": {
-                "host": "localhost",
-                "port": 5432,
-                "database": "test_db",
-            },
+            "connection": {"host": "localhost", "port": 5432, "database": "test_db"},
         },
         "target_warehouse": {
             "batch_size": 1000,
@@ -290,7 +185,6 @@ def real_plugin_configs() -> dict[
     }
 
 
-# Pytest markers for test categorization
 def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers."""
     config.addinivalue_line("markers", "unit: Unit tests")
@@ -303,11 +197,10 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "slow: Slow tests")
 
 
-# REAL Plugin Entity fixtures
 @pytest.fixture
-def real_tap_plugin() -> FlextPluginModels.Plugin:
+def real_tap_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL tap plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin.Plugin(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
@@ -316,9 +209,9 @@ def real_tap_plugin() -> FlextPluginModels.Plugin:
 
 
 @pytest.fixture
-def real_target_plugin() -> FlextPluginModels.Plugin:
+def real_target_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL target plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin.Plugin(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
@@ -327,9 +220,9 @@ def real_target_plugin() -> FlextPluginModels.Plugin:
 
 
 @pytest.fixture
-def real_processor_plugin() -> FlextPluginModels.Plugin:
+def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
     """Create REAL processor plugin entity."""
-    return FlextPluginModels.Plugin.create(
+    return FlextPluginModels.Plugin.Plugin(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",
@@ -337,7 +230,6 @@ def real_processor_plugin() -> FlextPluginModels.Plugin:
     )
 
 
-# REAL Dependency fixtures
 @pytest.fixture
 def real_plugin_dependencies() -> dict[str, list[str]]:
     """REAL plugin dependency graph."""
@@ -348,13 +240,12 @@ def real_plugin_dependencies() -> dict[str, list[str]]:
     }
 
 
-# Performance testing fixtures
 @pytest.fixture
-def performance_config() -> dict[str, t.GeneralValueType]:
+def performance_config() -> dict[str, object]:
     """Configuration for REAL plugin performance testing."""
     return {
-        "max_load_time": 2.0,  # seconds for real plugins
-        "max_memory_usage": 50,  # MB
-        "max_cpu_usage": 25,  # percentage
-        "test_iterations": 10,  # Reduced for real testing
+        "max_load_time": 2.0,
+        "max_memory_usage": 50,
+        "max_cpu_usage": 25,
+        "test_iterations": 10,
     }

@@ -7,11 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-from typing import Literal, TypeVar
+from collections.abc import Awaitable, Callable, Mapping
+from typing import Literal, TypeAlias, TypeVar
 
-from flext_core.typings import FlextTypes
-from pydantic import BaseModel, ConfigDict
+from flext_core import FlextTypes
 
 from .constants import FlextPluginConstants as c_plugin
 
@@ -23,57 +22,57 @@ class FlextPluginTypes(FlextTypes):
 
     Follows FLEXT ecosystem namespace conventions:
     - t.Plugin.* for plugin-specific types
-    - t.Core.JsonDict, t.Core.GeneralValueType via Core alias
+    - t.Core.JsonDict, t.Core.object via Core alias
     """
-
-    # Alias for projects expecting t.Core.* (JsonDict, GeneralValueType)
-    class _Core:
-        JsonDict = FlextTypes.JsonDict
-        GeneralValueType = FlextTypes.GeneralValueType
-
-    Core = _Core
 
     class Handlers:
         """Event handler type definitions."""
 
-        type EventHandler = Callable[
-            [dict[str, FlextTypes.GeneralValueType]], Awaitable[object]
+        EventHandler: TypeAlias = Callable[
+            [Mapping[str, FlextTypes.NormalizedValue]],
+            Awaitable[object],
         ]
 
-        class HandlerInfo(BaseModel):
-            """Handler registration info."""
+        class HandlerInfo:
+            """Handler metadata container."""
 
-            model_config = ConfigDict(frozen=False, extra="forbid")
+            def __init__(
+                self,
+                handler: Callable[
+                    [Mapping[str, FlextTypes.NormalizedValue]],
+                    Awaitable[object],
+                ],
+                priority: int = 0,
+            ) -> None:
+                """Initialize handler info.
 
-            handler: FlextPluginTypes.Handlers.EventHandler
-            priority: int
+                Args:
+                    handler: Event handler function
+                    priority: Handler execution priority (higher = first)
+
+                """
+                self.handler = handler
+                self.priority = priority
 
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        # Collections
         type StringList = list[str]
         type StringSet = set[str]
-        type StringDict = dict[str, str]
-        type IntDict = dict[str, int]
-        type FloatDict = dict[str, float]
-
-        # Plugin types - Using JsonDict from FlextTypes for JSON-like data
-        type PluginList = list[FlextTypes.JsonDict]
-        type PluginDict = FlextTypes.JsonDict
-        type ConfigDict = FlextTypes.JsonDict
-        type SettingsDict = FlextTypes.JsonDict
-        type MetadataDict = FlextTypes.JsonDict
-        type InputDict = FlextTypes.JsonDict
-        type OutputDict = FlextTypes.JsonDict
-        type PluginEntity = FlextTypes.JsonDict
-
-        # Literal types for plugin operations
+        type StringDict = Mapping[str, str]
+        type IntDict = Mapping[str, int]
+        type FloatDict = Mapping[str, float]
+        type PluginList = list[Mapping[str, FlextTypes.NormalizedValue]]
+        type PluginDict = Mapping[str, FlextTypes.NormalizedValue]
+        type ConfigDict = Mapping[str, FlextTypes.NormalizedValue]
+        type SettingsDict = Mapping[str, FlextTypes.NormalizedValue]
+        type MetadataDict = Mapping[str, FlextTypes.NormalizedValue]
+        type InputDict = Mapping[str, FlextTypes.NormalizedValue]
+        type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
+        type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
-
-        # Literal types referencing StrEnum members (DRY principle)
         type PluginTypeLiteral = Literal[
             c_plugin.Plugin.PluginType.TAP,
             c_plugin.Plugin.PluginType.TARGET,
@@ -96,8 +95,7 @@ class FlextPluginTypes(FlextTypes):
             c_plugin.Plugin.PluginType.THEME,
             c_plugin.Plugin.PluginType.LANGUAGE,
         ]
-        """Plugin type literal - references PluginType StrEnum members."""
-
+        "Plugin type literal - references PluginType StrEnum members."
         type PluginStatusLiteral = Literal[
             c_plugin.Plugin.PluginStatus.UNKNOWN,
             c_plugin.Plugin.PluginStatus.DISCOVERED,
@@ -110,7 +108,7 @@ class FlextPluginTypes(FlextTypes):
             c_plugin.Plugin.PluginStatus.HEALTHY,
             c_plugin.Plugin.PluginStatus.UNHEALTHY,
         ]
-        """Plugin status literal - references PluginStatus StrEnum members."""
+        "Plugin status literal - references PluginStatus StrEnum members."
 
     class Lifecycle:
         """Plugin lifecycle and status type aliases."""
@@ -125,43 +123,39 @@ class FlextPluginTypes(FlextTypes):
 
         type SecurityLevel = str
         type Permission = str
-        type SecurityConfig = FlextTypes.JsonDict
-
-        # Literal type for security levels
+        type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
         type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
-        """Security level literal - no corresponding StrEnum."""
+        "Security level literal - no corresponding StrEnum."
 
     class Performance:
         """Performance metrics and monitoring type aliases."""
 
-        type Metrics = FlextTypes.JsonDict
-        type PerformanceData = FlextTypes.JsonDict
-        type ResourceUsage = FlextTypes.JsonDict
+        type Metrics = Mapping[str, FlextTypes.NormalizedValue]
+        type PerformanceData = Mapping[str, FlextTypes.NormalizedValue]
+        type ResourceUsage = Mapping[str, FlextTypes.NormalizedValue]
 
     class Discovery:
         """Plugin discovery type aliases."""
 
         type DiscoveryPath = str
-        type DiscoveryResult = FlextTypes.JsonDict
-        type PluginLoader = FlextTypes.GeneralValueType
+        type DiscoveryResult = Mapping[str, FlextTypes.NormalizedValue]
+        type PluginLoader = object
         type EntryPoint = str
 
     class Execution:
         """Plugin execution type aliases."""
 
-        type ExecutionContext = FlextTypes.JsonDict
-        type ExecutionResult = FlextTypes.JsonDict
+        type ExecutionContext = Mapping[str, FlextTypes.NormalizedValue]
+        type ExecutionResult = Mapping[str, FlextTypes.NormalizedValue]
         type ExecutionError = str
-        type ResourceLimits = FlextTypes.JsonDict
+        type ResourceLimits = Mapping[str, FlextTypes.NormalizedValue]
 
     class Registry:
         """Plugin registry type aliases."""
 
-        type RegistryConfig = FlextTypes.JsonDict
-        type RegistryEntry = FlextTypes.JsonDict
-        type RegistrySync = FlextTypes.JsonDict
-
-        # Literal types for plugin operations
+        type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
+        type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
+        type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
         type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
@@ -169,12 +163,10 @@ class FlextPluginTypes(FlextTypes):
     class HotReload:
         """Hot reload and file watching type aliases."""
 
-        type WatchConfig = FlextTypes.JsonDict
-        type ReloadEvent = FlextTypes.JsonDict
-        type FileWatcher = FlextTypes.GeneralValueType
+        type WatchConfig = Mapping[str, FlextTypes.NormalizedValue]
+        type ReloadEvent = Mapping[str, FlextTypes.NormalizedValue]
+        type FileWatcher = object
 
 
-# Shorthand alias for convenient use throughout ecosystem
 t = FlextPluginTypes
-
 __all__ = ["FlextPluginTypes", "t"]

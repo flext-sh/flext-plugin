@@ -8,14 +8,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
-from flext_core import FlextResult as r
-from flext_core.protocols import FlextProtocols
-from flext_core.typings import FlextTypes
+from flext_core import FlextProtocols, r, t
 
-if TYPE_CHECKING:
-    from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginModels
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -30,7 +27,7 @@ class FlextPluginProtocols(FlextProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_plugin.protocols import p
+    from flext_plugin import p
 
     # Foundation protocols (inherited)
     result: p.Result[str]
@@ -48,91 +45,72 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginLoader(Protocol):
             """Protocol for plugin loading operations."""
 
-            def load_plugin(
-                self,
-                _plugin_path: str,
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
-                """Load a plugin from the specified path."""
-                # INTERFACE
-                # INTERFACE
-                ...
-
-            def unload_plugin(self, _plugin_name: str) -> r[bool]:
-                """Unload a previously loaded plugin."""
-                # INTERFACE
-                # INTERFACE
-                ...
-
-            def is_plugin_loaded(self, _plugin_name: str) -> bool:
-                """Check if a plugin is currently loaded."""
-                # INTERFACE
-                # INTERFACE
-                ...
-
             def get_loaded_plugins(self) -> list[str]:
                 """Get list of all currently loaded plugin names."""
-                # INTERFACE
+                ...
+
+            def is_plugin_loaded(self, plugin_name: str) -> bool:
+                """Check if a plugin is currently loaded."""
+                ...
+
+            def load_plugin(
+                self, plugin_path: str
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                """Load a plugin from the specified path."""
+                ...
+
+            def unload_plugin(self, plugin_name: str) -> r[bool]:
+                """Unload a previously loaded plugin."""
                 ...
 
         @runtime_checkable
         class PluginDiscovery(Protocol):
             """Protocol for plugin discovery operations."""
 
-            def discover_plugins(
-                self,
-                paths: list[str],
-            ) -> r[list[Mapping[str, FlextTypes.GeneralValueType]]]:
-                """Discover plugins at the given paths."""
-                # INTERFACE
+            def discover_plugin(
+                self, _plugin_path: str
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                """Discover a single plugin at the specified path."""
                 ...
 
-            def discover_plugin(
-                self,
-                _plugin_path: str,
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
-                """Discover a single plugin at the specified path."""
-                # INTERFACE
+            def discover_plugins(
+                self, paths: list[str]
+            ) -> r[list[Mapping[str, t.NormalizedValue]]]:
+                """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
-                self,
-                _plugin_data: Mapping[str, FlextTypes.GeneralValueType],
+                self, _plugin_data: Mapping[str, t.NormalizedValue]
             ) -> r[bool]:
                 """Validate plugin discovery data."""
-                # INTERFACE
                 ...
 
-        @runtime_checkable
-        class PluginRegistry(Protocol):
-            """Protocol for plugin registry operations."""
+            @runtime_checkable
+            class PluginRegistry(Protocol):
+                """Protocol for plugin registry operations."""
 
-            def register_plugin(self, _plugin: FlextTypes.GeneralValueType) -> r[bool]:
-                """Register a plugin."""
-                # INTERFACE
-                ...
-
-            def unregister_plugin(self, _plugin_name: str) -> r[bool]:
-                """Unregister a plugin."""
-                # INTERFACE
-                ...
-
-            def get_plugin(
-                self, _plugin_name: str
-            ) -> r[FlextTypes.GeneralValueType | None]:
+            def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
                 """Get a registered plugin by name."""
-                # INTERFACE
                 ...
 
-            def list_plugins(
-                self,
-            ) -> r[list[Mapping[str, FlextTypes.GeneralValueType]]]:
-                """List all registered plugins."""
-                # INTERFACE
-                ...
-
-            def is_plugin_registered(self, _plugin_name: str) -> bool:
+            def is_plugin_registered(self, plugin_name: str) -> bool:
                 """Check if a plugin is registered."""
-                # INTERFACE
+                ...
+
+            def list_plugins(self) -> r[list[Mapping[str, t.NormalizedValue]]]:
+                """List all registered plugins."""
+                ...
+
+            def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+                """Register a plugin."""
+                ...
+
+            def register(self, plugin: t.NormalizedValue) -> r[None]:
+                """Register a plugin with normalized API."""
+                ...
+
+            def unregister_plugin(self, plugin_name: str) -> r[bool]:
+                """Unregister a plugin."""
                 ...
 
         @runtime_checkable
@@ -140,362 +118,239 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin execution operations."""
 
             def execute_plugin(
-                self,
-                _plugin_name: str,
-                _context: Mapping[str, FlextTypes.GeneralValueType],
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
+                self, _plugin_name: str, _context: Mapping[str, t.NormalizedValue]
+            ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Execute a plugin with the given context."""
-                # INTERFACE
-                ...
-
-            def stop_execution(self, _execution_id: str) -> r[bool]:
-                """Stop a running execution."""
-                # INTERFACE
                 ...
 
             def get_execution_status(self, _execution_id: str) -> r[str]:
                 """Get the status of an execution."""
-                # INTERFACE
                 ...
 
             def list_running_executions(self) -> list[str]:
                 """List all currently running execution IDs."""
-                # INTERFACE
+                ...
+
+            def stop_execution(self, _execution_id: str) -> r[bool]:
+                """Stop a running execution."""
                 ...
 
         @runtime_checkable
         class PluginSecurity(Protocol):
             """Protocol for plugin security operations."""
 
-            def validate_plugin_security(
-                self, _plugin: FlextTypes.GeneralValueType
-            ) -> r[bool]:
-                """Validate plugin security compliance."""
-                # INTERFACE
-                ...
-
             def check_permissions(
-                self,
-                _plugin_name: str,
-                _permissions: list[str],
+                self, _plugin_name: str, _permissions: list[str]
             ) -> r[bool]:
                 """Check if plugin has specified permissions."""
-                # INTERFACE
-                ...
-
-            def scan_plugin_security(
-                self,
-                _plugin_path: str,
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
-                """Scan plugin for security vulnerabilities."""
-                # INTERFACE
                 ...
 
             def get_security_level(self, _plugin_name: str) -> r[str]:
                 """Get security level of a plugin."""
-                # INTERFACE
+                ...
+
+            def scan_plugin_security(
+                self, _plugin_path: str
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                """Scan plugin for security vulnerabilities."""
+                ...
+
+            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+                """Validate plugin security compliance."""
                 ...
 
         @runtime_checkable
         class PluginHotReload(Protocol):
             """Protocol for hot reload operations."""
 
-            def start_watching(self, paths: list[str]) -> r[bool]:
-                """Start watching paths for plugin changes."""
-                # INTERFACE
-                ...
-
-            def stop_watching(self) -> r[bool]:
-                """Stop watching for plugin changes."""
-                # INTERFACE
-                ...
-
-            def reload_plugin(self, _plugin_name: str) -> r[bool]:
-                """Reload a plugin."""
-                # INTERFACE
+            def get_watched_paths(self) -> list[str]:
+                """Get list of currently watched paths."""
                 ...
 
             def is_watching(self) -> bool:
                 """Check if currently watching for changes."""
-                # INTERFACE
                 ...
 
-            def get_watched_paths(self) -> list[str]:
-                """Get list of currently watched paths."""
-                # INTERFACE
+            def reload_plugin(self, _plugin_name: str) -> r[bool]:
+                """Reload a plugin."""
+                ...
+
+            def start_watching(self, paths: list[str]) -> r[bool]:
+                """Start watching paths for plugin changes."""
+                ...
+
+            def stop_watching(self) -> r[bool]:
+                """Stop watching for plugin changes."""
                 ...
 
         @runtime_checkable
         class PluginMonitoring(Protocol):
             """Protocol for plugin monitoring operations."""
 
-            def start_monitoring(self, _plugin_name: str) -> r[bool]:
-                """Start monitoring a plugin."""
-                # INTERFACE
-                ...
-
-            def stop_monitoring(self, _plugin_name: str) -> r[bool]:
-                """Stop monitoring a plugin."""
-                # INTERFACE
+            def get_plugin_health(
+                self, _plugin_name: str
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                """Get health status of a plugin."""
                 ...
 
             def get_plugin_metrics(
-                self,
-                _plugin_name: str,
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
+                self, _plugin_name: str
+            ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Get metrics for a plugin."""
-                # INTERFACE
-                ...
-
-            def get_plugin_health(
-                self,
-                _plugin_name: str,
-            ) -> r[Mapping[str, FlextTypes.GeneralValueType]]:
-                """Get health status of a plugin."""
-                # INTERFACE
                 ...
 
             def is_monitoring(self, _plugin_name: str) -> bool:
                 """Check if a plugin is being monitored."""
-                # INTERFACE
+                ...
+
+            def start_monitoring(self, _plugin_name: str) -> r[bool]:
+                """Start monitoring a plugin."""
+                ...
+
+            def stop_monitoring(self, _plugin_name: str) -> r[bool]:
+                """Stop monitoring a plugin."""
                 ...
 
         @runtime_checkable
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def load_config(self, _plugin_name: str) -> r[FlextTypes.JsonDict]:
+            def get_default_config(self, plugin_type: str) -> r[t.NormalizedValue]:
+                """Get default configuration for a plugin type."""
+                ...
+
+            def load_config(self, _plugin_name: str) -> r[t.NormalizedValue]:
                 """Load configuration for a plugin."""
-                # INTERFACE
                 ...
 
             def save_config(
-                self,
-                _plugin_name: str,
-                config: FlextTypes.JsonDict,
+                self, _plugin_name: str, config: t.NormalizedValue
             ) -> r[bool]:
                 """Save configuration for a plugin."""
-                # INTERFACE
                 ...
 
-            def validate_config(self, config: FlextTypes.JsonDict) -> r[bool]:
+            def validate_config(self, config: t.NormalizedValue) -> r[bool]:
                 """Validate plugin configuration."""
-                # INTERFACE
-                ...
-
-            def get_default_config(
-                self,
-                plugin_type: str,
-            ) -> r[FlextTypes.JsonDict]:
-                """Get default configuration for a plugin type."""
-                # INTERFACE
                 ...
 
         @runtime_checkable
         class PluginLifecycle(Protocol):
             """Protocol for plugin lifecycle operations."""
 
-            def initialize_plugin(self, _plugin_name: str) -> r[bool]:
-                """Initialize a plugin."""
-                # INTERFACE
-                ...
-
             def activate_plugin(self, _plugin_name: str) -> r[bool]:
                 """Activate a plugin."""
-                # INTERFACE
                 ...
 
             def deactivate_plugin(self, _plugin_name: str) -> r[bool]:
                 """Deactivate a plugin."""
-                # INTERFACE
                 ...
 
             def destroy_plugin(self, _plugin_name: str) -> r[bool]:
                 """Destroy a plugin."""
-                # INTERFACE
                 ...
 
             def get_plugin_status(self, _plugin_name: str) -> r[str]:
                 """Get the status of a plugin."""
-                # INTERFACE
                 ...
 
-            def list_plugin_statuses(self) -> r[dict[str, str]]:
+            def initialize_plugin(self, _plugin_name: str) -> r[bool]:
+                """Initialize a plugin."""
+                ...
+
+            def list_plugin_statuses(self) -> r[Mapping[str, str]]:
                 """Get status of all plugins."""
-                # INTERFACE
                 ...
 
         @runtime_checkable
         class PluginValidation(Protocol):
             """Protocol for plugin validation operations."""
 
+            def validate_plugin_compatibility(self, _plugin_name: str) -> r[bool]:
+                """Validate plugin compatibility."""
+                ...
+
+            def validate_plugin_dependencies(self, _plugin_name: str) -> r[bool]:
+                """Validate plugin dependencies."""
+                ...
+
+            def validate_plugin_permissions(self, _plugin_name: str) -> r[bool]:
+                """Validate plugin permissions."""
+                ...
+
             def validate_plugin_structure(
-                self,
-                _plugin_data: FlextTypes.JsonDict,
+                self, _plugin_data: t.NormalizedValue
             ) -> r[bool]:
                 """Validate plugin structure."""
-                # INTERFACE
-                ...
-
-            def validate_plugin_dependencies(
-                self,
-                _plugin_name: str,
-            ) -> r[bool]:
-                """Validate plugin dependencies."""
-                # INTERFACE
-                ...
-
-            def validate_plugin_permissions(
-                self,
-                _plugin_name: str,
-            ) -> r[bool]:
-                """Validate plugin permissions."""
-                # INTERFACE
-                ...
-
-            def validate_plugin_compatibility(
-                self,
-                _plugin_name: str,
-            ) -> r[bool]:
-                """Validate plugin compatibility."""
-                # INTERFACE
                 ...
 
         @runtime_checkable
         class PluginStorage(Protocol):
             """Protocol for plugin storage operations."""
 
-            def store_plugin(
-                self,
-                _plugin_data: FlextTypes.JsonDict,
-            ) -> r[bool]:
-                """Store plugin data."""
-                # INTERFACE
-                ...
-
-            def retrieve_plugin(
-                self,
-                _plugin_name: str,
-            ) -> r[FlextTypes.JsonDict | None]:
-                """Retrieve stored plugin data."""
-                # INTERFACE
-                ...
-
             def delete_plugin(self, _plugin_name: str) -> r[bool]:
                 """Delete stored plugin."""
-                # INTERFACE
                 ...
 
             def list_stored_plugins(self) -> r[list[str]]:
                 """List all stored plugin names."""
-                # INTERFACE
                 ...
 
             def plugin_exists(self, _plugin_name: str) -> bool:
                 """Check if plugin is stored."""
-                # INTERFACE
+                ...
+
+            def retrieve_plugin(self, _plugin_name: str) -> r[t.ContainerValue | None]:
+                """Retrieve stored plugin data."""
+                ...
+
+            def store_plugin(self, _plugin_data: t.NormalizedValue) -> r[bool]:
+                """Store plugin data."""
                 ...
 
         @runtime_checkable
-        class LoggerProtocol(Protocol):
+        class Logger(Protocol):
             """Protocol for logging operations."""
 
             def critical(
-                self,
-                message: str,
-                *args: FlextTypes.GeneralValueType,
-                **kwargs: FlextTypes.GeneralValueType,
+                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
             ) -> None:
                 """Log critical message."""
-                # INTERFACE
-                ...
-
-            def error(
-                self,
-                message: str,
-                *args: FlextTypes.GeneralValueType,
-                **kwargs: FlextTypes.GeneralValueType,
-            ) -> None:
-                """Log error message."""
-                # INTERFACE
-                ...
-
-            def warning(
-                self,
-                message: str,
-                *args: FlextTypes.GeneralValueType,
-                **kwargs: FlextTypes.GeneralValueType,
-            ) -> None:
-                """Log warning message."""
-                # INTERFACE
-                ...
-
-            def info(
-                self,
-                message: str,
-                *args: FlextTypes.GeneralValueType,
-                **kwargs: FlextTypes.GeneralValueType,
-            ) -> None:
-                """Log info message."""
-                # INTERFACE
                 ...
 
             def debug(
-                self,
-                message: str,
-                *args: FlextTypes.GeneralValueType,
-                **kwargs: FlextTypes.GeneralValueType,
+                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
             ) -> None:
                 """Log debug message."""
-                # INTERFACE
                 ...
 
-        # =====================================================================
-        # DUCK TYPING PROTOCOLS
-        # =====================================================================
-        # Protocols for duck typing common plugin patterns.
-
-        @runtime_checkable
-        class PluginLoaderProtocol(Protocol):
-            """Protocol for plugin loader interface."""
-
-            def load_plugin(
-                self, plugin_path: str | FlextTypes.GeneralValueType
-            ) -> r[FlextTypes.GeneralValueType]:
-                """Load plugin from path."""
-                # INTERFACE
+            def error(
+                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+            ) -> None:
+                """Log error message."""
                 ...
 
-        @runtime_checkable
-        class PluginRegistryProtocol(Protocol):
-            """Protocol for plugin registry interface."""
-
-            def register(self, plugin: FlextTypes.GeneralValueType) -> r[None]:
-                """Register a plugin."""
-                # INTERFACE
+            def info(
+                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+            ) -> None:
+                """Log info message."""
                 ...
 
-            def get_plugin(self, plugin_name: str) -> r[FlextTypes.GeneralValueType]:
-                """Get plugin by name."""
-                # INTERFACE
+            def warning(
+                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+            ) -> None:
+                """Log warning message."""
                 ...
 
         @runtime_checkable
-        class DiscoveryStrategyProtocol(Protocol):
+        class DiscoveryStrategy(Protocol):
             """Strategy protocol for plugin discovery."""
 
             def discover(
-                self,
-                paths: list[str],
+                self, paths: list[str]
             ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
-                # INTERFACE
                 ...
 
 
 p = FlextPluginProtocols
-
-__all__ = [
-    "FlextPluginProtocols",
-    "p",
-]
+__all__ = ["FlextPluginProtocols", "p"]

@@ -53,7 +53,7 @@ flext-plugin integrates with these FLEXT ecosystem components:
 
 ```bash
 # Core dependencies (automatically installed)
-flext-core>=0.9.9        # Foundation patterns and FlextResult
+flext-core>=0.9.9        # Foundation patterns and r
 flext-observability>=0.9.9  # Monitoring and observability
 ```
 
@@ -80,7 +80,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -93,10 +93,7 @@ platform = FlextPluginPlatform()
 plugin = create_flext_plugin(
     name="hello-world",
     version="0.9.9",
-    config={
-        "description": "A basic plugin example",
-        "author": "FLEXT Developer"
-    }
+    config={"description": "A basic plugin example", "author": "FLEXT Developer"},
 )
 
 # Load and activate plugin
@@ -198,7 +195,7 @@ For advanced usage and integration patterns, see the complete documentation in t
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
 - [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/CLAUDE.md) - Data integration and ELT orchestration
+- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
 
 **External Resources**:
 
