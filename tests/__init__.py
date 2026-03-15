@@ -1,15 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""init module.
-
-This module is part of the FLEXT ecosystem. Docstrings follow PEP 257 and Google style.
-
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+"""Tests package."""
 
 from __future__ import annotations
 
@@ -20,6 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
+    from tests import unit
     from tests.conftest import (
         performance_config,
         pytest_configure,
@@ -253,6 +246,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "tm": ("tests.models", "tm"),
     "u": ("tests.utilities", "TestsFlextPluginUtilities"),
+    "unit": ("tests.unit", ""),
 }
 
 __all__ = [
@@ -328,6 +322,7 @@ __all__ = [
     "test_plugin_configuration_example_execution",
     "tm",
     "u",
+    "unit",
 ]
 
 
