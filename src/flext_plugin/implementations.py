@@ -398,7 +398,7 @@ class FlextPluginImplementations:
         """Adapter to make FlextLogger compatible with Logger."""
 
         @override
-        def __init__(self, logger: FlextLogger) -> None:
+        def __init__(self, logger: p.Logger) -> None:
             """Initialize with FlextLogger instance."""
             self.logger = logger
 
@@ -468,7 +468,7 @@ class FlextPluginImplementations:
         @override
         def __init__(
             self,
-            logger: FlextLogger,
+            logger: p.Logger,
             config: Mapping[str, t.NormalizedValue] | None = None,
             services: Mapping[str, t.NormalizedValue] | None = None,
         ) -> None:

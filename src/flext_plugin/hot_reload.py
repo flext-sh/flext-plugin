@@ -27,7 +27,7 @@ class FileChangeHandler(FileSystemEventHandler):
         self,
         callback: Callable[[str], None],
         watched_paths: set[Path],
-        logger: FlextLogger,
+        logger: p.Logger,
     ) -> None:
         """Initialize file change handler.
 
