@@ -17,7 +17,7 @@ from typing import override
 from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter
 
-from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
+from flext_plugin import FlextPluginModels, FlextPluginProtocols, c, p
 
 
 class FlextPluginImplementations:

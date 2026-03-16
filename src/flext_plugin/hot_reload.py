@@ -17,7 +17,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_plugin import FlextPluginModels, t
+from flext_plugin import FlextPluginModels, p, t
 
 
 class FileChangeHandler(FileSystemEventHandler):
