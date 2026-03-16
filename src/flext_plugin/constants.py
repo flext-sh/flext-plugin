@@ -204,8 +204,6 @@ class FlextPluginConstants(FlextConstants):
                 "CRITICAL",
             ]
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-            type LogLevelLiteral = FlextConstants.Literals.LogLevelLiteral
-            "Log level literal - references flext-core."
             DEFAULT_RETENTION_DAYS: Final[int] = 30
             MIN_RETENTION_DAYS: Final[int] = 1
             MAX_RETENTION_DAYS: Final[int] = 365
