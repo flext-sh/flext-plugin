@@ -73,20 +73,9 @@ class FlextPluginTypes(FlextTypes):
         type InputDict = Mapping[str, FlextTypes.NormalizedValue]
         type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
         type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Literal[
-            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_FILE,
-            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_DIRECTORY,
-            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
-        ]
-        type DiscoveryMethodLiteral = Literal[
-            c_plugin.Plugin.Discovery.METHOD_FILE_SYSTEM,
-            c_plugin.Plugin.Discovery.METHOD_ENTRY_POINTS,
-        ]
-        type LoadTypeLiteral = Literal[
-            c_plugin.Plugin.Execution.LOAD_TYPE_FILE,
-            c_plugin.Plugin.Execution.LOAD_TYPE_DIRECTORY,
-            c_plugin.Plugin.Execution.LOAD_TYPE_ENTRY_POINT,
-        ]
+        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
+        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
+        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
         type PluginTypeLiteral = Literal[
             c_plugin.Plugin.PluginType.TAP,
             c_plugin.Plugin.PluginType.TARGET,
@@ -170,9 +159,9 @@ class FlextPluginTypes(FlextTypes):
         type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
         type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
         type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Plugin.DiscoveryTypeLiteral
-        type DiscoveryMethodLiteral = Plugin.DiscoveryMethodLiteral
-        type LoadTypeLiteral = Plugin.LoadTypeLiteral
+        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
+        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
+        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
 
     class HotReload:
         """Hot reload and file watching type aliases."""
