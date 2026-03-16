@@ -1,0 +1,27 @@
+src/flext_plugin/implementations.py
+  d35bb5e63cc779bf 20
+src/flext_plugin/hot_reload.py
+  d35bb5e63cc779bf 20
+src/flext_plugin/typings.py
+  d35bb5e63cc779bf 33,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "3983d873942840553e7773e67b17d8b55b4d6653",
+  "prompts": {
+    "d35bb5e63cc779bf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_308778b78ffeJvszdVgr4agyHf",
+        "model": "anthropic/claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 4,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
