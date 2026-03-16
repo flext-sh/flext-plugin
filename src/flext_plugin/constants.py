@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import StrEnum, unique
 from typing import ClassVar, Final
 
 from flext_core import FlextConstants
@@ -53,6 +53,7 @@ class FlextPluginConstants(FlextConstants):
             DISCOVERY_TYPE_ENTRY_POINT: Final = "entry_point"
             DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
 
+        @unique
         class PluginType(StrEnum):
             """Plugin type enumeration.
 
@@ -303,6 +304,7 @@ class FlextPluginConstants(FlextConstants):
                 "Sync interval must be positive"
             )
 
+        @unique
         class PluginStatus(StrEnum):
             """Plugin lifecycle and operational status enumeration.
 
@@ -380,6 +382,30 @@ class FlextPluginConstants(FlextConstants):
             PluginStatus.UNHEALTHY,
             PluginStatus.DISABLED,
         })
+
+    @unique
+    class DiscoveryTypeLiteral(StrEnum):
+        FILE = "file"
+        DIRECTORY = "directory"
+        ENTRY_POINT = "entry_point"
+
+    @unique
+    class DiscoveryMethodLiteral(StrEnum):
+        FILE_SYSTEM = "file_system"
+        ENTRY_POINTS = "entry_points"
+
+    @unique
+    class LoadTypeLiteral(StrEnum):
+        FILE = "file"
+        DIRECTORY = "directory"
+        ENTRY_POINT = "entry_point"
+
+    @unique
+    class SecurityLevelLiteral(StrEnum):
+        LOW = "low"
+        MEDIUM = "medium"
+        HIGH = "high"
+        CRITICAL = "critical"
 
 
 c = FlextPluginConstants

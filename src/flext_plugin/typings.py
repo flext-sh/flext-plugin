@@ -17,6 +17,9 @@ from .constants import FlextPluginConstants as c_plugin
 T = TypeVar("T")
 
 
+from flext_plugin import c
+
+
 class FlextPluginTypes(FlextTypes):
     """Plugin type system with Python 3.13+ patterns.
 
@@ -70,9 +73,9 @@ class FlextPluginTypes(FlextTypes):
         type InputDict = Mapping[str, FlextTypes.NormalizedValue]
         type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
         type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
-        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
-        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
+        type DiscoveryTypeLiteral = c.DiscoveryTypeLiteral
+        type DiscoveryMethodLiteral = c.DiscoveryMethodLiteral
+        type LoadTypeLiteral = c.LoadTypeLiteral
         type PluginTypeLiteral = Literal[
             c_plugin.Plugin.PluginType.TAP,
             c_plugin.Plugin.PluginType.TARGET,
@@ -124,7 +127,7 @@ class FlextPluginTypes(FlextTypes):
         type SecurityLevel = str
         type Permission = str
         type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
-        type SecurityLevelLiteral = Literal["low", "medium", "high", "critical"]
+        type SecurityLevelLiteral = c.SecurityLevelLiteral
         "Security level literal - no corresponding StrEnum."
 
     class Performance:
@@ -156,9 +159,9 @@ class FlextPluginTypes(FlextTypes):
         type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
         type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
         type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
-        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
-        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
+        type DiscoveryTypeLiteral = c.DiscoveryTypeLiteral
+        type DiscoveryMethodLiteral = c.DiscoveryMethodLiteral
+        type LoadTypeLiteral = c.LoadTypeLiteral
 
     class HotReload:
         """Hot reload and file watching type aliases."""
