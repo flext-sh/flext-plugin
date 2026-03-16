@@ -101,6 +101,10 @@ class FlextPluginAdapters:
             """Validate discovered plugin data."""
             return self._execute_safe(lambda: True, "Plugin validation failed")
 
+        @override
+        def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+            return r[bool].ok(value=True)
+
         def _discover_all(self, paths: list[str]) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered: list[m.Plugin.DiscoveryData] = []

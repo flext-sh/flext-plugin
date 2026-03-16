@@ -33,7 +33,7 @@ class FlextPluginTypes(FlextTypes):
 
         EventHandler: TypeAlias = Callable[
             [Mapping[str, FlextTypes.NormalizedValue]],
-            Awaitable[None],
+            Awaitable[Mapping[str, FlextTypes.NormalizedValue]],
         ]
 
         class HandlerInfo:
@@ -43,7 +43,7 @@ class FlextPluginTypes(FlextTypes):
                 self,
                 handler: Callable[
                     [Mapping[str, FlextTypes.NormalizedValue]],
-                    Awaitable[None],
+                    Awaitable[Mapping[str, FlextTypes.NormalizedValue]],
                 ],
                 priority: int = 0,
             ) -> None:
@@ -73,9 +73,20 @@ class FlextPluginTypes(FlextTypes):
         type InputDict = Mapping[str, FlextTypes.NormalizedValue]
         type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
         type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = c.DiscoveryTypeLiteral
-        type DiscoveryMethodLiteral = c.DiscoveryMethodLiteral
-        type LoadTypeLiteral = c.LoadTypeLiteral
+        type DiscoveryTypeLiteral = Literal[
+            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_FILE,
+            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_DIRECTORY,
+            c_plugin.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
+        ]
+        type DiscoveryMethodLiteral = Literal[
+            c_plugin.Plugin.Discovery.METHOD_FILE_SYSTEM,
+            c_plugin.Plugin.Discovery.METHOD_ENTRY_POINTS,
+        ]
+        type LoadTypeLiteral = Literal[
+            c_plugin.Plugin.Execution.LOAD_TYPE_FILE,
+            c_plugin.Plugin.Execution.LOAD_TYPE_DIRECTORY,
+            c_plugin.Plugin.Execution.LOAD_TYPE_ENTRY_POINT,
+        ]
         type PluginTypeLiteral = Literal[
             c_plugin.Plugin.PluginType.TAP,
             c_plugin.Plugin.PluginType.TARGET,
@@ -159,9 +170,9 @@ class FlextPluginTypes(FlextTypes):
         type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
         type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
         type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = c.DiscoveryTypeLiteral
-        type DiscoveryMethodLiteral = c.DiscoveryMethodLiteral
-        type LoadTypeLiteral = c.LoadTypeLiteral
+        type DiscoveryTypeLiteral = Plugin.DiscoveryTypeLiteral
+        type DiscoveryMethodLiteral = Plugin.DiscoveryMethodLiteral
+        type LoadTypeLiteral = Plugin.LoadTypeLiteral
 
     class HotReload:
         """Hot reload and file watching type aliases."""
