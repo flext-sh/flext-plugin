@@ -110,7 +110,7 @@ class FlextPluginPlatform:
         @classmethod
         def create(
             cls,
-            dispatcher: p.CommandBus | None = None,
+            dispatcher: p.Dispatcher | None = None,
             *,
             auto_discover_handlers: bool = False,
         ) -> FlextPluginPlatform.PluginRegistry:

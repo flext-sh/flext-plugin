@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-from flext_core import FlextContainer, FlextExceptions
+from flext_core import FlextContainer, FlextExceptions, p
 
 from flext_plugin import (
     FlextPluginConstants,
@@ -284,7 +284,7 @@ class TestFlextPluginServiceReal:
         service = FlextPluginService()
         assert service is not None
         assert hasattr(service, "container")
-        assert isinstance(service.container, FlextContainer)
+        assert isinstance(service.container, p.Container)
         assert hasattr(service, "logger")
         assert hasattr(service, "config")
 

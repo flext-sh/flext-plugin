@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import override
 
-from flext_core import FlextContainer, r, u, x
+from flext_core import FlextContainer, p, r, u, x
 from pydantic import TypeAdapter
 
 from flext_plugin import (
@@ -61,7 +61,7 @@ class FlextPluginService(x):
 
     def __init__(
         self,
-        container: FlextContainer | None = None,
+        container: p.Container | None = None,
         discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = None,
         loader: FlextPluginProtocols.Plugin.PluginLoader | None = None,
         executor: FlextPluginProtocols.Plugin.PluginExecution | None = None,
@@ -99,7 +99,7 @@ class FlextPluginService(x):
 
     @property
     @override
-    def container(self) -> FlextContainer:
+    def container(self) -> p.Container:
         """Get the container for this service instance."""
         return FlextContainer.get_global()
 
