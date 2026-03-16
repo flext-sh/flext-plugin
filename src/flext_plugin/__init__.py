@@ -37,13 +37,13 @@ if TYPE_CHECKING:
     from flext_plugin.implementations import FlextPluginImplementations
     from flext_plugin.loader import FlextPluginLoader
     from flext_plugin.models import FlextPluginModels, m
-    from flext_plugin.platform import (
-        FlextPluginPlatform,
-        Plugin,
-        PluginExecution,
+    from flext_plugin.platform import FlextPluginPlatform, Plugin, PluginExecution
+    from flext_plugin.protocols import (
+        FlextPluginProtocols,
+        PluginDiscovery,
         PluginRegistry,
+        p,
     )
-    from flext_plugin.protocols import FlextPluginProtocols, p
     from flext_plugin.services import FlextPluginService, FlextPluginService as s
     from flext_plugin.settings import FlextPluginSettings
     from flext_plugin.typings import FlextPluginTypes, t
@@ -70,8 +70,9 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginTypes": ("flext_plugin.typings", "FlextPluginTypes"),
     "FlextPluginUtilities": ("flext_plugin.utilities", "FlextPluginUtilities"),
     "Plugin": ("flext_plugin.platform", "Plugin"),
+    "PluginDiscovery": ("flext_plugin.protocols", "PluginDiscovery"),
     "PluginExecution": ("flext_plugin.platform", "PluginExecution"),
-    "PluginRegistry": ("flext_plugin.platform", "PluginRegistry"),
+    "PluginRegistry": ("flext_plugin.protocols", "PluginRegistry"),
     "__all__": ("flext_plugin.__version__", "__all__"),
     "__author__": ("flext_plugin.__version__", "__author__"),
     "__author_email__": ("flext_plugin.__version__", "__author_email__"),
@@ -108,6 +109,7 @@ __all__ = [
     "FlextPluginTypes",
     "FlextPluginUtilities",
     "Plugin",
+    "PluginDiscovery",
     "PluginExecution",
     "PluginRegistry",
     "__all__",

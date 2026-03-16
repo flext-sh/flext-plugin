@@ -486,8 +486,7 @@ class FlextPluginImplementations:
             self._services = services or {}
 
         @property
-        def logger(self) -> FlextLogger:
-            """Get logger for plugin."""
+        def logger(self) -> p.Logger:
             return self._logger
 
         def get_config(self) -> Mapping[str, t.NormalizedValue]:

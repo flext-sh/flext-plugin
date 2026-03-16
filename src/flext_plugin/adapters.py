@@ -19,6 +19,10 @@ from flext_core import FlextLogger, T, r
 from pydantic import TypeAdapter
 
 from flext_plugin import c, m, p, t
+from flext_plugin.protocols import FlextPluginProtocols
+
+PluginDiscovery = FlextPluginProtocols.Plugin.PluginDiscovery
+PluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
 
 
 class FlextPluginAdapters:
@@ -63,7 +67,7 @@ class FlextPluginAdapters:
                 error_msg = f"{error_context}: {e!s}"
                 return r[T].fail(error_msg)
 
-    class FileSystemDiscoveryAdapter(BaseAdapter, p.Plugin.PluginDiscovery):
+    class FileSystemDiscoveryAdapter(BaseAdapter, PluginDiscovery):
         """File system plugin discovery - synchronous."""
 
         @override
@@ -308,7 +312,7 @@ class FlextPluginAdapters:
             """Validate plugin for security."""
             return r.ok(True)
 
-    class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
+    class MemoryRegistryAdapter(BaseAdapter, PluginRegistry):
         """In-memory plugin registry - synchronous."""
 
         def __init__(self) -> None:

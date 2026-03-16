@@ -85,9 +85,13 @@ class FlextPluginProtocols(FlextProtocols):
                 """Validate plugin discovery data."""
                 ...
 
-            @runtime_checkable
-            class PluginRegistry(Protocol):
-                """Protocol for plugin registry operations."""
+            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+                """Validate plugin for security."""
+                ...
+
+        @runtime_checkable
+        class PluginRegistry(Protocol):
+            """Protocol for plugin registry operations."""
 
             def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
                 """Get a registered plugin by name."""
@@ -353,4 +357,9 @@ class FlextPluginProtocols(FlextProtocols):
 
 
 p = FlextPluginProtocols
-__all__ = ["FlextPluginProtocols", "p"]
+
+# Flat aliases for pyrefly MRO resolution (3-level nesting not resolved)
+PluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
+PluginDiscovery = FlextPluginProtocols.Plugin.PluginDiscovery
+
+__all__ = ["FlextPluginProtocols", "PluginDiscovery", "PluginRegistry", "p"]
