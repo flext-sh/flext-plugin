@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from flext_plugin.entities import FlextPluginEntities
     from flext_plugin.handlers import FlextPluginHandlers, FlextPluginHandlers as h
     from flext_plugin.hot_reload import FlextPluginHotReload
-    from flext_plugin.implementations import FlextPluginImplementations
     from flext_plugin.loader import FlextPluginLoader
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.platform import FlextPluginPlatform, Plugin, PluginExecution
@@ -57,10 +56,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginEntities": ("flext_plugin.entities", "FlextPluginEntities"),
     "FlextPluginHandlers": ("flext_plugin.handlers", "FlextPluginHandlers"),
     "FlextPluginHotReload": ("flext_plugin.hot_reload", "FlextPluginHotReload"),
-    "FlextPluginImplementations": (
-        "flext_plugin.implementations",
-        "FlextPluginImplementations",
-    ),
     "FlextPluginLoader": ("flext_plugin.loader", "FlextPluginLoader"),
     "FlextPluginModels": ("flext_plugin.models", "FlextPluginModels"),
     "FlextPluginPlatform": ("flext_plugin.platform", "FlextPluginPlatform"),
@@ -99,7 +94,6 @@ __all__ = [
     "FlextPluginEntities",
     "FlextPluginHandlers",
     "FlextPluginHotReload",
-    "FlextPluginImplementations",
     "FlextPluginLoader",
     "FlextPluginModels",
     "FlextPluginPlatform",
