@@ -1,0 +1,27 @@
+src/flext_plugin/adapters.py
+  d35bb5e63cc779bf 22-25
+src/flext_plugin/implementations.py
+  d35bb5e63cc779bf 489
+src/flext_plugin/protocols.py
+  d35bb5e63cc779bf 88-91,360-365
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "7ce3c6d6ae75e473b3cd22ea995364cb622b7887",
+  "prompts": {
+    "d35bb5e63cc779bf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_308778b78ffeJvszdVgr4agyHf",
+        "model": "anthropic/claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 21,
+      "total_deletions": 9,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    }
+  }
+}
