@@ -12,12 +12,11 @@ from typing import Literal, TypeAlias, TypeVar
 
 from flext_core import FlextTypes
 
+from flext_plugin import c
+
 from .constants import FlextPluginConstants as c_plugin
 
 T = TypeVar("T")
-
-
-from flext_plugin import c
 
 
 class FlextPluginTypes(FlextTypes):
