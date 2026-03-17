@@ -18,6 +18,7 @@ from typing import Protocol, cast
 
 import pytest
 from flext_core import FlextContainer, FlextExceptions, p
+from pydantic import BaseModel
 
 from flext_plugin import (
     FlextPluginConstants,
@@ -95,10 +96,10 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
     loader_adapter = FlextPluginLoader()
-    container.with_service(
+    container.register(
         "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
     )
-    container.with_service(
+    container.register(
         "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
     )
     return FlextPluginService(container=container)
@@ -109,7 +110,7 @@ def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginSe
     """Create FlextPluginService with REAL discovery adapters."""
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
-    container.with_service(
+    container.register(
         "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
     )
     return FlextPluginService(container=container)
@@ -215,9 +216,9 @@ class TestFlextPluginServiceWithRealAdapters:
         """Test REAL plugin discovery using real adapters."""
         result = real_service_with_adapters.discover_plugins([str(temp_plugin_dir)])
         assert result.is_success
-        assert isinstance(result.data, list)
-        assert len(result.data) == 4
-        for plugin in result.data:
+        assert isinstance(result.value, list)
+        assert len(result.value) == 4
+        for plugin in result.value:
             assert isinstance(plugin, FlextPluginModels.Plugin.Plugin)
             assert plugin.name in {
                 "tap_database",
@@ -235,9 +236,9 @@ class TestFlextPluginServiceWithRealAdapters:
             str(temp_plugin_dir)
         ])
         assert discover_result.is_success
-        assert len(discover_result.data) > 0
+        assert len(discover_result.value) > 0
         tap_plugin: FlextPluginModels.Plugin.Plugin | None = None
-        for plugin in discover_result.data:
+        for plugin in discover_result.value:
             if plugin.name == "tap_database":
                 tap_plugin = plugin
                 break
@@ -245,8 +246,8 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_path = temp_plugin_dir / "tap_database.py"
         load_result = real_service_with_adapters.load_plugin(str(tap_plugin_path))
         assert load_result.is_success
-        assert isinstance(load_result.data, FlextPluginModels.Plugin.Plugin)
-        assert load_result.data.name == "tap_database"
+        assert isinstance(load_result.value, FlextPluginModels.Plugin.Plugin)
+        assert load_result.value.name == "tap_database"
 
     def test_install_plugin_with_real_adapters(
         self, real_service_with_adapters: FlextPluginService, temp_plugin_dir: Path
@@ -255,8 +256,8 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_file = temp_plugin_dir / "tap_database.py"
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
         assert install_result.is_success
-        assert isinstance(install_result.data, FlextPluginModels.Plugin.Plugin)
-        assert install_result.data.name == "tap_database"
+        assert isinstance(install_result.value, FlextPluginModels.Plugin.Plugin)
+        assert install_result.value.name == "tap_database"
 
     def test_is_plugin_loaded_with_real_adapters(
         self, real_service_with_adapters: FlextPluginService, temp_plugin_dir: Path
@@ -355,8 +356,8 @@ class TestFlextPluginServiceReal:
             return
         assert isinstance(result.is_success, bool)
         if result.is_success:
-            assert hasattr(result, "data")
-            assert isinstance(result.data, list)
+            assert hasattr(result, "value")
+            assert isinstance(result.value, list)
         else:
             assert "Plugin discovery not available" in str(result.error)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
@@ -378,7 +379,7 @@ class TestFlextPluginServiceReal:
             return
         assert isinstance(result.is_success, bool)
         if result.is_success:
-            assert hasattr(result, "data")
+            assert hasattr(result, "value")
         else:
             assert hasattr(result, "error")
         if not result.is_success:
@@ -525,7 +526,7 @@ class TestFlextPluginServiceReal:
         self, service: FlextPluginService
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test")
+        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test", settings={})
         result = service.update_plugin_config("", config.model_dump())
         assert not result.is_success
         assert (
@@ -537,7 +538,9 @@ class TestFlextPluginServiceReal:
         self, service: FlextPluginService
     ) -> None:
         """Test update_plugin_config with mismatched plugin name fails."""
-        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="different-plugin")
+        config = FlextPluginModels.Plugin.PluginConfig(
+            plugin_name="different-plugin", settings={}
+        )
         result = service.update_plugin_config("test-plugin", config.model_dump())
         assert not result.is_success
 
@@ -545,7 +548,9 @@ class TestFlextPluginServiceReal:
         self, service: FlextPluginService
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
-        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="real-test-plugin")
+        config = FlextPluginModels.Plugin.PluginConfig(
+            plugin_name="real-test-plugin", settings={}
+        )
         result = service.update_plugin_config("real-test-plugin", config.model_dump())
         assert result.is_success or result.is_failure
 
@@ -611,7 +616,7 @@ class TestFlextPluginDiscoveryReal:
         """Test discover_plugins with empty paths returns empty list."""
         result = discovery_service.discover_plugins([])
         assert result.is_success
-        assert result.data == []
+        assert result.value == []
 
     def test_discover_plugins_empty_paths_succeeds(
         self, discovery_service: FlextPluginDiscovery
@@ -619,7 +624,7 @@ class TestFlextPluginDiscoveryReal:
         """Test discover_plugins with empty paths list returns empty."""
         result = discovery_service.discover_plugins([])
         assert result.is_success
-        assert result.data == []
+        assert result.value == []
 
     def test_discover_plugins_with_real_files(
         self, discovery_service: FlextPluginDiscovery, temp_plugin_dir: Path
@@ -634,7 +639,7 @@ class TestFlextPluginDiscoveryReal:
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
         assert result.is_success
-        assert isinstance(result.data, list)
+        assert isinstance(result.value, list)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
         assert len(plugin_files) == 4
 
@@ -644,11 +649,11 @@ class TestFlextPluginDiscoveryReal:
         """Test validate_plugin with DiscoveryData from real files."""
         result = discovery_service.discover_plugins([str(temp_plugin_dir)])
         assert result.is_success
-        assert len(result.data) > 0
-        plugin_data = result.data[0]
+        assert len(result.value) > 0
+        plugin_data = result.value[0]
         validation_result = discovery_service.validate_plugin(plugin_data)
         assert validation_result.is_success
-        assert validation_result.data is True
+        assert validation_result.value is True
         plugin_file = temp_plugin_dir / f"{plugin_data.name}.py"
         assert plugin_file.exists()
 
@@ -664,10 +669,10 @@ class TestRealPluginIntegrationWorkflow:
             str(temp_plugin_dir)
         ])
         assert discover_result.is_success
-        assert len(discover_result.data) == 4
+        assert len(discover_result.value) == 4
         tap_plugin = None
         target_plugin = None
-        for plugin in discover_result.data:
+        for plugin in discover_result.value:
             if plugin.name == "tap_database":
                 tap_plugin = plugin
             elif plugin.name == "target_warehouse":
@@ -805,14 +810,14 @@ class TestServicesIntegrationReal:
             "name": "test_service",
             "config": {"enabled": True},
         }
-        container.with_service("test_service", test_service)
+        container.register("test_service", test_service)
         plugin_service = FlextPluginService(container=container)
         result1 = plugin_service.container.get("test_service")
         assert result1.is_success
-        assert result1.data is test_service
-        data1 = result1.data
-        assert isinstance(data1, dict)
-        assert data1["name"] == "test_service"
+        value = result1.value
+        normalized_value = value.model_dump() if isinstance(value, BaseModel) else value
+        assert isinstance(normalized_value, dict)
+        assert normalized_value["name"] == "test_service"
         discovery_service = FlextPluginDiscovery()
         assert discovery_service is not None
 
@@ -851,8 +856,8 @@ class TestServicesIntegrationReal:
             return
         assert plugin_discovery_result.is_success
         assert service_discovery_result.is_success
-        assert isinstance(plugin_discovery_result.data, list)
-        assert isinstance(service_discovery_result.data, list)
+        assert isinstance(plugin_discovery_result.value, list)
+        assert isinstance(service_discovery_result.value, list)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
         assert len(plugin_files) == 4
 
@@ -912,7 +917,7 @@ class TestServiceErrorHandling:
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
         assert result.is_success
-        assert isinstance(result.data, list)
+        assert isinstance(result.value, list)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
         assert len(plugin_files) == 4
 
@@ -925,8 +930,8 @@ class TestServiceErrorHandling:
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
             assert result.is_success
-            assert isinstance(result.data, list)
-            assert result.data == []
+            assert isinstance(result.value, list)
+            assert result.value == []
 
     def test_service_methods_work_with_default_initialization(self) -> None:
         """Test that service methods work with default initialization."""
@@ -981,11 +986,11 @@ class TestServiceErrorHandling:
         service = FlextPluginDiscovery()
         result = service.discover_plugins([])
         assert result.is_success
-        assert result.data == []
+        assert result.value == []
         invalid_path = "/" + "x" * 500
         result2 = service.discover_plugins([invalid_path])
         assert result2.is_success
-        assert result2.data == []
+        assert result2.value == []
 
 
 class TestBackwardsCompatibilityAliasesReal:
@@ -1002,7 +1007,7 @@ class TestBackwardsCompatibilityAliasesReal:
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
             assert result.is_success
-            assert isinstance(result.data, list)
+            assert isinstance(result.value, list)
 
     def test_plugin_discovery_service_alias_exists_real(self) -> None:
         """Test PluginDiscoveryService alias exists and works with REAL functionality."""
@@ -1015,4 +1020,4 @@ class TestBackwardsCompatibilityAliasesReal:
                 pytest.skip(f"Infrastructure not configured: {result.error}")
                 return
             assert result.is_success
-            assert isinstance(result.data, list)
+            assert isinstance(result.value, list)
