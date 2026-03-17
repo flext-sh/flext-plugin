@@ -485,10 +485,10 @@ class FlextPluginImplementations:
             self._config: dict[str, t.NormalizedValue] = dict(config) if config else {}
             self._services = services or {}
 
-         @property
-         def logger(self) -> p.Logger:
-             """Plugin logger."""
-             return self._logger
+        @property
+        def logger(self) -> p.Logger:
+            """Plugin logger."""
+            return self._logger
 
         def get_config(self) -> Mapping[str, t.NormalizedValue]:
             """Get configuration for plugin."""

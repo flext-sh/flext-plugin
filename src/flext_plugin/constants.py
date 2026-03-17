@@ -385,23 +385,31 @@ class FlextPluginConstants(FlextConstants):
 
     @unique
     class DiscoveryTypeLiteral(StrEnum):
+        """Discovery type literal enumeration."""
+
         FILE = "file"
         DIRECTORY = "directory"
         ENTRY_POINT = "entry_point"
 
     @unique
     class DiscoveryMethodLiteral(StrEnum):
+        """Discovery method literal enumeration."""
+
         FILE_SYSTEM = "file_system"
         ENTRY_POINTS = "entry_points"
 
     @unique
     class LoadTypeLiteral(StrEnum):
+        """Load type literal enumeration."""
+
         FILE = "file"
         DIRECTORY = "directory"
         ENTRY_POINT = "entry_point"
 
     @unique
     class SecurityLevelLiteral(StrEnum):
+        """Security level literal enumeration."""
+
         LOW = "low"
         MEDIUM = "medium"
         HIGH = "high"
