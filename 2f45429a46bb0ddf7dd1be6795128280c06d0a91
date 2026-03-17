@@ -1,0 +1,23 @@
+src/flext_plugin/constants.py
+  805a7c426a49e940 388-389,396-397,403-404,411-412
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "2f45429a46bb0ddf7dd1be6795128280c06d0a91",
+  "prompts": {
+    "805a7c426a49e940": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_306f4527effedylQR79HqiACVE",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 10,
+      "total_deletions": 2,
+      "accepted_lines": 8,
+      "overriden_lines": 0
+    }
+  }
+}
