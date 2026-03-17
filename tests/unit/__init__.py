@@ -12,13 +12,10 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from tests.unit.test_config import TestFlextPluginSettings
-    from tests.unit.test_constants import (
-        TestFlextPluginConstants,
-        TestFlextPluginConstants as c,
-    )
-    from tests.unit.test_models import TestFlextPluginModels, TestFlextPluginModels as m
-    from tests.unit.test_types import TestFlextPluginTypes, TestFlextPluginTypes as t
+    from .test_config import TestFlextPluginSettings
+    from .test_constants import TestFlextPluginConstants, TestFlextPluginConstants as c
+    from .test_models import TestFlextPluginModels, TestFlextPluginModels as m
+    from .test_types import TestFlextPluginTypes, TestFlextPluginTypes as t
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextPluginConstants": (
