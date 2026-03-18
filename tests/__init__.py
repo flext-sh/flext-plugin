@@ -32,7 +32,7 @@ if TYPE_CHECKING:
         set_test_environment,
         simple_plugin_directory,
     )
-    from .constants import TestsFlextPluginConstants
+    from .constants import TestsFlextPluginConstants, c
     from .models import TestsFlextPluginModels, m, tm
     from .protocols import TestsFlextPluginProtocols, p
     from .test_application_services import (
@@ -82,14 +82,11 @@ if TYPE_CHECKING:
         TestFlextPluginServiceStubBridges,
     )
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
-    from .typings import TestsFlextPluginTypes
-    from .unit.test_constants import (
-        TestFlextPluginConstants,
-        TestFlextPluginConstants as c,
-    )
+    from .typings import TestsFlextPluginTypes, t
+    from .unit.test_constants import TestFlextPluginConstants
     from .unit.test_models import TestFlextPluginModels
-    from .unit.test_types import TestFlextPluginTypes, TestFlextPluginTypes as t
-    from .utilities import TestsFlextPluginUtilities, TestsFlextPluginUtilities as u
+    from .unit.test_types import TestFlextPluginTypes
+    from .utilities import TestsFlextPluginUtilities, u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "PluginInterface": ("tests.test_application_services", "PluginInterface"),
@@ -180,7 +177,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestsFlextPluginProtocols": ("tests.protocols", "TestsFlextPluginProtocols"),
     "TestsFlextPluginTypes": ("tests.typings", "TestsFlextPluginTypes"),
     "TestsFlextPluginUtilities": ("tests.utilities", "TestsFlextPluginUtilities"),
-    "c": ("tests.unit.test_constants", "TestFlextPluginConstants"),
+    "c": ("tests.constants", "c"),
     "h": ("tests.test_handlers", "TestFlextPluginHandlers"),
     "m": ("tests.models", "m"),
     "modules_to_test": ("tests.test_imports", "modules_to_test"),
@@ -216,7 +213,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "s": ("tests.test_manager", "TestFlextPluginService"),
     "set_test_environment": ("tests.conftest", "set_test_environment"),
     "simple_plugin_directory": ("tests.conftest", "simple_plugin_directory"),
-    "t": ("tests.unit.test_types", "TestFlextPluginTypes"),
+    "t": ("tests.typings", "t"),
     "temp_plugin_dir": ("tests.test_application_services", "temp_plugin_dir"),
     "test_basic_plugin_example_execution": (
         "tests.test_examples",
@@ -235,7 +232,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "test_plugin_configuration_example_execution",
     ),
     "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "TestsFlextPluginUtilities"),
+    "u": ("tests.utilities", "u"),
     "unit": ("tests.unit", ""),
 }
 
