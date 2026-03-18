@@ -204,7 +204,9 @@ class FlextPluginImplementations:
             self._operations = operations or {}
 
         def execute(
-            self, operation: str, _params: Mapping[str, t.NormalizedValue]
+            self,
+            operation: str,
+            _params: Mapping[str, t.NormalizedValue],
         ) -> r[t.NormalizedValue]:
             """Execute a plugin operation.
 
@@ -222,7 +224,7 @@ class FlextPluginImplementations:
                 return r[t.NormalizedValue].fail(f"Unsupported operation: {operation}")
             try:
                 self.logger.info(
-                    f"Executing operation {operation} on plugin {self.name}"
+                    f"Executing operation {operation} on plugin {self.name}",
                 )
                 if self._entity:
                     self._entity.record_execution(0.0, success=True)
@@ -377,7 +379,7 @@ class FlextPluginImplementations:
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
                 transformed = TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
-                    data
+                    data,
                 )
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
@@ -404,34 +406,50 @@ class FlextPluginImplementations:
 
         @override
         def critical(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log critical message."""
             self.logger.critical(message)
 
         @override
         def debug(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log debug message."""
             self.logger.debug(message)
 
         @override
         def error(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log error message."""
             self.logger.error(message)
 
         def exception(
-            self, message: str, *, _exc_info: bool = True, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *,
+            _exc_info: bool = True,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log exception message."""
             self.logger.error(message)
 
         @override
         def info(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log info message."""
             self.logger.info(message)
@@ -446,14 +464,20 @@ class FlextPluginImplementations:
             getattr(self.logger, level.lower(), self.logger.debug)(message)
 
         def trace(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log trace message."""
             self.logger.debug(message)
 
         @override
         def warning(
-            self, message: str, *_args: t.NormalizedValue, **_kwargs: t.Scalar
+            self,
+            message: str,
+            *_args: t.NormalizedValue,
+            **_kwargs: t.Scalar,
         ) -> None:
             """Log warning message."""
             self.logger.warning(message)
@@ -524,7 +548,8 @@ class FlextPluginImplementations:
             self._logger = FlextLogger("plugin.registry")
 
         def get_plugin(
-            self, plugin_name: str
+            self,
+            plugin_name: str,
         ) -> FlextPluginModels.Plugin.Plugin | None:
             """Get plugin by name.
 
@@ -646,12 +671,13 @@ class FlextPluginImplementations:
                     version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                 )
                 plugin_entity = FlextPluginModels.Plugin.Plugin.create(
-                    name=concrete_plugin.name, plugin_version=concrete_plugin.version
+                    name=concrete_plugin.name,
+                    plugin_version=concrete_plugin.version,
                 )
                 reg_result: r[None] = self._registry.register(plugin_entity)
                 if reg_result.is_failure:
                     return r[t.NormalizedValue].fail(
-                        f"Failed to register loaded plugin: {reg_result.error}"
+                        f"Failed to register loaded plugin: {reg_result.error}",
                     )
                 return r[t.NormalizedValue].ok(concrete_plugin)
             except (
@@ -663,7 +689,7 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception(f"Failed to load plugin from {plugin_path}")
+                self.logger.exception("Failed to load plugin from %s", plugin_path)
                 return r[t.NormalizedValue].fail(f"Load failed: {e!s}")
 
 

@@ -101,7 +101,8 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             is_enabled: Annotated[
-                bool, Field(default=True, description="Plugin enabled state")
+                bool,
+                Field(default=True, description="Plugin enabled state"),
             ]
             metadata: Annotated[
                 dict[str, t.NormalizedValue],
@@ -510,7 +511,8 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             loaded_at: Annotated[
-                datetime, Field(description="Timestamp when plugin was loaded")
+                datetime,
+                Field(description="Timestamp when plugin was loaded"),
             ]
             entry_file: Annotated[
                 Path | None,
@@ -577,13 +579,16 @@ class FlextPluginModels(FlextModels):
             name: Annotated[str, Field(description="Plugin unique identifier")]
             version: Annotated[str, Field(description="Plugin semantic version")]
             description: Annotated[
-                str, Field(default="", description="Plugin description")
+                str,
+                Field(default="", description="Plugin description"),
             ]
             author: Annotated[
-                str, Field(default="Unknown", description="Plugin author")
+                str,
+                Field(default="Unknown", description="Plugin author"),
             ]
             plugin_type: Annotated[
-                str, Field(default="extension", description="Type of plugin")
+                str,
+                Field(default="extension", description="Type of plugin"),
             ]
             entry_point: Annotated[str, Field(description="Entry point for plugin")]
             dependencies: Annotated[
@@ -678,7 +683,8 @@ class FlextPluginModels(FlextModels):
             """
 
             is_safe: Annotated[
-                bool, Field(description="Whether plugin passed security checks")
+                bool,
+                Field(description="Whether plugin passed security checks"),
             ]
             violations: Annotated[
                 list[str],
@@ -695,7 +701,8 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             analysis_time: Annotated[
-                datetime, Field(description="When analysis was performed")
+                datetime,
+                Field(description="When analysis was performed"),
             ]
 
         class WatcherConfig(FlextModels.Value):
@@ -716,7 +723,8 @@ class FlextPluginModels(FlextModels):
 
             watch_path: Annotated[str, Field(description="Path being watched")]
             watch_interval: Annotated[
-                float, Field(description="Polling interval in seconds")
+                float,
+                Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
                 Callable[..., object] | None,
@@ -726,7 +734,8 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             active: Annotated[
-                bool, Field(default=False, description="Whether watcher is active")
+                bool,
+                Field(default=False, description="Whether watcher is active"),
             ]
             last_modified: Annotated[
                 dict[str, t.NormalizedValue],
@@ -736,7 +745,8 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             created_at: Annotated[
-                datetime, Field(description="Configuration creation time")
+                datetime,
+                Field(description="Configuration creation time"),
             ]
 
         class SandboxConfig(FlextModels.Value):
@@ -771,10 +781,12 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             network_access: Annotated[
-                bool, Field(description="Whether network access allowed")
+                bool,
+                Field(description="Whether network access allowed"),
             ]
             file_system_access: Annotated[
-                str, Field(description="File system access level")
+                str,
+                Field(description="File system access level"),
             ]
             environment_variables: Annotated[
                 dict[str, str],

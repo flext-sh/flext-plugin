@@ -39,10 +39,10 @@ def discover_python_plugins_in_directory[TDiscovery](
                     discovered.append(data)
             elif item.is_dir() and (not item.name.startswith("__")):
                 discovered.extend(
-                    discover_python_plugins_in_directory(item, discover_file, logger)
+                    discover_python_plugins_in_directory(item, discover_file, logger),
                 )
     except (OSError, PermissionError):
-        logger.exception(f"Failed to discover directory {path}")
+        logger.exception("Failed to discover directory %s", path)
     return discovered
 
 
@@ -62,7 +62,8 @@ class FlextPluginDiscovery:
         ]
 
     def discover_plugin(
-        self, plugin_path: str
+        self,
+        plugin_path: str,
     ) -> r[FlextPluginModels.Plugin.DiscoveryData]:
         """Discover single plugin at path.
 
@@ -80,16 +81,16 @@ class FlextPluginDiscovery:
                 result = fs_strategy.discover([plugin_path])
                 if result.is_success and result.value:
                     return r[FlextPluginModels.Plugin.DiscoveryData].ok(
-                        value=result.value[0]
+                        value=result.value[0],
                     )
             ep_strategy = self.EntryPointStrategy(self.logger)
             result = ep_strategy.discover([plugin_path])
             if result.is_success and result.value:
                 return r[FlextPluginModels.Plugin.DiscoveryData].ok(
-                    value=result.value[0]
+                    value=result.value[0],
                 )
             return r[FlextPluginModels.Plugin.DiscoveryData].fail(
-                f"Plugin not found at: {plugin_path}"
+                f"Plugin not found at: {plugin_path}",
             )
         except (
             ValueError,
@@ -100,13 +101,14 @@ class FlextPluginDiscovery:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
+            self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return r[FlextPluginModels.Plugin.DiscoveryData].fail(
-                f"Discovery error: {e!s}"
+                f"Discovery error: {e!s}",
             )
 
     def discover_plugins(
-        self, paths: list[str]
+        self,
+        paths: list[str],
     ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
@@ -127,7 +129,7 @@ class FlextPluginDiscovery:
                             discovered[data.name] = data
             self.logger.info(f"Discovered {len(discovered)} unique plugins")
             return r[list[FlextPluginModels.Plugin.DiscoveryData]].ok(
-                value=list(discovered.values())
+                value=list(discovered.values()),
             )
         except (
             ValueError,
@@ -140,11 +142,12 @@ class FlextPluginDiscovery:
         ) as e:
             self.logger.exception("Plugin discovery failed")
             return r[list[FlextPluginModels.Plugin.DiscoveryData]].fail(
-                f"Discovery error: {e!s}"
+                f"Discovery error: {e!s}",
             )
 
     def validate_plugin(
-        self, plugin_data: FlextPluginModels.Plugin.DiscoveryData
+        self,
+        plugin_data: FlextPluginModels.Plugin.DiscoveryData,
     ) -> r[bool]:
         """Validate discovered plugin data.
 
@@ -180,7 +183,8 @@ class FlextPluginDiscovery:
             self.logger = logger
 
         def discover(
-            self, paths: list[str]
+            self,
+            paths: list[str],
         ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
@@ -188,7 +192,7 @@ class FlextPluginDiscovery:
                 for path_str in paths:
                     path = Path(path_str).expanduser().resolve()
                     if not path.exists():
-                        self.logger.warning(f"Path does not exist: {path_str}")
+                        self.logger.warning("Path does not exist: %s", path_str)
                         continue
                     if path.is_file():
                         data = self._discover_file(path)
@@ -197,10 +201,10 @@ class FlextPluginDiscovery:
                     elif path.is_dir():
                         discovered.extend(self._discover_directory(path))
                 self.logger.info(
-                    f"File system discovery found {len(discovered)} plugins"
+                    f"File system discovery found {len(discovered)} plugins",
                 )
                 return r[list[FlextPluginModels.Plugin.DiscoveryData]].ok(
-                    value=discovered
+                    value=discovered,
                 )
             except (
                 ValueError,
@@ -213,11 +217,12 @@ class FlextPluginDiscovery:
             ) as e:
                 self.logger.exception("File system discovery failed")
                 return r[list[FlextPluginModels.Plugin.DiscoveryData]].fail(
-                    f"File discovery error: {e!s}"
+                    f"File discovery error: {e!s}",
                 )
 
         def _discover_directory(
-            self, path: Path
+            self,
+            path: Path,
         ) -> list[FlextPluginModels.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
             return discover_python_plugins_in_directory(
@@ -227,7 +232,8 @@ class FlextPluginDiscovery:
             )
 
         def _discover_file(
-            self, path: Path
+            self,
+            path: Path,
         ) -> FlextPluginModels.Plugin.DiscoveryData | None:
             """Discover single Python file as plugin."""
             if path.suffix != ".py":
@@ -242,7 +248,7 @@ class FlextPluginDiscovery:
                     metadata={},
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
     class EntryPointStrategy:
@@ -253,14 +259,15 @@ class FlextPluginDiscovery:
             self.logger = logger
 
         def discover(
-            self, paths: list[str]
+            self,
+            paths: list[str],
         ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             _ = paths
             try:
                 discovered: list[FlextPluginModels.Plugin.DiscoveryData] = []
                 for entry_point in importlib.metadata.entry_points().select(
-                    group="flext.plugins"
+                    group="flext.plugins",
                 ):
                     try:
                         data = FlextPluginModels.Plugin.DiscoveryData(
@@ -274,7 +281,7 @@ class FlextPluginDiscovery:
                             discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
                             discovery_method=c.Plugin.Discovery.METHOD_ENTRY_POINTS,
                             metadata={
-                                "entry_point": f"{entry_point.module}:{entry_point.attr}"
+                                "entry_point": f"{entry_point.module}:{entry_point.attr}",
                             },
                         )
                         discovered.append(data)
@@ -282,10 +289,10 @@ class FlextPluginDiscovery:
                         self.logger.debug(f"Invalid entry point: {entry_point.name}")
                         continue
                 self.logger.info(
-                    f"Entry point discovery found {len(discovered)} plugins"
+                    f"Entry point discovery found {len(discovered)} plugins",
                 )
                 return r[list[FlextPluginModels.Plugin.DiscoveryData]].ok(
-                    value=discovered
+                    value=discovered,
                 )
             except (
                 ValueError,
@@ -298,7 +305,7 @@ class FlextPluginDiscovery:
             ) as e:
                 self.logger.exception("Entry point discovery failed")
                 return r[list[FlextPluginModels.Plugin.DiscoveryData]].fail(
-                    f"Entry point discovery error: {e!s}"
+                    f"Entry point discovery error: {e!s}",
                 )
 
 

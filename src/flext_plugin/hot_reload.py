@@ -88,7 +88,10 @@ class FlextPluginHotReload:
     """
 
     def __init__(
-        self, watch_interval: float = 2.0, debounce_ms: int = 500, max_retries: int = 3
+        self,
+        watch_interval: float = 2.0,
+        debounce_ms: int = 500,
+        max_retries: int = 3,
     ) -> None:
         """Initialize the hot reload service.
 
@@ -170,7 +173,7 @@ class FlextPluginHotReload:
         try:
             if not self._is_watching:
                 return r[dict[str, t.NormalizedValue]].fail(
-                    "Hot reload is not watching"
+                    "Hot reload is not watching",
                 )
             reload_results: list[dict[str, t.NormalizedValue]] = []
             for watched_path in self._watched_paths:
@@ -227,7 +230,8 @@ class FlextPluginHotReload:
         }
 
     def get_reload_history(
-        self, limit: int = 100
+        self,
+        limit: int = 100,
     ) -> list[FlextPluginModels.Plugin.ReloadRecord]:
         """Get reload history.
 
@@ -377,7 +381,9 @@ class FlextPluginHotReload:
             self._watched_paths = watched_paths
             self._is_watching = True
             self._event_handler = FileChangeHandler(
-                self._handle_file_change, self._watched_paths, self.logger
+                self._handle_file_change,
+                self._watched_paths,
+                self.logger,
             )
             self._observer = WatchdogObserver()
             if self._observer:
@@ -387,16 +393,16 @@ class FlextPluginHotReload:
                         str(
                             watched_path.parent
                             if watched_path.is_file()
-                            else watched_path
+                            else watched_path,
                         ),
                         recursive=True,
                     )
                 self._observer.start()
                 self.logger.info(
-                    f"Started hot reload with watchdog for {len(watched_paths)} paths"
+                    f"Started hot reload with watchdog for {len(watched_paths)} paths",
                 )
             self.logger.info(
-                f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths"
+                f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths",
             )
             return r.ok(True)
         except (

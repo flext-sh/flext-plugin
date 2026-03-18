@@ -54,7 +54,8 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def load_plugin(
-                self, plugin_path: str
+                self,
+                plugin_path: str,
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Load a plugin from the specified path."""
                 ...
@@ -68,19 +69,22 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin discovery operations."""
 
             def discover_plugin(
-                self, _plugin_path: str
+                self,
+                _plugin_path: str,
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
-                self, paths: list[str]
+                self,
+                paths: list[str],
             ) -> r[list[Mapping[str, t.NormalizedValue]]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
-                self, _plugin_data: Mapping[str, t.NormalizedValue]
+                self,
+                _plugin_data: Mapping[str, t.NormalizedValue],
             ) -> r[bool]:
                 """Validate plugin discovery data."""
                 ...
@@ -122,7 +126,9 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin execution operations."""
 
             def execute_plugin(
-                self, _plugin_name: str, _context: Mapping[str, t.NormalizedValue]
+                self,
+                _plugin_name: str,
+                _context: Mapping[str, t.NormalizedValue],
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Execute a plugin with the given context."""
                 ...
@@ -144,7 +150,9 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin security operations."""
 
             def check_permissions(
-                self, _plugin_name: str, _permissions: list[str]
+                self,
+                _plugin_name: str,
+                _permissions: list[str],
             ) -> r[bool]:
                 """Check if plugin has specified permissions."""
                 ...
@@ -154,7 +162,8 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def scan_plugin_security(
-                self, _plugin_path: str
+                self,
+                _plugin_path: str,
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Scan plugin for security vulnerabilities."""
                 ...
@@ -192,13 +201,15 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for plugin monitoring operations."""
 
             def get_plugin_health(
-                self, _plugin_name: str
+                self,
+                _plugin_name: str,
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Get health status of a plugin."""
                 ...
 
             def get_plugin_metrics(
-                self, _plugin_name: str
+                self,
+                _plugin_name: str,
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 """Get metrics for a plugin."""
                 ...
@@ -228,7 +239,9 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def save_config(
-                self, _plugin_name: str, config: t.NormalizedValue
+                self,
+                _plugin_name: str,
+                config: t.NormalizedValue,
             ) -> r[bool]:
                 """Save configuration for a plugin."""
                 ...
@@ -282,7 +295,8 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def validate_plugin_structure(
-                self, _plugin_data: t.NormalizedValue
+                self,
+                _plugin_data: t.NormalizedValue,
             ) -> r[bool]:
                 """Validate plugin structure."""
                 ...
@@ -316,31 +330,46 @@ class FlextPluginProtocols(FlextProtocols):
             """Protocol for logging operations."""
 
             def critical(
-                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+                self,
+                message: str,
+                *args: t.NormalizedValue,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Log critical message."""
                 ...
 
             def debug(
-                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+                self,
+                message: str,
+                *args: t.NormalizedValue,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Log debug message."""
                 ...
 
             def error(
-                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+                self,
+                message: str,
+                *args: t.NormalizedValue,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Log error message."""
                 ...
 
             def info(
-                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+                self,
+                message: str,
+                *args: t.NormalizedValue,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Log info message."""
                 ...
 
             def warning(
-                self, message: str, *args: t.NormalizedValue, **kwargs: t.Scalar
+                self,
+                message: str,
+                *args: t.NormalizedValue,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Log warning message."""
                 ...
@@ -350,7 +379,8 @@ class FlextPluginProtocols(FlextProtocols):
             """Strategy protocol for plugin discovery."""
 
             def discover(
-                self, paths: list[str]
+                self,
+                paths: list[str],
             ) -> r[list[FlextPluginModels.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...

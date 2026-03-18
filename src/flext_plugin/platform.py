@@ -66,7 +66,10 @@ class FlextPluginPlatform:
             return cls(plugin_name, execution_config, execution_id)
 
         def mark_completed(
-            self, *, success: bool, error_message: str | None = None
+            self,
+            *,
+            success: bool,
+            error_message: str | None = None,
         ) -> None:
             """Mark execution as completed."""
             self.is_running = False
@@ -133,7 +136,7 @@ class FlextPluginPlatform:
             if result.is_success:
                 try:
                     plugin = FlextPluginModels.Plugin.Plugin.model_validate(
-                        result.value
+                        result.value,
                     )
                     return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
                 except (
@@ -146,7 +149,7 @@ class FlextPluginPlatform:
                     ImportError,
                 ):
                     return r[FlextPluginModels.Plugin.Plugin].fail(
-                        "Plugin is not a valid Plugin type"
+                        "Plugin is not a valid Plugin type",
                     )
             if result.is_failure:
                 return r[FlextPluginModels.Plugin.Plugin].fail(result.error)
@@ -154,7 +157,10 @@ class FlextPluginPlatform:
 
         @override
         def list_plugins(
-            self, category: str = "plugins", *, scope: str = "class"
+            self,
+            category: str = "plugins",
+            *,
+            scope: str = "class",
         ) -> r[list[str]]:
             """List all registered plugin names.
 
@@ -210,20 +216,20 @@ class FlextPluginPlatform:
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: dict[str, FlextPluginPlatform.Plugin] = PrivateAttr(
-            default_factory=lambda: dict[str, FlextPluginPlatform.Plugin]()
+            default_factory=lambda: dict[str, FlextPluginPlatform.Plugin](),
         )
         _executions: dict[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
-            default_factory=lambda: dict[str, FlextPluginPlatform.PluginExecution]()
+            default_factory=lambda: dict[str, FlextPluginPlatform.PluginExecution](),
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
         _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(
-            default=None
+            default=None,
         )
         _loader: FlextPluginProtocols.Plugin.PluginLoader | None = PrivateAttr(
-            default=None
+            default=None,
         )
         _executor: FlextPluginProtocols.Plugin.PluginExecution | None = PrivateAttr(
-            default=None
+            default=None,
         )
 
         @staticmethod
@@ -323,7 +329,8 @@ class FlextPluginPlatform:
             return len(completed_ids)
 
         def discover_plugins(
-            self, paths: list[str]
+            self,
+            paths: list[str],
         ) -> r[list[FlextPluginPlatform.Plugin]]:
             """Discover plugins with railway composition."""
 
@@ -332,7 +339,7 @@ class FlextPluginPlatform:
             ) -> r[list[Mapping[str, t.NormalizedValue]]]:
                 if not self.discovery:
                     return r[list[Mapping[str, t.NormalizedValue]]].fail(
-                        "Discovery protocol not configured"
+                        "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.is_success:
@@ -347,7 +354,9 @@ class FlextPluginPlatform:
                         path = getattr(item, "path", "")
                         discovery_type = getattr(item, "discovery_type", "file")
                         discovery_method = getattr(
-                            item, "discovery_method", "file_system"
+                            item,
+                            "discovery_method",
+                            "file_system",
                         )
                         metadata = getattr(item, "metadata", {})
                         if u.is_dict_like(metadata):
@@ -361,7 +370,7 @@ class FlextPluginPlatform:
                             })
                     return r.ok(plugin_dicts)
                 return r[list[Mapping[str, t.NormalizedValue]]].fail(
-                    discovery_result.error or "Discovery failed"
+                    discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
@@ -459,7 +468,7 @@ class FlextPluginPlatform:
             ) -> r[Mapping[str, t.NormalizedValue]]:
                 if not self.loader:
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        "Loader protocol not configured"
+                        "Loader protocol not configured",
                     )
                 load_result = self.loader.load_plugin(plugin_path)
                 if load_result.is_success:
@@ -479,10 +488,10 @@ class FlextPluginPlatform:
                         }
                         return r.ok(plugin_dict)
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        "Invalid load data format"
+                        "Invalid load data format",
                     )
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    load_result.error or "Load failed"
+                    load_result.error or "Load failed",
                 )
 
             def create_plugin_from_load_data(
@@ -499,7 +508,8 @@ class FlextPluginPlatform:
             )
 
         def register_plugin(
-            self, plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin
+            self,
+            plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin,
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
@@ -511,7 +521,7 @@ class FlextPluginPlatform:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
                 plugin_entity = FlextPluginPlatform.Plugin.model_validate(
-                    plugin.model_dump(mode="python")
+                    plugin.model_dump(mode="python"),
                 )
                 return self._add_to_plugins(plugin_entity)
 
@@ -548,7 +558,9 @@ class FlextPluginPlatform:
             return True
 
         def _check_protocol(
-            self, protocol: t.NormalizedValue | None, name: str
+            self,
+            protocol: t.NormalizedValue | None,
+            name: str,
         ) -> r[bool]:
             """Protocol validation helper."""
             return (
@@ -570,15 +582,17 @@ class FlextPluginPlatform:
             return r.ok(execution)
 
         def _execute_with_executor(
-            self, execution: FlextPluginPlatform.PluginExecution
+            self,
+            execution: FlextPluginPlatform.PluginExecution,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Execute with injected executor."""
             if not self.executor:
                 execution.mark_completed(
-                    success=False, error_message="Executor not configured"
+                    success=False,
+                    error_message="Executor not configured",
                 )
                 return r[FlextPluginPlatform.PluginExecution].fail(
-                    "Executor not configured"
+                    "Executor not configured",
                 )
             exec_context: dict[str, t.NormalizedValue] = {
                 "plugin_id": execution.plugin_name,
@@ -596,7 +610,7 @@ class FlextPluginPlatform:
             if result.is_success:
                 return r.ok(execution)
             return r[FlextPluginPlatform.PluginExecution].fail(
-                result.error or "Execution failed"
+                result.error or "Execution failed",
             )
 
         def _get_plugin(self, name: str) -> r[FlextPluginPlatform.Plugin]:
@@ -606,7 +620,8 @@ class FlextPluginPlatform:
             return r[FlextPluginPlatform.Plugin].fail(f"Plugin '{name}' not found")
 
         def _prepare_execution(
-            self, execution: FlextPluginPlatform.PluginExecution
+            self,
+            execution: FlextPluginPlatform.PluginExecution,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Prepare execution for running."""
             execution.mark_started()
@@ -614,7 +629,8 @@ class FlextPluginPlatform:
             return r.ok(execution)
 
         def _register_all(
-            self, plugins: list[FlextPluginPlatform.Plugin]
+            self,
+            plugins: list[FlextPluginPlatform.Plugin],
         ) -> list[FlextPluginPlatform.Plugin]:
             """Register multiple plugins."""
             for plugin in plugins:
@@ -623,7 +639,8 @@ class FlextPluginPlatform:
             return plugins
 
         def _register_single(
-            self, plugin: FlextPluginPlatform.Plugin
+            self,
+            plugin: FlextPluginPlatform.Plugin,
         ) -> FlextPluginPlatform.Plugin:
             """Register single plugin."""
             self._plugins[plugin.name] = plugin
@@ -636,7 +653,8 @@ class FlextPluginPlatform:
             return True
 
         def _validate_and_create_plugin(
-            self, plugin_data: Mapping[str, t.NormalizedValue]
+            self,
+            plugin_data: Mapping[str, t.NormalizedValue],
         ) -> r[FlextPluginPlatform.Plugin]:
             """Create single validated plugin."""
             plugin = FlextPluginPlatform.Plugin.create(
@@ -647,11 +665,12 @@ class FlextPluginPlatform:
             if validation_result.is_success:
                 return r.ok(plugin)
             return r[FlextPluginPlatform.Plugin].fail(
-                validation_result.error or "Plugin validation failed"
+                validation_result.error or "Plugin validation failed",
             )
 
         def _validate_and_create_plugins(
-            self, plugin_data: list[Mapping[str, t.NormalizedValue]]
+            self,
+            plugin_data: list[Mapping[str, t.NormalizedValue]],
         ) -> r[list[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: list[FlextPluginPlatform.Plugin] = []

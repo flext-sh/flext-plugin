@@ -71,7 +71,7 @@ class FlextPluginUtilities(FlextUtilities):
                 search_path = Path(directory)
                 if not search_path.exists():
                     return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
-                        f"Plugin directory does not exist: {search_path}"
+                        f"Plugin directory does not exist: {search_path}",
                     )
                 plugins: list[FlextPluginModels.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
@@ -82,13 +82,13 @@ class FlextPluginUtilities(FlextUtilities):
                     ):
                         validation_result = (
                             FlextPluginUtilities.Plugin.validate_plugin_file(
-                                plugin_file
+                                plugin_file,
                             )
                         )
                         if validation_result.is_success:
                             metadata_result = (
                                 FlextPluginUtilities.Plugin.extract_plugin_metadata(
-                                    plugin_file
+                                    plugin_file,
                                 )
                             )
                             if metadata_result.is_success:
@@ -104,7 +104,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
-                    f"Plugin discovery failed: {e}"
+                    f"Plugin discovery failed: {e}",
                 )
 
         @staticmethod
@@ -126,7 +126,8 @@ class FlextPluginUtilities(FlextUtilities):
                 if plugin_path.suffix == ".py":
                     content = plugin_path.read_text(encoding="utf-8")
                     version_match = re.search(
-                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']", content
+                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']",
+                        content,
                     )
                     if version_match:
                         version = version_match.group(1)
@@ -154,7 +155,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[FlextPluginModels.Plugin.PluginMetadata].fail(
-                    f"Metadata extraction failed: {e}"
+                    f"Metadata extraction failed: {e}",
                 )
 
         @staticmethod
@@ -174,7 +175,7 @@ class FlextPluginUtilities(FlextUtilities):
                 file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
                 if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
                     return r[None].fail(
-                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB"
+                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
                     )
                 if plugin_path.suffix == ".py":
                     content = plugin_path.read_text(encoding="utf-8")
@@ -188,7 +189,7 @@ class FlextPluginUtilities(FlextUtilities):
                     for pattern in dangerous_patterns:
                         if pattern in content:
                             return r[None].fail(
-                                f"Plugin contains potentially dangerous code: {pattern}"
+                                f"Plugin contains potentially dangerous code: {pattern}",
                             )
                 return r[None].ok(None)
             except (
@@ -215,7 +216,7 @@ class FlextPluginUtilities(FlextUtilities):
             """
             if not re.match(FlextPluginUtilities.Plugin.PLUGIN_NAME_PATTERN, name):
                 return r[None].fail(
-                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores."
+                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
                 )
             return r[None].ok(None)
 
@@ -245,7 +246,7 @@ class FlextPluginUtilities(FlextUtilities):
                 path = Path(watch_path)
                 if not path.exists():
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Watch path does not exist: {path}"
+                        f"Watch path does not exist: {path}",
                     )
                 watcher_config: dict[str, t.NormalizedValue] = {
                     "watch_path": str(path),
@@ -268,7 +269,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"File watcher creation failed: {e}"
+                    f"File watcher creation failed: {e}",
                 )
 
         @staticmethod
@@ -289,7 +290,7 @@ class FlextPluginUtilities(FlextUtilities):
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: dict[str, t.NormalizedValue] = (
                     TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
-                        last_modified_raw
+                        last_modified_raw,
                     )
                     if u.is_dict_like(last_modified_raw)
                     else {}
@@ -334,11 +335,11 @@ class FlextPluginUtilities(FlextUtilities):
             """
             try:
                 validation_result = FlextPluginUtilities.Plugin.validate_plugin_file(
-                    plugin_path
+                    plugin_path,
                 )
                 if validation_result.is_failure:
                     return r[None].fail(
-                        f"Plugin validation failed: {validation_result.error}"
+                        f"Plugin validation failed: {validation_result.error}",
                     )
                 if plugin_path.suffix == ".py":
                     try:
@@ -484,7 +485,7 @@ class FlextPluginUtilities(FlextUtilities):
                         violations = security_report["violations"]
                         if u.is_list_like(violations) and isinstance(violations, list):
                             violations.append(
-                                f"Dangerous operation detected: {dangerous_op}"
+                                f"Dangerous operation detected: {dangerous_op}",
                             )
                 import_pattern = "(?:from\\s+(\\w+)|import\\s+(\\w+))"
                 imports = re.findall(import_pattern, plugin_content)
@@ -518,7 +519,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Security validation failed: {e}"
+                    f"Security validation failed: {e}",
                 )
 
     class ConfigurationManager:
@@ -545,7 +546,7 @@ class FlextPluginUtilities(FlextUtilities):
                 path = Path(config_path)
                 if not path.exists():
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Configuration file not found: {path}"
+                        f"Configuration file not found: {path}",
                     )
                 file_size_kb = path.stat().st_size / 1024
                 if (
@@ -553,18 +554,18 @@ class FlextPluginUtilities(FlextUtilities):
                     > FlextPluginUtilities.ConfigurationManager.MAX_CONFIG_SIZE_KB
                 ):
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Configuration file too large: {file_size_kb:.1f}KB"
+                        f"Configuration file too large: {file_size_kb:.1f}KB",
                     )
                 content = path.read_text(encoding="utf-8")
                 if path.suffix in {".yaml", ".yml"}:
                     config = yaml.safe_load(content)
                 elif path.suffix == ".json":
                     config = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
-                        content
+                        content,
                     )
                 else:
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Unsupported configuration format: {path.suffix}"
+                        f"Unsupported configuration format: {path.suffix}",
                     )
                 if (
                     u.is_dict_like(config)
@@ -572,10 +573,10 @@ class FlextPluginUtilities(FlextUtilities):
                     != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
                 ):
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Unsupported configuration schema version: {config.get('schema_version')}"
+                        f"Unsupported configuration schema version: {config.get('schema_version')}",
                     )
                 config_mapping = TypeAdapter(
-                    dict[str, t.NormalizedValue]
+                    dict[str, t.NormalizedValue],
                 ).validate_python(config)
                 return r[Mapping[str, t.NormalizedValue]].ok(config_mapping)
             except (
@@ -588,7 +589,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Configuration loading failed: {e}"
+                    f"Configuration loading failed: {e}",
                 )
 
         @staticmethod
@@ -612,19 +613,20 @@ class FlextPluginUtilities(FlextUtilities):
                     existing_value = merged_config.get(key)
                     if isinstance(value, dict) and isinstance(existing_value, dict):
                         base_nested_config = TypeAdapter(
-                            dict[str, t.NormalizedValue]
+                            dict[str, t.NormalizedValue],
                         ).validate_python(existing_value)
                         override_value = TypeAdapter(
-                            dict[str, t.NormalizedValue]
+                            dict[str, t.NormalizedValue],
                         ).validate_python(value)
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
-                            base_nested_config, override_value
+                            base_nested_config,
+                            override_value,
                         )
                         if nested_merge.is_success:
                             merged_config[key] = nested_merge.value
                         else:
                             return r[Mapping[str, t.NormalizedValue]].fail(
-                                f"Failed to merge nested config for key '{key}': {nested_merge.error}"
+                                f"Failed to merge nested config for key '{key}': {nested_merge.error}",
                             )
                     else:
                         merged_config[key] = value
@@ -639,7 +641,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Configuration merge failed: {e}"
+                    f"Configuration merge failed: {e}",
                 )
 
         @staticmethod
@@ -658,19 +660,19 @@ class FlextPluginUtilities(FlextUtilities):
                 for field in required_fields:
                     if field not in config:
                         return r[None].fail(
-                            f"Missing required configuration field: {field}"
+                            f"Missing required configuration field: {field}",
                         )
                 name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
-                    str(config["name"])
+                    str(config["name"]),
                 )
                 if name_validation.is_failure:
                     return r[None].fail(
-                        name_validation.error or "Plugin name validation failed"
+                        name_validation.error or "Plugin name validation failed",
                     )
                 version_pattern = "^\\d+\\.\\d+\\.\\d+$"
                 if not re.match(version_pattern, str(config["version"])):
                     return r[None].fail(
-                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)"
+                        f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)",
                     )
                 return r[None].ok(None)
             except (
@@ -719,7 +721,7 @@ class FlextPluginUtilities(FlextUtilities):
             plugin_function = getattr(plugin_module, function_name, None)
             if plugin_function is None:
                 return r[t.NormalizedValue].fail(
-                    f"Function '{function_name}' not found in plugin module"
+                    f"Function '{function_name}' not found in plugin module",
                 )
             if not callable(plugin_function):
                 return r[t.NormalizedValue].fail(f"'{function_name}' is not callable")
@@ -760,12 +762,12 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[ModuleType].fail(f"Plugin file not found: {path}")
                 if path.suffix != ".py":
                     return r[ModuleType].fail(
-                        f"Only Python plugins are supported: {path}"
+                        f"Only Python plugins are supported: {path}",
                     )
                 spec = importlib.util.spec_from_file_location(path.stem, path)
                 if spec is None or spec.loader is None:
                     return r[ModuleType].fail(
-                        f"Failed to create module spec for: {path}"
+                        f"Failed to create module spec for: {path}",
                     )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
@@ -783,7 +785,8 @@ class FlextPluginUtilities(FlextUtilities):
 
         @staticmethod
         def validate_plugin_interface(
-            plugin_module: ModuleType, required_functions: t.Plugin.StringList
+            plugin_module: ModuleType,
+            required_functions: t.Plugin.StringList,
         ) -> r[None]:
             """Validate that plugin module implements required interface.
 
@@ -899,11 +902,11 @@ class FlextPluginUtilities(FlextUtilities):
                     > FlextPluginUtilities.RegistryOperations.MAX_REGISTRY_SIZE_MB
                 ):
                     return r[Mapping[str, t.NormalizedValue]].fail(
-                        f"Registry file too large: {file_size_mb:.1f}MB"
+                        f"Registry file too large: {file_size_mb:.1f}MB",
                     )
                 content = path.read_text(encoding="utf-8")
                 registry = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
-                    content
+                    content,
                 )
                 return r[Mapping[str, t.NormalizedValue]].ok(registry)
             except (
@@ -916,7 +919,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Registry loading failed: {e}"
+                    f"Registry loading failed: {e}",
                 )
 
         @staticmethod
@@ -964,12 +967,13 @@ class FlextPluginUtilities(FlextUtilities):
                 ImportError,
             ) as e:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Plugin registration failed: {e}"
+                    f"Plugin registration failed: {e}",
                 )
 
         @staticmethod
         def save_plugin_registry(
-            registry: Mapping[str, t.NormalizedValue], registry_path: Path | str
+            registry: Mapping[str, t.NormalizedValue],
+            registry_path: Path | str,
         ) -> r[None]:
             """Save plugin registry to file with backup.
 
@@ -985,11 +989,11 @@ class FlextPluginUtilities(FlextUtilities):
                 path = Path(registry_path)
                 if path.exists():
                     backup_path = path.with_suffix(
-                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
+                        f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
                     )
                     _ = path.rename(backup_path)
                     _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
-                        path.parent
+                        path.parent,
                     )
                 mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()

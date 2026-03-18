@@ -141,7 +141,8 @@ class FlextPluginService(x):
         return r.ok(True)
 
     def discover_and_register_plugins(
-        self, paths: list[str]
+        self,
+        paths: list[str],
     ) -> r[list[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins and register them in the service.
 
@@ -155,16 +156,16 @@ class FlextPluginService(x):
         try:
             if not self._discovery:
                 return r[list[FlextPluginModels.Plugin.Plugin]].fail(
-                    "Plugin discovery not available"
+                    "Plugin discovery not available",
                 )
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
                 return r[list[FlextPluginModels.Plugin.Plugin]].fail(
-                    f"Discovery failed: {discovery_result.error}"
+                    f"Discovery failed: {discovery_result.error}",
                 )
             if not u.is_list_like(discovery_result.value):
                 return r[list[FlextPluginModels.Plugin.Plugin]].fail(
-                    "Discovery did not return a list"
+                    "Discovery did not return a list",
                 )
             registered_plugins: list[FlextPluginModels.Plugin.Plugin] = []
             for plugin_data in discovery_result.value:
@@ -192,32 +193,32 @@ class FlextPluginService(x):
                 validation_result = plugin.validate_business_rules()
                 if validation_result.is_failure:
                     self.logger.warning(
-                        f"Plugin {plugin.name} validation failed: {validation_result.error}"
+                        f"Plugin {plugin.name} validation failed: {validation_result.error}",
                     )
                     continue
                 if self._security:
                     plugin_payload = self._to_general_mapping(
-                        plugin.model_dump(mode="python")
+                        plugin.model_dump(mode="python"),
                     )
                     security_result = self._security.validate_plugin_security(
-                        plugin_payload
+                        plugin_payload,
                     )
                     if security_result.is_failure:
                         self.logger.warning(
                             "Plugin "
                             f"{plugin.name} security validation failed: "
-                            f"{security_result.error if security_result.error is not None else ''}"
+                            f"{security_result.error if security_result.error is not None else ''}",
                         )
                         continue
                 if self._registry:
                     plugin_payload = self._to_general_mapping(
-                        plugin.model_dump(mode="python")
+                        plugin.model_dump(mode="python"),
                     )
                     register_result = self._registry.register_plugin(plugin_payload)
                     if register_result.is_failure:
                         self.logger.warning(
                             f"Plugin {plugin.name} registration failed: "
-                            f"{register_result.error if register_result.error is not None else ''}"
+                            f"{register_result.error if register_result.error is not None else ''}",
                         )
                         continue
                 self._plugins[plugin.name] = plugin
@@ -227,7 +228,7 @@ class FlextPluginService(x):
                     if monitoring_result.is_failure:
                         self.logger.warning(
                             f"Plugin {plugin.name} monitoring startup failed: "
-                            f"{monitoring_result.error if monitoring_result.error is not None else ''}"
+                            f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                         )
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r.ok(registered_plugins)
@@ -242,11 +243,12 @@ class FlextPluginService(x):
         ) as e:
             self.logger.exception("Plugin discovery and registration failed")
             return r[list[FlextPluginModels.Plugin.Plugin]].fail(
-                f"Service error: {e!s}"
+                f"Service error: {e!s}",
             )
 
     def discover_plugins(
-        self, paths: list[str]
+        self,
+        paths: list[str],
     ) -> r[list[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins from the specified paths.
 
@@ -297,11 +299,11 @@ class FlextPluginService(x):
         try:
             if plugin_name not in self._plugins:
                 return r[FlextPluginPlatform.PluginExecution].fail(
-                    f"Plugin '{plugin_name}' not found"
+                    f"Plugin '{plugin_name}' not found",
                 )
             if not self._executor:
                 return r[FlextPluginPlatform.PluginExecution].fail(
-                    "Plugin executor not available"
+                    "Plugin executor not available",
                 )
             plugin = self._plugins[plugin_name]
             execution = FlextPluginPlatform.PluginExecution.create(
@@ -315,13 +317,13 @@ class FlextPluginService(x):
             if exec_result.is_failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
                 return r[FlextPluginPlatform.PluginExecution].fail(
-                    f"Execution failed: {exec_result.error}"
+                    f"Execution failed: {exec_result.error}",
                 )
             execution.mark_completed(success=True)
             if u.is_dict_like(exec_result.value):
                 execution.result = self._to_general_mapping(exec_result.value)
             plugin.record_execution(0.0, success=True)
-            self.logger.info(f"Executed plugin '{plugin_name}' successfully")
+            self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r.ok(execution)
         except (
             ValueError,
@@ -334,11 +336,12 @@ class FlextPluginService(x):
         ) as e:
             self.logger.exception("Failed to execute plugin '%s'", plugin_name)
             return r[FlextPluginPlatform.PluginExecution].fail(
-                f"Execution error: {e!s}"
+                f"Execution error: {e!s}",
             )
 
     def get_execution(
-        self, execution_id: str
+        self,
+        execution_id: str,
     ) -> FlextPluginPlatform.PluginExecution | None:
         """Get an execution by ID.
 
@@ -364,7 +367,8 @@ class FlextPluginService(x):
         return self._plugins.get(plugin_name)
 
     def get_plugin_config(
-        self, plugin_name: str
+        self,
+        plugin_name: str,
     ) -> r[FlextPluginModels.Plugin.PluginConfig]:
         """Get configuration for a plugin.
 
@@ -378,17 +382,19 @@ class FlextPluginService(x):
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
             return r[FlextPluginModels.Plugin.PluginConfig].fail(
-                f"Plugin '{plugin_name}' not found"
+                f"Plugin '{plugin_name}' not found",
             )
         config_data = plugin.metadata.get("config", {})
         settings = self._to_general_mapping(config_data)
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name=plugin.name, settings=settings
+            plugin_name=plugin.name,
+            settings=settings,
         )
         return r.ok(config)
 
     async def get_plugin_health(
-        self, plugin_name: str
+        self,
+        plugin_name: str,
     ) -> r[Mapping[str, t.NormalizedValue]]:
         """Get health status for a specific plugin.
 
@@ -409,7 +415,8 @@ class FlextPluginService(x):
         )
 
     async def get_plugin_metrics(
-        self, plugin_name: str
+        self,
+        plugin_name: str,
     ) -> r[Mapping[str, t.NormalizedValue]]:
         """Get metrics for a specific plugin.
 
@@ -441,21 +448,21 @@ class FlextPluginService(x):
         try:
             if not self._monitoring:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    "Plugin monitoring not available"
+                    "Plugin monitoring not available",
                 )
             if plugin_name not in self._plugins:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Plugin '{plugin_name}' not found"
+                    f"Plugin '{plugin_name}' not found",
                 )
 
             monitoring_result = operation(plugin_name)
             if monitoring_result.is_failure:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"{operation_failure_prefix}: {monitoring_result.error}"
+                    f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
             if not u.is_dict_like(monitoring_result.value):
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"{response_label} response is not a mapping"
+                    f"{response_label} response is not a mapping",
                 )
             return r.ok(self._to_general_mapping(monitoring_result.value))
         except (
@@ -468,10 +475,12 @@ class FlextPluginService(x):
             ImportError,
         ) as e:
             self.logger.exception(
-                "Failed to get %s for plugin '%s'", operation_name, plugin_name
+                "Failed to get %s for plugin '%s'",
+                operation_name,
+                plugin_name,
             )
             return r[Mapping[str, t.NormalizedValue]].fail(
-                f"{operation_error_prefix}: {e!s}"
+                f"{operation_error_prefix}: {e!s}",
             )
 
     def get_plugin_status(self, plugin_name: str) -> str | None:
@@ -540,7 +549,7 @@ class FlextPluginService(x):
             self._plugins[plugin.name] = plugin
             return r.ok(plugin)
         return r[FlextPluginModels.Plugin.Plugin].fail(
-            result.error or "Plugin installation failed"
+            result.error or "Plugin installation failed",
         )
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
@@ -586,12 +595,12 @@ class FlextPluginService(x):
         try:
             if not self._loader:
                 return r[FlextPluginModels.Plugin.Plugin].fail(
-                    "Plugin loader not available"
+                    "Plugin loader not available",
                 )
             load_result = self._loader.load_plugin(plugin_path)
             if load_result.is_failure:
                 return r[FlextPluginModels.Plugin.Plugin].fail(
-                    f"Plugin loading failed: {load_result.error}"
+                    f"Plugin loading failed: {load_result.error}",
                 )
             value = load_result.value
             if u.is_dict_like(value):
@@ -610,7 +619,7 @@ class FlextPluginService(x):
                 plugin_name = str(getattr(value, "name", ""))
                 if not plugin_name:
                     return r[FlextPluginModels.Plugin.Plugin].fail(
-                        "Loader did not return valid load data"
+                        "Loader did not return valid load data",
                     )
                 plugin_version = str(getattr(value, "version", "1.0.0"))
                 module = getattr(value, "module", None)
@@ -628,27 +637,27 @@ class FlextPluginService(x):
             validation_result = plugin.validate_business_rules()
             if validation_result.is_failure:
                 return r[FlextPluginModels.Plugin.Plugin].fail(
-                    f"Plugin validation failed: {validation_result.error}"
+                    f"Plugin validation failed: {validation_result.error}",
                 )
             if self._security:
                 plugin_payload = self._to_general_mapping(
-                    plugin.model_dump(mode="python")
+                    plugin.model_dump(mode="python"),
                 )
                 security_result = self._security.validate_plugin_security(
-                    plugin_payload
+                    plugin_payload,
                 )
                 if security_result.is_failure:
                     return r[FlextPluginModels.Plugin.Plugin].fail(
-                        f"Security validation failed: {security_result.error}"
+                        f"Security validation failed: {security_result.error}",
                     )
             if self._registry:
                 plugin_payload = self._to_general_mapping(
-                    plugin.model_dump(mode="python")
+                    plugin.model_dump(mode="python"),
                 )
                 register_result = self._registry.register_plugin(plugin_payload)
                 if register_result.is_failure:
                     return r[FlextPluginModels.Plugin.Plugin].fail(
-                        f"Registration failed: {register_result.error}"
+                        f"Registration failed: {register_result.error}",
                     )
             self._plugins[plugin.name] = plugin
             if self._monitoring:
@@ -656,7 +665,7 @@ class FlextPluginService(x):
                 if monitoring_result.is_failure:
                     self.logger.warning(
                         f"Monitoring startup failed for plugin {plugin.name}: "
-                        f"{monitoring_result.error if monitoring_result.error is not None else ''}"
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                     )
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return r.ok(plugin)
@@ -705,20 +714,20 @@ class FlextPluginService(x):
                 if monitoring_result.is_failure:
                     self.logger.warning(
                         f"Failed to stop monitoring for {plugin_name}: "
-                        f"{monitoring_result.error if monitoring_result.error is not None else ''}"
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                     )
             if self._registry:
                 unregister_result = self._registry.unregister_plugin(plugin_name)
                 if unregister_result.is_failure:
                     return r[bool].fail(
-                        f"Unregistration failed: {unregister_result.error}"
+                        f"Unregistration failed: {unregister_result.error}",
                     )
             if self._loader:
                 unload_result = self._loader.unload_plugin(plugin_name)
                 if unload_result.is_failure:
                     return r[bool].fail(f"Unloading failed: {unload_result.error}")
             del self._plugins[plugin_name]
-            self.logger.info(f"Unloaded plugin: {plugin_name}")
+            self.logger.info("Unloaded plugin: %s", plugin_name)
             return r.ok(True)
         except (
             ValueError,
@@ -733,7 +742,9 @@ class FlextPluginService(x):
             return r[bool].fail(f"Unloading error: {e!s}")
 
     def update_plugin_config(
-        self, plugin_name: str, config: Mapping[str, t.NormalizedValue]
+        self,
+        plugin_name: str,
+        config: Mapping[str, t.NormalizedValue],
     ) -> r[bool]:
         """Update configuration for a plugin.
 
