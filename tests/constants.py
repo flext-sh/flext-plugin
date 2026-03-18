@@ -11,7 +11,7 @@ from __future__ import annotations
 from flext_tests import c
 
 
-class TestsFlextPluginConstants(FlextTestsConstants):
+class TestsFlextPluginConstants(c):
     """Test constants for flextplugin."""
 
 

@@ -1,6 +1,6 @@
 """Test models for flext-plugin.
 
-Provides test-specific models extending FlextTestsModels and FlextPluginModels
+Provides test-specific models extending m and FlextPluginModels
 with proper hierarchy composition.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,18 +14,18 @@ from flext_tests import m
 from flext_plugin import FlextPluginModels
 
 
-class TestsFlextPluginModels(FlextTestsModels, FlextPluginModels):
-    """Test models - composition of FlextTestsModels + FlextPluginModels.
+class TestsFlextPluginModels(m, FlextPluginModels):
+    """Test models - composition of m + FlextPluginModels.
 
     Hierarchy:
-    - FlextTestsModels: Generic test utilities from flext-tests
+    - m: Generic test utilities from flext-tests
     - FlextPluginModels: Domain models from flext-plugin
     - TestsFlextPluginModels: Composition + namespace .Tests
 
     Access patterns:
     - m.Tests.* - Project-specific test fixtures
     - m.Plugin.* - Production domain models (inherited)
-    - FlextTestsModels.Tests.* - Generic test utilities
+    - m.Tests.* - Generic test utilities
     """
 
 

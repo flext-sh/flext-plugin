@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_tests import tm
+
 from flext_plugin import FlextPluginSettings
 
 
@@ -16,20 +18,20 @@ class TestFlextPluginSettings:
     def test_create_config(self) -> None:
         """Test that config can be created with the create method."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
-        assert config is not None
-        assert config.plugin_name == "test-plugin"
+        tm.that(config is not None, eq=True)
+        tm.that(config.plugin_name == "test-plugin", eq=True)
 
     def test_create_config_with_defaults(self) -> None:
         """Test that config has sensible defaults."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
-        assert config.enabled is True
-        assert config.priority == 100
-        assert config.max_memory_mb == 512
-        assert config.max_cpu_percent == 50
-        assert config.timeout_seconds == 30
-        assert config.dependencies == []
-        assert config.settings == {}
-        assert config.config_data == {}
+        tm.that(config.enabled is True, eq=True)
+        tm.that(config.priority == 100, eq=True)
+        tm.that(config.max_memory_mb == 512, eq=True)
+        tm.that(config.max_cpu_percent == 50, eq=True)
+        tm.that(config.timeout_seconds == 30, eq=True)
+        tm.that(config.dependencies == [], eq=True)
+        tm.that(config.settings == {}, eq=True)
+        tm.that(config.config_data == {}, eq=True)
 
     def test_create_config_with_custom_values(self) -> None:
         """Test config creation with custom values."""
@@ -47,67 +49,69 @@ class TestFlextPluginSettings:
             config_data={"data_key": "data_value"},
             options=options,
         )
-        assert config.plugin_name == "custom-plugin"
-        assert config.enabled is False
-        assert config.priority == 50
-        assert config.max_memory_mb == 1024
-        assert config.max_cpu_percent == 75
-        assert config.timeout_seconds == 60
-        assert config.dependencies == ["dep1", "dep2"]
-        assert config.settings == {"key": "value"}
-        assert config.config_data == {"data_key": "data_value"}
+        tm.that(config.plugin_name == "custom-plugin", eq=True)
+        tm.that(config.enabled is False, eq=True)
+        tm.that(config.priority == 50, eq=True)
+        tm.that(config.max_memory_mb == 1024, eq=True)
+        tm.that(config.max_cpu_percent == 75, eq=True)
+        tm.that(config.timeout_seconds == 60, eq=True)
+        tm.that(config.dependencies == ["dep1", "dep2"], eq=True)
+        tm.that(config.settings == {"key": "value"}, eq=True)
+        tm.that(config.config_data == {"data_key": "data_value"}, eq=True)
 
     def test_update_timestamp(self) -> None:
         """Test update_timestamp method."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
-        assert config.updated_at is None
+        tm.that(config.updated_at is None, eq=True)
         config.update_timestamp()
-        assert config.updated_at is not None
+        tm.that(config.updated_at is not None, eq=True)
 
     def test_validate_business_rules_valid(self) -> None:
         """Test validate_business_rules with valid config."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
         result = config.validate_business_rules()
-        assert result.is_success
+        tm.that(result.is_success, eq=True)
 
     def test_validate_business_rules_empty_name(self) -> None:
         """Test validate_business_rules rejects empty name."""
         config = FlextPluginSettings.create(plugin_name="test")
         config.plugin_name = ""
         result = config.validate_business_rules()
-        assert result.is_failure
-        assert "Plugin name is required" in str(result.error)
+        tm.that(result.is_failure, eq=True)
+        tm.that("Plugin name is required" in str(result.error), eq=True)
 
     def test_validate_business_rules_invalid_memory(self) -> None:
         """Test validate_business_rules rejects invalid memory."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
         config.max_memory_mb = 0
         result = config.validate_business_rules()
-        assert result.is_failure
-        assert "Maximum memory must be positive" in str(result.error)
+        tm.that(result.is_failure, eq=True)
+        tm.that("Maximum memory must be positive" in str(result.error), eq=True)
 
     def test_validate_business_rules_invalid_cpu(self) -> None:
         """Test validate_business_rules rejects invalid CPU percent."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
         config.max_cpu_percent = 150
         result = config.validate_business_rules()
-        assert result.is_failure
-        assert "CPU percentage must be between 0 and 100" in str(result.error)
+        tm.that(result.is_failure, eq=True)
+        tm.that(
+            "CPU percentage must be between 0 and 100" in str(result.error), eq=True
+        )
 
     def test_validate_business_rules_invalid_timeout(self) -> None:
         """Test validate_business_rules rejects invalid timeout."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
         config.timeout_seconds = 0
         result = config.validate_business_rules()
-        assert result.is_failure
-        assert "Timeout must be positive" in str(result.error)
+        tm.that(result.is_failure, eq=True)
+        tm.that("Timeout must be positive" in str(result.error), eq=True)
 
     def test_created_at_timestamp(self) -> None:
         """Test that created_at is set automatically."""
         config = FlextPluginSettings.create(plugin_name="test-plugin")
-        assert config.created_at is not None
+        tm.that(config.created_at is not None, eq=True)
 
     def test_config_model_validation(self) -> None:
         """Test that Pydantic validates the model."""
         config = FlextPluginSettings.create(plugin_name="valid-plugin")
-        assert config.plugin_name == "valid-plugin"
+        tm.that(config.plugin_name == "valid-plugin", eq=True)

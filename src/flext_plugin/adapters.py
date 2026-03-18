@@ -19,6 +19,7 @@ from flext_core import FlextLogger, T, r
 from pydantic import TypeAdapter
 
 from flext_plugin import c, m, p, t
+from flext_plugin.discovery import discover_python_plugins_in_directory
 from flext_plugin.protocols import FlextPluginProtocols
 
 PluginDiscovery = FlextPluginProtocols.Plugin.PluginDiscovery
@@ -111,7 +112,7 @@ class FlextPluginAdapters:
             for path in paths:
                 path_obj = Path(path).expanduser().resolve()
                 if not path_obj.exists():
-                    self.logger.warning("Path does not exist: %s", path)
+                    self.logger.warning(f"Path does not exist: {path}")
                     continue
                 if path_obj.is_file():
                     data = self._discover_single_file(path_obj)
@@ -124,22 +125,11 @@ class FlextPluginAdapters:
 
         def _discover_directory(self, path: Path) -> list[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
-            discovered: list[m.Plugin.DiscoveryData] = []
-            try:
-                for item in path.iterdir():
-                    if (
-                        item.is_file()
-                        and item.suffix == ".py"
-                        and (not item.name.startswith("_"))
-                    ):
-                        data = self._discover_single_file(item)
-                        if data:
-                            discovered.append(data)
-                    elif item.is_dir() and (not item.name.startswith("__")):
-                        discovered.extend(self._discover_directory(item))
-            except (OSError, PermissionError):
-                self.logger.exception(f"Failed to discover directory {path}")
-            return discovered
+            return discover_python_plugins_in_directory(
+                path,
+                self._discover_single_file,
+                self.logger,
+            )
 
         def _discover_single(self, plugin_path: str) -> m.Plugin.DiscoveryData:
             """Internal: discover single plugin."""

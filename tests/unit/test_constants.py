@@ -16,102 +16,182 @@ class TestFlextPluginConstants:
     def test_constants_initialization(self) -> None:
         """Test that constants can be initialized."""
         constants = FlextPluginConstants()
-        assert constants is not None
+        tm.that(constants is not None, eq=True)
 
     def test_discovery_constants(self) -> None:
         """Test discovery-related constants."""
-        assert FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS > 0
-        assert FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS > 0
-        assert len(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS) > 0
-        assert FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH > 0
-        assert FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH > 0
-        assert FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS > 0, eq=True
+        )
+        tm.that(
+            len(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS) > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN, eq=True
+        )
 
     def test_types_constants(self) -> None:
         """Test plugin type constants."""
-        assert len(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES) > 0
-        assert len(FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES) > 0
-        assert len(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES) > 0
-        assert len(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES) > 0
-        assert len(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES) > 0
+        tm.that(len(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES) > 0, eq=True)
+        tm.that(
+            len(FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES) > 0,
+            eq=True,
+        )
+        tm.that(
+            len(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES) > 0, eq=True
+        )
+        tm.that(
+            len(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES) > 0, eq=True
+        )
+        tm.that(len(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES) > 0, eq=True)
 
     def test_lifecycle_constants(self) -> None:
         """Test lifecycle-related constants."""
-        assert len(FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES) > 0
-        assert FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS > 0
-        assert FlextPluginConstants.Plugin.Lifecycle.MIN_PLUGIN_WORKERS >= 0
-        assert FlextPluginConstants.Plugin.Lifecycle.DEFAULT_WORKERS > 0
+        tm.that(
+            len(FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES) > 0,
+            eq=True,
+        )
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.MIN_PLUGIN_WORKERS >= 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.DEFAULT_WORKERS > 0, eq=True)
 
     def test_hot_reload_constants(self) -> None:
         """Test hot reload constants."""
-        assert FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS > 0
-        assert FlextPluginConstants.Plugin.HotReload.DEBOUNCE_MS >= 0
-        assert FlextPluginConstants.Plugin.HotReload.MAX_RETRIES > 0
+        tm.that(
+            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS > 0, eq=True
+        )
+        tm.that(FlextPluginConstants.Plugin.HotReload.DEBOUNCE_MS >= 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.HotReload.MAX_RETRIES > 0, eq=True)
 
     def test_files_constants(self) -> None:
         """Test file-related constants."""
-        assert FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION
-        assert FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION
-        assert FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION
-        assert FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION
-        assert FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR
-        assert FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR
-        assert FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR
+        tm.that(FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR, eq=True)
 
     def test_plugin_messages_constants(self) -> None:
         """Test plugin message constants."""
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS
-        assert FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, eq=True)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS, eq=True
+        )
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, eq=True)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS, eq=True
+        )
 
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
-        assert len(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS) > 0
-        assert FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL
-        assert FlextPluginConstants.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT > 0
+        tm.that(
+            len(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS) > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT > 0,
+            eq=True,
+        )
 
     def test_plugin_performance_constants(self) -> None:
         """Test plugin performance constants."""
-        assert FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX == 100
-        assert FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MIN == 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.GOOD_SUCCESS_RATE > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.FAIR_SUCCESS_RATE > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_TIME_MS > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.GOOD_TIME_MS > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.FAIR_TIME_MS > 0
-        assert (
-            FlextPluginConstants.Plugin.PluginPerformance.EXECUTION_TIME_SCALE_MS_TO_S
-            == 1000
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX == 100, eq=True
         )
-        assert FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS > 0
-        assert FlextPluginConstants.Plugin.PluginPerformance.READY_MAX_MEMORY_MB > 0
-        assert (
-            FlextPluginConstants.Plugin.PluginPerformance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
-            > 0
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MIN == 0, eq=True
         )
-        assert FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB > 0
-        assert (
-            FlextPluginConstants.Plugin.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
-            > 0
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE > 0,
+            eq=True,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.GOOD_SUCCESS_RATE > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.FAIR_SUCCESS_RATE > 0, eq=True
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_TIME_MS > 0, eq=True
+        )
+        tm.that(FlextPluginConstants.Plugin.PluginPerformance.GOOD_TIME_MS > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginPerformance.FAIR_TIME_MS > 0, eq=True)
+        tm.that(
+            (
+                FlextPluginConstants.Plugin.PluginPerformance.EXECUTION_TIME_SCALE_MS_TO_S
+                == 1000
+            ),
+            eq=True,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS > 0,
+            eq=True,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.READY_MAX_MEMORY_MB > 0,
+            eq=True,
+        )
+        tm.that(
+            (
+                FlextPluginConstants.Plugin.PluginPerformance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
+                > 0
+            ),
+            eq=True,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB > 0,
+            eq=True,
+        )
+        tm.that(
+            (
+                FlextPluginConstants.Plugin.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
+                > 0
+            ),
+            eq=True,
         )
 
     def test_constants_immutability(self) -> None:
         """Test that constants are immutable."""
-        assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int
+        tm.that(
+            isinstance(
+                FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int
+            ),
+            eq=True,
         )
-        assert isinstance(
-            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int
+        tm.that(
+            isinstance(
+                FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int
+            ),
+            eq=True,
         )
-        assert isinstance(
-            FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int
+        tm.that(
+            isinstance(
+                FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int
+            ),
+            eq=True,
         )
-        assert isinstance(
-            FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int
+        tm.that(
+            isinstance(
+                FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int
+            ),
+            eq=True,
         )
 
     def test_plugin_type_consistency(self) -> None:
@@ -121,16 +201,16 @@ class TestFlextPluginConstants:
         arch_types = FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES
         integration_types = FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES
         utility_types = FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES
-        assert singer_types.issubset(all_types)
-        assert arch_types.issubset(all_types)
-        assert integration_types.issubset(all_types)
-        assert utility_types.issubset(all_types)
-        assert singer_types.isdisjoint(arch_types)
-        assert singer_types.isdisjoint(integration_types)
-        assert singer_types.isdisjoint(utility_types)
-        assert arch_types.isdisjoint(integration_types)
-        assert arch_types.isdisjoint(utility_types)
-        assert integration_types.isdisjoint(utility_types)
+        tm.that(singer_types.issubset(all_types), eq=True)
+        tm.that(arch_types.issubset(all_types), eq=True)
+        tm.that(integration_types.issubset(all_types), eq=True)
+        tm.that(utility_types.issubset(all_types), eq=True)
+        tm.that(singer_types.isdisjoint(arch_types), eq=True)
+        tm.that(singer_types.isdisjoint(integration_types), eq=True)
+        tm.that(singer_types.isdisjoint(utility_types), eq=True)
+        tm.that(arch_types.isdisjoint(integration_types), eq=True)
+        tm.that(arch_types.isdisjoint(utility_types), eq=True)
+        tm.that(integration_types.isdisjoint(utility_types), eq=True)
 
     def test_security_levels_consistency(self) -> None:
         """Test that security levels are consistent."""
@@ -138,12 +218,12 @@ class TestFlextPluginConstants:
         default_level = (
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL
         )
-        assert default_level in security_levels
-        assert len(security_levels) == 4
-        assert "LOW" in security_levels
-        assert "MEDIUM" in security_levels
-        assert "HIGH" in security_levels
-        assert "CRITICAL" in security_levels
+        tm.that(default_level in security_levels, eq=True)
+        tm.that(len(security_levels) == 4, eq=True)
+        tm.that("LOW" in security_levels, eq=True)
+        tm.that("MEDIUM" in security_levels, eq=True)
+        tm.that("HIGH" in security_levels, eq=True)
+        tm.that("CRITICAL" in security_levels, eq=True)
 
     def test_lifecycle_states_consistency(self) -> None:
         """Test that lifecycle states are consistent."""
@@ -160,5 +240,5 @@ class TestFlextPluginConstants:
             "healthy",
             "unhealthy",
         }
-        assert states == expected_states
-        assert len(states) == 10
+        tm.that(states == expected_states, eq=True)
+        tm.that(len(states) == 10, eq=True)
