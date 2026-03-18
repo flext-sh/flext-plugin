@@ -26,3 +26,5 @@ class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
 
 p: type[TestsFlextPluginProtocols] = TestsFlextPluginProtocols
 __all__ = ["TestsFlextPluginProtocols", "p"]
+
+p = TestsFlextPluginProtocols

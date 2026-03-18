@@ -13,3 +13,7 @@ from flext_tests import FlextTestsUtilities
 
 class TestsFlextPluginUtilities(FlextTestsUtilities):
     """Test utilities for flextplugin."""
+
+
+u = TestsFlextPluginUtilities
+__all__ = ["TestsFlextPluginUtilities", "u"]
