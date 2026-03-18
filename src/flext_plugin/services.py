@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import override
 
 from flext_core import FlextContainer, p, r, u, x
@@ -204,11 +204,9 @@ class FlextPluginService(x):
                     )
                     if security_result.is_failure:
                         self.logger.warning(
-                            "Plugin %s security validation failed: %s",
-                            plugin.name,
-                            security_result.error
-                            if security_result.error is not None
-                            else "",
+                            "Plugin "
+                            f"{plugin.name} security validation failed: "
+                            f"{security_result.error if security_result.error is not None else ''}"
                         )
                         continue
                 if self._registry:
@@ -218,11 +216,8 @@ class FlextPluginService(x):
                     register_result = self._registry.register_plugin(plugin_payload)
                     if register_result.is_failure:
                         self.logger.warning(
-                            "Plugin %s registration failed: %s",
-                            plugin.name,
-                            register_result.error
-                            if register_result.error is not None
-                            else "",
+                            f"Plugin {plugin.name} registration failed: "
+                            f"{register_result.error if register_result.error is not None else ''}"
                         )
                         continue
                 self._plugins[plugin.name] = plugin
@@ -231,11 +226,8 @@ class FlextPluginService(x):
                     monitoring_result = self._monitoring.start_monitoring(plugin.name)
                     if monitoring_result.is_failure:
                         self.logger.warning(
-                            "Plugin %s monitoring startup failed: %s",
-                            plugin.name,
-                            monitoring_result.error
-                            if monitoring_result.error is not None
-                            else "",
+                            f"Plugin {plugin.name} monitoring startup failed: "
+                            f"{monitoring_result.error if monitoring_result.error is not None else ''}"
                         )
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r.ok(registered_plugins)
@@ -329,7 +321,7 @@ class FlextPluginService(x):
             if u.is_dict_like(exec_result.value):
                 execution.result = self._to_general_mapping(exec_result.value)
             plugin.record_execution(0.0, success=True)
-            self.logger.info("Executed plugin '%s' successfully", plugin_name)
+            self.logger.info(f"Executed plugin '{plugin_name}' successfully")
             return r.ok(execution)
         except (
             ValueError,
@@ -407,36 +399,14 @@ class FlextPluginService(x):
         r containing plugin health information
 
         """
-        try:
-            if not self._monitoring:
-                return r[Mapping[str, t.NormalizedValue]].fail(
-                    "Plugin monitoring not available"
-                )
-            if plugin_name not in self._plugins:
-                return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Plugin '{plugin_name}' not found"
-                )
-            health_result = self._monitoring.get_plugin_health(plugin_name)
-            if health_result.is_failure:
-                return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Health check failed: {health_result.error}"
-                )
-            if not u.is_dict_like(health_result.value):
-                return r[Mapping[str, t.NormalizedValue]].fail(
-                    "Health response is not a mapping"
-                )
-            return r.ok(self._to_general_mapping(health_result.value))
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
-            self.logger.exception("Failed to get health for plugin '%s'", plugin_name)
-            return r[Mapping[str, t.NormalizedValue]].fail(f"Health check error: {e!s}")
+        return self._get_plugin_monitoring_data(
+            plugin_name=plugin_name,
+            operation=self._monitoring.get_plugin_health,
+            operation_name="health",
+            operation_failure_prefix="Health check failed",
+            response_label="Health",
+            operation_error_prefix="Health check error",
+        )
 
     async def get_plugin_metrics(
         self, plugin_name: str
@@ -450,6 +420,24 @@ class FlextPluginService(x):
         r containing plugin metrics
 
         """
+        return self._get_plugin_monitoring_data(
+            plugin_name=plugin_name,
+            operation=self._monitoring.get_plugin_metrics,
+            operation_name="metrics",
+            operation_failure_prefix="Metrics retrieval failed",
+            response_label="Metrics",
+            operation_error_prefix="Metrics error",
+        )
+
+    def _get_plugin_monitoring_data(
+        self,
+        plugin_name: str,
+        operation: Callable[[str], r[Mapping[str, t.NormalizedValue]]],
+        operation_name: str,
+        operation_failure_prefix: str,
+        response_label: str,
+        operation_error_prefix: str,
+    ) -> r[Mapping[str, t.NormalizedValue]]:
         try:
             if not self._monitoring:
                 return r[Mapping[str, t.NormalizedValue]].fail(
@@ -459,16 +447,17 @@ class FlextPluginService(x):
                 return r[Mapping[str, t.NormalizedValue]].fail(
                     f"Plugin '{plugin_name}' not found"
                 )
-            metrics_result = self._monitoring.get_plugin_metrics(plugin_name)
-            if metrics_result.is_failure:
+
+            monitoring_result = operation(plugin_name)
+            if monitoring_result.is_failure:
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    f"Metrics retrieval failed: {metrics_result.error}"
+                    f"{operation_failure_prefix}: {monitoring_result.error}"
                 )
-            if not u.is_dict_like(metrics_result.value):
+            if not u.is_dict_like(monitoring_result.value):
                 return r[Mapping[str, t.NormalizedValue]].fail(
-                    "Metrics response is not a mapping"
+                    f"{response_label} response is not a mapping"
                 )
-            return r.ok(self._to_general_mapping(metrics_result.value))
+            return r.ok(self._to_general_mapping(monitoring_result.value))
         except (
             ValueError,
             TypeError,
@@ -478,8 +467,12 @@ class FlextPluginService(x):
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to get metrics for plugin '%s'", plugin_name)
-            return r[Mapping[str, t.NormalizedValue]].fail(f"Metrics error: {e!s}")
+            self.logger.exception(
+                "Failed to get %s for plugin '%s'", operation_name, plugin_name
+            )
+            return r[Mapping[str, t.NormalizedValue]].fail(
+                f"{operation_error_prefix}: {e!s}"
+            )
 
     def get_plugin_status(self, plugin_name: str) -> str | None:
         """Get the status of a specific plugin.
@@ -662,11 +655,8 @@ class FlextPluginService(x):
                 monitoring_result = self._monitoring.start_monitoring(plugin.name)
                 if monitoring_result.is_failure:
                     self.logger.warning(
-                        "Monitoring startup failed for plugin %s: %s",
-                        plugin.name,
-                        monitoring_result.error
-                        if monitoring_result.error is not None
-                        else "",
+                        f"Monitoring startup failed for plugin {plugin.name}: "
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}"
                     )
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return r.ok(plugin)
@@ -714,11 +704,8 @@ class FlextPluginService(x):
                 monitoring_result = self._monitoring.stop_monitoring(plugin_name)
                 if monitoring_result.is_failure:
                     self.logger.warning(
-                        "Failed to stop monitoring for %s: %s",
-                        plugin_name,
-                        monitoring_result.error
-                        if monitoring_result.error is not None
-                        else "",
+                        f"Failed to stop monitoring for {plugin_name}: "
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}"
                     )
             if self._registry:
                 unregister_result = self._registry.unregister_plugin(plugin_name)
@@ -731,7 +718,7 @@ class FlextPluginService(x):
                 if unload_result.is_failure:
                     return r[bool].fail(f"Unloading failed: {unload_result.error}")
             del self._plugins[plugin_name]
-            self.logger.info("Unloaded plugin: %s", plugin_name)
+            self.logger.info(f"Unloaded plugin: {plugin_name}")
             return r.ok(True)
         except (
             ValueError,
