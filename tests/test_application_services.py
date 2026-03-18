@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-from flext_core import FlextContainer, FlextExceptions, p
+from flext_core import FlextContainer, FlextExceptions
 from pydantic import BaseModel
 
 from flext_plugin import (
@@ -28,6 +28,7 @@ from flext_plugin import (
     FlextPluginService,
     t,
 )
+from tests import p
 
 
 class PluginInterface(Protocol):
