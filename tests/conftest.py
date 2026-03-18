@@ -130,7 +130,10 @@ def real_plugin_entity() -> FlextPluginModels.Plugin.Plugin:
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
+        author="test-suite",
         plugin_type="utility",
+        is_enabled=True,
+        metadata={},
     )
 
 
@@ -197,7 +200,10 @@ def real_tap_plugin() -> FlextPluginModels.Plugin.Plugin:
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
+        author="test-suite",
         plugin_type=FlextPluginModels.PluginType.TAP,
+        is_enabled=True,
+        metadata={},
     )
 
 
@@ -208,7 +214,10 @@ def real_target_plugin() -> FlextPluginModels.Plugin.Plugin:
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
+        author="test-suite",
         plugin_type=FlextPluginModels.PluginType.TARGET,
+        is_enabled=True,
+        metadata={},
     )
 
 
@@ -219,7 +228,10 @@ def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",
+        author="test-suite",
         plugin_type=FlextPluginModels.PluginType.PROCESSOR,
+        is_enabled=True,
+        metadata={},
     )
 
 
