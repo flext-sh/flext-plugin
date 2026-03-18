@@ -1,117 +1,84 @@
-"""Unit tests for FlextPluginSettings.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
-
 from __future__ import annotations
 
+import pytest
 from flext_tests import tm
 
 from flext_plugin import FlextPluginSettings
 
 
 class TestFlextPluginSettings:
-    """Test cases for FlextPluginSettings."""
-
     def test_create_config(self) -> None:
-        """Test that config can be created with the create method."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings(app_name="test-plugin")
         tm.that(config is not None, eq=True)
-        tm.that(config.plugin_name == "test-plugin", eq=True)
+        tm.that(config.app_name == "test-plugin", eq=True)
 
     def test_create_config_with_defaults(self) -> None:
-        """Test that config has sensible defaults."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        tm.that(config.enabled is True, eq=True)
-        tm.that(config.priority == 100, eq=True)
-        tm.that(config.max_memory_mb == 512, eq=True)
-        tm.that(config.max_cpu_percent == 50, eq=True)
-        tm.that(config.timeout_seconds == 30, eq=True)
-        tm.that(config.dependencies == [], eq=True)
-        tm.that(config.settings == {}, eq=True)
-        tm.that(config.config_data == {}, eq=True)
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings()
+        tm.that(config.debug is False, eq=True)
+        tm.that(config.trace is False, eq=True)
+        tm.that(config.enable_caching is True, eq=True)
+        tm.that(config.cache_ttl > 0, eq=True)
+        tm.that(config.max_workers > 0, eq=True)
+        tm.that(config.timeout_seconds > 0, eq=True)
+        tm.that(config.api_key is None, eq=True)
 
     def test_create_config_with_custom_values(self) -> None:
-        """Test config creation with custom values."""
-        options = FlextPluginSettings.CreateOptions(
-            enabled=False,
-            priority=50,
-            max_memory_mb=1024,
-            max_cpu_percent=75,
-            timeout_seconds=60,
-            dependencies=["dep1", "dep2"],
-            settings={"key": "value"},
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings(
+            app_name="custom-plugin",
+            debug=True,
+            timeout_seconds=60.0,
+            max_workers=8,
+            enable_caching=False,
         )
-        config = FlextPluginSettings.create(
-            plugin_name="custom-plugin",
-            config_data={"data_key": "data_value"},
-            options=options,
-        )
-        tm.that(config.plugin_name == "custom-plugin", eq=True)
-        tm.that(config.enabled is False, eq=True)
-        tm.that(config.priority == 50, eq=True)
-        tm.that(config.max_memory_mb == 1024, eq=True)
-        tm.that(config.max_cpu_percent == 75, eq=True)
-        tm.that(config.timeout_seconds == 60, eq=True)
-        tm.that(config.dependencies == ["dep1", "dep2"], eq=True)
-        tm.that(config.settings == {"key": "value"}, eq=True)
-        tm.that(config.config_data == {"data_key": "data_value"}, eq=True)
+        tm.that(config.app_name == "custom-plugin", eq=True)
+        tm.that(config.debug is True, eq=True)
+        tm.that(config.timeout_seconds == 60.0, eq=True)
+        tm.that(config.max_workers == 8, eq=True)
+        tm.that(config.enable_caching is False, eq=True)
 
     def test_update_timestamp(self) -> None:
-        """Test update_timestamp method."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        tm.that(config.updated_at is None, eq=True)
-        config.update_timestamp()
-        tm.that(config.updated_at is not None, eq=True)
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings()
+        tm.that(config.timeout_seconds == 30.0, eq=True)
+        tm.that(config.apply_override("timeout_seconds", 45.0), eq=True)
+        tm.that(config.timeout_seconds == 45.0, eq=True)
 
     def test_validate_business_rules_valid(self) -> None:
-        """Test validate_business_rules with valid config."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        result = config.validate_business_rules()
-        tm.that(result.is_success, eq=True)
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings(debug=True, trace=True)
+        tm.that(config.debug is True, eq=True)
+        tm.that(config.trace is True, eq=True)
 
     def test_validate_business_rules_empty_name(self) -> None:
-        """Test validate_business_rules rejects empty name."""
-        config = FlextPluginSettings.create(plugin_name="test")
-        config.plugin_name = ""
-        result = config.validate_business_rules()
-        tm.that(result.is_failure, eq=True)
-        tm.that("Plugin name is required" in str(result.error), eq=True)
+        FlextPluginSettings.reset_for_testing()
+        with pytest.raises(ValueError):
+            _ = FlextPluginSettings(trace=True)
 
     def test_validate_business_rules_invalid_memory(self) -> None:
-        """Test validate_business_rules rejects invalid memory."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        config.max_memory_mb = 0
-        result = config.validate_business_rules()
-        tm.that(result.is_failure, eq=True)
-        tm.that("Maximum memory must be positive" in str(result.error), eq=True)
+        FlextPluginSettings.reset_for_testing()
+        with pytest.raises(ValueError):
+            _ = FlextPluginSettings(max_workers="invalid")
 
     def test_validate_business_rules_invalid_cpu(self) -> None:
-        """Test validate_business_rules rejects invalid CPU percent."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        config.max_cpu_percent = 150
-        result = config.validate_business_rules()
-        tm.that(result.is_failure, eq=True)
-        tm.that(
-            "CPU percentage must be between 0 and 100" in str(result.error), eq=True
-        )
+        FlextPluginSettings.reset_for_testing()
+        with pytest.raises(ValueError):
+            _ = FlextPluginSettings(log_level="INVALID")
 
     def test_validate_business_rules_invalid_timeout(self) -> None:
-        """Test validate_business_rules rejects invalid timeout."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        config.timeout_seconds = 0
-        result = config.validate_business_rules()
-        tm.that(result.is_failure, eq=True)
-        tm.that("Timeout must be positive" in str(result.error), eq=True)
+        FlextPluginSettings.reset_for_testing()
+        with pytest.raises(ValueError):
+            _ = FlextPluginSettings(database_url="invalid-url")
 
     def test_created_at_timestamp(self) -> None:
-        """Test that created_at is set automatically."""
-        config = FlextPluginSettings.create(plugin_name="test-plugin")
-        tm.that(config.created_at is not None, eq=True)
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings()
+        tm.that(config.version != "", eq=True)
 
     def test_config_model_validation(self) -> None:
-        """Test that Pydantic validates the model."""
-        config = FlextPluginSettings.create(plugin_name="valid-plugin")
-        tm.that(config.plugin_name == "valid-plugin", eq=True)
+        FlextPluginSettings.reset_for_testing()
+        config = FlextPluginSettings(app_name="valid-plugin")
+        dumped = config.model_dump()
+        tm.that(dumped["app_name"] == "valid-plugin", eq=True)

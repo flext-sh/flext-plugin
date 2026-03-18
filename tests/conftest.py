@@ -18,10 +18,9 @@ import os
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
-from typing import cast
 
 import pytest
-from flext_core import FlextContainer, t
+from flext_core import FlextContainer
 
 from flext_plugin import FlextPluginAdapters, FlextPluginModels
 
@@ -118,15 +117,9 @@ def real_container_with_adapters() -> FlextContainer:
     discovery_adapter = FlextPluginAdapters.FileSystemDiscoveryAdapter()
     loader_adapter = FlextPluginAdapters.DynamicLoaderAdapter()
     manager_adapter = FlextPluginAdapters.PluginExecutorAdapter()
-    container.with_service(
-        "plugin_discovery_port", cast("t.RegisterableService", discovery_adapter)
-    )
-    container.with_service(
-        "plugin_loader_port", cast("t.RegisterableService", loader_adapter)
-    )
-    container.with_service(
-        "plugin_manager_port", cast("t.RegisterableService", manager_adapter)
-    )
+    container.register("plugin_discovery_port", discovery_adapter)
+    container.register("plugin_loader_port", loader_adapter)
+    container.register("plugin_manager_port", manager_adapter)
     return container
 
 

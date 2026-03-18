@@ -11,10 +11,11 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Mapping
+from types import ModuleType
 from typing import override
 
 import pytest
-from flext_core import r
+from flext_core import r, t
 
 from flext_plugin import FlextPluginAdapters, FlextPluginService
 
@@ -47,7 +48,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def discover_plugins(
                 self, paths: list[str]
-            ) -> r[list[Mapping[str, object]]]:
+            ) -> r[list[Mapping[str, t.NormalizedValue]]]:
                 _ = paths
                 return r.ok([
                     {
@@ -63,7 +64,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin) -> r[bool]:
+            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -73,11 +74,11 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin) -> r[bool]:
+            def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
-                    self.registered.append(str(getattr(_plugin, "name", "")))
+                    self.registered.append("")
                 return r.ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
@@ -110,8 +111,11 @@ class TestFlextPluginServiceStubBridges:
 
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
-            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
-                _ = _plugin_path
+            def load_plugin(
+                self,
+                plugin_path: str,
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                _ = plugin_path
                 return r.ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
@@ -124,7 +128,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin) -> r[bool]:
+            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
                 self.calls += 1
                 return r.ok(True)
 
@@ -134,11 +138,11 @@ class TestFlextPluginServiceStubBridges:
                 self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin) -> r[bool]:
+            def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
-                    self.registered.append(str(getattr(_plugin, "name", "")))
+                    self.registered.append("")
                 return r.ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
@@ -167,8 +171,11 @@ class TestFlextPluginServiceStubBridges:
 
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             @override
-            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
-                _ = _plugin_path
+            def load_plugin(
+                self,
+                plugin_path: str,
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                _ = plugin_path
                 return r.ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
@@ -182,8 +189,10 @@ class TestFlextPluginServiceStubBridges:
 
             @override
             def execute_plugin(
-                self, _plugin_name: str, _context: Mapping[str, object]
-            ) -> r[Mapping[str, object]]:
+                self,
+                _plugin_name: str,
+                _context: Mapping[str, t.NormalizedValue],
+            ) -> r[Mapping[str, t.NormalizedValue]]:
                 self.calls.append(_plugin_name)
                 return r.ok({"status": "executed", "plugin": _plugin_name})
 
@@ -205,9 +214,12 @@ class TestFlextPluginServiceStubBridges:
                 self.unloaded: list[str] = []
 
             @override
-            def load_plugin(self, _plugin_path: str) -> r[Mapping[str, object]]:
-                _ = _plugin_path
-                self._loaded_plugins["stub_plugin"] = True
+            def load_plugin(
+                self,
+                plugin_path: str,
+            ) -> r[Mapping[str, t.NormalizedValue]]:
+                _ = plugin_path
+                self._loaded_plugins["stub_plugin"] = ModuleType("stub_plugin")
                 return r.ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
@@ -215,9 +227,9 @@ class TestFlextPluginServiceStubBridges:
                 })
 
             @override
-            def unload_plugin(self, _plugin_name: str) -> r[bool]:
-                self.unloaded.append(_plugin_name)
-                return super().unload_plugin(_plugin_name)
+            def unload_plugin(self, plugin_name: str) -> r[bool]:
+                self.unloaded.append(plugin_name)
+                return super().unload_plugin(plugin_name)
 
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
@@ -225,8 +237,8 @@ class TestFlextPluginServiceStubBridges:
                 self.unregistered: list[str] = []
 
             @override
-            def unregister_plugin(self, _plugin_name: str) -> r[bool]:
-                self.unregistered.append(_plugin_name)
+            def unregister_plugin(self, plugin_name: str) -> r[bool]:
+                self.unregistered.append(plugin_name)
                 return r.ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
