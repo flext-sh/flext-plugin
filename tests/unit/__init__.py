@@ -13,9 +13,9 @@ if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
     from .test_config import TestFlextPluginSettings
-    from .test_constants import TestFlextPluginConstants, TestFlextPluginConstants as c
-    from .test_models import TestFlextPluginModels, TestFlextPluginModels as m
-    from .test_types import TestFlextPluginTypes, TestFlextPluginTypes as t
+    from .test_constants import TestFlextPluginConstants
+    from .test_models import TestFlextPluginModels
+    from .test_types import TestFlextPluginTypes
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextPluginConstants": (
@@ -25,9 +25,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
     "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
     "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
-    "c": ("tests.unit.test_constants", "TestFlextPluginConstants"),
-    "m": ("tests.unit.test_models", "TestFlextPluginModels"),
-    "t": ("tests.unit.test_types", "TestFlextPluginTypes"),
 }
 
 __all__ = [
@@ -35,9 +32,6 @@ __all__ = [
     "TestFlextPluginModels",
     "TestFlextPluginSettings",
     "TestFlextPluginTypes",
-    "c",
-    "m",
-    "t",
 ]
 
 

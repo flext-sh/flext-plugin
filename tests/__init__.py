@@ -71,16 +71,12 @@ if TYPE_CHECKING:
         test_docker_integration_example_with_connection_testing,
         test_plugin_configuration_example_execution,
     )
-    from .test_handlers import TestFlextPluginHandlers, TestFlextPluginHandlers as h
+    from .test_handlers import TestFlextPluginHandlers
     from .test_hot_reload import TestFlextPluginHotReload
     from .test_hot_reload_package import TestHotReloadPackage
     from .test_imports import modules_to_test
     from .test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
-    from .test_manager import (
-        TestFlextPluginService,
-        TestFlextPluginService as s,
-        TestFlextPluginServiceStubBridges,
-    )
+    from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
     from .typings import TestsFlextPluginTypes, t
     from .unit.test_constants import TestFlextPluginConstants
@@ -178,7 +174,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestsFlextPluginTypes": ("tests.typings", "TestsFlextPluginTypes"),
     "TestsFlextPluginUtilities": ("tests.utilities", "TestsFlextPluginUtilities"),
     "c": ("tests.constants", "c"),
-    "h": ("tests.test_handlers", "TestFlextPluginHandlers"),
     "m": ("tests.models", "m"),
     "modules_to_test": ("tests.test_imports", "modules_to_test"),
     "p": ("tests.protocols", "p"),
@@ -210,7 +205,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "real_tap_plugin": ("tests.conftest", "real_tap_plugin"),
     "real_target_plugin": ("tests.conftest", "real_target_plugin"),
-    "s": ("tests.test_manager", "TestFlextPluginService"),
     "set_test_environment": ("tests.conftest", "set_test_environment"),
     "simple_plugin_directory": ("tests.conftest", "simple_plugin_directory"),
     "t": ("tests.typings", "t"),
@@ -275,7 +269,6 @@ __all__ = [
     "TestsFlextPluginTypes",
     "TestsFlextPluginUtilities",
     "c",
-    "h",
     "m",
     "modules_to_test",
     "p",
@@ -298,7 +291,6 @@ __all__ = [
     "real_service_with_adapters",
     "real_tap_plugin",
     "real_target_plugin",
-    "s",
     "set_test_environment",
     "simple_plugin_directory",
     "t",
