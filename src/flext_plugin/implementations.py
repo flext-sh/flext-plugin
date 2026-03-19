@@ -14,10 +14,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import TypeAdapter
 
-from flext_plugin import FlextPluginModels, FlextPluginProtocols, c, p
+from flext_plugin import FlextPluginModels, FlextPluginProtocols, c, p, t
 
 
 class FlextPluginImplementations:

@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import override
 
-from flext_core import FlextContainer, p, r, u, x
+from flext_core import FlextContainer, r, x
 from pydantic import TypeAdapter
 
 from flext_plugin import (
@@ -20,7 +20,9 @@ from flext_plugin import (
     FlextPluginProtocols,
     FlextPluginTypes,
     c,
+    p,
     t,
+    u,
 )
 
 

@@ -11,15 +11,7 @@ import uuid
 from collections.abc import Mapping
 from typing import override
 
-from flext_core import (
-    FlextContainer,
-    FlextRegistry,
-    FlextService,
-    FlextSettings,
-    r,
-    t,
-    u,
-)
+from flext_core import FlextContainer, FlextRegistry, FlextService, FlextSettings, r
 from pydantic import PrivateAttr, TypeAdapter
 
 from flext_plugin import (
@@ -28,6 +20,8 @@ from flext_plugin import (
     FlextPluginSettings,
     c,
     p,
+    t,
+    u,
 )
 
 
