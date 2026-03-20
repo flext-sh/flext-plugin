@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import d, e, r, s, x
+    from flext_core import d, e, r, x
     from flext_core.typings import FlextTypes
 
     from flext_plugin.__version__ import (
@@ -30,25 +30,29 @@ if TYPE_CHECKING:
     )
     from flext_plugin.adapters import FlextPluginAdapters
     from flext_plugin.api import FlextPluginApi
-    from flext_plugin.constants import FlextPluginConstants, c
+    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
     from flext_plugin.discovery import FlextPluginDiscovery
     from flext_plugin.entities import FlextPluginEntities
     from flext_plugin.handlers import FlextPluginHandlers, FlextPluginHandlers as h
     from flext_plugin.hot_reload import FlextPluginHotReload
     from flext_plugin.implementations import FlextPluginImplementations
     from flext_plugin.loader import FlextPluginLoader
-    from flext_plugin.models import FlextPluginModels, m
+    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
     from flext_plugin.platform import (
         FlextPluginPlatform,
         Plugin,
         PluginExecution,
         PluginRegistry,
     )
-    from flext_plugin.protocols import FlextPluginProtocols, PluginDiscovery, p
-    from flext_plugin.services import FlextPluginService
+    from flext_plugin.protocols import (
+        FlextPluginProtocols,
+        FlextPluginProtocols as p,
+        PluginDiscovery,
+    )
+    from flext_plugin.services import FlextPluginService, FlextPluginService as s
     from flext_plugin.settings import FlextPluginSettings
-    from flext_plugin.typings import FlextPluginTypes, t
-    from flext_plugin.utilities import FlextPluginUtilities, u
+    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
+    from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginAdapters": ("flext_plugin.adapters", "FlextPluginAdapters"),
@@ -83,16 +87,16 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__url__": ("flext_plugin.__version__", "__url__"),
     "__version__": ("flext_plugin.__version__", "__version__"),
     "__version_info__": ("flext_plugin.__version__", "__version_info__"),
-    "c": ("flext_plugin.constants", "c"),
+    "c": ("flext_plugin.constants", "FlextPluginConstants"),
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
     "h": ("flext_plugin.handlers", "FlextPluginHandlers"),
-    "m": ("flext_plugin.models", "m"),
-    "p": ("flext_plugin.protocols", "p"),
+    "m": ("flext_plugin.models", "FlextPluginModels"),
+    "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
     "r": ("flext_core", "r"),
-    "s": ("flext_core", "s"),
-    "t": ("flext_plugin.typings", "t"),
-    "u": ("flext_plugin.utilities", "u"),
+    "s": ("flext_plugin.services", "FlextPluginService"),
+    "t": ("flext_plugin.typings", "FlextPluginTypes"),
+    "u": ("flext_plugin.utilities", "FlextPluginUtilities"),
     "x": ("flext_core", "x"),
 }
 
