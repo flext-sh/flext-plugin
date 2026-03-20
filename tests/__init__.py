@@ -32,9 +32,9 @@ if TYPE_CHECKING:
         set_test_environment,
         simple_plugin_directory,
     )
-    from .constants import TestsFlextPluginConstants, c
-    from .models import TestsFlextPluginModels, m, tm
-    from .protocols import TestsFlextPluginProtocols, p
+    from .constants import TestsFlextPluginConstants, TestsFlextPluginConstants as c
+    from .models import TestsFlextPluginModels, TestsFlextPluginModels as m, tm
+    from .protocols import TestsFlextPluginProtocols, TestsFlextPluginProtocols as p
     from .test_application_services import (
         PluginInterface,
         TestBackwardsCompatibilityAliasesReal,
@@ -71,18 +71,22 @@ if TYPE_CHECKING:
         test_docker_integration_example_with_connection_testing,
         test_plugin_configuration_example_execution,
     )
-    from .test_handlers import TestFlextPluginHandlers
+    from .test_handlers import TestFlextPluginHandlers, TestFlextPluginHandlers as h
     from .test_hot_reload import TestFlextPluginHotReload
     from .test_hot_reload_package import TestHotReloadPackage
     from .test_imports import modules_to_test
     from .test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
-    from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
+    from .test_manager import (
+        TestFlextPluginService,
+        TestFlextPluginService as s,
+        TestFlextPluginServiceStubBridges,
+    )
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
-    from .typings import TestsFlextPluginTypes, t
+    from .typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
     from .unit.test_constants import TestFlextPluginConstants
     from .unit.test_models import TestFlextPluginModels
     from .unit.test_types import TestFlextPluginTypes
-    from .utilities import TestsFlextPluginUtilities, u
+    from .utilities import TestsFlextPluginUtilities, TestsFlextPluginUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "PluginInterface": ("tests.test_application_services", "PluginInterface"),
@@ -173,10 +177,11 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestsFlextPluginProtocols": ("tests.protocols", "TestsFlextPluginProtocols"),
     "TestsFlextPluginTypes": ("tests.typings", "TestsFlextPluginTypes"),
     "TestsFlextPluginUtilities": ("tests.utilities", "TestsFlextPluginUtilities"),
-    "c": ("tests.constants", "c"),
-    "m": ("tests.models", "m"),
+    "c": ("tests.constants", "TestsFlextPluginConstants"),
+    "h": ("tests.test_handlers", "TestFlextPluginHandlers"),
+    "m": ("tests.models", "TestsFlextPluginModels"),
     "modules_to_test": ("tests.test_imports", "modules_to_test"),
-    "p": ("tests.protocols", "p"),
+    "p": ("tests.protocols", "TestsFlextPluginProtocols"),
     "performance_config": ("tests.conftest", "performance_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
     "real_container_with_adapters": ("tests.conftest", "real_container_with_adapters"),
@@ -205,9 +210,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "real_tap_plugin": ("tests.conftest", "real_tap_plugin"),
     "real_target_plugin": ("tests.conftest", "real_target_plugin"),
+    "s": ("tests.test_manager", "TestFlextPluginService"),
     "set_test_environment": ("tests.conftest", "set_test_environment"),
     "simple_plugin_directory": ("tests.conftest", "simple_plugin_directory"),
-    "t": ("tests.typings", "t"),
+    "t": ("tests.typings", "TestsFlextPluginTypes"),
     "temp_plugin_dir": ("tests.test_application_services", "temp_plugin_dir"),
     "test_basic_plugin_example_execution": (
         "tests.test_examples",
@@ -226,7 +232,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "test_plugin_configuration_example_execution",
     ),
     "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "u"),
+    "u": ("tests.utilities", "TestsFlextPluginUtilities"),
     "unit": ("tests.unit", ""),
 }
 
@@ -269,6 +275,7 @@ __all__ = [
     "TestsFlextPluginTypes",
     "TestsFlextPluginUtilities",
     "c",
+    "h",
     "m",
     "modules_to_test",
     "p",
@@ -291,6 +298,7 @@ __all__ = [
     "real_service_with_adapters",
     "real_tap_plugin",
     "real_target_plugin",
+    "s",
     "set_test_environment",
     "simple_plugin_directory",
     "t",
