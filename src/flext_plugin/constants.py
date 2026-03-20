@@ -35,7 +35,7 @@ class FlextPluginConstants(FlextConstants):
         class Discovery:
             """Discovery-related constants."""
 
-            DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
+            DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
             DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
                 "/opt/flext/plugins",
@@ -133,7 +133,7 @@ class FlextPluginConstants(FlextConstants):
             PERMISSION_FILESYSTEM: Final[str] = "filesystem"
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
-            SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
+            SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
             DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
             DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
                 "os",
