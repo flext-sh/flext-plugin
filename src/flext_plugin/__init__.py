@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import d, e, r, x
+    from flext_core import d, e, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_plugin.__version__ import (
@@ -49,7 +49,7 @@ if TYPE_CHECKING:
         FlextPluginProtocols as p,
         PluginDiscovery,
     )
-    from flext_plugin.services import FlextPluginService, FlextPluginService as s
+    from flext_plugin.services import FlextPluginService
     from flext_plugin.settings import FlextPluginSettings
     from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
@@ -94,7 +94,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "m": ("flext_plugin.models", "FlextPluginModels"),
     "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
     "r": ("flext_core", "r"),
-    "s": ("flext_plugin.services", "FlextPluginService"),
+    "s": ("flext_core", "s"),
     "t": ("flext_plugin.typings", "FlextPluginTypes"),
     "u": ("flext_plugin.utilities", "FlextPluginUtilities"),
     "x": ("flext_core", "x"),
