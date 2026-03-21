@@ -679,7 +679,4 @@ class FlextPluginPlatform:
             return r.ok(plugins)
 
 
-Plugin = FlextPluginPlatform.Plugin
-PluginExecution = FlextPluginPlatform.PluginExecution
-PluginRegistry = FlextPluginPlatform.PluginRegistry
-__all__ = ["FlextPluginPlatform", "Plugin", "PluginExecution", "PluginRegistry"]
+__all__ = ["FlextPluginPlatform"]

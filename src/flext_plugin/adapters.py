@@ -25,9 +25,6 @@ from pydantic import TypeAdapter
 from flext_plugin.discovery import discover_python_plugins_in_directory
 from flext_plugin.protocols import FlextPluginProtocols
 
-PluginDiscovery = FlextPluginProtocols.Plugin.PluginDiscovery
-PluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
-
 
 class FlextPluginAdapters:
     """Infrastructure adapters with composition pattern.
@@ -71,7 +68,9 @@ class FlextPluginAdapters:
                 error_msg = f"{error_context}: {e!s}"
                 return r[T].fail(error_msg)
 
-    class FileSystemDiscoveryAdapter(BaseAdapter, PluginDiscovery):
+    class FileSystemDiscoveryAdapter(
+        BaseAdapter, FlextPluginProtocols.Plugin.PluginDiscovery
+    ):
         """File system plugin discovery - synchronous."""
 
         @override
@@ -321,7 +320,9 @@ class FlextPluginAdapters:
             """Validate plugin for security."""
             return r.ok(True)
 
-    class MemoryRegistryAdapter(BaseAdapter, PluginRegistry):
+    class MemoryRegistryAdapter(
+        BaseAdapter, FlextPluginProtocols.Plugin.PluginRegistry
+    ):
         """In-memory plugin registry - synchronous."""
 
         def __init__(self) -> None:

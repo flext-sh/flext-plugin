@@ -18,10 +18,10 @@ from typing import ClassVar
 
 import yaml
 from flext_core import FlextUtilities, r
-from flext_core.constants import c
 from flext_core.typings import t
 from pydantic import TypeAdapter, model_validator
 
+from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.models import FlextPluginModels
 
 

@@ -389,8 +389,4 @@ class FlextPluginProtocols(FlextProtocols):
 
 p = FlextPluginProtocols
 
-# Flat aliases for pyrefly MRO resolution (3-level nesting not resolved)
-PluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
-PluginDiscovery = FlextPluginProtocols.Plugin.PluginDiscovery
-
-__all__ = ["FlextPluginProtocols", "PluginDiscovery", "PluginRegistry", "p"]
+__all__ = ["FlextPluginProtocols", "p"]
