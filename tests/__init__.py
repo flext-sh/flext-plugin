@@ -79,9 +79,11 @@ if TYPE_CHECKING:
     from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
     from .typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
-    from .unit.test_constants import TestFlextPluginConstants
-    from .unit.test_models import TestFlextPluginModels
-    from .unit.test_types import TestFlextPluginTypes
+    from .unit import (
+        TestFlextPluginConstants,
+        TestFlextPluginModels,
+        TestFlextPluginTypes,
+    )
     from .utilities import TestsFlextPluginUtilities, TestsFlextPluginUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -92,10 +94,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "TestDynamicLoaderAdapter": ("tests.test_loader", "TestDynamicLoaderAdapter"),
     "TestFlextPlugin": ("tests.test_domain_entities", "TestFlextPlugin"),
-    "TestFlextPluginConstants": (
-        "tests.unit.test_constants",
-        "TestFlextPluginConstants",
-    ),
+    "TestFlextPluginConstants": ("tests.unit", "TestFlextPluginConstants"),
     "TestFlextPluginConstantsLifecycle": (
         "tests.test_core_types",
         "TestFlextPluginConstantsLifecycle",
@@ -120,7 +119,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_domain_entities",
         "TestFlextPluginMetadata",
     ),
-    "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
+    "TestFlextPluginModels": ("tests.unit", "TestFlextPluginModels"),
     "TestFlextPluginRegistryEntity": (
         "tests.test_domain_entities",
         "TestFlextPluginRegistryEntity",
@@ -142,7 +141,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_domain_entities",
         "TestFlextPluginSettings",
     ),
-    "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
+    "TestFlextPluginTypes": ("tests.unit", "TestFlextPluginTypes"),
     "TestHotReloadPackage": ("tests.test_hot_reload_package", "TestHotReloadPackage"),
     "TestPluginError": ("tests.test_core_types", "TestPluginError"),
     "TestPluginModel": ("tests.test_plugin", "TestPluginModel"),
