@@ -13,11 +13,13 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, r
+from flext_core.protocols import FlextProtocols as p
+from flext_core.typings import t
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_plugin import FlextPluginModels, p, t
+from flext_plugin.models import FlextPluginModels
 
 
 class FileChangeHandler(FileSystemEventHandler):
@@ -72,7 +74,7 @@ class FlextPluginHotReload:
 
     Usage:
         ```python
-        from flext_plugin import FlextPluginHotReload
+        from flext_plugin.hot_reload import FlextPluginHotReload
 
         # Initialize hot reload service
         hot_reload = FlextPluginHotReload()

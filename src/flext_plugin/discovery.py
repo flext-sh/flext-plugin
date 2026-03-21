@@ -15,8 +15,10 @@ from pathlib import Path
 from typing import TypeVar
 
 from flext_core import FlextLogger, r
+from flext_core.constants import c
+from flext_core.protocols import FlextProtocols as p
 
-from flext_plugin import FlextPluginModels, c, p
+from flext_plugin.models import FlextPluginModels
 
 TDiscovery = TypeVar("TDiscovery")
 

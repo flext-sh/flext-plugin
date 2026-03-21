@@ -11,8 +11,9 @@ from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r
+from flext_core.typings import t
 
-from flext_plugin import FlextPluginModels, t
+from flext_plugin.models import FlextPluginModels
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -27,7 +28,7 @@ class FlextPluginProtocols(FlextProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_plugin import p
+    from flext_core.protocols import FlextProtocols as p
 
     # Foundation protocols (inherited)
     result: p.Result[str]

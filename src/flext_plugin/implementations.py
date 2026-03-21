@@ -15,9 +15,13 @@ from pathlib import Path
 from typing import override
 
 from flext_core import FlextLogger, r
+from flext_core.constants import c
+from flext_core.protocols import FlextProtocols as p
+from flext_core.typings import t
 from pydantic import TypeAdapter
 
-from flext_plugin import FlextPluginModels, FlextPluginProtocols, c, p, t
+from flext_plugin.models import FlextPluginModels
+from flext_plugin.protocols import FlextPluginProtocols
 
 
 class FlextPluginImplementations:

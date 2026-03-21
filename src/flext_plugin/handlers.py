@@ -12,8 +12,8 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger, r
-
-from flext_plugin import c, t
+from flext_core.constants import c
+from flext_core.typings import t
 
 
 class FlextPluginHandlers:
@@ -24,7 +24,7 @@ class FlextPluginHandlers:
 
     Usage:
         ```python
-        from flext_plugin import FlextPluginHandlers
+        from flext_plugin.handlers import FlextPluginHandlers
 
         # Initialize handlers
         handlers = FlextPluginHandlers()
