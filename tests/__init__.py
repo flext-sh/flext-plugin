@@ -62,7 +62,6 @@ if TYPE_CHECKING:
         TestFlextPluginExecution,
         TestFlextPluginMetadata,
         TestFlextPluginRegistryEntity,
-        TestFlextPluginSettings,
     )
     from .test_domain_ports import TestFlextPluginDiscovery
     from .test_examples import (
@@ -79,6 +78,7 @@ if TYPE_CHECKING:
     from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
     from .typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
+    from .unit.test_config import TestFlextPluginSettings
     from .unit.test_constants import TestFlextPluginConstants
     from .unit.test_models import TestFlextPluginModels
     from .unit.test_types import TestFlextPluginTypes
@@ -138,10 +138,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_application_services",
         "TestFlextPluginServiceWithRealAdapters",
     ),
-    "TestFlextPluginSettings": (
-        "tests.test_domain_entities",
-        "TestFlextPluginSettings",
-    ),
+    "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
     "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
     "TestHotReloadPackage": ("tests.test_hot_reload_package", "TestHotReloadPackage"),
     "TestPluginError": ("tests.test_core_types", "TestPluginError"),
