@@ -133,7 +133,7 @@ class FlextPluginHandlers:
         Handler result
 
         """
-        plugin_name = event_data.get("plugin_name", c.Mixins.IDENTIFIER_UNKNOWN)
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         name_str = str(plugin_name)
         self.logger.info("Plugin discovered: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
@@ -151,7 +151,7 @@ class FlextPluginHandlers:
         Handler result
 
         """
-        plugin_name = event_data.get("plugin_name", c.Mixins.IDENTIFIER_UNKNOWN)
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         error_message = event_data.get("error_message", "Unknown error")
         name_str = str(plugin_name)
         error_str = str(error_message)
@@ -175,8 +175,8 @@ class FlextPluginHandlers:
         Handler result
 
         """
-        plugin_name = event_data.get("plugin_name", c.Mixins.IDENTIFIER_UNKNOWN)
-        execution_id = event_data.get("execution_id", c.Mixins.IDENTIFIER_UNKNOWN)
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        execution_id = event_data.get("execution_id", c.IDENTIFIER_UNKNOWN)
         success = event_data.get("success", False)
         name_str = str(plugin_name)
         exec_str = str(execution_id)
@@ -207,7 +207,7 @@ class FlextPluginHandlers:
         Handler result
 
         """
-        plugin_name = event_data.get("plugin_name", c.Mixins.IDENTIFIER_UNKNOWN)
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         name_str = str(plugin_name)
         self.logger.info("Plugin loaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
@@ -225,7 +225,7 @@ class FlextPluginHandlers:
         Handler result
 
         """
-        plugin_name = event_data.get("plugin_name", c.Mixins.IDENTIFIER_UNKNOWN)
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         name_str = str(plugin_name)
         self.logger.info("Plugin unloaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}

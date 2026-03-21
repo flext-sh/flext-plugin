@@ -188,7 +188,7 @@ class FlextPluginConstants(FlextConstants):
 
             DEFAULT_INTERVAL_SECONDS: Final[int] = 2
             DEBOUNCE_MS: Final[int] = 500
-            MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
+            MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
             EVENT_CREATED: Final[str] = "created"
             EVENT_MODIFIED: Final[str] = "modified"
             EVENT_DELETED: Final[str] = "deleted"
@@ -216,13 +216,13 @@ class FlextPluginConstants(FlextConstants):
         class Files:
             """File extension constants."""
 
-            PYTHON_EXTENSION: Final[str] = FlextConstants.Platform.EXT_PYTHON
-            YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_YAML
-            JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_JSON
-            TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.Platform.EXT_TOML
+            PYTHON_EXTENSION: Final[str] = FlextConstants.EXT_PYTHON
+            YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.EXT_YAML
+            JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.EXT_JSON
+            TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.EXT_TOML
             DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
             DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-            DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Platform.DIR_CONFIG
+            DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.DIR_CONFIG
             DEFAULT_CONFIG_FILE: Final[str] = "plugin.yaml"
             CONFIG_SCHEMA_VERSION: Final[str] = "1.0"
 
