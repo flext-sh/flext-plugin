@@ -388,10 +388,9 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             execution_time_ms: Annotated[
-                float,
+                t.NonNegativeFloat,
                 Field(
                     default=0.0,
-                    ge=0,
                     description="Execution time in milliseconds",
                 ),
             ]
@@ -550,10 +549,9 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             duration_ms: Annotated[
-                float,
+                t.NonNegativeFloat,
                 Field(
                     default=0.0,
-                    ge=0,
                     description="Reload duration in milliseconds",
                 ),
             ]
