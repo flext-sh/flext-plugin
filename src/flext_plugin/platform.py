@@ -124,9 +124,10 @@ class FlextPluginPlatform:
             _ = (dispatcher, auto_discover_handlers)
             return cls()
 
-        def get(self, plugin_name: str) -> r[FlextPluginModels.Plugin.Plugin]:
+        @override
+        def get(self, data: str) -> r[FlextPluginModels.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
-            result = self.get_plugin(self.PLUGINS, plugin_name, scope="class")
+            result = self.get_plugin(self.PLUGINS, data, scope="class")
             if result.is_success:
                 try:
                     plugin = FlextPluginModels.Plugin.Plugin.model_validate(
@@ -551,6 +552,7 @@ class FlextPluginPlatform:
             self._plugins[plugin.name] = plugin
             return True
 
+        @override
         def _check_protocol(
             self,
             protocol: t.NormalizedValue | None,

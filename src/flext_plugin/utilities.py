@@ -23,6 +23,7 @@ from pydantic import TypeAdapter, model_validator
 
 from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.typings import FlextPluginTypes as t_plugin
 
 
 class FlextPluginUtilities(FlextUtilities):
@@ -41,13 +42,13 @@ class FlextPluginUtilities(FlextUtilities):
     class Plugin:
         """Plugin discovery and validation utilities."""
 
-        PLUGIN_FILE_EXTENSIONS: ClassVar[t.Plugin.StringList] = [
+        PLUGIN_FILE_EXTENSIONS: ClassVar[t_plugin.Plugin.StringList] = [
             ".py",
             ".yaml",
             ".yml",
             ".json",
         ]
-        PLUGIN_MANIFEST_FILES: ClassVar[t.Plugin.StringList] = [
+        PLUGIN_MANIFEST_FILES: ClassVar[t_plugin.Plugin.StringList] = [
             "plugin.yaml",
             "plugin.yml",
             "plugin.json",
@@ -277,7 +278,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def detect_file_changes(
             watcher_config: Mapping[str, t.NormalizedValue],
-        ) -> r[t.Plugin.StringList]:
+        ) -> r[t_plugin.Plugin.StringList]:
             """Detect file changes in watched directory.
 
             Args:
@@ -312,7 +313,7 @@ class FlextPluginUtilities(FlextUtilities):
                         ):
                             changed_files.append(file_path.as_posix())
                             last_modified[file_key] = current_mtime
-                return r[t.Plugin.StringList].ok(changed_files)
+                return r[t_plugin.Plugin.StringList].ok(changed_files)
             except (
                 ValueError,
                 TypeError,
@@ -322,7 +323,9 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[t.Plugin.StringList].fail(f"File change detection failed: {e}")
+                return r[t_plugin.Plugin.StringList].fail(
+                    f"File change detection failed: {e}"
+                )
 
         @staticmethod
         def validate_reload_safety(plugin_path: Path) -> r[None]:
@@ -364,7 +367,7 @@ class FlextPluginUtilities(FlextUtilities):
     class SecurityValidation:
         """Plugin security validation and sandboxing utilities."""
 
-        ALLOWED_IMPORTS: ClassVar[t.Plugin.StringList] = [
+        ALLOWED_IMPORTS: ClassVar[t_plugin.Plugin.StringList] = [
             "flext_core",
             "flext_api",
             "flext_observability",
@@ -375,7 +378,7 @@ class FlextPluginUtilities(FlextUtilities):
             "typing",
             "pydantic",
         ]
-        DANGEROUS_OPERATIONS: ClassVar[t.Plugin.StringList] = [
+        DANGEROUS_OPERATIONS: ClassVar[t_plugin.Plugin.StringList] = [
             "exec",
             "eval",
             "__import__",
@@ -693,7 +696,7 @@ class FlextPluginUtilities(FlextUtilities):
 
         DEFAULT_TIMEOUT_SECONDS: ClassVar[int] = 300
         MAX_RETRY_ATTEMPTS: ClassVar[int] = 3
-        EXECUTION_LOG_LEVELS: ClassVar[t.Plugin.StringList] = [
+        EXECUTION_LOG_LEVELS: ClassVar[t_plugin.Plugin.StringList] = [
             "DEBUG",
             "INFO",
             "WARNING",
@@ -788,7 +791,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def validate_plugin_interface(
             plugin_module: ModuleType,
-            required_functions: t.Plugin.StringList,
+            required_functions: t_plugin.Plugin.StringList,
         ) -> r[None]:
             """Validate that plugin module implements required interface.
 

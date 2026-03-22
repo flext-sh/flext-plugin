@@ -11,7 +11,6 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import Literal, TypeAlias, TypeVar
 
 from flext_core import FlextTypes
-from flext_core.constants import c
 
 from .constants import FlextPluginConstants as c_plugin
 
@@ -125,8 +124,13 @@ class FlextPluginTypes(FlextTypes):
         type SecurityLevel = str
         type Permission = str
         type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
-        type SecurityLevelLiteral = c.SecurityLevelLiteral
-        "Security level literal - no corresponding StrEnum."
+        type SecurityLevelLiteral = Literal[
+            c_plugin.SecurityLevelLiteral.LOW,
+            c_plugin.SecurityLevelLiteral.MEDIUM,
+            c_plugin.SecurityLevelLiteral.HIGH,
+            c_plugin.SecurityLevelLiteral.CRITICAL,
+        ]
+        "Security level literal - references SecurityLevelLiteral StrEnum members."
 
     class Performance:
         """Performance metrics and monitoring type aliases."""

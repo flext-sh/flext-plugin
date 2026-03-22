@@ -15,10 +15,10 @@ from pathlib import Path
 from typing import TypeVar
 
 from flext_core import FlextLogger, r
-from flext_core.constants import c
-from flext_core.protocols import FlextProtocols as p
 
+from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.models import FlextPluginModels
+from flext_plugin.protocols import FlextPluginProtocols as p
 
 TDiscovery = TypeVar("TDiscovery")
 
@@ -278,7 +278,8 @@ class FlextPluginDiscovery:
                                 entry_point.dist,
                                 "version",
                                 c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
-                            ),
+                            )
+                            or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                             path=Path(getattr(entry_point.dist, "_path", "")),
                             discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
                             discovery_method=c.Plugin.Discovery.METHOD_ENTRY_POINTS,

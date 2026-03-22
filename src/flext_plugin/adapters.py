@@ -16,14 +16,13 @@ from types import ModuleType
 from typing import override
 
 from flext_core import FlextLogger, T, r
-from flext_core.constants import c
-from flext_core.models import m
-from flext_core.protocols import FlextProtocols as p
 from flext_core.typings import t
 from pydantic import TypeAdapter
 
+from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.discovery import discover_python_plugins_in_directory
-from flext_plugin.protocols import FlextPluginProtocols
+from flext_plugin.models import FlextPluginModels as m
+from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
 
 
 class FlextPluginAdapters:

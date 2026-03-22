@@ -13,9 +13,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, r
-from flext_core.constants import c
 from flext_core.typings import t
 
+from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.models import FlextPluginModels
 
 
@@ -303,7 +303,8 @@ class FlextPluginLoader:
                         module,
                         "__version__",
                         c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
-                    ),
+                    )
+                    or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
                     load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
@@ -357,7 +358,8 @@ class FlextPluginLoader:
                         module,
                         "__version__",
                         c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
-                    ),
+                    )
+                    or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
                     load_type=c.Plugin.Execution.LOAD_TYPE_DIRECTORY,
