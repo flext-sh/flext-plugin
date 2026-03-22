@@ -148,6 +148,7 @@ class FlextPluginLoader:
             OSError,
             RuntimeError,
             ImportError,
+            SyntaxError,
         ) as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[FlextPluginModels.Plugin.LoadData].fail(f"Loading error: {e!s}")
