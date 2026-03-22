@@ -1,6 +1,7 @@
-"""Module skeleton for TestsFlextPluginConstants.
+"""Test constants for flext-plugin tests.
 
-Test constants for flextplugin.
+Provides FlextPluginTestConstants, extending FlextTestsConstants with
+flext-plugin-specific constants.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -8,12 +9,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import c
+from flext_tests import FlextTestsConstants
 
 
-class TestsFlextPluginConstants(c):
-    """Test constants for flextplugin."""
+class FlextPluginTestConstants(FlextTestsConstants):
+    """Test constants for flext-plugin."""
 
 
-c = TestsFlextPluginConstants
-__all__ = ["TestsFlextPluginConstants", "c"]
+c = FlextPluginTestConstants
+__all__ = ["FlextPluginTestConstants", "c"]

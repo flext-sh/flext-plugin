@@ -1,6 +1,6 @@
 """Test protocol definitions for flext-plugin.
 
-Provides TestsFlextPluginProtocols, combining p with
+Provides FlextPluginTestProtocols, combining FlextTestsProtocols with
 FlextPluginProtocols for test-specific protocol definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -9,22 +9,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import p
+from flext_tests import FlextTestsProtocols
 
 from flext_plugin import FlextPluginProtocols
 
 
-class TestsFlextPluginProtocols(p, FlextPluginProtocols):
-    """Test protocols combining p and FlextPluginProtocols.
+class FlextPluginTestProtocols(FlextTestsProtocols, FlextPluginProtocols):
+    """Test protocols combining FlextTestsProtocols and FlextPluginProtocols."""
 
-    Provides access to:
-    - p.Tests.Docker.* (from p)
-    - p.Tests.Factory.* (from p)
-    - p.Plugin.* (from FlextPluginProtocols)
-    """
+    class Plugin(FlextPluginProtocols.Plugin):
+        """Plugin test protocols namespace."""
+
+        class Tests:
+            """Plugin-specific test protocols."""
 
 
-p: type[TestsFlextPluginProtocols] = TestsFlextPluginProtocols
-__all__ = ["TestsFlextPluginProtocols", "p"]
-
-p = TestsFlextPluginProtocols
+p = FlextPluginTestProtocols
+__all__ = ["FlextPluginTestProtocols", "p"]

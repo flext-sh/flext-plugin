@@ -11,6 +11,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
+    from flext_tests import d, e, h, r, s, x
 
     from . import unit as unit
     from .conftest import (
@@ -32,9 +33,9 @@ if TYPE_CHECKING:
         set_test_environment,
         simple_plugin_directory,
     )
-    from .constants import TestsFlextPluginConstants, TestsFlextPluginConstants as c
-    from .models import TestsFlextPluginModels, TestsFlextPluginModels as m, tm
-    from .protocols import TestsFlextPluginProtocols, TestsFlextPluginProtocols as p
+    from .constants import FlextPluginTestConstants, FlextPluginTestConstants as c
+    from .models import FlextPluginTestModels, FlextPluginTestModels as m
+    from .protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
     from .test_application_services import (
         PluginInterface,
         TestBackwardsCompatibilityAliasesReal,
@@ -77,14 +78,19 @@ if TYPE_CHECKING:
     from .test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
     from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
     from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
-    from .typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
+    from .typings import FlextPluginTestTypes, FlextPluginTestTypes as t
     from .unit.test_config import TestFlextPluginSettings
     from .unit.test_constants import TestFlextPluginConstants
     from .unit.test_models import TestFlextPluginModels
     from .unit.test_types import TestFlextPluginTypes
-    from .utilities import TestsFlextPluginUtilities, TestsFlextPluginUtilities as u
+    from .utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+    "FlextPluginTestConstants": ("tests.constants", "FlextPluginTestConstants"),
+    "FlextPluginTestModels": ("tests.models", "FlextPluginTestModels"),
+    "FlextPluginTestProtocols": ("tests.protocols", "FlextPluginTestProtocols"),
+    "FlextPluginTestTypes": ("tests.typings", "FlextPluginTestTypes"),
+    "FlextPluginTestUtilities": ("tests.utilities", "FlextPluginTestUtilities"),
     "PluginInterface": ("tests.test_application_services", "PluginInterface"),
     "TestBackwardsCompatibilityAliasesReal": (
         "tests.test_application_services",
@@ -165,17 +171,16 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_application_services",
         "TestServicesIntegrationReal",
     ),
-    "TestsFlextPluginConstants": ("tests.constants", "TestsFlextPluginConstants"),
-    "TestsFlextPluginModels": ("tests.models", "TestsFlextPluginModels"),
-    "TestsFlextPluginProtocols": ("tests.protocols", "TestsFlextPluginProtocols"),
-    "TestsFlextPluginTypes": ("tests.typings", "TestsFlextPluginTypes"),
-    "TestsFlextPluginUtilities": ("tests.utilities", "TestsFlextPluginUtilities"),
-    "c": ("tests.constants", "TestsFlextPluginConstants"),
-    "m": ("tests.models", "TestsFlextPluginModels"),
+    "c": ("tests.constants", "FlextPluginTestConstants"),
+    "d": ("flext_tests", "d"),
+    "e": ("flext_tests", "e"),
+    "h": ("flext_tests", "h"),
+    "m": ("tests.models", "FlextPluginTestModels"),
     "modules_to_test": ("tests.test_imports", "modules_to_test"),
-    "p": ("tests.protocols", "TestsFlextPluginProtocols"),
+    "p": ("tests.protocols", "FlextPluginTestProtocols"),
     "performance_config": ("tests.conftest", "performance_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
+    "r": ("flext_tests", "r"),
     "real_container_with_adapters": ("tests.conftest", "real_container_with_adapters"),
     "real_discovery_adapter": ("tests.conftest", "real_discovery_adapter"),
     "real_discovery_service_with_adapters": (
@@ -202,9 +207,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "real_tap_plugin": ("tests.conftest", "real_tap_plugin"),
     "real_target_plugin": ("tests.conftest", "real_target_plugin"),
+    "s": ("flext_tests", "s"),
     "set_test_environment": ("tests.conftest", "set_test_environment"),
     "simple_plugin_directory": ("tests.conftest", "simple_plugin_directory"),
-    "t": ("tests.typings", "TestsFlextPluginTypes"),
+    "t": ("tests.typings", "FlextPluginTestTypes"),
     "temp_plugin_dir": ("tests.test_application_services", "temp_plugin_dir"),
     "test_basic_plugin_example_execution": (
         "tests.test_examples",
@@ -222,12 +228,17 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_examples",
         "test_plugin_configuration_example_execution",
     ),
-    "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "TestsFlextPluginUtilities"),
+    "u": ("tests.utilities", "FlextPluginTestUtilities"),
     "unit": ("tests.unit", ""),
+    "x": ("flext_tests", "x"),
 }
 
 __all__ = [
+    "FlextPluginTestConstants",
+    "FlextPluginTestModels",
+    "FlextPluginTestProtocols",
+    "FlextPluginTestTypes",
+    "FlextPluginTestUtilities",
     "PluginInterface",
     "TestBackwardsCompatibilityAliasesReal",
     "TestDynamicLoaderAdapter",
@@ -260,17 +271,16 @@ __all__ = [
     "TestRealPluginIntegrationWorkflow",
     "TestServiceErrorHandling",
     "TestServicesIntegrationReal",
-    "TestsFlextPluginConstants",
-    "TestsFlextPluginModels",
-    "TestsFlextPluginProtocols",
-    "TestsFlextPluginTypes",
-    "TestsFlextPluginUtilities",
     "c",
+    "d",
+    "e",
+    "h",
     "m",
     "modules_to_test",
     "p",
     "performance_config",
     "pytest_configure",
+    "r",
     "real_container_with_adapters",
     "real_discovery_adapter",
     "real_discovery_service_with_adapters",
@@ -288,6 +298,7 @@ __all__ = [
     "real_service_with_adapters",
     "real_tap_plugin",
     "real_target_plugin",
+    "s",
     "set_test_environment",
     "simple_plugin_directory",
     "t",
@@ -296,9 +307,9 @@ __all__ = [
     "test_docker_integration_example_execution",
     "test_docker_integration_example_with_connection_testing",
     "test_plugin_configuration_example_execution",
-    "tm",
     "u",
     "unit",
+    "x",
 ]
 
 
