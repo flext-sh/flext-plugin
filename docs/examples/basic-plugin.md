@@ -315,7 +315,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
-        # Access configuration from the config dict[str, object] passed during initialization
+        # Access configuration from the config dict[str, t.NormalizedValue] passed during initialization
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
@@ -704,7 +704,7 @@ class TestBasicDataProcessorPlugin:
         plugin.activate()
 
         # Force an error by providing non-dict data
-        with patch.object(
+        with patch.t.NormalizedValue(
             plugin, "_process_data", side_effect=Exception("Processing error")
         ):
             result = plugin.execute({"payload": {"test": "data"}})

@@ -184,7 +184,7 @@
 
 ## Notes
 
-[object additional information, implementation details, or future considerations]
+[t.NormalizedValue additional information, implementation details, or future considerations]
 
 ## Decision Log
 

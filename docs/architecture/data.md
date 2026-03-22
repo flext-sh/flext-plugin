@@ -102,7 +102,7 @@ class Execution {
 }
 
 class ExecutionContext {
-    +input_data: Dict[str, object]
+    +input_data: Dict[str, t.NormalizedValue]
     +environment: Dict[str, str]
     +user_id: str
     +correlation_id: str
@@ -411,14 +411,14 @@ ______________________________________________________________________
 ```python
 # Pydantic data models with validation
 from pydantic import BaseModel, Field
-from typing import List, Dict, object
+from typing import List, Dict, t.NormalizedValue
 
 
 class FlextPluginSettings(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = Field(default_factory=list)
-    config: Dict[str, object] = Field(default_factory=dict)
+    config: Dict[str, t.NormalizedValue] = Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -428,7 +428,9 @@ class FlextPluginSettings(BaseModel):
 
 ```python
 # Schema evolution and data migration
-def migrate_plugin_data(old_data: dict, target_version: str) -> dict[str, object]:
+def migrate_plugin_data(
+    old_data: dict, target_version: str
+) -> dict[str, t.NormalizedValue]:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
     pass

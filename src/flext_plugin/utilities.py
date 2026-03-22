@@ -233,7 +233,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def create_file_watcher(
             watch_path: Path | str,
-            callback_function: Callable[..., object] | None = None,
+            callback_function: Callable[..., t.NormalizedValue] | None = None,
         ) -> r[Mapping[str, t.NormalizedValue]]:
             """Create file system watcher for plugin hot reload.
 
@@ -730,7 +730,7 @@ class FlextPluginUtilities(FlextUtilities):
                 )
             if not callable(plugin_function):
                 return r[t.NormalizedValue].fail(f"'{function_name}' is not callable")
-            callable_plugin: Callable[..., object] = plugin_function
+            callable_plugin: Callable[..., t.NormalizedValue] = plugin_function
 
             def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []

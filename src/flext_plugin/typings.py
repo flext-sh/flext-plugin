@@ -22,7 +22,7 @@ class FlextPluginTypes(FlextTypes):
 
     Follows FLEXT ecosystem namespace conventions:
     - t.Plugin.* for plugin-specific types
-    - t.Core.JsonDict, t.Core.object via Core alias
+    - t.Core.JsonDict, t.Core.t.NormalizedValue via Core alias
     """
 
     class Handlers:
@@ -144,7 +144,7 @@ class FlextPluginTypes(FlextTypes):
 
         type DiscoveryPath = str
         type DiscoveryResult = Mapping[str, FlextTypes.NormalizedValue]
-        type PluginLoader = object
+        type PluginLoader = t.NormalizedValue
         type EntryPoint = str
 
     class Execution:
@@ -170,7 +170,7 @@ class FlextPluginTypes(FlextTypes):
 
         type WatchConfig = Mapping[str, FlextTypes.NormalizedValue]
         type ReloadEvent = Mapping[str, FlextTypes.NormalizedValue]
-        type FileWatcher = object
+        type FileWatcher = t.NormalizedValue
 
 
 t = FlextPluginTypes

@@ -15,6 +15,7 @@ from __future__ import annotations
 import pytest
 
 from flext_plugin import FlextPluginConstants, FlextPluginModels
+from tests import t
 
 
 class TestFlextPlugin:
@@ -130,7 +131,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_with_complex_settings(self) -> None:
         """Test configuration with complex settings."""
-        settings: dict[str, object] = {
+        settings: dict[str, t.NormalizedValue] = {
             "max_memory_mb": 800,
             "max_cpu_percent": 75,
             "timeout_seconds": 300,
@@ -177,7 +178,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_with_complex_data(self) -> None:
         """Test ExecutionResult with complex output data."""
-        complex_data: dict[str, object] = {
+        complex_data: dict[str, t.NormalizedValue] = {
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
@@ -201,7 +202,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_with_plugins(self) -> None:
         """Test registry with plugins."""
-        plugins: dict[str, object] = {
+        plugins: dict[str, t.NormalizedValue] = {
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }

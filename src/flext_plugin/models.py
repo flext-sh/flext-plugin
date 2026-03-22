@@ -399,7 +399,7 @@ class FlextPluginModels(FlextModels):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
-            (file system, entry points, etc_constants.). Immutable value object.
+            (file system, entry points, etc_constants.). Immutable value t.NormalizedValue.
 
             Attributes:
             name: Plugin unique identifier name
@@ -468,13 +468,13 @@ class FlextPluginModels(FlextModels):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
-            module object and load metadata. Immutable value object.
+            module t.NormalizedValue and load metadata. Immutable value t.NormalizedValue.
 
             Attributes:
             name: Plugin unique identifier name
             version: Plugin semantic version
             path: File system path to plugin
-            module: The loaded Python module object
+            module: The loaded Python module t.NormalizedValue
             load_type: Type of loaded plugin (file, directory, entry_point)
             loaded_at: Timestamp when plugin was loaded
             entry_file: Entry file path for directory-based plugins
@@ -500,7 +500,7 @@ class FlextPluginModels(FlextModels):
             module: Annotated[
                 types.ModuleType,
                 Field(
-                    description="The loaded Python module object",
+                    description="The loaded Python module t.NormalizedValue",
                 ),
             ]
             load_type: Annotated[
@@ -525,7 +525,7 @@ class FlextPluginModels(FlextModels):
             """Plugin reload record - immutable reload history entry.
 
             Records information about a plugin reload event including timing,
-            success/failure status, and optional error details. Immutable value object.
+            success/failure status, and optional error details. Immutable value t.NormalizedValue.
 
             Attributes:
             plugin_name: Name of reloaded plugin
@@ -557,10 +557,10 @@ class FlextPluginModels(FlextModels):
             ]
 
         class PluginMetadata(FlextModels.Value):
-            """Plugin metadata - immutable metadata value object.
+            """Plugin metadata - immutable metadata value t.NormalizedValue.
 
             Represents complete metadata about a plugin including discovery
-            and description information. Immutable value object.
+            and description information. Immutable value t.NormalizedValue.
 
             Attributes:
             name: Plugin unique identifier
@@ -608,7 +608,7 @@ class FlextPluginModels(FlextModels):
             """Event data - immutable event information.
 
             Represents structured event data with context and metadata.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             event_type: Type of event
@@ -633,7 +633,7 @@ class FlextPluginModels(FlextModels):
             """Validation result - immutable validation outcome.
 
             Represents result of plugin validation including status and details.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             is_valid: Whether validation passed
@@ -670,7 +670,7 @@ class FlextPluginModels(FlextModels):
             """Security report - immutable security scan result.
 
             Represents security scanning results for plugins.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             is_safe: Whether plugin passed security checks
@@ -707,7 +707,7 @@ class FlextPluginModels(FlextModels):
             """Watcher configuration - file system monitoring config.
 
             Represents file watcher configuration for hot reload.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             watch_path: Path being watched
@@ -725,7 +725,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
-                Callable[..., object] | None,
+                Callable[..., t.NormalizedValue] | None,
                 Field(
                     default=None,
                     description="Callback function reference",
@@ -751,7 +751,7 @@ class FlextPluginModels(FlextModels):
             """Sandbox configuration - plugin execution sandbox settings.
 
             Represents security sandbox configuration for plugin execution.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             plugin_name: Name of plugin to sandbox
@@ -797,7 +797,7 @@ class FlextPluginModels(FlextModels):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
-            Immutable value object.
+            Immutable value t.NormalizedValue.
 
             Attributes:
             version: Registry schema version

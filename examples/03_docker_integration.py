@@ -16,7 +16,7 @@ from collections.abc import Mapping
 
 from flext_core import FlextContainer
 
-from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels
+from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -32,7 +32,7 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
 
 
 def create_docker_postgres_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin, Mapping[str, object]
+    FlextPluginModels.Plugin.Plugin, Mapping[str, t.NormalizedValue]
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
     postgres_config = {
@@ -59,7 +59,7 @@ def create_docker_postgres_plugin() -> tuple[
 
 
 def create_docker_redis_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin, Mapping[str, object]
+    FlextPluginModels.Plugin.Plugin, Mapping[str, t.NormalizedValue]
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
     redis_config = {
@@ -87,7 +87,7 @@ def create_docker_redis_plugin() -> tuple[
 
 
 def create_docker_ldap_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin, Mapping[str, object]
+    FlextPluginModels.Plugin.Plugin, Mapping[str, t.NormalizedValue]
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
     ldap_config = {

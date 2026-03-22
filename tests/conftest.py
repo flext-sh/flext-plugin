@@ -23,6 +23,7 @@ import pytest
 from flext_core import FlextContainer
 
 from flext_plugin import FlextPluginAdapters, FlextPluginModels
+from tests import t
 
 
 @pytest.fixture(autouse=True)
@@ -36,7 +37,7 @@ def set_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_plugin_config() -> dict[str, object]:
+def real_plugin_config() -> dict[str, t.NormalizedValue]:
     """REAL plugin configuration for testing."""
     return {
         "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
@@ -58,7 +59,7 @@ def simple_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_plugin_data() -> dict[str, object]:
+def real_plugin_data() -> dict[str, t.NormalizedValue]:
     """REAL plugin data matching actual plugin files."""
     return {
         "plugins": [
@@ -157,7 +158,7 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 
 @pytest.fixture
 def real_plugin_configs() -> dict[
-    str, dict[str, dict[str, object] | list[str] | object]
+    str, dict[str, dict[str, t.NormalizedValue] | list[str] | t.NormalizedValue]
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
@@ -246,7 +247,7 @@ def real_plugin_dependencies() -> dict[str, list[str]]:
 
 
 @pytest.fixture
-def performance_config() -> dict[str, object]:
+def performance_config() -> dict[str, t.NormalizedValue]:
     """Configuration for REAL plugin performance testing."""
     return {
         "max_load_time": 2.0,

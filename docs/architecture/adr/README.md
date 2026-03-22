@@ -133,7 +133,7 @@ All ADRs follow a standardized template for consistency and completeness.
 
 ## Notes
 
-[object additional information or implementation details]
+[t.NormalizedValue additional information or implementation details]
 ```
 
 ______________________________________________________________________
