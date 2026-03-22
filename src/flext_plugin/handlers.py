@@ -76,11 +76,7 @@ class FlextPluginHandlers:
         history = self._event_history
         if event_type:
             history = [e for e in history if e["event_type"] == event_type]
-        return [
-            e
-            for e in self._event_history
-            if limit <= 0 or e in self._event_history[-limit:]
-        ]
+        return [e for e in history if limit <= 0 or e in history[-limit:]]
 
     def get_handler_count(self, event_type: str) -> int:
         """Get count of handlers for a specific event type.

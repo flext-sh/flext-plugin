@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import u
+from flext_tests import tm
 
 from flext_plugin import FlextPluginConstants
 
@@ -18,188 +18,150 @@ class TestFlextPluginConstants:
     def test_constants_initialization(self) -> None:
         """Test that constants can be initialized."""
         constants = FlextPluginConstants()
-        u.Tests.Matchers.that(constants is not None, eq=True)
+        tm.that(constants is not None, eq=True)
 
     def test_discovery_constants(self) -> None:
         """Test discovery-related constants."""
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             len(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS) > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN, eq=True
         )
 
     def test_types_constants(self) -> None:
         """Test plugin type constants."""
-        u.Tests.Matchers.that(
-            len(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES) > 0, eq=True
-        )
-        u.Tests.Matchers.that(
+        tm.that(len(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES) > 0, eq=True)
+        tm.that(
             len(FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES) > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             len(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES) > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             len(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES) > 0, eq=True
         )
-        u.Tests.Matchers.that(
-            len(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES) > 0, eq=True
-        )
+        tm.that(len(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES) > 0, eq=True)
 
     def test_lifecycle_constants(self) -> None:
         """Test lifecycle-related constants."""
-        u.Tests.Matchers.that(
+        tm.that(
             len(FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES) > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS > 0, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Lifecycle.MIN_PLUGIN_WORKERS >= 0, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Lifecycle.DEFAULT_WORKERS > 0, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.MIN_PLUGIN_WORKERS >= 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Lifecycle.DEFAULT_WORKERS > 0, eq=True)
 
     def test_hot_reload_constants(self) -> None:
         """Test hot reload constants."""
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS > 0, eq=True
         )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.HotReload.DEBOUNCE_MS >= 0, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.HotReload.MAX_RETRIES > 0, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.HotReload.DEBOUNCE_MS >= 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.HotReload.MAX_RETRIES > 0, eq=True)
 
     def test_files_constants(self) -> None:
         """Test file-related constants."""
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR, eq=True)
 
     def test_plugin_messages_constants(self) -> None:
         """Test plugin message constants."""
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, eq=True
-        )
-        u.Tests.Matchers.that(
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, eq=True)
+        tm.that(
             FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS, eq=True
         )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, eq=True
-        )
-        u.Tests.Matchers.that(
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, eq=True)
+        tm.that(
             FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS, eq=True
         )
 
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
-        u.Tests.Matchers.that(
+        tm.that(
             len(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS) > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT > 0,
             eq=True,
         )
 
     def test_plugin_performance_constants(self) -> None:
         """Test plugin performance constants."""
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX == 100, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MIN == 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.GOOD_SUCCESS_RATE > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.FAIR_SUCCESS_RATE > 0, eq=True
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_TIME_MS > 0, eq=True
         )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.PluginPerformance.GOOD_TIME_MS > 0, eq=True
-        )
-        u.Tests.Matchers.that(
-            FlextPluginConstants.Plugin.PluginPerformance.FAIR_TIME_MS > 0, eq=True
-        )
-        u.Tests.Matchers.that(
+        tm.that(FlextPluginConstants.Plugin.PluginPerformance.GOOD_TIME_MS > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginPerformance.FAIR_TIME_MS > 0, eq=True)
+        tm.that(
             (
                 FlextPluginConstants.Plugin.PluginPerformance.EXECUTION_TIME_SCALE_MS_TO_S
                 == 1000
             ),
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.READY_MAX_MEMORY_MB > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             (
                 FlextPluginConstants.Plugin.PluginPerformance.MAX_CONCURRENT_LOADS_WARNING_THRESHOLD
                 > 0
             ),
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB > 0,
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             (
                 FlextPluginConstants.Plugin.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
                 > 0
@@ -209,25 +171,25 @@ class TestFlextPluginConstants:
 
     def test_constants_immutability(self) -> None:
         """Test that constants are immutable."""
-        u.Tests.Matchers.that(
+        tm.that(
             isinstance(
                 FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int
             ),
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             isinstance(
                 FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int
             ),
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             isinstance(
                 FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int
             ),
             eq=True,
         )
-        u.Tests.Matchers.that(
+        tm.that(
             isinstance(
                 FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int
             ),
@@ -241,16 +203,16 @@ class TestFlextPluginConstants:
         arch_types = FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES
         integration_types = FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES
         utility_types = FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES
-        u.Tests.Matchers.that(singer_types.issubset(all_types), eq=True)
-        u.Tests.Matchers.that(arch_types.issubset(all_types), eq=True)
-        u.Tests.Matchers.that(integration_types.issubset(all_types), eq=True)
-        u.Tests.Matchers.that(utility_types.issubset(all_types), eq=True)
-        u.Tests.Matchers.that(singer_types.isdisjoint(arch_types), eq=True)
-        u.Tests.Matchers.that(singer_types.isdisjoint(integration_types), eq=True)
-        u.Tests.Matchers.that(singer_types.isdisjoint(utility_types), eq=True)
-        u.Tests.Matchers.that(arch_types.isdisjoint(integration_types), eq=True)
-        u.Tests.Matchers.that(arch_types.isdisjoint(utility_types), eq=True)
-        u.Tests.Matchers.that(integration_types.isdisjoint(utility_types), eq=True)
+        tm.that(singer_types.issubset(all_types), eq=True)
+        tm.that(arch_types.issubset(all_types), eq=True)
+        tm.that(integration_types.issubset(all_types), eq=True)
+        tm.that(utility_types.issubset(all_types), eq=True)
+        tm.that(singer_types.isdisjoint(arch_types), eq=True)
+        tm.that(singer_types.isdisjoint(integration_types), eq=True)
+        tm.that(singer_types.isdisjoint(utility_types), eq=True)
+        tm.that(arch_types.isdisjoint(integration_types), eq=True)
+        tm.that(arch_types.isdisjoint(utility_types), eq=True)
+        tm.that(integration_types.isdisjoint(utility_types), eq=True)
 
     def test_security_levels_consistency(self) -> None:
         """Test that security levels are consistent."""
@@ -258,12 +220,12 @@ class TestFlextPluginConstants:
         default_level = (
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL
         )
-        u.Tests.Matchers.that(default_level in security_levels, eq=True)
-        u.Tests.Matchers.that(len(security_levels) == 4, eq=True)
-        u.Tests.Matchers.that("LOW" in security_levels, eq=True)
-        u.Tests.Matchers.that("MEDIUM" in security_levels, eq=True)
-        u.Tests.Matchers.that("HIGH" in security_levels, eq=True)
-        u.Tests.Matchers.that("CRITICAL" in security_levels, eq=True)
+        tm.that(default_level in security_levels, eq=True)
+        tm.that(len(security_levels) == 4, eq=True)
+        tm.that("LOW" in security_levels, eq=True)
+        tm.that("MEDIUM" in security_levels, eq=True)
+        tm.that("HIGH" in security_levels, eq=True)
+        tm.that("CRITICAL" in security_levels, eq=True)
 
     def test_lifecycle_states_consistency(self) -> None:
         """Test that lifecycle states are consistent."""
@@ -280,5 +242,5 @@ class TestFlextPluginConstants:
             "healthy",
             "unhealthy",
         }
-        u.Tests.Matchers.that(states == expected_states, eq=True)
-        u.Tests.Matchers.that(len(states) == 10, eq=True)
+        tm.that(states == expected_states, eq=True)
+        tm.that(len(states) == 10, eq=True)
