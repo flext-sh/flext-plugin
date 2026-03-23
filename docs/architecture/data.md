@@ -1,7 +1,6 @@
 # Data Architecture
 
 <!-- TOC START -->
-
 - [💾 Data Architecture Overview](#data-architecture-overview)
   - [Data Architecture Principles](#data-architecture-principles)
 - [🗂️ Data Model Hierarchy](#data-model-hierarchy)
@@ -32,7 +31,6 @@
 - [📚 Data Architecture Documentation](#data-architecture-documentation)
   - [Data Dictionary](#data-dictionary)
   - [API Data Contracts](#api-data-contracts)
-
 <!-- TOC END -->
 
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025

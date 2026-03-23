@@ -1,7 +1,6 @@
 # Getting Started with FLEXT Plugin
 
 <!-- TOC START -->
-
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Development Installation (Recommended)](#development-installation-recommended)
@@ -15,7 +14,6 @@
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **Version**: 0.9.9 RC

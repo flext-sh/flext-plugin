@@ -1,7 +1,6 @@
 # FLEXT Plugin Documentation
 
 <!-- TOC START -->
-
 - [Documentation Structure](#documentation-structure)
   - [📚 Core Documentation](#core-documentation)
   - [🏗️ Architecture & Design](#architecture-design)
@@ -28,7 +27,6 @@
   - [Getting Help](#getting-help)
   - [Contributing](#contributing)
   - [Commercial Support](#commercial-support)
-
 <!-- TOC END -->
 
 Welcome to the comprehensive documentation for FLEXT Plugin, the enterprise plugin management system for the FLEXT ecosystem.

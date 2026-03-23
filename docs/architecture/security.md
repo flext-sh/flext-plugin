@@ -1,7 +1,6 @@
 # Security Architecture
 
 <!-- TOC START -->
-
 - [🔒 Security Architecture Overview](#security-architecture-overview)
   - [Security Principles](#security-principles)
 - [🛡️ Security Architecture Layers](#security-architecture-layers)
@@ -39,7 +38,6 @@
 - [📚 Security Architecture Documentation](#security-architecture-documentation)
   - [Security Documentation Index](#security-documentation-index)
   - [Security Training and Awareness](#security-training-and-awareness)
-
 <!-- TOC END -->
 
 **Security Design, Controls, and Threat Model** | **Version**: 0.9.0 | **Last Updated**: October 2025

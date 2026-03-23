@@ -1,7 +1,6 @@
 # Development Guide
 
 <!-- TOC START -->
-
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Setup Commands](#setup-commands)
@@ -29,7 +28,6 @@
   - [Version Management](#version-management)
   - [Quality Requirements](#quality-requirements)
 - [Getting Help](#getting-help)
-
 <!-- TOC END -->
 
 **Contributing to FLEXT Plugin**

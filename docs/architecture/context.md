@@ -1,7 +1,6 @@
 # System Context (C4 Level 1)
 
 <!-- TOC START -->
-
 - [🎯 System Context Overview](#system-context-overview)
   - [System Mission](#system-mission)
 - [📊 System Context Diagram](#system-context-diagram)
@@ -29,7 +28,6 @@
   - [Version 0.9.0 (Current)](#version-090-current)
   - [Version 0.10.0 (Next)](#version-0100-next)
   - [Version 1.0.0 (Future)](#version-100-future)
-
 <!-- TOC END -->
 
 **C4 Model Level 1**: System Context | **Version**: 0.9.0 | **Last Updated**: October 2025

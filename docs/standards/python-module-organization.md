@@ -1,7 +1,6 @@
 # Python Module Organization & Semantic Patterns
 
 <!-- TOC START -->
-
 - [🏗️ **Module Architecture Overview**](#module-architecture-overview)
   - [**Core Design Principles**](#core-design-principles)
 - [📁 **Module Structure & Responsibilities**](#module-structure-responsibilities)
@@ -28,7 +27,7 @@
 - [🎯 **Domain-Driven Design Patterns**](#domain-driven-design-patterns)
   - [**Plugin Entity Patterns**](#plugin-entity-patterns)
   - [**Plugin Aggregate Patterns**](#plugin-aggregate-patterns)
-  - [**Plugin Value Object Patterns**](#plugin-value-t.NormalizedValue-patterns)
+  - [**Plugin Value Object Patterns**](#plugin-value-object-patterns)
 - [🚀 **Performance & Optimization Patterns**](#performance-optimization-patterns)
   - [**Lazy Plugin Loading**](#lazy-plugin-loading)
   - [**Plugin Caching Patterns**](#plugin-caching-patterns)
@@ -44,7 +43,6 @@
   - [**Cross-Project Plugin Standards**](#cross-project-plugin-standards)
   - [**Plugin Configuration Integration**](#plugin-configuration-integration)
   - [**Plugin Registry Integration**](#plugin-registry-integration)
-
 <!-- TOC END -->
 
 **FLEXT Plugin Module Architecture & Best Practices for Plugin System Development**

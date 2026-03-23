@@ -1,7 +1,6 @@
 # Container Architecture (C4 Level 2)
 
 <!-- TOC START -->
-
 - [🏗️ Container Architecture Overview](#container-architecture-overview)
   - [Architecture Principles](#architecture-principles)
 - [📦 Container Diagram](#container-diagram)
@@ -31,7 +30,6 @@
   - [FLEXT Plugin Core API](#flext-plugin-core-api)
   - [FLEXT Plugin CLI Interface](#flext-plugin-cli-interface)
   - [FLEXT Plugin API Interface (Planned)](#flext-plugin-api-interface-planned)
-
 <!-- TOC END -->
 
 **C4 Model Level 2**: Containers | **Version**: 0.9.0 | **Last Updated**: October 2025

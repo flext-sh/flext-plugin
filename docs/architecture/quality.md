@@ -1,7 +1,6 @@
 # Quality Attributes
 
 <!-- TOC START -->
-
 - [🎯 Quality Attributes Overview](#quality-attributes-overview)
   - [Quality Attribute Categories](#quality-attribute-categories)
 - [⚡ Performance Requirements](#performance-requirements)
@@ -34,7 +33,6 @@
 - [📋 Quality Requirements Summary](#quality-requirements-summary)
   - [Critical Quality Requirements](#critical-quality-requirements)
   - [Quality Assurance Activities](#quality-assurance-activities)
-
 <!-- TOC END -->
 
 **Performance, Scalability, Reliability, and Quality Requirements** | **Version**: 0.9.0 | **Last Updated**: October 2025

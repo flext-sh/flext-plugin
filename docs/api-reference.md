@@ -1,7 +1,6 @@
 # API Reference
 
 <!-- TOC START -->
-
 - [Core Classes](#core-classes)
   - [FlextPluginPlatform](#flextpluginplatform)
   - [FlextPlugin (Entity)](#flextplugin-entity)
@@ -25,7 +24,6 @@
   - [Basic Plugin Management](#basic-plugin-management)
   - [Plugin Discovery](#plugin-discovery)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **FLEXT Plugin System API Reference**

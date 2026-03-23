@@ -1,7 +1,6 @@
 # Architecture Decision Log
 
 <!-- TOC START -->
-
 - [📊 Decision Log Overview](#decision-log-overview)
   - [Decision Log Structure](#decision-log-structure)
 - [📅 Detailed Decision Timeline](#detailed-decision-timeline)
@@ -28,7 +27,6 @@
   - [Decision-Making Framework](#decision-making-framework)
   - [Historical Context](#historical-context)
   - [Process Documentation](#process-documentation)
-
 <!-- TOC END -->
 
 **Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last Updated**: October 2025

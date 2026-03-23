@@ -1,7 +1,6 @@
 # Quick Start Guide
 
 <!-- TOC START -->
-
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Option 1: Install from PyPI (Recommended)](#option-1-install-from-pypi-recommended)
@@ -21,7 +20,6 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Getting Help](#getting-help)
-
 <!-- TOC END -->
 
 **⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0 compliance. Current implementation is non-compliant with FLEXT standards and modern Python practices.

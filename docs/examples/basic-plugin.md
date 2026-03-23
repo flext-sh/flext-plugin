@@ -1,7 +1,6 @@
 # Basic Plugin Example
 
 <!-- TOC START -->
-
 - [Overview](#overview)
 - [Plugin Implementation](#plugin-implementation)
   - [1. Basic Plugin Class](#1-basic-plugin-class)
@@ -18,7 +17,6 @@
   - [3. Error Handling](#3-error-handling)
   - [4. Testing Strategy](#4-testing-strategy)
   - [5. Best Practices](#5-best-practices)
-
 <!-- TOC END -->
 
 This example demonstrates how to create a simple, functional plugin using the FLEXT Plugin system. The example covers plugin creation, registration, lifecycle management, and basic execution patterns.

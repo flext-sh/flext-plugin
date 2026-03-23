@@ -1,7 +1,6 @@
 # Architecture
 
 <!-- TOC START -->
-
 - [Clean Architecture Overview](#clean-architecture-overview)
 - [Domain Layer](#domain-layer)
   - [Core Entities](#core-entities)
@@ -22,7 +21,6 @@
   - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
   - [Integration Points](#integration-points)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **FLEXT Plugin System Architecture**

@@ -1,7 +1,6 @@
 # ADR-\[NUMBER\]: [TITLE]
 
 <!-- TOC START -->
-
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -34,7 +33,6 @@
   - [Internal References](#internal-references)
 - [Notes](#notes)
 - [Decision Log](#decision-log)
-
 <!-- TOC END -->
 
 ## Status

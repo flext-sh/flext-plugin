@@ -1,7 +1,6 @@
 # Component Architecture (C4 Level 3)
 
 <!-- TOC START -->
-
 - [🏗️ Component Architecture Overview](#component-architecture-overview)
   - [Architecture Layers](#architecture-layers)
   - [Component Design Principles](#component-design-principles)
@@ -26,7 +25,6 @@
 - [🔧 Component Evolution and Maintenance](#component-evolution-and-maintenance)
   - [Component Lifecycle](#component-lifecycle)
   - [Component Refactoring Guidelines](#component-refactoring-guidelines)
-
 <!-- TOC END -->
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
