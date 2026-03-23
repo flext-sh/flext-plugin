@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from . import unit as unit
-    from .conftest import (
+    from tests import unit
+    from tests.conftest import (
         performance_config,
         pytest_configure,
         real_container_with_adapters,
@@ -33,10 +33,10 @@ if TYPE_CHECKING:
         set_test_environment,
         simple_plugin_directory,
     )
-    from .constants import FlextPluginTestConstants, FlextPluginTestConstants as c
-    from .models import FlextPluginTestModels, FlextPluginTestModels as m
-    from .protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
-    from .test_application_services import (
+    from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
+    from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
+    from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
+    from tests.test_application_services import (
         PluginInterface,
         TestBackwardsCompatibilityAliasesReal,
         TestFlextPluginDiscoveryReal,
@@ -53,37 +53,44 @@ if TYPE_CHECKING:
         real_service_with_adapters,
         temp_plugin_dir,
     )
-    from .test_core_types import (
+    from tests.test_core_types import (
         TestFlextPluginConstantsLifecycle,
         TestFlextPluginConstantsPluginType,
         TestPluginError,
     )
-    from .test_domain_entities import (
+    from tests.test_domain_entities import (
         TestFlextPlugin,
         TestFlextPluginExecution,
         TestFlextPluginMetadata,
         TestFlextPluginRegistryEntity,
     )
-    from .test_domain_ports import TestFlextPluginDiscovery
-    from .test_examples import (
+    from tests.test_domain_ports import TestFlextPluginDiscovery
+    from tests.test_examples import (
         test_basic_plugin_example_execution,
         test_docker_integration_example_execution,
         test_docker_integration_example_with_connection_testing,
         test_plugin_configuration_example_execution,
     )
-    from .test_handlers import TestFlextPluginHandlers
-    from .test_hot_reload import TestFlextPluginHotReload
-    from .test_hot_reload_package import TestHotReloadPackage
-    from .test_imports import modules_to_test
-    from .test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
-    from .test_manager import TestFlextPluginService, TestFlextPluginServiceStubBridges
-    from .test_plugin import TestPluginModel, TestPluginPlatform, TestPluginRegistry
-    from .typings import FlextPluginTestTypes, FlextPluginTestTypes as t
-    from .unit.test_config import TestFlextPluginSettings
-    from .unit.test_constants import TestFlextPluginConstants
-    from .unit.test_models import TestFlextPluginModels
-    from .unit.test_types import TestFlextPluginTypes
-    from .utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
+    from tests.test_handlers import TestFlextPluginHandlers
+    from tests.test_hot_reload import TestFlextPluginHotReload
+    from tests.test_hot_reload_package import TestHotReloadPackage
+    from tests.test_imports import modules_to_test
+    from tests.test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
+    from tests.test_manager import (
+        TestFlextPluginService,
+        TestFlextPluginServiceStubBridges,
+    )
+    from tests.test_plugin import (
+        TestPluginModel,
+        TestPluginPlatform,
+        TestPluginRegistry,
+    )
+    from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
+    from tests.unit.test_config import TestFlextPluginSettings
+    from tests.unit.test_constants import TestFlextPluginConstants
+    from tests.unit.test_models import TestFlextPluginModels
+    from tests.unit.test_types import TestFlextPluginTypes
+    from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextPluginTestConstants": ("tests.constants", "FlextPluginTestConstants"),
