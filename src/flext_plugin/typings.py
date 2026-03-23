@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from typing import Literal, TypeAlias, TypeVar
 
 from flext_core import FlextTypes
@@ -57,12 +57,12 @@ class FlextPluginTypes(FlextTypes):
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = list[str]
+        type StringList = Sequence[str]
         type StringSet = set[str]
         type StringDict = Mapping[str, str]
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
-        type PluginList = list[Mapping[str, FlextTypes.NormalizedValue]]
+        type PluginList = Sequence[Mapping[str, FlextTypes.NormalizedValue]]
         type PluginDict = Mapping[str, FlextTypes.NormalizedValue]
         type ConfigDict = Mapping[str, FlextTypes.NormalizedValue]
         type SettingsDict = Mapping[str, FlextTypes.NormalizedValue]

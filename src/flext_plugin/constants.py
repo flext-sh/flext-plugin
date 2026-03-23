@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
@@ -37,7 +38,7 @@ class FlextPluginConstants(FlextConstants):
 
             DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
-            DEFAULT_PLUGIN_PATHS: Final[list[str]] = [
+            DEFAULT_PLUGIN_PATHS: Final[Sequence[str]] = [
                 "/opt/flext/plugins",
                 "~/.flext/plugins",
                 "./plugins",
@@ -123,7 +124,12 @@ class FlextPluginConstants(FlextConstants):
         class PluginSecurity:
             """Plugin security level constants."""
 
-            SECURITY_LEVELS: Final[list[str]] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+            SECURITY_LEVELS: Final[Sequence[str]] = [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL",
+            ]
             DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
             SECURITY_LOW: Final[str] = "low"
             SECURITY_MEDIUM: Final[str] = "medium"
@@ -134,8 +140,11 @@ class FlextPluginConstants(FlextConstants):
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
             SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
-            DEFAULT_ALLOWED_IMPORTS: Final[list[str]] = ["flext_core", "flext_plugin"]
-            DEFAULT_BLOCKED_IMPORTS: Final[list[str]] = [
+            DEFAULT_ALLOWED_IMPORTS: Final[Sequence[str]] = [
+                "flext_core",
+                "flext_plugin",
+            ]
+            DEFAULT_BLOCKED_IMPORTS: Final[Sequence[str]] = [
                 "os",
                 "sys",
                 "subprocess",
@@ -197,7 +206,7 @@ class FlextPluginConstants(FlextConstants):
         class Monitoring:
             """Monitoring configuration constants."""
 
-            LOG_LEVELS: Final[list[str]] = [
+            LOG_LEVELS: Final[Sequence[str]] = [
                 "DEBUG",
                 "INFO",
                 "WARNING",

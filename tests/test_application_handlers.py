@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 import pytest
 from flext_core import t
@@ -43,7 +43,7 @@ class TestFlextPluginHandlers:
     async def test_event_triggering(self) -> None:
         """Test triggering events."""
         handlers = FlextPluginHandlers()
-        results: list[Mapping[str, t.NormalizedValue]] = []
+        results: Sequence[Mapping[str, t.NormalizedValue]] = []
 
         async def test_handler(
             event_data: Mapping[str, t.NormalizedValue],
@@ -72,7 +72,7 @@ class TestFlextPluginHandlers:
     async def test_handler_priorities(self) -> None:
         """Test handler priority ordering."""
         handlers = FlextPluginHandlers()
-        results: list[str] = []
+        results: Sequence[str] = []
 
         async def handler_low(
             event_data: Mapping[str, t.NormalizedValue],
@@ -97,7 +97,7 @@ class TestFlextPluginHandlers:
     async def test_multiple_handlers_same_event(self) -> None:
         """Test multiple handlers for the same event."""
         handlers = FlextPluginHandlers()
-        results: list[str] = []
+        results: Sequence[str] = []
 
         async def handler1(
             event_data: Mapping[str, t.NormalizedValue],

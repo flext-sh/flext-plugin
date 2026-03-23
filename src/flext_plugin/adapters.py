@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from types import ModuleType
 from typing import override
@@ -21,8 +21,7 @@ from pydantic import TypeAdapter
 from flext_plugin.constants import FlextPluginConstants as c
 from flext_plugin.discovery import discover_python_plugins_in_directory
 from flext_plugin.models import FlextPluginModels as m
-from flext_plugin.protocols import FlextPluginProtocols
-from flext_plugin.protocols import FlextPluginProtocols as p
+from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
 
 
 class FlextPluginAdapters:
@@ -88,8 +87,8 @@ class FlextPluginAdapters:
         @override
         def discover_plugins(
             self,
-            paths: list[str],
-        ) -> r[list[Mapping[str, t.NormalizedValue]]]:
+            paths: Sequence[str],
+        ) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
@@ -110,9 +109,11 @@ class FlextPluginAdapters:
         def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
             return r[bool].ok(value=True)
 
-        def _discover_all(self, paths: list[str]) -> list[m.Plugin.DiscoveryData]:
+        def _discover_all(
+            self, paths: Sequence[str]
+        ) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
-            discovered: list[m.Plugin.DiscoveryData] = []
+            discovered: Sequence[m.Plugin.DiscoveryData] = []
             for path in paths:
                 path_obj = Path(path).expanduser().resolve()
                 if not path_obj.exists():
@@ -127,7 +128,7 @@ class FlextPluginAdapters:
             self.logger.info(f"Discovered {len(discovered)} plugins")
             return discovered
 
-        def _discover_directory(self, path: Path) -> list[m.Plugin.DiscoveryData]:
+        def _discover_directory(self, path: Path) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
             return discover_python_plugins_in_directory(
                 path,
@@ -183,10 +184,10 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize the synchronous plugin adapter."""
             super().__init__()
-            self._loaded_plugins: dict[str, ModuleType] = {}
+            self._loaded_plugins: Mapping[str, ModuleType] = {}
 
         @override
-        def get_loaded_plugins(self) -> list[str]:
+        def get_loaded_plugins(self) -> Sequence[str]:
             """Get list of loaded plugins."""
             return list(self._loaded_plugins.keys())
 
@@ -280,7 +281,7 @@ class FlextPluginAdapters:
             return r.ok(c.Plugin.Execution.STATE_COMPLETED)
 
         @override
-        def list_running_executions(self) -> list[str]:
+        def list_running_executions(self) -> Sequence[str]:
             """List running executions."""
             return []
 
@@ -296,7 +297,7 @@ class FlextPluginAdapters:
         def check_permissions(
             self,
             _plugin_name: str,
-            _permissions: list[str],
+            _permissions: Sequence[str],
         ) -> r[bool]:
             """Check plugin permissions."""
             return r.ok(True)
@@ -327,7 +328,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: dict[str, t.NormalizedValue] = {}
+            self._plugins: Mapping[str, t.NormalizedValue] = {}
 
         @override
         def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
@@ -340,7 +341,7 @@ class FlextPluginAdapters:
             return plugin_name in self._plugins
 
         @override
-        def list_plugins(self) -> r[list[Mapping[str, t.NormalizedValue]]]:
+        def list_plugins(self) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
             """List all plugins in registry."""
             return r.ok([])
 
@@ -348,7 +349,9 @@ class FlextPluginAdapters:
         def register(self, plugin: t.NormalizedValue) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
-            plugin_payload = TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
+            plugin_payload = TypeAdapter(
+                Mapping[str, t.NormalizedValue]
+            ).validate_python(
                 plugin,
             )
             plugin_name = plugin_payload.get("name")

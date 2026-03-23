@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
@@ -16,8 +16,10 @@ from typing import Annotated, Self
 from flext_core import FlextModels, r
 from pydantic import Field, field_validator
 
-from flext_plugin.constants import FlextPluginConstants as c
-from flext_plugin.constants import FlextPluginConstants as c_constants
+from flext_plugin.constants import (
+    FlextPluginConstants as c,
+    FlextPluginConstants as c_constants,
+)
 from flext_plugin.typings import FlextPluginTypes as t
 
 
@@ -103,7 +105,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=True, description="Plugin enabled state"),
             ]
             metadata: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Extensible plugin metadata",
@@ -139,10 +141,10 @@ class FlextPluginModels(FlextModels):
                 New Plugin entity instance
 
                 """
-                metadata_payload: dict[str, t.NormalizedValue] = (
+                metadata_payload: Mapping[str, t.NormalizedValue] = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: dict[str, t.NormalizedValue] = {
+                payload: Mapping[str, t.NormalizedValue] = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,
@@ -372,7 +374,7 @@ class FlextPluginModels(FlextModels):
 
             success: Annotated[bool, Field(description="Whether execution succeeded")]
             data: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Execution output data",
@@ -439,7 +441,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Extensible discovery metadata",
@@ -588,14 +590,14 @@ class FlextPluginModels(FlextModels):
             ]
             entry_point: Annotated[str, Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of plugin dependencies",
                 ),
             ]
             metadata: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Additional metadata",
@@ -620,7 +622,7 @@ class FlextPluginModels(FlextModels):
             plugin_name: Annotated[str, Field(description="Associated plugin name")]
             timestamp: Annotated[datetime, Field(description="When event occurred")]
             data: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Event-specific data",
@@ -643,21 +645,21 @@ class FlextPluginModels(FlextModels):
 
             is_valid: Annotated[bool, Field(description="Whether validation passed")]
             errors: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of validation errors",
                 ),
             ]
             warnings: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of validation warnings",
                 ),
             ]
             details: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Additional validation details",
@@ -683,14 +685,14 @@ class FlextPluginModels(FlextModels):
                 Field(description="Whether plugin passed security checks"),
             ]
             violations: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of security violations",
                 ),
             ]
             warnings: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of security warnings",
@@ -734,7 +736,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=False, description="Whether watcher is active"),
             ]
             last_modified: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="File modification tracking",
@@ -771,7 +773,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             allowed_modules: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     description="Allowed import modules",
                 ),
@@ -785,7 +787,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="File system access level"),
             ]
             environment_variables: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     description="Environment variable settings",
                 ),
@@ -807,7 +809,7 @@ class FlextPluginModels(FlextModels):
 
             version: Annotated[str, Field(description="Registry schema version")]
             plugins: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",
@@ -836,7 +838,7 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: Annotated[str, Field(description="Plugin name")]
             settings: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Configuration settings",
@@ -850,7 +852,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugins: Annotated[
-                dict[str, t.NormalizedValue],
+                Mapping[str, t.NormalizedValue],
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger, c, r
@@ -42,8 +42,8 @@ class FlextPluginHandlers:
         """Initialize the plugin handlers."""
         super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
-        self._event_history: list[dict[str, t.NormalizedValue]] = []
+        self._handlers: Mapping[str, Sequence[t.Handlers.HandlerInfo]] = {}
+        self._event_history: Sequence[Mapping[str, t.NormalizedValue]] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -61,7 +61,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> list[Mapping[str, t.NormalizedValue]]:
+    ) -> Sequence[Mapping[str, t.NormalizedValue]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -304,7 +304,7 @@ class FlextPluginHandlers:
         self,
         event_type: str,
         event_data: Mapping[str, t.NormalizedValue],
-    ) -> r[list[t.NormalizedValue]]:
+    ) -> r[Sequence[t.NormalizedValue]]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -316,7 +316,7 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: dict[str, t.NormalizedValue] = {
+            event_record: Mapping[str, t.NormalizedValue] = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -328,7 +328,7 @@ class FlextPluginHandlers:
                     event_type,
                 )
                 return r.ok([])
-            results: list[t.NormalizedValue] = []
+            results: Sequence[t.NormalizedValue] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
@@ -359,7 +359,7 @@ class FlextPluginHandlers:
             ImportError,
         ) as e:
             self.logger.exception("Failed to trigger event %s", event_type)
-            return r[list[t.NormalizedValue]].fail(f"Event triggering error: {e!s}")
+            return r[Sequence[t.NormalizedValue]].fail(f"Event triggering error: {e!s}")
 
     def unregister_handler(
         self,

@@ -69,7 +69,9 @@ class FlextPluginPlatform:
         """Check if plugin is currently loaded"""
 
     # Discovery
-    def scan_directory(self, directory_path: str) -> r[list[FlextPluginModels.Entity]]:
+    def scan_directory(
+        self, directory_path: str
+    ) -> r[Sequence[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
     def validate_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
@@ -194,7 +196,7 @@ ______________________________________________________________________
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
-    def scan_directory(self, path: str) -> r[list[FlextPluginModels.Entity]]:
+    def scan_directory(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
     def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> r[bool]:

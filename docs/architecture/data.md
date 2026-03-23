@@ -430,7 +430,7 @@ class FlextPluginSettings(BaseModel):
 # Schema evolution and data migration
 def migrate_plugin_data(
     old_data: dict, target_version: str
-) -> dict[str, t.NormalizedValue]:
+) -> Mapping[str, t.NormalizedValue]:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
     pass

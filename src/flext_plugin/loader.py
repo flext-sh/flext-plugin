@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -43,15 +43,15 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: dict[str, t.NormalizedValue] = {}
-        self._loader_strategies: list[
+        self._loaded_plugins: Mapping[str, t.NormalizedValue] = {}
+        self._loader_strategies: Sequence[
             Callable[[Path], FlextPluginModels.Plugin.LoadData | None]
         ] = [
             self.FilePluginLoader(self.logger).load,
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
-    def get_loaded_plugins(self) -> list[str]:
+    def get_loaded_plugins(self) -> Sequence[str]:
         """Get list of currently loaded plugin names.
 
         Returns:

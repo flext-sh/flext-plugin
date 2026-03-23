@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import override
 
 from flext_core import FlextContainer, FlextRegistry, FlextService, FlextSettings, r
@@ -45,7 +45,7 @@ class FlextPluginPlatform:
             self.is_completed = False
             self.success = False
             self.error_message: str | None = None
-            self.result: dict[str, t.NormalizedValue] | None = None
+            self.result: Mapping[str, t.NormalizedValue] | None = None
             self.started_at: str | None = None
             self.completed_at: str | None = None
 
@@ -156,7 +156,7 @@ class FlextPluginPlatform:
             category: str = "plugins",
             *,
             scope: str = "class",
-        ) -> r[list[str]]:
+        ) -> r[Sequence[str]]:
             """List all registered plugin names.
 
             Args:
@@ -210,11 +210,11 @@ class FlextPluginPlatform:
     class PluginPlatformService(FlextService[None]):
         """railway-oriented plugin platform with functional composition."""
 
-        _plugins: dict[str, FlextPluginPlatform.Plugin] = PrivateAttr(
-            default_factory=lambda: dict[str, FlextPluginPlatform.Plugin](),
+        _plugins: Mapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
+            default_factory=lambda: Mapping[str, FlextPluginPlatform.Plugin](),
         )
-        _executions: dict[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
-            default_factory=lambda: dict[str, FlextPluginPlatform.PluginExecution](),
+        _executions: Mapping[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
+            default_factory=lambda: Mapping[str, FlextPluginPlatform.PluginExecution](),
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
         _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(
@@ -230,11 +230,11 @@ class FlextPluginPlatform:
         @staticmethod
         def _to_general_mapping(
             value: t.NormalizedValue,
-        ) -> dict[str, t.NormalizedValue]:
+        ) -> Mapping[str, t.NormalizedValue]:
             """Convert mapping-like values to a typed dict."""
             if not u.is_dict_like(value):
                 return {}
-            return TypeAdapter(dict[str, t.NormalizedValue]).validate_python(value)
+            return TypeAdapter(Mapping[str, t.NormalizedValue]).validate_python(value)
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
@@ -325,21 +325,21 @@ class FlextPluginPlatform:
 
         def discover_plugins(
             self,
-            paths: list[str],
-        ) -> r[list[FlextPluginPlatform.Plugin]]:
+            paths: Sequence[str],
+        ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
                 _checked: t.NormalizedValue,
-            ) -> r[list[Mapping[str, t.NormalizedValue]]]:
+            ) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
                 if not self.discovery:
-                    return r[list[Mapping[str, t.NormalizedValue]]].fail(
+                    return r[Sequence[Mapping[str, t.NormalizedValue]]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.is_success:
                     discovered_items = discovery_result.value
-                    plugin_dicts: list[Mapping[str, t.NormalizedValue]] = []
+                    plugin_dicts: Sequence[Mapping[str, t.NormalizedValue]] = []
                     for item in discovered_items:
                         if u.is_dict_like(item):
                             plugin_dicts.append(self._to_general_mapping(item))
@@ -364,13 +364,13 @@ class FlextPluginPlatform:
                                 "metadata": self._to_general_mapping(metadata),
                             })
                     return r.ok(plugin_dicts)
-                return r[list[Mapping[str, t.NormalizedValue]]].fail(
+                return r[Sequence[Mapping[str, t.NormalizedValue]]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: list[Mapping[str, t.NormalizedValue]],
-            ) -> r[list[FlextPluginPlatform.Plugin]]:
+                data: Sequence[Mapping[str, t.NormalizedValue]],
+            ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
             return (
@@ -434,7 +434,9 @@ class FlextPluginPlatform:
             plugin = self.get_plugin(name)
             return plugin.status if plugin else None
 
-        def get_running_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+        def get_running_executions(
+            self,
+        ) -> Sequence[FlextPluginPlatform.PluginExecution]:
             """Get all running executions."""
             return [
                 execution
@@ -447,11 +449,11 @@ class FlextPluginPlatform:
             plugin = self.get_plugin(name)
             return plugin.is_active() if plugin else False
 
-        def list_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+        def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
             """List all executions."""
             return list(self.executions.values())
 
-        def list_plugins(self) -> list[FlextPluginPlatform.Plugin]:
+        def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
             """List all registered plugins."""
             return list(self.plugins.values())
 
@@ -471,7 +473,7 @@ class FlextPluginPlatform:
                     if u.is_dict_like(load_data):
                         return r.ok(self._to_general_mapping(load_data))
                     if getattr(load_data, "name", None):
-                        plugin_dict: dict[str, t.NormalizedValue] = {
+                        plugin_dict: Mapping[str, t.NormalizedValue] = {
                             "name": str(getattr(load_data, "name", "")),
                             "version": str(getattr(load_data, "version", "1.0.0")),
                             "path": str(getattr(load_data, "path", "")),
@@ -527,7 +529,7 @@ class FlextPluginPlatform:
                 .map(add_to_plugins_result)
             )
 
-        def start_hot_reload(self, paths: list[str]) -> r[bool]:
+        def start_hot_reload(self, paths: Sequence[str]) -> r[bool]:
             """Start hot reload for given paths."""
             _ = paths
             return r.ok(True)
@@ -590,7 +592,7 @@ class FlextPluginPlatform:
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     "Executor not configured",
                 )
-            exec_context: dict[str, t.NormalizedValue] = {
+            exec_context: Mapping[str, t.NormalizedValue] = {
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
                 "input_data": execution.input_data,
@@ -626,8 +628,8 @@ class FlextPluginPlatform:
 
         def _register_all(
             self,
-            plugins: list[FlextPluginPlatform.Plugin],
-        ) -> list[FlextPluginPlatform.Plugin]:
+            plugins: Sequence[FlextPluginPlatform.Plugin],
+        ) -> Sequence[FlextPluginPlatform.Plugin]:
             """Register multiple plugins."""
             for plugin in plugins:
                 self._plugins[plugin.name] = plugin
@@ -666,10 +668,10 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: list[Mapping[str, t.NormalizedValue]],
-        ) -> r[list[FlextPluginPlatform.Plugin]]:
+            plugin_data: Sequence[Mapping[str, t.NormalizedValue]],
+        ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
-            plugins: list[FlextPluginPlatform.Plugin] = []
+            plugins: Sequence[FlextPluginPlatform.Plugin] = []
             for data in plugin_data:
                 plugin = FlextPluginPlatform.Plugin.create(
                     name=str(data["name"]),

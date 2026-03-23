@@ -31,14 +31,16 @@ class FlextPluginApi:
             container=container or FlextContainer(),
         )
 
-    def discover_plugins(self, paths: list[str]) -> r[list[FlextPluginPlatform.Plugin]]:
+    def discover_plugins(
+        self, paths: Sequence[str]
+    ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
         if result.is_success:
             plugins = result.value
             self.logger.info(f"Discovered {len(plugins)} plugins")
-            return r[list[FlextPluginPlatform.Plugin]].ok(plugins)
-        return r[list[FlextPluginPlatform.Plugin]].fail(
+            return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)
+        return r[Sequence[FlextPluginPlatform.Plugin]].fail(
             result.error or "Discovery failed",
         )
 
@@ -80,7 +82,7 @@ class FlextPluginApi:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
-    def start_hot_reload(self, paths: list[str]) -> r[bool]:
+    def start_hot_reload(self, paths: Sequence[str]) -> r[bool]:
         """Start hot reload monitoring for the given paths."""
         return self.platform.start_hot_reload(paths)
 

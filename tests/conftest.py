@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from collections.abc import Generator
+from collections.abc import Generator, Mapping, Sequence
 from pathlib import Path
 
 import pytest
@@ -37,7 +37,7 @@ def set_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_plugin_config() -> dict[str, t.NormalizedValue]:
+def real_plugin_config() -> Mapping[str, t.NormalizedValue]:
     """REAL plugin configuration for testing."""
     return {
         "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
@@ -59,7 +59,7 @@ def simple_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_plugin_data() -> dict[str, t.NormalizedValue]:
+def real_plugin_data() -> Mapping[str, t.NormalizedValue]:
     """REAL plugin data matching actual plugin files."""
     return {
         "plugins": [
@@ -157,8 +157,9 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 
 
 @pytest.fixture
-def real_plugin_configs() -> dict[
-    str, dict[str, dict[str, t.NormalizedValue] | list[str] | t.NormalizedValue]
+def real_plugin_configs() -> Mapping[
+    str,
+    Mapping[str, Mapping[str, t.NormalizedValue] | Sequence[str] | t.NormalizedValue],
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
@@ -237,7 +238,7 @@ def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
 
 
 @pytest.fixture
-def real_plugin_dependencies() -> dict[str, list[str]]:
+def real_plugin_dependencies() -> Mapping[str, Sequence[str]]:
     """REAL plugin dependency graph."""
     return {
         "tap_database": [],
@@ -247,7 +248,7 @@ def real_plugin_dependencies() -> dict[str, list[str]]:
 
 
 @pytest.fixture
-def performance_config() -> dict[str, t.NormalizedValue]:
+def performance_config() -> Mapping[str, t.NormalizedValue]:
     """Configuration for REAL plugin performance testing."""
     return {
         "max_load_time": 2.0,

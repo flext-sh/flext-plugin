@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -26,8 +26,8 @@ from flext_plugin import FlextPluginModels, c, t
 class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
-    PLUGIN_EXTENSIONS: ClassVar[list[str]] = [".py", ".yaml", ".yml", ".json"]
-    PLUGIN_MANIFESTS: ClassVar[list[str]] = [
+    PLUGIN_EXTENSIONS: ClassVar[Sequence[str]] = [".py", ".yaml", ".yml", ".json"]
+    PLUGIN_MANIFESTS: ClassVar[Sequence[str]] = [
         "plugin.yaml",
         "plugin.yml",
         "plugin.json",
@@ -57,7 +57,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> r[list[FlextPluginModels.Plugin.PluginMetadata]]:
+        ) -> r[Sequence[FlextPluginModels.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
@@ -70,10 +70,10 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 search_path = Path(directory)
                 if not search_path.exists():
-                    return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                    return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}",
                     )
-                plugins: list[FlextPluginModels.Plugin.PluginMetadata] = []
+                plugins: Sequence[FlextPluginModels.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
                     if (
                         plugin_file.is_file()
@@ -93,7 +93,7 @@ class FlextPluginUtilities(FlextUtilities):
                             )
                             if metadata_result.is_success:
                                 plugins.append(metadata_result.value)
-                return r[list[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
+                return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
             except (
                 ValueError,
                 TypeError,
@@ -103,7 +103,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[list[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].fail(
                     f"Plugin discovery failed: {e}",
                 )
 
@@ -248,7 +248,7 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[Mapping[str, t.NormalizedValue]].fail(
                         f"Watch path does not exist: {path}",
                     )
-                watcher_config: dict[str, t.NormalizedValue] = {
+                watcher_config: Mapping[str, t.NormalizedValue] = {
                     "watch_path": str(path),
                     "callback": callback_function.__name__
                     if callback_function
@@ -288,14 +288,14 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
-                last_modified: dict[str, t.NormalizedValue] = (
-                    TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
+                last_modified: Mapping[str, t.NormalizedValue] = (
+                    TypeAdapter(Mapping[str, t.NormalizedValue]).validate_python(
                         last_modified_raw,
                     )
                     if u.is_dict_like(last_modified_raw)
                     else {}
                 )
-                changed_files: list[str] = []
+                changed_files: Sequence[str] = []
                 for file_path in watch_path.rglob("*"):
                     if (
                         file_path.is_file()
@@ -429,7 +429,7 @@ class FlextPluginUtilities(FlextUtilities):
             """
 
             def _create_sandbox_config() -> Mapping[str, t.NormalizedValue]:
-                sandbox_config: dict[str, t.NormalizedValue] = {
+                sandbox_config: Mapping[str, t.NormalizedValue] = {
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
@@ -471,10 +471,10 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                security_report: dict[str, t.NormalizedValue] = {
+                security_report: Mapping[str, t.NormalizedValue] = {
                     "safe": True,
-                    "violations": list[str](),
-                    "warnings": list[str](),
+                    "violations": Sequence[str](),
+                    "warnings": Sequence[str](),
                     "analysis_time": datetime.now(UTC).isoformat(),
                 }
                 for (
@@ -560,7 +560,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if path.suffix in {".yaml", ".yml"}:
                     config = yaml.safe_load(content)
                 elif path.suffix == ".json":
-                    config = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
+                    config = TypeAdapter(Mapping[str, t.NormalizedValue]).validate_json(
                         content,
                     )
                 else:
@@ -576,7 +576,7 @@ class FlextPluginUtilities(FlextUtilities):
                         f"Unsupported configuration schema version: {config.get('schema_version')}",
                     )
                 config_mapping = TypeAdapter(
-                    dict[str, t.NormalizedValue],
+                    Mapping[str, t.NormalizedValue],
                 ).validate_python(config)
                 return r[Mapping[str, t.NormalizedValue]].ok(config_mapping)
             except (
@@ -613,10 +613,10 @@ class FlextPluginUtilities(FlextUtilities):
                     existing_value = merged_config.get(key)
                     if isinstance(value, dict) and isinstance(existing_value, dict):
                         base_nested_config = TypeAdapter(
-                            dict[str, t.NormalizedValue],
+                            Mapping[str, t.NormalizedValue],
                         ).validate_python(existing_value)
                         override_value = TypeAdapter(
-                            dict[str, t.NormalizedValue],
+                            Mapping[str, t.NormalizedValue],
                         ).validate_python(value)
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
@@ -703,7 +703,7 @@ class FlextPluginUtilities(FlextUtilities):
         def execute_plugin_function(
             plugin_module: ModuleType,
             function_name: str,
-            args: list[t.NormalizedValue] | None = None,
+            args: Sequence[t.NormalizedValue] | None = None,
             kwargs: Mapping[str, t.NormalizedValue] | None = None,
         ) -> r[t.NormalizedValue]:
             """Execute a specific function within a plugin module.
@@ -889,7 +889,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 path = Path(registry_path)
                 if not path.exists():
-                    registry: dict[str, t.NormalizedValue] = {
+                    registry: Mapping[str, t.NormalizedValue] = {
                         "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
                         "plugins": {},
                         "last_updated": datetime.now(UTC).isoformat(),
@@ -905,7 +905,7 @@ class FlextPluginUtilities(FlextUtilities):
                         f"Registry file too large: {file_size_mb:.1f}MB",
                     )
                 content = path.read_text(encoding="utf-8")
-                registry = TypeAdapter(dict[str, t.NormalizedValue]).validate_json(
+                registry = TypeAdapter(Mapping[str, t.NormalizedValue]).validate_json(
                     content,
                 )
                 return r[Mapping[str, t.NormalizedValue]].ok(registry)
@@ -938,9 +938,9 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                mutable_registry: dict[str, t.NormalizedValue] = dict(registry)
+                mutable_registry: Mapping[str, t.NormalizedValue] = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = dict[str, t.NormalizedValue]()
+                    mutable_registry["plugins"] = Mapping[str, t.NormalizedValue]()
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
@@ -998,7 +998,7 @@ class FlextPluginUtilities(FlextUtilities):
                 mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
                 _ = path.write_text(
-                    TypeAdapter(dict[str, t.NormalizedValue])
+                    TypeAdapter(Mapping[str, t.NormalizedValue])
                     .dump_json(mutable_registry, indent=2)
                     .decode("utf-8"),
                     encoding="utf-8",

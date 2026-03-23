@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from typing import override
 
 from flext_core import FlextContainer, r, x
@@ -96,8 +96,8 @@ class FlextPluginService(x):
         self._security = security or FlextPluginAdapters.PluginSecurityAdapter()
         self._registry = registry or FlextPluginAdapters.MemoryRegistryAdapter()
         self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
-        self._plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
-        self._executions: dict[str, FlextPluginPlatform.PluginExecution] = {}
+        self._plugins: Mapping[str, FlextPluginModels.Plugin.Plugin] = {}
+        self._executions: Mapping[str, FlextPluginPlatform.PluginExecution] = {}
 
     @property
     @override
@@ -106,10 +106,12 @@ class FlextPluginService(x):
         return FlextContainer.get_global()
 
     @staticmethod
-    def _to_general_mapping(value: t.NormalizedValue) -> dict[str, t.NormalizedValue]:
+    def _to_general_mapping(
+        value: t.NormalizedValue,
+    ) -> Mapping[str, t.NormalizedValue]:
         if not isinstance(value, Mapping):
             return {}
-        return TypeAdapter(dict[str, t.NormalizedValue]).validate_python(value)
+        return TypeAdapter(Mapping[str, t.NormalizedValue]).validate_python(value)
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.
@@ -144,8 +146,8 @@ class FlextPluginService(x):
 
     def discover_and_register_plugins(
         self,
-        paths: list[str],
-    ) -> r[list[FlextPluginModels.Plugin.Plugin]]:
+        paths: Sequence[str],
+    ) -> r[Sequence[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -157,19 +159,19 @@ class FlextPluginService(x):
         """
         try:
             if not self._discovery:
-                return r[list[FlextPluginModels.Plugin.Plugin]].fail(
+                return r[Sequence[FlextPluginModels.Plugin.Plugin]].fail(
                     "Plugin discovery not available",
                 )
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.is_failure:
-                return r[list[FlextPluginModels.Plugin.Plugin]].fail(
+                return r[Sequence[FlextPluginModels.Plugin.Plugin]].fail(
                     f"Discovery failed: {discovery_result.error}",
                 )
             if not u.is_list_like(discovery_result.value):
-                return r[list[FlextPluginModels.Plugin.Plugin]].fail(
+                return r[Sequence[FlextPluginModels.Plugin.Plugin]].fail(
                     "Discovery did not return a list",
                 )
-            registered_plugins: list[FlextPluginModels.Plugin.Plugin] = []
+            registered_plugins: Sequence[FlextPluginModels.Plugin.Plugin] = []
             for plugin_data in discovery_result.value:
                 if u.is_dict_like(plugin_data):
                     name = str(plugin_data.get("name", ""))
@@ -244,14 +246,14 @@ class FlextPluginService(x):
             ImportError,
         ) as e:
             self.logger.exception("Plugin discovery and registration failed")
-            return r[list[FlextPluginModels.Plugin.Plugin]].fail(
+            return r[Sequence[FlextPluginModels.Plugin.Plugin]].fail(
                 f"Service error: {e!s}",
             )
 
     def discover_plugins(
         self,
-        paths: list[str],
-    ) -> r[list[FlextPluginModels.Plugin.Plugin]]:
+        paths: Sequence[str],
+    ) -> r[Sequence[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins from the specified paths.
 
         Alias for discover_and_register_plugins.
@@ -502,7 +504,7 @@ class FlextPluginService(x):
             return c.Plugin.PluginStatus.ACTIVE
         return c.Plugin.PluginStatus.INACTIVE
 
-    def get_running_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+    def get_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
         """Get all currently running executions.
 
         Returns:
@@ -566,7 +568,7 @@ class FlextPluginService(x):
         """
         return plugin_name in self._plugins
 
-    def list_executions(self) -> list[FlextPluginPlatform.PluginExecution]:
+    def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
         """List all executions.
 
         Returns:
@@ -575,7 +577,7 @@ class FlextPluginService(x):
         """
         return list(self._executions.values())
 
-    def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
+    def list_plugins(self) -> Sequence[FlextPluginModels.Plugin.Plugin]:
         """List all loaded plugins.
 
         Returns:

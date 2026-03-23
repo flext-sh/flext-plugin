@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import override
 
@@ -71,7 +71,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = FlextLogger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: dict[str, t.NormalizedValue] = {}
+            self._config: Mapping[str, t.NormalizedValue] = {}
 
         @property
         def name(self) -> str:
@@ -244,7 +244,7 @@ class FlextPluginImplementations:
                     self._entity.record_error(str(e))
                 return r[t.NormalizedValue].fail(f"Operation failed: {e!s}")
 
-        def get_supported_operations(self) -> list[str]:
+        def get_supported_operations(self) -> Sequence[str]:
             """Get list of supported operations.
 
             Returns:
@@ -378,7 +378,9 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
-                transformed = TypeAdapter(dict[str, t.NormalizedValue]).validate_python(
+                transformed = TypeAdapter(
+                    Mapping[str, t.NormalizedValue]
+                ).validate_python(
                     data,
                 )
                 transformed["_transformed_by"] = self._name
@@ -506,7 +508,9 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: dict[str, t.NormalizedValue] = dict(config) if config else {}
+            self._config: Mapping[str, t.NormalizedValue] = (
+                dict(config) if config else {}
+            )
             self._services = services or {}
 
         @property
@@ -544,7 +548,7 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: dict[str, FlextPluginModels.Plugin.Plugin] = {}
+            self.plugins: Mapping[str, FlextPluginModels.Plugin.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
         def get_plugin(
@@ -562,7 +566,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> list[FlextPluginModels.Plugin.Plugin]:
+        def list_plugins(self) -> Sequence[FlextPluginModels.Plugin.Plugin]:
             """List all registered plugin names.
 
             Returns:
@@ -628,7 +632,7 @@ class FlextPluginImplementations:
             )
             self.logger = FlextLogger("plugin.loader")
 
-        def discover_plugins(self, search_path: str) -> r[list[str]]:
+        def discover_plugins(self, search_path: str) -> r[Sequence[str]]:
             """Discover available plugins in path.
 
             Args:
@@ -641,7 +645,7 @@ class FlextPluginImplementations:
             try:
                 self.logger.info("Discovering plugins in %s", search_path)
                 discovered = [f"{search_path}/plugin1", f"{search_path}/plugin2"]
-                return r[list[str]].ok(discovered)
+                return r[Sequence[str]].ok(discovered)
             except (
                 ValueError,
                 TypeError,
@@ -652,7 +656,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Plugin discovery failed in %s", search_path)
-                return r[list[str]].fail(f"Discovery failed: {e!s}")
+                return r[Sequence[str]].fail(f"Discovery failed: {e!s}")
 
         def load_plugin(self, plugin_path: str | Path) -> r[t.NormalizedValue]:
             """Load plugin from path.

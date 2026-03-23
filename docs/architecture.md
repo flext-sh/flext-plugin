@@ -125,7 +125,7 @@ class FlextPluginPlatform:
     def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> r[list[FlextPluginModels.Entity]]:
+    def discover_plugins(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -147,7 +147,7 @@ ______________________________________________________________________
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
-    def scan_directory(self, path: str) -> r[list[PluginInfo]]:
+    def scan_directory(self, path: str) -> r[Sequence[PluginInfo]]:
         """Scan directory for plugin files"""
 ```
 

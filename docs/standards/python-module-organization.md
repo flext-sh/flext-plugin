@@ -712,7 +712,7 @@ class AdvancedPluginDiscovery:
 
     def discover_singer_plugins(
         self, meltano_path: str
-    ) -> r[dict[str, List[FlextPlugin]]]:
+    ) -> r[Mapping[str, List[FlextPlugin]]]:
         """Discover Singer plugins from Meltano project structure."""
         try:
             meltano_yml_path = Path(meltano_path) / "meltano.yml"

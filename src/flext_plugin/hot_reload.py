@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
@@ -108,8 +108,8 @@ class FlextPluginHotReload:
         self.max_retries = max_retries
         self._is_watching = False
         self._watched_paths: set[Path] = set()
-        self._reload_callbacks: list[Callable[[str], None]] = []
-        self._reload_history: list[FlextPluginModels.Plugin.ReloadRecord] = []
+        self._reload_callbacks: Sequence[Callable[[str], None]] = []
+        self._reload_history: Sequence[FlextPluginModels.Plugin.ReloadRecord] = []
         self._observer: BaseObserver | None = None
         self._event_handler: FileSystemEventHandler | None = None
 
@@ -164,7 +164,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> r[dict[str, t.NormalizedValue]]:
+    def force_reload_all(self) -> r[Mapping[str, t.NormalizedValue]]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -173,10 +173,10 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[dict[str, t.NormalizedValue]].fail(
+                return r[Mapping[str, t.NormalizedValue]].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: list[dict[str, t.NormalizedValue]] = []
+            reload_results: Sequence[Mapping[str, t.NormalizedValue]] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -209,9 +209,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[dict[str, t.NormalizedValue]].fail(f"Force reload error: {e!s}")
+            return r[Mapping[str, t.NormalizedValue]].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> dict[str, t.NormalizedValue]:
+    def get_hot_reload_status(self) -> Mapping[str, t.NormalizedValue]:
         """Get the current status of the hot reload service.
 
         Returns:
@@ -233,7 +233,7 @@ class FlextPluginHotReload:
     def get_reload_history(
         self,
         limit: int = 100,
-    ) -> list[FlextPluginModels.Plugin.ReloadRecord]:
+    ) -> Sequence[FlextPluginModels.Plugin.ReloadRecord]:
         """Get reload history.
 
         Args:
@@ -245,7 +245,7 @@ class FlextPluginHotReload:
         """
         return self._reload_history[-limit:] if limit > 0 else self._reload_history
 
-    def get_watched_paths(self) -> list[str]:
+    def get_watched_paths(self) -> Sequence[str]:
         """Get list of currently watched paths.
 
         Returns:
@@ -357,7 +357,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to remove watch path: %s", path)
             return r[bool].fail(f"Remove watch path error: {e!s}")
 
-    def start_watching(self, paths: list[str]) -> r[bool]:
+    def start_watching(self, paths: Sequence[str]) -> r[bool]:
         """Start watching the given paths for changes.
 
         Args:
