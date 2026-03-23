@@ -17,8 +17,7 @@ from flext_core import FlextModels, r
 from pydantic import Field, field_validator
 
 from flext_plugin import (
-    FlextPluginConstants as c_constants,
-    FlextPluginTypes as t_types,
+    c,
     t,
 )
 
@@ -34,7 +33,7 @@ class FlextPluginModels(FlextModels):
     """
 
     # Re-export PluginType enum from constants for convenience
-    PluginType = c_constants.Plugin.PluginType
+    PluginType = c.Plugin.PluginType
 
     class Plugin:
         """Plugin domain namespace."""
@@ -120,7 +119,7 @@ class FlextPluginModels(FlextModels):
                 plugin_version: str = "1.0.0",
                 description: str = "",
                 author: str = "",
-                plugin_type: str = c_constants.Plugin.PluginType.UTILITY,
+                plugin_type: str = c.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
                 metadata: Mapping[str, t.NormalizedValue] | None = None,
                 entity_id: str | None = None,
@@ -429,13 +428,13 @@ class FlextPluginModels(FlextModels):
             ]
             path: Annotated[Path, Field(description="File system path to plugin")]
             discovery_type: Annotated[
-                t_types.Plugin.DiscoveryTypeLiteral,
+                t.Plugin.DiscoveryTypeLiteral,
                 Field(
                     description="Type of discovered plugin",
                 ),
             ]
             discovery_method: Annotated[
-                t_types.Plugin.DiscoveryMethodLiteral,
+                t.Plugin.DiscoveryMethodLiteral,
                 Field(
                     description="Discovery method used",
                 ),
@@ -504,7 +503,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             load_type: Annotated[
-                t_types.Plugin.LoadTypeLiteral,
+                t.Plugin.LoadTypeLiteral,
                 Field(
                     description="Type of loaded plugin",
                 ),

@@ -12,9 +12,8 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger, c, r
-from flext_core.typings import t
 
-from flext_plugin.typings import FlextPluginTypes as t_plugin
+from flext_plugin import t
 
 
 class FlextPluginHandlers:
@@ -25,7 +24,7 @@ class FlextPluginHandlers:
 
     Usage:
         ```python
-        from flext_plugin.handlers import FlextPluginHandlers
+        from flext_plugin import FlextPluginHandlers
 
         # Initialize handlers
         handlers = FlextPluginHandlers()
@@ -43,7 +42,7 @@ class FlextPluginHandlers:
         """Initialize the plugin handlers."""
         super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: dict[str, list[t_plugin.Handlers.HandlerInfo]] = {}
+        self._handlers: dict[str, list[t.Handlers.HandlerInfo]] = {}
         self._event_history: list[dict[str, t.NormalizedValue]] = []
 
     def clear_event_history(self) -> int:
@@ -263,7 +262,7 @@ class FlextPluginHandlers:
     def register_handler(
         self,
         event_type: str,
-        handler: t_plugin.Handlers.EventHandler,
+        handler: t.Handlers.EventHandler,
         priority: int = 0,
     ) -> r[bool]:
         """Register an event handler for a specific event type.
@@ -280,12 +279,10 @@ class FlextPluginHandlers:
         try:
             if event_type not in self._handlers:
                 self._handlers[event_type] = []
-            handler_info = t_plugin.Handlers.HandlerInfo(
-                handler=handler, priority=priority
-            )
+            handler_info = t.Handlers.HandlerInfo(handler=handler, priority=priority)
             self._handlers[event_type].append(handler_info)
 
-            def get_priority(handler_info: t_plugin.Handlers.HandlerInfo) -> int:
+            def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
                 return handler_info.priority
 
             self._handlers[event_type].sort(key=get_priority, reverse=True)
@@ -367,7 +364,7 @@ class FlextPluginHandlers:
     def unregister_handler(
         self,
         event_type: str,
-        handler: t_plugin.Handlers.EventHandler,
+        handler: t.Handlers.EventHandler,
     ) -> r[bool]:
         """Unregister an event handler.
 
@@ -406,7 +403,7 @@ class FlextPluginHandlers:
 
     async def _execute_handler(
         self,
-        handler: t_plugin.Handlers.EventHandler,
+        handler: t.Handlers.EventHandler,
         event_data: Mapping[str, t.NormalizedValue],
     ) -> t.NormalizedValue:
         """Execute a single handler with proper error handling.

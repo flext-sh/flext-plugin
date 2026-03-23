@@ -74,7 +74,7 @@ Create a file called `hello_plugin.py`:
 
 ```python
 from flext_plugin import create_flext_plugin
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 
 # Create a simple utility plugin
 hello_plugin = create_flext_plugin(
@@ -109,7 +109,7 @@ Create `platform_example.py`:
 
 ```python
 from flext_plugin import create_flext_plugin_platform, create_flext_plugin
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 
 
 def main():
@@ -174,8 +174,8 @@ Active plugins: ['hello-world']
 Create `custom_plugin.py`:
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -322,7 +322,7 @@ Cleaning up greeting-generator...
 FLEXT Plugin can automatically discover plugins in directories:
 
 ```python
-from flext_plugin.application.services import FlextPluginDiscoveryService
+from flext_plugin import FlextPluginDiscoveryService
 
 
 def discover_plugins():

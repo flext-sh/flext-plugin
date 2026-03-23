@@ -42,7 +42,7 @@ class FlextPluginService(x):
 
     Usage:
         ```python
-        from flext_plugin.services import FlextPluginService
+        from flext_plugin import FlextPluginService
 
         # Initialize service with dependency injection
         service = FlextPluginService()

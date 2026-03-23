@@ -12,7 +12,7 @@ from typing import Literal, TypeAlias, TypeVar
 
 from flext_core import FlextTypes
 
-from .constants import FlextPluginConstants as c_plugin
+from .constants import c
 
 T = TypeVar("T")
 
@@ -74,39 +74,39 @@ class FlextPluginTypes(FlextTypes):
         type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
         type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
         type PluginTypeLiteral = Literal[
-            c_plugin.Plugin.PluginType.TAP,
-            c_plugin.Plugin.PluginType.TARGET,
-            c_plugin.Plugin.PluginType.TRANSFORM,
-            c_plugin.Plugin.PluginType.EXTENSION,
-            c_plugin.Plugin.PluginType.SERVICE,
-            c_plugin.Plugin.PluginType.MIDDLEWARE,
-            c_plugin.Plugin.PluginType.TRANSFORMER,
-            c_plugin.Plugin.PluginType.API,
-            c_plugin.Plugin.PluginType.DATABASE,
-            c_plugin.Plugin.PluginType.NOTIFICATION,
-            c_plugin.Plugin.PluginType.AUTHENTICATION,
-            c_plugin.Plugin.PluginType.AUTHORIZATION,
-            c_plugin.Plugin.PluginType.UTILITY,
-            c_plugin.Plugin.PluginType.TOOL,
-            c_plugin.Plugin.PluginType.HANDLER,
-            c_plugin.Plugin.PluginType.PROCESSOR,
-            c_plugin.Plugin.PluginType.CORE,
-            c_plugin.Plugin.PluginType.ADDON,
-            c_plugin.Plugin.PluginType.THEME,
-            c_plugin.Plugin.PluginType.LANGUAGE,
+            c.Plugin.PluginType.TAP,
+            c.Plugin.PluginType.TARGET,
+            c.Plugin.PluginType.TRANSFORM,
+            c.Plugin.PluginType.EXTENSION,
+            c.Plugin.PluginType.SERVICE,
+            c.Plugin.PluginType.MIDDLEWARE,
+            c.Plugin.PluginType.TRANSFORMER,
+            c.Plugin.PluginType.API,
+            c.Plugin.PluginType.DATABASE,
+            c.Plugin.PluginType.NOTIFICATION,
+            c.Plugin.PluginType.AUTHENTICATION,
+            c.Plugin.PluginType.AUTHORIZATION,
+            c.Plugin.PluginType.UTILITY,
+            c.Plugin.PluginType.TOOL,
+            c.Plugin.PluginType.HANDLER,
+            c.Plugin.PluginType.PROCESSOR,
+            c.Plugin.PluginType.CORE,
+            c.Plugin.PluginType.ADDON,
+            c.Plugin.PluginType.THEME,
+            c.Plugin.PluginType.LANGUAGE,
         ]
         "Plugin type literal - references PluginType StrEnum members."
         type PluginStatusLiteral = Literal[
-            c_plugin.Plugin.PluginStatus.UNKNOWN,
-            c_plugin.Plugin.PluginStatus.DISCOVERED,
-            c_plugin.Plugin.PluginStatus.LOADED,
-            c_plugin.Plugin.PluginStatus.ACTIVE,
-            c_plugin.Plugin.PluginStatus.INACTIVE,
-            c_plugin.Plugin.PluginStatus.LOADING,
-            c_plugin.Plugin.PluginStatus.ERROR,
-            c_plugin.Plugin.PluginStatus.DISABLED,
-            c_plugin.Plugin.PluginStatus.HEALTHY,
-            c_plugin.Plugin.PluginStatus.UNHEALTHY,
+            c.Plugin.PluginStatus.UNKNOWN,
+            c.Plugin.PluginStatus.DISCOVERED,
+            c.Plugin.PluginStatus.LOADED,
+            c.Plugin.PluginStatus.ACTIVE,
+            c.Plugin.PluginStatus.INACTIVE,
+            c.Plugin.PluginStatus.LOADING,
+            c.Plugin.PluginStatus.ERROR,
+            c.Plugin.PluginStatus.DISABLED,
+            c.Plugin.PluginStatus.HEALTHY,
+            c.Plugin.PluginStatus.UNHEALTHY,
         ]
         "Plugin status literal - references PluginStatus StrEnum members."
 
@@ -125,10 +125,10 @@ class FlextPluginTypes(FlextTypes):
         type Permission = str
         type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
         type SecurityLevelLiteral = Literal[
-            c_plugin.SecurityLevelLiteral.LOW,
-            c_plugin.SecurityLevelLiteral.MEDIUM,
-            c_plugin.SecurityLevelLiteral.HIGH,
-            c_plugin.SecurityLevelLiteral.CRITICAL,
+            c.SecurityLevelLiteral.LOW,
+            c.SecurityLevelLiteral.MEDIUM,
+            c.SecurityLevelLiteral.HIGH,
+            c.SecurityLevelLiteral.CRITICAL,
         ]
         "Security level literal - references SecurityLevelLiteral StrEnum members."
 

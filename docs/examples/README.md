@@ -67,7 +67,7 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ```python
 from flext_plugin import create_flext_plugin, create_flext_plugin_platform
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 
 # Create simple plugin
 plugin = create_flext_plugin(
@@ -83,7 +83,7 @@ platform.activate_plugin("hello-world")
 ### Singer Plugin Creation
 
 ```python
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 
 # Create Singer tap plugin
 tap_plugin = create_flext_plugin(
@@ -215,8 +215,8 @@ echo "# Modified at $(date)" >> demo_plugin.py
 ### Plugin Template
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants

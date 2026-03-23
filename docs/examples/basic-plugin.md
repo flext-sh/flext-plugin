@@ -40,8 +40,8 @@ The basic plugin example shows:
 
 ```python
 # basic_plugin.py
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -467,7 +467,7 @@ import pytest
 from unittest.mock import patch, mock_open
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import PluginStatus, PluginType
 
 
 class TestBasicDataProcessorPlugin:

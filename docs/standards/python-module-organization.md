@@ -107,8 +107,8 @@ from flext_plugin import create_flext_plugin_platform
 **Usage Pattern**:
 
 ```python
-from flext_plugin.core.types import PluginStatus, PluginType, PluginError
-from flext_plugin.core.discovery import PluginDiscovery
+from flext_plugin import PluginStatus, PluginType, PluginError
+from flext_plugin import PluginDiscovery
 
 # Plugin type definitions
 plugin_type = PluginType.TAP  # Singer data extraction
@@ -131,8 +131,8 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 **Entity Pattern**:
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin, FlextPluginModels.Registry
-from flext_plugin.domain.ports import FlextPlugins.Manager
+from flext_plugin import FlextPlugin, FlextPluginModels.Registry
+from flext_plugin import FlextPlugins.Manager
 
 class CustomPlugin(FlextPlugin):
     """Rich plugin entity with business logic"""
@@ -163,11 +163,11 @@ class CustomPlugin(FlextPlugin):
 **Service Pattern**:
 
 ```python
-from flext_plugin.application.services import (
+from flext_plugin import (
     FlextPluginService,
     FlextPluginDiscoveryService,
 )
-from flext_plugin.application.handlers import FlextPluginHandler
+from flext_plugin import FlextPluginHandler
 
 
 class PluginWorkflow:
@@ -201,7 +201,7 @@ class PluginWorkflow:
 **Configuration Pattern**:
 
 ```python
-from flext_plugin.settings.settings import PluginSystemSettings
+from flext_plugin import PluginSystemSettings
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -333,7 +333,7 @@ from flext_plugin import (
     create_flext_plugin,
     create_flext_plugin_platform,
 )
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import PluginStatus, PluginType
 
 
 # Use patterns directly
@@ -349,9 +349,9 @@ def deploy_plugin():
 
 ```python
 # Import from specific modules for clarity
-from flext_plugin.domain.entities import FlextPlugin, FlextPluginModels.Registry
-from flext_plugin.application.services import FlextPluginService
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import FlextPlugin, FlextPluginModels.Registry
+from flext_plugin import FlextPluginService
+from flext_plugin import PluginStatus, PluginType
 
 # More explicit but verbose
 service = FlextPluginService(registry)
@@ -389,10 +389,10 @@ plugin = create_flext_plugin(
 from flext_plugin import *
 
 # ❌ Don't import internal modules
-from flext_plugin.core._internal import _PrivateClass
+from flext_plugin import _PrivateClass
 
 # ❌ Don't use deep imports for public APIs
-from flext_plugin.domain.entities import FlextPlugin, _private_method
+from flext_plugin import FlextPlugin, _private_method
 
 # ❌ Don't alias core plugin types
 from flext_plugin import FlextPlugin as Plugin  # Confusing across ecosystem
@@ -488,7 +488,7 @@ ______________________________________________________________________
 
 ```python
 from flext_plugin import create_flext_plugin
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -547,8 +547,8 @@ def deploy_tap_plugin(config: dict) -> r[FlextPlugin]:
 ### **Plugin Lifecycle Management**
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -656,8 +656,8 @@ class PluginLifecycleManager:
 ### **Plugin Discovery Patterns**
 
 ```python
-from flext_plugin.application.services import FlextPluginDiscoveryService
-from flext_plugin.core.discovery import PluginDiscovery
+from flext_plugin import FlextPluginDiscoveryService
+from flext_plugin import PluginDiscovery
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -757,8 +757,8 @@ ______________________________________________________________________
 ### **Plugin Entity Patterns**
 
 ```python
-from flext_plugin.domain.entities import FlextPlugin
-from flext_plugin.core.types import PluginStatus, PluginType
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -902,7 +902,7 @@ class FlextPlugin(FlextModels.Entity):
 ### **Plugin Aggregate Patterns**
 
 ```python
-from flext_plugin.domain.entities import FlextPluginModels.Registry
+from flext_plugin import FlextPluginModels.Registry
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -1019,7 +1019,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
 ### **Plugin Value Object Patterns**
 
 ```python
-from flext_plugin.domain.value_objects import FlextPluginModels.Metadata, FlextPluginModels.Config
+from flext_plugin import FlextPluginModels.Metadata, FlextPluginModels.Config
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -1407,7 +1407,7 @@ def execute_plugin(plugin, data):  # Missing types
 
 ```python
 # ✅ Plugin-specific error handling with r
-from flext_plugin.core.types import PluginError
+from flext_plugin import PluginError
 
 
 def safe_plugin_operation(plugin: FlextPlugin) -> r[bool]:
@@ -1702,7 +1702,7 @@ ______________________________________________________________________
 ```python
 # ✅ Standard plugin creation across ecosystem projects
 from flext_plugin import create_flext_plugin
-from flext_plugin.core.types import PluginType
+from flext_plugin import PluginType
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -1768,7 +1768,7 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 
 ```python
 # ✅ Extend plugin configuration patterns consistently
-from flext_plugin.settings.settings import PluginSystemSettings
+from flext_plugin import PluginSystemSettings
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -1817,7 +1817,7 @@ class ProjectPluginConfig(PluginSystemSettings):
 
 ```python
 # ✅ Use centralized plugin registry across ecosystem
-from flext_plugin.domain.entities import FlextPluginModels.Registry
+from flext_plugin import FlextPluginModels.Registry
 from flext_plugin import create_flext_plugin_platform
 
 class EcosystemPluginManager:

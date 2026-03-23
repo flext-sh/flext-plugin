@@ -12,11 +12,9 @@ from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, r
-from flext_core.typings import t
+from flext_core import FlextLogger, r, t
 
-from flext_plugin.constants import FlextPluginConstants as c
-from flext_plugin.models import FlextPluginModels
+from flext_plugin import FlextPluginModels, c
 
 
 class FlextPluginLoader:
@@ -28,7 +26,7 @@ class FlextPluginLoader:
 
     Usage:
         ```python
-        from flext_plugin.loader import FlextPluginLoader
+        from flext_plugin import FlextPluginLoader
 
         # Initialize loader
         loader = FlextPluginLoader()
