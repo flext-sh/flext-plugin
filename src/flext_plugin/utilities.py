@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Callable, MutableSequence, Sequence
+from collections.abc import Callable, Mapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -22,8 +22,8 @@ from pydantic import TypeAdapter, model_validator
 
 from flext_plugin import FlextPluginModels, c, t
 
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
-    t.ContainerMapping,
+_CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
+    Mapping[str, t.ContainerValue],
 )
 
 
@@ -293,9 +293,9 @@ class FlextPluginUtilities(FlextUtilities):
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: t.MutableContainerMapping = (
-                    _CONTAINER_MAP_ADAPTER.validate_python(
+                    dict(_CONTAINER_MAP_ADAPTER.validate_python(
                         last_modified_raw,
-                    )
+                    ))
                     if u.is_dict_like(last_modified_raw)
                     else {}
                 )
@@ -581,8 +581,8 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[t.ContainerMapping].fail(
                         f"Unsupported configuration schema version: {config.get('schema_version')}",
                     )
-                config_mapping = TypeAdapter(
-                    t.ContainerMapping,
+                config_mapping: t.ContainerMapping = TypeAdapter(
+                    Mapping[str, t.ContainerValue],
                 ).validate_python(config)
                 return r[t.ContainerMapping].ok(config_mapping)
             except (
@@ -618,11 +618,11 @@ class FlextPluginUtilities(FlextUtilities):
                 for key, value in override_config.items():
                     existing_value = merged_config.get(key)
                     if isinstance(value, dict) and isinstance(existing_value, dict):
-                        base_nested_config = TypeAdapter(
-                            t.ContainerMapping,
+                        base_nested_config: t.ContainerMapping = TypeAdapter(
+                            Mapping[str, t.ContainerValue],
                         ).validate_python(existing_value)
-                        override_value = TypeAdapter(
-                            t.ContainerMapping,
+                        override_value: t.ContainerMapping = TypeAdapter(
+                            Mapping[str, t.ContainerValue],
                         ).validate_python(value)
                         nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
                             base_nested_config,
@@ -731,12 +731,12 @@ class FlextPluginUtilities(FlextUtilities):
                 )
             if not callable(plugin_function):
                 return r[t.NormalizedValue].fail(f"'{function_name}' is not callable")
-            callable_plugin: Callable[..., t.NormalizedValue] = plugin_function
 
             def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
-                return callable_plugin(*execution_args, **execution_kwargs)
+                result: t.NormalizedValue = plugin_function(*execution_args, **execution_kwargs)
+                return result
 
             return FlextPluginUtilities.try_(
                 _execute_plugin_function,

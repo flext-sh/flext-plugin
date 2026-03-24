@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Literal, TypeAlias, TypeVar
+from typing import Literal, TypeVar
 
 from flext_core import FlextTypes
 
@@ -28,7 +28,7 @@ class FlextPluginTypes(FlextTypes):
     class Handlers:
         """Event handler type definitions."""
 
-        EventHandler: TypeAlias = Callable[
+        type EventHandler = Callable[
             [Mapping[str, FlextTypes.NormalizedValue]],
             Awaitable[Mapping[str, FlextTypes.NormalizedValue]],
         ]

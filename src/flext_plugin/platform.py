@@ -128,7 +128,6 @@ class FlextPluginPlatform:
             _ = (dispatcher, auto_discover_handlers)
             return cls()
 
-        @override
         def get(self, data: str) -> r[FlextPluginModels.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
             result = self.get_plugin(self.PLUGINS, data, scope="class")
@@ -177,7 +176,7 @@ class FlextPluginPlatform:
             self,
             name: str,
             service: t.RegistrablePlugin,
-            metadata: t.NormalizedValue | None = None,
+            metadata: t.ConfigMap | FlextPluginModels.Metadata | None = None,
         ) -> r[bool]:
             """Register plugin using class-level storage.
 
@@ -215,11 +214,11 @@ class FlextPluginPlatform:
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
-            default_factory=dict,
+            default_factory=lambda: dict[str, FlextPluginPlatform.Plugin](),
         )
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
             PrivateAttr(
-                default_factory=dict,
+                default_factory=lambda: dict[str, FlextPluginPlatform.PluginExecution](),
             )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
@@ -382,7 +381,7 @@ class FlextPluginPlatform:
 
             return (
                 self
-                ._check_protocol(self.discovery, "Discovery")
+                ._require_protocol(self.discovery, "Discovery")
                 .flat_map(discover_and_validate)
                 .flat_map(create_plugins_from_data)
                 .map(self._register_all)
@@ -505,7 +504,7 @@ class FlextPluginPlatform:
 
             return (
                 self
-                ._check_protocol(self.loader, "Loader")
+                ._require_protocol(self.loader, "Loader")
                 .flat_map(load_and_validate)
                 .flat_map(create_plugin_from_load_data)
                 .map(self._register_single)
@@ -561,8 +560,7 @@ class FlextPluginPlatform:
             self._plugins[plugin.name] = plugin
             return True
 
-        @override
-        def _check_protocol(
+        def _require_protocol(
             self,
             protocol: t.NormalizedValue | None,
             name: str,
