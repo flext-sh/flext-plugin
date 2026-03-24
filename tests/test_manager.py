@@ -16,9 +16,9 @@ from typing import override
 
 import pytest
 from flext_core import r
-from tests import t
 
 from flext_plugin import FlextPluginAdapters, FlextPluginService
+from tests import t
 
 
 class TestFlextPluginService:

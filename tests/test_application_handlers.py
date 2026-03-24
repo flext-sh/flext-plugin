@@ -10,9 +10,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import pytest
-from tests import t
 
 from flext_plugin import FlextPluginHandlers
+from tests import t
 
 
 class TestFlextPluginHandlers:
