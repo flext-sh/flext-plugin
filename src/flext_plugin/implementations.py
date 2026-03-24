@@ -19,6 +19,10 @@ from pydantic import TypeAdapter
 
 from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
 
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
+    t.ContainerMapping,
+)
+
 
 class FlextPluginImplementations:
     """Single CONSOLIDATED class containing ALL plugin implementations.
@@ -378,7 +382,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
-                validated = TypeAdapter(t.ContainerMapping).validate_python(
+                validated = _CONTAINER_MAP_ADAPTER.validate_python(
                     data,
                 )
                 transformed: t.MutableContainerMapping = dict(validated)
