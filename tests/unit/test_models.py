@@ -39,9 +39,15 @@ class TestFlextPluginModels:
         operational_statuses = (
             FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
         )
-        tm.that(operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ACTIVE)
-        tm.that(operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.HEALTHY)
-        tm.that(operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.LOADED)
+        tm.that(
+            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ACTIVE
+        )
+        tm.that(
+            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.HEALTHY
+        )
+        tm.that(
+            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.LOADED
+        )
         error_statuses = FlextPluginConstants.Plugin.PluginStatus.get_error_statuses()
         tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ERROR)
         tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY)
@@ -49,11 +55,15 @@ class TestFlextPluginModels:
         tm.that(
             FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational(), eq=True
         )
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(), eq=False)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(), eq=False
+        )
         tm.that(
             FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state(), eq=True
         )
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(), eq=False)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(), eq=False
+        )
 
     def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values."""
@@ -67,8 +77,12 @@ class TestFlextPluginModels:
         tm.that(FlextPluginConstants.Plugin.PluginType.API, eq="api")
         tm.that(FlextPluginConstants.Plugin.PluginType.DATABASE, eq="database")
         tm.that(FlextPluginConstants.Plugin.PluginType.NOTIFICATION, eq="notification")
-        tm.that(FlextPluginConstants.Plugin.PluginType.AUTHENTICATION, eq="authentication")
-        tm.that(FlextPluginConstants.Plugin.PluginType.AUTHORIZATION, eq="authorization")
+        tm.that(
+            FlextPluginConstants.Plugin.PluginType.AUTHENTICATION, eq="authentication"
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginType.AUTHORIZATION, eq="authorization"
+        )
         tm.that(FlextPluginConstants.Plugin.PluginType.UTILITY, eq="utility")
         tm.that(FlextPluginConstants.Plugin.PluginType.TOOL, eq="tool")
         tm.that(FlextPluginConstants.Plugin.PluginType.HANDLER, eq="handler")
@@ -191,5 +205,5 @@ class TestFlextPluginModels:
         """Test Registry model creation."""
         registry = FlextPluginModels.Plugin.Registry(plugins={"plugin1": {}})
         tm.that(registry.plugins, has="plugin1")
-        tm.that(isinstance(registry.last_updated, datetime), eq=True)
-        tm.that(isinstance(registry.created_at, datetime), eq=True)
+        tm.that(registry.last_updated, is_=datetime)
+        tm.that(registry.created_at, is_=datetime)

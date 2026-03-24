@@ -24,9 +24,7 @@ class TestFlextPluginConstants:
         """Test discovery-related constants."""
         tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, gt=0)
         tm.that(FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, gt=0)
-        tm.that(
-            FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, eq=True)
         tm.that(FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(
@@ -40,12 +38,8 @@ class TestFlextPluginConstants:
             FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES,
             eq=True,
         )
-        tm.that(
-            FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES, eq=True
-        )
-        tm.that(
-            FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES, eq=True)
         tm.that(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES, eq=True)
 
     def test_lifecycle_constants(self) -> None:
@@ -91,9 +85,7 @@ class TestFlextPluginConstants:
 
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
-        tm.that(
-            FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, eq=True
-        )
+        tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, eq=True)
         tm.that(
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, eq=True
         )
@@ -103,7 +95,9 @@ class TestFlextPluginConstants:
         """Test plugin performance constants."""
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, eq=100)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MIN, eq=0)
-        tm.that(FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE, gt=0)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE, gt=0
+        )
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.GOOD_SUCCESS_RATE, gt=0)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.FAIR_SUCCESS_RATE, gt=0)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_TIME_MS, gt=0)
@@ -116,7 +110,9 @@ class TestFlextPluginConstants:
             ),
             eq=True,
         )
-        tm.that(FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS, gt=0)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS, gt=0
+        )
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.READY_MAX_MEMORY_MB, gt=0)
         tm.that(
             (
@@ -125,7 +121,9 @@ class TestFlextPluginConstants:
             ),
             eq=True,
         )
-        tm.that(FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB, gt=0)
+        tm.that(
+            FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB, gt=0
+        )
         tm.that(
             (
                 FlextPluginConstants.Plugin.PluginPerformance.MAXIMUM_EXECUTION_TIMEOUT_SECONDS
@@ -136,10 +134,12 @@ class TestFlextPluginConstants:
 
     def test_constants_immutability(self) -> None:
         """Test that constants are immutable."""
-        tm.that(isinstance(FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, int), eq=True)
-        tm.that(isinstance(FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, int), eq=True)
-        tm.that(isinstance(FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, int), eq=True)
-        tm.that(isinstance(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, int), eq=True)
+        tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, is_=int)
+        tm.that(
+            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, is_=int
+        )
+        tm.that(FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, is_=int)
+        tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, is_=int)
 
     def test_plugin_type_consistency(self) -> None:
         """Test that plugin types are consistent across constants."""
