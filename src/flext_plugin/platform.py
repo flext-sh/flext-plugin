@@ -235,7 +235,8 @@ class FlextPluginPlatform:
         ) -> t.ContainerMapping:
             """Convert mapping-like values to a typed dict."""
             if not u.is_dict_like(value):
-                return {}
+                result: t.ContainerMapping = {}
+                return result
             return TypeAdapter(t.ContainerMapping).validate_python(value)
 
         def __init__(self, container: FlextContainer | None = None) -> None:

@@ -110,7 +110,8 @@ class FlextPluginService(x):
         value: t.NormalizedValue,
     ) -> t.ContainerMapping:
         if not isinstance(value, Mapping):
-            return {}
+            result: t.ContainerMapping = {}
+            return result
         return TypeAdapter(t.ContainerMapping).validate_python(value)
 
     def cleanup_executions(self) -> int:
