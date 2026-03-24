@@ -293,9 +293,11 @@ class FlextPluginUtilities(FlextUtilities):
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: t.MutableContainerMapping = (
-                    dict(_CONTAINER_MAP_ADAPTER.validate_python(
-                        last_modified_raw,
-                    ))
+                    dict(
+                        _CONTAINER_MAP_ADAPTER.validate_python(
+                            last_modified_raw,
+                        )
+                    )
                     if u.is_dict_like(last_modified_raw)
                     else {}
                 )
@@ -735,7 +737,9 @@ class FlextPluginUtilities(FlextUtilities):
             def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
-                raw_result: object = plugin_function(*execution_args, **execution_kwargs)
+                raw_result: object = plugin_function(
+                    *execution_args, **execution_kwargs
+                )
                 if isinstance(raw_result, (str, int, float, bool)):
                     return raw_result
                 if raw_result is None:
@@ -1005,7 +1009,9 @@ class FlextPluginUtilities(FlextUtilities):
                     _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
                         path.parent,
                     )
-                validated: Mapping[str, t.ContainerValue] = _CONTAINER_MAP_ADAPTER.validate_python(registry)
+                validated: Mapping[str, t.ContainerValue] = (
+                    _CONTAINER_MAP_ADAPTER.validate_python(registry)
+                )
                 mutable_registry: Mapping[str, t.ContainerValue] = {
                     **validated,
                     "last_updated": datetime.now(UTC).isoformat(),

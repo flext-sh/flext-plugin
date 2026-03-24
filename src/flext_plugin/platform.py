@@ -218,7 +218,9 @@ class FlextPluginPlatform:
         )
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
             PrivateAttr(
-                default_factory=lambda: dict[str, FlextPluginPlatform.PluginExecution](),
+                default_factory=lambda: dict[
+                    str, FlextPluginPlatform.PluginExecution
+                ](),
             )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
@@ -562,7 +564,10 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: FlextPluginProtocols.Plugin.PluginDiscovery | FlextPluginProtocols.Plugin.PluginLoader | FlextPluginProtocols.Plugin.PluginExecution | None,
+            protocol: FlextPluginProtocols.Plugin.PluginDiscovery
+            | FlextPluginProtocols.Plugin.PluginLoader
+            | FlextPluginProtocols.Plugin.PluginExecution
+            | None,
             name: str,
         ) -> r[bool]:
             """Protocol validation helper."""

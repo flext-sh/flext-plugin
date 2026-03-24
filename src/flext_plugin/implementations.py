@@ -35,9 +35,6 @@ class FlextPluginImplementations:
     per module while preserving existing API surface for seamless migration.
     """
 
-    FlextPluginLoader = FlextPluginProtocols.Plugin.PluginLoader
-    FlextPluginRegistry = FlextPluginProtocols.Plugin.PluginRegistry
-
     class ConcretePlugin:
         """Concrete implementation of the FlextPlugin interface.
 
@@ -667,7 +664,9 @@ class FlextPluginImplementations:
                 self.logger.exception("Plugin discovery failed in %s", search_path)
                 return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
 
-        def load_plugin(self, plugin_path: str | Path) -> r[FlextPluginImplementations.ConcretePlugin]:
+        def load_plugin(
+            self, plugin_path: str | Path
+        ) -> r[FlextPluginImplementations.ConcretePlugin]:
             """Load plugin from path.
 
             Args:
@@ -699,7 +698,9 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Failed to load plugin from %s", plugin_path)
-                return r[FlextPluginImplementations.ConcretePlugin].fail(f"Load failed: {e!s}")
+                return r[FlextPluginImplementations.ConcretePlugin].fail(
+                    f"Load failed: {e!s}"
+                )
 
 
 __all__ = ["FlextPluginImplementations"]

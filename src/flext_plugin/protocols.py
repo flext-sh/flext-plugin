@@ -109,11 +109,15 @@ class FlextPluginProtocols(FlextProtocols):
                 """List all registered plugins."""
                 ...
 
-            def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue) -> r[bool]:
+            def register_plugin(
+                self, _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
+            ) -> r[bool]:
                 """Register a plugin."""
                 ...
 
-            def register(self, plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue) -> r[None]:
+            def register(
+                self, plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
+            ) -> r[None]:
                 """Register a plugin with normalized API."""
                 ...
 
