@@ -18,7 +18,7 @@ class TestFlextPluginTypes:
     def test_types_initialization(self) -> None:
         """Test that types can be initialized."""
         types = FlextPluginTypes()
-        tm.that(types is not None, eq=True)
+        tm.that(types, none=False)
 
     def test_types_alias_exists(self) -> None:
         """Test that t alias exists."""
@@ -27,22 +27,22 @@ class TestFlextPluginTypes:
     def test_plugin_class_exists(self) -> None:
         """Test that Plugin nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Plugin"), eq=True)
-        tm.that(FlextPluginTypes.Plugin is not None, eq=True)
+        tm.that(FlextPluginTypes.Plugin, none=False)
 
     def test_discovery_class_exists(self) -> None:
         """Test that Discovery nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Discovery"), eq=True)
-        tm.that(FlextPluginTypes.Discovery is not None, eq=True)
+        tm.that(FlextPluginTypes.Discovery, none=False)
 
     def test_execution_class_exists(self) -> None:
         """Test that Execution nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Execution"), eq=True)
-        tm.that(FlextPluginTypes.Execution is not None, eq=True)
+        tm.that(FlextPluginTypes.Execution, none=False)
 
     def test_registry_class_exists(self) -> None:
         """Test that Registry nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Registry"), eq=True)
-        tm.that(FlextPluginTypes.Registry is not None, eq=True)
+        tm.that(FlextPluginTypes.Registry, none=False)
 
     def test_discovery_type_aliases(self) -> None:
         """Test Discovery type aliases exist."""
