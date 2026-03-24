@@ -42,7 +42,7 @@ class TestDynamicLoaderAdapter:
     def plugin_file(self, tmp_path: Path) -> Path:
         plugin_path = tmp_path / "sample_plugin.py"
         _ = plugin_path.write_text(
-            "__version__ = '1.0.0'\ndef run():\n    return 'ok'\n"
+            "__version__ = '1.0.0'\ndef run():\n    return 'ok'\n",
         )
         return plugin_path
 

@@ -47,7 +47,8 @@ class TestFlextPluginServiceStubBridges:
         class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
             @override
             def discover_plugins(
-                self, paths: t.StrSequence
+                self,
+                paths: t.StrSequence,
             ) -> r[Sequence[t.ContainerMapping]]:
                 _ = paths
                 return r.ok([
@@ -55,7 +56,7 @@ class TestFlextPluginServiceStubBridges:
                         "name": "stub_plugin",
                         "version": "1.0.0",
                         "metadata": {"plugin_type": "utility"},
-                    }
+                    },
                 ])
 
         class Security(FlextPluginAdapters.PluginSecurityAdapter):
@@ -159,7 +160,10 @@ class TestFlextPluginServiceStubBridges:
         registry = Registry()
         monitoring = Monitoring()
         service = FlextPluginService(
-            loader=Loader(), security=security, registry=registry, monitoring=monitoring
+            loader=Loader(),
+            security=security,
+            registry=registry,
+            monitoring=monitoring,
         )
         result = service.load_plugin("/tmp/stub_plugin.py")
         assert result.is_success
@@ -255,7 +259,9 @@ class TestFlextPluginServiceStubBridges:
         registry = Registry()
         monitoring = Monitoring()
         service = FlextPluginService(
-            loader=loader, registry=registry, monitoring=monitoring
+            loader=loader,
+            registry=registry,
+            monitoring=monitoring,
         )
         load_result = service.load_plugin("/tmp/stub_plugin.py")
         assert load_result.is_success

@@ -57,7 +57,9 @@ class FlextPluginDiscovery:
                 elif item.is_dir() and (not item.name.startswith("__")):
                     discovered.extend(
                         FlextPluginDiscovery.discover_python_plugins_in_directory(
-                            item, discover_file, logger
+                            item,
+                            discover_file,
+                            logger,
                         ),
                     )
         except (OSError, PermissionError):

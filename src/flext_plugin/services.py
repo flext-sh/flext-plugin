@@ -766,7 +766,7 @@ class FlextPluginService(x):
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("config")
         merged_config: t.MutableContainerMapping = dict(
-            self._to_general_mapping(existing_config)
+            self._to_general_mapping(existing_config),
         )
         merged_config.update(config)
         plugin.metadata["config"] = merged_config

@@ -52,7 +52,7 @@ class TestFlextPluginSettings:
     def test_validate_business_rules_valid(self) -> None:
         FlextPluginSettings.reset_for_testing()
         config = FlextPluginSettings.get_global(
-            overrides={"debug": True, "trace": True}
+            overrides={"debug": True, "trace": True},
         )
         tm.that(config.debug is True, eq=True)
         tm.that(config.trace is True, eq=True)

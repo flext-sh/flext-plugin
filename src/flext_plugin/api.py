@@ -32,7 +32,8 @@ class FlextPluginApi:
         )
 
     def discover_plugins(
-        self, paths: t.StrSequence
+        self,
+        paths: t.StrSequence,
     ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)

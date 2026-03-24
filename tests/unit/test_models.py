@@ -40,26 +40,32 @@ class TestFlextPluginModels:
             FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
         )
         tm.that(
-            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ACTIVE
+            operational_statuses,
+            has=FlextPluginConstants.Plugin.PluginStatus.ACTIVE,
         )
         tm.that(
-            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.HEALTHY
+            operational_statuses,
+            has=FlextPluginConstants.Plugin.PluginStatus.HEALTHY,
         )
         tm.that(
-            operational_statuses, has=FlextPluginConstants.Plugin.PluginStatus.LOADED
+            operational_statuses,
+            has=FlextPluginConstants.Plugin.PluginStatus.LOADED,
         )
         error_statuses = FlextPluginConstants.Plugin.PluginStatus.get_error_statuses()
         tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ERROR)
         tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY)
         tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.DISABLED)
         tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational(), eq=True
+            FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational(),
+            eq=True,
         )
         tm.that(
-            not FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(), eq=True
+            not FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(),
+            eq=True,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state(), eq=True
+            FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state(),
+            eq=True,
         )
         tm.that(
             not FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(),
@@ -79,10 +85,12 @@ class TestFlextPluginModels:
         tm.that(FlextPluginConstants.Plugin.PluginType.DATABASE, eq="database")
         tm.that(FlextPluginConstants.Plugin.PluginType.NOTIFICATION, eq="notification")
         tm.that(
-            FlextPluginConstants.Plugin.PluginType.AUTHENTICATION, eq="authentication"
+            FlextPluginConstants.Plugin.PluginType.AUTHENTICATION,
+            eq="authentication",
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginType.AUTHORIZATION, eq="authorization"
+            FlextPluginConstants.Plugin.PluginType.AUTHORIZATION,
+            eq="authorization",
         )
         tm.that(FlextPluginConstants.Plugin.PluginType.UTILITY, eq="utility")
         tm.that(FlextPluginConstants.Plugin.PluginType.TOOL, eq="tool")
@@ -129,7 +137,10 @@ class TestFlextPluginModels:
     def test_execution_result_creation(self) -> None:
         """Test ExecutionResult creation."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True, data={"output": "result"}, error="", execution_time_ms=1500.0
+            success=True,
+            data={"output": "result"},
+            error="",
+            execution_time_ms=1500.0,
         )
         tm.that(result.success is True, eq=True)
         tm.that(result.data, eq={"output": "result"})
@@ -179,7 +190,9 @@ class TestFlextPluginModels:
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
         result = FlextPluginModels.Plugin.ValidationResult(
-            is_valid=True, errors=[], warnings=[]
+            is_valid=True,
+            errors=[],
+            warnings=[],
         )
         tm.that(result.is_valid is True, eq=True)
         tm.that(result.errors, eq=[])
@@ -188,7 +201,9 @@ class TestFlextPluginModels:
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
         result = FlextPluginModels.Plugin.ValidationResult(
-            is_valid=False, errors=["Error 1", "Error 2"], warnings=["Warning 1"]
+            is_valid=False,
+            errors=["Error 1", "Error 2"],
+            warnings=["Warning 1"],
         )
         tm.that(result.is_valid is False, eq=True)
         tm.that(len(result.errors), eq=2)
@@ -197,7 +212,8 @@ class TestFlextPluginModels:
     def test_config_creation(self) -> None:
         """Test Config model creation."""
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin", settings={"key": "value"}
+            plugin_name="test-plugin",
+            settings={"key": "value"},
         )
         tm.that(config.plugin_name, eq="test-plugin")
         tm.that(config.settings, eq={"key": "value"})

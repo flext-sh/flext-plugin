@@ -766,7 +766,8 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: Annotated[str, Field(description="Name of plugin to sandbox")]
             max_memory_mb: Annotated[
-                t.PositiveInt, Field(description="Maximum memory in MB")
+                t.PositiveInt,
+                Field(description="Maximum memory in MB"),
             ]
             max_execution_time: Annotated[
                 t.PositiveInt,

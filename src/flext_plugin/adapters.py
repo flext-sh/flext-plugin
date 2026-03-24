@@ -108,7 +108,8 @@ class FlextPluginAdapters:
             return r[bool].ok(value=True)
 
         def _discover_all(
-            self, paths: t.StrSequence
+            self,
+            paths: t.StrSequence,
         ) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []

@@ -434,7 +434,7 @@ class FlextPluginUtilities(FlextUtilities):
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
                     "allowed_modules": list(
-                        FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
+                        FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS,
                     ),
                     "network_access": False,
                     "file_system_access": "read-only",

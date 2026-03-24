@@ -28,7 +28,8 @@ class TestFlextPluginConstants:
         tm.that(FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(
-            FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN, empty=False
+            FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN,
+            empty=False,
         )
 
     def test_types_constants(self) -> None:
@@ -71,17 +72,20 @@ class TestFlextPluginConstants:
     def test_plugin_messages_constants(self) -> None:
         """Test plugin message constants."""
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, empty=False
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND,
+            empty=False,
         )
         tm.that(
             FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS,
             empty=False,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, empty=False
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED,
+            empty=False,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, empty=False
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME,
+            empty=False,
         )
         tm.that(
             FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS,
@@ -106,7 +110,8 @@ class TestFlextPluginConstants:
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, eq=100)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MIN, eq=0)
         tm.that(
-            FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE, gt=0
+            FlextPluginConstants.Plugin.PluginPerformance.EXCELLENT_SUCCESS_RATE,
+            gt=0,
         )
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.GOOD_SUCCESS_RATE, gt=0)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.FAIR_SUCCESS_RATE, gt=0)
@@ -121,7 +126,8 @@ class TestFlextPluginConstants:
             eq=True,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS, gt=0
+            FlextPluginConstants.Plugin.PluginPerformance.READY_TIMEOUT_SECONDS,
+            gt=0,
         )
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.READY_MAX_MEMORY_MB, gt=0)
         tm.that(
@@ -132,7 +138,8 @@ class TestFlextPluginConstants:
             eq=True,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB, gt=0
+            FlextPluginConstants.Plugin.PluginPerformance.MINIMUM_MEMORY_LIMIT_MB,
+            gt=0,
         )
         tm.that(
             (
@@ -146,7 +153,8 @@ class TestFlextPluginConstants:
         """Test that constants are immutable."""
         tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, is_=int)
         tm.that(
-            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, is_=int
+            FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS,
+            is_=int,
         )
         tm.that(FlextPluginConstants.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, is_=int)
         tm.that(FlextPluginConstants.Plugin.PluginPerformance.PERCENTAGE_MAX, is_=int)

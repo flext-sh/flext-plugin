@@ -43,7 +43,8 @@ class FlextPluginHandlers:
         super().__init__()
         self.logger = FlextLogger(__name__)
         self._handlers: MutableMapping[
-            str, MutableSequence[t.Handlers.HandlerInfo]
+            str,
+            MutableSequence[t.Handlers.HandlerInfo],
         ] = {}
         self._event_history: MutableSequence[t.MutableContainerMapping] = []
 
@@ -288,7 +289,9 @@ class FlextPluginHandlers:
                 return handler_info.priority
 
             self._handlers[event_type] = sorted(
-                self._handlers[event_type], key=get_priority, reverse=True
+                self._handlers[event_type],
+                key=get_priority,
+                reverse=True,
             )
             self.logger.debug("Registered handler for event type: %s", event_type)
             return r.ok(True)

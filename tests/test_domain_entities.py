@@ -117,7 +117,8 @@ class TestFlextPluginSettings:
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin", settings={"enabled": True, "key": "value"}
+            plugin_name="test-plugin",
+            settings={"enabled": True, "key": "value"},
         )
         assert config.plugin_name == "test-plugin"
         assert config.settings["enabled"] is True
@@ -138,7 +139,8 @@ class TestFlextPluginSettings:
             "nested": {"deep": "value"},
         }
         config = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test-plugin", settings=settings
+            plugin_name="test-plugin",
+            settings=settings,
         )
         assert config.settings["max_memory_mb"] == 800
         assert config.settings["max_cpu_percent"] == 75
@@ -151,7 +153,9 @@ class TestFlextPluginExecution:
     def test_execution_result_success(self) -> None:
         """Test creating successful ExecutionResult."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True, data={"output": "test data"}, execution_time_ms=150.5
+            success=True,
+            data={"output": "test data"},
+            execution_time_ms=150.5,
         )
         assert result.success is True
         assert result.data == {"output": "test data"}
@@ -161,7 +165,9 @@ class TestFlextPluginExecution:
     def test_execution_result_failure(self) -> None:
         """Test creating failed ExecutionResult."""
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=False, error="Plugin execution failed", execution_time_ms=50.0
+            success=False,
+            error="Plugin execution failed",
+            execution_time_ms=50.0,
         )
         assert result.success is False
         assert result.error == "Plugin execution failed"
@@ -183,7 +189,9 @@ class TestFlextPluginExecution:
             "metadata": {"count": 3, "type": "test"},
         }
         result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True, data=complex_data, execution_time_ms=100.0
+            success=True,
+            data=complex_data,
+            execution_time_ms=100.0,
         )
         assert result.success is True
         assert result.data == complex_data
@@ -242,7 +250,9 @@ class TestFlextPluginMetadata:
     def test_metadata_defaults(self) -> None:
         """Test PluginMetadata default values."""
         metadata = FlextPluginModels.Plugin.PluginMetadata(
-            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
+            name="minimal-plugin",
+            version="1.0.0",
+            entry_point="minimal.entry:main",
         )
         assert metadata.name == "minimal-plugin"
         assert metadata.version == "1.0.0"
