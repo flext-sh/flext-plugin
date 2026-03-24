@@ -24,6 +24,10 @@ from flext_plugin import (
     u,
 )
 
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
+    t.ContainerMapping,
+)
+
 
 class FlextPluginPlatform:
     """Platform namespace for plugin platform classes."""
@@ -237,7 +241,7 @@ class FlextPluginPlatform:
             if not u.is_dict_like(value):
                 result: t.ContainerMapping = {}
                 return result
-            return TypeAdapter(t.ContainerMapping).validate_python(value)
+            return _CONTAINER_MAP_ADAPTER.validate_python(value)
 
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""

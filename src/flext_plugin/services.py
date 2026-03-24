@@ -25,6 +25,10 @@ from flext_plugin import (
     u,
 )
 
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
+    t.ContainerMapping,
+)
+
 
 class FlextPluginService(x):
     """Main plugin service orchestrating plugin operations using SOLID principles.
@@ -112,7 +116,7 @@ class FlextPluginService(x):
         if not isinstance(value, Mapping):
             result: t.ContainerMapping = {}
             return result
-        return TypeAdapter(t.ContainerMapping).validate_python(value)
+        return _CONTAINER_MAP_ADAPTER.validate_python(value)
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.

@@ -22,6 +22,10 @@ from pydantic import TypeAdapter, model_validator
 
 from flext_plugin import FlextPluginModels, c, t
 
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
+    t.ContainerMapping,
+)
+
 
 class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
@@ -289,7 +293,7 @@ class FlextPluginUtilities(FlextUtilities):
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
                 last_modified: t.MutableContainerMapping = (
-                    TypeAdapter(t.ContainerMapping).validate_python(
+                    _CONTAINER_MAP_ADAPTER.validate_python(
                         last_modified_raw,
                     )
                     if u.is_dict_like(last_modified_raw)
@@ -562,7 +566,7 @@ class FlextPluginUtilities(FlextUtilities):
                 if path.suffix in {".yaml", ".yml"}:
                     config = yaml.safe_load(content)
                 elif path.suffix == ".json":
-                    config = TypeAdapter(t.ContainerMapping).validate_json(
+                    config = _CONTAINER_MAP_ADAPTER.validate_json(
                         content,
                     )
                 else:
@@ -907,7 +911,7 @@ class FlextPluginUtilities(FlextUtilities):
                         f"Registry file too large: {file_size_mb:.1f}MB",
                     )
                 content = path.read_text(encoding="utf-8")
-                registry = TypeAdapter(t.ContainerMapping).validate_json(
+                registry = _CONTAINER_MAP_ADAPTER.validate_json(
                     content,
                 )
                 return r[t.ContainerMapping].ok(registry)
@@ -1000,9 +1004,9 @@ class FlextPluginUtilities(FlextUtilities):
                 mutable_registry = dict(registry)
                 mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
                 _ = path.write_text(
-                    TypeAdapter(t.ContainerMapping)
-                    .dump_json(mutable_registry, indent=2)
-                    .decode("utf-8"),
+                    _CONTAINER_MAP_ADAPTER.dump_json(mutable_registry, indent=2).decode(
+                        "utf-8"
+                    ),
                     encoding="utf-8",
                 )
                 return r[None].ok(None)

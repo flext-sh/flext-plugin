@@ -23,6 +23,10 @@ from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.models import FlextPluginModels as m
 from flext_plugin.protocols import FlextPluginProtocols as p
 
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
+    t.ContainerMapping,
+)
+
 
 class FlextPluginAdapters:
     """Infrastructure adapters with composition pattern.
@@ -346,7 +350,7 @@ class FlextPluginAdapters:
         def register(self, plugin: t.NormalizedValue) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
-            plugin_payload = TypeAdapter(t.ContainerMapping).validate_python(
+            plugin_payload = _CONTAINER_MAP_ADAPTER.validate_python(
                 plugin,
             )
             plugin_name = plugin_payload.get("name")
