@@ -18,10 +18,10 @@ from typing import override
 from flext_core import FlextLogger, T, r, t
 from pydantic import TypeAdapter
 
-from flext_plugin import c
-from flext_plugin import discover_python_plugins_in_directory
-from flext_plugin import m
-from flext_plugin import p, p
+from flext_plugin.constants import FlextPluginConstants as c
+from flext_plugin.discovery import discover_python_plugins_in_directory
+from flext_plugin.models import FlextPluginModels as m
+from flext_plugin.protocols import FlextPluginProtocols as p
 
 
 class FlextPluginAdapters:
@@ -66,9 +66,7 @@ class FlextPluginAdapters:
                 error_msg = f"{error_context}: {e!s}"
                 return r[T].fail(error_msg)
 
-    class FileSystemDiscoveryAdapter(
-        BaseAdapter, p.Plugin.PluginDiscovery
-    ):
+    class FileSystemDiscoveryAdapter(BaseAdapter, p.Plugin.PluginDiscovery):
         """File system plugin discovery - synchronous."""
 
         @override
@@ -320,9 +318,7 @@ class FlextPluginAdapters:
             """Validate plugin for security."""
             return r.ok(True)
 
-    class MemoryRegistryAdapter(
-        BaseAdapter, p.Plugin.PluginRegistry
-    ):
+    class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
         """In-memory plugin registry - synchronous."""
 
         def __init__(self) -> None:

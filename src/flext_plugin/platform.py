@@ -213,8 +213,10 @@ class FlextPluginPlatform:
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
             default_factory=dict,
         )
-        _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
-            default_factory=dict,
+        _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
+            PrivateAttr(
+                default_factory=dict,
+            )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
         _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(

@@ -16,7 +16,7 @@ from typing import TypeVar
 
 from flext_core import FlextLogger, r
 
-from flext_plugin import m, c, p, t
+from flext_plugin import c, m, p, t
 
 TDiscovery = TypeVar("TDiscovery")
 

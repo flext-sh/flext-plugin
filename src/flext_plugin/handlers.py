@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 
 from flext_core import FlextLogger
 
-from flext_plugin import t, c, r
+from flext_plugin import c, r, t
 
 
 class FlextPluginHandlers:
@@ -42,7 +42,9 @@ class FlextPluginHandlers:
         """Initialize the plugin handlers."""
         super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: MutableMapping[str, MutableSequence[t.Handlers.HandlerInfo]] = {}
+        self._handlers: MutableMapping[
+            str, MutableSequence[t.Handlers.HandlerInfo]
+        ] = {}
         self._event_history: MutableSequence[t.MutableContainerMapping] = []
 
     def clear_event_history(self) -> int:
@@ -285,7 +287,9 @@ class FlextPluginHandlers:
             def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
                 return handler_info.priority
 
-            self._handlers[event_type] = sorted(self._handlers[event_type], key=get_priority, reverse=True)
+            self._handlers[event_type] = sorted(
+                self._handlers[event_type], key=get_priority, reverse=True
+            )
             self.logger.debug("Registered handler for event type: %s", event_type)
             return r.ok(True)
         except (

@@ -508,7 +508,9 @@ class FlextPluginImplementations:
             super().__init__()
             self._logger = logger
             self._config: t.MutableContainerMapping = dict(config) if config else {}
-            self._services: t.MutableContainerMapping = dict(services) if services else {}
+            self._services: t.MutableContainerMapping = (
+                dict(services) if services else {}
+            )
 
         @property
         def logger(self) -> p.Logger:

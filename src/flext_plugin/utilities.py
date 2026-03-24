@@ -433,7 +433,9 @@ class FlextPluginUtilities(FlextUtilities):
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
-                    "allowed_modules": list(FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS),
+                    "allowed_modules": list(
+                        FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
+                    ),
                     "network_access": False,
                     "file_system_access": "read-only",
                     "environment_variables": {
@@ -940,7 +942,7 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 mutable_registry: t.MutableContainerMapping = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = {}
+                    mutable_registry["plugins"] = dict[str, t.NormalizedValue]()
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
