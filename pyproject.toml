@@ -5,11 +5,14 @@
 
 # [MANAGED] build system
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [ "poetry-core>=2" ]
+build-backend = "hatchling.build"
+requires = [ "hatchling" ]
 
 [dependency-groups]
 dev = [  ]
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/flext_plugin" ]
 
 # [CUSTOM] project metadata
 [project]
@@ -27,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
   "anyio>=4",
-  "flext-core @ file:../flext-core",
+  "flext-core",
   "jsonschema>=4.25",
   "psutil>=7",
   "pydantic-core>=2.41.4",
@@ -139,7 +142,6 @@ plugins = [
 ]
 python_version = "3.13"
 
-[tool.poetry]
 
 # [MANAGED] pydantic-mypy
 [tool.pydantic-mypy]
