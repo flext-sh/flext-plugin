@@ -93,152 +93,152 @@ if TYPE_CHECKING:
     from tests.unit.test_types import TestFlextPluginTypes
     from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "FlextPluginTestConstants": ("tests.constants", "FlextPluginTestConstants"),
-    "FlextPluginTestModels": ("tests.models", "FlextPluginTestModels"),
-    "FlextPluginTestProtocols": ("tests.protocols", "FlextPluginTestProtocols"),
-    "FlextPluginTestTypes": ("tests.typings", "FlextPluginTestTypes"),
-    "FlextPluginTestUtilities": ("tests.utilities", "FlextPluginTestUtilities"),
-    "PluginInterface": ("tests.test_application_services", "PluginInterface"),
-    "TestBackwardsCompatibilityAliasesReal": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "FlextPluginTestConstants": ["tests.constants", "FlextPluginTestConstants"],
+    "FlextPluginTestModels": ["tests.models", "FlextPluginTestModels"],
+    "FlextPluginTestProtocols": ["tests.protocols", "FlextPluginTestProtocols"],
+    "FlextPluginTestTypes": ["tests.typings", "FlextPluginTestTypes"],
+    "FlextPluginTestUtilities": ["tests.utilities", "FlextPluginTestUtilities"],
+    "PluginInterface": ["tests.test_application_services", "PluginInterface"],
+    "TestBackwardsCompatibilityAliasesReal": [
         "tests.test_application_services",
         "TestBackwardsCompatibilityAliasesReal",
-    ),
-    "TestDynamicLoaderAdapter": ("tests.test_loader", "TestDynamicLoaderAdapter"),
-    "TestFlextPlugin": ("tests.test_domain_entities", "TestFlextPlugin"),
-    "TestFlextPluginConstants": (
+    ],
+    "TestDynamicLoaderAdapter": ["tests.test_loader", "TestDynamicLoaderAdapter"],
+    "TestFlextPlugin": ["tests.test_domain_entities", "TestFlextPlugin"],
+    "TestFlextPluginConstants": [
         "tests.unit.test_constants",
         "TestFlextPluginConstants",
-    ),
-    "TestFlextPluginConstantsLifecycle": (
+    ],
+    "TestFlextPluginConstantsLifecycle": [
         "tests.test_core_types",
         "TestFlextPluginConstantsLifecycle",
-    ),
-    "TestFlextPluginConstantsPluginType": (
+    ],
+    "TestFlextPluginConstantsPluginType": [
         "tests.test_core_types",
         "TestFlextPluginConstantsPluginType",
-    ),
-    "TestFlextPluginDiscovery": ("tests.test_domain_ports", "TestFlextPluginDiscovery"),
-    "TestFlextPluginDiscoveryReal": (
+    ],
+    "TestFlextPluginDiscovery": ["tests.test_domain_ports", "TestFlextPluginDiscovery"],
+    "TestFlextPluginDiscoveryReal": [
         "tests.test_application_services",
         "TestFlextPluginDiscoveryReal",
-    ),
-    "TestFlextPluginExecution": (
+    ],
+    "TestFlextPluginExecution": [
         "tests.test_domain_entities",
         "TestFlextPluginExecution",
-    ),
-    "TestFlextPluginHandlers": ("tests.test_handlers", "TestFlextPluginHandlers"),
-    "TestFlextPluginHotReload": ("tests.test_hot_reload", "TestFlextPluginHotReload"),
-    "TestFlextPluginLoader": ("tests.test_loader", "TestFlextPluginLoader"),
-    "TestFlextPluginMetadata": (
+    ],
+    "TestFlextPluginHandlers": ["tests.test_handlers", "TestFlextPluginHandlers"],
+    "TestFlextPluginHotReload": ["tests.test_hot_reload", "TestFlextPluginHotReload"],
+    "TestFlextPluginLoader": ["tests.test_loader", "TestFlextPluginLoader"],
+    "TestFlextPluginMetadata": [
         "tests.test_domain_entities",
         "TestFlextPluginMetadata",
-    ),
-    "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
-    "TestFlextPluginRegistryEntity": (
+    ],
+    "TestFlextPluginModels": ["tests.unit.test_models", "TestFlextPluginModels"],
+    "TestFlextPluginRegistryEntity": [
         "tests.test_domain_entities",
         "TestFlextPluginRegistryEntity",
-    ),
-    "TestFlextPluginService": ("tests.test_manager", "TestFlextPluginService"),
-    "TestFlextPluginServiceReal": (
+    ],
+    "TestFlextPluginService": ["tests.test_manager", "TestFlextPluginService"],
+    "TestFlextPluginServiceReal": [
         "tests.test_application_services",
         "TestFlextPluginServiceReal",
-    ),
-    "TestFlextPluginServiceStubBridges": (
+    ],
+    "TestFlextPluginServiceStubBridges": [
         "tests.test_manager",
         "TestFlextPluginServiceStubBridges",
-    ),
-    "TestFlextPluginServiceWithRealAdapters": (
+    ],
+    "TestFlextPluginServiceWithRealAdapters": [
         "tests.test_application_services",
         "TestFlextPluginServiceWithRealAdapters",
-    ),
-    "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
-    "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
-    "TestHotReloadPackage": ("tests.test_hot_reload_package", "TestHotReloadPackage"),
-    "TestPluginError": ("tests.test_core_types", "TestPluginError"),
-    "TestPluginModel": ("tests.test_plugin", "TestPluginModel"),
-    "TestPluginPlatform": ("tests.test_plugin", "TestPluginPlatform"),
-    "TestPluginRegistry": ("tests.test_plugin", "TestPluginRegistry"),
-    "TestRealPluginDiscoveryAndExecution": (
+    ],
+    "TestFlextPluginSettings": ["tests.unit.test_config", "TestFlextPluginSettings"],
+    "TestFlextPluginTypes": ["tests.unit.test_types", "TestFlextPluginTypes"],
+    "TestHotReloadPackage": ["tests.test_hot_reload_package", "TestHotReloadPackage"],
+    "TestPluginError": ["tests.test_core_types", "TestPluginError"],
+    "TestPluginModel": ["tests.test_plugin", "TestPluginModel"],
+    "TestPluginPlatform": ["tests.test_plugin", "TestPluginPlatform"],
+    "TestPluginRegistry": ["tests.test_plugin", "TestPluginRegistry"],
+    "TestRealPluginDiscoveryAndExecution": [
         "tests.test_application_services",
         "TestRealPluginDiscoveryAndExecution",
-    ),
-    "TestRealPluginErrorScenarios": (
+    ],
+    "TestRealPluginErrorScenarios": [
         "tests.test_application_services",
         "TestRealPluginErrorScenarios",
-    ),
-    "TestRealPluginIntegrationWorkflow": (
+    ],
+    "TestRealPluginIntegrationWorkflow": [
         "tests.test_application_services",
         "TestRealPluginIntegrationWorkflow",
-    ),
-    "TestServiceErrorHandling": (
+    ],
+    "TestServiceErrorHandling": [
         "tests.test_application_services",
         "TestServiceErrorHandling",
-    ),
-    "TestServicesIntegrationReal": (
+    ],
+    "TestServicesIntegrationReal": [
         "tests.test_application_services",
         "TestServicesIntegrationReal",
-    ),
-    "c": ("tests.constants", "FlextPluginTestConstants"),
-    "d": ("flext_tests", "d"),
-    "e": ("flext_tests", "e"),
-    "h": ("flext_tests", "h"),
-    "m": ("tests.models", "FlextPluginTestModels"),
-    "modules_to_test": ("tests.test_imports", "modules_to_test"),
-    "p": ("tests.protocols", "FlextPluginTestProtocols"),
-    "performance_config": ("tests.conftest", "performance_config"),
-    "pytest_configure": ("tests.conftest", "pytest_configure"),
-    "r": ("flext_tests", "r"),
-    "real_container_with_adapters": ("tests.conftest", "real_container_with_adapters"),
-    "real_discovery_adapter": ("tests.conftest", "real_discovery_adapter"),
-    "real_discovery_service_with_adapters": (
+    ],
+    "c": ["tests.constants", "FlextPluginTestConstants"],
+    "d": ["flext_tests", "d"],
+    "e": ["flext_tests", "e"],
+    "h": ["flext_tests", "h"],
+    "m": ["tests.models", "FlextPluginTestModels"],
+    "modules_to_test": ["tests.test_imports", "modules_to_test"],
+    "p": ["tests.protocols", "FlextPluginTestProtocols"],
+    "performance_config": ["tests.conftest", "performance_config"],
+    "pytest_configure": ["tests.conftest", "pytest_configure"],
+    "r": ["flext_tests", "r"],
+    "real_container_with_adapters": ["tests.conftest", "real_container_with_adapters"],
+    "real_discovery_adapter": ["tests.conftest", "real_discovery_adapter"],
+    "real_discovery_service_with_adapters": [
         "tests.test_application_services",
         "real_discovery_service_with_adapters",
-    ),
-    "real_loader_adapter": ("tests.conftest", "real_loader_adapter"),
-    "real_manager_adapter": ("tests.conftest", "real_manager_adapter"),
-    "real_plugin_config": ("tests.conftest", "real_plugin_config"),
-    "real_plugin_configs": ("tests.conftest", "real_plugin_configs"),
-    "real_plugin_data": ("tests.conftest", "real_plugin_data"),
-    "real_plugin_dependencies": ("tests.conftest", "real_plugin_dependencies"),
-    "real_plugin_directory": ("tests.conftest", "real_plugin_directory"),
-    "real_plugin_discovery": (
+    ],
+    "real_loader_adapter": ["tests.conftest", "real_loader_adapter"],
+    "real_manager_adapter": ["tests.conftest", "real_manager_adapter"],
+    "real_plugin_config": ["tests.conftest", "real_plugin_config"],
+    "real_plugin_configs": ["tests.conftest", "real_plugin_configs"],
+    "real_plugin_data": ["tests.conftest", "real_plugin_data"],
+    "real_plugin_dependencies": ["tests.conftest", "real_plugin_dependencies"],
+    "real_plugin_directory": ["tests.conftest", "real_plugin_directory"],
+    "real_plugin_discovery": [
         "tests.test_application_services",
         "real_plugin_discovery",
-    ),
-    "real_plugin_entity": ("tests.conftest", "real_plugin_entity"),
-    "real_plugin_loader": ("tests.test_application_services", "real_plugin_loader"),
-    "real_processor_plugin": ("tests.conftest", "real_processor_plugin"),
-    "real_service_with_adapters": (
+    ],
+    "real_plugin_entity": ["tests.conftest", "real_plugin_entity"],
+    "real_plugin_loader": ["tests.test_application_services", "real_plugin_loader"],
+    "real_processor_plugin": ["tests.conftest", "real_processor_plugin"],
+    "real_service_with_adapters": [
         "tests.test_application_services",
         "real_service_with_adapters",
-    ),
-    "real_tap_plugin": ("tests.conftest", "real_tap_plugin"),
-    "real_target_plugin": ("tests.conftest", "real_target_plugin"),
-    "s": ("flext_tests", "s"),
-    "set_test_environment": ("tests.conftest", "set_test_environment"),
-    "simple_plugin_directory": ("tests.conftest", "simple_plugin_directory"),
-    "t": ("tests.typings", "FlextPluginTestTypes"),
-    "temp_plugin_dir": ("tests.test_application_services", "temp_plugin_dir"),
-    "test_basic_plugin_example_execution": (
+    ],
+    "real_tap_plugin": ["tests.conftest", "real_tap_plugin"],
+    "real_target_plugin": ["tests.conftest", "real_target_plugin"],
+    "s": ["flext_tests", "s"],
+    "set_test_environment": ["tests.conftest", "set_test_environment"],
+    "simple_plugin_directory": ["tests.conftest", "simple_plugin_directory"],
+    "t": ["tests.typings", "FlextPluginTestTypes"],
+    "temp_plugin_dir": ["tests.test_application_services", "temp_plugin_dir"],
+    "test_basic_plugin_example_execution": [
         "tests.test_examples",
         "test_basic_plugin_example_execution",
-    ),
-    "test_docker_integration_example_execution": (
+    ],
+    "test_docker_integration_example_execution": [
         "tests.test_examples",
         "test_docker_integration_example_execution",
-    ),
-    "test_docker_integration_example_with_connection_testing": (
+    ],
+    "test_docker_integration_example_with_connection_testing": [
         "tests.test_examples",
         "test_docker_integration_example_with_connection_testing",
-    ),
-    "test_plugin_configuration_example_execution": (
+    ],
+    "test_plugin_configuration_example_execution": [
         "tests.test_examples",
         "test_plugin_configuration_example_execution",
-    ),
-    "u": ("tests.utilities", "FlextPluginTestUtilities"),
-    "unit": ("tests.unit", ""),
-    "x": ("flext_tests", "x"),
+    ],
+    "u": ["tests.utilities", "FlextPluginTestUtilities"],
+    "unit": ["tests.unit", ""],
+    "x": ["flext_tests", "x"],
 }
 
 __all__ = [
