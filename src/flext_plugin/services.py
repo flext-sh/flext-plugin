@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
 from flext_core import FlextContainer, r, x
@@ -96,8 +96,8 @@ class FlextPluginService(x):
         self._security = security or FlextPluginAdapters.PluginSecurityAdapter()
         self._registry = registry or FlextPluginAdapters.MemoryRegistryAdapter()
         self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
-        self._plugins: Mapping[str, FlextPluginModels.Plugin.Plugin] = {}
-        self._executions: Mapping[str, FlextPluginPlatform.PluginExecution] = {}
+        self._plugins: MutableMapping[str, FlextPluginModels.Plugin.Plugin] = {}
+        self._executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = {}
 
     @property
     @override
@@ -171,7 +171,7 @@ class FlextPluginService(x):
                 return r[Sequence[FlextPluginModels.Plugin.Plugin]].fail(
                     "Discovery did not return a list",
                 )
-            registered_plugins: Sequence[FlextPluginModels.Plugin.Plugin] = []
+            registered_plugins: MutableSequence[FlextPluginModels.Plugin.Plugin] = []
             for plugin_data in discovery_result.value:
                 if u.is_dict_like(plugin_data):
                     name = str(plugin_data.get("name", ""))
@@ -764,7 +764,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("config")
-        merged_config = self._to_general_mapping(existing_config)
+        merged_config: t.MutableContainerMapping = dict(self._to_general_mapping(existing_config))
         merged_config.update(config)
         plugin.metadata["config"] = merged_config
         return r.ok(True)

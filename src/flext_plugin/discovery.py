@@ -10,13 +10,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.metadata
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 from typing import TypeVar
 
 from flext_core import FlextLogger, r
 
-from flext_plugin import FlextPluginModels, c, p, t
+from flext_plugin import m, c, p, t
 
 TDiscovery = TypeVar("TDiscovery")
 
@@ -26,7 +26,7 @@ def discover_python_plugins_in_directory[TDiscovery](
     discover_file: Callable[[Path], TDiscovery | None],
     logger: FlextLogger,
 ) -> Sequence[TDiscovery]:
-    discovered: Sequence[TDiscovery] = []
+    discovered: MutableSequence[TDiscovery] = []
     try:
         for item in path.iterdir():
             if (
@@ -64,7 +64,7 @@ class FlextPluginDiscovery:
     def discover_plugin(
         self,
         plugin_path: str,
-    ) -> r[FlextPluginModels.Plugin.DiscoveryData]:
+    ) -> r[m.Plugin.DiscoveryData]:
         """Discover single plugin at path.
 
         Args:
@@ -80,16 +80,16 @@ class FlextPluginDiscovery:
                 fs_strategy = self.FileSystemStrategy(self.logger)
                 result = fs_strategy.discover([plugin_path])
                 if result.is_success and result.value:
-                    return r[FlextPluginModels.Plugin.DiscoveryData].ok(
+                    return r[m.Plugin.DiscoveryData].ok(
                         value=result.value[0],
                     )
             ep_strategy = self.EntryPointStrategy(self.logger)
             result = ep_strategy.discover([plugin_path])
             if result.is_success and result.value:
-                return r[FlextPluginModels.Plugin.DiscoveryData].ok(
+                return r[m.Plugin.DiscoveryData].ok(
                     value=result.value[0],
                 )
-            return r[FlextPluginModels.Plugin.DiscoveryData].fail(
+            return r[m.Plugin.DiscoveryData].fail(
                 f"Plugin not found at: {plugin_path}",
             )
         except (
@@ -102,14 +102,14 @@ class FlextPluginDiscovery:
             ImportError,
         ) as e:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
-            return r[FlextPluginModels.Plugin.DiscoveryData].fail(
+            return r[m.Plugin.DiscoveryData].fail(
                 f"Discovery error: {e!s}",
             )
 
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
+    ) -> r[Sequence[m.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
         Args:
@@ -120,7 +120,7 @@ class FlextPluginDiscovery:
 
         """
         try:
-            discovered: Mapping[str, FlextPluginModels.Plugin.DiscoveryData] = {}
+            discovered: MutableMapping[str, m.Plugin.DiscoveryData] = {}
             for strategy in self.strategies:
                 result = strategy.discover(paths)
                 if result.is_success:
@@ -128,7 +128,7 @@ class FlextPluginDiscovery:
                         if data.name not in discovered:
                             discovered[data.name] = data
             self.logger.info(f"Discovered {len(discovered)} unique plugins")
-            return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].ok(
+            return r[Sequence[m.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
         except (
@@ -141,13 +141,13 @@ class FlextPluginDiscovery:
             ImportError,
         ) as e:
             self.logger.exception("Plugin discovery failed")
-            return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].fail(
+            return r[Sequence[m.Plugin.DiscoveryData]].fail(
                 f"Discovery error: {e!s}",
             )
 
     def validate_plugin(
         self,
-        plugin_data: FlextPluginModels.Plugin.DiscoveryData,
+        plugin_data: m.Plugin.DiscoveryData,
     ) -> r[bool]:
         """Validate discovered plugin data.
 
@@ -185,10 +185,10 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
+        ) -> r[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
-                discovered: Sequence[FlextPluginModels.Plugin.DiscoveryData] = []
+                discovered: MutableSequence[m.Plugin.DiscoveryData] = []
                 for path_str in paths:
                     path = Path(path_str).expanduser().resolve()
                     if not path.exists():
@@ -203,7 +203,7 @@ class FlextPluginDiscovery:
                 self.logger.info(
                     f"File system discovery found {len(discovered)} plugins",
                 )
-                return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].ok(
+                return r[Sequence[m.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
             except (
@@ -216,14 +216,14 @@ class FlextPluginDiscovery:
                 ImportError,
             ) as e:
                 self.logger.exception("File system discovery failed")
-                return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].fail(
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     f"File discovery error: {e!s}",
                 )
 
         def _discover_directory(
             self,
             path: Path,
-        ) -> Sequence[FlextPluginModels.Plugin.DiscoveryData]:
+        ) -> Sequence[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
             return discover_python_plugins_in_directory(
                 path,
@@ -234,12 +234,12 @@ class FlextPluginDiscovery:
         def _discover_file(
             self,
             path: Path,
-        ) -> FlextPluginModels.Plugin.DiscoveryData | None:
+        ) -> m.Plugin.DiscoveryData | None:
             """Discover single Python file as plugin."""
             if path.suffix != ".py":
                 return None
             try:
-                return FlextPluginModels.Plugin.DiscoveryData(
+                return m.Plugin.DiscoveryData(
                     name=path.stem,
                     version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
@@ -261,16 +261,16 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
+        ) -> r[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             _ = paths
             try:
-                discovered: Sequence[FlextPluginModels.Plugin.DiscoveryData] = []
+                discovered: MutableSequence[m.Plugin.DiscoveryData] = []
                 for entry_point in importlib.metadata.entry_points().select(
                     group="flext.plugins",
                 ):
                     try:
-                        data = FlextPluginModels.Plugin.DiscoveryData(
+                        data = m.Plugin.DiscoveryData(
                             name=entry_point.name,
                             version=getattr(
                                 entry_point.dist,
@@ -292,7 +292,7 @@ class FlextPluginDiscovery:
                 self.logger.info(
                     f"Entry point discovery found {len(discovered)} plugins",
                 )
-                return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].ok(
+                return r[Sequence[m.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
             except (
@@ -305,7 +305,7 @@ class FlextPluginDiscovery:
                 ImportError,
             ) as e:
                 self.logger.exception("Entry point discovery failed")
-                return r[Sequence[FlextPluginModels.Plugin.DiscoveryData]].fail(
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     f"Entry point discovery error: {e!s}",
                 )
 

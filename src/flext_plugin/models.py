@@ -105,7 +105,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=True, description="Plugin enabled state"),
             ]
             metadata: Annotated[
-                t.ContainerMapping,
+                t.MutableContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Extensible plugin metadata",
@@ -144,7 +144,7 @@ class FlextPluginModels(FlextModels):
                 metadata_payload: t.ContainerMapping = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: t.ContainerMapping = {
+                payload: t.MutableContainerMapping = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,

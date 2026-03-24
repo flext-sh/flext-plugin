@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
@@ -71,7 +71,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = FlextLogger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: t.ContainerMapping = {}
+            self._config: t.MutableContainerMapping = {}
 
         @property
         def name(self) -> str:
@@ -378,9 +378,10 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
-                transformed = TypeAdapter(t.ContainerMapping).validate_python(
+                validated = TypeAdapter(t.ContainerMapping).validate_python(
                     data,
                 )
+                transformed: t.MutableContainerMapping = dict(validated)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[t.NormalizedValue].ok(transformed)
@@ -506,8 +507,8 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: t.ContainerMapping = dict(config) if config else {}
-            self._services = services or {}
+            self._config: t.MutableContainerMapping = dict(config) if config else {}
+            self._services: t.MutableContainerMapping = dict(services) if services else {}
 
         @property
         def logger(self) -> p.Logger:
@@ -544,7 +545,7 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: Mapping[str, FlextPluginModels.Plugin.Plugin] = {}
+            self.plugins: MutableMapping[str, FlextPluginModels.Plugin.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
         def get_plugin(

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
 from flext_core import FlextContainer, FlextRegistry, FlextService, FlextSettings, r
@@ -210,10 +210,10 @@ class FlextPluginPlatform:
     class PluginPlatformService(FlextService[None]):
         """railway-oriented plugin platform with functional composition."""
 
-        _plugins: Mapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
+        _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
             default_factory=dict,
         )
-        _executions: Mapping[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
+        _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
             default_factory=dict,
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
@@ -339,7 +339,7 @@ class FlextPluginPlatform:
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.is_success:
                     discovered_items = discovery_result.value
-                    plugin_dicts: Sequence[t.ContainerMapping] = []
+                    plugin_dicts: MutableSequence[t.ContainerMapping] = []
                     for item in discovered_items:
                         if u.is_dict_like(item):
                             plugin_dicts.append(self._to_general_mapping(item))
@@ -671,7 +671,7 @@ class FlextPluginPlatform:
             plugin_data: Sequence[t.ContainerMapping],
         ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
-            plugins: Sequence[FlextPluginPlatform.Plugin] = []
+            plugins: MutableSequence[FlextPluginPlatform.Plugin] = []
             for data in plugin_data:
                 plugin = FlextPluginPlatform.Plugin.create(
                     name=str(data["name"]),

@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -73,7 +73,7 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}",
                     )
-                plugins: Sequence[FlextPluginModels.Plugin.PluginMetadata] = []
+                plugins: MutableSequence[FlextPluginModels.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
                     if (
                         plugin_file.is_file()
@@ -288,14 +288,14 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 watch_path = Path(str(watcher_config["watch_path"]))
                 last_modified_raw = watcher_config.get("last_modified", {})
-                last_modified: t.ContainerMapping = (
+                last_modified: t.MutableContainerMapping = (
                     TypeAdapter(t.ContainerMapping).validate_python(
                         last_modified_raw,
                     )
                     if u.is_dict_like(last_modified_raw)
                     else {}
                 )
-                changed_files: t.StrSequence = []
+                changed_files: MutableSequence[str] = []
                 for file_path in watch_path.rglob("*"):
                     if (
                         file_path.is_file()
@@ -433,7 +433,7 @@ class FlextPluginUtilities(FlextUtilities):
                     "plugin_name": plugin_name,
                     "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
                     "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
-                    "allowed_modules": FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS.copy(),
+                    "allowed_modules": list(FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS),
                     "network_access": False,
                     "file_system_access": "read-only",
                     "environment_variables": {
@@ -471,10 +471,10 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                security_report: t.ContainerMapping = {
+                security_report: t.MutableContainerMapping = {
                     "safe": True,
-                    "violations": t.StrSequence(),
-                    "warnings": t.StrSequence(),
+                    "violations": list[str](),
+                    "warnings": list[str](),
                     "analysis_time": datetime.now(UTC).isoformat(),
                 }
                 for (
@@ -938,9 +938,9 @@ class FlextPluginUtilities(FlextUtilities):
 
             """
             try:
-                mutable_registry: t.ContainerMapping = dict(registry)
+                mutable_registry: t.MutableContainerMapping = dict(registry)
                 if "plugins" not in mutable_registry:
-                    mutable_registry["plugins"] = t.ContainerMapping()
+                    mutable_registry["plugins"] = {}
                 plugin_info = {
                     "name": plugin_metadata.name,
                     "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),

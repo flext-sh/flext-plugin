@@ -7,17 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, p, r, t
+from flext_core import FlextLogger, r
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_plugin import FlextPluginModels
+from flext_plugin import m, p, t
 
 
 class FileChangeHandler(FileSystemEventHandler):
@@ -108,8 +108,8 @@ class FlextPluginHotReload:
         self.max_retries = max_retries
         self._is_watching = False
         self._watched_paths: set[Path] = set()
-        self._reload_callbacks: Sequence[Callable[[str], None]] = []
-        self._reload_history: Sequence[FlextPluginModels.Plugin.ReloadRecord] = []
+        self._reload_callbacks: MutableSequence[Callable[[str], None]] = []
+        self._reload_history: MutableSequence[m.Plugin.ReloadRecord] = []
         self._observer: BaseObserver | None = None
         self._event_handler: FileSystemEventHandler | None = None
 
@@ -176,7 +176,7 @@ class FlextPluginHotReload:
                 return r[t.ContainerMapping].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: Sequence[t.ContainerMapping] = []
+            reload_results: MutableSequence[t.ContainerMapping] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -233,7 +233,7 @@ class FlextPluginHotReload:
     def get_reload_history(
         self,
         limit: int = 100,
-    ) -> Sequence[FlextPluginModels.Plugin.ReloadRecord]:
+    ) -> Sequence[m.Plugin.ReloadRecord]:
         """Get reload history.
 
         Args:
@@ -291,7 +291,7 @@ class FlextPluginHotReload:
                     ImportError,
                 ):
                     self.logger.exception("Reload callback failed for %s", plugin_name)
-            reload_record = FlextPluginModels.Plugin.ReloadRecord(
+            reload_record = m.Plugin.ReloadRecord(
                 plugin_name=plugin_name,
                 plugin_path=plugin_path,
                 timestamp=datetime.now(UTC),

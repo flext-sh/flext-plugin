@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 from types import ModuleType
 from typing import override
@@ -18,10 +18,10 @@ from typing import override
 from flext_core import FlextLogger, T, r, t
 from pydantic import TypeAdapter
 
-from flext_plugin.constants import FlextPluginConstants as c
-from flext_plugin.discovery import discover_python_plugins_in_directory
-from flext_plugin.models import FlextPluginModels as m
-from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
+from flext_plugin import c
+from flext_plugin import discover_python_plugins_in_directory
+from flext_plugin import m
+from flext_plugin import p, p
 
 
 class FlextPluginAdapters:
@@ -67,7 +67,7 @@ class FlextPluginAdapters:
                 return r[T].fail(error_msg)
 
     class FileSystemDiscoveryAdapter(
-        BaseAdapter, FlextPluginProtocols.Plugin.PluginDiscovery
+        BaseAdapter, p.Plugin.PluginDiscovery
     ):
         """File system plugin discovery - synchronous."""
 
@@ -113,7 +113,7 @@ class FlextPluginAdapters:
             self, paths: t.StrSequence
         ) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
-            discovered: Sequence[m.Plugin.DiscoveryData] = []
+            discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for path in paths:
                 path_obj = Path(path).expanduser().resolve()
                 if not path_obj.exists():
@@ -184,7 +184,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize the synchronous plugin adapter."""
             super().__init__()
-            self._loaded_plugins: Mapping[str, ModuleType] = {}
+            self._loaded_plugins: MutableMapping[str, ModuleType] = {}
 
         @override
         def get_loaded_plugins(self) -> t.StrSequence:
@@ -321,14 +321,14 @@ class FlextPluginAdapters:
             return r.ok(True)
 
     class MemoryRegistryAdapter(
-        BaseAdapter, FlextPluginProtocols.Plugin.PluginRegistry
+        BaseAdapter, p.Plugin.PluginRegistry
     ):
         """In-memory plugin registry - synchronous."""
 
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: t.ContainerMapping = {}
+            self._plugins: t.MutableContainerMapping = {}
 
         @override
         def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:

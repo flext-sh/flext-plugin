@@ -8,12 +8,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
-from flext_core import FlextLogger, c, r
+from flext_core import FlextLogger
 
-from flext_plugin import t
+from flext_plugin import t, c, r
 
 
 class FlextPluginHandlers:
@@ -42,8 +42,8 @@ class FlextPluginHandlers:
         """Initialize the plugin handlers."""
         super().__init__()
         self.logger = FlextLogger(__name__)
-        self._handlers: Mapping[str, Sequence[t.Handlers.HandlerInfo]] = {}
-        self._event_history: Sequence[t.ContainerMapping] = []
+        self._handlers: MutableMapping[str, MutableSequence[t.Handlers.HandlerInfo]] = {}
+        self._event_history: MutableSequence[t.MutableContainerMapping] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -285,7 +285,7 @@ class FlextPluginHandlers:
             def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
                 return handler_info.priority
 
-            self._handlers[event_type].sort(key=get_priority, reverse=True)
+            self._handlers[event_type] = sorted(self._handlers[event_type], key=get_priority, reverse=True)
             self.logger.debug("Registered handler for event type: %s", event_type)
             return r.ok(True)
         except (
@@ -316,7 +316,7 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: t.ContainerMapping = {
+            event_record: t.MutableContainerMapping = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -328,7 +328,7 @@ class FlextPluginHandlers:
                     event_type,
                 )
                 return r.ok([])
-            results: t.ContainerList = []
+            results: t.MutableContainerList = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
