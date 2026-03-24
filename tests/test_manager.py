@@ -17,7 +17,7 @@ from typing import override
 import pytest
 from flext_core import r
 
-from flext_plugin import FlextPluginAdapters, FlextPluginService
+from flext_plugin import FlextPluginAdapters, FlextPluginModels, FlextPluginService
 from tests import t
 
 
@@ -73,10 +73,12 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: t.StrSequence = []
+                self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+            def register_plugin(
+                self, _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
+            ) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -86,7 +88,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: t.StrSequence = []
+                self.started: list[str] = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -137,10 +139,12 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: t.StrSequence = []
+                self.registered: list[str] = []
 
             @override
-            def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+            def register_plugin(
+                self, _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
+            ) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -150,7 +154,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: t.StrSequence = []
+                self.started: list[str] = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -190,7 +194,7 @@ class TestFlextPluginServiceStubBridges:
         class Executor(FlextPluginAdapters.PluginExecutorAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.calls: t.StrSequence = []
+                self.calls: list[str] = []
 
             @override
             def execute_plugin(
@@ -216,7 +220,7 @@ class TestFlextPluginServiceStubBridges:
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unloaded: t.StrSequence = []
+                self.unloaded: list[str] = []
 
             @override
             def load_plugin(
@@ -239,7 +243,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unregistered: t.StrSequence = []
+                self.unregistered: list[str] = []
 
             @override
             def unregister_plugin(self, plugin_name: str) -> r[bool]:
@@ -249,7 +253,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.stopped: t.StrSequence = []
+                self.stopped: list[str] = []
 
             @override
             def stop_monitoring(self, _plugin_name: str) -> r[bool]:

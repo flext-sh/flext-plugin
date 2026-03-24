@@ -18,7 +18,7 @@ class TestFlextPluginConstants:
     def test_constants_initialization(self) -> None:
         """Test that constants can be initialized."""
         constants = FlextPluginConstants()
-        tm.that(constants, none=False)
+        assert constants is not None
 
     def test_discovery_constants(self) -> None:
         """Test discovery-related constants."""

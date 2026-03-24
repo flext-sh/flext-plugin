@@ -18,7 +18,7 @@ class TestFlextPluginTypes:
     def test_types_initialization(self) -> None:
         """Test that types can be initialized."""
         types = FlextPluginTypes()
-        tm.that(types, none=False)
+        assert types is not None
 
     def test_types_alias_exists(self) -> None:
         """Test that t alias exists."""

@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import math
 from datetime import datetime
 from pathlib import Path
 
@@ -22,7 +23,7 @@ class TestFlextPluginModels:
     def test_models_initialization(self) -> None:
         """Test that models can be initialized."""
         models = FlextPluginModels()
-        tm.that(models, none=False)
+        assert models is not None
 
     def test_plugin_status_enum(self) -> None:
         """Test PluginStatus enum values and methods."""
@@ -145,7 +146,7 @@ class TestFlextPluginModels:
         tm.that(result.success is True, eq=True)
         tm.that(result.data, eq={"output": "result"})
         tm.that(not result.error, eq=True)
-        assert result.execution_time_ms == pytest.approx(1500.0)
+        assert math.isclose(result.execution_time_ms, 1500.0)
 
     def test_execution_result_failure(self) -> None:
         """Test ExecutionResult failure case."""
