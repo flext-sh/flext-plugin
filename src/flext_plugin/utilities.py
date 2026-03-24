@@ -296,7 +296,7 @@ class FlextPluginUtilities(FlextUtilities):
                     dict(
                         _CONTAINER_MAP_ADAPTER.validate_python(
                             last_modified_raw,
-                        )
+                        ),
                     )
                     if u.is_dict_like(last_modified_raw)
                     else {}
@@ -738,7 +738,7 @@ class FlextPluginUtilities(FlextUtilities):
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
                 raw_result: object = plugin_function(
-                    *execution_args, **execution_kwargs
+                    *execution_args, **execution_kwargs,
                 )
                 if isinstance(raw_result, (str, int, float, bool)):
                     return raw_result
@@ -1018,7 +1018,7 @@ class FlextPluginUtilities(FlextUtilities):
                 }
                 _ = path.write_text(
                     _CONTAINER_MAP_ADAPTER.dump_json(mutable_registry, indent=2).decode(
-                        "utf-8"
+                        "utf-8",
                     ),
                     encoding="utf-8",
                 )

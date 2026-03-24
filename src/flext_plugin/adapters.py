@@ -358,7 +358,7 @@ class FlextPluginAdapters:
 
         @override
         def register_plugin(
-            self, _plugin: m.Plugin.Plugin | t.NormalizedValue
+            self, _plugin: m.Plugin.Plugin | t.NormalizedValue,
         ) -> r[bool]:
             """Register plugin in registry."""
             registration_result = self.register(_plugin)

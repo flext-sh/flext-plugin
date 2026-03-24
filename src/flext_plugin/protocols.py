@@ -113,7 +113,7 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def register_plugin(
-                self, _plugin: m.Plugin.Plugin | t.NormalizedValue
+                self, _plugin: m.Plugin.Plugin | t.NormalizedValue,
             ) -> r[bool]:
                 """Register a plugin."""
                 ...
