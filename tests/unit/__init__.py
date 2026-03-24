@@ -19,10 +19,7 @@ if TYPE_CHECKING:
     from tests.unit.test_types import TestFlextPluginTypes
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "TestFlextPluginConstants": [
-        "tests.unit.test_constants",
-        "TestFlextPluginConstants",
-    ],
+    "TestFlextPluginConstants": ["tests.unit.test_constants", "TestFlextPluginConstants"],
     "TestFlextPluginModels": ["tests.unit.test_models", "TestFlextPluginModels"],
     "TestFlextPluginSettings": ["tests.unit.test_config", "TestFlextPluginSettings"],
     "TestFlextPluginTypes": ["tests.unit.test_types", "TestFlextPluginTypes"],
