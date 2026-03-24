@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
@@ -590,7 +590,7 @@ class FlextPluginModels(FlextModels):
             ]
             entry_point: Annotated[str, Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of plugin dependencies",
@@ -645,14 +645,14 @@ class FlextPluginModels(FlextModels):
 
             is_valid: Annotated[bool, Field(description="Whether validation passed")]
             errors: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of validation errors",
                 ),
             ]
             warnings: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of validation warnings",
@@ -685,14 +685,14 @@ class FlextPluginModels(FlextModels):
                 Field(description="Whether plugin passed security checks"),
             ]
             violations: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of security violations",
                 ),
             ]
             warnings: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of security warnings",
@@ -721,7 +721,7 @@ class FlextPluginModels(FlextModels):
 
             watch_path: Annotated[str, Field(description="Path being watched")]
             watch_interval: Annotated[
-                float,
+                t.PositiveFloat,
                 Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
@@ -765,15 +765,17 @@ class FlextPluginModels(FlextModels):
             """
 
             plugin_name: Annotated[str, Field(description="Name of plugin to sandbox")]
-            max_memory_mb: Annotated[int, Field(description="Maximum memory in MB")]
+            max_memory_mb: Annotated[
+                t.PositiveInt, Field(description="Maximum memory in MB")
+            ]
             max_execution_time: Annotated[
-                int,
+                t.PositiveInt,
                 Field(
                     description="Maximum execution time in seconds",
                 ),
             ]
             allowed_modules: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     description="Allowed import modules",
                 ),
@@ -787,7 +789,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="File system access level"),
             ]
             environment_variables: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     description="Environment variable settings",
                 ),

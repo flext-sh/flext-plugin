@@ -47,7 +47,7 @@ class TestFlextPluginServiceStubBridges:
         class Discovery(FlextPluginAdapters.FileSystemDiscoveryAdapter):
             @override
             def discover_plugins(
-                self, paths: Sequence[str]
+                self, paths: t.StrSequence
             ) -> r[Sequence[t.ContainerMapping]]:
                 _ = paths
                 return r.ok([
@@ -71,7 +71,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: Sequence[str] = []
+                self.registered: t.StrSequence = []
 
             @override
             def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
@@ -84,7 +84,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: Sequence[str] = []
+                self.started: t.StrSequence = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -135,7 +135,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: Sequence[str] = []
+                self.registered: t.StrSequence = []
 
             @override
             def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
@@ -148,7 +148,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: Sequence[str] = []
+                self.started: t.StrSequence = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -185,7 +185,7 @@ class TestFlextPluginServiceStubBridges:
         class Executor(FlextPluginAdapters.PluginExecutorAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.calls: Sequence[str] = []
+                self.calls: t.StrSequence = []
 
             @override
             def execute_plugin(
@@ -211,7 +211,7 @@ class TestFlextPluginServiceStubBridges:
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unloaded: Sequence[str] = []
+                self.unloaded: t.StrSequence = []
 
             @override
             def load_plugin(
@@ -234,7 +234,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unregistered: Sequence[str] = []
+                self.unregistered: t.StrSequence = []
 
             @override
             def unregister_plugin(self, plugin_name: str) -> r[bool]:
@@ -244,7 +244,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.stopped: Sequence[str] = []
+                self.stopped: t.StrSequence = []
 
             @override
             def stop_monitoring(self, _plugin_name: str) -> r[bool]:

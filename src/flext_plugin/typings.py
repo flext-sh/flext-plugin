@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from typing import Literal, TypeAlias, TypeVar
 
-from flext_core import FlextTypes
+from flext_core import FlextTypes, FlextTypes as t
 
 from .constants import c
 
@@ -57,9 +57,9 @@ class FlextPluginTypes(FlextTypes):
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = Sequence[str]
+        type StringList = t.StrSequence
         type StringSet = set[str]
-        type StringDict = Mapping[str, str]
+        type StringDict = t.StrMapping
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
         type PluginList = Sequence[Mapping[str, FlextTypes.NormalizedValue]]
