@@ -1005,9 +1005,9 @@ class FlextPluginUtilities(FlextUtilities):
                     _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
                         path.parent,
                     )
-                _validated: Mapping[str, t.ContainerValue] = _CONTAINER_MAP_ADAPTER.validate_python(registry)
+                validated: Mapping[str, t.ContainerValue] = _CONTAINER_MAP_ADAPTER.validate_python(registry)
                 mutable_registry: Mapping[str, t.ContainerValue] = {
-                    **_validated,
+                    **validated,
                     "last_updated": datetime.now(UTC).isoformat(),
                 }
                 _ = path.write_text(
