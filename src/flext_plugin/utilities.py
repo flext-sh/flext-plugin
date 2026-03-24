@@ -737,7 +737,7 @@ class FlextPluginUtilities(FlextUtilities):
             def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
-                raw_result: object = plugin_function(
+                raw_result: t.NormalizedValue = plugin_function(
                     *execution_args,
                     **execution_kwargs,
                 )

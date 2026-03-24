@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 from types import ModuleType
 from typing import override
 
@@ -73,7 +73,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: list[str] = []
+                self.registered: MutableSequence[str] = []
 
             @override
             def register_plugin(
@@ -89,7 +89,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: list[str] = []
+                self.started: MutableSequence[str] = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -140,7 +140,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.registered: list[str] = []
+                self.registered: MutableSequence[str] = []
 
             @override
             def register_plugin(
@@ -156,7 +156,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.started: list[str] = []
+                self.started: MutableSequence[str] = []
 
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
@@ -196,7 +196,7 @@ class TestFlextPluginServiceStubBridges:
         class Executor(FlextPluginAdapters.PluginExecutorAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.calls: list[str] = []
+                self.calls: MutableSequence[str] = []
 
             @override
             def execute_plugin(
@@ -222,7 +222,7 @@ class TestFlextPluginServiceStubBridges:
         class Loader(FlextPluginAdapters.DynamicLoaderAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unloaded: list[str] = []
+                self.unloaded: MutableSequence[str] = []
 
             @override
             def load_plugin(
@@ -245,7 +245,7 @@ class TestFlextPluginServiceStubBridges:
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.unregistered: list[str] = []
+                self.unregistered: MutableSequence[str] = []
 
             @override
             def unregister_plugin(self, plugin_name: str) -> r[bool]:
@@ -255,7 +255,7 @@ class TestFlextPluginServiceStubBridges:
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
                 super().__init__()
-                self.stopped: list[str] = []
+                self.stopped: MutableSequence[str] = []
 
             @override
             def stop_monitoring(self, _plugin_name: str) -> r[bool]:
