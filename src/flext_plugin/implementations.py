@@ -14,10 +14,10 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, p, r, t
+from flext_core import FlextLogger, r
 from pydantic import TypeAdapter
 
-from flext_plugin import FlextPluginModels, FlextPluginProtocols, c
+from flext_plugin import c, m, p, t
 
 _CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
     t.ContainerMapping,
@@ -39,7 +39,7 @@ class FlextPluginImplementations:
         """Concrete implementation of the FlextPlugin interface.
 
         This class implements the abstract FlextPlugin interface from flext-core,
-        providing actual plugin functionality while using FlextPluginModels.Plugin
+        providing actual plugin functionality while using m.Plugin
         for domain logic and state management.
 
         Attributes:
@@ -56,7 +56,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            entity: FlextPluginModels.Plugin.Plugin | None = None,
+            entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize concrete plugin.
 
@@ -190,7 +190,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             operations: t.ContainerMapping | None = None,
-            entity: FlextPluginModels.Plugin.Plugin | None = None,
+            entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
 
@@ -267,7 +267,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             connection_config: t.ContainerMapping | None = None,
-            entity: FlextPluginModels.Plugin.Plugin | None = None,
+            entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
 
@@ -340,7 +340,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             schema: t.ContainerMapping | None = None,
-            entity: FlextPluginModels.Plugin.Plugin | None = None,
+            entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
 
@@ -398,7 +398,7 @@ class FlextPluginImplementations:
                 self.logger.exception("Transformation failed")
                 return r[t.NormalizedValue].fail(f"Transform failed: {e!s}")
 
-    class LoggerAdapter(FlextPluginProtocols.Plugin.Logger):
+    class LoggerAdapter(p.Plugin.Logger):
         """Adapter to make FlextLogger compatible with Logger."""
 
         @override
@@ -522,7 +522,7 @@ class FlextPluginImplementations:
             """Get configuration for plugin."""
             return dict(self._config)
 
-        def get_logger(self) -> FlextPluginProtocols.Plugin.Logger:
+        def get_logger(self) -> p.Plugin.Logger:
             """Get logger instance for plugin."""
             return FlextPluginImplementations.LoggerAdapter(self.logger)
 
@@ -548,13 +548,13 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: MutableMapping[str, FlextPluginModels.Plugin.Plugin] = {}
+            self.plugins: MutableMapping[str, m.Plugin.Plugin] = {}
             self._logger = FlextLogger("plugin.registry")
 
         def get_plugin(
             self,
             plugin_name: str,
-        ) -> FlextPluginModels.Plugin.Plugin | None:
+        ) -> m.Plugin.Plugin | None:
             """Get plugin by name.
 
             Args:
@@ -566,7 +566,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> Sequence[FlextPluginModels.Plugin.Plugin]:
+        def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
             """List all registered plugin names.
 
             Returns:
@@ -577,11 +577,11 @@ class FlextPluginImplementations:
 
         def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
             """Register a plugin via protocol interface."""
-            if isinstance(_plugin, FlextPluginModels.Plugin.Plugin):
+            if isinstance(_plugin, m.Plugin.Plugin):
                 return self.register(_plugin).map(lambda _: True)
             return r[bool].fail("Invalid plugin type for registration")
 
-        def register(self, plugin: FlextPluginModels.Plugin.Plugin) -> r[None]:
+        def register(self, plugin: m.Plugin.Plugin) -> r[None]:
             """Register a plugin.
 
             Args:
@@ -624,7 +624,7 @@ class FlextPluginImplementations:
         @override
         def __init__(
             self,
-            registry: FlextPluginProtocols.Plugin.PluginRegistry | None = None,
+            registry: p.Plugin.PluginRegistry | None = None,
         ) -> None:
             """Initialize plugin loader.
 
@@ -682,7 +682,7 @@ class FlextPluginImplementations:
                     name=f"loaded-from-{plugin_path}",
                     version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                 )
-                plugin_entity = FlextPluginModels.Plugin.Plugin.create(
+                plugin_entity = m.Plugin.Plugin.create(
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )

@@ -8,11 +8,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, r, t
+from flext_core import FlextProtocols, r
 
-from flext_plugin import FlextPluginModels
+from flext_plugin import t
+
+if TYPE_CHECKING:
+    from flext_plugin import m
 
 
 class FlextPluginProtocols(FlextProtocols):
@@ -110,14 +113,12 @@ class FlextPluginProtocols(FlextProtocols):
                 ...
 
             def register_plugin(
-                self, _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
+                self, _plugin: m.Plugin.Plugin | t.NormalizedValue
             ) -> r[bool]:
                 """Register a plugin."""
                 ...
 
-            def register(
-                self, plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue
-            ) -> r[None]:
+            def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
                 """Register a plugin with normalized API."""
                 ...
 
@@ -385,7 +386,7 @@ class FlextPluginProtocols(FlextProtocols):
             def discover(
                 self,
                 paths: t.StrSequence,
-            ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
+            ) -> r[Sequence[m.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...
 

@@ -204,18 +204,7 @@ whitelines = 1
 
 # [MANAGED] pyright
 [tool.pyright]
-extraPaths = [
-  ".",
-  "../flext-core/examples",
-  "../flext-core/src",
-  "../flext-core/tests",
-  "../typings",
-  "../typings/generated",
-  "docs",
-  "examples",
-  "src",
-  "tests",
-]
+extraPaths = [".", "../flext-core/examples", "../flext-core/src", "../flext-core/tests", "../typings", "../typings/generated", "docs", "examples", "src", "tests", "../flext-tests/src", "../flext-infra/src"]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
 reportCallIssue = "none"

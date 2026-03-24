@@ -8,13 +8,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Literal, TypeVar
+from typing import Literal
 
 from flext_core import FlextTypes
 
-from .constants import c
-
-T = TypeVar("T")
+from flext_plugin import c
 
 
 class FlextPluginTypes(FlextTypes):

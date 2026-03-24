@@ -16,11 +16,7 @@ from typing import Annotated, Self
 from flext_core import FlextModels, r
 from pydantic import Field, field_validator
 
-from flext_plugin.constants import (
-    FlextPluginConstants as c,
-    FlextPluginConstants as c_constants,
-)
-from flext_plugin.typings import FlextPluginTypes as t
+from flext_plugin import c, t
 
 
 class FlextPluginModels(FlextModels):
@@ -63,9 +59,9 @@ class FlextPluginModels(FlextModels):
                 str,
                 Field(
                     ...,
-                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                    pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
                     description="Plugin unique identifier name",
                 ),
             ]
@@ -73,7 +69,7 @@ class FlextPluginModels(FlextModels):
                 str,
                 Field(
                     default="1.0.0",
-                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
             ]
@@ -81,7 +77,7 @@ class FlextPluginModels(FlextModels):
                 str,
                 Field(
                     default="",
-                    max_length=c_constants.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
                     description="Plugin functionality description",
                 ),
             ]
@@ -89,14 +85,14 @@ class FlextPluginModels(FlextModels):
                 str,
                 Field(
                     default="",
-                    max_length=c_constants.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
                     description="Plugin author/maintainer",
                 ),
             ]
             plugin_type: Annotated[
                 str,
                 Field(
-                    default=c_constants.Plugin.PluginType.UTILITY,
+                    default=c.Plugin.PluginType.UTILITY,
                     description="Plugin type classification",
                 ),
             ]
@@ -414,16 +410,16 @@ class FlextPluginModels(FlextModels):
             name: Annotated[
                 str,
                 Field(
-                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                    pattern=c_constants.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
                     description="Plugin unique identifier name",
                 ),
             ]
             version: Annotated[
                 str,
                 Field(
-                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
             ]
@@ -484,15 +480,15 @@ class FlextPluginModels(FlextModels):
             name: Annotated[
                 str,
                 Field(
-                    min_length=c_constants.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                    max_length=c_constants.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
                     description="Plugin unique identifier name",
                 ),
             ]
             version: Annotated[
                 str,
                 Field(
-                    pattern=c_constants.Plugin.PluginValidation.VERSION_PATTERN,
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
             ]

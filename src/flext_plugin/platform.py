@@ -15,10 +15,9 @@ from flext_core import FlextRegistry, FlextService, FlextSettings, r
 from pydantic import PrivateAttr, TypeAdapter
 
 from flext_plugin import (
-    FlextPluginModels,
-    FlextPluginProtocols,
     FlextPluginSettings,
     c,
+    m,
     p,
     t,
     u,
@@ -128,15 +127,15 @@ class FlextPluginPlatform:
             _ = (dispatcher, auto_discover_handlers)
             return cls()
 
-        def get(self, data: str) -> r[FlextPluginModels.Plugin.Plugin]:
+        def get(self, data: str) -> r[m.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
             result = self.get_plugin(self.PLUGINS, data, scope="class")
             if result.is_success:
                 try:
-                    plugin = FlextPluginModels.Plugin.Plugin.model_validate(
+                    plugin = m.Plugin.Plugin.model_validate(
                         result.value,
                     )
-                    return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
+                    return r[m.Plugin.Plugin].ok(plugin)
                 except (
                     ValueError,
                     TypeError,
@@ -146,12 +145,12 @@ class FlextPluginPlatform:
                     RuntimeError,
                     ImportError,
                 ):
-                    return r[FlextPluginModels.Plugin.Plugin].fail(
+                    return r[m.Plugin.Plugin].fail(
                         "Plugin is not a valid Plugin type",
                     )
             if result.is_failure:
-                return r[FlextPluginModels.Plugin.Plugin].fail(result.error)
-            return r[FlextPluginModels.Plugin.Plugin].fail("Plugin not found")
+                return r[m.Plugin.Plugin].fail(result.error)
+            return r[m.Plugin.Plugin].fail("Plugin not found")
 
         @override
         def list_plugins(
@@ -176,7 +175,7 @@ class FlextPluginPlatform:
             self,
             name: str,
             service: t.RegistrablePlugin,
-            metadata: t.ConfigMap | FlextPluginModels.Metadata | None = None,
+            metadata: t.ConfigMap | m.Metadata | None = None,
         ) -> r[bool]:
             """Register plugin using class-level storage.
 
@@ -196,7 +195,7 @@ class FlextPluginPlatform:
             """Unregister plugin from class-level storage."""
             return self.unregister_plugin(self.PLUGINS, plugin_name, scope="class")
 
-    class Plugin(FlextPluginModels.Plugin.Plugin):
+    class Plugin(m.Plugin.Plugin):
         """Plugin entity extending the base model."""
 
         @property
@@ -224,13 +223,13 @@ class FlextPluginPlatform:
             )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
-        _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(
+        _discovery: p.Plugin.PluginDiscovery | None = PrivateAttr(
             default=None,
         )
-        _loader: FlextPluginProtocols.Plugin.PluginLoader | None = PrivateAttr(
+        _loader: p.Plugin.PluginLoader | None = PrivateAttr(
             default=None,
         )
-        _executor: FlextPluginProtocols.Plugin.PluginExecution | None = PrivateAttr(
+        _executor: p.Plugin.PluginExecution | None = PrivateAttr(
             default=None,
         )
 
@@ -269,7 +268,7 @@ class FlextPluginPlatform:
             self._executor = None
 
         @property
-        def discovery(self) -> FlextPluginProtocols.Plugin.PluginDiscovery | None:
+        def discovery(self) -> p.Plugin.PluginDiscovery | None:
             """Discovery protocol."""
             return self._discovery
 
@@ -279,7 +278,7 @@ class FlextPluginPlatform:
             return self._executions
 
         @property
-        def executor(self) -> FlextPluginProtocols.Plugin.PluginExecution | None:
+        def executor(self) -> p.Plugin.PluginExecution | None:
             """Executor protocol."""
             return self._executor
 
@@ -298,7 +297,7 @@ class FlextPluginPlatform:
             }
 
         @property
-        def loader(self) -> FlextPluginProtocols.Plugin.PluginLoader | None:
+        def loader(self) -> p.Plugin.PluginLoader | None:
             """Loader protocol."""
             return self._loader
 
@@ -514,7 +513,7 @@ class FlextPluginPlatform:
 
         def register_plugin(
             self,
-            plugin: FlextPluginPlatform.Plugin | FlextPluginModels.Plugin.Plugin,
+            plugin: FlextPluginPlatform.Plugin | m.Plugin.Plugin,
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
@@ -564,9 +563,9 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: FlextPluginProtocols.Plugin.PluginDiscovery
-            | FlextPluginProtocols.Plugin.PluginLoader
-            | FlextPluginProtocols.Plugin.PluginExecution
+            protocol: p.Plugin.PluginDiscovery
+            | p.Plugin.PluginLoader
+            | p.Plugin.PluginExecution
             | None,
             name: str,
         ) -> r[bool]:

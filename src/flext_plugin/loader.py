@@ -13,9 +13,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 
-from flext_plugin import FlextPluginModels, c, p
+from flext_plugin import c, m, p, t
 
 
 class FlextPluginLoader:
@@ -46,7 +46,7 @@ class FlextPluginLoader:
         self.logger = FlextLogger(__name__)
         self._loaded_plugins: MutableMapping[str, ModuleType] = {}
         self._loader_strategies: Sequence[
-            Callable[[Path], FlextPluginModels.Plugin.LoadData | None]
+            Callable[[Path], m.Plugin.LoadData | None]
         ] = [
             self.FilePluginLoader(self.logger).load,
             self.DirectoryPluginLoader(self.logger).load,
@@ -117,7 +117,7 @@ class FlextPluginLoader:
         """
         return plugin_name in self._loaded_plugins
 
-    def load_plugin(self, plugin_path: str) -> r[FlextPluginModels.Plugin.LoadData]:
+    def load_plugin(self, plugin_path: str) -> r[m.Plugin.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -131,14 +131,14 @@ class FlextPluginLoader:
             path_obj = Path(plugin_path).expanduser().resolve()
             if not path_obj.exists():
                 error_msg = f"Plugin path does not exist: {plugin_path}"
-                return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+                return r[m.Plugin.LoadData].fail(error_msg)
             for loader_strategy in self._loader_strategies:
                 load_data = loader_strategy(path_obj)
                 if load_data:
                     self._loaded_plugins[load_data.name] = load_data.module
                     return r.ok(load_data)
             error_msg = f"Invalid plugin path type: {plugin_path}"
-            return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+            return r[m.Plugin.LoadData].fail(error_msg)
         except (
             ValueError,
             TypeError,
@@ -150,9 +150,9 @@ class FlextPluginLoader:
             SyntaxError,
         ) as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
-            return r[FlextPluginModels.Plugin.LoadData].fail(f"Loading error: {e!s}")
+            return r[m.Plugin.LoadData].fail(f"Loading error: {e!s}")
 
-    def reload_plugin(self, plugin_name: str) -> r[FlextPluginModels.Plugin.LoadData]:
+    def reload_plugin(self, plugin_name: str) -> r[m.Plugin.LoadData]:
         """Reload a plugin by name.
 
         Args:
@@ -165,23 +165,23 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+                return r[m.Plugin.LoadData].fail(error_msg)
             module = self._loaded_plugins.get(plugin_name)
             module_file = getattr(module, "__file__", None)
             if not module or module_file is None:
                 error_msg = f"No path information for plugin: {plugin_name}"
-                return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+                return r[m.Plugin.LoadData].fail(error_msg)
             plugin_path = module_file
             if not plugin_path:
                 error_msg = f"Cannot determine plugin path for: {plugin_name}"
-                return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+                return r[m.Plugin.LoadData].fail(error_msg)
             unload_result = self.unload_plugin(plugin_name)
             if unload_result.is_failure:
                 error_msg = f"Failed to unload plugin for reload: {unload_result.error}"
-                return r[FlextPluginModels.Plugin.LoadData].fail(error_msg)
+                return r[m.Plugin.LoadData].fail(error_msg)
             load_result = self.load_plugin(str(plugin_path))
             if load_result.is_failure:
-                return r[FlextPluginModels.Plugin.LoadData].fail(
+                return r[m.Plugin.LoadData].fail(
                     f"Failed to reload plugin: {load_result.error}",
                 )
             self.logger.info("Reloaded plugin: %s", plugin_name)
@@ -196,7 +196,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
-            return r[FlextPluginModels.Plugin.LoadData].fail(f"Reload error: {e!s}")
+            return r[m.Plugin.LoadData].fail(f"Reload error: {e!s}")
 
     def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin by name.
@@ -276,7 +276,7 @@ class FlextPluginLoader:
             """Initialize file loader with logger."""
             self.logger = logger
 
-        def load(self, path: Path) -> FlextPluginModels.Plugin.LoadData | None:
+        def load(self, path: Path) -> m.Plugin.LoadData | None:
             """Load a single file plugin safely.
 
             Uses importlib.util.spec_from_file_location for safe loading
@@ -297,7 +297,7 @@ class FlextPluginLoader:
                     return None
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                return FlextPluginModels.Plugin.LoadData(
+                return m.Plugin.LoadData(
                     name=path.stem,
                     version=getattr(
                         module,
@@ -329,7 +329,7 @@ class FlextPluginLoader:
             """Initialize directory loader with logger."""
             self.logger = logger
 
-        def load(self, path: Path) -> FlextPluginModels.Plugin.LoadData | None:
+        def load(self, path: Path) -> m.Plugin.LoadData | None:
             """Load a directory-based plugin.
 
             Searches for __init__.py or main.py entry files.
@@ -352,7 +352,7 @@ class FlextPluginLoader:
                     return None
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                return FlextPluginModels.Plugin.LoadData(
+                return m.Plugin.LoadData(
                     name=path.name,
                     version=getattr(
                         module,
