@@ -46,7 +46,7 @@ class TestFlextPluginDiscovery:
         result = discovery.discover_plugins(paths=[])
         assert result.is_success
         assert result.value is not None
-        assert len(result.value) == 0
+        assert not result.value
 
     def test_discover_plugins_nonexistent_path(
         self, discovery: FlextPluginDiscovery

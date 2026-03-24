@@ -29,7 +29,7 @@ class TestFlextPluginConstants:
             FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS > 0, eq=True
         )
         tm.that(
-            len(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS) > 0, eq=True
+            FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, eq=True
         )
         tm.that(
             FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH > 0, eq=True
@@ -43,23 +43,23 @@ class TestFlextPluginConstants:
 
     def test_types_constants(self) -> None:
         """Test plugin type constants."""
-        tm.that(len(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES) > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES, eq=True)
         tm.that(
-            len(FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES) > 0,
+            FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES,
             eq=True,
         )
         tm.that(
-            len(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES) > 0, eq=True
+            FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES, eq=True
         )
         tm.that(
-            len(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES) > 0, eq=True
+            FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES, eq=True
         )
-        tm.that(len(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES) > 0, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES, eq=True)
 
     def test_lifecycle_constants(self) -> None:
         """Test lifecycle-related constants."""
         tm.that(
-            len(FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES) > 0,
+            FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES,
             eq=True,
         )
         tm.that(FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS > 0, eq=True)
@@ -102,7 +102,7 @@ class TestFlextPluginConstants:
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
         tm.that(
-            len(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS) > 0, eq=True
+            FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, eq=True
         )
         tm.that(
             FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, eq=True

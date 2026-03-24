@@ -239,7 +239,7 @@ class TestFlextPluginServiceWithRealAdapters:
             str(temp_plugin_dir)
         ])
         assert discover_result.is_success
-        assert len(discover_result.value) > 0
+        assert discover_result.value
         tap_plugin: FlextPluginModels.Plugin.Plugin | None = None
         for plugin in discover_result.value:
             if plugin.name == "tap_database":
@@ -364,7 +364,7 @@ class TestFlextPluginServiceReal:
         else:
             assert "Plugin discovery not available" in str(result.error)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
-        assert len(plugin_files) > 0
+        assert plugin_files
 
     def test_load_plugin_with_real_plugin_entity(
         self, service: FlextPluginService
@@ -652,7 +652,7 @@ class TestFlextPluginDiscoveryReal:
         """Test validate_plugin with DiscoveryData from real files."""
         result = discovery_service.discover_plugins([str(temp_plugin_dir)])
         assert result.is_success
-        assert len(result.value) > 0
+        assert result.value
         plugin_data = result.value[0]
         validation_result = discovery_service.validate_plugin(plugin_data)
         assert validation_result.is_success

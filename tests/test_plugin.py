@@ -124,7 +124,7 @@ class TestPluginRegistry:
         """Test registry initialization."""
         plugins_result = registry.list_plugins()
         assert plugins_result.is_success
-        assert len(plugins_result.value) == 0
+        assert not plugins_result.value
 
     def test_register_plugin_success(
         self,
