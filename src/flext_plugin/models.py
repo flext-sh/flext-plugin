@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
@@ -590,7 +590,7 @@ class FlextPluginModels(FlextModels):
             ]
             entry_point: Annotated[str, Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of plugin dependencies",
@@ -645,14 +645,14 @@ class FlextPluginModels(FlextModels):
 
             is_valid: Annotated[bool, Field(description="Whether validation passed")]
             errors: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of validation errors",
                 ),
             ]
             warnings: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of validation warnings",
@@ -685,14 +685,14 @@ class FlextPluginModels(FlextModels):
                 Field(description="Whether plugin passed security checks"),
             ]
             violations: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of security violations",
                 ),
             ]
             warnings: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of security warnings",
@@ -775,7 +775,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             allowed_modules: Annotated[
-                t.StrSequence,
+                Sequence[str],
                 Field(
                     description="Allowed import modules",
                 ),

@@ -51,7 +51,7 @@ class FlextPluginLoader:
             self.DirectoryPluginLoader(self.logger).load,
         ]
 
-    def get_loaded_plugins(self) -> t.StrSequence:
+    def get_loaded_plugins(self) -> Sequence[str]:
         """Get list of currently loaded plugin names.
 
         Returns:

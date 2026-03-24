@@ -244,7 +244,7 @@ class FlextPluginImplementations:
                     self._entity.record_error(str(e))
                 return r[t.NormalizedValue].fail(f"Operation failed: {e!s}")
 
-        def get_supported_operations(self) -> t.StrSequence:
+        def get_supported_operations(self) -> Sequence[str]:
             """Get list of supported operations.
 
             Returns:
@@ -628,7 +628,7 @@ class FlextPluginImplementations:
             )
             self.logger = FlextLogger("plugin.loader")
 
-        def discover_plugins(self, search_path: str) -> r[t.StrSequence]:
+        def discover_plugins(self, search_path: str) -> r[Sequence[str]]:
             """Discover available plugins in path.
 
             Args:
@@ -641,7 +641,7 @@ class FlextPluginImplementations:
             try:
                 self.logger.info("Discovering plugins in %s", search_path)
                 discovered = [f"{search_path}/plugin1", f"{search_path}/plugin2"]
-                return r[t.StrSequence].ok(discovered)
+                return r[Sequence[str]].ok(discovered)
             except (
                 ValueError,
                 TypeError,
@@ -652,7 +652,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Plugin discovery failed in %s", search_path)
-                return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
+                return r[Sequence[str]].fail(f"Discovery failed: {e!s}")
 
         def load_plugin(self, plugin_path: str | Path) -> r[t.NormalizedValue]:
             """Load plugin from path.

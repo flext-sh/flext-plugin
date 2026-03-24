@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from collections.abc import Generator, Mapping
+from collections.abc import Generator, Mapping, Sequence
 from pathlib import Path
 
 import pytest
@@ -159,7 +159,7 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 @pytest.fixture
 def real_plugin_configs() -> Mapping[
     str,
-    Mapping[str, t.ContainerMapping | t.StrSequence | t.NormalizedValue],
+    Mapping[str, t.ContainerMapping | Sequence[str] | t.NormalizedValue],
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
@@ -238,7 +238,7 @@ def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
 
 
 @pytest.fixture
-def real_plugin_dependencies() -> Mapping[str, t.StrSequence]:
+def real_plugin_dependencies() -> Mapping[str, Sequence[str]]:
     """REAL plugin dependency graph."""
     return {
         "tap_database": [],

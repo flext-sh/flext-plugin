@@ -72,7 +72,7 @@ class TestFlextPluginHandlers:
     async def test_handler_priorities(self) -> None:
         """Test handler priority ordering."""
         handlers = FlextPluginHandlers()
-        results: t.StrSequence = []
+        results: Sequence[str] = []
 
         async def handler_low(
             event_data: t.ContainerMapping,
@@ -97,7 +97,7 @@ class TestFlextPluginHandlers:
     async def test_multiple_handlers_same_event(self) -> None:
         """Test multiple handlers for the same event."""
         handlers = FlextPluginHandlers()
-        results: t.StrSequence = []
+        results: Sequence[str] = []
 
         async def handler1(
             event_data: t.ContainerMapping,

@@ -32,7 +32,7 @@ class FlextPluginApi:
         )
 
     def discover_plugins(
-        self, paths: t.StrSequence
+        self, paths: Sequence[str]
     ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
@@ -82,7 +82,7 @@ class FlextPluginApi:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
-    def start_hot_reload(self, paths: t.StrSequence) -> r[bool]:
+    def start_hot_reload(self, paths: Sequence[str]) -> r[bool]:
         """Start hot reload monitoring for the given paths."""
         return self.platform.start_hot_reload(paths)
 
