@@ -211,10 +211,10 @@ class FlextPluginPlatform:
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: Mapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
-            default_factory=lambda: Mapping[str, FlextPluginPlatform.Plugin](),
+            default_factory=dict,
         )
         _executions: Mapping[str, FlextPluginPlatform.PluginExecution] = PrivateAttr(
-            default_factory=lambda: Mapping[str, FlextPluginPlatform.PluginExecution](),
+            default_factory=dict,
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
         _discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None = PrivateAttr(
