@@ -134,7 +134,7 @@ class TestFlextPluginModels:
         tm.that(result.success is True, eq=True)
         tm.that(result.data, eq={"output": "result"})
         tm.that(not result.error, eq=True)
-        tm.that(result.execution_time_ms, eq=pytest.approx(1500.0))
+        assert result.execution_time_ms == pytest.approx(1500.0)
 
     def test_execution_result_failure(self) -> None:
         """Test ExecutionResult failure case."""

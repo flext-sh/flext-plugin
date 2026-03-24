@@ -57,7 +57,7 @@ class FlextPluginTypes(FlextTypes):
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = Sequence[str]
+        type StringList = t.StrSequence
         type StringSet = set[str]
         type StringDict = t.StrMapping
         type IntDict = Mapping[str, int]

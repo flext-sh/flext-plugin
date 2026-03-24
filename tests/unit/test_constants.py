@@ -24,29 +24,29 @@ class TestFlextPluginConstants:
         """Test discovery-related constants."""
         tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, gt=0)
         tm.that(FlextPluginConstants.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, gt=0)
-        tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, none=False)
         tm.that(FlextPluginConstants.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(FlextPluginConstants.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH, gt=0)
         tm.that(
-            FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN, eq=True
+            FlextPluginConstants.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN, empty=False
         )
 
     def test_types_constants(self) -> None:
         """Test plugin type constants."""
-        tm.that(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Types.SINGER_PLUGIN_TYPES, none=False)
         tm.that(
             FlextPluginConstants.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES,
-            eq=True,
+            none=False,
         )
-        tm.that(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Types.INTEGRATION_PLUGIN_TYPES, none=False)
+        tm.that(FlextPluginConstants.Plugin.Types.UTILITY_PLUGIN_TYPES, none=False)
+        tm.that(FlextPluginConstants.Plugin.Types.ALL_PLUGIN_TYPES, none=False)
 
     def test_lifecycle_constants(self) -> None:
         """Test lifecycle-related constants."""
         tm.that(
             FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES,
-            eq=True,
+            none=False,
         )
         tm.that(FlextPluginConstants.Plugin.Lifecycle.MAX_PLUGIN_WORKERS, gt=0)
         tm.that(FlextPluginConstants.Plugin.Lifecycle.MIN_PLUGIN_WORKERS, gte=0)
@@ -60,34 +60,34 @@ class TestFlextPluginConstants:
 
     def test_files_constants(self) -> None:
         """Test file-related constants."""
-        tm.that(FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR, eq=True)
-        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR, eq=True)
+        tm.that(FlextPluginConstants.Plugin.Files.PYTHON_EXTENSION, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.YAML_CONFIG_EXTENSION, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.JSON_CONFIG_EXTENSION, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.TOML_CONFIG_EXTENSION, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_PLUGIN_DIR, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CACHE_DIR, empty=False)
+        tm.that(FlextPluginConstants.Plugin.Files.DEFAULT_CONFIG_DIR, empty=False)
 
     def test_plugin_messages_constants(self) -> None:
         """Test plugin message constants."""
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, empty=False)
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS, eq=True
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS, empty=False
         )
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, eq=True)
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, empty=False)
+        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, empty=False)
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS, eq=True
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS, empty=False
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS, eq=True
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS, empty=False
         )
 
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
-        tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, eq=True)
+        tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, none=False)
         tm.that(
-            FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, eq=True
+            FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, empty=False
         )
         tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT, gt=0)
 
@@ -175,7 +175,7 @@ class TestFlextPluginConstants:
     def test_lifecycle_states_consistency(self) -> None:
         """Test that lifecycle states are consistent."""
         states = FlextPluginConstants.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES
-        expected_states = {
+        expected_states: frozenset[str] = frozenset({
             "unknown",
             "discovered",
             "loaded",
@@ -186,6 +186,6 @@ class TestFlextPluginConstants:
             "disabled",
             "healthy",
             "unhealthy",
-        }
+        })
         tm.that(states, eq=expected_states)
         tm.that(len(states), eq=10)

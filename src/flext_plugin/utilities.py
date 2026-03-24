@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Mapping, Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType

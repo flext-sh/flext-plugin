@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Sequence, Generator, Mapping
 from pathlib import Path
 
 import pytest
