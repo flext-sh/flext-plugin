@@ -281,7 +281,7 @@ class FlextPluginHandlers:
         """
         try:
             if event_type not in self._handlers:
-                self._handlers[event_type] = []
+                self._handlers[event_type] = list[t.Handlers.HandlerInfo]()
             handler_info = t.Handlers.HandlerInfo(handler=handler, priority=priority)
             self._handlers[event_type].append(handler_info)
 
