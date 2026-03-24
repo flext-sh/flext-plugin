@@ -1,23 +1,20 @@
 # [MANAGED] FLEXT pyproject standardization
 # Sections with [MANAGED] are enforced by flext_infra.deps.modernizer.
+# Run `make mod` to regenerate all managed pyproject sections.
 # Sections with [CUSTOM] are project-specific extension points.
-# Sections with [AUTO] are derived from workspace layout and dependencies.
+
 # [MANAGED] build system
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = [ "poetry-core>=2" ]
 
+[dependency-groups]
+dev = [  ]
+
 # [CUSTOM] project metadata
 [project]
-name = "flext-plugin"
-version = "0.12.0-dev"
-description = "FLEXT Plugin - Plugin System for FLEXT Platform"
-readme = "README.md"
-keywords = [ "architecture", "enterprise", "extensions", "flext", "plugins", "typed" ]
-license = "MIT"
-maintainers = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
+
 authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
-requires-python = ">=3.13,<3.14"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Development Status :: 5 - Production/Stable",
@@ -38,9 +35,20 @@ dependencies = [
   "pydantic>=2.12.3",
   "watchdog>=6",
 ]
+description = "FLEXT Plugin - Plugin System for FLEXT Platform"
+keywords = [ "architecture", "enterprise", "extensions", "flext", "plugins", "typed" ]
+license = "MIT"
+maintainers = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
+name = "flext-plugin"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+scripts = {"flext-plugin" = "flext_plugin.cli:main"}
+urls = {Documentation = "https://github.com/flext-sh/flext/blob/main/README.md", Homepage = "https://github.com/flext-sh/flext", Repository = "https://github.com/flext-sh/flext"}
+version = "0.12.0-dev"
+
 # [MANAGED] consolidated development dependencies
-# [AUTO] merged from dev/docs/security/test/typings
-optional-dependencies.dev = [
+[project.optional-dependencies]
+dev = [
   "autoflake>=2.3.1",
   "bandit>=1.8",
   "black>=25.1",
@@ -100,13 +108,13 @@ optional-dependencies.dev = [
   "types-toml>=0.10.8.20240310",
   "vulture>=2.13",
 ]
-urls = {Documentation = "https://github.com/flext-sh/flext/blob/main/README.md", Homepage = "https://github.com/flext-sh/flext", Repository = "https://github.com/flext-sh/flext"}
-scripts = {"flext-plugin" = "flext_plugin.cli:main"}
 
-[dependency-groups]
-dev = [  ]
-
-[tool.poetry]
+# [MANAGED] coverage
+[tool.coverage.report]
+fail_under = 15
+precision = 2
+show_missing = true
+skip_covered = false
 
 # [MANAGED] deptry
 [tool.deptry]
@@ -117,22 +125,46 @@ pep621_dev_dependency_groups = [
   "dev",
 ]
 
+# [MANAGED] mypy
+[tool.mypy]
+disable_error_code = [
+  "prop-decorator",
+]
+explicit_package_bases = true
+ignore_missing_imports = true
+mypy_path = [ ".", "../typings", "../typings/generated", "src" ]
+namespace_packages = true
+plugins = [
+  "pydantic.mypy",
+]
+python_version = "3.13"
+
+[tool.poetry]
+
+# [MANAGED] pydantic-mypy
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+# [MANAGED] pyrefly
 [tool.pyrefly]
 ignore-errors-in-generated-code = true
 project-excludes = [
   "**/*_pb2*.py",
   "**/*_pb2_grpc*.py",
+  "**/.venv/**",
+  "**/typings/**",
+  "**/vendor/**",
+  "../typings/**",
+  ".venv/**",
+  "typings/**",
+  "vendor/**",
 ]
 python-version = "3.13"
 search-path = [
   ".",
-  "../flext-core/examples",
-  "../flext-core/src",
-  "../flext-core/tests",
-  "docs",
-  "examples",
   "src",
-  "tests",
 ]
 
 [tool.pyrefly.errors]
@@ -151,60 +183,27 @@ unannotated-attribute = true
 unannotated-parameter = true
 unannotated-return = true
 
-# [MANAGED] mypy
-[tool.mypy]
-disable_error_code = [
-  "prop-decorator",
-]
-explicit_package_bases = true
-ignore_missing_imports = true
-mypy_path = [
-  ".",
-  "../flext-core/examples",
-  "../flext-core/src",
-  "../flext-core/tests",
-  "../typings",
-  "../typings/generated",
-  "docs",
-  "examples",
-  "src",
-  "tests",
-]
-namespace_packages = true
-plugins = [
-  "pydantic.mypy",
-]
-python_version = "3.13"
-
-# [MANAGED] pydantic-mypy
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-
-# [MANAGED] tomlsort
-[tool.tomlsort]
-all = true
-in_place = true
-sort_first = [
-  "build-system",
-  "dependency-groups",
-  "project",
-  "tool",
-]
-
-# [MANAGED] yamlfix
-[tool.yamlfix]
-explicit_start = false
-line_length = 88
-preserve_quotes = true
-section_whitelines = 1
-whitelines = 1
-
 # [MANAGED] pyright
 [tool.pyright]
-extraPaths = [".", "../flext-core/examples", "../flext-core/src", "../flext-core/tests", "../typings", "../typings/generated", "docs", "examples", "src", "tests", "../flext-tests/src", "../flext-infra/src"]
+exclude = [
+  "**/.*",
+  "**/__pycache__",
+  "**/node_modules",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  ".venv",
+]
+extraPaths = [
+  ".",
+  "../typings",
+  "../typings/generated",
+  "src",
+]
+ignore = [
+  "../typings",
+  "../typings/generated",
+]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
 reportCallIssue = "none"
@@ -226,20 +225,45 @@ reportUnusedVariable = "error"
 typeCheckingMode = "strict"
 
 [[tool.pyright.executionEnvironments]]
-reportPrivateUsage = "none"
-root = "docs"
-
-[[tool.pyright.executionEnvironments]]
-reportPrivateUsage = "none"
-root = "examples"
-
-[[tool.pyright.executionEnvironments]]
+extraPaths = [ "src" ]
 reportPrivateUsage = "error"
 root = "src"
 
 [[tool.pyright.executionEnvironments]]
+extraPaths = [ ".", "src" ]
 reportPrivateUsage = "none"
 root = "tests"
+
+[[tool.pyright.executionEnvironments]]
+extraPaths = [ ".", "src" ]
+reportPrivateUsage = "none"
+root = "examples"
+
+# [MANAGED] pytest
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-markers",
+]
+markers = [
+  "docker: tests requiring Docker",
+  "e2e: end-to-end integration tests",
+  "edge_cases: edge case tests",
+  "integration: integration tests",
+  "performance: performance and benchmark tests",
+  "resilience: resilience tests",
+  "slow: slow-running tests",
+  "stress: stress tests",
+  "unit: unit tests",
+]
+minversion = "8.0"
+python_classes = [
+  "Test*",
+]
+python_files = [
+  "*_test.py",
+  "*_tests.py",
+  "test_*.py",
+]
 
 # [MANAGED] ruff
 [tool.ruff]
@@ -347,6 +371,7 @@ known-first-party = [
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
+
 "**/.vulture_whitelist.py" = [
   "ALL",
 ]
@@ -461,6 +486,7 @@ split-on-trailing-comma = true
   "D102",
   "D103",
   "D104",
+  "D106",
   "D107",
   "EM102",
   "F822",
@@ -520,6 +546,8 @@ split-on-trailing-comma = true
 ]
 "**/*utilities*" = [
   "C901",
+  "E402",
+  "PLC2801",
   "PLW1510",
   "S404",
   "S603",
@@ -529,11 +557,15 @@ split-on-trailing-comma = true
   "D107",
   "F822",
   "N999",
+  "PLC2701",
   "RUF067",
 ]
 "**/_utilities/parser.py" = [
   "ARG004",
   "FBT001",
+]
+"**/alert_manager*.py" = [
+  "S310",
 ]
 "**/config.py" = [
   "ANN401",
@@ -547,6 +579,10 @@ split-on-trailing-comma = true
   "ANN401",
   "SLF001",
 ]
+"**/external_command*.py" = [
+  "S404",
+  "S603",
+]
 "**/file_tools.py" = [
   "D102",
 ]
@@ -554,8 +590,14 @@ split-on-trailing-comma = true
   "S105",
 ]
 "**/models.py" = [
+  "PLC0415",
   "PLC2801",
   "S102",
+  "S105",
+]
+"**/orchestrator*.py" = [
+  "S404",
+  "S603",
 ]
 "**/output.py" = [
   "FBT001",
@@ -568,6 +610,9 @@ split-on-trailing-comma = true
   "S607",
   "TID252",
 ]
+"**/protocol_impls/*.py" = [
+  "SLF001",
+]
 "**/providers/*.py" = [
   "S106",
   "S107",
@@ -578,6 +623,8 @@ split-on-trailing-comma = true
 ]
 "**/settings.py" = [
   "ANN401",
+  "PLC0415",
+  "S105",
 ]
 "**/singer/*.py" = [
   "S404",
@@ -608,36 +655,28 @@ split-on-trailing-comma = true
 "**/typings.py" = [
   "RUF036",
 ]
-
-[tool.pytest.ini_options]
-addopts = [
-  "--strict-markers",
-]
-markers = [
-  "docker: tests requiring Docker",
-  "e2e: end-to-end integration tests",
-  "edge_cases: edge case tests",
-  "integration: integration tests",
-  "performance: performance and benchmark tests",
-  "resilience: resilience tests",
-  "slow: slow-running tests",
-  "stress: stress tests",
-  "unit: unit tests",
-]
-minversion = "8.0"
-python_classes = [
-  "Test*",
-]
-python_files = [
-  "*_test.py",
-  "*_tests.py",
-  "test_*.py",
+"**/workspace/*.py" = [
+  "PLC0415",
+  "S404",
+  "S603",
+  "S607",
 ]
 
-# [MANAGED] pyrefly
+# [MANAGED] tomlsort
+[tool.tomlsort]
+all = true
+in_place = true
+sort_first = [
+  "build-system",
+  "dependency-groups",
+  "project",
+  "tool",
+]
 
-[tool.coverage.report]
-fail_under = 15
-precision = 2
-show_missing = true
-skip_covered = false
+# [MANAGED] yamlfix
+[tool.yamlfix]
+explicit_start = false
+line_length = 88
+preserve_quotes = true
+section_whitelines = 1
+whitelines = 1
