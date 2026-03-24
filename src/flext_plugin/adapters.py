@@ -19,7 +19,7 @@ from flext_core import FlextLogger, T, r, t
 from pydantic import TypeAdapter
 
 from flext_plugin.constants import FlextPluginConstants as c
-from flext_plugin.discovery import discover_python_plugins_in_directory
+from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.models import FlextPluginModels as m
 from flext_plugin.protocols import FlextPluginProtocols as p
 
@@ -128,7 +128,7 @@ class FlextPluginAdapters:
 
         def _discover_directory(self, path: Path) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
-            return discover_python_plugins_in_directory(
+            return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,
                 self._discover_single_file,
                 self.logger,

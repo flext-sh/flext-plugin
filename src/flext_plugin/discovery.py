@@ -21,31 +21,6 @@ from flext_plugin import c, m, p, t
 TDiscovery = TypeVar("TDiscovery")
 
 
-def discover_python_plugins_in_directory[TDiscovery](
-    path: Path,
-    discover_file: Callable[[Path], TDiscovery | None],
-    logger: FlextLogger,
-) -> Sequence[TDiscovery]:
-    discovered: MutableSequence[TDiscovery] = []
-    try:
-        for item in path.iterdir():
-            if (
-                item.is_file()
-                and item.suffix == ".py"
-                and (not item.name.startswith("_"))
-            ):
-                data = discover_file(item)
-                if data:
-                    discovered.append(data)
-            elif item.is_dir() and (not item.name.startswith("__")):
-                discovered.extend(
-                    discover_python_plugins_in_directory(item, discover_file, logger),
-                )
-    except (OSError, PermissionError):
-        logger.exception("Failed to discover directory %s", path)
-    return discovered
-
-
 class FlextPluginDiscovery:
     """Plugin discovery using strategy pattern.
 
@@ -60,6 +35,34 @@ class FlextPluginDiscovery:
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),
         ]
+
+    @staticmethod
+    def discover_python_plugins_in_directory[TDiscovery](
+        path: Path,
+        discover_file: Callable[[Path], TDiscovery | None],
+        logger: FlextLogger,
+    ) -> Sequence[TDiscovery]:
+        """Discover Python plugins recursively in a directory."""
+        discovered: MutableSequence[TDiscovery] = []
+        try:
+            for item in path.iterdir():
+                if (
+                    item.is_file()
+                    and item.suffix == ".py"
+                    and (not item.name.startswith("_"))
+                ):
+                    data = discover_file(item)
+                    if data:
+                        discovered.append(data)
+                elif item.is_dir() and (not item.name.startswith("__")):
+                    discovered.extend(
+                        FlextPluginDiscovery.discover_python_plugins_in_directory(
+                            item, discover_file, logger
+                        ),
+                    )
+        except (OSError, PermissionError):
+            logger.exception("Failed to discover directory %s", path)
+        return discovered
 
     def discover_plugin(
         self,
@@ -225,7 +228,7 @@ class FlextPluginDiscovery:
             path: Path,
         ) -> Sequence[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
-            return discover_python_plugins_in_directory(
+            return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,
                 self._discover_file,
                 self.logger,

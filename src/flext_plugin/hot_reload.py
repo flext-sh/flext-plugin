@@ -20,7 +20,7 @@ from watchdog.observers.api import BaseObserver
 from flext_plugin import m, p, t
 
 
-class FileChangeHandler(FileSystemEventHandler):
+class FlextPluginFileChangeHandler(FileSystemEventHandler):
     """Watchdog event handler for file change detection."""
 
     def __init__(
@@ -381,7 +381,7 @@ class FlextPluginHotReload:
                 return r[bool].fail("No valid paths to watch")
             self._watched_paths = watched_paths
             self._is_watching = True
-            self._event_handler = FileChangeHandler(
+            self._event_handler = FlextPluginFileChangeHandler(
                 self._handle_file_change,
                 self._watched_paths,
                 self.logger,
