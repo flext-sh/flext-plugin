@@ -245,7 +245,7 @@ class FlextPluginHotReload:
         """
         return self._reload_history[-limit:] if limit > 0 else self._reload_history
 
-    def get_watched_paths(self) -> Sequence[str]:
+    def get_watched_paths(self) -> t.StrSequence:
         """Get list of currently watched paths.
 
         Returns:
@@ -357,7 +357,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to remove watch path: %s", path)
             return r[bool].fail(f"Remove watch path error: {e!s}")
 
-    def start_watching(self, paths: Sequence[str]) -> r[bool]:
+    def start_watching(self, paths: t.StrSequence) -> r[bool]:
         """Start watching the given paths for changes.
 
         Args:

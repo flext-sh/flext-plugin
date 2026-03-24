@@ -70,24 +70,34 @@ class TestFlextPluginConstants:
 
     def test_plugin_messages_constants(self) -> None:
         """Test plugin message constants."""
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, empty=False)
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS, empty=False
-        )
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, empty=False)
-        tm.that(FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, empty=False)
-        tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS, empty=False
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_NOT_FOUND, empty=False
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS, empty=False
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ALREADY_EXISTS,
+            empty=False,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOAD_FAILED, empty=False
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_INVALID_NAME, empty=False
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_LOADED_SUCCESS,
+            empty=False,
+        )
+        tm.that(
+            FlextPluginConstants.Plugin.PluginMessages.PLUGIN_ACTIVATED_SUCCESS,
+            empty=False,
         )
 
     def test_plugin_security_constants(self) -> None:
         """Test plugin security constants."""
         tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_LEVELS, none=False)
         tm.that(
-            FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL, empty=False
+            FlextPluginConstants.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL,
+            empty=False,
         )
         tm.that(FlextPluginConstants.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT, gt=0)
 

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r, t
@@ -45,7 +45,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginLoader(Protocol):
             """Protocol for plugin loading operations."""
 
-            def get_loaded_plugins(self) -> Sequence[str]:
+            def get_loaded_plugins(self) -> t.StrSequence:
                 """Get list of all currently loaded plugin names."""
                 ...
 
@@ -77,7 +77,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def discover_plugins(
                 self,
-                paths: Sequence[str],
+                paths: t.StrSequence,
             ) -> r[Sequence[t.ContainerMapping]]:
                 """Discover plugins at the given paths."""
                 ...
@@ -137,7 +137,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get the status of an execution."""
                 ...
 
-            def list_running_executions(self) -> Sequence[str]:
+            def list_running_executions(self) -> t.StrSequence:
                 """List all currently running execution IDs."""
                 ...
 
@@ -152,7 +152,7 @@ class FlextPluginProtocols(FlextProtocols):
             def check_permissions(
                 self,
                 _plugin_name: str,
-                _permissions: Sequence[str],
+                _permissions: t.StrSequence,
             ) -> r[bool]:
                 """Check if plugin has specified permissions."""
                 ...
@@ -176,7 +176,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginHotReload(Protocol):
             """Protocol for hot reload operations."""
 
-            def get_watched_paths(self) -> Sequence[str]:
+            def get_watched_paths(self) -> t.StrSequence:
                 """Get list of currently watched paths."""
                 ...
 
@@ -188,7 +188,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Reload a plugin."""
                 ...
 
-            def start_watching(self, paths: Sequence[str]) -> r[bool]:
+            def start_watching(self, paths: t.StrSequence) -> r[bool]:
                 """Start watching paths for plugin changes."""
                 ...
 
@@ -274,7 +274,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Initialize a plugin."""
                 ...
 
-            def list_plugin_statuses(self) -> r[Mapping[str, str]]:
+            def list_plugin_statuses(self) -> r[t.StrMapping]:
                 """Get status of all plugins."""
                 ...
 
@@ -309,7 +309,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Delete stored plugin."""
                 ...
 
-            def list_stored_plugins(self) -> r[Sequence[str]]:
+            def list_stored_plugins(self) -> r[t.StrSequence]:
                 """List all stored plugin names."""
                 ...
 
@@ -380,7 +380,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def discover(
                 self,
-                paths: Sequence[str],
+                paths: t.StrSequence,
             ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...

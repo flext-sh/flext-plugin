@@ -16,7 +16,7 @@ from typing import TypeVar
 
 from flext_core import FlextLogger, r
 
-from flext_plugin import FlextPluginModels, c, p
+from flext_plugin import FlextPluginModels, c, p, t
 
 TDiscovery = TypeVar("TDiscovery")
 
@@ -108,7 +108,7 @@ class FlextPluginDiscovery:
 
     def discover_plugins(
         self,
-        paths: Sequence[str],
+        paths: t.StrSequence,
     ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
@@ -184,7 +184,7 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            paths: Sequence[str],
+            paths: t.StrSequence,
         ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
@@ -260,7 +260,7 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            paths: Sequence[str],
+            paths: t.StrSequence,
         ) -> r[Sequence[FlextPluginModels.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             _ = paths

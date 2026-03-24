@@ -87,7 +87,7 @@ class FlextPluginAdapters:
         @override
         def discover_plugins(
             self,
-            paths: Sequence[str],
+            paths: t.StrSequence,
         ) -> r[Sequence[t.ContainerMapping]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
@@ -110,7 +110,7 @@ class FlextPluginAdapters:
             return r[bool].ok(value=True)
 
         def _discover_all(
-            self, paths: Sequence[str]
+            self, paths: t.StrSequence
         ) -> Sequence[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered: Sequence[m.Plugin.DiscoveryData] = []
@@ -187,7 +187,7 @@ class FlextPluginAdapters:
             self._loaded_plugins: Mapping[str, ModuleType] = {}
 
         @override
-        def get_loaded_plugins(self) -> Sequence[str]:
+        def get_loaded_plugins(self) -> t.StrSequence:
             """Get list of loaded plugins."""
             return list(self._loaded_plugins.keys())
 
@@ -281,7 +281,7 @@ class FlextPluginAdapters:
             return r.ok(c.Plugin.Execution.STATE_COMPLETED)
 
         @override
-        def list_running_executions(self) -> Sequence[str]:
+        def list_running_executions(self) -> t.StrSequence:
             """List running executions."""
             return []
 
@@ -297,7 +297,7 @@ class FlextPluginAdapters:
         def check_permissions(
             self,
             _plugin_name: str,
-            _permissions: Sequence[str],
+            _permissions: t.StrSequence,
         ) -> r[bool]:
             """Check plugin permissions."""
             return r.ok(True)

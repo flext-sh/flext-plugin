@@ -156,7 +156,7 @@ class FlextPluginPlatform:
             category: str = "plugins",
             *,
             scope: str = "class",
-        ) -> r[Sequence[str]]:
+        ) -> r[t.StrSequence]:
             """List all registered plugin names.
 
             Args:
@@ -325,7 +325,7 @@ class FlextPluginPlatform:
 
         def discover_plugins(
             self,
-            paths: Sequence[str],
+            paths: t.StrSequence,
         ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Discover plugins with railway composition."""
 
@@ -529,7 +529,7 @@ class FlextPluginPlatform:
                 .map(add_to_plugins_result)
             )
 
-        def start_hot_reload(self, paths: Sequence[str]) -> r[bool]:
+        def start_hot_reload(self, paths: t.StrSequence) -> r[bool]:
             """Start hot reload for given paths."""
             _ = paths
             return r.ok(True)

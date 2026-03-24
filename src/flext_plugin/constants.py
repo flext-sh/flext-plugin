@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
-
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
@@ -20,7 +19,7 @@ class FlextPluginConstants(FlextConstants):
 
     Usage:
     ```python
-    from flext_plugin import FlextPluginConstants
+    from flext_plugin import FlextPluginConstants, t
 
     timeout = FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS
     plugin_type = FlextPluginConstants.Plugin.PluginType.TAP

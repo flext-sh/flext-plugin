@@ -146,7 +146,7 @@ class FlextPluginService(x):
 
     def discover_and_register_plugins(
         self,
-        paths: Sequence[str],
+        paths: t.StrSequence,
     ) -> r[Sequence[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins and register them in the service.
 
@@ -252,7 +252,7 @@ class FlextPluginService(x):
 
     def discover_plugins(
         self,
-        paths: Sequence[str],
+        paths: t.StrSequence,
     ) -> r[Sequence[FlextPluginModels.Plugin.Plugin]]:
         """Discover plugins from the specified paths.
 

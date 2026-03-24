@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Mapping, Callable, Sequence
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -26,8 +26,8 @@ from flext_plugin import FlextPluginModels, c, t
 class FlextPluginUtilities(FlextUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
-    PLUGIN_EXTENSIONS: ClassVar[Sequence[str]] = [".py", ".yaml", ".yml", ".json"]
-    PLUGIN_MANIFESTS: ClassVar[Sequence[str]] = [
+    PLUGIN_EXTENSIONS: ClassVar[t.StrSequence] = [".py", ".yaml", ".yml", ".json"]
+    PLUGIN_MANIFESTS: ClassVar[t.StrSequence] = [
         "plugin.yaml",
         "plugin.yml",
         "plugin.json",
@@ -295,7 +295,7 @@ class FlextPluginUtilities(FlextUtilities):
                     if u.is_dict_like(last_modified_raw)
                     else {}
                 )
-                changed_files: Sequence[str] = []
+                changed_files: t.StrSequence = []
                 for file_path in watch_path.rglob("*"):
                     if (
                         file_path.is_file()
@@ -473,8 +473,8 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 security_report: t.ContainerMapping = {
                     "safe": True,
-                    "violations": Sequence[str](),
-                    "warnings": Sequence[str](),
+                    "violations": t.StrSequence(),
+                    "warnings": t.StrSequence(),
                     "analysis_time": datetime.now(UTC).isoformat(),
                 }
                 for (
