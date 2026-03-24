@@ -735,8 +735,12 @@ class FlextPluginUtilities(FlextUtilities):
             def _execute_plugin_function() -> t.NormalizedValue:
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
-                result: t.NormalizedValue = plugin_function(*execution_args, **execution_kwargs)
-                return result
+                raw_result: object = plugin_function(*execution_args, **execution_kwargs)
+                if isinstance(raw_result, (str, int, float, bool)):
+                    return raw_result
+                if raw_result is None:
+                    return None
+                return str(raw_result)
 
             return FlextPluginUtilities.try_(
                 _execute_plugin_function,
@@ -1001,8 +1005,11 @@ class FlextPluginUtilities(FlextUtilities):
                     _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
                         path.parent,
                     )
-                mutable_registry = dict(registry)
-                mutable_registry["last_updated"] = datetime.now(UTC).isoformat()
+                _validated: Mapping[str, t.ContainerValue] = _CONTAINER_MAP_ADAPTER.validate_python(registry)
+                mutable_registry: Mapping[str, t.ContainerValue] = {
+                    **_validated,
+                    "last_updated": datetime.now(UTC).isoformat(),
+                }
                 _ = path.write_text(
                     _CONTAINER_MAP_ADAPTER.dump_json(mutable_registry, indent=2).decode(
                         "utf-8"

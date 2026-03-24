@@ -24,8 +24,8 @@ from flext_plugin import (
     u,
 )
 
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
-    t.ContainerMapping,
+_CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
+    Mapping[str, t.ContainerValue],
 )
 
 
@@ -234,7 +234,7 @@ class FlextPluginPlatform:
 
         @staticmethod
         def _to_general_mapping(
-            value: t.NormalizedValue,
+            value: t.RuntimeData,
         ) -> t.ContainerMapping:
             """Convert mapping-like values to a typed dict."""
             if not u.is_dict_like(value):
@@ -359,7 +359,7 @@ class FlextPluginPlatform:
                             "discovery_method",
                             "file_system",
                         )
-                        metadata = getattr(item, "metadata", {})
+                        metadata: t.NormalizedValue = getattr(item, "metadata", {})
                         if u.is_dict_like(metadata):
                             plugin_dicts.append({
                                 "name": str(name),
@@ -562,7 +562,7 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: t.NormalizedValue | None,
+            protocol: FlextPluginProtocols.Plugin.PluginDiscovery | FlextPluginProtocols.Plugin.PluginLoader | FlextPluginProtocols.Plugin.PluginExecution | None,
             name: str,
         ) -> r[bool]:
             """Protocol validation helper."""

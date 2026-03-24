@@ -15,7 +15,8 @@ from types import ModuleType
 from typing import override
 
 import pytest
-from flext_core import r, t
+from flext_core import r
+from tests import t
 
 from flext_plugin import FlextPluginAdapters, FlextPluginService
 

@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import pytest
-from flext_core import t
+from tests import t
 
 from flext_plugin import FlextPluginHandlers
 

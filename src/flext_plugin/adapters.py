@@ -23,8 +23,8 @@ from flext_plugin.discovery import FlextPluginDiscovery
 from flext_plugin.models import FlextPluginModels as m
 from flext_plugin.protocols import FlextPluginProtocols as p
 
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
-    t.ContainerMapping,
+_CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
+    Mapping[str, t.ContainerValue],
 )
 
 
@@ -347,7 +347,7 @@ class FlextPluginAdapters:
             return r.ok([])
 
         @override
-        def register(self, plugin: t.NormalizedValue) -> r[None]:
+        def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
             plugin_payload = _CONTAINER_MAP_ADAPTER.validate_python(
@@ -360,7 +360,7 @@ class FlextPluginAdapters:
             return r[None].ok(None)
 
         @override
-        def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+        def register_plugin(self, _plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[bool]:
             """Register plugin in registry."""
             registration_result = self.register(_plugin)
             if registration_result.is_failure:

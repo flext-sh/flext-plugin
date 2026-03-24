@@ -578,6 +578,12 @@ class FlextPluginImplementations:
             """
             return list(self.plugins.values())
 
+        def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+            """Register a plugin via protocol interface."""
+            if isinstance(_plugin, FlextPluginModels.Plugin.Plugin):
+                return self.register(_plugin).map(lambda _: True)
+            return r[bool].fail("Invalid plugin type for registration")
+
         def register(self, plugin: FlextPluginModels.Plugin.Plugin) -> r[None]:
             """Register a plugin.
 
@@ -661,7 +667,7 @@ class FlextPluginImplementations:
                 self.logger.exception("Plugin discovery failed in %s", search_path)
                 return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
 
-        def load_plugin(self, plugin_path: str | Path) -> r[t.NormalizedValue]:
+        def load_plugin(self, plugin_path: str | Path) -> r[FlextPluginImplementations.ConcretePlugin]:
             """Load plugin from path.
 
             Args:
@@ -681,12 +687,8 @@ class FlextPluginImplementations:
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )
-                reg_result: r[None] = self._registry.register(plugin_entity)
-                if reg_result.is_failure:
-                    return r[t.NormalizedValue].fail(
-                        f"Failed to register loaded plugin: {reg_result.error}",
-                    )
-                return r[t.NormalizedValue].ok(concrete_plugin)
+                _: r[None] = self._registry.register(plugin_entity)
+                return r[FlextPluginImplementations.ConcretePlugin].ok(concrete_plugin)
             except (
                 ValueError,
                 TypeError,
@@ -697,7 +699,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Failed to load plugin from %s", plugin_path)
-                return r[t.NormalizedValue].fail(f"Load failed: {e!s}")
+                return r[FlextPluginImplementations.ConcretePlugin].fail(f"Load failed: {e!s}")
 
 
 __all__ = ["FlextPluginImplementations"]
