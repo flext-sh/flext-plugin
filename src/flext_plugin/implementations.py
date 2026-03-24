@@ -665,7 +665,8 @@ class FlextPluginImplementations:
                 return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
 
         def load_plugin(
-            self, plugin_path: str | Path,
+            self,
+            plugin_path: str | Path,
         ) -> r[FlextPluginImplementations.ConcretePlugin]:
             """Load plugin from path.
 

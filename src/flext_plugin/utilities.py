@@ -738,7 +738,8 @@ class FlextPluginUtilities(FlextUtilities):
                 execution_args = args or []
                 execution_kwargs = kwargs or {}
                 raw_result: object = plugin_function(
-                    *execution_args, **execution_kwargs,
+                    *execution_args,
+                    **execution_kwargs,
                 )
                 if isinstance(raw_result, (str, int, float, bool)):
                     return raw_result

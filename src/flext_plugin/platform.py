@@ -218,7 +218,8 @@ class FlextPluginPlatform:
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
             PrivateAttr(
                 default_factory=lambda: dict[
-                    str, FlextPluginPlatform.PluginExecution,
+                    str,
+                    FlextPluginPlatform.PluginExecution,
                 ](),
             )
         )
