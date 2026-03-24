@@ -11,7 +11,7 @@ from collections.abc import Sequence
 
 from flext_core import FlextContainer, FlextLogger, r, t
 
-from flext_plugin import FlextPluginModels, FlextPluginPlatform
+from flext_plugin import FlextPluginModels, FlextPluginPlatform, p
 
 
 class FlextPluginApi:
@@ -19,7 +19,7 @@ class FlextPluginApi:
 
     __slots__ = ("logger", "platform")
 
-    def __init__(self, container: FlextContainer | None = None) -> None:
+    def __init__(self, container: p.Container | None = None) -> None:
         """Initialize FlextPlugin with optional container.
 
         Args:

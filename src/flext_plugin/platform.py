@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from flext_core import FlextContainer, FlextRegistry, FlextService, FlextSettings, r
+from flext_core import FlextRegistry, FlextService, FlextSettings, r
 from pydantic import PrivateAttr, TypeAdapter
 
 from flext_plugin import (
@@ -239,7 +239,7 @@ class FlextPluginPlatform:
                 return result
             return TypeAdapter(t.ContainerMapping).validate_python(value)
 
-        def __init__(self, container: FlextContainer | None = None) -> None:
+        def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
             super().__init__(
                 config_type=None,

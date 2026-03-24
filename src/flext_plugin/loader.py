@@ -15,7 +15,7 @@ from types import ModuleType
 
 from flext_core import FlextLogger, r, t
 
-from flext_plugin import FlextPluginModels, c
+from flext_plugin import FlextPluginModels, c, p
 
 
 class FlextPluginLoader:
@@ -272,7 +272,7 @@ class FlextPluginLoader:
     class FilePluginLoader:
         """File-based plugin loader using safe spec-based module loading."""
 
-        def __init__(self, logger: FlextLogger) -> None:
+        def __init__(self, logger: p.Logger) -> None:
             """Initialize file loader with logger."""
             self.logger = logger
 
@@ -325,7 +325,7 @@ class FlextPluginLoader:
     class DirectoryPluginLoader:
         """Directory-based plugin loader with entry file discovery."""
 
-        def __init__(self, logger: FlextLogger) -> None:
+        def __init__(self, logger: p.Logger) -> None:
             """Initialize directory loader with logger."""
             self.logger = logger
 
