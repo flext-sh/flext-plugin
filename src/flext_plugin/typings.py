@@ -21,8 +21,8 @@ class FlextPluginTypes(FlextTypes):
     """Plugin type system with Python 3.13+ patterns.
 
     Follows FLEXT ecosystem namespace conventions:
-    - t.Plugin.* for plugin-specific types
-    - t.Core.JsonDict, t.Core.t.NormalizedValue via Core alias
+    - FlextTypes.Plugin.* for plugin-specific types
+    - FlextTypes.Core.JsonDict, FlextTypes.Core.FlextTypes.NormalizedValue via Core alias
     """
 
     class Handlers:
@@ -57,9 +57,9 @@ class FlextPluginTypes(FlextTypes):
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = t.StrSequence
+        type StringList = FlextTypes.StrSequence
         type StringSet = set[str]
-        type StringDict = t.StrMapping
+        type StringDict = FlextTypes.StrMapping
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
         type PluginList = Sequence[Mapping[str, FlextTypes.NormalizedValue]]
@@ -144,7 +144,7 @@ class FlextPluginTypes(FlextTypes):
 
         type DiscoveryPath = str
         type DiscoveryResult = Mapping[str, FlextTypes.NormalizedValue]
-        type PluginLoader = t.NormalizedValue
+        type PluginLoader = FlextTypes.NormalizedValue
         type EntryPoint = str
 
     class Execution:
@@ -170,7 +170,7 @@ class FlextPluginTypes(FlextTypes):
 
         type WatchConfig = Mapping[str, FlextTypes.NormalizedValue]
         type ReloadEvent = Mapping[str, FlextTypes.NormalizedValue]
-        type FileWatcher = t.NormalizedValue
+        type FileWatcher = FlextTypes.NormalizedValue
 
 
 t = FlextPluginTypes
