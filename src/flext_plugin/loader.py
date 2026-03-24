@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -43,7 +43,7 @@ class FlextPluginLoader:
     def __init__(self) -> None:
         """Initialize the plugin loader."""
         self.logger = FlextLogger(__name__)
-        self._loaded_plugins: Mapping[str, t.NormalizedValue] = {}
+        self._loaded_plugins: t.ContainerMapping = {}
         self._loader_strategies: Sequence[
             Callable[[Path], FlextPluginModels.Plugin.LoadData | None]
         ] = [
@@ -60,7 +60,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(self, plugin_name: str) -> r[Mapping[str, t.NormalizedValue]]:
+    def get_plugin_info(self, plugin_name: str) -> r[t.ContainerMapping]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -73,7 +73,7 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[Mapping[str, t.NormalizedValue]].fail(error_msg)
+                return r[t.ContainerMapping].fail(error_msg)
             module = self._loaded_plugins[plugin_name]
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
@@ -102,7 +102,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return r[Mapping[str, t.NormalizedValue]].fail(f"Plugin info error: {e!s}")
+            return r[t.ContainerMapping].fail(f"Plugin info error: {e!s}")
 
     def is_plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.

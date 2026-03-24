@@ -48,7 +48,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def discover_plugins(
                 self, paths: Sequence[str]
-            ) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+            ) -> r[Sequence[t.ContainerMapping]]:
                 _ = paths
                 return r.ok([
                     {
@@ -114,7 +114,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[Mapping[str, t.NormalizedValue]]:
+            ) -> r[t.ContainerMapping]:
                 _ = plugin_path
                 return r.ok({
                     "name": "stub_plugin",
@@ -174,7 +174,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[Mapping[str, t.NormalizedValue]]:
+            ) -> r[t.ContainerMapping]:
                 _ = plugin_path
                 return r.ok({
                     "name": "stub_plugin",
@@ -191,8 +191,8 @@ class TestFlextPluginServiceStubBridges:
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: Mapping[str, t.NormalizedValue],
-            ) -> r[Mapping[str, t.NormalizedValue]]:
+                _context: t.ContainerMapping,
+            ) -> r[t.ContainerMapping]:
                 self.calls.append(_plugin_name)
                 return r.ok({"status": "executed", "plugin": _plugin_name})
 
@@ -217,7 +217,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[Mapping[str, t.NormalizedValue]]:
+            ) -> r[t.ContainerMapping]:
                 _ = plugin_path
                 self._loaded_plugins["stub_plugin"] = ModuleType("stub_plugin")
                 return r.ok({

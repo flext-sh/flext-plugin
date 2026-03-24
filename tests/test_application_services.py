@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import tempfile
-from collections.abc import Generator, Mapping
+from collections.abc import Generator
 from pathlib import Path
 from typing import Protocol, cast
 
@@ -44,15 +44,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> Mapping[str, t.NormalizedValue]: ...
+    def initialize(self) -> t.ContainerMapping: ...
 
-    def execute(
-        self, data: Mapping[str, t.NormalizedValue] | None = None
-    ) -> Mapping[str, t.NormalizedValue]: ...
+    def execute(self, data: t.ContainerMapping | None = None) -> t.ContainerMapping: ...
 
-    def cleanup(self) -> Mapping[str, t.NormalizedValue]: ...
+    def cleanup(self) -> t.ContainerMapping: ...
 
-    def health_check(self) -> Mapping[str, t.NormalizedValue]: ...
+    def health_check(self) -> t.ContainerMapping: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
@@ -809,7 +807,7 @@ class TestServicesIntegrationReal:
     def test_services_share_container_state_real(self) -> None:
         """Test services share REAL container state."""
         container = FlextContainer()
-        test_service: Mapping[str, t.NormalizedValue] = {
+        test_service: t.ContainerMapping = {
             "name": "test_service",
             "config": {"enabled": True},
         }

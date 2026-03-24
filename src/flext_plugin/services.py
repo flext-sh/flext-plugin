@@ -108,10 +108,10 @@ class FlextPluginService(x):
     @staticmethod
     def _to_general_mapping(
         value: t.NormalizedValue,
-    ) -> Mapping[str, t.NormalizedValue]:
+    ) -> t.ContainerMapping:
         if not isinstance(value, Mapping):
             return {}
-        return TypeAdapter(Mapping[str, t.NormalizedValue]).validate_python(value)
+        return TypeAdapter(t.ContainerMapping).validate_python(value)
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.
@@ -399,7 +399,7 @@ class FlextPluginService(x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Get health status for a specific plugin.
 
         Args:
@@ -421,7 +421,7 @@ class FlextPluginService(x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -443,29 +443,29 @@ class FlextPluginService(x):
     def _get_plugin_monitoring_data(
         self,
         plugin_name: str,
-        operation: Callable[[str], r[Mapping[str, t.NormalizedValue]]],
+        operation: Callable[[str], r[t.ContainerMapping]],
         operation_name: str,
         operation_failure_prefix: str,
         response_label: str,
         operation_error_prefix: str,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         try:
             if not self._monitoring:
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     "Plugin monitoring not available",
                 )
             if plugin_name not in self._plugins:
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     f"Plugin '{plugin_name}' not found",
                 )
 
             monitoring_result = operation(plugin_name)
             if monitoring_result.is_failure:
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
             if not u.is_dict_like(monitoring_result.value):
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
             return r.ok(self._to_general_mapping(monitoring_result.value))
@@ -483,7 +483,7 @@ class FlextPluginService(x):
                 operation_name,
                 plugin_name,
             )
-            return r[Mapping[str, t.NormalizedValue]].fail(
+            return r[t.ContainerMapping].fail(
                 f"{operation_error_prefix}: {e!s}",
             )
 
@@ -513,7 +513,7 @@ class FlextPluginService(x):
         """
         return [e for e in self._executions.values() if e.is_running]
 
-    def get_service_status(self) -> Mapping[str, t.NormalizedValue]:
+    def get_service_status(self) -> t.ContainerMapping:
         """Get the current status of the plugin service.
 
         Returns:
@@ -748,7 +748,7 @@ class FlextPluginService(x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        config: Mapping[str, t.NormalizedValue],
+        config: t.ContainerMapping,
     ) -> r[bool]:
         """Update configuration for a plugin.
 

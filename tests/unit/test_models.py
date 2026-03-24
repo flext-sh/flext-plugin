@@ -56,13 +56,14 @@ class TestFlextPluginModels:
             FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational(), eq=True
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(), eq=False
+            not FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(), eq=True
         )
         tm.that(
             FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state(), eq=True
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(), eq=False
+            not FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(),
+            eq=True,
         )
 
     def test_plugin_type_enum(self) -> None:
@@ -132,7 +133,7 @@ class TestFlextPluginModels:
         )
         tm.that(result.success is True, eq=True)
         tm.that(result.data, eq={"output": "result"})
-        tm.that(result.error, eq=False)
+        tm.that(not result.error, eq=True)
         tm.that(result.execution_time_ms, eq=pytest.approx(1500.0))
 
     def test_execution_result_failure(self) -> None:

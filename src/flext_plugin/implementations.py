@@ -71,7 +71,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = FlextLogger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: Mapping[str, t.NormalizedValue] = {}
+            self._config: t.ContainerMapping = {}
 
         @property
         def name(self) -> str:
@@ -83,7 +83,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: Mapping[str, t.NormalizedValue]) -> r[None]:
+        def configure(self, config: t.ContainerMapping) -> r[None]:
             """Configure component with provided settings."""
             try:
                 self._config.update(config)
@@ -100,11 +100,11 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
-        def get_config(self) -> Mapping[str, t.NormalizedValue]:
+        def get_config(self) -> t.ContainerMapping:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
-        def get_info(self) -> Mapping[str, t.NormalizedValue]:
+        def get_info(self) -> t.ContainerMapping:
             """Get plugin information.
 
             Returns:
@@ -118,7 +118,7 @@ class FlextPluginImplementations:
                 "entity_present": self._entity is not None,
             }
 
-        def initialize(self, _context: Mapping[str, t.NormalizedValue]) -> r[None]:
+        def initialize(self, _context: t.ContainerMapping) -> r[None]:
             """Initialize plugin with context.
 
             Args:
@@ -188,7 +188,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            operations: Mapping[str, t.NormalizedValue] | None = None,
+            operations: t.ContainerMapping | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
@@ -206,7 +206,7 @@ class FlextPluginImplementations:
         def execute(
             self,
             operation: str,
-            _params: Mapping[str, t.NormalizedValue],
+            _params: t.ContainerMapping,
         ) -> r[t.NormalizedValue]:
             """Execute a plugin operation.
 
@@ -265,7 +265,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            connection_config: Mapping[str, t.NormalizedValue] | None = None,
+            connection_config: t.ContainerMapping | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
@@ -309,7 +309,7 @@ class FlextPluginImplementations:
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
 
-        def validate_config(self, config: Mapping[str, t.NormalizedValue]) -> r[None]:
+        def validate_config(self, config: t.ContainerMapping) -> r[None]:
             """Validate plugin configuration.
 
             Args:
@@ -338,7 +338,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            schema: Mapping[str, t.NormalizedValue] | None = None,
+            schema: t.ContainerMapping | None = None,
             entity: FlextPluginModels.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
@@ -353,7 +353,7 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def get_schema(self) -> r[Mapping[str, t.NormalizedValue]]:
+        def get_schema(self) -> r[t.ContainerMapping]:
             """Get transformation schema.
 
             Returns:
@@ -361,8 +361,8 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[Mapping[str, t.NormalizedValue]].fail("No schema defined")
-            return r[Mapping[str, t.NormalizedValue]].ok(self._schema)
+                return r[t.ContainerMapping].fail("No schema defined")
+            return r[t.ContainerMapping].ok(self._schema)
 
         def transform(self, data: t.NormalizedValue) -> r[t.NormalizedValue]:
             """Transform input data.
@@ -378,9 +378,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
-                transformed = TypeAdapter(
-                    Mapping[str, t.NormalizedValue]
-                ).validate_python(
+                transformed = TypeAdapter(t.ContainerMapping).validate_python(
                     data,
                 )
                 transformed["_transformed_by"] = self._name
@@ -460,7 +458,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            _context: Mapping[str, t.NormalizedValue] | None = None,
+            _context: t.ContainerMapping | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -495,8 +493,8 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: p.Logger,
-            config: Mapping[str, t.NormalizedValue] | None = None,
-            services: Mapping[str, t.NormalizedValue] | None = None,
+            config: t.ContainerMapping | None = None,
+            services: t.ContainerMapping | None = None,
         ) -> None:
             """Initialize the instance.
 
@@ -508,9 +506,7 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: Mapping[str, t.NormalizedValue] = (
-                dict(config) if config else {}
-            )
+            self._config: t.ContainerMapping = dict(config) if config else {}
             self._services = services or {}
 
         @property
@@ -518,7 +514,7 @@ class FlextPluginImplementations:
             """Plugin logger."""
             return self._logger
 
-        def get_config(self) -> Mapping[str, t.NormalizedValue]:
+        def get_config(self) -> t.ContainerMapping:
             """Get configuration for plugin."""
             return dict(self._config)
 

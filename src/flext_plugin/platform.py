@@ -34,7 +34,7 @@ class FlextPluginPlatform:
         def __init__(
             self,
             plugin_name: str,
-            execution_config: Mapping[str, t.NormalizedValue],
+            execution_config: t.ContainerMapping,
             execution_id: str | None = None,
         ) -> None:
             """Initialize plugin execution."""
@@ -45,7 +45,7 @@ class FlextPluginPlatform:
             self.is_completed = False
             self.success = False
             self.error_message: str | None = None
-            self.result: Mapping[str, t.NormalizedValue] | None = None
+            self.result: t.ContainerMapping | None = None
             self.started_at: str | None = None
             self.completed_at: str | None = None
 
@@ -53,7 +53,7 @@ class FlextPluginPlatform:
         def create(
             cls,
             plugin_name: str,
-            execution_config: Mapping[str, t.NormalizedValue],
+            execution_config: t.ContainerMapping,
             execution_id: str | None = None,
         ) -> FlextPluginPlatform.PluginExecution:
             """Create new plugin execution."""
@@ -230,11 +230,11 @@ class FlextPluginPlatform:
         @staticmethod
         def _to_general_mapping(
             value: t.NormalizedValue,
-        ) -> Mapping[str, t.NormalizedValue]:
+        ) -> t.ContainerMapping:
             """Convert mapping-like values to a typed dict."""
             if not u.is_dict_like(value):
                 return {}
-            return TypeAdapter(Mapping[str, t.NormalizedValue]).validate_python(value)
+            return TypeAdapter(t.ContainerMapping).validate_python(value)
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
@@ -276,7 +276,7 @@ class FlextPluginPlatform:
             return self._executor
 
         @property
-        def get_platform_status(self) -> Mapping[str, t.NormalizedValue]:
+        def get_platform_status(self) -> t.ContainerMapping:
             """Get platform status information."""
             return {
                 "total_plugins": len(self.plugins),
@@ -331,15 +331,15 @@ class FlextPluginPlatform:
 
             def discover_and_validate(
                 _checked: t.NormalizedValue,
-            ) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+            ) -> r[Sequence[t.ContainerMapping]]:
                 if not self.discovery:
-                    return r[Sequence[Mapping[str, t.NormalizedValue]]].fail(
+                    return r[Sequence[t.ContainerMapping]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.is_success:
                     discovered_items = discovery_result.value
-                    plugin_dicts: Sequence[Mapping[str, t.NormalizedValue]] = []
+                    plugin_dicts: Sequence[t.ContainerMapping] = []
                     for item in discovered_items:
                         if u.is_dict_like(item):
                             plugin_dicts.append(self._to_general_mapping(item))
@@ -364,12 +364,12 @@ class FlextPluginPlatform:
                                 "metadata": self._to_general_mapping(metadata),
                             })
                     return r.ok(plugin_dicts)
-                return r[Sequence[Mapping[str, t.NormalizedValue]]].fail(
+                return r[Sequence[t.ContainerMapping]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: Sequence[Mapping[str, t.NormalizedValue]],
+                data: Sequence[t.ContainerMapping],
             ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
@@ -389,7 +389,7 @@ class FlextPluginPlatform:
         def execute_plugin(
             self,
             plugin_name: str,
-            context: Mapping[str, t.NormalizedValue],
+            context: t.ContainerMapping,
             execution_id: str | None = None,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Execute plugin with async composition."""
@@ -462,9 +462,9 @@ class FlextPluginPlatform:
 
             def load_and_validate(
                 _checked: t.NormalizedValue,
-            ) -> r[Mapping[str, t.NormalizedValue]]:
+            ) -> r[t.ContainerMapping]:
                 if not self.loader:
-                    return r[Mapping[str, t.NormalizedValue]].fail(
+                    return r[t.ContainerMapping].fail(
                         "Loader protocol not configured",
                     )
                 load_result = self.loader.load_plugin(plugin_path)
@@ -473,7 +473,7 @@ class FlextPluginPlatform:
                     if u.is_dict_like(load_data):
                         return r.ok(self._to_general_mapping(load_data))
                     if getattr(load_data, "name", None):
-                        plugin_dict: Mapping[str, t.NormalizedValue] = {
+                        plugin_dict: t.ContainerMapping = {
                             "name": str(getattr(load_data, "name", "")),
                             "version": str(getattr(load_data, "version", "1.0.0")),
                             "path": str(getattr(load_data, "path", "")),
@@ -484,15 +484,15 @@ class FlextPluginPlatform:
                             else None,
                         }
                         return r.ok(plugin_dict)
-                    return r[Mapping[str, t.NormalizedValue]].fail(
+                    return r[t.ContainerMapping].fail(
                         "Invalid load data format",
                     )
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     load_result.error or "Load failed",
                 )
 
             def create_plugin_from_load_data(
-                data: Mapping[str, t.NormalizedValue],
+                data: t.ContainerMapping,
             ) -> r[FlextPluginPlatform.Plugin]:
                 return self._validate_and_create_plugin(data)
 
@@ -568,7 +568,7 @@ class FlextPluginPlatform:
         def _create_execution(
             self,
             plugin: FlextPluginPlatform.Plugin,
-            context: Mapping[str, t.NormalizedValue],
+            context: t.ContainerMapping,
             execution_id: str | None,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Create execution entity."""
@@ -592,7 +592,7 @@ class FlextPluginPlatform:
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     "Executor not configured",
                 )
-            exec_context: Mapping[str, t.NormalizedValue] = {
+            exec_context: t.ContainerMapping = {
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
                 "input_data": execution.input_data,
@@ -652,7 +652,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugin(
             self,
-            plugin_data: Mapping[str, t.NormalizedValue],
+            plugin_data: t.ContainerMapping,
         ) -> r[FlextPluginPlatform.Plugin]:
             """Create single validated plugin."""
             plugin = FlextPluginPlatform.Plugin.create(
@@ -668,7 +668,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: Sequence[Mapping[str, t.NormalizedValue]],
+            plugin_data: Sequence[t.ContainerMapping],
         ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: Sequence[FlextPluginPlatform.Plugin] = []

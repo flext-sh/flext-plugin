@@ -105,7 +105,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=True, description="Plugin enabled state"),
             ]
             metadata: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Extensible plugin metadata",
@@ -122,7 +122,7 @@ class FlextPluginModels(FlextModels):
                 author: str = "",
                 plugin_type: str = c.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: Mapping[str, t.NormalizedValue] | None = None,
+                metadata: t.ContainerMapping | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -141,10 +141,10 @@ class FlextPluginModels(FlextModels):
                 New Plugin entity instance
 
                 """
-                metadata_payload: Mapping[str, t.NormalizedValue] = (
+                metadata_payload: t.ContainerMapping = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: Mapping[str, t.NormalizedValue] = {
+                payload: t.ContainerMapping = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,
@@ -374,7 +374,7 @@ class FlextPluginModels(FlextModels):
 
             success: Annotated[bool, Field(description="Whether execution succeeded")]
             data: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Execution output data",
@@ -441,7 +441,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Extensible discovery metadata",
@@ -597,7 +597,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Additional metadata",
@@ -622,7 +622,7 @@ class FlextPluginModels(FlextModels):
             plugin_name: Annotated[str, Field(description="Associated plugin name")]
             timestamp: Annotated[datetime, Field(description="When event occurred")]
             data: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Event-specific data",
@@ -659,7 +659,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             details: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Additional validation details",
@@ -736,7 +736,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=False, description="Whether watcher is active"),
             ]
             last_modified: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="File modification tracking",
@@ -809,7 +809,7 @@ class FlextPluginModels(FlextModels):
 
             version: Annotated[str, Field(description="Registry schema version")]
             plugins: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",
@@ -838,7 +838,7 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: Annotated[str, Field(description="Plugin name")]
             settings: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Configuration settings",
@@ -852,7 +852,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugins: Annotated[
-                Mapping[str, t.NormalizedValue],
+                t.ContainerMapping,
                 Field(
                     default_factory=dict,
                     description="Dictionary of registered plugins",

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
@@ -164,7 +164,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> r[Mapping[str, t.NormalizedValue]]:
+    def force_reload_all(self) -> r[t.ContainerMapping]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -173,10 +173,10 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[Mapping[str, t.NormalizedValue]].fail(
+                return r[t.ContainerMapping].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: Sequence[Mapping[str, t.NormalizedValue]] = []
+            reload_results: Sequence[t.ContainerMapping] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -209,9 +209,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[Mapping[str, t.NormalizedValue]].fail(f"Force reload error: {e!s}")
+            return r[t.ContainerMapping].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> Mapping[str, t.NormalizedValue]:
+    def get_hot_reload_status(self) -> t.ContainerMapping:
         """Get the current status of the hot reload service.
 
         Returns:

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 
 import pytest
 from flext_core import t
@@ -30,8 +30,8 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
 
         async def test_handler(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             return {"status": "processed", "event": dict(event_data.items())}
 
         result = handlers.register_handler("test_event", test_handler)
@@ -43,11 +43,11 @@ class TestFlextPluginHandlers:
     async def test_event_triggering(self) -> None:
         """Test triggering events."""
         handlers = FlextPluginHandlers()
-        results: Sequence[Mapping[str, t.NormalizedValue]] = []
+        results: Sequence[t.ContainerMapping] = []
 
         async def test_handler(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             results.append(event_data)
             return {"status": "handled"}
 
@@ -75,15 +75,15 @@ class TestFlextPluginHandlers:
         results: Sequence[str] = []
 
         async def handler_low(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             results.append("low")
             return {"handler": "low"}
 
         async def handler_high(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             results.append("high")
             return {"handler": "high"}
@@ -100,15 +100,15 @@ class TestFlextPluginHandlers:
         results: Sequence[str] = []
 
         async def handler1(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             results.append("handler1")
             return {"handler": "handler1"}
 
         async def handler2(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             results.append("handler2")
             return {"handler": "handler2"}
@@ -139,15 +139,15 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
 
         async def failing_handler(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             msg = "Handler failed"
             raise ValueError(msg)
 
         async def working_handler(
-            event_data: Mapping[str, t.NormalizedValue],
-        ) -> Mapping[str, t.NormalizedValue]:
+            event_data: t.ContainerMapping,
+        ) -> t.ContainerMapping:
             _ = event_data
             return {"status": "success"}
 

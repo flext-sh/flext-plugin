@@ -313,7 +313,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
-        # Access configuration from the config Mapping[str, t.NormalizedValue] passed during initialization
+        # Access configuration from the config t.ContainerMapping passed during initialization
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods

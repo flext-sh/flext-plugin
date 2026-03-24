@@ -12,8 +12,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 import pytest
 
 from flext_plugin import FlextPluginConstants, FlextPluginModels
@@ -133,7 +131,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_with_complex_settings(self) -> None:
         """Test configuration with complex settings."""
-        settings: Mapping[str, t.NormalizedValue] = {
+        settings: t.ContainerMapping = {
             "max_memory_mb": 800,
             "max_cpu_percent": 75,
             "timeout_seconds": 300,
@@ -180,7 +178,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_with_complex_data(self) -> None:
         """Test ExecutionResult with complex output data."""
-        complex_data: Mapping[str, t.NormalizedValue] = {
+        complex_data: t.ContainerMapping = {
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
@@ -204,7 +202,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_with_plugins(self) -> None:
         """Test registry with plugins."""
-        plugins: Mapping[str, t.NormalizedValue] = {
+        plugins: t.ContainerMapping = {
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }

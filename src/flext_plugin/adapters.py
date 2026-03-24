@@ -75,7 +75,7 @@ class FlextPluginAdapters:
         def discover_plugin(
             self,
             _plugin_path: str,
-        ) -> r[Mapping[str, t.NormalizedValue]]:
+        ) -> r[t.ContainerMapping]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
@@ -88,7 +88,7 @@ class FlextPluginAdapters:
         def discover_plugins(
             self,
             paths: Sequence[str],
-        ) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+        ) -> r[Sequence[t.ContainerMapping]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
@@ -100,7 +100,7 @@ class FlextPluginAdapters:
         @override
         def validate_plugin(
             self,
-            _plugin_data: Mapping[str, t.NormalizedValue],
+            _plugin_data: t.ContainerMapping,
         ) -> r[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(lambda: True, "Plugin validation failed")
@@ -168,7 +168,7 @@ class FlextPluginAdapters:
         def _discovery_data_to_dict(
             self,
             data: m.Plugin.DiscoveryData,
-        ) -> Mapping[str, t.NormalizedValue]:
+        ) -> t.ContainerMapping:
             """Convert DiscoveryData model to JsonDict."""
             return {
                 "name": data.name,
@@ -197,7 +197,7 @@ class FlextPluginAdapters:
             return plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(self, plugin_path: str) -> r[Mapping[str, t.NormalizedValue]]:
+        def load_plugin(self, plugin_path: str) -> r[t.ContainerMapping]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(plugin_path),
@@ -248,7 +248,7 @@ class FlextPluginAdapters:
         def _load_module_as_dict(
             self,
             plugin_path: str,
-        ) -> Mapping[str, t.NormalizedValue]:
+        ) -> t.ContainerMapping:
             """Load module and convert to JsonDict."""
             data = self._load_module(plugin_path)
             self._loaded_plugins[data.name] = data.module
@@ -267,8 +267,8 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: Mapping[str, t.NormalizedValue],
-        ) -> r[Mapping[str, t.NormalizedValue]]:
+            _context: t.ContainerMapping,
+        ) -> r[t.ContainerMapping]:
             """Execute plugin."""
             return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
@@ -311,7 +311,7 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> r[Mapping[str, t.NormalizedValue]]:
+        ) -> r[t.ContainerMapping]:
             """Scan plugin for security issues."""
             return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
 
@@ -328,7 +328,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: Mapping[str, t.NormalizedValue] = {}
+            self._plugins: t.ContainerMapping = {}
 
         @override
         def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
@@ -341,7 +341,7 @@ class FlextPluginAdapters:
             return plugin_name in self._plugins
 
         @override
-        def list_plugins(self) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+        def list_plugins(self) -> r[Sequence[t.ContainerMapping]]:
             """List all plugins in registry."""
             return r.ok([])
 
@@ -349,9 +349,7 @@ class FlextPluginAdapters:
         def register(self, plugin: t.NormalizedValue) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
-            plugin_payload = TypeAdapter(
-                Mapping[str, t.NormalizedValue]
-            ).validate_python(
+            plugin_payload = TypeAdapter(t.ContainerMapping).validate_python(
                 plugin,
             )
             plugin_name = plugin_payload.get("name")
@@ -381,7 +379,7 @@ class FlextPluginAdapters:
         def get_plugin_health(
             self,
             _plugin_name: str,
-        ) -> r[Mapping[str, t.NormalizedValue]]:
+        ) -> r[t.ContainerMapping]:
             """Get plugin health information."""
             return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
@@ -389,7 +387,7 @@ class FlextPluginAdapters:
         def get_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> r[Mapping[str, t.NormalizedValue]]:
+        ) -> r[t.ContainerMapping]:
             """Get plugin metrics."""
             return r.ok({"execution_count": 0, "error_count": 0})
 
