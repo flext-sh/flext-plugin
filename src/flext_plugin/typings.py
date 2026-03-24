@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Literal
 
 from flext_core import FlextTypes
 
@@ -68,45 +67,9 @@ class FlextPluginTypes(FlextTypes):
         type InputDict = Mapping[str, FlextTypes.NormalizedValue]
         type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
         type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
-        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
-        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
-        type PluginTypeLiteral = Literal[
-            c.Plugin.PluginType.TAP,
-            c.Plugin.PluginType.TARGET,
-            c.Plugin.PluginType.TRANSFORM,
-            c.Plugin.PluginType.EXTENSION,
-            c.Plugin.PluginType.SERVICE,
-            c.Plugin.PluginType.MIDDLEWARE,
-            c.Plugin.PluginType.TRANSFORMER,
-            c.Plugin.PluginType.API,
-            c.Plugin.PluginType.DATABASE,
-            c.Plugin.PluginType.NOTIFICATION,
-            c.Plugin.PluginType.AUTHENTICATION,
-            c.Plugin.PluginType.AUTHORIZATION,
-            c.Plugin.PluginType.UTILITY,
-            c.Plugin.PluginType.TOOL,
-            c.Plugin.PluginType.HANDLER,
-            c.Plugin.PluginType.PROCESSOR,
-            c.Plugin.PluginType.CORE,
-            c.Plugin.PluginType.ADDON,
-            c.Plugin.PluginType.THEME,
-            c.Plugin.PluginType.LANGUAGE,
-        ]
-        "Plugin type literal - references PluginType StrEnum members."
-        type PluginStatusLiteral = Literal[
-            c.Plugin.PluginStatus.UNKNOWN,
-            c.Plugin.PluginStatus.DISCOVERED,
-            c.Plugin.PluginStatus.LOADED,
-            c.Plugin.PluginStatus.ACTIVE,
-            c.Plugin.PluginStatus.INACTIVE,
-            c.Plugin.PluginStatus.LOADING,
-            c.Plugin.PluginStatus.ERROR,
-            c.Plugin.PluginStatus.DISABLED,
-            c.Plugin.PluginStatus.HEALTHY,
-            c.Plugin.PluginStatus.UNHEALTHY,
-        ]
-        "Plugin status literal - references PluginStatus StrEnum members."
+        DiscoveryTypeLiteral = c.DiscoveryTypeLiteral
+        DiscoveryMethodLiteral = c.DiscoveryMethodLiteral
+        LoadTypeLiteral = c.LoadTypeLiteral
 
     class Lifecycle:
         """Plugin lifecycle and status type aliases."""
@@ -122,13 +85,7 @@ class FlextPluginTypes(FlextTypes):
         type SecurityLevel = str
         type Permission = str
         type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
-        type SecurityLevelLiteral = Literal[
-            c.SecurityLevelLiteral.LOW,
-            c.SecurityLevelLiteral.MEDIUM,
-            c.SecurityLevelLiteral.HIGH,
-            c.SecurityLevelLiteral.CRITICAL,
-        ]
-        "Security level literal - references SecurityLevelLiteral StrEnum members."
+        SecurityLevelLiteral = c.SecurityLevelLiteral
 
     class Performance:
         """Performance metrics and monitoring type aliases."""
@@ -159,9 +116,6 @@ class FlextPluginTypes(FlextTypes):
         type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
         type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
         type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
-        type DiscoveryTypeLiteral = Literal["file", "directory", "entry_point"]
-        type DiscoveryMethodLiteral = Literal["file_system", "entry_points"]
-        type LoadTypeLiteral = Literal["file", "directory", "entry_point"]
 
     class HotReload:
         """Hot reload and file watching type aliases."""
