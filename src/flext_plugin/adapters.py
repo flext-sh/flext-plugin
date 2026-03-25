@@ -157,8 +157,8 @@ class FlextPluginAdapters:
                     name=path.stem,
                     version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
-                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
-                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                    discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+                    discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
                     metadata={},
                 )
             except ValueError:
@@ -238,7 +238,7 @@ class FlextPluginAdapters:
                 ),
                 path=path,
                 module=module,
-                load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
+                load_type=c.Plugin.LoadTypeLiteral.FILE,
                 loaded_at=__import__("datetime").datetime.now(
                     __import__("datetime").UTC,
                 ),

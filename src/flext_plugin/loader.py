@@ -306,7 +306,7 @@ class FlextPluginLoader:
                     or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
-                    load_type=c.Plugin.Execution.LOAD_TYPE_FILE,
+                    load_type=c.Plugin.LoadTypeLiteral.FILE,
                     loaded_at=datetime.now(UTC),
                 )
             except (
@@ -361,7 +361,7 @@ class FlextPluginLoader:
                     or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
-                    load_type=c.Plugin.Execution.LOAD_TYPE_DIRECTORY,
+                    load_type=c.Plugin.LoadTypeLiteral.DIRECTORY,
                     loaded_at=datetime.now(UTC),
                     entry_file=entry_file,
                 )

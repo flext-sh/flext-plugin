@@ -338,7 +338,7 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: bool,
+                _checked: bool,  # noqa: FBT001 — required by r[T].map callback signature
             ) -> r[Sequence[t.ContainerMapping]]:
                 if not self.discovery:
                     return r[Sequence[t.ContainerMapping]].fail(
@@ -381,13 +381,10 @@ class FlextPluginPlatform:
             ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
-            return (
-                self
-                ._require_protocol(self.discovery, "Discovery")
-                .flat_map(discover_and_validate)
-                .flat_map(create_plugins_from_data)
-                .map(self._register_all)
-            )
+            checked: r[bool] = self._require_protocol(self.discovery, "Discovery")
+            discovered: r[Sequence[t.ContainerMapping]] = checked.flat_map(discover_and_validate)
+            plugins: r[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(create_plugins_from_data)
+            return plugins.map(self._register_all)
 
         @override
         def execute(self) -> r[None]:
@@ -422,12 +419,10 @@ class FlextPluginPlatform:
             ) -> r[FlextPluginPlatform.PluginExecution]:
                 return self._execute_with_executor(execution)
 
-            return (
-                get_plugin_result(plugin_name)
-                .flat_map(create_execution_from_plugin)
-                .flat_map(prepare_execution_result)
-                .flat_map(execute_with_executor_result)
-            )
+            plugin_r: r[FlextPluginPlatform.Plugin] = get_plugin_result(plugin_name)
+            exec_r: r[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(create_execution_from_plugin)
+            prepared_r: r[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(prepare_execution_result)
+            return prepared_r.flat_map(execute_with_executor_result)
 
         def get_execution(self, eid: str) -> FlextPluginPlatform.PluginExecution | None:
             """Get execution by ID."""
@@ -469,7 +464,7 @@ class FlextPluginPlatform:
             """Load single plugin with composition."""
 
             def load_and_validate(
-                _checked: t.NormalizedValue,
+                _checked: bool,  # noqa: FBT001 — required by r[T].map callback signature
             ) -> r[t.ContainerMapping]:
                 if not self.loader:
                     return r[t.ContainerMapping].fail(
@@ -504,13 +499,10 @@ class FlextPluginPlatform:
             ) -> r[FlextPluginPlatform.Plugin]:
                 return self._validate_and_create_plugin(data)
 
-            return (
-                self
-                ._require_protocol(self.loader, "Loader")
-                .flat_map(load_and_validate)
-                .flat_map(create_plugin_from_load_data)
-                .map(self._register_single)
-            )
+            checked_l: r[bool] = self._require_protocol(self.loader, "Loader")
+            loaded: r[t.ContainerMapping] = checked_l.flat_map(load_and_validate)
+            plugin_r2: r[FlextPluginPlatform.Plugin] = loaded.flat_map(create_plugin_from_load_data)
+            return plugin_r2.map(self._register_single)
 
         def register_plugin(
             self,
@@ -518,10 +510,10 @@ class FlextPluginPlatform:
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
-            def validate_plugin_result(_: t.NormalizedValue) -> r[bool]:
+            def validate_plugin_result(_: bool) -> r[bool]:  # noqa: FBT001 — required by r[T].flat_map callback signature
                 return self.registry.register(plugin.name, plugin)
 
-            def add_to_plugins_result(_registry_result: t.NormalizedValue) -> bool:
+            def add_to_plugins_result(_registry_result: bool) -> bool:  # noqa: FBT001 — required by r[T].map callback signature
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
@@ -530,12 +522,9 @@ class FlextPluginPlatform:
                 )
                 return self._add_to_plugins(plugin_entity)
 
-            return (
-                plugin
-                .validate_business_rules()
-                .flat_map(validate_plugin_result)
-                .map(add_to_plugins_result)
-            )
+            validated_biz: r[bool] = plugin.validate_business_rules()
+            registered: r[bool] = validated_biz.flat_map(validate_plugin_result)
+            return registered.map(add_to_plugins_result)
 
         def start_hot_reload(self, paths: t.StrSequence) -> r[bool]:
             """Start hot reload for given paths."""

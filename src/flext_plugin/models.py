@@ -420,13 +420,13 @@ class FlextPluginModels(FlextModels):
             ]
             path: Annotated[Path, Field(description="File system path to plugin")]
             discovery_type: Annotated[
-                t.Plugin.DiscoveryTypeLiteral,
+                c.Plugin.DiscoveryTypeLiteral,
                 Field(
                     description="Type of discovered plugin",
                 ),
             ]
             discovery_method: Annotated[
-                t.Plugin.DiscoveryMethodLiteral,
+                c.Plugin.DiscoveryMethodLiteral,
                 Field(
                     description="Discovery method used",
                 ),
@@ -494,7 +494,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             load_type: Annotated[
-                t.Plugin.LoadTypeLiteral,
+                c.Plugin.LoadTypeLiteral,
                 Field(
                     description="Type of loaded plugin",
                 ),
@@ -506,10 +506,9 @@ class FlextPluginModels(FlextModels):
             entry_file: Annotated[
                 Path | None,
                 Field(
-                    default=None,
                     description="Entry file path for directory-based plugins",
                 ),
-            ]
+            ] = None
 
         class ReloadRecord(FlextModels.Value):
             """Plugin reload record - immutable reload history entry.
@@ -534,17 +533,15 @@ class FlextPluginModels(FlextModels):
             error: Annotated[
                 str | None,
                 Field(
-                    default=None,
                     description="Error message if reload failed",
                 ),
-            ]
+            ] = None
             duration_ms: Annotated[
                 t.NonNegativeFloat,
                 Field(
-                    default=0.0,
                     description="Reload duration in milliseconds",
                 ),
-            ]
+            ] = 0.0
 
         class PluginMetadata(FlextModels.Value):
             """Plugin metadata - immutable metadata value t.NormalizedValue.

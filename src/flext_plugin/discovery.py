@@ -248,8 +248,8 @@ class FlextPluginDiscovery:
                     name=path.stem,
                     version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                     path=path,
-                    discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_FILE,
-                    discovery_method=c.Plugin.Discovery.METHOD_FILE_SYSTEM,
+                    discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+                    discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
                     metadata={},
                 )
             except ValueError:
@@ -284,8 +284,8 @@ class FlextPluginDiscovery:
                             )
                             or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
                             path=Path(getattr(entry_point.dist, "_path", "")),
-                            discovery_type=c.Plugin.Discovery.DISCOVERY_TYPE_ENTRY_POINT,
-                            discovery_method=c.Plugin.Discovery.METHOD_ENTRY_POINTS,
+                            discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
+                            discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,
                             metadata={
                                 "entry_point": f"{entry_point.module}:{entry_point.attr}",
                             },

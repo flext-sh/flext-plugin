@@ -350,13 +350,16 @@ class TestFlextPluginServiceReal:
         result = service.is_plugin_loaded("non-existent-plugin")
         assert result is False
 
-    @pytest.mark.asyncio
-    async def test_management_functionality_real(
+    def test_management_functionality_real(
         self,
         service: FlextPluginService,
     ) -> None:
         """Test REAL management functionality through service methods."""
-        result = await service.unload_plugin("non-existent-plugin")
+        import asyncio
+
+        result = asyncio.get_event_loop().run_until_complete(
+            service.unload_plugin("non-existent-plugin"),
+        )
         assert result.is_failure
         assert "not found" in str(result.error)
 
