@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import FlextPluginDiscovery, FlextPluginModels
+from flext_plugin import FlextPluginConstants, FlextPluginDiscovery, FlextPluginModels
 
 
 class TestFlextPluginDiscovery:
@@ -80,8 +80,8 @@ class TestFlextPluginDiscovery:
             name="test_plugin",
             version="1.0.0",
             path=Path("test_path"),
-            discovery_type="file",
-            discovery_method="file_system",
+            discovery_type=FlextPluginConstants.Plugin.DiscoveryTypeLiteral.FILE,
+            discovery_method=FlextPluginConstants.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
         result = discovery.validate_plugin(plugin_data=plugin_data)
         assert result.is_success

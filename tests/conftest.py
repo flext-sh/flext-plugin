@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 from flext_core import FlextContainer
 
-from flext_plugin import FlextPluginAdapters, FlextPluginModels
+from flext_plugin import FlextPluginAdapters, FlextPluginConstants, FlextPluginModels
 from tests import t
 
 
@@ -203,7 +203,7 @@ def real_tap_plugin() -> FlextPluginModels.Plugin.Plugin:
         plugin_version="1.0.0",
         description="Real database tap plugin",
         author="test-suite",
-        plugin_type=FlextPluginModels.PluginType.TAP,
+        plugin_type=FlextPluginConstants.Plugin.PluginType.TAP,
         is_enabled=True,
         metadata={},
     )
@@ -217,7 +217,7 @@ def real_target_plugin() -> FlextPluginModels.Plugin.Plugin:
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
         author="test-suite",
-        plugin_type=FlextPluginModels.PluginType.TARGET,
+        plugin_type=FlextPluginConstants.Plugin.PluginType.TARGET,
         is_enabled=True,
         metadata={},
     )
@@ -231,7 +231,7 @@ def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
         plugin_version="1.0.0",
         description="Real transform processor plugin",
         author="test-suite",
-        plugin_type=FlextPluginModels.PluginType.PROCESSOR,
+        plugin_type=FlextPluginConstants.Plugin.PluginType.PROCESSOR,
         is_enabled=True,
         metadata={},
     )

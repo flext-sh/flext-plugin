@@ -35,7 +35,7 @@ def create_docker_postgres_plugin() -> tuple[
     t.ContainerMapping,
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
-    postgres_config = {
+    postgres_config: t.ContainerMapping = {
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
@@ -63,7 +63,7 @@ def create_docker_redis_plugin() -> tuple[
     t.ContainerMapping,
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
-    redis_config = {
+    redis_config: t.ContainerMapping = {
         "host": "localhost",
         "port": 6379,
         "password": "flext_redis_password",
@@ -72,7 +72,7 @@ def create_docker_redis_plugin() -> tuple[
         "socket_timeout": 5,
         "socket_connect_timeout": 5,
         "socket_keepalive": True,
-        "socket_keepalive_options": {socket.TCP_KEEPIDLE: 60},
+        "socket_keepalive_options": {str(socket.TCP_KEEPIDLE): 60},
         "health_check_interval": 30,
     }
     redis_plugin = FlextPluginModels.Plugin.Plugin(
@@ -92,7 +92,7 @@ def create_docker_ldap_plugin() -> tuple[
     t.ContainerMapping,
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
-    ldap_config = {
+    ldap_config: t.ContainerMapping = {
         "host": "localhost",
         "port": 389,
         "use_ssl": False,

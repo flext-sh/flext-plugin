@@ -107,7 +107,10 @@ class TestFlextPluginModels:
         plugin = FlextPluginModels.Plugin.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
             plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+            is_enabled=True,
         )
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.0.0")
@@ -119,20 +122,29 @@ class TestFlextPluginModels:
         plugin = FlextPluginModels.Plugin.Plugin(
             name="valid-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
             plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+            is_enabled=True,
         )
         tm.that(plugin.name, eq="valid-plugin")
         with pytest.raises(ValueError):
             FlextPluginModels.Plugin.Plugin(
                 name="",
                 plugin_version="1.0.0",
+                description="",
+                author="",
                 plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+                is_enabled=True,
             )
         with pytest.raises(ValueError):
             FlextPluginModels.Plugin.Plugin(
                 name="test-plugin",
                 plugin_version="invalid-version",
+                description="",
+                author="",
                 plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+                is_enabled=True,
             )
 
     def test_execution_result_creation(self) -> None:
@@ -165,8 +177,8 @@ class TestFlextPluginModels:
             name="test-plugin",
             version="1.0.0",
             path=Path("/path/to/plugin"),
-            discovery_type="file",
-            discovery_method="file_system",
+            discovery_type=FlextPluginConstants.Plugin.DiscoveryTypeLiteral.FILE,
+            discovery_method=FlextPluginConstants.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
         tm.that(discovery.name, eq="test-plugin")
         tm.that(discovery.version, eq="1.0.0")
@@ -182,6 +194,7 @@ class TestFlextPluginModels:
             entry_point="test_plugin:main",
             author="Test Author",
             description="Test plugin description",
+            plugin_type="extension",
         )
         tm.that(metadata.name, eq="test-plugin")
         tm.that(metadata.version, eq="1.0.0")

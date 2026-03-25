@@ -145,7 +145,14 @@ class TestPluginRegistry:
     @pytest.fixture
     def plugin(self) -> FlextPluginPlatform.Plugin:
         """Create plugin for registry testing."""
-        return FlextPluginPlatform.Plugin(name="test-plugin", plugin_version="1.0.0")
+        return FlextPluginPlatform.Plugin(
+            name="test-plugin",
+            plugin_version="1.0.0",
+            description="",
+            author="",
+            plugin_type="utility",
+            is_enabled=True,
+        )
 
     def test_registry_initialization(
         self,
@@ -198,7 +205,14 @@ class TestPluginRegistry:
     ) -> None:
         """Test registering multiple plugins."""
         plugins = [
-            FlextPluginPlatform.Plugin(name=f"plugin-{i}", plugin_version="1.0.0")
+            FlextPluginPlatform.Plugin(
+                name=f"plugin-{i}",
+                plugin_version="1.0.0",
+                description="",
+                author="",
+                plugin_type="utility",
+                is_enabled=True,
+            )
             for i in range(3)
         ]
         for plugin in plugins:

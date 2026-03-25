@@ -157,6 +157,7 @@ class TestFlextPluginExecution:
         result = FlextPluginModels.Plugin.ExecutionResult(
             success=True,
             data={"output": "test data"},
+            error="",
             execution_time_ms=150.5,
         )
         assert result.success is True
@@ -178,7 +179,9 @@ class TestFlextPluginExecution:
 
     def test_execution_result_defaults(self) -> None:
         """Test ExecutionResult default values."""
-        result = FlextPluginModels.Plugin.ExecutionResult(success=True)
+        result = FlextPluginModels.Plugin.ExecutionResult(
+            success=True, error="", execution_time_ms=0.0
+        )
         assert result.success is True
         assert result.data == {}
         assert result.error == ""
@@ -193,6 +196,7 @@ class TestFlextPluginExecution:
         result = FlextPluginModels.Plugin.ExecutionResult(
             success=True,
             data=complex_data,
+            error="",
             execution_time_ms=100.0,
         )
         assert result.success is True
@@ -239,6 +243,7 @@ class TestFlextPluginMetadata:
             entry_point="test.entry:main",
             plugin_type=FlextPluginConstants.Plugin.PluginType.TAP.value,
             description="Test extractor plugin",
+            author="test-author",
             dependencies=["requests", "pydantic"],
         )
         assert metadata.name == "test-plugin"
@@ -255,6 +260,9 @@ class TestFlextPluginMetadata:
             name="minimal-plugin",
             version="1.0.0",
             entry_point="minimal.entry:main",
+            description="",
+            author="Unknown",
+            plugin_type="extension",
         )
         assert metadata.name == "minimal-plugin"
         assert metadata.version == "1.0.0"

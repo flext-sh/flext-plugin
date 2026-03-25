@@ -32,33 +32,33 @@ class TestFlextPluginTypes:
     def test_discovery_class_exists(self) -> None:
         """Test that Discovery nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Discovery"), eq=True)
-        tm.that(FlextPluginTypes.Discovery, none=False)
+        tm.that(FlextPluginTypes.Plugin.Discovery, none=False)
 
     def test_execution_class_exists(self) -> None:
         """Test that Execution nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Execution"), eq=True)
-        tm.that(FlextPluginTypes.Execution, none=False)
+        tm.that(FlextPluginTypes.Plugin.Execution, none=False)
 
     def test_registry_class_exists(self) -> None:
         """Test that Registry nested class exists."""
         tm.that(hasattr(FlextPluginTypes, "Registry"), eq=True)
-        tm.that(FlextPluginTypes.Registry, none=False)
+        tm.that(FlextPluginTypes.Plugin.Registry, none=False)
 
     def test_discovery_type_aliases(self) -> None:
         """Test Discovery type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Discovery, "DiscoveryPath"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Discovery, "DiscoveryResult"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Discovery, "PluginLoader"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Discovery, "EntryPoint"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "DiscoveryPath"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "DiscoveryResult"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "PluginLoader"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "EntryPoint"), eq=True)
 
     def test_execution_type_aliases(self) -> None:
         """Test Execution type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Execution, "ExecutionContext"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Execution, "ExecutionResult"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Execution, "ExecutionError"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Execution, "ResourceLimits"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionContext"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionResult"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionError"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ResourceLimits"), eq=True)
 
     def test_registry_type_aliases(self) -> None:
         """Test Registry type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Registry, "RegistryConfig"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Registry, "RegistryEntry"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Registry, "RegistryConfig"), eq=True)
+        tm.that(hasattr(FlextPluginTypes.Plugin.Registry, "RegistryEntry"), eq=True)
