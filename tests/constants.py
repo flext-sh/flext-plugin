@@ -9,14 +9,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugins import FlextPluginsConstants
 from flext_tests import FlextTestsConstants
 
+from flext_plugin import FlextPluginConstants
 
-class FlextPluginTestConstants(FlextTestsConstants, FlextPluginsConstants):
+
+class FlextPluginTestConstants(FlextTestsConstants, FlextPluginConstants):
     """Test constants for flext-plugin."""
 
-    class Plugin(FlextPluginsConstants.Plugin):
+    class Plugin(FlextPluginConstants.Plugin):
         """Plugin test namespace."""
 
         class Tests:
