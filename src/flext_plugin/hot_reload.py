@@ -80,8 +80,7 @@ class FlextPluginHotReload:
         # Start monitoring
         result = hot_reload.start_watching(["./plugins"])
         if result.is_success:
-            # CLI output
-            print("Hot reload monitoring started")
+            hot_reload.logger.info("hot_reload_monitoring_started")
 
         # Stop monitoring
         result = hot_reload.stop_watching()
