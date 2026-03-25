@@ -29,7 +29,7 @@ class FlextPluginUtilities(FlextUtilities):
     class Plugin:
         """Plugin discovery and validation utilities."""
 
-        _CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = (
+        CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = (
             TypeAdapter(
                 Mapping[str, t.ContainerValue],
             )
@@ -296,7 +296,7 @@ class FlextPluginUtilities(FlextUtilities):
                     last_modified_raw = watcher_config.get("last_modified", {})
                     last_modified: t.MutableContainerMapping = (
                         dict(
-                            FlextPluginUtilities.Plugin._CONTAINER_MAP_ADAPTER.validate_python(
+                            FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_python(
                                 last_modified_raw,
                             ),
                         )
@@ -581,7 +581,7 @@ class FlextPluginUtilities(FlextUtilities):
                     if path.suffix in {".yaml", ".yml"}:
                         config = yaml.safe_load(content)
                     elif path.suffix == ".json":
-                        config = FlextPluginUtilities.Plugin._CONTAINER_MAP_ADAPTER.validate_json(
+                        config = FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_json(
                             content,
                         )
                     else:
@@ -937,8 +937,10 @@ class FlextPluginUtilities(FlextUtilities):
                             f"Registry file too large: {file_size_mb:.1f}MB",
                         )
                     content = path.read_text(encoding="utf-8")
-                    registry = FlextPluginUtilities.Plugin._CONTAINER_MAP_ADAPTER.validate_json(
-                        content,
+                    registry = (
+                        FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_json(
+                            content,
+                        )
                     )
                     return r[t.ContainerMapping].ok(registry)
                 except (
@@ -1028,7 +1030,7 @@ class FlextPluginUtilities(FlextUtilities):
                             path.parent,
                         )
                     validated: Mapping[str, t.ContainerValue] = (
-                        FlextPluginUtilities.Plugin._CONTAINER_MAP_ADAPTER.validate_python(
+                        FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_python(
                             registry
                         )
                     )
@@ -1037,7 +1039,7 @@ class FlextPluginUtilities(FlextUtilities):
                         "last_updated": datetime.now(UTC).isoformat(),
                     }
                     _ = path.write_text(
-                        FlextPluginUtilities.Plugin._CONTAINER_MAP_ADAPTER.dump_json(
+                        FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.dump_json(
                             mutable_registry, indent=2
                         ).decode(
                             "utf-8",
