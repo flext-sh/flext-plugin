@@ -110,7 +110,6 @@ from flext_plugin import create_flext_plugin_platform, create_flext_plugin
 from flext_plugin import PluginType
 
 
-
 def main():
     # Create plugin platform
     platform = create_flext_plugin_platform(config={"debug": True})
@@ -322,7 +321,6 @@ FLEXT Plugin can automatically discover plugins in directories:
 
 ```python
 from flext_plugin import FlextPluginDiscoveryService
-
 
 
 def discover_plugins():

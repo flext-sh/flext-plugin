@@ -178,11 +178,7 @@ class FlextPluginServices:
 
     async def discover_plugins(
         self, paths: t.StringList, discovery_service: PluginDiscovery
-<<<<<<< Updated upstream
     ) -> r[List[FlextPluginModels.Plugin]]:
-=======
-    ) -> FlextResult[List[FlextPluginModels.Plugin]]:
->>>>>>> Stashed changes
         """Application service orchestrating plugin discovery."""
 
         try:
@@ -222,11 +218,7 @@ class FlextPluginServices:
         plugin: FlextPluginModels.Plugin,
         context: t.Dict,
         executor: PluginExecution,
-<<<<<<< Updated upstream
     ) -> r[FlextPluginModels.Execution]:
-=======
-    ) -> FlextResult[FlextPluginModels.Execution]:
->>>>>>> Stashed changes
         """Application service orchestrating plugin execution."""
 
         try:
@@ -416,37 +408,22 @@ class FlextPluginProtocols:
         """Protocol for plugin execution mechanisms."""
 
         async def execute_plugin(
-<<<<<<< Updated upstream
             self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.NormalizedValue]
         ) -> r[t.NormalizedValue]:
-=======
-            self, plugin: FlextPluginModels.Plugin, context: Dict[str, object]
-        ) -> FlextResult[object]:
->>>>>>> Stashed changes
             """Execute plugin with given context."""
             ...
 
     class PluginSecurity(Protocol):
         """Protocol for plugin security validation."""
 
-<<<<<<< Updated upstream
         async def validate_plugin(self, plugin: FlextPluginModels.Plugin) -> r[bool]:
-=======
-        async def validate_plugin(
-            self, plugin: FlextPluginModels.Plugin
-        ) -> FlextResult[bool]:
->>>>>>> Stashed changes
             """Validate plugin security."""
             ...
 
     class PluginHotReload(Protocol):
         """Protocol for plugin hot reload functionality."""
 
-<<<<<<< Updated upstream
         async def start_watching(self, paths: t.StringList) -> r[bool]:
-=======
-        async def start_watching(self, paths: t.StringList) -> FlextResult[bool]:
->>>>>>> Stashed changes
             """Start watching paths for plugin changes."""
             ...
 
@@ -460,7 +437,6 @@ class FlextPluginProtocols:
 ```python
 # Example protocol implementation
 from flext_plugin import FlextPluginProtocols
-
 
 
 class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
@@ -503,13 +479,7 @@ from flext_core import u
 from typing import List
 
 
-<<<<<<< Updated upstream
 async def process_plugins_workflow(self, plugin_names: t.StringList) -> r[t.List]:
-=======
-async def process_plugins_workflow(
-    self, plugin_names: t.StringList
-) -> FlextResult[t.List]:
->>>>>>> Stashed changes
     """Complete plugin processing workflow using railway pattern."""
 
     # Chain operations with automatic error propagation
@@ -523,11 +493,7 @@ async def process_plugins_workflow(
     )
 
 
-<<<<<<< Updated upstream
 def _validate_plugin_names(self, names: t.StringList) -> r[t.StringList]:
-=======
-def _validate_plugin_names(self, names: t.StringList) -> FlextResult[t.StringList]:
->>>>>>> Stashed changes
     """Validate plugin names."""
     if not names:
         return r.fail("No plugin names provided")
@@ -539,13 +505,7 @@ def _validate_plugin_names(self, names: t.StringList) -> FlextResult[t.StringLis
     return r.ok(names)
 
 
-<<<<<<< Updated upstream
 async def _load_plugins(self, names: t.StringList) -> r[List[FlextPluginModels.Plugin]]:
-=======
-async def _load_plugins(
-    self, names: t.StringList
-) -> FlextResult[List[FlextPluginModels.Plugin]]:
->>>>>>> Stashed changes
     """Load plugins by name."""
     plugins = []
     for name in names:
@@ -569,7 +529,6 @@ ______________________________________________________________________
 # tests/unit/test_entities.py
 import pytest
 from flext_plugin import FlextPluginModels
-
 
 
 class TestPluginEntity:
@@ -629,7 +588,6 @@ class TestPluginEntity:
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from flext_plugin import FlextPluginServices
-
 
 
 class TestPluginServices:
@@ -882,7 +840,6 @@ if TYPE_CHECKING:
     from flext_plugin import FlextPluginModels
 
 
-
 class FlextPlugin[ModuleName]:
     """Single main class following FLEXT naming convention.
 
@@ -899,11 +856,7 @@ class FlextPlugin[ModuleName]:
     # Public API methods
     async def public_method(
         self, param: FlextPluginTypes.SomeType
-<<<<<<< Updated upstream
     ) -> r[FlextPluginModels.SomeEntity]:
-=======
-    ) -> FlextResult[FlextPluginModels.SomeEntity]:
->>>>>>> Stashed changes
         """Public method with comprehensive documentation."""
         try:
             # Validation
@@ -948,7 +901,6 @@ class FlextPlugin[ModuleName]:
             return r.ok("helper result")
 
 
-
 # Module constants (if needed)
 DEFAULT_TIMEOUT: int = 30
 MAX_RETRIES: int = 3
@@ -965,11 +917,7 @@ __all__ = ["FlextPlugin[ModuleName]"]
 # Railway pattern for complex operations
 async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
-<<<<<<< Updated upstream
 ) -> r[FlextPluginTypes.ComplexOutput]:
-=======
-) -> FlextResult[FlextPluginTypes.ComplexOutput]:
->>>>>>> Stashed changes
     """Complex operation using railway pattern."""
 
     return (
@@ -1005,7 +953,6 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 from flext_plugin import FlextPluginConstants
-
 
 
 class FlextPluginSettings:
@@ -1422,13 +1369,8 @@ class FlextPluginExecutor:
         self.executor = ThreadPoolExecutor(max_workers=thread_pool_size)
 
     async def execute_plugins_concurrent(
-<<<<<<< Updated upstream
         self, plugins: List[FlextPluginModels.Plugin], context: Dict[str, t.NormalizedValue]
     ) -> r[List[FlextPluginModels.Execution]]:
-=======
-        self, plugins: List[FlextPluginModels.Plugin], context: Dict[str, object]
-    ) -> FlextResult[List[FlextPluginModels.Execution]]:
->>>>>>> Stashed changes
         """Execute multiple plugins concurrently with resource limits."""
 
         async def execute_single_plugin(plugin: FlextPluginModels.Plugin):
@@ -1458,13 +1400,8 @@ class FlextPluginExecutor:
         return r.ok(executions)
 
     async def _execute_plugin_safe(
-<<<<<<< Updated upstream
         self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.NormalizedValue]
     ) -> r[FlextPluginModels.Execution]:
-=======
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, object]
-    ) -> FlextResult[FlextPluginModels.Execution]:
->>>>>>> Stashed changes
         """Execute single plugin with error isolation."""
         try:
             # Create execution entity
@@ -1491,13 +1428,8 @@ class FlextPluginExecutor:
             return r.ok(execution)  # Return failed execution, not error
 
     def _execute_plugin_sync(
-<<<<<<< Updated upstream
         self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.NormalizedValue]
     ):
-=======
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, object]
-    ) -> object:
->>>>>>> Stashed changes
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic
         # This would integrate with the plugin loading system

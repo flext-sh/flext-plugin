@@ -123,13 +123,7 @@ class FlextPluginPlatform:
     def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Coordinate plugin loading across services"""
 
-<<<<<<< Updated upstream
     def discover_plugins(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
-=======
-    def discover_plugins(
-        self, path: str
-    ) -> FlextResult[list[FlextPluginModels.Entity]]:
->>>>>>> Stashed changes
         """Coordinate plugin discovery"""
 ```
 

@@ -161,20 +161,11 @@ class CustomPlugin(FlextPlugin):
 **Service Pattern**:
 
 ```python
-<<<<<<< Updated upstream
 from flext_plugin import (
     FlextPluginService,
     FlextPluginDiscoveryService,
 )
 from flext_plugin import FlextPluginHandler
-
-=======
-from flext_plugin.application.services import (
-    FlextPluginService,
-    FlextPluginDiscoveryService,
-)
-from flext_plugin.application.handlers import FlextPluginHandler
->>>>>>> Stashed changes
 
 
 class PluginWorkflow:
@@ -263,11 +254,7 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 # Core plugin patterns
 FlextPlugin  # Main plugin entity
 FlextPluginModels.Config  # Plugin configuration entity
-<<<<<<< Updated upstream
 FlextPluginModels.Metadata  # Plugin metadata value t.NormalizedValue
-=======
-FlextPluginModels.Metadata  # Plugin metadata value object
->>>>>>> Stashed changes
 FlextPluginModels.Registry  # Plugin collection aggregate
 FlextPluginPlatform  # Main platform orchestrator
 
@@ -345,7 +332,6 @@ from flext_plugin import (
     create_flext_plugin_platform,
 )
 from flext_plugin import PluginStatus, PluginType
-
 
 
 # Use patterns directly
@@ -526,11 +512,7 @@ from flext_core import u
 # Factory pattern for plugin creation
 def create_singer_tap_plugin(
     name: str, version: str, tap_config: t.Dict
-<<<<<<< Updated upstream
 ) -> r[FlextPlugin]:
-=======
-) -> FlextResult[FlextPlugin]:
->>>>>>> Stashed changes
     """Create Singer tap plugin with validation."""
     try:
         plugin = create_flext_plugin(
@@ -546,7 +528,6 @@ def create_singer_tap_plugin(
         return r[bool].ok(plugin)
     except Exception as e:
         return r[bool].fail(f"Failed to create tap plugin: {e}")
-
 
 
 # Usage with railway-oriented chaining
@@ -706,11 +687,7 @@ class AdvancedPluginDiscovery:
 
     def discover_plugins_by_type(
         self, plugin_type: PluginType, paths: t.StringList
-<<<<<<< Updated upstream
     ) -> r[List[FlextPlugin]]:
-=======
-    ) -> FlextResult[List[FlextPlugin]]:
->>>>>>> Stashed changes
         """Discover plugins filtered by type."""
         try:
             all_plugins = []
@@ -733,11 +710,7 @@ class AdvancedPluginDiscovery:
 
     def discover_singer_plugins(
         self, meltano_path: str
-<<<<<<< Updated upstream
     ) -> r[Mapping[str, List[FlextPlugin]]]:
-=======
-    ) -> FlextResult[dict[str, List[FlextPlugin]]]:
->>>>>>> Stashed changes
         """Discover Singer plugins from Meltano project structure."""
         try:
             meltano_yml_path = Path(meltano_path) / "meltano.yml"
@@ -848,13 +821,7 @@ class FlextPlugin(FlextModels.Entity):
             return r[bool].fail("Plugin already active")
 
         if self.status not in [PluginStatus.LOADED, PluginStatus.INACTIVE]:
-<<<<<<< Updated upstream
             return r[bool].fail(f"Cannot activate plugin in {self.status} state")
-=======
-            return FlextResult[bool].fail(
-                f"Cannot activate plugin in {self.status} state"
-            )
->>>>>>> Stashed changes
 
         # Check dependencies
         if not self._validate_dependencies():
@@ -1221,35 +1188,19 @@ class LazyPluginLoader:
         class_name = self.plugin_config.get("class_name", "Plugin")
 
         if not hasattr(module, class_name):
-<<<<<<< Updated upstream
             return r[bool].fail(f"Plugin class '{class_name}' not found in module")
-=======
-            return FlextResult[bool].fail(
-                f"Plugin class '{class_name}' not found in module"
-            )
->>>>>>> Stashed changes
 
         plugin_class = getattr(module, class_name)
 
         # Validate plugin class
         if not issubclass(plugin_class, FlextPlugin):
-<<<<<<< Updated upstream
             return r[bool].fail(f"Class '{class_name}' is not a FlextPlugin subclass")
-=======
-            return FlextResult[bool].fail(
-                f"Class '{class_name}' is not a FlextPlugin subclass"
-            )
->>>>>>> Stashed changes
 
         return r[bool].ok(plugin_class)
 
     def _instantiate_plugin(
         self, plugin_class: type, *args, **kwargs
-<<<<<<< Updated upstream
     ) -> r[FlextPlugin]:
-=======
-    ) -> FlextResult[FlextPlugin]:
->>>>>>> Stashed changes
         """Instantiate plugin with error handling."""
         try:
             instance = plugin_class(*args, **kwargs)
@@ -1283,11 +1234,7 @@ class PluginCache:
     ):
         """Decorator for caching plugin operation results."""
 
-<<<<<<< Updated upstream
         def decorator(func: Callable[..., r[t.NormalizedValue]]):
-=======
-        def decorator(func: Callable[..., FlextResult[object]]):
->>>>>>> Stashed changes
             @wraps(func)
             def wrapper(*args, **kwargs) -> r[t.NormalizedValue]:
                 # Generate cache key
@@ -1434,13 +1381,8 @@ def process_plugin_data(
     plugin: PluginInterface,
     data: t.Dict,
     transformer: Callable[[t.Dict], T],
-<<<<<<< Updated upstream
     validator: Callable[[T], r[U]],
 ) -> r[U]:
-=======
-    validator: Callable[[T], FlextResult[U]],
-) -> FlextResult[U]:
->>>>>>> Stashed changes
     """Process plugin data with complete type safety."""
     execution_result = plugin.execute(data)
 
@@ -1452,7 +1394,6 @@ def process_plugin_data(
         return validator(transformed_data)
     except Exception as e:
         return r[bool].fail(f"Data processing failed: {e}")
-
 
 
 # ❌ Avoid untyped plugin interfaces
@@ -1467,11 +1408,7 @@ def execute_plugin(plugin, data):  # Missing types
 from flext_plugin import PluginError
 
 
-<<<<<<< Updated upstream
 def safe_plugin_operation(plugin: FlextPlugin) -> r[bool]:
-=======
-def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
->>>>>>> Stashed changes
     """Plugin operation with comprehensive error handling."""
     try:
         # Validate plugin state
@@ -1506,12 +1443,7 @@ def safe_plugin_operation(plugin: FlextPlugin) -> FlextResult[bool]:
         logger.exception(
             "Unexpected error in plugin operation", plugin_name=plugin.name
         )
-<<<<<<< Updated upstream
         return r[bool].fail(f"Unexpected error: {e}")
-
-=======
-        return FlextResult[bool].fail(f"Unexpected error: {e}")
->>>>>>> Stashed changes
 
 
 # ✅ Plugin error hierarchy
@@ -1617,11 +1549,7 @@ class DataProcessorPlugin(FlextPlugin):
         self,
         config: Optional[FlextPluginModels.Config] = None,
         metadata: Optional[FlextPluginModels.Metadata] = None,
-<<<<<<< Updated upstream
         **kwargs,
-=======
-        **kwargs: object,
->>>>>>> Stashed changes
     ) -> None:
         """
         Initialize data processor plugin with configuration.
@@ -1656,11 +1584,7 @@ class DataProcessorPlugin(FlextPlugin):
             **kwargs,
         )
 
-<<<<<<< Updated upstream
     def execute(self, data: t.Dict) -> r[t.Dict]:
-=======
-    def execute(self, data: t.Dict) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
         """
         Execute data processing pipeline on input data.
 
@@ -1802,11 +1726,7 @@ from flext_core import u
 # Oracle WMS plugin (flext-oracle-wms project)
 def create_oracle_wms_plugin(config: t.Dict) -> r[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
-<<<<<<< Updated upstream
     return r[bool].ok(
-=======
-    return FlextResult[bool].ok(
->>>>>>> Stashed changes
         create_flext_plugin(
             name="oracle-wms-connector",
             version="0.9.9",
@@ -1823,11 +1743,7 @@ def create_oracle_wms_plugin(config: t.Dict) -> r[FlextPlugin]:
 # Singer tap plugin (flext-tap-oracle project)
 def create_oracle_tap_plugin(tap_config: t.Dict) -> r[FlextPlugin]:
     """Create Oracle Singer tap plugin."""
-<<<<<<< Updated upstream
     return r[bool].ok(
-=======
-    return FlextResult[bool].ok(
->>>>>>> Stashed changes
         create_flext_plugin(
             name=f"tap-oracle-{tap_config.get('schema', 'default')}",
             version="0.9.9",

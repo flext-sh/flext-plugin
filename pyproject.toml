@@ -5,7 +5,6 @@
 
 # [MANAGED] build system
 [build-system]
-<<<<<<< Updated upstream
 build-backend = "hatchling.build"
 requires = [ "hatchling" ]
 
@@ -15,30 +14,10 @@ dev = [  ]
 # [CUSTOM] project metadata
 [project]
 
-authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
-=======
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=2"]
 
-# [CUSTOM] project metadata
-[project]
-name = "flext-plugin"
-version = "0.12.0-dev"
-description = "FLEXT Plugin - Plugin System for FLEXT Platform"
-readme = "README.md"
-keywords = [
-  "architecture",
-  "enterprise",
-  "extensions",
-  "flext",
-  "plugins",
-  "typed",
-]
-license = "MIT"
-maintainers = [{ email = "team@flext.sh", name = "FLEXT Team" }]
-authors = [{ email = "team@flext.sh", name = "FLEXT Team" }]
-requires-python = ">=3.13,<3.14"
->>>>>>> Stashed changes
+
+
+authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Development Status :: 5 - Production/Stable",
@@ -133,13 +112,21 @@ dev = [
   "vulture>=2.13",
 ]
 
-<<<<<<< Updated upstream
+
+
+
+
+
+
 # [MANAGED] coverage
 [tool.coverage.report]
 fail_under = 15
 precision = 2
 show_missing = true
 skip_covered = false
+
+
+
 
 # [MANAGED] deptry
 [tool.deptry]
@@ -150,78 +137,19 @@ pep621_dev_dependency_groups = [
   "dev",
 ]
 
+
+
+
 [tool.hatch.metadata]
 allow-direct-references = true
+
+
+
 
 # [MANAGED] mypy
 [tool.mypy]
 disable_error_code = [
   "prop-decorator",
-=======
-[dependency-groups]
-dev = []
-
-[tool.poetry]
-dependencies.flext-core.develop = true
-dependencies.flext-core.path = "../flext-core"
-dependencies.flext-observability.develop = true
-dependencies.flext-observability.path = "../flext-observability"
-packages = [{ from = "src", include = "flext_plugin" }]
-
-# [MANAGED] ruff
-
-# [CUSTOM] poetry dev extensions
-[tool.poetry.group.dev.dependencies]
-[tool.ruff]
-extend = "../ruff-shared.toml"
-lint.isort.known-first-party = ["flext_plugin"]
-
-# [MANAGED] codespell
-[tool.codespell]
-ignore-words-list = "dn,cn,ou,uid,sn,aci,acl,ldif,flext,FLEXT,dbt,oic,wms,grpc,meltano,protobuf,creds,assertIn"
-skip = """\
-  .git,*.lock,*.egg-info,dist,build,.venv,__pycache__,.mypy_cache,.pytest_cache,.ruff_cache,node_modules,typings,vendor\
-  ,*.pb2*.py\
-  """
-
-# [MANAGED] deptry
-[tool.deptry]
-known_first_party = ["flext", "flext_quality"]
-pep621_dev_dependency_groups = ["dev"]
-per_rule_ignores.DEP002 = [
-  # CLI tools (invoked from command line, not imported)
-  "autoflake",
-  "bandit",
-  "black",
-  "codespell",
-  "deptry",
-  "isort",
-  "pip-audit",
-  "pre-commit",
-  "pylint",
-  "pyupgrade",
-  "radon",
-  "ruff",
-  "vulture",
-  # Type stubs
-  "django-stubs",
-  "types-ldap3",
-  "types-protobuf",
-  "types-psutil",
-  "types-psycopg2",
-  "types-python-dateutil",
-  "types-pyyaml",
-  "types-redis",
-  "types-requests",
-  "types-setuptools",
-  "types-toml",
-  # Runtime deps used indirectly (via pydantic, anyio)
-  "anyio",
-  "jsonschema",
-  "psutil",
-  "pydantic-core",
-  "watchdog",
->>>>>>> Stashed changes
 ]
 explicit_package_bases = true
 ignore_missing_imports = true
@@ -234,11 +162,17 @@ python_version = "3.13"
 
 [tool.poetry]
 
+
+
+
 # [MANAGED] pydantic-mypy
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
+
+
+
 
 # [MANAGED] pyrefly
 [tool.pyrefly]
@@ -288,6 +222,9 @@ redundant-cast = true
 unannotated-attribute = true
 unannotated-parameter = true
 unannotated-return = true
+
+
+
 
 # [MANAGED] pyright
 [tool.pyright]
@@ -341,17 +278,17 @@ venv = ".venv"
 venvPath = ".."
 
 [[tool.pyright.executionEnvironments]]
-extraPaths = [ "src" ]
+extraPaths = ["src"]
 reportPrivateUsage = "error"
 root = "src"
 
 [[tool.pyright.executionEnvironments]]
-extraPaths = [ ".", "src" ]
+extraPaths = [".", "src"]
 reportPrivateUsage = "none"
 root = "tests"
 
 [[tool.pyright.executionEnvironments]]
-extraPaths = [ ".", "src" ]
+extraPaths = [".", "src"]
 reportPrivateUsage = "none"
 root = "examples"
 
@@ -381,6 +318,9 @@ python_files = [
   "test_*.py",
 ]
 
+
+
+
 # [MANAGED] ruff
 [tool.ruff]
 exclude = [
@@ -400,146 +340,16 @@ exclude = [
   "vendor",
   "venv",
 ]
-<<<<<<< Updated upstream
 fix = true
 line-length = 88
 preview = true
 respect-gitignore = true
 show-fixes = true
 src = [
-=======
-extend_exclude = ["flexcore/", "flext-.*/"]
-
-# [MANAGED] pytest
-[tool.pytest]
-[tool.pytest.ini_options]
-tool.pytest.ini_options.minversion = "8.0"
-tool.pytest.ini_options.python_classes = ["Test*"]
-tool.pytest.ini_options.python_files = ["*_test.py", "*_tests.py", "test_*.py"]
-tool.pytest.ini_options.addopts = ["--strict-markers"]
-tool.pytest.ini_options.markers = [
-  "unit: unit tests",
-  "integration: integration tests",
-  "performance: performance and benchmark tests",
-  "slow: slow-running tests",
-  "docker: tests requiring Docker",
-  "e2e: end-to-end integration tests",
-  "edge_cases: edge case tests",
-  "stress: stress tests",
-  "resilience: resilience tests",
-]
-
-
-# [MANAGED] coverage
-[tool.coverage]
-run.branch = true
-run.omit = ["*/__pycache__/*", "*/_pb2*.py", "*/conftest.py", "*/tests/*"]
-run.relative_files = true
-run.source = ["src/flext_plugin"]
-report.exclude_lines = [
-  "@abstractmethod",
-  "^\\s*\\.\\.\\.\\s*$",
-  "def __repr__",
-  "def __str__",
-  'if __name__ == "__main__":',
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-  "pragma: no cover",
-  "raise NotImplementedError",
-]
-report.fail_under = 0
-report.partial_branches = ["pragma: no branch"]
-report.precision = 2
-report.show_missing = true
-report.skip_empty = true
-html.directory = "htmlcov"
-xml.output = "coverage.xml"
-
-# [MANAGED] mypy
-[tool.mypy]
-cache_dir = ".mypy_cache"
-check_untyped_defs = true
-color_output = true
-disallow_any_decorated = false
-disallow_any_explicit = true
-disallow_any_expr = false
-disallow_any_generics = true
-disallow_any_unimported = true
-disallow_incomplete_defs = true
-disallow_subclassing_any = true
-disallow_untyped_calls = true
-disallow_untyped_decorators = false
-disallow_untyped_defs = true
-error_summary = true
-exclude = [
-  ".*/generate_config.py",
-  ".*/manage.py",
-  ".*_pb2\\.py$",
-  ".*_pb2_grpc\\.py$",
-  ".coverage.*",
-  ".git/",
-  ".mypy_cache/",
-  ".pytest_cache/",
-  ".ruff_cache/",
-  ".venv/",
-  "__pycache__/",
-  "build/",
-  "dist/",
-  "node_modules/",
-  "typings/",
-  "vendor/",
-]
-extra_checks = true
-follow_imports = "silent"
-follow_imports_for_stubs = true
-incremental = true
-local_partial_types = true
-namespace_packages = true
-no_implicit_optional = true
-no_implicit_reexport = true
-platform = "linux"
-pretty = true
-python_version = "3.13"
-show_column_numbers = true
-show_error_codes = true
-show_error_context = true
-show_traceback = true
-strict = true
-strict_equality = true
-strict_optional = true
-warn_incomplete_stub = true
-warn_no_return = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = false
-mypy_path = [
-  "..",
-  "../typings",
-  "../typings/generated",
-  "src",
-  "../flext-core/src",
-  "../flext-observability/src",
-]
-
-# [MANAGED] pyrefly
-[tool.pyrefly]
-project-excludes = ["**/*_pb2*.py", "**/*_pb2_grpc*.py"]
-search-path = [
-  "..",
-  "../flext-core/src",
-  "../flext-observability/src",
-  "../typings",
-  "../typings/generated",
-  "src",
-  "tests",
->>>>>>> Stashed changes
   "examples",
   "src",
   "tests",
 ]
-<<<<<<< Updated upstream
 target-version = "py313"
 
 [tool.ruff.format]
@@ -605,107 +415,6 @@ ignore = [
 ]
 select = [
   "ALL",
-=======
-include = ["src", "scripts", "tests", "examples"]
-exclude = [
-  "**/*.pb2.py",
-  "**/*.pb2_grpc.py",
-  ".git/",
-  ".meltano/",
-  ".mypy_cache/",
-  ".pytest_cache/",
-  ".ruff_cache/",
-  "__pycache__/",
-  "build/",
-  "dist/",
-  "node_modules/",
-  "target/",
-  "typings/",
-]
-pythonPlatform = "Linux"
-pythonVersion = "3.13"
-reportAssertAlwaysTrue = false
-reportCallInDefaultInitializer = "error"
-reportCallIssue = "error"
-reportConstantRedefinition = "error"
-reportDuplicateImport = "error"
-reportFunctionMemberAccess = "error"
-reportGeneralTypeIssues = "error"
-reportImplicitRelativeImport = false
-reportImplicitStringConcatenation = "warning"
-reportImportCycles = "error"
-reportIncompatibleMethodOverride = "error"
-reportIncompatibleVariableOverride = "error"
-reportIncompleteStub = "warning"
-reportInconsistentConstructor = "error"
-reportInvalidStringEscapeSequence = "error"
-reportInvalidStubStatement = "error"
-reportInvalidTypeForm = false
-reportInvalidTypeVarUse = "error"
-reportMatchNotExhaustive = "warning"
-reportMissingImports = "error"
-reportMissingModuleSource = "error"
-reportMissingParameterType = "error"
-reportMissingSuperCall = "warning"
-reportMissingTypeArgument = "error"
-reportMissingTypeStubs = "warning"
-reportOptionalCall = "error"
-reportOptionalContextManager = "error"
-reportOptionalIterable = "error"
-reportOptionalMemberAccess = "error"
-reportOptionalOperand = "error"
-reportOptionalSubscript = "error"
-reportPrivateUsage = false
-reportPropertyTypeMismatch = "error"
-reportSelfClsParameterName = "error"
-reportTypedDictNotRequiredAccess = "error"
-reportUnboundVariable = "error"
-typeCheckingMode = "strict"
-reportUninitializedInstanceVariable = "warning"
-reportUnknownArgumentType = false
-reportUnknownLambdaType = "error"
-reportUnknownMemberType = false
-reportUnknownParameterType = false
-reportUnknownVariableType = false
-reportUnnecessaryCast = "warning"
-reportUnnecessaryComparison = "warning"
-reportUnnecessaryIsInstance = "warning"
-reportUnnecessaryTypeIgnoreComment = "warning"
-reportUnsupportedDunderAll = "error"
-reportUntypedBaseClass = "error"
-reportUntypedClassDecorator = "error"
-reportUntypedFunctionDecorator = "error"
-reportUntypedNamedTuple = "error"
-reportUnusedCallResult = "warning"
-reportUnusedClass = "warning"
-reportUnusedCoroutine = "error"
-reportUnusedExpression = "warning"
-reportUnusedFunction = "warning"
-reportUnusedImport = "error"
-reportUnusedVariable = "error"
-reportWildcardImportFromLibrary = "error"
-strictDictionaryInference = true
-strictListInference = true
-strictParameterNoneValue = true
-strictSetInference = true
-useLibraryCodeForTypes = true
-
-[tool.bandit]
-skips = ["B404", "B603", "B607", "B105", "B608"]
-exclude_dirs = [
-  ".git",
-  ".mypy_cache",
-  ".pytest_cache",
-  ".ruff_cache",
-  ".venv",
-  "__pycache__",
-  "build",
-  "dist",
-  "node_modules",
-  "tests",
-  "typings",
-  "vendor",
->>>>>>> Stashed changes
 ]
 
 [tool.ruff.lint.isort]
@@ -718,10 +427,7 @@ split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 
-"**/.vulture_whitelist.py" = [
-  "ALL",
-]
-<<<<<<< Updated upstream
+
 "**/*_pb2*.py" = [
   "ALL",
 ]
@@ -898,6 +604,9 @@ split-on-trailing-comma = true
   "S404",
   "S603",
 ]
+"**/.vulture_whitelist.py" = [
+  "ALL",
+]
 "**/__init__.py" = [
   "ANN401",
   "D107",
@@ -980,7 +689,7 @@ split-on-trailing-comma = true
   "S404",
   "S603",
 ]
-"**/tools/*.py" = [
+"**/tools/**/*.py" = [
   "FBT001",
   "FBT002",
   "N802",
@@ -989,7 +698,7 @@ split-on-trailing-comma = true
   "S607",
   "T201",
 ]
-"**/tools/**/*.py" = [
+"**/tools/*.py" = [
   "FBT001",
   "FBT002",
   "N802",
@@ -1008,6 +717,8 @@ split-on-trailing-comma = true
   "S607",
 ]
 
+
+
 # [MANAGED] tomlsort
 [tool.tomlsort]
 all = true
@@ -1022,6 +733,9 @@ sort_first = [
 [tool.uv.sources.flext-core]
 workspace = true
 
+
+
+
 # [MANAGED] yamlfix
 [tool.yamlfix]
 explicit_start = false
@@ -1029,9 +743,3 @@ line_length = 88
 preserve_quotes = true
 section_whitelines = 1
 whitelines = 1
-=======
-min_confidence = 80
-paths = ["**/src", "src"]
-sort_by_size = true
-verbose = false
->>>>>>> Stashed changes

@@ -69,33 +69,19 @@ class FlextPluginPlatform:
     # Discovery
     def scan_directory(
         self, directory_path: str
-<<<<<<< Updated upstream
     ) -> r[Sequence[FlextPluginModels.Entity]]:
-=======
-    ) -> FlextResult[list[FlextPluginModels.Entity]]:
->>>>>>> Stashed changes
         """Scan directory for plugins"""
 
     def validate_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-<<<<<<< Updated upstream
     def get_plugin_config(self, plugin_name: str) -> r[FlextPluginModels.Config]:
-=======
-    def get_plugin_config(
-        self, plugin_name: str
-    ) -> FlextResult[FlextPluginModels.Config]:
->>>>>>> Stashed changes
         """Get plugin configuration"""
 
     def update_plugin_config(
         self, plugin_name: str, config: FlextPluginModels.Config
-<<<<<<< Updated upstream
     ) -> r[bool]:
-=======
-    ) -> FlextResult[bool]:
->>>>>>> Stashed changes
         """Update plugin configuration"""
 ```
 
@@ -211,13 +197,7 @@ class FlextPluginDiscoveryService:
     def scan_directory(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-<<<<<<< Updated upstream
     def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> r[bool]:
-=======
-    def validate_plugin_integrity(
-        self, plugin: FlextPluginModels.Entity
-    ) -> FlextResult[bool]:
->>>>>>> Stashed changes
         """Validate plugin integrity"""
 ```
 
@@ -299,17 +279,12 @@ from flext_core import t
 from flext_core import u
 
 
-<<<<<<< Updated upstream
 def plugin_operation() -> r[bool]:
-=======
-def plugin_operation() -> FlextResult[bool]:
->>>>>>> Stashed changes
     try:
         # Plugin operation
         return r[bool].ok(True)
     except Exception as e:
         return r[bool].fail(str(e))
-
 
 
 # Use dependency injection
