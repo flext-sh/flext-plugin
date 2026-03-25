@@ -338,7 +338,7 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: bool,
+                _checked: t.NormalizedValue,
             ) -> r[Sequence[t.ContainerMapping]]:
                 if not self.discovery:
                     return r[Sequence[t.ContainerMapping]].fail(
@@ -472,7 +472,7 @@ class FlextPluginPlatform:
             """Load single plugin with composition."""
 
             def load_and_validate(
-                _checked: bool,
+                _checked: t.NormalizedValue,
             ) -> r[t.ContainerMapping]:
                 if not self.loader:
                     return r[t.ContainerMapping].fail(
@@ -522,10 +522,10 @@ class FlextPluginPlatform:
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
-            def validate_plugin_result(_: bool) -> r[bool]:
+            def validate_plugin_result(_: t.NormalizedValue) -> r[bool]:
                 return self.registry.register(plugin.name, plugin)
 
-            def add_to_plugins_result(_registry_result: bool) -> bool:
+            def add_to_plugins_result(_registry_result: t.NormalizedValue) -> bool:
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
