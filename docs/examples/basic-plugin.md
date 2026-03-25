@@ -229,7 +229,13 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             timeout = self._get_config_value("timeout_seconds", 30)
             if not isinstance(timeout, int) or timeout <= 0:
+<<<<<<< Updated upstream
                 return r[bool].fail("timeout_seconds must be a positive integer")
+=======
+                return FlextResult[bool].fail(
+                    "timeout_seconds must be a positive integer"
+                )
+>>>>>>> Stashed changes
 
             return r[bool].ok(data=True)
 
@@ -313,7 +319,11 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
+<<<<<<< Updated upstream
         # Access configuration from the config t.ContainerMapping passed during initialization
+=======
+        # Access configuration from the config dict[str, object] passed during initialization
+>>>>>>> Stashed changes
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
@@ -466,6 +476,7 @@ from unittest.mock import patch, mock_open
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 from flext_plugin import PluginStatus, PluginType
+
 
 
 class TestBasicDataProcessorPlugin:
@@ -702,7 +713,11 @@ class TestBasicDataProcessorPlugin:
         plugin.activate()
 
         # Force an error by providing non-dict data
+<<<<<<< Updated upstream
         with patch.t.NormalizedValue(
+=======
+        with patch.object(
+>>>>>>> Stashed changes
             plugin, "_process_data", side_effect=Exception("Processing error")
         ):
             result = plugin.execute({"payload": {"test": "data"}})

@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+
 if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_plugins import d, e, h, r, s, x
 
-    from tests import unit
     from tests.conftest import (
         performance_config,
         pytest_configure,
@@ -87,6 +87,7 @@ if TYPE_CHECKING:
         TestPluginRegistry,
     )
     from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
+    import tests.unit as unit
     from tests.unit.test_config import TestFlextPluginSettings
     from tests.unit.test_constants import TestFlextPluginConstants
     from tests.unit.test_models import TestFlextPluginModels
@@ -100,58 +101,25 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginTestTypes": ["tests.typings", "FlextPluginTestTypes"],
     "FlextPluginTestUtilities": ["tests.utilities", "FlextPluginTestUtilities"],
     "PluginInterface": ["tests.test_application_services", "PluginInterface"],
-    "TestBackwardsCompatibilityAliasesReal": [
-        "tests.test_application_services",
-        "TestBackwardsCompatibilityAliasesReal",
-    ],
+    "TestBackwardsCompatibilityAliasesReal": ["tests.test_application_services", "TestBackwardsCompatibilityAliasesReal"],
     "TestDynamicLoaderAdapter": ["tests.test_loader", "TestDynamicLoaderAdapter"],
     "TestFlextPlugin": ["tests.test_domain_entities", "TestFlextPlugin"],
-    "TestFlextPluginConstants": [
-        "tests.unit.test_constants",
-        "TestFlextPluginConstants",
-    ],
-    "TestFlextPluginConstantsLifecycle": [
-        "tests.test_core_types",
-        "TestFlextPluginConstantsLifecycle",
-    ],
-    "TestFlextPluginConstantsPluginType": [
-        "tests.test_core_types",
-        "TestFlextPluginConstantsPluginType",
-    ],
+    "TestFlextPluginConstants": ["tests.unit.test_constants", "TestFlextPluginConstants"],
+    "TestFlextPluginConstantsLifecycle": ["tests.test_core_types", "TestFlextPluginConstantsLifecycle"],
+    "TestFlextPluginConstantsPluginType": ["tests.test_core_types", "TestFlextPluginConstantsPluginType"],
     "TestFlextPluginDiscovery": ["tests.test_domain_ports", "TestFlextPluginDiscovery"],
-    "TestFlextPluginDiscoveryReal": [
-        "tests.test_application_services",
-        "TestFlextPluginDiscoveryReal",
-    ],
-    "TestFlextPluginExecution": [
-        "tests.test_domain_entities",
-        "TestFlextPluginExecution",
-    ],
+    "TestFlextPluginDiscoveryReal": ["tests.test_application_services", "TestFlextPluginDiscoveryReal"],
+    "TestFlextPluginExecution": ["tests.test_domain_entities", "TestFlextPluginExecution"],
     "TestFlextPluginHandlers": ["tests.test_handlers", "TestFlextPluginHandlers"],
     "TestFlextPluginHotReload": ["tests.test_hot_reload", "TestFlextPluginHotReload"],
     "TestFlextPluginLoader": ["tests.test_loader", "TestFlextPluginLoader"],
-    "TestFlextPluginMetadata": [
-        "tests.test_domain_entities",
-        "TestFlextPluginMetadata",
-    ],
+    "TestFlextPluginMetadata": ["tests.test_domain_entities", "TestFlextPluginMetadata"],
     "TestFlextPluginModels": ["tests.unit.test_models", "TestFlextPluginModels"],
-    "TestFlextPluginRegistryEntity": [
-        "tests.test_domain_entities",
-        "TestFlextPluginRegistryEntity",
-    ],
+    "TestFlextPluginRegistryEntity": ["tests.test_domain_entities", "TestFlextPluginRegistryEntity"],
     "TestFlextPluginService": ["tests.test_manager", "TestFlextPluginService"],
-    "TestFlextPluginServiceReal": [
-        "tests.test_application_services",
-        "TestFlextPluginServiceReal",
-    ],
-    "TestFlextPluginServiceStubBridges": [
-        "tests.test_manager",
-        "TestFlextPluginServiceStubBridges",
-    ],
-    "TestFlextPluginServiceWithRealAdapters": [
-        "tests.test_application_services",
-        "TestFlextPluginServiceWithRealAdapters",
-    ],
+    "TestFlextPluginServiceReal": ["tests.test_application_services", "TestFlextPluginServiceReal"],
+    "TestFlextPluginServiceStubBridges": ["tests.test_manager", "TestFlextPluginServiceStubBridges"],
+    "TestFlextPluginServiceWithRealAdapters": ["tests.test_application_services", "TestFlextPluginServiceWithRealAdapters"],
     "TestFlextPluginSettings": ["tests.unit.test_config", "TestFlextPluginSettings"],
     "TestFlextPluginTypes": ["tests.unit.test_types", "TestFlextPluginTypes"],
     "TestHotReloadPackage": ["tests.test_hot_reload_package", "TestHotReloadPackage"],
@@ -159,26 +127,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestPluginModel": ["tests.test_plugin", "TestPluginModel"],
     "TestPluginPlatform": ["tests.test_plugin", "TestPluginPlatform"],
     "TestPluginRegistry": ["tests.test_plugin", "TestPluginRegistry"],
-    "TestRealPluginDiscoveryAndExecution": [
-        "tests.test_application_services",
-        "TestRealPluginDiscoveryAndExecution",
-    ],
-    "TestRealPluginErrorScenarios": [
-        "tests.test_application_services",
-        "TestRealPluginErrorScenarios",
-    ],
-    "TestRealPluginIntegrationWorkflow": [
-        "tests.test_application_services",
-        "TestRealPluginIntegrationWorkflow",
-    ],
-    "TestServiceErrorHandling": [
-        "tests.test_application_services",
-        "TestServiceErrorHandling",
-    ],
-    "TestServicesIntegrationReal": [
-        "tests.test_application_services",
-        "TestServicesIntegrationReal",
-    ],
+    "TestRealPluginDiscoveryAndExecution": ["tests.test_application_services", "TestRealPluginDiscoveryAndExecution"],
+    "TestRealPluginErrorScenarios": ["tests.test_application_services", "TestRealPluginErrorScenarios"],
+    "TestRealPluginIntegrationWorkflow": ["tests.test_application_services", "TestRealPluginIntegrationWorkflow"],
+    "TestServiceErrorHandling": ["tests.test_application_services", "TestServiceErrorHandling"],
+    "TestServicesIntegrationReal": ["tests.test_application_services", "TestServicesIntegrationReal"],
     "c": ["tests.constants", "FlextPluginTestConstants"],
     "d": ["flext_plugins", "d"],
     "e": ["flext_plugins", "e"],
@@ -191,10 +144,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "r": ["flext_plugins", "r"],
     "real_container_with_adapters": ["tests.conftest", "real_container_with_adapters"],
     "real_discovery_adapter": ["tests.conftest", "real_discovery_adapter"],
-    "real_discovery_service_with_adapters": [
-        "tests.test_application_services",
-        "real_discovery_service_with_adapters",
-    ],
+    "real_discovery_service_with_adapters": ["tests.test_application_services", "real_discovery_service_with_adapters"],
     "real_loader_adapter": ["tests.conftest", "real_loader_adapter"],
     "real_manager_adapter": ["tests.conftest", "real_manager_adapter"],
     "real_plugin_config": ["tests.conftest", "real_plugin_config"],
@@ -202,17 +152,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "real_plugin_data": ["tests.conftest", "real_plugin_data"],
     "real_plugin_dependencies": ["tests.conftest", "real_plugin_dependencies"],
     "real_plugin_directory": ["tests.conftest", "real_plugin_directory"],
-    "real_plugin_discovery": [
-        "tests.test_application_services",
-        "real_plugin_discovery",
-    ],
+    "real_plugin_discovery": ["tests.test_application_services", "real_plugin_discovery"],
     "real_plugin_entity": ["tests.conftest", "real_plugin_entity"],
     "real_plugin_loader": ["tests.test_application_services", "real_plugin_loader"],
     "real_processor_plugin": ["tests.conftest", "real_processor_plugin"],
-    "real_service_with_adapters": [
-        "tests.test_application_services",
-        "real_service_with_adapters",
-    ],
+    "real_service_with_adapters": ["tests.test_application_services", "real_service_with_adapters"],
     "real_tap_plugin": ["tests.conftest", "real_tap_plugin"],
     "real_target_plugin": ["tests.conftest", "real_target_plugin"],
     "s": ["flext_plugins", "s"],
@@ -220,22 +164,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "simple_plugin_directory": ["tests.conftest", "simple_plugin_directory"],
     "t": ["tests.typings", "FlextPluginTestTypes"],
     "temp_plugin_dir": ["tests.test_application_services", "temp_plugin_dir"],
-    "test_basic_plugin_example_execution": [
-        "tests.test_examples",
-        "test_basic_plugin_example_execution",
-    ],
-    "test_docker_integration_example_execution": [
-        "tests.test_examples",
-        "test_docker_integration_example_execution",
-    ],
-    "test_docker_integration_example_with_connection_testing": [
-        "tests.test_examples",
-        "test_docker_integration_example_with_connection_testing",
-    ],
-    "test_plugin_configuration_example_execution": [
-        "tests.test_examples",
-        "test_plugin_configuration_example_execution",
-    ],
+    "test_basic_plugin_example_execution": ["tests.test_examples", "test_basic_plugin_example_execution"],
+    "test_docker_integration_example_execution": ["tests.test_examples", "test_docker_integration_example_execution"],
+    "test_docker_integration_example_with_connection_testing": ["tests.test_examples", "test_docker_integration_example_with_connection_testing"],
+    "test_plugin_configuration_example_execution": ["tests.test_examples", "test_plugin_configuration_example_execution"],
     "u": ["tests.utilities", "FlextPluginTestUtilities"],
     "unit": ["tests.unit", ""],
     "x": ["flext_plugins", "x"],
@@ -338,7 +270,6 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
-
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -353,7 +284,6 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
-
     """
     return sorted(__all__)
 

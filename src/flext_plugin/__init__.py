@@ -1,11 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""FLEXT Plugin System - plugin management for FLEXT ecosystem.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-"""
+"""Flext plugin package."""
 
 from __future__ import annotations
 
@@ -14,8 +10,10 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, r, s, x
+    from flext_core import FlextTypes
+    from flext_core import d, e, r, s, x
 
     from flext_plugin.__version__ import (
         __all__,
@@ -53,10 +51,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginEntities": ["flext_plugin.entities", "FlextPluginEntities"],
     "FlextPluginHandlers": ["flext_plugin.handlers", "FlextPluginHandlers"],
     "FlextPluginHotReload": ["flext_plugin.hot_reload", "FlextPluginHotReload"],
-    "FlextPluginImplementations": [
-        "flext_plugin.implementations",
-        "FlextPluginImplementations",
-    ],
+    "FlextPluginImplementations": ["flext_plugin.implementations", "FlextPluginImplementations"],
     "FlextPluginLoader": ["flext_plugin.loader", "FlextPluginLoader"],
     "FlextPluginModels": ["flext_plugin.models", "FlextPluginModels"],
     "FlextPluginPlatform": ["flext_plugin.platform", "FlextPluginPlatform"],
@@ -144,7 +139,6 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
-
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -159,7 +153,6 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
-
     """
     return sorted(__all__)
 

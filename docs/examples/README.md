@@ -461,7 +461,11 @@ from flext_core import t
 from flext_core import u
 
 
+<<<<<<< Updated upstream
 def process_data(self, data: t.Dict) -> r[t.Dict]:
+=======
+def process_data(self, data: t.Dict) -> FlextResult[t.Dict]:
+>>>>>>> Stashed changes
     """Type-safe data processing."""
     pass
 ```
