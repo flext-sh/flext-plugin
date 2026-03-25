@@ -482,7 +482,9 @@ class FlextPluginPlatform:
                 if load_result.is_success:
                     load_data = load_result.value
                     if u.is_dict_like(load_data):
-                        return r[t.ContainerMapping].ok(self._to_general_mapping(load_data))
+                        return r[t.ContainerMapping].ok(
+                            self._to_general_mapping(load_data)
+                        )
                     if getattr(load_data, "name", None):
                         plugin_dict: t.ContainerMapping = {
                             "name": str(getattr(load_data, "name", "")),

@@ -313,7 +313,9 @@ class FlextPluginAdapters:
             _plugin_path: str,
         ) -> r[t.ContainerMapping]:
             """Scan plugin for security issues."""
-            return r[t.ContainerMapping].ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
+            return r[t.ContainerMapping].ok({
+                "security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM
+            })
 
         @override
         def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:

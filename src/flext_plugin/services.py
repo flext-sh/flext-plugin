@@ -472,7 +472,9 @@ class FlextPluginService(x):
                 return r[t.ContainerMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
-            return r[t.ContainerMapping].ok(self._to_general_mapping(monitoring_result.value))
+            return r[t.ContainerMapping].ok(
+                self._to_general_mapping(monitoring_result.value)
+            )
         except (
             ValueError,
             TypeError,
