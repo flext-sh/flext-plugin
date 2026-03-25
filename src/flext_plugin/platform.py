@@ -382,8 +382,12 @@ class FlextPluginPlatform:
                 return self._validate_and_create_plugins(data)
 
             checked: r[bool] = self._require_protocol(self.discovery, "Discovery")
-            discovered: r[Sequence[t.ContainerMapping]] = checked.flat_map(discover_and_validate)
-            plugins: r[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(create_plugins_from_data)
+            discovered: r[Sequence[t.ContainerMapping]] = checked.flat_map(
+                discover_and_validate
+            )
+            plugins: r[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(
+                create_plugins_from_data
+            )
             return plugins.map(self._register_all)
 
         @override
@@ -420,8 +424,12 @@ class FlextPluginPlatform:
                 return self._execute_with_executor(execution)
 
             plugin_r: r[FlextPluginPlatform.Plugin] = get_plugin_result(plugin_name)
-            exec_r: r[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(create_execution_from_plugin)
-            prepared_r: r[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(prepare_execution_result)
+            exec_r: r[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(
+                create_execution_from_plugin
+            )
+            prepared_r: r[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(
+                prepare_execution_result
+            )
             return prepared_r.flat_map(execute_with_executor_result)
 
         def get_execution(self, eid: str) -> FlextPluginPlatform.PluginExecution | None:
@@ -501,7 +509,9 @@ class FlextPluginPlatform:
 
             checked_l: r[bool] = self._require_protocol(self.loader, "Loader")
             loaded: r[t.ContainerMapping] = checked_l.flat_map(load_and_validate)
-            plugin_r2: r[FlextPluginPlatform.Plugin] = loaded.flat_map(create_plugin_from_load_data)
+            plugin_r2: r[FlextPluginPlatform.Plugin] = loaded.flat_map(
+                create_plugin_from_load_data
+            )
             return plugin_r2.map(self._register_single)
 
         def register_plugin(

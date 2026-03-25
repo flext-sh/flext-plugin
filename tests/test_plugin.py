@@ -84,6 +84,9 @@ class TestPluginPlatform:
         plugin = FlextPluginPlatform.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
+            plugin_type="utility",
             is_enabled=True,
         )
         assert plugin.is_active()
@@ -93,6 +96,9 @@ class TestPluginPlatform:
         plugin = FlextPluginPlatform.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
+            plugin_type="utility",
             is_enabled=False,
         )
         assert not plugin.is_active()
@@ -102,6 +108,9 @@ class TestPluginPlatform:
         plugin = FlextPluginPlatform.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
+            plugin_type="utility",
             is_enabled=True,
         )
         assert plugin.status == "active"
@@ -111,6 +120,9 @@ class TestPluginPlatform:
         plugin = FlextPluginPlatform.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
+            description="",
+            author="",
+            plugin_type="utility",
             is_enabled=False,
         )
         assert plugin.status == "inactive"

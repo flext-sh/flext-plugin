@@ -355,8 +355,6 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test REAL management functionality through service methods."""
-        import asyncio
-
         result = asyncio.get_event_loop().run_until_complete(
             service.unload_plugin("non-existent-plugin"),
         )
