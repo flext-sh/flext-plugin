@@ -17,6 +17,12 @@ from flext_plugin import FlextPluginModels
 class FlextPluginTestModels(FlextTestsModels, FlextPluginModels):
     """Test models combining FlextTestsModels with flext-plugin models."""
 
+    class Plugin(FlextPluginModels.Plugin):
+        """Plugin test namespace."""
+
+        class Tests:
+            """Internal tests declarations."""
+
 
 m = FlextPluginTestModels
 

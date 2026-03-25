@@ -44,7 +44,7 @@ class FlextPluginHandlers:
         self.logger = FlextLogger(__name__)
         self._handlers: MutableMapping[
             str,
-            MutableSequence[t.Handlers.HandlerInfo],
+            MutableSequence[t.Plugin.Handlers.HandlerInfo],
         ] = {}
         self._event_history: MutableSequence[t.MutableContainerMapping] = []
 
@@ -265,7 +265,7 @@ class FlextPluginHandlers:
     def register_handler(
         self,
         event_type: str,
-        handler: t.Handlers.EventHandler,
+        handler: t.Plugin.Handlers.EventHandler,
         priority: int = 0,
     ) -> r[bool]:
         """Register an event handler for a specific event type.
@@ -281,11 +281,13 @@ class FlextPluginHandlers:
         """
         try:
             if event_type not in self._handlers:
-                self._handlers[event_type] = list[t.Handlers.HandlerInfo]()
-            handler_info = t.Handlers.HandlerInfo(handler=handler, priority=priority)
+                self._handlers[event_type] = list[t.Plugin.Handlers.HandlerInfo]()
+            handler_info = t.Plugin.Handlers.HandlerInfo(
+                handler=handler, priority=priority
+            )
             self._handlers[event_type].append(handler_info)
 
-            def get_priority(handler_info: t.Handlers.HandlerInfo) -> int:
+            def get_priority(handler_info: t.Plugin.Handlers.HandlerInfo) -> int:
                 return handler_info.priority
 
             self._handlers[event_type] = sorted(
@@ -371,7 +373,7 @@ class FlextPluginHandlers:
     def unregister_handler(
         self,
         event_type: str,
-        handler: t.Handlers.EventHandler,
+        handler: t.Plugin.Handlers.EventHandler,
     ) -> r[bool]:
         """Unregister an event handler.
 
@@ -410,7 +412,7 @@ class FlextPluginHandlers:
 
     async def _execute_handler(
         self,
-        handler: t.Handlers.EventHandler,
+        handler: t.Plugin.Handlers.EventHandler,
         event_data: t.ContainerMapping,
     ) -> t.NormalizedValue:
         """Execute a single handler with proper error handling.

@@ -17,6 +17,12 @@ from flext_plugin import FlextPluginTypes
 class FlextPluginTestTypes(FlextTestsTypes, FlextPluginTypes):
     """Test types combining FlextTestsTypes with flext-plugin types."""
 
+    class Plugin(FlextPluginTypes.Plugin):
+        """Plugin test namespace."""
+
+        class Tests:
+            """Internal tests declarations."""
+
 
 t = FlextPluginTestTypes
 __all__ = ["FlextPluginTestTypes", "t"]

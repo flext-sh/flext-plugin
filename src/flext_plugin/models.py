@@ -29,9 +29,6 @@ class FlextPluginModels(FlextModels):
     Railway-Oriented Programming with r[T] error handling.
     """
 
-    # Re-export PluginType enum from constants for convenience
-    PluginType = c.Plugin.PluginType
-
     class Plugin:
         """Plugin domain namespace."""
 
