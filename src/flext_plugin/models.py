@@ -103,10 +103,9 @@ class FlextPluginModels(FlextModels):
             metadata: Annotated[
                 t.MutableContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Extensible plugin metadata",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
             @classmethod
             def create(
@@ -372,10 +371,9 @@ class FlextPluginModels(FlextModels):
             data: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Execution output data",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             error: Annotated[
                 str,
                 Field(
@@ -439,10 +437,9 @@ class FlextPluginModels(FlextModels):
             metadata: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Extensible discovery metadata",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
             @field_validator("version", mode="before")
             @classmethod
@@ -588,17 +585,15 @@ class FlextPluginModels(FlextModels):
             dependencies: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of plugin dependencies",
                 ),
-            ]
+            ] = Field(default_factory=list)
             metadata: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Additional metadata",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
         class EventData(FlextModels.Value):
             """Event data - immutable event information.
@@ -620,10 +615,9 @@ class FlextPluginModels(FlextModels):
             data: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Event-specific data",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
         class ValidationResult(FlextModels.Value):
             """Validation result - immutable validation outcome.
@@ -643,24 +637,21 @@ class FlextPluginModels(FlextModels):
             errors: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of validation errors",
                 ),
-            ]
+            ] = Field(default_factory=list)
             warnings: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of validation warnings",
                 ),
-            ]
+            ] = Field(default_factory=list)
             details: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Additional validation details",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
         class SecurityReport(FlextModels.Value):
             """Security report - immutable security scan result.
@@ -683,17 +674,15 @@ class FlextPluginModels(FlextModels):
             violations: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of security violations",
                 ),
-            ]
+            ] = Field(default_factory=list)
             warnings: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of security warnings",
                 ),
-            ]
+            ] = Field(default_factory=list)
             analysis_time: Annotated[
                 datetime,
                 Field(description="When analysis was performed"),
@@ -734,10 +723,9 @@ class FlextPluginModels(FlextModels):
             last_modified: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="File modification tracking",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             created_at: Annotated[
                 datetime,
                 Field(description="Configuration creation time"),
@@ -810,24 +798,21 @@ class FlextPluginModels(FlextModels):
             plugins: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Dictionary of registered plugins",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             last_updated: Annotated[
                 datetime,
                 Field(
-                    default_factory=datetime.now,
                     description="Last update timestamp",
                 ),
-            ]
+            ] = Field(default_factory=datetime.now)
             created_at: Annotated[
                 datetime,
                 Field(
-                    default_factory=datetime.now,
                     description="Registry creation timestamp",
                 ),
-            ]
+            ] = Field(default_factory=datetime.now)
 
         class PluginConfig(FlextModels.Value):
             """Plugin configuration model.
@@ -839,10 +824,9 @@ class FlextPluginModels(FlextModels):
             settings: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Configuration settings",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
         class Registry(FlextModels.Value):
             """Plugin registry model.
@@ -853,24 +837,21 @@ class FlextPluginModels(FlextModels):
             plugins: Annotated[
                 t.ContainerMapping,
                 Field(
-                    default_factory=dict,
                     description="Dictionary of registered plugins",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             last_updated: Annotated[
                 datetime,
                 Field(
-                    default_factory=datetime.now,
                     description="Last update timestamp",
                 ),
-            ]
+            ] = Field(default_factory=datetime.now)
             created_at: Annotated[
                 datetime,
                 Field(
-                    default_factory=datetime.now,
                     description="Registry creation timestamp",
                 ),
-            ]
+            ] = Field(default_factory=datetime.now)
 
 
 m = FlextPluginModels
