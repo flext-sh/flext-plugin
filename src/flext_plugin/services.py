@@ -18,7 +18,6 @@ from flext_plugin import (
     FlextPluginModels,
     FlextPluginPlatform,
     FlextPluginProtocols,
-    FlextPluginTypes,
     c,
     p,
     t,
@@ -291,7 +290,7 @@ class FlextPluginService(x):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: FlextPluginTypes.Execution.ExecutionContext,
+        context: t.ContainerMapping,
         execution_id: str | None = None,
     ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.

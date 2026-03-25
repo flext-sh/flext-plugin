@@ -338,7 +338,7 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: t.NormalizedValue,
+                _checked: bool,
             ) -> r[Sequence[t.ContainerMapping]]:
                 if not self.discovery:
                     return r[Sequence[t.ContainerMapping]].fail(

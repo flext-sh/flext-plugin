@@ -259,7 +259,7 @@ class FlextPluginUtilities(FlextUtilities):
                         "callback": callback_function.__name__
                         if callback_function
                         else None,
-                        "watch_interval": FlextPluginUtilities.HotReloadManager.DEFAULT_WATCH_INTERVAL,
+                        "watch_interval": FlextPluginUtilities.Plugin.HotReloadManager.DEFAULT_WATCH_INTERVAL,
                         "last_modified": {},
                         "active": False,
                         "created_at": datetime.now(UTC).isoformat(),
@@ -443,10 +443,10 @@ class FlextPluginUtilities(FlextUtilities):
                 def _create_sandbox_config() -> t.ContainerMapping:
                     sandbox_config: t.ContainerMapping = {
                         "plugin_name": plugin_name,
-                        "max_memory_mb": FlextPluginUtilities.SecurityValidation.MAX_MEMORY_MB,
-                        "max_execution_time": FlextPluginUtilities.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
+                        "max_memory_mb": FlextPluginUtilities.Plugin.SecurityValidation.MAX_MEMORY_MB,
+                        "max_execution_time": FlextPluginUtilities.Plugin.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
                         "allowed_modules": list(
-                            FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS,
+                            FlextPluginUtilities.Plugin.SecurityValidation.ALLOWED_IMPORTS,
                         ),
                         "network_access": False,
                         "file_system_access": "read-only",
@@ -491,9 +491,7 @@ class FlextPluginUtilities(FlextUtilities):
                         "warnings": list[str](),
                         "analysis_time": datetime.now(UTC).isoformat(),
                     }
-                    for (
-                        dangerous_op
-                    ) in FlextPluginUtilities.SecurityValidation.DANGEROUS_OPERATIONS:
+                    for dangerous_op in FlextPluginUtilities.Plugin.SecurityValidation.DANGEROUS_OPERATIONS:
                         if dangerous_op in plugin_content:
                             security_report["safe"] = False
                             violations = security_report["violations"]
@@ -510,7 +508,7 @@ class FlextPluginUtilities(FlextUtilities):
                         if module_name and (
                             not any(
                                 allowed in module_name
-                                for allowed in FlextPluginUtilities.SecurityValidation.ALLOWED_IMPORTS
+                                for allowed in FlextPluginUtilities.Plugin.SecurityValidation.ALLOWED_IMPORTS
                             )
                         ):
                             warnings = security_report["warnings"]
@@ -572,7 +570,7 @@ class FlextPluginUtilities(FlextUtilities):
                     file_size_kb = path.stat().st_size / 1024
                     if (
                         file_size_kb
-                        > FlextPluginUtilities.ConfigurationManager.MAX_CONFIG_SIZE_KB
+                        > FlextPluginUtilities.Plugin.ConfigurationManager.MAX_CONFIG_SIZE_KB
                     ):
                         return r[t.ContainerMapping].fail(
                             f"Configuration file too large: {file_size_kb:.1f}KB",
@@ -591,7 +589,7 @@ class FlextPluginUtilities(FlextUtilities):
                     if (
                         u.is_dict_like(config)
                         and config.get("schema_version")
-                        != FlextPluginUtilities.ConfigurationManager.CONFIG_SCHEMA_VERSION
+                        != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):
                         return r[t.ContainerMapping].fail(
                             f"Unsupported configuration schema version: {config.get('schema_version')}",
@@ -639,7 +637,7 @@ class FlextPluginUtilities(FlextUtilities):
                             override_value: t.ContainerMapping = TypeAdapter(
                                 Mapping[str, t.ContainerValue],
                             ).validate_python(value)
-                            nested_merge = FlextPluginUtilities.ConfigurationManager.merge_plugin_configs(
+                            nested_merge = FlextPluginUtilities.Plugin.ConfigurationManager.merge_plugin_configs(
                                 base_nested_config,
                                 override_value,
                             )
@@ -884,11 +882,11 @@ class FlextPluginUtilities(FlextUtilities):
                 """
 
                 def _cleanup_registry_backups() -> None:
-                    backup_pattern = f"{FlextPluginUtilities.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
+                    backup_pattern = f"{FlextPluginUtilities.Plugin.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
                     backup_files = list(registry_directory.glob(backup_pattern))
                     backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
                     for backup_file in backup_files[
-                        FlextPluginUtilities.RegistryOperations.REGISTRY_BACKUP_COUNT :
+                        FlextPluginUtilities.Plugin.RegistryOperations.REGISTRY_BACKUP_COUNT :
                     ]:
                         backup_file.unlink()
 
@@ -931,7 +929,7 @@ class FlextPluginUtilities(FlextUtilities):
                     file_size_mb = path.stat().st_size / (1024 * 1024)
                     if (
                         file_size_mb
-                        > FlextPluginUtilities.RegistryOperations.MAX_REGISTRY_SIZE_MB
+                        > FlextPluginUtilities.Plugin.RegistryOperations.MAX_REGISTRY_SIZE_MB
                     ):
                         return r[t.ContainerMapping].fail(
                             f"Registry file too large: {file_size_mb:.1f}MB",
@@ -1026,7 +1024,7 @@ class FlextPluginUtilities(FlextUtilities):
                             f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
                         )
                         _ = path.rename(backup_path)
-                        _ = FlextPluginUtilities.RegistryOperations.cleanup_registry_backups(
+                        _ = FlextPluginUtilities.Plugin.RegistryOperations.cleanup_registry_backups(
                             path.parent,
                         )
                     validated: Mapping[str, t.ContainerValue] = (
@@ -1058,22 +1056,15 @@ class FlextPluginUtilities(FlextUtilities):
                 ) as e:
                     return r[None].fail(f"Registry save failed: {e}")
 
-        @model_validator(mode="after")
-        def validate_utilities_configuration(self) -> FlextPluginUtilities:
-            """Validate the complete utilities configuration."""
-            required_classes = [
-                "Plugin",
-                "HotReloadManager",
-                "SecurityValidation",
-                "ConfigurationManager",
-                "PluginExecution",
-                "RegistryOperations",
-            ]
-            for class_name in required_classes:
-                if getattr(self.__class__, class_name, None) is None:
-                    msg = f"Missing required nested class: {class_name}"
-                    raise ValueError(msg)
-            return self
+    @model_validator(mode="after")
+    def validate_utilities_configuration(self) -> FlextPluginUtilities:
+        """Validate the complete utilities configuration."""
+        required_classes = ["Plugin"]
+        for class_name in required_classes:
+            if getattr(self.__class__, class_name, None) is None:
+                msg = f"Missing required nested class: {class_name}"
+                raise ValueError(msg)
+        return self
 
 
 __all__ = ["FlextPluginUtilities", "u"]
