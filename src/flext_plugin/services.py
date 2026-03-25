@@ -146,7 +146,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         plugin.is_enabled = False
-        return r.ok(True)
+        return r[bool].ok(True)
 
     def discover_and_register_plugins(
         self,
@@ -239,7 +239,7 @@ class FlextPluginService(x):
                             f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                         )
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
-            return r.ok(registered_plugins)
+            return r[Sequence[FlextPluginModels.Plugin.Plugin]].ok(registered_plugins)
         except (
             ValueError,
             TypeError,
@@ -285,7 +285,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         plugin.is_enabled = True
-        return r.ok(True)
+        return r[bool].ok(True)
 
     def execute_plugin(
         self,
@@ -332,7 +332,7 @@ class FlextPluginService(x):
                 execution.result = self._to_general_mapping(exec_result.value)
             plugin.record_execution(0.0, success=True)
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
-            return r.ok(execution)
+            return r[FlextPluginPlatform.PluginExecution].ok(execution)
         except (
             ValueError,
             TypeError,
@@ -398,7 +398,7 @@ class FlextPluginService(x):
             plugin_name=plugin.name,
             settings=settings,
         )
-        return r.ok(config)
+        return r[FlextPluginModels.Plugin.PluginConfig].ok(config)
 
     async def get_plugin_health(
         self,
@@ -472,7 +472,7 @@ class FlextPluginService(x):
                 return r[t.ContainerMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
-            return r.ok(self._to_general_mapping(monitoring_result.value))
+            return r[t.ContainerMapping].ok(self._to_general_mapping(monitoring_result.value))
         except (
             ValueError,
             TypeError,
@@ -555,7 +555,7 @@ class FlextPluginService(x):
         if result.is_success:
             plugin = result.value
             self._plugins[plugin.name] = plugin
-            return r.ok(plugin)
+            return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
         return r[FlextPluginModels.Plugin.Plugin].fail(
             result.error or "Plugin installation failed",
         )
@@ -676,7 +676,7 @@ class FlextPluginService(x):
                         f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                     )
             self.logger.info(f"Loaded plugin: {plugin.name}")
-            return r.ok(plugin)
+            return r[FlextPluginModels.Plugin.Plugin].ok(plugin)
         except (
             ValueError,
             TypeError,
@@ -702,7 +702,7 @@ class FlextPluginService(x):
         if plugin_name not in self._plugins:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         del self._plugins[plugin_name]
-        return r.ok(True)
+        return r[bool].ok(True)
 
     async def unload_plugin(self, plugin_name: str) -> r[bool]:
         """Unload a plugin from the service.
@@ -736,7 +736,7 @@ class FlextPluginService(x):
                     return r[bool].fail(f"Unloading failed: {unload_result.error}")
             del self._plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -773,7 +773,7 @@ class FlextPluginService(x):
         )
         merged_config.update(config)
         plugin.metadata["config"] = merged_config
-        return r.ok(True)
+        return r[bool].ok(True)
 
 
 __all__ = ["FlextPluginService"]

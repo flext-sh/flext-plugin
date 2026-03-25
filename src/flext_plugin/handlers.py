@@ -249,7 +249,7 @@ class FlextPluginHandlers:
                 if result.is_failure:
                     return r[bool].fail(f"Failed to register {event_type} handler")
             self.logger.info("Registered default event handlers")
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -296,7 +296,7 @@ class FlextPluginHandlers:
                 reverse=True,
             )
             self.logger.debug("Registered handler for event type: %s", event_type)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -336,7 +336,7 @@ class FlextPluginHandlers:
                     "No handlers registered for event type: %s",
                     event_type,
                 )
-                return r.ok([])
+                return r[t.ContainerList].ok([])
             results: t.MutableContainerList = []
             for handler_info in self._handlers[event_type]:
                 try:
@@ -357,7 +357,7 @@ class FlextPluginHandlers:
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
-            return r.ok(results)
+            return r[t.ContainerList].ok(results)
         except (
             ValueError,
             TypeError,
@@ -397,7 +397,7 @@ class FlextPluginHandlers:
             if len(self._handlers[event_type]) == original_count:
                 return r[bool].fail(f"Handler not found for event type: {event_type}")
             self.logger.debug("Unregistered handler for event type: %s", event_type)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,

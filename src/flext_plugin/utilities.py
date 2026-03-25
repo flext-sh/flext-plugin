@@ -260,7 +260,7 @@ class FlextPluginUtilities(FlextUtilities):
                         if callback_function
                         else None,
                         "watch_interval": FlextPluginUtilities.Plugin.HotReloadManager.DEFAULT_WATCH_INTERVAL,
-                        "last_modified": {},
+                        "last_modified": dict[str, t.ContainerValue](),
                         "active": False,
                         "created_at": datetime.now(UTC).isoformat(),
                     }
@@ -750,7 +750,7 @@ class FlextPluginUtilities(FlextUtilities):
                 def _execute_plugin_function() -> t.NormalizedValue:
                     execution_args = args or []
                     execution_kwargs = kwargs or {}
-                    raw_result: t.NormalizedValue = plugin_function(
+                    raw_result = plugin_function(
                         *execution_args,
                         **execution_kwargs,
                     )
@@ -921,7 +921,7 @@ class FlextPluginUtilities(FlextUtilities):
                     if not path.exists():
                         registry: t.ContainerMapping = {
                             "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
-                            "plugins": {},
+                            "plugins": dict[str, t.ContainerValue](),
                             "last_updated": datetime.now(UTC).isoformat(),
                             "created_at": datetime.now(UTC).isoformat(),
                         }

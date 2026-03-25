@@ -53,7 +53,7 @@ class FlextPluginAdapters:
             """
             try:
                 result = operation()
-                return r.ok(result)
+                return r[T].ok(result)
             except (
                 ValueError,
                 TypeError,
@@ -278,7 +278,7 @@ class FlextPluginAdapters:
         @override
         def get_execution_status(self, _execution_id: str) -> r[str]:
             """Get execution status."""
-            return r.ok(c.Plugin.Execution.STATE_COMPLETED)
+            return r[str].ok(c.Plugin.Execution.STATE_COMPLETED)
 
         @override
         def list_running_executions(self) -> t.StrSequence:
@@ -288,7 +288,7 @@ class FlextPluginAdapters:
         @override
         def stop_execution(self, _execution_id: str) -> r[bool]:
             """Stop plugin execution."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
     class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
         """Plugin security validation - synchronous."""
@@ -300,12 +300,12 @@ class FlextPluginAdapters:
             _permissions: t.StrSequence,
         ) -> r[bool]:
             """Check plugin permissions."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
         @override
         def get_security_level(self, _plugin_name: str) -> r[str]:
             """Get security level."""
-            return r.ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
+            return r[str].ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
 
         @override
         def scan_plugin_security(
@@ -313,12 +313,12 @@ class FlextPluginAdapters:
             _plugin_path: str,
         ) -> r[t.ContainerMapping]:
             """Scan plugin for security issues."""
-            return r.ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
+            return r[t.ContainerMapping].ok({"security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM})
 
         @override
         def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
             """Validate plugin for security."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
     class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
         """In-memory plugin registry - synchronous."""
@@ -331,7 +331,7 @@ class FlextPluginAdapters:
         @override
         def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
             """Get plugin from registry."""
-            return r.ok(self._plugins.get(plugin_name))
+            return r[t.NormalizedValue | None].ok(self._plugins.get(plugin_name))
 
         @override
         def is_plugin_registered(self, plugin_name: str) -> bool:
@@ -341,7 +341,7 @@ class FlextPluginAdapters:
         @override
         def list_plugins(self) -> r[Sequence[t.ContainerMapping]]:
             """List all plugins in registry."""
-            return r.ok([])
+            return r[Sequence[t.ContainerMapping]].ok([])
 
         @override
         def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
@@ -365,13 +365,13 @@ class FlextPluginAdapters:
             registration_result = self.register(_plugin)
             if registration_result.is_failure:
                 return r[bool].fail(registration_result.error or "Registration failed")
-            return r.ok(True)
+            return r[bool].ok(True)
 
         @override
         def unregister_plugin(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from registry."""
             self._plugins.pop(plugin_name, None)
-            return r.ok(True)
+            return r[bool].ok(True)
 
     class PluginMonitoringAdapter(BaseAdapter, p.Plugin.PluginMonitoring):
         """Plugin monitoring - synchronous."""
@@ -382,7 +382,7 @@ class FlextPluginAdapters:
             _plugin_name: str,
         ) -> r[t.ContainerMapping]:
             """Get plugin health information."""
-            return r.ok({"status": c.Plugin.PluginStatus.HEALTHY})
+            return r[t.ContainerMapping].ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
         def get_plugin_metrics(
@@ -390,7 +390,7 @@ class FlextPluginAdapters:
             _plugin_name: str,
         ) -> r[t.ContainerMapping]:
             """Get plugin metrics."""
-            return r.ok({"execution_count": 0, "error_count": 0})
+            return r[t.ContainerMapping].ok({"execution_count": 0, "error_count": 0})
 
         @override
         def is_monitoring(self, _plugin_name: str) -> bool:
@@ -400,12 +400,12 @@ class FlextPluginAdapters:
         @override
         def start_monitoring(self, _plugin_name: str) -> r[bool]:
             """Start monitoring plugin."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
         @override
         def stop_monitoring(self, _plugin_name: str) -> r[bool]:
             """Stop monitoring plugin."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
 
 __all__ = ["FlextPluginAdapters"]

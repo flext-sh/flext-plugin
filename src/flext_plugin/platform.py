@@ -338,7 +338,7 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: bool,  # noqa: FBT001 — required by r[T].map callback signature
+                _checked: bool,
             ) -> r[Sequence[t.ContainerMapping]]:
                 if not self.discovery:
                     return r[Sequence[t.ContainerMapping]].fail(
@@ -371,7 +371,7 @@ class FlextPluginPlatform:
                                 "discovery_method": str(discovery_method),
                                 "metadata": self._to_general_mapping(metadata),
                             })
-                    return r.ok(plugin_dicts)
+                    return r[Sequence[t.ContainerMapping]].ok(plugin_dicts)
                 return r[Sequence[t.ContainerMapping]].fail(
                     discovery_result.error or "Discovery failed",
                 )
@@ -472,7 +472,7 @@ class FlextPluginPlatform:
             """Load single plugin with composition."""
 
             def load_and_validate(
-                _checked: bool,  # noqa: FBT001 — required by r[T].map callback signature
+                _checked: bool,
             ) -> r[t.ContainerMapping]:
                 if not self.loader:
                     return r[t.ContainerMapping].fail(
@@ -482,7 +482,7 @@ class FlextPluginPlatform:
                 if load_result.is_success:
                     load_data = load_result.value
                     if u.is_dict_like(load_data):
-                        return r.ok(self._to_general_mapping(load_data))
+                        return r[t.ContainerMapping].ok(self._to_general_mapping(load_data))
                     if getattr(load_data, "name", None):
                         plugin_dict: t.ContainerMapping = {
                             "name": str(getattr(load_data, "name", "")),
@@ -494,7 +494,7 @@ class FlextPluginPlatform:
                             if getattr(load_data, "entry_file", None)
                             else None,
                         }
-                        return r.ok(plugin_dict)
+                        return r[t.ContainerMapping].ok(plugin_dict)
                     return r[t.ContainerMapping].fail(
                         "Invalid load data format",
                     )
@@ -520,10 +520,10 @@ class FlextPluginPlatform:
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
-            def validate_plugin_result(_: bool) -> r[bool]:  # noqa: FBT001 — required by r[T].flat_map callback signature
+            def validate_plugin_result(_: bool) -> r[bool]:
                 return self.registry.register(plugin.name, plugin)
 
-            def add_to_plugins_result(_registry_result: bool) -> bool:  # noqa: FBT001 — required by r[T].map callback signature
+            def add_to_plugins_result(_registry_result: bool) -> bool:
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
@@ -539,11 +539,11 @@ class FlextPluginPlatform:
         def start_hot_reload(self, paths: t.StrSequence) -> r[bool]:
             """Start hot reload for given paths."""
             _ = paths
-            return r.ok(True)
+            return r[bool].ok(True)
 
         def stop_hot_reload(self) -> r[bool]:
             """Stop hot reload."""
-            return r.ok(True)
+            return r[bool].ok(True)
 
         def unregister_plugin(self, plugin_name: str) -> r[bool]:
             """Unregister with cleanup chain."""
@@ -586,7 +586,7 @@ class FlextPluginPlatform:
                 execution_config={"input_data": context},
                 execution_id=execution_id,
             )
-            return r.ok(execution)
+            return r[FlextPluginPlatform.PluginExecution].ok(execution)
 
         def _execute_with_executor(
             self,
@@ -615,7 +615,7 @@ class FlextPluginPlatform:
             if result.is_success:
                 execution.result = self._to_general_mapping(result.value)
             if result.is_success:
-                return r.ok(execution)
+                return r[FlextPluginPlatform.PluginExecution].ok(execution)
             return r[FlextPluginPlatform.PluginExecution].fail(
                 result.error or "Execution failed",
             )
@@ -623,7 +623,7 @@ class FlextPluginPlatform:
         def _get_plugin(self, name: str) -> r[FlextPluginPlatform.Plugin]:
             """Get plugin with error handling."""
             if plugin := self.plugins.get(name):
-                return r.ok(plugin)
+                return r[FlextPluginPlatform.Plugin].ok(plugin)
             return r[FlextPluginPlatform.Plugin].fail(f"Plugin '{name}' not found")
 
         def _prepare_execution(
@@ -633,7 +633,7 @@ class FlextPluginPlatform:
             """Prepare execution for running."""
             execution.mark_started()
             self._executions[execution.execution_id] = execution
-            return r.ok(execution)
+            return r[FlextPluginPlatform.PluginExecution].ok(execution)
 
         def _register_all(
             self,
@@ -670,7 +670,7 @@ class FlextPluginPlatform:
             )
             validation_result = plugin.validate_business_rules()
             if validation_result.is_success:
-                return r.ok(plugin)
+                return r[FlextPluginPlatform.Plugin].ok(plugin)
             return r[FlextPluginPlatform.Plugin].fail(
                 validation_result.error or "Plugin validation failed",
             )
@@ -689,7 +689,7 @@ class FlextPluginPlatform:
                 validation_result = plugin.validate_business_rules()
                 if validation_result.is_success:
                     plugins.append(plugin)
-            return r.ok(plugins)
+            return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)
 
 
 __all__ = ["FlextPluginPlatform"]

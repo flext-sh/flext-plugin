@@ -138,7 +138,7 @@ class FlextPluginHotReload:
                 return r[bool].fail(error_msg)
             self._watched_paths.add(path_obj)
             self.logger.info("Added watch path: %s", path)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -194,7 +194,7 @@ class FlextPluginHotReload:
                                 "success": result.is_success,
                             })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return r.ok({
+            return r[t.ContainerMapping].ok({
                 "plugin_results": reload_results,
                 "count": len(reload_results),
             })
@@ -298,7 +298,7 @@ class FlextPluginHotReload:
             )
             self._reload_history.append(reload_record)
             self.logger.info("Reloaded plugin: %s", plugin_name)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -342,7 +342,7 @@ class FlextPluginHotReload:
             if path_obj in self._watched_paths:
                 self._watched_paths.remove(path_obj)
                 self.logger.info("Removed watch path: %s", path)
-                return r.ok(True)
+                return r[bool].ok(True)
             return r[bool].fail(f"Path not being watched: {path}")
         except (
             ValueError,
@@ -404,7 +404,7 @@ class FlextPluginHotReload:
             self.logger.info(
                 f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths",
             )
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -436,7 +436,7 @@ class FlextPluginHotReload:
             self._is_watching = False
             self._watched_paths.clear()
             self.logger.info("Stopped hot reload monitoring")
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,

@@ -91,7 +91,7 @@ class FlextPluginLoader:
                 "available_methods": callable_methods,
                 "all_attributes": methods,
             }
-            return r.ok(plugin_info)
+            return r[t.ContainerMapping].ok(plugin_info)
         except (
             ValueError,
             TypeError,
@@ -135,7 +135,7 @@ class FlextPluginLoader:
                 load_data = loader_strategy(path_obj)
                 if load_data:
                     self._loaded_plugins[load_data.name] = load_data.module
-                    return r.ok(load_data)
+                    return r[m.Plugin.LoadData].ok(load_data)
             error_msg = f"Invalid plugin path type: {plugin_path}"
             return r[m.Plugin.LoadData].fail(error_msg)
         except (
@@ -213,7 +213,7 @@ class FlextPluginLoader:
                 return r[bool].fail(error_msg)
             del self._loaded_plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
@@ -255,7 +255,7 @@ class FlextPluginLoader:
                     plugin_name,
                 )
             self.logger.info("Plugin dependencies validated: %s", plugin_name)
-            return r.ok(True)
+            return r[bool].ok(True)
         except (
             ValueError,
             TypeError,
