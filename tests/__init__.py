@@ -12,8 +12,8 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core import FlextTypes
+    from flext_tests import d, e, h, r, s, x
 
-    from flext_plugin import d, e, h, r, s, x
     from tests import unit
     from tests.conftest import (
         performance_config,
@@ -180,15 +180,15 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "TestServicesIntegrationReal",
     ],
     "c": ["tests.constants", "FlextPluginTestConstants"],
-    "d": ["flext_plugin", "d"],
-    "e": ["flext_plugin", "e"],
-    "h": ["flext_plugin", "h"],
+    "d": ["flext_tests", "d"],
+    "e": ["flext_tests", "e"],
+    "h": ["flext_tests", "h"],
     "m": ["tests.models", "FlextPluginTestModels"],
     "modules_to_test": ["tests.test_imports", "modules_to_test"],
     "p": ["tests.protocols", "FlextPluginTestProtocols"],
     "performance_config": ["tests.conftest", "performance_config"],
     "pytest_configure": ["tests.conftest", "pytest_configure"],
-    "r": ["flext_plugin", "r"],
+    "r": ["flext_tests", "r"],
     "real_container_with_adapters": ["tests.conftest", "real_container_with_adapters"],
     "real_discovery_adapter": ["tests.conftest", "real_discovery_adapter"],
     "real_discovery_service_with_adapters": [
@@ -215,7 +215,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     ],
     "real_tap_plugin": ["tests.conftest", "real_tap_plugin"],
     "real_target_plugin": ["tests.conftest", "real_target_plugin"],
-    "s": ["flext_plugin", "s"],
+    "s": ["flext_tests", "s"],
     "set_test_environment": ["tests.conftest", "set_test_environment"],
     "simple_plugin_directory": ["tests.conftest", "simple_plugin_directory"],
     "t": ["tests.typings", "FlextPluginTestTypes"],
@@ -238,7 +238,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     ],
     "u": ["tests.utilities", "FlextPluginTestUtilities"],
     "unit": ["tests.unit", ""],
-    "x": ["flext_plugin", "x"],
+    "x": ["flext_tests", "x"],
 }
 
 __all__ = [
