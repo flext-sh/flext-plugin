@@ -20,7 +20,7 @@ from collections.abc import Generator, Mapping
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer, FlextTypes as t_core
+from flext_core import FlextContainer
 
 from flext_plugin import FlextPluginAdapters, FlextPluginConstants, FlextPluginModels
 from tests import t
@@ -115,13 +115,13 @@ def real_plugin_directory() -> Generator[Path]:
 def real_container_with_adapters() -> FlextContainer:
     """Create FlextContainer with REAL adapters registered."""
     container = FlextContainer()
-    discovery_svc: t_core.RegisterableService = dict(
+    discovery_svc: t.RegisterableService = dict(
         vars(FlextPluginAdapters.FileSystemDiscoveryAdapter()),
     )
-    loader_svc: t_core.RegisterableService = dict(
+    loader_svc: t.RegisterableService = dict(
         vars(FlextPluginAdapters.DynamicLoaderAdapter()),
     )
-    manager_svc: t_core.RegisterableService = dict(
+    manager_svc: t.RegisterableService = dict(
         vars(FlextPluginAdapters.PluginExecutorAdapter()),
     )
     container.register("plugin_discovery_port", discovery_svc)
