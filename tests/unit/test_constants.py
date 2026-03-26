@@ -205,5 +205,5 @@ class TestFlextPluginConstants:
             "healthy",
             "unhealthy",
         })
-        tm.that(states, eq=expected_states)
+        assert states == expected_states
         tm.that(len(states), eq=10)

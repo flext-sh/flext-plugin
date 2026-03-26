@@ -355,9 +355,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test REAL management functionality through service methods."""
-        result = asyncio.get_event_loop().run_until_complete(
-            service.unload_plugin("non-existent-plugin"),
-        )
+        result = asyncio.run(service.unload_plugin("non-existent-plugin"))
         assert result.is_failure
         assert "not found" in str(result.error)
 
@@ -436,27 +434,33 @@ class TestFlextPluginServiceReal:
             assert isinstance(result.is_success, bool)
             assert result.is_success or result.is_failure
 
-    @pytest.mark.asyncio
-    async def test_unload_plugin_empty_name_fails_real(
+    def test_unload_plugin_empty_name_fails_real(
         self,
         service: FlextPluginService,
     ) -> None:
         """Test REAL unload_plugin with empty name fails."""
-        result = await service.unload_plugin("")
-        assert result.is_failure
-        error_message = str(result.error).lower()
-        assert "not found" in error_message or "plugin" in error_message
 
-    @pytest.mark.asyncio
-    async def test_unload_plugin_valid_name_real(
+        async def _inner() -> None:
+            result = await service.unload_plugin("")
+            assert result.is_failure
+            error_message = str(result.error).lower()
+            assert "not found" in error_message or "plugin" in error_message
+
+        asyncio.run(_inner())
+
+    def test_unload_plugin_valid_name_real(
         self,
         service: FlextPluginService,
     ) -> None:
         """Test REAL unload_plugin with non-existent plugin returns failure."""
-        result = await service.unload_plugin("real-unload-plugin")
-        assert isinstance(result.is_success, bool)
-        assert result.is_failure
-        assert "not found" in str(result.error)
+
+        async def _inner() -> None:
+            result = await service.unload_plugin("real-unload-plugin")
+            assert isinstance(result.is_success, bool)
+            assert result.is_failure
+            assert "not found" in str(result.error)
+
+        asyncio.run(_inner())
 
     def test_install_plugin_empty_path_fails_real(
         self,
@@ -1026,25 +1030,28 @@ class TestServiceErrorHandling:
         result2 = service.discover_plugins([invalid_path])
         assert isinstance(result2.is_success, bool)
 
-    @pytest.mark.asyncio
-    async def test_service_handles_loader_exceptions_real(self) -> None:
+    def test_service_handles_loader_exceptions_real(self) -> None:
         """Test service handles loader port exceptions with REAL scenarios."""
-        service = FlextPluginService()
-        result = await service.unload_plugin("")
-        assert not result.is_success
-        assert (
-            "not found" in str(result.error).lower()
-            or "plugin" in str(result.error).lower()
-        )
-        long_name = "x" * 1000
-        result2 = await service.unload_plugin(long_name)
-        assert isinstance(result2.is_success, bool)
-        if not result2.is_success:
+
+        async def _inner() -> None:
+            service = FlextPluginService()
+            result = await service.unload_plugin("")
+            assert not result.is_success
             assert (
-                "Failed to unload plugin" in str(result2.error)
-                or "plugin" in str(result2.error).lower()
-                or "not found" in str(result2.error).lower()
+                "not found" in str(result.error).lower()
+                or "plugin" in str(result.error).lower()
             )
+            long_name = "x" * 1000
+            result2 = await service.unload_plugin(long_name)
+            assert isinstance(result2.is_success, bool)
+            if not result2.is_success:
+                assert (
+                    "Failed to unload plugin" in str(result2.error)
+                    or "plugin" in str(result2.error).lower()
+                    or "not found" in str(result2.error).lower()
+                )
+
+        asyncio.run(_inner())
 
     def test_discovery_service_handles_empty_paths_real(self) -> None:
         """Test discovery service handles empty paths with REAL scenarios."""

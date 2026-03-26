@@ -1,5 +1,8 @@
 """Unit tests for FlextPluginTypes.
 
+Tests type namespace organization and type alias accessibility
+via canonical t.Plugin namespace.
+
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
@@ -15,50 +18,44 @@ from flext_plugin import FlextPluginTypes, t
 class TestFlextPluginTypes:
     """Test cases for FlextPluginTypes."""
 
-    def test_types_initialization(self) -> None:
-        """Test that types can be initialized."""
-        types = FlextPluginTypes()
-        assert types is not None
-
-    def test_types_alias_exists(self) -> None:
-        """Test that t alias exists."""
+    def test_types_alias_matches_facade(self) -> None:
+        """T alias points to FlextPluginTypes facade."""
         tm.that(t is FlextPluginTypes, eq=True)
 
-    def test_plugin_class_exists(self) -> None:
-        """Test that Plugin nested class exists."""
-        tm.that(hasattr(FlextPluginTypes, "Plugin"), eq=True)
-        tm.that(FlextPluginTypes.Plugin, none=False)
+    def test_plugin_namespace_exposes_sub_namespaces(self) -> None:
+        """Plugin namespace contains Discovery, Execution, Registry sub-namespaces."""
+        plugin = t.Plugin
+        tm.that(str(plugin.Discovery.__name__), eq="Discovery")
+        tm.that(str(plugin.Execution.__name__), eq="Execution")
+        tm.that(str(plugin.Registry.__name__), eq="Registry")
 
-    def test_discovery_class_exists(self) -> None:
-        """Test that Discovery nested class exists."""
-        tm.that(hasattr(FlextPluginTypes, "Discovery"), eq=True)
-        tm.that(FlextPluginTypes.Plugin.Discovery, none=False)
+    def test_discovery_type_aliases_accessible(self) -> None:
+        """Discovery sub-namespace exposes expected type aliases."""
+        discovery = t.Plugin.Discovery
+        tm.that(str(discovery.DiscoveryPath), none=False)
+        tm.that(str(discovery.DiscoveryResult), none=False)
+        tm.that(str(discovery.PluginLoader), none=False)
+        tm.that(str(discovery.EntryPoint), none=False)
 
-    def test_execution_class_exists(self) -> None:
-        """Test that Execution nested class exists."""
-        tm.that(hasattr(FlextPluginTypes, "Execution"), eq=True)
-        tm.that(FlextPluginTypes.Plugin.Execution, none=False)
+    def test_execution_type_aliases_accessible(self) -> None:
+        """Execution sub-namespace exposes expected type aliases."""
+        execution = t.Plugin.Execution
+        tm.that(str(execution.ExecutionContext), none=False)
+        tm.that(str(execution.ExecutionResult), none=False)
+        tm.that(str(execution.ExecutionError), none=False)
+        tm.that(str(execution.ResourceLimits), none=False)
 
-    def test_registry_class_exists(self) -> None:
-        """Test that Registry nested class exists."""
-        tm.that(hasattr(FlextPluginTypes, "Registry"), eq=True)
-        tm.that(FlextPluginTypes.Plugin.Registry, none=False)
+    def test_registry_type_aliases_accessible(self) -> None:
+        """Registry sub-namespace exposes expected type aliases."""
+        registry = t.Plugin.Registry
+        tm.that(str(registry.RegistryConfig), none=False)
+        tm.that(str(registry.RegistryEntry), none=False)
 
-    def test_discovery_type_aliases(self) -> None:
-        """Test Discovery type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "DiscoveryPath"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "DiscoveryResult"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "PluginLoader"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Discovery, "EntryPoint"), eq=True)
-
-    def test_execution_type_aliases(self) -> None:
-        """Test Execution type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionContext"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionResult"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ExecutionError"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Execution, "ResourceLimits"), eq=True)
-
-    def test_registry_type_aliases(self) -> None:
-        """Test Registry type aliases exist."""
-        tm.that(hasattr(FlextPluginTypes.Plugin.Registry, "RegistryConfig"), eq=True)
-        tm.that(hasattr(FlextPluginTypes.Plugin.Registry, "RegistryEntry"), eq=True)
+    def test_plugin_container_types_accessible(self) -> None:
+        """Plugin namespace exposes container type aliases."""
+        plugin = t.Plugin
+        tm.that(str(plugin.PluginDict), none=False)
+        tm.that(str(plugin.PluginList), none=False)
+        tm.that(str(plugin.StringDict), none=False)
+        tm.that(str(plugin.StringList), none=False)
+        tm.that(str(plugin.StringSet), none=False)
