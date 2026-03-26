@@ -52,7 +52,7 @@ class TestFlextPluginServiceStubBridges:
                 paths: t.StrSequence,
             ) -> r[Sequence[t.ContainerMapping]]:
                 _ = paths
-                return r.ok([
+                return r[Sequence[t.ContainerMapping]].ok([
                     {
                         "name": "stub_plugin",
                         "version": "1.0.0",
@@ -68,7 +68,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
                 self.calls += 1
-                return r.ok(True)
+                return r[bool].ok(True)
 
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
@@ -84,7 +84,7 @@ class TestFlextPluginServiceStubBridges:
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
                     self.registered.append("")
-                return r.ok(True)
+                return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
@@ -94,7 +94,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.started.append(_plugin_name)
-                return r.ok(True)
+                return r[bool].ok(True)
 
         security = Security()
         registry = Registry()
@@ -121,7 +121,7 @@ class TestFlextPluginServiceStubBridges:
                 plugin_path: str,
             ) -> r[t.ContainerMapping]:
                 _ = plugin_path
-                return r.ok({
+                return r[t.ContainerMapping].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},
@@ -135,7 +135,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
                 self.calls += 1
-                return r.ok(True)
+                return r[bool].ok(True)
 
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:
@@ -151,7 +151,7 @@ class TestFlextPluginServiceStubBridges:
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
                     self.registered.append("")
-                return r.ok(True)
+                return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
@@ -161,7 +161,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def start_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.started.append(_plugin_name)
-                return r.ok(True)
+                return r[bool].ok(True)
 
         security = Security()
         registry = Registry()
@@ -187,7 +187,7 @@ class TestFlextPluginServiceStubBridges:
                 plugin_path: str,
             ) -> r[t.ContainerMapping]:
                 _ = plugin_path
-                return r.ok({
+                return r[t.ContainerMapping].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},
@@ -205,7 +205,10 @@ class TestFlextPluginServiceStubBridges:
                 _context: t.ContainerMapping,
             ) -> r[t.ContainerMapping]:
                 self.calls.append(_plugin_name)
-                return r.ok({"status": "executed", "plugin": _plugin_name})
+                return r[t.ContainerMapping].ok({
+                    "status": "executed",
+                    "plugin": _plugin_name,
+                })
 
         executor = Executor()
         service = FlextPluginService(loader=Loader(), executor=executor)
@@ -231,7 +234,7 @@ class TestFlextPluginServiceStubBridges:
             ) -> r[t.ContainerMapping]:
                 _ = plugin_path
                 self._loaded_plugins["stub_plugin"] = ModuleType("stub_plugin")
-                return r.ok({
+                return r[t.ContainerMapping].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},
@@ -250,7 +253,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def unregister_plugin(self, plugin_name: str) -> r[bool]:
                 self.unregistered.append(plugin_name)
-                return r.ok(True)
+                return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
             def __init__(self) -> None:
@@ -260,7 +263,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def stop_monitoring(self, _plugin_name: str) -> r[bool]:
                 self.stopped.append(_plugin_name)
-                return r.ok(True)
+                return r[bool].ok(True)
 
         loader = Loader()
         registry = Registry()
