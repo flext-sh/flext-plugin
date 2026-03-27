@@ -159,8 +159,6 @@ def main() -> None:
             sys.exit(1)
     if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
         validation_result = redis_plugin.validate_business_rules()
-        if validation_result.is_success:
-            pass
     else:
         sys.exit(1)
     if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
