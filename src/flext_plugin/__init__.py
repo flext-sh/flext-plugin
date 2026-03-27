@@ -49,7 +49,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginEntities": ["flext_plugin.entities", "FlextPluginEntities"],
     "FlextPluginHandlers": ["flext_plugin.handlers", "FlextPluginHandlers"],
     "FlextPluginHotReload": ["flext_plugin.hot_reload", "FlextPluginHotReload"],
-    "FlextPluginImplementations": ["flext_plugin.implementations", "FlextPluginImplementations"],
+    "FlextPluginImplementations": [
+        "flext_plugin.implementations",
+        "FlextPluginImplementations",
+    ],
     "FlextPluginLoader": ["flext_plugin.loader", "FlextPluginLoader"],
     "FlextPluginModels": ["flext_plugin.models", "FlextPluginModels"],
     "FlextPluginPlatform": ["flext_plugin.plugin_platform", "FlextPluginPlatform"],
