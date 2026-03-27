@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from flext_plugin.implementations import FlextPluginImplementations
     from flext_plugin.loader import FlextPluginLoader
     from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-    from flext_plugin.platform import FlextPluginPlatform
+    from flext_plugin.plugin_platform import FlextPluginPlatform
     from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from flext_plugin.services import FlextPluginService
     from flext_plugin.settings import FlextPluginSettings
@@ -49,13 +49,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginEntities": ["flext_plugin.entities", "FlextPluginEntities"],
     "FlextPluginHandlers": ["flext_plugin.handlers", "FlextPluginHandlers"],
     "FlextPluginHotReload": ["flext_plugin.hot_reload", "FlextPluginHotReload"],
-    "FlextPluginImplementations": [
-        "flext_plugin.implementations",
-        "FlextPluginImplementations",
-    ],
+    "FlextPluginImplementations": ["flext_plugin.implementations", "FlextPluginImplementations"],
     "FlextPluginLoader": ["flext_plugin.loader", "FlextPluginLoader"],
     "FlextPluginModels": ["flext_plugin.models", "FlextPluginModels"],
-    "FlextPluginPlatform": ["flext_plugin.platform", "FlextPluginPlatform"],
+    "FlextPluginPlatform": ["flext_plugin.plugin_platform", "FlextPluginPlatform"],
     "FlextPluginProtocols": ["flext_plugin.protocols", "FlextPluginProtocols"],
     "FlextPluginService": ["flext_plugin.services", "FlextPluginService"],
     "FlextPluginSettings": ["flext_plugin.settings", "FlextPluginSettings"],
