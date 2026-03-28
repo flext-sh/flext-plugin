@@ -11,8 +11,9 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, r, s, x
+    from flext_core import FlextTypes, d, e, h, r, s, x
 
+    from flext_plugin import _utilities
     from flext_plugin.__version__ import (
         __all__,
         __author__,
@@ -27,10 +28,7 @@ if TYPE_CHECKING:
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities
-    from flext_plugin._utilities.handlers import (
-        FlextPluginHandlers,
-        FlextPluginHandlers as h,
-    )
+    from flext_plugin._utilities.handlers import FlextPluginHandlers
     from flext_plugin._utilities.hot_reload import FlextPluginHotReload
     from flext_plugin._utilities.implementations import FlextPluginImplementations
     from flext_plugin._utilities.loader import FlextPluginLoader
@@ -82,10 +80,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "__url__": ["flext_plugin.__version__", "__url__"],
     "__version__": ["flext_plugin.__version__", "__version__"],
     "__version_info__": ["flext_plugin.__version__", "__version_info__"],
+    "_utilities": ["flext_plugin._utilities", ""],
     "c": ["flext_plugin.constants", "FlextPluginConstants"],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
-    "h": ["flext_plugin._utilities.handlers", "FlextPluginHandlers"],
+    "h": ["flext_core", "h"],
     "m": ["flext_plugin.models", "FlextPluginModels"],
     "p": ["flext_plugin.protocols", "FlextPluginProtocols"],
     "r": ["flext_core", "r"],
@@ -121,6 +120,7 @@ __all__ = [
     "__url__",
     "__version__",
     "__version_info__",
+    "_utilities",
     "c",
     "d",
     "e",
