@@ -24,40 +24,52 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
-    from flext_plugin.adapters import FlextPluginAdapters
+    from flext_plugin._utilities.adapters import FlextPluginAdapters
+    from flext_plugin._utilities.discovery import FlextPluginDiscovery
+    from flext_plugin._utilities.entities import FlextPluginEntities
+    from flext_plugin._utilities.handlers import (
+        FlextPluginHandlers,
+        FlextPluginHandlers as h,
+    )
+    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
+    from flext_plugin._utilities.implementations import FlextPluginImplementations
+    from flext_plugin._utilities.loader import FlextPluginLoader
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.services import FlextPluginService
     from flext_plugin.api import FlextPluginApi
     from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
-    from flext_plugin.discovery import FlextPluginDiscovery
-    from flext_plugin.entities import FlextPluginEntities
-    from flext_plugin.handlers import FlextPluginHandlers, FlextPluginHandlers as h
-    from flext_plugin.hot_reload import FlextPluginHotReload
-    from flext_plugin.implementations import FlextPluginImplementations
-    from flext_plugin.loader import FlextPluginLoader
     from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-    from flext_plugin.plugin_platform import FlextPluginPlatform
     from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
-    from flext_plugin.services import FlextPluginService
     from flext_plugin.settings import FlextPluginSettings
     from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "FlextPluginAdapters": ["flext_plugin.adapters", "FlextPluginAdapters"],
+    "FlextPluginAdapters": ["flext_plugin._utilities.adapters", "FlextPluginAdapters"],
     "FlextPluginApi": ["flext_plugin.api", "FlextPluginApi"],
     "FlextPluginConstants": ["flext_plugin.constants", "FlextPluginConstants"],
-    "FlextPluginDiscovery": ["flext_plugin.discovery", "FlextPluginDiscovery"],
-    "FlextPluginEntities": ["flext_plugin.entities", "FlextPluginEntities"],
-    "FlextPluginHandlers": ["flext_plugin.handlers", "FlextPluginHandlers"],
-    "FlextPluginHotReload": ["flext_plugin.hot_reload", "FlextPluginHotReload"],
+    "FlextPluginDiscovery": [
+        "flext_plugin._utilities.discovery",
+        "FlextPluginDiscovery",
+    ],
+    "FlextPluginEntities": ["flext_plugin._utilities.entities", "FlextPluginEntities"],
+    "FlextPluginHandlers": ["flext_plugin._utilities.handlers", "FlextPluginHandlers"],
+    "FlextPluginHotReload": [
+        "flext_plugin._utilities.hot_reload",
+        "FlextPluginHotReload",
+    ],
     "FlextPluginImplementations": [
-        "flext_plugin.implementations",
+        "flext_plugin._utilities.implementations",
         "FlextPluginImplementations",
     ],
-    "FlextPluginLoader": ["flext_plugin.loader", "FlextPluginLoader"],
+    "FlextPluginLoader": ["flext_plugin._utilities.loader", "FlextPluginLoader"],
     "FlextPluginModels": ["flext_plugin.models", "FlextPluginModels"],
-    "FlextPluginPlatform": ["flext_plugin.plugin_platform", "FlextPluginPlatform"],
+    "FlextPluginPlatform": [
+        "flext_plugin._utilities.plugin_platform",
+        "FlextPluginPlatform",
+    ],
     "FlextPluginProtocols": ["flext_plugin.protocols", "FlextPluginProtocols"],
-    "FlextPluginService": ["flext_plugin.services", "FlextPluginService"],
+    "FlextPluginService": ["flext_plugin._utilities.services", "FlextPluginService"],
     "FlextPluginSettings": ["flext_plugin.settings", "FlextPluginSettings"],
     "FlextPluginTypes": ["flext_plugin.typings", "FlextPluginTypes"],
     "FlextPluginUtilities": ["flext_plugin.utilities", "FlextPluginUtilities"],
@@ -73,7 +85,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "c": ["flext_plugin.constants", "FlextPluginConstants"],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
-    "h": ["flext_plugin.handlers", "FlextPluginHandlers"],
+    "h": ["flext_plugin._utilities.handlers", "FlextPluginHandlers"],
     "m": ["flext_plugin.models", "FlextPluginModels"],
     "p": ["flext_plugin.protocols", "FlextPluginProtocols"],
     "r": ["flext_core", "r"],
