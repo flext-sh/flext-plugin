@@ -28,25 +28,13 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginAdapters": ["flext_plugin._utilities.adapters", "FlextPluginAdapters"],
-    "FlextPluginDiscovery": [
-        "flext_plugin._utilities.discovery",
-        "FlextPluginDiscovery",
-    ],
+    "FlextPluginDiscovery": ["flext_plugin._utilities.discovery", "FlextPluginDiscovery"],
     "FlextPluginEntities": ["flext_plugin._utilities.entities", "FlextPluginEntities"],
     "FlextPluginHandlers": ["flext_plugin._utilities.handlers", "FlextPluginHandlers"],
-    "FlextPluginHotReload": [
-        "flext_plugin._utilities.hot_reload",
-        "FlextPluginHotReload",
-    ],
-    "FlextPluginImplementations": [
-        "flext_plugin._utilities.implementations",
-        "FlextPluginImplementations",
-    ],
+    "FlextPluginHotReload": ["flext_plugin._utilities.hot_reload", "FlextPluginHotReload"],
+    "FlextPluginImplementations": ["flext_plugin._utilities.implementations", "FlextPluginImplementations"],
     "FlextPluginLoader": ["flext_plugin._utilities.loader", "FlextPluginLoader"],
-    "FlextPluginPlatform": [
-        "flext_plugin._utilities.plugin_platform",
-        "FlextPluginPlatform",
-    ],
+    "FlextPluginPlatform": ["flext_plugin._utilities.plugin_platform", "FlextPluginPlatform"],
     "FlextPluginService": ["flext_plugin._utilities.services", "FlextPluginService"],
 }
 
