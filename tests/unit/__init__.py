@@ -13,6 +13,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import test_config, test_constants, test_models, test_types
     from tests.unit.test_config import TestFlextPluginSettings
     from tests.unit.test_constants import TestFlextPluginConstants
     from tests.unit.test_models import TestFlextPluginModels
@@ -26,6 +27,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestFlextPluginModels": ["tests.unit.test_models", "TestFlextPluginModels"],
     "TestFlextPluginSettings": ["tests.unit.test_config", "TestFlextPluginSettings"],
     "TestFlextPluginTypes": ["tests.unit.test_types", "TestFlextPluginTypes"],
+    "test_config": ["tests.unit.test_config", ""],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_models": ["tests.unit.test_models", ""],
+    "test_types": ["tests.unit.test_types", ""],
 }
 
 __all__ = [
@@ -33,6 +38,10 @@ __all__ = [
     "TestFlextPluginModels",
     "TestFlextPluginSettings",
     "TestFlextPluginTypes",
+    "test_config",
+    "test_constants",
+    "test_models",
+    "test_types",
 ]
 
 

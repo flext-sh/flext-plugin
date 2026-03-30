@@ -16,6 +16,17 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from flext_plugin._utilities import (
+        adapters,
+        discovery,
+        entities,
+        handlers,
+        hot_reload,
+        implementations,
+        loader,
+        plugin_platform,
+        services,
+    )
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities
@@ -48,6 +59,15 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextPluginPlatform",
     ],
     "FlextPluginService": ["flext_plugin._utilities.services", "FlextPluginService"],
+    "adapters": ["flext_plugin._utilities.adapters", ""],
+    "discovery": ["flext_plugin._utilities.discovery", ""],
+    "entities": ["flext_plugin._utilities.entities", ""],
+    "handlers": ["flext_plugin._utilities.handlers", ""],
+    "hot_reload": ["flext_plugin._utilities.hot_reload", ""],
+    "implementations": ["flext_plugin._utilities.implementations", ""],
+    "loader": ["flext_plugin._utilities.loader", ""],
+    "plugin_platform": ["flext_plugin._utilities.plugin_platform", ""],
+    "services": ["flext_plugin._utilities.services", ""],
 }
 
 __all__ = [
@@ -60,6 +80,15 @@ __all__ = [
     "FlextPluginLoader",
     "FlextPluginPlatform",
     "FlextPluginService",
+    "adapters",
+    "discovery",
+    "entities",
+    "handlers",
+    "hot_reload",
+    "implementations",
+    "loader",
+    "plugin_platform",
+    "services",
 ]
 
 
