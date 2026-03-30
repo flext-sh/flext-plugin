@@ -91,20 +91,7 @@ class FlextPluginPlatform:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            super().__init__(
-                config_type=None,
-                config_overrides=None,
-                initial_context=None,
-                subproject="",
-                services=None,
-                factories=None,
-                resources=None,
-                container_overrides=None,
-                wire_modules=None,
-                wire_packages=None,
-                wire_classes=None,
-                dispatcher=None,
-            )
+            super().__init__()
 
         @override
         @classmethod
@@ -246,19 +233,7 @@ class FlextPluginPlatform:
 
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
-            super().__init__(
-                config_type=None,
-                config_overrides=None,
-                initial_context=None,
-                subproject="",
-                services=None,
-                factories=None,
-                resources=None,
-                container_overrides=None,
-                wire_modules=None,
-                wire_packages=None,
-                wire_classes=None,
-            )
+            super().__init__()
             if container is not None:
                 self._container = container
             self._plugins = dict[str, FlextPluginPlatform.Plugin]()
