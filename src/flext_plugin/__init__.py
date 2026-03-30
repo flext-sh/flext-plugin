@@ -10,20 +10,21 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+from flext_plugin.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+)
+
 if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
     from flext_plugin import _utilities
-    from flext_plugin.__version__ import (
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-    )
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities
@@ -70,14 +71,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginSettings": ["flext_plugin.settings", "FlextPluginSettings"],
     "FlextPluginTypes": ["flext_plugin.typings", "FlextPluginTypes"],
     "FlextPluginUtilities": ["flext_plugin.utilities", "FlextPluginUtilities"],
-    "__author__": ["flext_plugin.__version__", "__author__"],
-    "__author_email__": ["flext_plugin.__version__", "__author_email__"],
-    "__description__": ["flext_plugin.__version__", "__description__"],
-    "__license__": ["flext_plugin.__version__", "__license__"],
-    "__title__": ["flext_plugin.__version__", "__title__"],
-    "__url__": ["flext_plugin.__version__", "__url__"],
-    "__version__": ["flext_plugin.__version__", "__version__"],
-    "__version_info__": ["flext_plugin.__version__", "__version_info__"],
     "_utilities": ["flext_plugin._utilities", ""],
     "c": ["flext_plugin.constants", "FlextPluginConstants"],
     "d": ["flext_core", "d"],
