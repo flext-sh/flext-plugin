@@ -10,31 +10,9 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
-if TYPE_CHECKING:
-    from flext_tests import *
+from tests.unit import _LAZY_IMPORTS as _CHILD_LAZY_0
 
-    from tests import (
-        conftest,
-        constants,
-        models,
-        protocols,
-        test_application_handlers,
-        test_application_services,
-        test_core_types,
-        test_discovery,
-        test_domain_entities,
-        test_domain_ports,
-        test_examples,
-        test_handlers,
-        test_hot_reload,
-        test_hot_reload_package,
-        test_imports,
-        test_loader,
-        test_manager,
-        test_plugin,
-        typings,
-        utilities,
-    )
+if TYPE_CHECKING:
     from tests.conftest import *
     from tests.constants import *
     from tests.models import *
@@ -56,6 +34,7 @@ if TYPE_CHECKING:
     from tests.utilities import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    **_CHILD_LAZY_0,
     "FlextPluginTestConstants": "tests.constants",
     "FlextPluginTestModels": "tests.models",
     "FlextPluginTestProtocols": "tests.protocols",
@@ -65,7 +44,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestBackwardsCompatibilityAliasesReal": "tests.test_application_services",
     "TestDynamicLoaderAdapter": "tests.test_loader",
     "TestFlextPlugin": "tests.test_domain_entities",
-    "TestFlextPluginConstants": "tests.unit.test_constants",
     "TestFlextPluginConstantsLifecycle": "tests.test_core_types",
     "TestFlextPluginConstantsPluginType": "tests.test_core_types",
     "TestFlextPluginDiscovery": "tests.test_domain_ports",
@@ -75,14 +53,11 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestFlextPluginHotReload": "tests.test_hot_reload",
     "TestFlextPluginLoader": "tests.test_loader",
     "TestFlextPluginMetadata": "tests.test_domain_entities",
-    "TestFlextPluginModels": "tests.unit.test_models",
     "TestFlextPluginRegistryEntity": "tests.test_domain_entities",
     "TestFlextPluginService": "tests.test_manager",
     "TestFlextPluginServiceReal": "tests.test_application_services",
     "TestFlextPluginServiceStubBridges": "tests.test_manager",
     "TestFlextPluginServiceWithRealAdapters": "tests.test_application_services",
-    "TestFlextPluginSettings": "tests.unit.test_config",
-    "TestFlextPluginTypes": "tests.unit.test_types",
     "TestHotReloadPackage": "tests.test_hot_reload_package",
     "TestPluginError": "tests.test_core_types",
     "TestPluginModel": "tests.test_plugin",
@@ -132,8 +107,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "test_application_handlers": "tests.test_application_handlers",
     "test_application_services": "tests.test_application_services",
     "test_basic_plugin_example_execution": "tests.test_examples",
-    "test_config": "tests.unit.test_config",
-    "test_constants": "tests.unit.test_constants",
     "test_core_types": "tests.test_core_types",
     "test_discovery": "tests.test_discovery",
     "test_docker_integration_example_execution": "tests.test_examples",
@@ -147,10 +120,8 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "test_imports": "tests.test_imports",
     "test_loader": "tests.test_loader",
     "test_manager": "tests.test_manager",
-    "test_models": "tests.unit.test_models",
     "test_plugin": "tests.test_plugin",
     "test_plugin_configuration_example_execution": "tests.test_examples",
-    "test_types": "tests.unit.test_types",
     "typings": "tests.typings",
     "u": ["tests.utilities", "FlextPluginTestUtilities"],
     "unit": "tests.unit",
@@ -159,4 +130,4 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
