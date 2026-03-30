@@ -11,7 +11,7 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 
 from flext_core import FlextTypes
 
-from flext_plugin.constants import FlextPluginConstants as c
+from flext_plugin import FlextPluginConstants as c
 
 
 class FlextPluginTypes(FlextTypes):

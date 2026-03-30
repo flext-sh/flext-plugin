@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
     from flext_plugin import _utilities
     from flext_plugin.__version__ import (
-        __all__,
         __author__,
         __author_email__,
         __description__,
@@ -71,7 +70,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginSettings": ["flext_plugin.settings", "FlextPluginSettings"],
     "FlextPluginTypes": ["flext_plugin.typings", "FlextPluginTypes"],
     "FlextPluginUtilities": ["flext_plugin.utilities", "FlextPluginUtilities"],
-    "__all__": ["flext_plugin.__version__", "__all__"],
     "__author__": ["flext_plugin.__version__", "__author__"],
     "__author_email__": ["flext_plugin.__version__", "__author_email__"],
     "__description__": ["flext_plugin.__version__", "__description__"],
@@ -111,7 +109,6 @@ __all__ = [
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
-    "__all__",
     "__author__",
     "__author_email__",
     "__description__",
