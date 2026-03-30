@@ -5,116 +5,146 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes
-    from flext_tests import d, e, h, r, s, x
-
     from tests import (
-        conftest,
-        constants,
-        models,
-        protocols,
-        test_application_handlers,
-        test_application_services,
-        test_core_types,
-        test_discovery,
-        test_domain_entities,
-        test_domain_ports,
-        test_examples,
-        test_handlers,
-        test_hot_reload,
-        test_hot_reload_package,
-        test_imports,
-        test_loader,
-        test_manager,
-        test_plugin,
-        typings,
-        unit,
-        utilities,
+        conftest as conftest,
+        constants as constants,
+        models as models,
+        protocols as protocols,
+        test_application_handlers as test_application_handlers,
+        test_application_services as test_application_services,
+        test_core_types as test_core_types,
+        test_discovery as test_discovery,
+        test_domain_entities as test_domain_entities,
+        test_domain_ports as test_domain_ports,
+        test_examples as test_examples,
+        test_handlers as test_handlers,
+        test_hot_reload as test_hot_reload,
+        test_hot_reload_package as test_hot_reload_package,
+        test_imports as test_imports,
+        test_loader as test_loader,
+        test_manager as test_manager,
+        test_plugin as test_plugin,
+        typings as typings,
+        unit as unit,
+        utilities as utilities,
     )
     from tests.conftest import (
-        performance_config,
-        pytest_configure,
-        real_container_with_adapters,
-        real_discovery_adapter,
-        real_loader_adapter,
-        real_manager_adapter,
-        real_plugin_config,
-        real_plugin_configs,
-        real_plugin_data,
-        real_plugin_dependencies,
-        real_plugin_directory,
-        real_plugin_entity,
-        real_processor_plugin,
-        real_tap_plugin,
-        real_target_plugin,
-        set_test_environment,
-        simple_plugin_directory,
+        performance_config as performance_config,
+        pytest_configure as pytest_configure,
+        real_container_with_adapters as real_container_with_adapters,
+        real_discovery_adapter as real_discovery_adapter,
+        real_loader_adapter as real_loader_adapter,
+        real_manager_adapter as real_manager_adapter,
+        real_plugin_config as real_plugin_config,
+        real_plugin_configs as real_plugin_configs,
+        real_plugin_data as real_plugin_data,
+        real_plugin_dependencies as real_plugin_dependencies,
+        real_plugin_directory as real_plugin_directory,
+        real_plugin_entity as real_plugin_entity,
+        real_processor_plugin as real_processor_plugin,
+        real_tap_plugin as real_tap_plugin,
+        real_target_plugin as real_target_plugin,
+        set_test_environment as set_test_environment,
+        simple_plugin_directory as simple_plugin_directory,
     )
-    from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
-    from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
-    from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
+    from tests.constants import (
+        FlextPluginTestConstants as FlextPluginTestConstants,
+        FlextPluginTestConstants as c,
+    )
+    from tests.models import (
+        FlextPluginTestModels as FlextPluginTestModels,
+        FlextPluginTestModels as m,
+    )
+    from tests.protocols import (
+        FlextPluginTestProtocols as FlextPluginTestProtocols,
+        FlextPluginTestProtocols as p,
+    )
     from tests.test_application_services import (
-        PluginInterface,
-        TestBackwardsCompatibilityAliasesReal,
-        TestFlextPluginDiscoveryReal,
-        TestFlextPluginServiceReal,
-        TestFlextPluginServiceWithRealAdapters,
-        TestRealPluginDiscoveryAndExecution,
-        TestRealPluginErrorScenarios,
-        TestRealPluginIntegrationWorkflow,
-        TestServiceErrorHandling,
-        TestServicesIntegrationReal,
-        real_discovery_service_with_adapters,
-        real_plugin_discovery,
-        real_plugin_loader,
-        real_service_with_adapters,
-        temp_plugin_dir,
+        PluginInterface as PluginInterface,
+        TestBackwardsCompatibilityAliasesReal as TestBackwardsCompatibilityAliasesReal,
+        TestFlextPluginDiscoveryReal as TestFlextPluginDiscoveryReal,
+        TestFlextPluginServiceReal as TestFlextPluginServiceReal,
+        TestFlextPluginServiceWithRealAdapters as TestFlextPluginServiceWithRealAdapters,
+        TestRealPluginDiscoveryAndExecution as TestRealPluginDiscoveryAndExecution,
+        TestRealPluginErrorScenarios as TestRealPluginErrorScenarios,
+        TestRealPluginIntegrationWorkflow as TestRealPluginIntegrationWorkflow,
+        TestServiceErrorHandling as TestServiceErrorHandling,
+        TestServicesIntegrationReal as TestServicesIntegrationReal,
+        real_discovery_service_with_adapters as real_discovery_service_with_adapters,
+        real_plugin_discovery as real_plugin_discovery,
+        real_plugin_loader as real_plugin_loader,
+        real_service_with_adapters as real_service_with_adapters,
+        temp_plugin_dir as temp_plugin_dir,
     )
     from tests.test_core_types import (
-        TestFlextPluginConstantsLifecycle,
-        TestFlextPluginConstantsPluginType,
-        TestPluginError,
+        TestFlextPluginConstantsLifecycle as TestFlextPluginConstantsLifecycle,
+        TestFlextPluginConstantsPluginType as TestFlextPluginConstantsPluginType,
+        TestPluginError as TestPluginError,
     )
     from tests.test_domain_entities import (
-        TestFlextPlugin,
-        TestFlextPluginExecution,
-        TestFlextPluginMetadata,
-        TestFlextPluginRegistryEntity,
+        TestFlextPlugin as TestFlextPlugin,
+        TestFlextPluginExecution as TestFlextPluginExecution,
+        TestFlextPluginMetadata as TestFlextPluginMetadata,
+        TestFlextPluginRegistryEntity as TestFlextPluginRegistryEntity,
     )
-    from tests.test_domain_ports import TestFlextPluginDiscovery
+    from tests.test_domain_ports import (
+        TestFlextPluginDiscovery as TestFlextPluginDiscovery,
+    )
     from tests.test_examples import (
-        test_basic_plugin_example_execution,
-        test_docker_integration_example_execution,
-        test_docker_integration_example_with_connection_testing,
-        test_plugin_configuration_example_execution,
+        test_basic_plugin_example_execution as test_basic_plugin_example_execution,
+        test_docker_integration_example_execution as test_docker_integration_example_execution,
+        test_docker_integration_example_with_connection_testing as test_docker_integration_example_with_connection_testing,
+        test_plugin_configuration_example_execution as test_plugin_configuration_example_execution,
     )
-    from tests.test_handlers import TestFlextPluginHandlers
-    from tests.test_hot_reload import TestFlextPluginHotReload
-    from tests.test_hot_reload_package import TestHotReloadPackage
-    from tests.test_imports import modules_to_test
-    from tests.test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
+    from tests.test_handlers import TestFlextPluginHandlers as TestFlextPluginHandlers
+    from tests.test_hot_reload import (
+        TestFlextPluginHotReload as TestFlextPluginHotReload,
+    )
+    from tests.test_hot_reload_package import (
+        TestHotReloadPackage as TestHotReloadPackage,
+    )
+    from tests.test_imports import modules_to_test as modules_to_test
+    from tests.test_loader import (
+        TestDynamicLoaderAdapter as TestDynamicLoaderAdapter,
+        TestFlextPluginLoader as TestFlextPluginLoader,
+    )
     from tests.test_manager import (
-        TestFlextPluginService,
-        TestFlextPluginServiceStubBridges,
+        TestFlextPluginService as TestFlextPluginService,
+        TestFlextPluginServiceStubBridges as TestFlextPluginServiceStubBridges,
     )
     from tests.test_plugin import (
-        TestPluginModel,
-        TestPluginPlatform,
-        TestPluginRegistry,
+        TestPluginModel as TestPluginModel,
+        TestPluginPlatform as TestPluginPlatform,
+        TestPluginRegistry as TestPluginRegistry,
     )
-    from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
-    from tests.unit import test_config, test_constants, test_models, test_types
-    from tests.unit.test_config import TestFlextPluginSettings
-    from tests.unit.test_constants import TestFlextPluginConstants
-    from tests.unit.test_models import TestFlextPluginModels
-    from tests.unit.test_types import TestFlextPluginTypes
-    from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
+    from tests.typings import (
+        FlextPluginTestTypes as FlextPluginTestTypes,
+        FlextPluginTestTypes as t,
+    )
+    from tests.unit import (
+        test_config as test_config,
+        test_constants as test_constants,
+        test_models as test_models,
+        test_types as test_types,
+    )
+    from tests.unit.test_config import (
+        TestFlextPluginSettings as TestFlextPluginSettings,
+    )
+    from tests.unit.test_constants import (
+        TestFlextPluginConstants as TestFlextPluginConstants,
+    )
+    from tests.unit.test_models import TestFlextPluginModels as TestFlextPluginModels
+    from tests.unit.test_types import TestFlextPluginTypes as TestFlextPluginTypes
+    from tests.utilities import (
+        FlextPluginTestUtilities as FlextPluginTestUtilities,
+        FlextPluginTestUtilities as u,
+    )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginTestConstants": ["tests.constants", "FlextPluginTestConstants"],
@@ -288,7 +318,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_tests", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "FlextPluginTestConstants",
     "FlextPluginTestModels",
     "FlextPluginTestProtocols",
@@ -392,41 +422,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)

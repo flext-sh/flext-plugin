@@ -5,62 +5,91 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 from flext_plugin.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
 )
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_plugin import (
-        _utilities,
-        api,
-        constants,
-        models,
-        protocols,
-        settings,
-        typings,
-        utilities,
+        _utilities as _utilities,
+        api as api,
+        constants as constants,
+        models as models,
+        protocols as protocols,
+        settings as settings,
+        typings as typings,
+        utilities as utilities,
     )
     from flext_plugin._utilities import (
-        adapters,
-        discovery,
-        entities,
-        handlers,
-        hot_reload,
-        implementations,
-        loader,
-        plugin_platform,
-        services,
+        adapters as adapters,
+        discovery as discovery,
+        entities as entities,
+        handlers as handlers,
+        hot_reload as hot_reload,
+        implementations as implementations,
+        loader as loader,
+        plugin_platform as plugin_platform,
+        services as services,
     )
-    from flext_plugin._utilities.adapters import FlextPluginAdapters
-    from flext_plugin._utilities.discovery import FlextPluginDiscovery
-    from flext_plugin._utilities.entities import FlextPluginEntities
-    from flext_plugin._utilities.handlers import FlextPluginHandlers
-    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
-    from flext_plugin._utilities.implementations import FlextPluginImplementations
-    from flext_plugin._utilities.loader import FlextPluginLoader
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
-    from flext_plugin._utilities.services import FlextPluginService
-    from flext_plugin.api import FlextPluginApi
-    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
-    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-    from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
-    from flext_plugin.settings import FlextPluginSettings
-    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
-    from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
+    from flext_plugin._utilities.adapters import (
+        FlextPluginAdapters as FlextPluginAdapters,
+    )
+    from flext_plugin._utilities.discovery import (
+        FlextPluginDiscovery as FlextPluginDiscovery,
+    )
+    from flext_plugin._utilities.entities import (
+        FlextPluginEntities as FlextPluginEntities,
+    )
+    from flext_plugin._utilities.handlers import (
+        FlextPluginHandlers as FlextPluginHandlers,
+    )
+    from flext_plugin._utilities.hot_reload import (
+        FlextPluginHotReload as FlextPluginHotReload,
+    )
+    from flext_plugin._utilities.implementations import (
+        FlextPluginImplementations as FlextPluginImplementations,
+    )
+    from flext_plugin._utilities.loader import FlextPluginLoader as FlextPluginLoader
+    from flext_plugin._utilities.plugin_platform import (
+        FlextPluginPlatform as FlextPluginPlatform,
+    )
+    from flext_plugin._utilities.services import (
+        FlextPluginService as FlextPluginService,
+    )
+    from flext_plugin.api import FlextPluginApi as FlextPluginApi
+    from flext_plugin.constants import (
+        FlextPluginConstants as FlextPluginConstants,
+        FlextPluginConstants as c,
+    )
+    from flext_plugin.models import (
+        FlextPluginModels as FlextPluginModels,
+        FlextPluginModels as m,
+    )
+    from flext_plugin.protocols import (
+        FlextPluginProtocols as FlextPluginProtocols,
+        FlextPluginProtocols as p,
+    )
+    from flext_plugin.settings import FlextPluginSettings as FlextPluginSettings
+    from flext_plugin.typings import (
+        FlextPluginTypes as FlextPluginTypes,
+        FlextPluginTypes as t,
+    )
+    from flext_plugin.utilities import (
+        FlextPluginUtilities as FlextPluginUtilities,
+        FlextPluginUtilities as u,
+    )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextPluginAdapters": ["flext_plugin._utilities.adapters", "FlextPluginAdapters"],
@@ -121,7 +150,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_core", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "FlextPluginAdapters",
     "FlextPluginApi",
     "FlextPluginConstants",
@@ -177,41 +206,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
