@@ -13,10 +13,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from flext_core import FlextModels, r
+from flext_core import FlextModels, FlextUtilities, r
 from pydantic import Field, field_validator
 
 from flext_plugin import c, t
+
+u = FlextUtilities
 
 
 class FlextPluginModels(FlextModels):
@@ -232,12 +234,7 @@ class FlextPluginModels(FlextModels):
                 if "last_error" not in self.metadata:
                     self.metadata["last_error"] = ""
 
-                error_count_val = self.metadata.get("error_count", 0)
-                error_count = (
-                    int(error_count_val)
-                    if isinstance(error_count_val, (int, float, str))
-                    else 0
-                )
+                error_count = u.to_int(self.metadata.get("error_count", 0))
                 self.metadata["error_count"] = error_count + 1
                 self.metadata["last_error"] = error_message
 
@@ -259,36 +256,16 @@ class FlextPluginModels(FlextModels):
                 if "failure_count" not in self.metadata:
                     self.metadata["failure_count"] = 0
 
-                exec_count_val = self.metadata.get("execution_count", 0)
-                exec_count = (
-                    int(exec_count_val)
-                    if isinstance(exec_count_val, (int, float, str))
-                    else 0
-                )
-                total_time_val = self.metadata.get("total_execution_time", 0.0)
-                total_time = (
-                    float(total_time_val)
-                    if isinstance(total_time_val, (int, float, str))
-                    else 0.0
-                )
+                exec_count = u.to_int(self.metadata.get("execution_count", 0))
+                total_time = u.to_float(self.metadata.get("total_execution_time", 0.0))
                 self.metadata["execution_count"] = exec_count + 1
                 self.metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
-                    success_count_val = self.metadata.get("success_count", 0)
-                    success_count = (
-                        int(success_count_val)
-                        if isinstance(success_count_val, (int, float, str))
-                        else 0
-                    )
+                    success_count = u.to_int(self.metadata.get("success_count", 0))
                     self.metadata["success_count"] = success_count + 1
                 else:
-                    failure_count_val = self.metadata.get("failure_count", 0)
-                    failure_count = (
-                        int(failure_count_val)
-                        if isinstance(failure_count_val, (int, float, str))
-                        else 0
-                    )
+                    failure_count = u.to_int(self.metadata.get("failure_count", 0))
                     self.metadata["failure_count"] = failure_count + 1
 
             def validate_business_rules(self) -> r[bool]:
