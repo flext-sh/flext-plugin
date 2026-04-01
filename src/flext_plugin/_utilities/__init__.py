@@ -16,15 +16,26 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from flext_plugin._utilities.adapters import *
-    from flext_plugin._utilities.discovery import *
-    from flext_plugin._utilities.entities import *
-    from flext_plugin._utilities.handlers import *
-    from flext_plugin._utilities.hot_reload import *
-    from flext_plugin._utilities.implementations import *
-    from flext_plugin._utilities.loader import *
-    from flext_plugin._utilities.plugin_platform import *
-    from flext_plugin._utilities.services import *
+    from flext_plugin._utilities import (
+        adapters,
+        discovery,
+        entities,
+        handlers,
+        hot_reload,
+        implementations,
+        loader,
+        plugin_platform,
+        services,
+    )
+    from flext_plugin._utilities.adapters import FlextPluginAdapters
+    from flext_plugin._utilities.discovery import FlextPluginDiscovery
+    from flext_plugin._utilities.entities import FlextPluginEntities
+    from flext_plugin._utilities.handlers import FlextPluginHandlers
+    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
+    from flext_plugin._utilities.implementations import FlextPluginImplementations
+    from flext_plugin._utilities.loader import FlextPluginLoader
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.services import FlextPluginService
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "FlextPluginAdapters": "flext_plugin._utilities.adapters",

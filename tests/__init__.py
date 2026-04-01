@@ -14,10 +14,51 @@ if _TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests.conftest import *
-    from tests.constants import *
-    from tests.models import *
-    from tests.protocols import *
+    from tests import (
+        conftest,
+        constants,
+        models,
+        protocols,
+        test_application_handlers,
+        test_application_services,
+        test_core_types,
+        test_discovery,
+        test_domain_entities,
+        test_domain_ports,
+        test_examples,
+        test_handlers,
+        test_hot_reload,
+        test_hot_reload_package,
+        test_imports,
+        test_loader,
+        test_manager,
+        test_plugin,
+        typings,
+        unit,
+        utilities,
+    )
+    from tests.conftest import (
+        performance_config,
+        pytest_configure,
+        real_container_with_adapters,
+        real_discovery_adapter,
+        real_loader_adapter,
+        real_manager_adapter,
+        real_plugin_config,
+        real_plugin_configs,
+        real_plugin_data,
+        real_plugin_dependencies,
+        real_plugin_directory,
+        real_plugin_entity,
+        real_processor_plugin,
+        real_tap_plugin,
+        real_target_plugin,
+        set_test_environment,
+        simple_plugin_directory,
+    )
+    from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
+    from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
+    from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
     from tests.test_application_services import (
         PluginInterface,
         TestBackwardsCompatibilityAliasesReal,
@@ -67,9 +108,18 @@ if _TYPE_CHECKING:
         TestPluginPlatform,
         TestPluginRegistry,
     )
-    from tests.typings import *
-    from tests.unit import *
-    from tests.utilities import *
+    from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
+    from tests.unit import (
+        TestFlextPluginConstants,
+        TestFlextPluginModels,
+        TestFlextPluginSettings,
+        TestFlextPluginTypes,
+        test_config,
+        test_constants,
+        test_models,
+        test_types,
+    )
+    from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     ("tests.unit",),

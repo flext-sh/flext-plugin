@@ -13,6 +13,7 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import test_config, test_constants, test_models, test_types
     from tests.unit.test_config import TestFlextPluginSettings
     from tests.unit.test_constants import TestFlextPluginConstants
     from tests.unit.test_models import TestFlextPluginModels
