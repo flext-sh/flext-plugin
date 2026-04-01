@@ -13,10 +13,10 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from tests.unit.test_config import *
-    from tests.unit.test_constants import *
-    from tests.unit.test_models import *
-    from tests.unit.test_types import *
+    from tests.unit.test_config import TestFlextPluginSettings
+    from tests.unit.test_constants import TestFlextPluginConstants
+    from tests.unit.test_models import TestFlextPluginModels
+    from tests.unit.test_types import TestFlextPluginTypes
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestFlextPluginConstants": "tests.unit.test_constants",
