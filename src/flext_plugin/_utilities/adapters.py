@@ -15,14 +15,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import override
 
-from pydantic import TypeAdapter
-
 from flext_core import FlextLogger, T, r
 from flext_plugin import FlextPluginDiscovery, c, m, p, t
-
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = (
-    t.CONTAINER_VALUE_MAPPING_ADAPTER
-)
 
 
 class FlextPluginAdapters:
@@ -349,7 +343,7 @@ class FlextPluginAdapters:
         def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
-            plugin_payload = _CONTAINER_MAP_ADAPTER.validate_python(
+            plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                 plugin,
             )
             plugin_name = plugin_payload.get("name")

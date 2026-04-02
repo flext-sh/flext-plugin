@@ -14,12 +14,8 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from pydantic import TypeAdapter
-
 from flext_core import FlextLogger, r
 from flext_plugin import c, m, p, t
-
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = t.CONTAINER_MAPPING_ADAPTER
 
 
 class FlextPluginImplementations:
@@ -377,7 +373,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
                     return r[t.NormalizedValue].fail("Input data must be a dictionary")
-                validated = _CONTAINER_MAP_ADAPTER.validate_python(
+                validated = t.CONTAINER_MAPPING_ADAPTER.validate_python(
                     data,
                 )
                 transformed: t.MutableContainerMapping = dict(validated)

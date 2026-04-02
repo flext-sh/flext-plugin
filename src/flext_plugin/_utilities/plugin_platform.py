@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from pydantic import PrivateAttr, TypeAdapter
+from pydantic import PrivateAttr
 
 from flext_core import FlextRegistry, FlextService, FlextSettings, r
 from flext_plugin import (
@@ -21,10 +21,6 @@ from flext_plugin import (
     p,
     t,
     u,
-)
-
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = (
-    t.CONTAINER_VALUE_MAPPING_ADAPTER
 )
 
 
@@ -229,7 +225,7 @@ class FlextPluginPlatform:
             if not u.is_dict_like(value):
                 result: t.ContainerMapping = {}
                 return result
-            return _CONTAINER_MAP_ADAPTER.validate_python(value)
+            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
 
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
