@@ -15,7 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import FlextPluginConstants, FlextPluginDiscovery, FlextPluginModels
+from flext_plugin import FlextPluginDiscovery
+from tests import c, m
 
 
 class TestFlextPluginDiscovery:
@@ -76,12 +77,12 @@ class TestFlextPluginDiscovery:
 
     def test_validate_plugin_none_data(self, discovery: FlextPluginDiscovery) -> None:
         """Test validate_plugin with None data."""
-        plugin_data = FlextPluginModels.Plugin.DiscoveryData(
+        plugin_data = m.Plugin.DiscoveryData(
             name="test_plugin",
             version="1.0.0",
             path=Path("test_path"),
-            discovery_type=FlextPluginConstants.Plugin.DiscoveryTypeLiteral.FILE,
-            discovery_method=FlextPluginConstants.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+            discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+            discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
         result = discovery.validate_plugin(plugin_data=plugin_data)
         assert result.is_success

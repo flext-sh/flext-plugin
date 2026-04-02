@@ -12,15 +12,16 @@ from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_plugin import FlextPluginTypes, t
+from flext_plugin import FlextPluginTypes
+from tests import t
 
 
 class TestFlextPluginTypes:
     """Test cases for FlextPluginTypes."""
 
     def test_types_alias_matches_facade(self) -> None:
-        """T alias points to FlextPluginTypes facade."""
-        tm.that(t is FlextPluginTypes, eq=True)
+        """T alias inherits from FlextPluginTypes facade."""
+        tm.that(issubclass(t, FlextPluginTypes), eq=True)
 
     def test_plugin_namespace_exposes_sub_namespaces(self) -> None:
         """Plugin namespace contains Discovery, Execution, Registry sub-namespaces."""

@@ -14,96 +14,73 @@ from __future__ import annotations
 import pytest
 from flext_core import FlextExceptions
 
-from flext_plugin import FlextPluginConstants
+from tests import c
 
 
 class TestFlextPluginConstantsPluginType:
-    """Test FlextPluginConstants.Plugin.PluginType enum functionality."""
+    """Test c.Plugin.PluginType enum functionality."""
 
     def test_plugin_type_values(self) -> None:
         """Test all plugin type enum values."""
-        if FlextPluginConstants.Plugin.PluginType.TAP.value != "tap":
-            error_message = f"Expected {'tap'}, got {FlextPluginConstants.Plugin.PluginType.TAP.value}"
+        if c.Plugin.PluginType.TAP.value != "tap":
+            error_message = f"Expected {'tap'}, got {c.Plugin.PluginType.TAP.value}"
             raise AssertionError(error_message)
-        assert FlextPluginConstants.Plugin.PluginType.TARGET.value == "target"
-        if FlextPluginConstants.Plugin.PluginType.TRANSFORM.value != "transform":
-            error_message = f"Expected {'transform'}, got {FlextPluginConstants.Plugin.PluginType.TRANSFORM.value}"
+        assert c.Plugin.PluginType.TARGET.value == "target"
+        if c.Plugin.PluginType.TRANSFORM.value != "transform":
+            error_message = (
+                f"Expected {'transform'}, got {c.Plugin.PluginType.TRANSFORM.value}"
+            )
             raise AssertionError(error_message)
-        assert FlextPluginConstants.Plugin.PluginType.UTILITY.value == "utility"
+        assert c.Plugin.PluginType.UTILITY.value == "utility"
 
     def test_plugin_type_from_string(self) -> None:
-        """Test creating FlextPluginConstants.Plugin.PluginType from string values."""
-        if (
-            FlextPluginConstants.Plugin.PluginType("tap")
-            != FlextPluginConstants.Plugin.PluginType.TAP
-        ):
-            error_message = f"Expected {FlextPluginConstants.Plugin.PluginType.TAP}, got {FlextPluginConstants.Plugin.PluginType('tap')}"
+        """Test creating c.Plugin.PluginType from string values."""
+        if c.Plugin.PluginType("tap") != c.Plugin.PluginType.TAP:
+            error_message = (
+                f"Expected {c.Plugin.PluginType.TAP}, got {c.Plugin.PluginType('tap')}"
+            )
             raise AssertionError(error_message)
-        assert (
-            FlextPluginConstants.Plugin.PluginType("target")
-            == FlextPluginConstants.Plugin.PluginType.TARGET
-        )
-        if (
-            FlextPluginConstants.Plugin.PluginType("transform")
-            != FlextPluginConstants.Plugin.PluginType.TRANSFORM
-        ):
-            error_message = f"Expected {FlextPluginConstants.Plugin.PluginType.TRANSFORM}, got {FlextPluginConstants.Plugin.PluginType('transform')}"
+        assert c.Plugin.PluginType("target") == c.Plugin.PluginType.TARGET
+        if c.Plugin.PluginType("transform") != c.Plugin.PluginType.TRANSFORM:
+            error_message = f"Expected {c.Plugin.PluginType.TRANSFORM}, got {c.Plugin.PluginType('transform')}"
             raise AssertionError(error_message)
-        assert (
-            FlextPluginConstants.Plugin.PluginType("utility")
-            == FlextPluginConstants.Plugin.PluginType.UTILITY
-        )
+        assert c.Plugin.PluginType("utility") == c.Plugin.PluginType.UTILITY
 
     def test_plugin_type_invalid(self) -> None:
         """Test invalid plugin type raises error."""
         with pytest.raises(ValueError, match=r".*invalid_type.*"):
-            FlextPluginConstants.Plugin.PluginType("invalid_type")
+            c.Plugin.PluginType("invalid_type")
 
 
 class TestFlextPluginConstantsLifecycle:
-    """Test FlextPluginConstants.Plugin.PluginStatus enum functionality."""
+    """Test c.Plugin.PluginStatus enum functionality."""
 
     def test_plugin_status_values(self) -> None:
         """Test all plugin status enum values."""
-        if FlextPluginConstants.Plugin.PluginStatus.UNKNOWN.value != "unknown":
-            msg = f"Expected {'unknown'}, got {FlextPluginConstants.Plugin.PluginStatus.UNKNOWN.value}"
+        if c.Plugin.PluginStatus.UNKNOWN.value != "unknown":
+            msg = f"Expected {'unknown'}, got {c.Plugin.PluginStatus.UNKNOWN.value}"
             raise AssertionError(msg)
-        assert FlextPluginConstants.Plugin.PluginStatus.DISCOVERED.value == "discovered"
-        if FlextPluginConstants.Plugin.PluginStatus.LOADED.value != "loaded":
-            msg = f"Expected {'loaded'}, got {FlextPluginConstants.Plugin.PluginStatus.LOADED.value}"
+        assert c.Plugin.PluginStatus.DISCOVERED.value == "discovered"
+        if c.Plugin.PluginStatus.LOADED.value != "loaded":
+            msg = f"Expected {'loaded'}, got {c.Plugin.PluginStatus.LOADED.value}"
             raise AssertionError(msg)
-        assert FlextPluginConstants.Plugin.PluginStatus.ACTIVE.value == "active"
-        if FlextPluginConstants.Plugin.PluginStatus.ERROR.value != "error":
-            msg = f"Expected {'error'}, got {FlextPluginConstants.Plugin.PluginStatus.ERROR.value}"
+        assert c.Plugin.PluginStatus.ACTIVE.value == "active"
+        if c.Plugin.PluginStatus.ERROR.value != "error":
+            msg = f"Expected {'error'}, got {c.Plugin.PluginStatus.ERROR.value}"
             raise AssertionError(msg)
 
     def test_plugin_status_from_string(self) -> None:
-        """Test creating FlextPluginConstants.Plugin.PluginStatus from string values."""
-        if (
-            FlextPluginConstants.Plugin.PluginStatus("unknown")
-            != FlextPluginConstants.Plugin.PluginStatus.UNKNOWN
-        ):
-            msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.UNKNOWN}, got {FlextPluginConstants.Plugin.PluginStatus('unknown')}"
+        """Test creating c.Plugin.PluginStatus from string values."""
+        if c.Plugin.PluginStatus("unknown") != c.Plugin.PluginStatus.UNKNOWN:
+            msg = f"Expected {c.Plugin.PluginStatus.UNKNOWN}, got {c.Plugin.PluginStatus('unknown')}"
             raise AssertionError(msg)
-        assert (
-            FlextPluginConstants.Plugin.PluginStatus("discovered")
-            == FlextPluginConstants.Plugin.PluginStatus.DISCOVERED
-        )
-        if (
-            FlextPluginConstants.Plugin.PluginStatus("loaded")
-            != FlextPluginConstants.Plugin.PluginStatus.LOADED
-        ):
-            msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.LOADED}, got {FlextPluginConstants.Plugin.PluginStatus('loaded')}"
+        assert c.Plugin.PluginStatus("discovered") == c.Plugin.PluginStatus.DISCOVERED
+        if c.Plugin.PluginStatus("loaded") != c.Plugin.PluginStatus.LOADED:
+            msg = f"Expected {c.Plugin.PluginStatus.LOADED}, got {c.Plugin.PluginStatus('loaded')}"
             raise AssertionError(msg)
-        assert (
-            FlextPluginConstants.Plugin.PluginStatus("active")
-            == FlextPluginConstants.Plugin.PluginStatus.ACTIVE
-        )
-        if (
-            FlextPluginConstants.Plugin.PluginStatus("error")
-            != FlextPluginConstants.Plugin.PluginStatus.ERROR
-        ):
-            msg = f"Expected {FlextPluginConstants.Plugin.PluginStatus.ERROR}, got {FlextPluginConstants.Plugin.PluginStatus('error')}"
+        assert c.Plugin.PluginStatus("active") == c.Plugin.PluginStatus.ACTIVE
+        if c.Plugin.PluginStatus("error") != c.Plugin.PluginStatus.ERROR:
+            msg = f"Expected {c.Plugin.PluginStatus.ERROR}, got {c.Plugin.PluginStatus('error')}"
             raise AssertionError(msg)
 
 

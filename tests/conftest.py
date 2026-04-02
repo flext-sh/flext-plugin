@@ -22,8 +22,8 @@ from pathlib import Path
 import pytest
 from flext_core import FlextContainer
 
-from flext_plugin import FlextPluginAdapters, FlextPluginConstants, FlextPluginModels
-from tests import t
+from flext_plugin import FlextPluginAdapters
+from tests import c, m, t
 
 
 @pytest.fixture(autouse=True)
@@ -131,9 +131,9 @@ def real_container_with_adapters() -> FlextContainer:
 
 
 @pytest.fixture
-def real_plugin_entity() -> FlextPluginModels.Plugin.Plugin:
-    """Create REAL FlextPluginModels.Plugin for testing."""
-    return FlextPluginModels.Plugin.Plugin(
+def real_plugin_entity() -> m.Plugin.Plugin:
+    """Create REAL m.Plugin for testing."""
+    return m.Plugin.Plugin(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
@@ -202,42 +202,42 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture
-def real_tap_plugin() -> FlextPluginModels.Plugin.Plugin:
+def real_tap_plugin() -> m.Plugin.Plugin:
     """Create REAL tap plugin entity."""
-    return FlextPluginModels.Plugin.Plugin(
+    return m.Plugin.Plugin(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
         author="test-suite",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.TAP,
+        plugin_type=c.Plugin.PluginType.TAP,
         is_enabled=True,
         metadata={},
     )
 
 
 @pytest.fixture
-def real_target_plugin() -> FlextPluginModels.Plugin.Plugin:
+def real_target_plugin() -> m.Plugin.Plugin:
     """Create REAL target plugin entity."""
-    return FlextPluginModels.Plugin.Plugin(
+    return m.Plugin.Plugin(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
         author="test-suite",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.TARGET,
+        plugin_type=c.Plugin.PluginType.TARGET,
         is_enabled=True,
         metadata={},
     )
 
 
 @pytest.fixture
-def real_processor_plugin() -> FlextPluginModels.Plugin.Plugin:
+def real_processor_plugin() -> m.Plugin.Plugin:
     """Create REAL processor plugin entity."""
-    return FlextPluginModels.Plugin.Plugin(
+    return m.Plugin.Plugin(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",
         author="test-suite",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.PROCESSOR,
+        plugin_type=c.Plugin.PluginType.PROCESSOR,
         is_enabled=True,
         metadata={},
     )

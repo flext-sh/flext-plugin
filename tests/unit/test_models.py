@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 from flext_tests import tm
 
-from flext_plugin import FlextPluginConstants, FlextPluginModels
+from tests import c, m
 
 
 class TestFlextPluginModels:
@@ -22,134 +22,132 @@ class TestFlextPluginModels:
 
     def test_models_initialization(self) -> None:
         """Test that models can be initialized."""
-        models = FlextPluginModels()
+        models = m()
         assert models is not None
 
     def test_plugin_status_enum(self) -> None:
         """Test PluginStatus enum values and methods."""
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.UNKNOWN, eq="unknown")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.DISCOVERED, eq="discovered")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.LOADED, eq="loaded")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.ACTIVE, eq="active")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.INACTIVE, eq="inactive")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.LOADING, eq="loading")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.ERROR, eq="error")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.DISABLED, eq="disabled")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.HEALTHY, eq="healthy")
-        tm.that(FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY, eq="unhealthy")
-        operational_statuses = (
-            FlextPluginConstants.Plugin.PluginStatus.get_operational_statuses()
+        tm.that(c.Plugin.PluginStatus.UNKNOWN, eq="unknown")
+        tm.that(c.Plugin.PluginStatus.DISCOVERED, eq="discovered")
+        tm.that(c.Plugin.PluginStatus.LOADED, eq="loaded")
+        tm.that(c.Plugin.PluginStatus.ACTIVE, eq="active")
+        tm.that(c.Plugin.PluginStatus.INACTIVE, eq="inactive")
+        tm.that(c.Plugin.PluginStatus.LOADING, eq="loading")
+        tm.that(c.Plugin.PluginStatus.ERROR, eq="error")
+        tm.that(c.Plugin.PluginStatus.DISABLED, eq="disabled")
+        tm.that(c.Plugin.PluginStatus.HEALTHY, eq="healthy")
+        tm.that(c.Plugin.PluginStatus.UNHEALTHY, eq="unhealthy")
+        operational_statuses = c.Plugin.PluginStatus.get_operational_statuses()
+        tm.that(
+            operational_statuses,
+            has=c.Plugin.PluginStatus.ACTIVE,
         )
         tm.that(
             operational_statuses,
-            has=FlextPluginConstants.Plugin.PluginStatus.ACTIVE,
+            has=c.Plugin.PluginStatus.HEALTHY,
         )
         tm.that(
             operational_statuses,
-            has=FlextPluginConstants.Plugin.PluginStatus.HEALTHY,
+            has=c.Plugin.PluginStatus.LOADED,
         )
+        error_statuses = c.Plugin.PluginStatus.get_error_statuses()
+        tm.that(error_statuses, has=c.Plugin.PluginStatus.ERROR)
+        tm.that(error_statuses, has=c.Plugin.PluginStatus.UNHEALTHY)
+        tm.that(error_statuses, has=c.Plugin.PluginStatus.DISABLED)
         tm.that(
-            operational_statuses,
-            has=FlextPluginConstants.Plugin.PluginStatus.LOADED,
-        )
-        error_statuses = FlextPluginConstants.Plugin.PluginStatus.get_error_statuses()
-        tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.ERROR)
-        tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.UNHEALTHY)
-        tm.that(error_statuses, has=FlextPluginConstants.Plugin.PluginStatus.DISABLED)
-        tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_operational(),
+            c.Plugin.PluginStatus.ACTIVE.is_operational(),
             eq=True,
         )
         tm.that(
-            not FlextPluginConstants.Plugin.PluginStatus.ERROR.is_operational(),
+            not c.Plugin.PluginStatus.ERROR.is_operational(),
             eq=True,
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginStatus.ERROR.is_error_state(),
+            c.Plugin.PluginStatus.ERROR.is_error_state(),
             eq=True,
         )
         tm.that(
-            not FlextPluginConstants.Plugin.PluginStatus.ACTIVE.is_error_state(),
+            not c.Plugin.PluginStatus.ACTIVE.is_error_state(),
             eq=True,
         )
 
     def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values."""
-        tm.that(FlextPluginConstants.Plugin.PluginType.TAP, eq="tap")
-        tm.that(FlextPluginConstants.Plugin.PluginType.TARGET, eq="target")
-        tm.that(FlextPluginConstants.Plugin.PluginType.TRANSFORM, eq="transform")
-        tm.that(FlextPluginConstants.Plugin.PluginType.EXTENSION, eq="extension")
-        tm.that(FlextPluginConstants.Plugin.PluginType.SERVICE, eq="service")
-        tm.that(FlextPluginConstants.Plugin.PluginType.MIDDLEWARE, eq="middleware")
-        tm.that(FlextPluginConstants.Plugin.PluginType.TRANSFORMER, eq="transformer")
-        tm.that(FlextPluginConstants.Plugin.PluginType.API, eq="api")
-        tm.that(FlextPluginConstants.Plugin.PluginType.DATABASE, eq="database")
-        tm.that(FlextPluginConstants.Plugin.PluginType.NOTIFICATION, eq="notification")
+        tm.that(c.Plugin.PluginType.TAP, eq="tap")
+        tm.that(c.Plugin.PluginType.TARGET, eq="target")
+        tm.that(c.Plugin.PluginType.TRANSFORM, eq="transform")
+        tm.that(c.Plugin.PluginType.EXTENSION, eq="extension")
+        tm.that(c.Plugin.PluginType.SERVICE, eq="service")
+        tm.that(c.Plugin.PluginType.MIDDLEWARE, eq="middleware")
+        tm.that(c.Plugin.PluginType.TRANSFORMER, eq="transformer")
+        tm.that(c.Plugin.PluginType.API, eq="api")
+        tm.that(c.Plugin.PluginType.DATABASE, eq="database")
+        tm.that(c.Plugin.PluginType.NOTIFICATION, eq="notification")
         tm.that(
-            FlextPluginConstants.Plugin.PluginType.AUTHENTICATION,
+            c.Plugin.PluginType.AUTHENTICATION,
             eq="authentication",
         )
         tm.that(
-            FlextPluginConstants.Plugin.PluginType.AUTHORIZATION,
+            c.Plugin.PluginType.AUTHORIZATION,
             eq="authorization",
         )
-        tm.that(FlextPluginConstants.Plugin.PluginType.UTILITY, eq="utility")
-        tm.that(FlextPluginConstants.Plugin.PluginType.TOOL, eq="tool")
-        tm.that(FlextPluginConstants.Plugin.PluginType.HANDLER, eq="handler")
-        tm.that(FlextPluginConstants.Plugin.PluginType.PROCESSOR, eq="processor")
-        tm.that(FlextPluginConstants.Plugin.PluginType.CORE, eq="core")
-        tm.that(FlextPluginConstants.Plugin.PluginType.ADDON, eq="addon")
-        tm.that(FlextPluginConstants.Plugin.PluginType.THEME, eq="theme")
-        tm.that(FlextPluginConstants.Plugin.PluginType.LANGUAGE, eq="language")
+        tm.that(c.Plugin.PluginType.UTILITY, eq="utility")
+        tm.that(c.Plugin.PluginType.TOOL, eq="tool")
+        tm.that(c.Plugin.PluginType.HANDLER, eq="handler")
+        tm.that(c.Plugin.PluginType.PROCESSOR, eq="processor")
+        tm.that(c.Plugin.PluginType.CORE, eq="core")
+        tm.that(c.Plugin.PluginType.ADDON, eq="addon")
+        tm.that(c.Plugin.PluginType.THEME, eq="theme")
+        tm.that(c.Plugin.PluginType.LANGUAGE, eq="language")
 
     def test_plugin_model_creation(self) -> None:
         """Test Plugin model creation."""
-        plugin = FlextPluginModels.Plugin.Plugin(
+        plugin = m.Plugin.Plugin(
             name="test-plugin",
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+            plugin_type=c.Plugin.PluginType.UTILITY,
             is_enabled=True,
         )
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.0.0")
-        tm.that(plugin.plugin_type, eq=FlextPluginConstants.Plugin.PluginType.UTILITY)
+        tm.that(plugin.plugin_type, eq=c.Plugin.PluginType.UTILITY)
         tm.that(plugin.is_enabled is True, eq=True)
 
     def test_plugin_model_validation(self) -> None:
         """Test Plugin model validation rules."""
-        plugin = FlextPluginModels.Plugin.Plugin(
+        plugin = m.Plugin.Plugin(
             name="valid-plugin",
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+            plugin_type=c.Plugin.PluginType.UTILITY,
             is_enabled=True,
         )
         tm.that(plugin.name, eq="valid-plugin")
         with pytest.raises(ValueError):
-            FlextPluginModels.Plugin.Plugin(
+            m.Plugin.Plugin(
                 name="",
                 plugin_version="1.0.0",
                 description="",
                 author="",
-                plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+                plugin_type=c.Plugin.PluginType.UTILITY,
                 is_enabled=True,
             )
         with pytest.raises(ValueError):
-            FlextPluginModels.Plugin.Plugin(
+            m.Plugin.Plugin(
                 name="test-plugin",
                 plugin_version="invalid-version",
                 description="",
                 author="",
-                plugin_type=FlextPluginConstants.Plugin.PluginType.UTILITY,
+                plugin_type=c.Plugin.PluginType.UTILITY,
                 is_enabled=True,
             )
 
     def test_execution_result_creation(self) -> None:
         """Test ExecutionResult creation."""
-        result = FlextPluginModels.Plugin.ExecutionResult(
+        result = m.Plugin.ExecutionResult(
             success=True,
             data={"output": "result"},
             error="",
@@ -162,7 +160,7 @@ class TestFlextPluginModels:
 
     def test_execution_result_failure(self) -> None:
         """Test ExecutionResult failure case."""
-        result = FlextPluginModels.Plugin.ExecutionResult(
+        result = m.Plugin.ExecutionResult(
             success=False,
             data={},
             error="Plugin execution failed",
@@ -173,12 +171,12 @@ class TestFlextPluginModels:
 
     def test_discovery_data_creation(self) -> None:
         """Test DiscoveryData creation."""
-        discovery = FlextPluginModels.Plugin.DiscoveryData(
+        discovery = m.Plugin.DiscoveryData(
             name="test-plugin",
             version="1.0.0",
             path=Path("/path/to/plugin"),
-            discovery_type=FlextPluginConstants.Plugin.DiscoveryTypeLiteral.FILE,
-            discovery_method=FlextPluginConstants.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+            discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+            discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
         tm.that(discovery.name, eq="test-plugin")
         tm.that(discovery.version, eq="1.0.0")
@@ -188,7 +186,7 @@ class TestFlextPluginModels:
 
     def test_plugin_metadata_creation(self) -> None:
         """Test PluginMetadata creation."""
-        metadata = FlextPluginModels.Plugin.PluginMetadata(
+        metadata = m.Plugin.PluginMetadata(
             name="test-plugin",
             version="1.0.0",
             entry_point="test_plugin:main",
@@ -203,7 +201,7 @@ class TestFlextPluginModels:
 
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
-        result = FlextPluginModels.Plugin.ValidationResult(
+        result = m.Plugin.ValidationResult(
             is_valid=True,
             errors=[],
             warnings=[],
@@ -214,7 +212,7 @@ class TestFlextPluginModels:
 
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
-        result = FlextPluginModels.Plugin.ValidationResult(
+        result = m.Plugin.ValidationResult(
             is_valid=False,
             errors=["Error 1", "Error 2"],
             warnings=["Warning 1"],
@@ -225,7 +223,7 @@ class TestFlextPluginModels:
 
     def test_config_creation(self) -> None:
         """Test Config model creation."""
-        config = FlextPluginModels.Plugin.PluginConfig(
+        config = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={"key": "value"},
         )
@@ -234,7 +232,7 @@ class TestFlextPluginModels:
 
     def test_registry_creation(self) -> None:
         """Test Registry model creation."""
-        registry = FlextPluginModels.Plugin.Registry(plugins={"plugin1": {}})
+        registry = m.Plugin.Registry(plugins={"plugin1": {}})
         tm.that(registry.plugins, has="plugin1")
         tm.that(registry.last_updated, is_=datetime)
         tm.that(registry.created_at, is_=datetime)

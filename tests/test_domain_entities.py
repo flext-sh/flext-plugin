@@ -14,8 +14,7 @@ from __future__ import annotations
 
 import math
 
-from flext_plugin import FlextPluginConstants, FlextPluginModels
-from tests import t
+from tests import c, m, t
 
 
 class TestFlextPlugin:
@@ -27,7 +26,7 @@ class TestFlextPlugin:
 
     def test_plugin_instance_creation(self) -> None:
         """Test creating FlextPlugin entity with factory method."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = m.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -43,7 +42,7 @@ class TestFlextPlugin:
 
     def test_plugin_enable_disable(self) -> None:
         """Test plugin enable and disable methods."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = m.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -62,7 +61,7 @@ class TestFlextPlugin:
 
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics in metadata."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = m.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -86,7 +85,7 @@ class TestFlextPlugin:
 
     def test_plugin_error_recording(self) -> None:
         """Test recording plugin errors in metadata."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = m.Plugin.Plugin.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -102,7 +101,7 @@ class TestFlextPlugin:
 
     def test_plugin_business_rules_validation(self) -> None:
         """Test plugin business rules validation."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = m.Plugin.Plugin.create(
             name="valid-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -118,7 +117,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
-        config = FlextPluginModels.Plugin.PluginConfig(
+        config = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={"enabled": True, "key": "value"},
         )
@@ -128,7 +127,7 @@ class TestFlextPluginSettings:
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginModels.Config default values."""
-        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test-plugin")
+        config = m.Plugin.PluginConfig(plugin_name="test-plugin")
         assert config.plugin_name == "test-plugin"
         assert config.settings == {}
 
@@ -140,7 +139,7 @@ class TestFlextPluginSettings:
             "timeout_seconds": 300,
             "nested": {"deep": "value"},
         }
-        config = FlextPluginModels.Plugin.PluginConfig(
+        config = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings=settings,
         )
@@ -150,11 +149,11 @@ class TestFlextPluginSettings:
 
 
 class TestFlextPluginExecution:
-    """Test FlextPluginModels.Plugin.ExecutionResult entity functionality."""
+    """Test m.Plugin.ExecutionResult entity functionality."""
 
     def test_execution_result_success(self) -> None:
         """Test creating successful ExecutionResult."""
-        result = FlextPluginModels.Plugin.ExecutionResult(
+        result = m.Plugin.ExecutionResult(
             success=True,
             data={"output": "test data"},
             error="",
@@ -167,7 +166,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_failure(self) -> None:
         """Test creating failed ExecutionResult."""
-        result = FlextPluginModels.Plugin.ExecutionResult(
+        result = m.Plugin.ExecutionResult(
             success=False,
             error="Plugin execution failed",
             execution_time_ms=50.0,
@@ -179,9 +178,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_defaults(self) -> None:
         """Test ExecutionResult default values."""
-        result = FlextPluginModels.Plugin.ExecutionResult(
-            success=True, error="", execution_time_ms=0.0
-        )
+        result = m.Plugin.ExecutionResult(success=True, error="", execution_time_ms=0.0)
         assert result.success is True
         assert result.data == {}
         assert result.error == ""
@@ -193,7 +190,7 @@ class TestFlextPluginExecution:
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
-        result = FlextPluginModels.Plugin.ExecutionResult(
+        result = m.Plugin.ExecutionResult(
             success=True,
             data=complex_data,
             error="",
@@ -205,11 +202,11 @@ class TestFlextPluginExecution:
 
 
 class TestFlextPluginRegistryEntity:
-    """Test FlextPluginModels.Plugin.Registry domain entity functionality."""
+    """Test m.Plugin.Registry domain entity functionality."""
 
     def test_registry_creation(self) -> None:
-        """Test creating FlextPluginModels.Plugin.Registry entity."""
-        registry = FlextPluginModels.Plugin.Registry()
+        """Test creating m.Plugin.Registry entity."""
+        registry = m.Plugin.Registry()
         assert registry.plugins == {}
         assert registry.last_updated is not None
         assert registry.created_at is not None
@@ -220,28 +217,28 @@ class TestFlextPluginRegistryEntity:
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }
-        registry = FlextPluginModels.Plugin.Registry(plugins=plugins)
+        registry = m.Plugin.Registry(plugins=plugins)
         assert len(registry.plugins) == 2
         assert "plugin1" in registry.plugins
         assert "plugin2" in registry.plugins
 
     def test_registry_timestamps(self) -> None:
         """Test registry timestamps."""
-        registry = FlextPluginModels.Plugin.Registry()
+        registry = m.Plugin.Registry()
         assert registry.last_updated is not None
         assert registry.created_at is not None
 
 
 class TestFlextPluginMetadata:
-    """Test FlextPluginModels.Plugin.PluginMetadata functionality."""
+    """Test m.Plugin.PluginMetadata functionality."""
 
     def test_metadata_creation(self) -> None:
-        """Test creating FlextPluginModels.Plugin.PluginMetadata."""
-        metadata = FlextPluginModels.Plugin.PluginMetadata(
+        """Test creating m.Plugin.PluginMetadata."""
+        metadata = m.Plugin.PluginMetadata(
             name="test-plugin",
             version="1.0.0",
             entry_point="test.entry:main",
-            plugin_type=FlextPluginConstants.Plugin.PluginType.TAP.value,
+            plugin_type=c.Plugin.PluginType.TAP.value,
             description="Test extractor plugin",
             author="test-author",
             dependencies=["requests", "pydantic"],
@@ -249,14 +246,14 @@ class TestFlextPluginMetadata:
         assert metadata.name == "test-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.entry_point == "test.entry:main"
-        assert metadata.plugin_type == FlextPluginConstants.Plugin.PluginType.TAP.value
+        assert metadata.plugin_type == c.Plugin.PluginType.TAP.value
         assert metadata.description == "Test extractor plugin"
         assert "requests" in metadata.dependencies
         assert "pydantic" in metadata.dependencies
 
     def test_metadata_defaults(self) -> None:
         """Test PluginMetadata default values."""
-        metadata = FlextPluginModels.Plugin.PluginMetadata(
+        metadata = m.Plugin.PluginMetadata(
             name="minimal-plugin",
             version="1.0.0",
             entry_point="minimal.entry:main",
@@ -272,7 +269,7 @@ class TestFlextPluginMetadata:
 
     def test_metadata_with_all_fields(self) -> None:
         """Test PluginMetadata with all fields."""
-        metadata = FlextPluginModels.Plugin.PluginMetadata(
+        metadata = m.Plugin.PluginMetadata(
             name="full-plugin",
             version="2.0.0",
             entry_point="full.entry:main",

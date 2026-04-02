@@ -17,8 +17,8 @@ from typing import override
 import pytest
 from flext_core import r
 
-from flext_plugin import FlextPluginAdapters, FlextPluginModels, FlextPluginService
-from tests import t
+from flext_plugin import FlextPluginAdapters, FlextPluginService
+from tests import m, t
 
 
 class TestFlextPluginService:
@@ -78,7 +78,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue,
+                _plugin: m.Plugin.Plugin | t.NormalizedValue,
             ) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
@@ -145,7 +145,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: FlextPluginModels.Plugin.Plugin | t.NormalizedValue,
+                _plugin: m.Plugin.Plugin | t.NormalizedValue,
             ) -> r[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
