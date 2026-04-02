@@ -15,9 +15,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import override
 
-from flext_core import FlextLogger, T, r
 from pydantic import TypeAdapter
 
+from flext_core import FlextLogger, T, r
 from flext_plugin import FlextPluginDiscovery, c, m, p, t
 
 _CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(

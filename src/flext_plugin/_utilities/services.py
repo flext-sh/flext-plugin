@@ -10,9 +10,9 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from flext_core import FlextContainer, r, x
 from pydantic import TypeAdapter
 
+from flext_core import FlextContainer, r, x
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginModels,

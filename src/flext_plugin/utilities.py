@@ -17,9 +17,9 @@ from types import ModuleType
 from typing import ClassVar
 
 import yaml
-from flext_core import FlextUtilities, r
 from pydantic import TypeAdapter, model_validator
 
+from flext_core import FlextUtilities, r
 from flext_plugin import FlextPluginModels, c, t
 
 

@@ -9,7 +9,6 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-
 from flext_plugin.__version__ import (
     __author__,
     __author_email__,
@@ -23,7 +22,6 @@ from flext_plugin.__version__ import (
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_plugin import (
         _utilities,
         api,
@@ -62,7 +60,7 @@ if _TYPE_CHECKING:
     from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
     ("flext_plugin._utilities",),
     {
         "FlextPluginApi": "flext_plugin.api",

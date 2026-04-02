@@ -13,9 +13,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from flext_core import FlextModels, FlextUtilities, r
 from pydantic import Field, field_validator
 
+from flext_core import FlextModels, FlextUtilities, r
 from flext_plugin import c, t
 
 u = FlextUtilities

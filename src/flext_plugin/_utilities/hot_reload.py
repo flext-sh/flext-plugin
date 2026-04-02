@@ -12,11 +12,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
+from flext_core import FlextLogger, r
 from flext_plugin import m, p, t
 
 

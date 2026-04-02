@@ -10,7 +10,6 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 
 from flext_core import FlextTypes
-
 from flext_plugin import FlextPluginConstants as c
 
 

@@ -12,7 +12,6 @@ from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger
-
 from flext_plugin import c, r, t
 
 

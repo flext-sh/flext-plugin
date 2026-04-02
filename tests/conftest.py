@@ -20,8 +20,8 @@ from collections.abc import Generator, Mapping
 from pathlib import Path
 
 import pytest
-from flext_core import FlextContainer
 
+from flext_core import FlextContainer
 from flext_plugin import FlextPluginAdapters
 from tests import c, m, t
 

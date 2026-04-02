@@ -15,7 +15,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from flext_plugin._utilities import (
         adapters,
         discovery,
@@ -37,7 +36,7 @@ if _TYPE_CHECKING:
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
     from flext_plugin._utilities.services import FlextPluginService
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "FlextPluginAdapters": "flext_plugin._utilities.adapters",
     "FlextPluginDiscovery": "flext_plugin._utilities.discovery",
     "FlextPluginEntities": "flext_plugin._utilities.entities",

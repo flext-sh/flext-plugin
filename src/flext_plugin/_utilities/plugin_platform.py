@@ -11,9 +11,9 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from flext_core import FlextRegistry, FlextService, FlextSettings, r
 from pydantic import PrivateAttr, TypeAdapter
 
+from flext_core import FlextRegistry, FlextService, FlextSettings, r
 from flext_plugin import (
     FlextPluginSettings,
     c,

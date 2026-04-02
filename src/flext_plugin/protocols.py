@@ -11,7 +11,6 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r
-
 from flext_plugin import t
 
 if TYPE_CHECKING:

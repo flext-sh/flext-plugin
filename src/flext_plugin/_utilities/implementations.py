@@ -14,9 +14,9 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r
 from pydantic import TypeAdapter
 
+from flext_core import FlextLogger, r
 from flext_plugin import c, m, p, t
 
 _CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
