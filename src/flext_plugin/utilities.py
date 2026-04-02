@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import re
-from collections.abc import Callable, Mapping, MutableSequence, Sequence
+from collections.abc import Callable, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
@@ -29,10 +29,8 @@ class FlextPluginUtilities(FlextUtilities):
     class Plugin:
         """Plugin discovery and validation utilities."""
 
-        CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = (
-            TypeAdapter(
-                Mapping[str, t.ContainerValue],
-            )
+        CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = (
+            t.CONTAINER_VALUE_MAPPING_ADAPTER
         )
 
         PLUGIN_EXTENSIONS: ClassVar[t.StrSequence] = [".py", ".yaml", ".yml", ".json"]
@@ -594,9 +592,9 @@ class FlextPluginUtilities(FlextUtilities):
                         return r[t.ContainerMapping].fail(
                             f"Unsupported configuration schema version: {config.get('schema_version')}",
                         )
-                    config_mapping: t.ContainerMapping = TypeAdapter(
-                        Mapping[str, t.ContainerValue],
-                    ).validate_python(config)
+                    config_mapping: t.ContainerMapping = (
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(config)
+                    )
                     return r[t.ContainerMapping].ok(config_mapping)
                 except (
                     ValueError,
@@ -631,12 +629,14 @@ class FlextPluginUtilities(FlextUtilities):
                     for key, value in override_config.items():
                         existing_value = merged_config.get(key)
                         if isinstance(value, dict) and isinstance(existing_value, dict):
-                            base_nested_config: t.ContainerMapping = TypeAdapter(
-                                Mapping[str, t.ContainerValue],
-                            ).validate_python(existing_value)
-                            override_value: t.ContainerMapping = TypeAdapter(
-                                Mapping[str, t.ContainerValue],
-                            ).validate_python(value)
+                            base_nested_config: t.ContainerMapping = (
+                                t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                                    existing_value
+                                )
+                            )
+                            override_value: t.ContainerMapping = (
+                                t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
+                            )
                             nested_merge = FlextPluginUtilities.Plugin.ConfigurationManager.merge_plugin_configs(
                                 base_nested_config,
                                 override_value,
@@ -1027,12 +1027,10 @@ class FlextPluginUtilities(FlextUtilities):
                         _ = FlextPluginUtilities.Plugin.RegistryOperations.cleanup_registry_backups(
                             path.parent,
                         )
-                    validated: Mapping[str, t.ContainerValue] = (
-                        FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_python(
-                            registry
-                        )
+                    validated: t.ContainerValueMapping = FlextPluginUtilities.Plugin.CONTAINER_MAP_ADAPTER.validate_python(
+                        registry
                     )
-                    mutable_registry: Mapping[str, t.ContainerValue] = {
+                    mutable_registry: t.ContainerValueMapping = {
                         **validated,
                         "last_updated": datetime.now(UTC).isoformat(),
                     }

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
-from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
 from flext_core import FlextLogger
@@ -107,7 +107,7 @@ class FlextPluginHandlers:
             "registered_handlers": self.get_registered_handlers(),
         }
 
-    def get_registered_handlers(self) -> Mapping[str, int]:
+    def get_registered_handlers(self) -> t.IntMapping:
         """Get count of registered handlers by event type.
 
         Returns:
@@ -413,7 +413,7 @@ class FlextPluginHandlers:
         self,
         handler: t.Plugin.Handlers.EventHandler,
         event_data: t.ContainerMapping,
-    ) -> t.NormalizedValue:
+    ) -> t.ContainerMapping:
         """Execute a single handler with proper error handling.
 
         Args:

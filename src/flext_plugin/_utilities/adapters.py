@@ -20,8 +20,8 @@ from pydantic import TypeAdapter
 from flext_core import FlextLogger, T, r
 from flext_plugin import FlextPluginDiscovery, c, m, p, t
 
-_CONTAINER_MAP_ADAPTER: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
-    Mapping[str, t.ContainerValue],
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = (
+    t.CONTAINER_VALUE_MAPPING_ADAPTER
 )
 
 

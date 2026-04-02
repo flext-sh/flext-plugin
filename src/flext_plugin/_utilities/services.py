@@ -24,9 +24,7 @@ from flext_plugin import (
     u,
 )
 
-_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = TypeAdapter(
-    t.ContainerMapping,
-)
+_CONTAINER_MAP_ADAPTER: TypeAdapter[t.ContainerMapping] = t.CONTAINER_MAPPING_ADAPTER
 
 
 class FlextPluginService(x):

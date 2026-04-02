@@ -7,11 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
-from flext_core import FlextConstants
+from flext_core import FlextConstants, t
 
 
 class FlextPluginConstants(FlextConstants):
@@ -38,7 +37,7 @@ class FlextPluginConstants(FlextConstants):
 
             DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
-            DEFAULT_PLUGIN_PATHS: Final[Sequence[str]] = [
+            DEFAULT_PLUGIN_PATHS: Final[t.StrSequence] = [
                 "/opt/flext/plugins",
                 "~/.flext/plugins",
                 "./plugins",
@@ -124,7 +123,7 @@ class FlextPluginConstants(FlextConstants):
         class PluginSecurity:
             """Plugin security level constants."""
 
-            SECURITY_LEVELS: Final[Sequence[str]] = [
+            SECURITY_LEVELS: Final[t.StrSequence] = [
                 "LOW",
                 "MEDIUM",
                 "HIGH",
@@ -140,11 +139,11 @@ class FlextPluginConstants(FlextConstants):
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
             SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
-            DEFAULT_ALLOWED_IMPORTS: Final[Sequence[str]] = [
+            DEFAULT_ALLOWED_IMPORTS: Final[t.StrSequence] = [
                 "flext_core",
                 "flext_plugin",
             ]
-            DEFAULT_BLOCKED_IMPORTS: Final[Sequence[str]] = [
+            DEFAULT_BLOCKED_IMPORTS: Final[t.StrSequence] = [
                 "os",
                 "sys",
                 "subprocess",
@@ -206,7 +205,7 @@ class FlextPluginConstants(FlextConstants):
         class Monitoring:
             """Monitoring configuration constants."""
 
-            LOG_LEVELS: Final[Sequence[str]] = [
+            LOG_LEVELS: Final[t.StrSequence] = [
                 "DEBUG",
                 "INFO",
                 "WARNING",

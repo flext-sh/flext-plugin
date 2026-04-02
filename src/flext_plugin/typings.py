@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 
+from pydantic import TypeAdapter
+
 from flext_core import FlextTypes
 from flext_plugin import FlextPluginConstants as c
 
@@ -21,13 +23,19 @@ class FlextPluginTypes(FlextTypes):
     - Canonical container contracts inherited from core `t.*`
     """
 
+    CONTAINER_MAPPING_ADAPTER: TypeAdapter[FlextTypes.ContainerMapping] = TypeAdapter(
+        FlextTypes.ContainerMapping
+    )
+    CONTAINER_VALUE_MAPPING_ADAPTER: TypeAdapter[FlextTypes.ContainerValueMapping] = (
+        TypeAdapter(FlextTypes.ContainerValueMapping)
+    )
+
     class Plugin:
         """Core collection and plugin type aliases."""
 
         type StringList = FlextTypes.StrSequence
         type StringSet = set[str]
         type StringDict = FlextTypes.StrMapping
-        type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
         type PluginList = Sequence[FlextTypes.GeneralValueMapping]
         type PluginDict = FlextTypes.GeneralValueMapping
@@ -45,8 +53,8 @@ class FlextPluginTypes(FlextTypes):
             """Event handler type definitions."""
 
             type EventHandler = Callable[
-                [FlextTypes.GeneralValueMapping],
-                Awaitable[FlextTypes.GeneralValueMapping],
+                [FlextTypes.ContainerMapping],
+                Awaitable[FlextTypes.ContainerMapping],
             ]
 
             class HandlerInfo:
@@ -55,8 +63,8 @@ class FlextPluginTypes(FlextTypes):
                 def __init__(
                     self,
                     handler: Callable[
-                        [FlextTypes.GeneralValueMapping],
-                        Awaitable[FlextTypes.GeneralValueMapping],
+                        [FlextTypes.ContainerMapping],
+                        Awaitable[FlextTypes.ContainerMapping],
                     ],
                     priority: int = 0,
                 ) -> None:
