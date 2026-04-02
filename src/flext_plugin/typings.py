@@ -19,7 +19,7 @@ class FlextPluginTypes(FlextTypes):
 
     Follows FLEXT ecosystem namespace conventions:
     - FlextTypes.Plugin.* for plugin-specific types
-    - FlextTypes.Core.JsonDict, FlextTypes.Core.FlextTypes.NormalizedValue via Core alias
+    - Canonical container contracts inherited from core `t.*`
     """
 
     class Plugin:
@@ -30,14 +30,14 @@ class FlextPluginTypes(FlextTypes):
         type StringDict = FlextTypes.StrMapping
         type IntDict = Mapping[str, int]
         type FloatDict = Mapping[str, float]
-        type PluginList = Sequence[Mapping[str, FlextTypes.NormalizedValue]]
-        type PluginDict = Mapping[str, FlextTypes.NormalizedValue]
-        type ConfigDict = Mapping[str, FlextTypes.NormalizedValue]
-        type SettingsDict = Mapping[str, FlextTypes.NormalizedValue]
-        type MetadataDict = Mapping[str, FlextTypes.NormalizedValue]
-        type InputDict = Mapping[str, FlextTypes.NormalizedValue]
-        type OutputDict = Mapping[str, FlextTypes.NormalizedValue]
-        type PluginEntity = Mapping[str, FlextTypes.NormalizedValue]
+        type PluginList = Sequence[FlextTypes.GeneralValueMapping]
+        type PluginDict = FlextTypes.GeneralValueMapping
+        type ConfigDict = FlextTypes.GeneralValueMapping
+        type SettingsDict = FlextTypes.GeneralValueMapping
+        type MetadataDict = FlextTypes.GeneralValueMapping
+        type InputDict = FlextTypes.GeneralValueMapping
+        type OutputDict = FlextTypes.GeneralValueMapping
+        type PluginEntity = FlextTypes.GeneralValueMapping
         DiscoveryTypeLiteral = c.Plugin.DiscoveryTypeLiteral
         DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
         LoadTypeLiteral = c.Plugin.LoadTypeLiteral
@@ -46,8 +46,8 @@ class FlextPluginTypes(FlextTypes):
             """Event handler type definitions."""
 
             type EventHandler = Callable[
-                [Mapping[str, FlextTypes.NormalizedValue]],
-                Awaitable[Mapping[str, FlextTypes.NormalizedValue]],
+                [FlextTypes.GeneralValueMapping],
+                Awaitable[FlextTypes.GeneralValueMapping],
             ]
 
             class HandlerInfo:
@@ -56,8 +56,8 @@ class FlextPluginTypes(FlextTypes):
                 def __init__(
                     self,
                     handler: Callable[
-                        [Mapping[str, FlextTypes.NormalizedValue]],
-                        Awaitable[Mapping[str, FlextTypes.NormalizedValue]],
+                        [FlextTypes.GeneralValueMapping],
+                        Awaitable[FlextTypes.GeneralValueMapping],
                     ],
                     priority: int = 0,
                 ) -> None:
@@ -78,45 +78,45 @@ class FlextPluginTypes(FlextTypes):
 
             type SecurityLevel = str
             type Permission = str
-            type SecurityConfig = Mapping[str, FlextTypes.NormalizedValue]
+            type SecurityConfig = FlextTypes.GeneralValueMapping
             SecurityLevelLiteral = c.Plugin.SecurityLevelLiteral
 
         class Performance:
             """Performance metrics and monitoring type aliases."""
 
-            type Metrics = Mapping[str, FlextTypes.NormalizedValue]
-            type PerformanceData = Mapping[str, FlextTypes.NormalizedValue]
-            type ResourceUsage = Mapping[str, FlextTypes.NormalizedValue]
+            type Metrics = FlextTypes.GeneralValueMapping
+            type PerformanceData = FlextTypes.GeneralValueMapping
+            type ResourceUsage = FlextTypes.GeneralValueMapping
 
         class Discovery:
             """Plugin discovery type aliases."""
 
             type DiscoveryPath = str
-            type DiscoveryResult = Mapping[str, FlextTypes.NormalizedValue]
-            type PluginLoader = FlextTypes.NormalizedValue
+            type DiscoveryResult = FlextTypes.GeneralValueMapping
+            type PluginLoader = FlextTypes.GeneralValueType
             type EntryPoint = str
 
         class Execution:
             """Plugin execution type aliases."""
 
-            type ExecutionContext = Mapping[str, FlextTypes.NormalizedValue]
-            type ExecutionResult = Mapping[str, FlextTypes.NormalizedValue]
+            type ExecutionContext = FlextTypes.GeneralValueMapping
+            type ExecutionResult = FlextTypes.GeneralValueMapping
             type ExecutionError = str
-            type ResourceLimits = Mapping[str, FlextTypes.NormalizedValue]
+            type ResourceLimits = FlextTypes.GeneralValueMapping
 
         class Registry:
             """Plugin registry type aliases."""
 
-            type RegistryConfig = Mapping[str, FlextTypes.NormalizedValue]
-            type RegistryEntry = Mapping[str, FlextTypes.NormalizedValue]
-            type RegistrySync = Mapping[str, FlextTypes.NormalizedValue]
+            type RegistryConfig = FlextTypes.GeneralValueMapping
+            type RegistryEntry = FlextTypes.GeneralValueMapping
+            type RegistrySync = FlextTypes.GeneralValueMapping
 
         class HotReload:
             """Hot reload and file watching type aliases."""
 
-            type WatchConfig = Mapping[str, FlextTypes.NormalizedValue]
-            type ReloadEvent = Mapping[str, FlextTypes.NormalizedValue]
-            type FileWatcher = FlextTypes.NormalizedValue
+            type WatchConfig = FlextTypes.GeneralValueMapping
+            type ReloadEvent = FlextTypes.GeneralValueMapping
+            type FileWatcher = FlextTypes.GeneralValueType
 
 
 t = FlextPluginTypes
