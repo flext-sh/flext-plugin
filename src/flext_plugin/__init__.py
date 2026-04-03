@@ -9,17 +9,7 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-from flext_plugin.__version__ import (
-    __all__,
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-)
+from flext_plugin.__version__ import *
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
@@ -31,22 +21,23 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_plugin import (
         _utilities,
-        adapters,
         api,
         constants,
-        discovery,
-        entities,
-        handlers,
-        hot_reload,
-        implementations,
-        loader,
         models,
-        plugin_platform,
         protocols,
-        services,
         settings,
         typings,
         utilities,
+    )
+    from flext_plugin.__version__ import (
+        __author__,
+        __author_email__,
+        __description__,
+        __license__,
+        __title__,
+        __url__,
+        __version__,
+        __version_info__,
     )
     from flext_plugin._utilities import (
         FlextPluginAdapters,
@@ -58,6 +49,15 @@ if _TYPE_CHECKING:
         FlextPluginLoader,
         FlextPluginPlatform,
         FlextPluginService,
+        adapters,
+        discovery,
+        entities,
+        handlers,
+        hot_reload,
+        implementations,
+        loader,
+        plugin_platform,
+        services,
     )
     from flext_plugin.api import FlextPluginApi
     from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
@@ -77,28 +77,27 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "FlextPluginSettings": "flext_plugin.settings",
         "FlextPluginTypes": "flext_plugin.typings",
         "FlextPluginUtilities": "flext_plugin.utilities",
+        "__author__": "flext_plugin.__version__",
+        "__author_email__": "flext_plugin.__version__",
+        "__description__": "flext_plugin.__version__",
+        "__license__": "flext_plugin.__version__",
+        "__title__": "flext_plugin.__version__",
+        "__url__": "flext_plugin.__version__",
+        "__version__": "flext_plugin.__version__",
+        "__version_info__": "flext_plugin.__version__",
         "_utilities": "flext_plugin._utilities",
-        "adapters": "flext_plugin.adapters",
         "api": "flext_plugin.api",
         "c": ("flext_plugin.constants", "FlextPluginConstants"),
         "constants": "flext_plugin.constants",
         "d": ("flext_core.decorators", "FlextDecorators"),
-        "discovery": "flext_plugin.discovery",
         "e": ("flext_core.exceptions", "FlextExceptions"),
-        "entities": "flext_plugin.entities",
         "h": ("flext_core.handlers", "FlextHandlers"),
-        "handlers": "flext_plugin.handlers",
-        "hot_reload": "flext_plugin.hot_reload",
-        "implementations": "flext_plugin.implementations",
-        "loader": "flext_plugin.loader",
         "m": ("flext_plugin.models", "FlextPluginModels"),
         "models": "flext_plugin.models",
         "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
-        "plugin_platform": "flext_plugin.plugin_platform",
         "protocols": "flext_plugin.protocols",
         "r": ("flext_core.result", "FlextResult"),
         "s": ("flext_core.service", "FlextService"),
-        "services": "flext_plugin.services",
         "settings": "flext_plugin.settings",
         "t": ("flext_plugin.typings", "FlextPluginTypes"),
         "typings": "flext_plugin.typings",
@@ -109,19 +108,4 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    [
-        "__all__",
-        "__author__",
-        "__author_email__",
-        "__description__",
-        "__license__",
-        "__title__",
-        "__url__",
-        "__version__",
-        "__version_info__",
-    ],
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
