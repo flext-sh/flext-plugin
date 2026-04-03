@@ -5,28 +5,253 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING as _TYPE_CHECKING
+import typing as _t
 
+from flext_core.decorators import FlextDecorators as d
+from flext_core.exceptions import FlextExceptions as e
+from flext_core.handlers import FlextHandlers as h
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
+from flext_core.mixins import FlextMixins as x
+from flext_core.result import FlextResult as r
+from flext_core.service import FlextService as s
+from tests.conftest import (
+    performance_config,
+    pytest_configure,
+    real_container_with_adapters,
+    real_discovery_adapter,
+    real_loader_adapter,
+    real_manager_adapter,
+    real_plugin_config,
+    real_plugin_configs,
+    real_plugin_data,
+    real_plugin_dependencies,
+    real_plugin_directory,
+    real_plugin_entity,
+    real_processor_plugin,
+    real_tap_plugin,
+    real_target_plugin,
+    set_test_environment,
+    simple_plugin_directory,
+)
+from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
+from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
+from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
+from tests.test_application_services import (
+    PluginInterface,
+    TestBackwardsCompatibilityAliasesReal,
+    TestFlextPluginDiscoveryReal,
+    TestFlextPluginServiceReal,
+    TestFlextPluginServiceWithRealAdapters,
+    TestRealPluginDiscoveryAndExecution,
+    TestRealPluginErrorScenarios,
+    TestRealPluginIntegrationWorkflow,
+    TestServiceErrorHandling,
+    TestServicesIntegrationReal,
+    real_discovery_service_with_adapters,
+    real_plugin_discovery,
+    real_plugin_loader,
+    real_service_with_adapters,
+    temp_plugin_dir,
+)
+from tests.test_core_types import (
+    TestFlextPluginConstantsLifecycle,
+    TestFlextPluginConstantsPluginType,
+    TestPluginError,
+)
+from tests.test_domain_entities import (
+    TestFlextPlugin,
+    TestFlextPluginExecution,
+    TestFlextPluginMetadata,
+    TestFlextPluginRegistryEntity,
+)
+from tests.test_domain_ports import TestFlextPluginDiscovery
+from tests.test_examples import (
+    test_basic_plugin_example_execution,
+    test_docker_integration_example_execution,
+    test_docker_integration_example_with_connection_testing,
+    test_plugin_configuration_example_execution,
+)
+from tests.test_handlers import TestFlextPluginHandlers
+from tests.test_hot_reload import TestFlextPluginHotReload
+from tests.test_hot_reload_package import TestHotReloadPackage
+from tests.test_imports import modules_to_test
+from tests.test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
+from tests.test_manager import (
+    TestFlextPluginService,
+    TestFlextPluginServiceStubBridges,
+)
+from tests.test_plugin import (
+    TestPluginModel,
+    TestPluginPlatform,
+    TestPluginRegistry,
+)
+from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
+from tests.unit.test_config import TestFlextPluginSettings
+from tests.unit.test_constants import TestFlextPluginConstants
+from tests.unit.test_models import TestFlextPluginModels
+from tests.unit.test_types import TestFlextPluginTypes
+from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
 
-if _TYPE_CHECKING:
-    from flext_core import FlextTypes
-    from flext_core.decorators import FlextDecorators as d
-    from flext_core.exceptions import FlextExceptions as e
-    from flext_core.handlers import FlextHandlers as h
-    from flext_core.mixins import FlextMixins as x
-    from flext_core.result import FlextResult as r
-    from flext_core.service import FlextService as s
-    from tests import (
+if _t.TYPE_CHECKING:
+    import tests.conftest as _tests_conftest
+
+    conftest = _tests_conftest
+    import tests.constants as _tests_constants
+
+    constants = _tests_constants
+    import tests.models as _tests_models
+
+    models = _tests_models
+    import tests.protocols as _tests_protocols
+
+    protocols = _tests_protocols
+    import tests.test_application_handlers as _tests_test_application_handlers
+
+    test_application_handlers = _tests_test_application_handlers
+    import tests.test_application_services as _tests_test_application_services
+
+    test_application_services = _tests_test_application_services
+    import tests.test_core_types as _tests_test_core_types
+
+    test_core_types = _tests_test_core_types
+    import tests.test_discovery as _tests_test_discovery
+
+    test_discovery = _tests_test_discovery
+    import tests.test_domain_entities as _tests_test_domain_entities
+
+    test_domain_entities = _tests_test_domain_entities
+    import tests.test_domain_ports as _tests_test_domain_ports
+
+    test_domain_ports = _tests_test_domain_ports
+    import tests.test_examples as _tests_test_examples
+
+    test_examples = _tests_test_examples
+    import tests.test_handlers as _tests_test_handlers
+
+    test_handlers = _tests_test_handlers
+    import tests.test_hot_reload as _tests_test_hot_reload
+
+    test_hot_reload = _tests_test_hot_reload
+    import tests.test_hot_reload_package as _tests_test_hot_reload_package
+
+    test_hot_reload_package = _tests_test_hot_reload_package
+    import tests.test_imports as _tests_test_imports
+
+    test_imports = _tests_test_imports
+    import tests.test_loader as _tests_test_loader
+
+    test_loader = _tests_test_loader
+    import tests.test_manager as _tests_test_manager
+
+    test_manager = _tests_test_manager
+    import tests.test_plugin as _tests_test_plugin
+
+    test_plugin = _tests_test_plugin
+    import tests.typings as _tests_typings
+
+    typings = _tests_typings
+    import tests.unit as _tests_unit
+
+    unit = _tests_unit
+    import tests.unit.test_config as _tests_unit_test_config
+
+    test_config = _tests_unit_test_config
+    import tests.unit.test_constants as _tests_unit_test_constants
+
+    test_constants = _tests_unit_test_constants
+    import tests.unit.test_models as _tests_unit_test_models
+
+    test_models = _tests_unit_test_models
+    import tests.unit.test_types as _tests_unit_test_types
+
+    test_types = _tests_unit_test_types
+    import tests.utilities as _tests_utilities
+
+    utilities = _tests_utilities
+
+    _ = (
+        FlextPluginTestConstants,
+        FlextPluginTestModels,
+        FlextPluginTestProtocols,
+        FlextPluginTestTypes,
+        FlextPluginTestUtilities,
+        PluginInterface,
+        TestBackwardsCompatibilityAliasesReal,
+        TestDynamicLoaderAdapter,
+        TestFlextPlugin,
+        TestFlextPluginConstants,
+        TestFlextPluginConstantsLifecycle,
+        TestFlextPluginConstantsPluginType,
+        TestFlextPluginDiscovery,
+        TestFlextPluginDiscoveryReal,
+        TestFlextPluginExecution,
+        TestFlextPluginHandlers,
+        TestFlextPluginHotReload,
+        TestFlextPluginLoader,
+        TestFlextPluginMetadata,
+        TestFlextPluginModels,
+        TestFlextPluginRegistryEntity,
+        TestFlextPluginService,
+        TestFlextPluginServiceReal,
+        TestFlextPluginServiceStubBridges,
+        TestFlextPluginServiceWithRealAdapters,
+        TestFlextPluginSettings,
+        TestFlextPluginTypes,
+        TestHotReloadPackage,
+        TestPluginError,
+        TestPluginModel,
+        TestPluginPlatform,
+        TestPluginRegistry,
+        TestRealPluginDiscoveryAndExecution,
+        TestRealPluginErrorScenarios,
+        TestRealPluginIntegrationWorkflow,
+        TestServiceErrorHandling,
+        TestServicesIntegrationReal,
+        c,
         conftest,
         constants,
+        d,
+        e,
+        h,
+        m,
         models,
+        modules_to_test,
+        p,
+        performance_config,
         protocols,
+        pytest_configure,
+        r,
+        real_container_with_adapters,
+        real_discovery_adapter,
+        real_discovery_service_with_adapters,
+        real_loader_adapter,
+        real_manager_adapter,
+        real_plugin_config,
+        real_plugin_configs,
+        real_plugin_data,
+        real_plugin_dependencies,
+        real_plugin_directory,
+        real_plugin_discovery,
+        real_plugin_entity,
+        real_plugin_loader,
+        real_processor_plugin,
+        real_service_with_adapters,
+        real_tap_plugin,
+        real_target_plugin,
+        s,
+        set_test_environment,
+        simple_plugin_directory,
+        t,
+        temp_plugin_dir,
         test_application_handlers,
         test_application_services,
+        test_basic_plugin_example_execution,
+        test_config,
+        test_constants,
         test_core_types,
         test_discovery,
+        test_docker_integration_example_execution,
+        test_docker_integration_example_with_connection_testing,
         test_domain_entities,
         test_domain_ports,
         test_examples,
@@ -36,96 +261,17 @@ if _TYPE_CHECKING:
         test_imports,
         test_loader,
         test_manager,
+        test_models,
         test_plugin,
+        test_plugin_configuration_example_execution,
+        test_types,
         typings,
+        u,
         unit,
         utilities,
+        x,
     )
-    from tests.conftest import (
-        performance_config,
-        pytest_configure,
-        real_container_with_adapters,
-        real_discovery_adapter,
-        real_loader_adapter,
-        real_manager_adapter,
-        real_plugin_config,
-        real_plugin_configs,
-        real_plugin_data,
-        real_plugin_dependencies,
-        real_plugin_directory,
-        real_plugin_entity,
-        real_processor_plugin,
-        real_tap_plugin,
-        real_target_plugin,
-        set_test_environment,
-        simple_plugin_directory,
-    )
-    from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
-    from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
-    from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
-    from tests.test_application_services import (
-        PluginInterface,
-        TestBackwardsCompatibilityAliasesReal,
-        TestFlextPluginDiscoveryReal,
-        TestFlextPluginServiceReal,
-        TestFlextPluginServiceWithRealAdapters,
-        TestRealPluginDiscoveryAndExecution,
-        TestRealPluginErrorScenarios,
-        TestRealPluginIntegrationWorkflow,
-        TestServiceErrorHandling,
-        TestServicesIntegrationReal,
-        real_discovery_service_with_adapters,
-        real_plugin_discovery,
-        real_plugin_loader,
-        real_service_with_adapters,
-        temp_plugin_dir,
-    )
-    from tests.test_core_types import (
-        TestFlextPluginConstantsLifecycle,
-        TestFlextPluginConstantsPluginType,
-        TestPluginError,
-    )
-    from tests.test_domain_entities import (
-        TestFlextPlugin,
-        TestFlextPluginExecution,
-        TestFlextPluginMetadata,
-        TestFlextPluginRegistryEntity,
-    )
-    from tests.test_domain_ports import TestFlextPluginDiscovery
-    from tests.test_examples import (
-        test_basic_plugin_example_execution,
-        test_docker_integration_example_execution,
-        test_docker_integration_example_with_connection_testing,
-        test_plugin_configuration_example_execution,
-    )
-    from tests.test_handlers import TestFlextPluginHandlers
-    from tests.test_hot_reload import TestFlextPluginHotReload
-    from tests.test_hot_reload_package import TestHotReloadPackage
-    from tests.test_imports import modules_to_test
-    from tests.test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
-    from tests.test_manager import (
-        TestFlextPluginService,
-        TestFlextPluginServiceStubBridges,
-    )
-    from tests.test_plugin import (
-        TestPluginModel,
-        TestPluginPlatform,
-        TestPluginRegistry,
-    )
-    from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
-    from tests.unit import (
-        TestFlextPluginConstants,
-        TestFlextPluginModels,
-        TestFlextPluginSettings,
-        TestFlextPluginTypes,
-        test_config,
-        test_constants,
-        test_models,
-        test_types,
-    )
-    from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
-
-_LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
+_LAZY_IMPORTS = merge_lazy_imports(
     ("tests.unit",),
     {
         "FlextPluginTestConstants": "tests.constants",
@@ -222,6 +368,109 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
+
+__all__ = [
+    "FlextPluginTestConstants",
+    "FlextPluginTestModels",
+    "FlextPluginTestProtocols",
+    "FlextPluginTestTypes",
+    "FlextPluginTestUtilities",
+    "PluginInterface",
+    "TestBackwardsCompatibilityAliasesReal",
+    "TestDynamicLoaderAdapter",
+    "TestFlextPlugin",
+    "TestFlextPluginConstants",
+    "TestFlextPluginConstantsLifecycle",
+    "TestFlextPluginConstantsPluginType",
+    "TestFlextPluginDiscovery",
+    "TestFlextPluginDiscoveryReal",
+    "TestFlextPluginExecution",
+    "TestFlextPluginHandlers",
+    "TestFlextPluginHotReload",
+    "TestFlextPluginLoader",
+    "TestFlextPluginMetadata",
+    "TestFlextPluginModels",
+    "TestFlextPluginRegistryEntity",
+    "TestFlextPluginService",
+    "TestFlextPluginServiceReal",
+    "TestFlextPluginServiceStubBridges",
+    "TestFlextPluginServiceWithRealAdapters",
+    "TestFlextPluginSettings",
+    "TestFlextPluginTypes",
+    "TestHotReloadPackage",
+    "TestPluginError",
+    "TestPluginModel",
+    "TestPluginPlatform",
+    "TestPluginRegistry",
+    "TestRealPluginDiscoveryAndExecution",
+    "TestRealPluginErrorScenarios",
+    "TestRealPluginIntegrationWorkflow",
+    "TestServiceErrorHandling",
+    "TestServicesIntegrationReal",
+    "c",
+    "conftest",
+    "constants",
+    "d",
+    "e",
+    "h",
+    "m",
+    "models",
+    "modules_to_test",
+    "p",
+    "performance_config",
+    "protocols",
+    "pytest_configure",
+    "r",
+    "real_container_with_adapters",
+    "real_discovery_adapter",
+    "real_discovery_service_with_adapters",
+    "real_loader_adapter",
+    "real_manager_adapter",
+    "real_plugin_config",
+    "real_plugin_configs",
+    "real_plugin_data",
+    "real_plugin_dependencies",
+    "real_plugin_directory",
+    "real_plugin_discovery",
+    "real_plugin_entity",
+    "real_plugin_loader",
+    "real_processor_plugin",
+    "real_service_with_adapters",
+    "real_tap_plugin",
+    "real_target_plugin",
+    "s",
+    "set_test_environment",
+    "simple_plugin_directory",
+    "t",
+    "temp_plugin_dir",
+    "test_application_handlers",
+    "test_application_services",
+    "test_basic_plugin_example_execution",
+    "test_config",
+    "test_constants",
+    "test_core_types",
+    "test_discovery",
+    "test_docker_integration_example_execution",
+    "test_docker_integration_example_with_connection_testing",
+    "test_domain_entities",
+    "test_domain_ports",
+    "test_examples",
+    "test_handlers",
+    "test_hot_reload",
+    "test_hot_reload_package",
+    "test_imports",
+    "test_loader",
+    "test_manager",
+    "test_models",
+    "test_plugin",
+    "test_plugin_configuration_example_execution",
+    "test_types",
+    "typings",
+    "u",
+    "unit",
+    "utilities",
+    "x",
+]
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

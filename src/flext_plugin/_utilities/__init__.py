@@ -5,14 +5,49 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING as _TYPE_CHECKING
+import typing as _t
 
 from flext_core.lazy import install_lazy_exports
 
-if _TYPE_CHECKING:
-    from flext_core import FlextTypes
-    from flext_plugin._utilities import (
+if _t.TYPE_CHECKING:
+    import flext_plugin._utilities.adapters as _flext_plugin__utilities_adapters
+
+    adapters = _flext_plugin__utilities_adapters
+    import flext_plugin._utilities.discovery as _flext_plugin__utilities_discovery
+
+    discovery = _flext_plugin__utilities_discovery
+    import flext_plugin._utilities.entities as _flext_plugin__utilities_entities
+
+    entities = _flext_plugin__utilities_entities
+    import flext_plugin._utilities.handlers as _flext_plugin__utilities_handlers
+
+    handlers = _flext_plugin__utilities_handlers
+    import flext_plugin._utilities.hot_reload as _flext_plugin__utilities_hot_reload
+
+    hot_reload = _flext_plugin__utilities_hot_reload
+    import flext_plugin._utilities.implementations as _flext_plugin__utilities_implementations
+
+    implementations = _flext_plugin__utilities_implementations
+    import flext_plugin._utilities.loader as _flext_plugin__utilities_loader
+
+    loader = _flext_plugin__utilities_loader
+    import flext_plugin._utilities.plugin_platform as _flext_plugin__utilities_plugin_platform
+
+    plugin_platform = _flext_plugin__utilities_plugin_platform
+    import flext_plugin._utilities.services as _flext_plugin__utilities_services
+
+    services = _flext_plugin__utilities_services
+
+    _ = (
+        FlextPluginAdapters,
+        FlextPluginDiscovery,
+        FlextPluginEntities,
+        FlextPluginHandlers,
+        FlextPluginHotReload,
+        FlextPluginImplementations,
+        FlextPluginLoader,
+        FlextPluginPlatform,
+        FlextPluginService,
         adapters,
         discovery,
         entities,
@@ -23,17 +58,7 @@ if _TYPE_CHECKING:
         plugin_platform,
         services,
     )
-    from flext_plugin._utilities.adapters import FlextPluginAdapters
-    from flext_plugin._utilities.discovery import FlextPluginDiscovery
-    from flext_plugin._utilities.entities import FlextPluginEntities
-    from flext_plugin._utilities.handlers import FlextPluginHandlers
-    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
-    from flext_plugin._utilities.implementations import FlextPluginImplementations
-    from flext_plugin._utilities.loader import FlextPluginLoader
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
-    from flext_plugin._utilities.services import FlextPluginService
-
-_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
+_LAZY_IMPORTS = {
     "FlextPluginAdapters": "flext_plugin._utilities.adapters",
     "FlextPluginDiscovery": "flext_plugin._utilities.discovery",
     "FlextPluginEntities": "flext_plugin._utilities.entities",
@@ -53,6 +78,27 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "plugin_platform": "flext_plugin._utilities.plugin_platform",
     "services": "flext_plugin._utilities.services",
 }
+
+__all__ = [
+    "FlextPluginAdapters",
+    "FlextPluginDiscovery",
+    "FlextPluginEntities",
+    "FlextPluginHandlers",
+    "FlextPluginHotReload",
+    "FlextPluginImplementations",
+    "FlextPluginLoader",
+    "FlextPluginPlatform",
+    "FlextPluginService",
+    "adapters",
+    "discovery",
+    "entities",
+    "handlers",
+    "hot_reload",
+    "implementations",
+    "loader",
+    "plugin_platform",
+    "services",
+]
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
