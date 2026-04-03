@@ -1,7 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make gen
 #
-"""Unit package."""
+"""Examples package."""
 
 from __future__ import annotations
 
@@ -23,17 +23,8 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_plugin import test_config, test_constants, test_models, test_types
-    from flext_plugin.test_config import TestFlextPluginSettings
-    from flext_plugin.test_constants import TestFlextPluginConstants
-    from flext_plugin.test_models import TestFlextPluginModels
-    from flext_plugin.test_types import TestFlextPluginTypes
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "TestFlextPluginConstants": "flext_plugin.test_constants",
-    "TestFlextPluginModels": "flext_plugin.test_models",
-    "TestFlextPluginSettings": "flext_plugin.test_config",
-    "TestFlextPluginTypes": "flext_plugin.test_types",
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -43,10 +34,6 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
     "t": ("flext_core.typings", "FlextTypes"),
-    "test_config": "flext_plugin.test_config",
-    "test_constants": "flext_plugin.test_constants",
-    "test_models": "flext_plugin.test_models",
-    "test_types": "flext_plugin.test_types",
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }
