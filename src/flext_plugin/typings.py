@@ -12,7 +12,7 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 from pydantic import TypeAdapter
 
 from flext_core import FlextTypes
-from flext_plugin import FlextPluginConstants as c
+from flext_plugin import c
 
 
 class FlextPluginTypes(FlextTypes):

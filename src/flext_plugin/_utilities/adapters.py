@@ -163,7 +163,7 @@ class FlextPluginAdapters:
             self,
             data: m.Plugin.DiscoveryData,
         ) -> t.ContainerMapping:
-            """Convert DiscoveryData model to JsonDict."""
+            """Convert DiscoveryData model to JsonMapping."""
             return {
                 "name": data.name,
                 "version": data.version,
@@ -243,7 +243,7 @@ class FlextPluginAdapters:
             self,
             plugin_path: str,
         ) -> t.ContainerMapping:
-            """Load module and convert to JsonDict."""
+            """Load module and convert to JsonMapping."""
             data = self._load_module(plugin_path)
             self._loaded_plugins[data.name] = data.module
             return {
