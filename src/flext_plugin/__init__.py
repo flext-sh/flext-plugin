@@ -12,16 +12,6 @@ from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
     import flext_plugin._utilities as _flext_plugin__utilities
-    from flext_plugin.__version__ import (
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-    )
 
     _utilities = _flext_plugin__utilities
     import flext_plugin.api as _flext_plugin_api
