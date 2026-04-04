@@ -24,46 +24,28 @@ if _t.TYPE_CHECKING:
     )
 
     _utilities = _flext_plugin__utilities
-    import flext_plugin._utilities.adapters as _flext_plugin__utilities_adapters
-
-    adapters = _flext_plugin__utilities_adapters
-    import flext_plugin._utilities.discovery as _flext_plugin__utilities_discovery
-    from flext_plugin._utilities.adapters import FlextPluginAdapters
-
-    discovery = _flext_plugin__utilities_discovery
-    import flext_plugin._utilities.entities as _flext_plugin__utilities_entities
-    from flext_plugin._utilities.discovery import FlextPluginDiscovery
-
-    entities = _flext_plugin__utilities_entities
-    import flext_plugin._utilities.handlers as _flext_plugin__utilities_handlers
-    from flext_plugin._utilities.entities import FlextPluginEntities
-
-    handlers = _flext_plugin__utilities_handlers
-    import flext_plugin._utilities.hot_reload as _flext_plugin__utilities_hot_reload
-    from flext_plugin._utilities.handlers import (
+    import flext_plugin.api as _flext_plugin_api
+    from flext_plugin._utilities import (
+        FlextPluginAdapters,
+        FlextPluginDiscovery,
+        FlextPluginEntities,
         FlextPluginHandlers,
         FlextPluginHandlers as h,
+        FlextPluginHotReload,
+        FlextPluginImplementations,
+        FlextPluginLoader,
+        FlextPluginPlatform,
+        FlextPluginService,
+        adapters,
+        discovery,
+        entities,
+        handlers,
+        hot_reload,
+        implementations,
+        loader,
+        plugin_platform,
+        services,
     )
-
-    hot_reload = _flext_plugin__utilities_hot_reload
-    import flext_plugin._utilities.implementations as _flext_plugin__utilities_implementations
-    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
-
-    implementations = _flext_plugin__utilities_implementations
-    import flext_plugin._utilities.loader as _flext_plugin__utilities_loader
-    from flext_plugin._utilities.implementations import FlextPluginImplementations
-
-    loader = _flext_plugin__utilities_loader
-    import flext_plugin._utilities.plugin_platform as _flext_plugin__utilities_plugin_platform
-    from flext_plugin._utilities.loader import FlextPluginLoader
-
-    plugin_platform = _flext_plugin__utilities_plugin_platform
-    import flext_plugin._utilities.services as _flext_plugin__utilities_services
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
-
-    services = _flext_plugin__utilities_services
-    import flext_plugin.api as _flext_plugin_api
-    from flext_plugin._utilities.services import FlextPluginService
 
     api = _flext_plugin_api
     import flext_plugin.constants as _flext_plugin_constants

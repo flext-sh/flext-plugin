@@ -16,7 +16,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import ClassVar
 
-import yaml
+from flext_cli import FlextCliUtilities
 from pydantic import model_validator
 
 from flext_core import FlextUtilities, r
@@ -571,7 +571,7 @@ class FlextPluginUtilities(FlextUtilities):
                         )
                     content = path.read_text(encoding="utf-8")
                     if path.suffix in {".yaml", ".yml"}:
-                        config = yaml.safe_load(content)
+                        config = FlextCliUtilities.Cli.yaml_parse(content).unwrap_or({})
                     elif path.suffix == ".json":
                         config = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                             content,

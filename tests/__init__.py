@@ -142,23 +142,17 @@ if _t.TYPE_CHECKING:
     from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
 
     unit = _tests_unit
-    import tests.unit.test_config as _tests_unit_test_config
-
-    test_config = _tests_unit_test_config
-    import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_config import TestFlextPluginSettings
-
-    test_constants = _tests_unit_test_constants
-    import tests.unit.test_models as _tests_unit_test_models
-    from tests.unit.test_constants import TestFlextPluginConstants
-
-    test_models = _tests_unit_test_models
-    import tests.unit.test_types as _tests_unit_test_types
-    from tests.unit.test_models import TestFlextPluginModels
-
-    test_types = _tests_unit_test_types
     import tests.utilities as _tests_utilities
-    from tests.unit.test_types import TestFlextPluginTypes
+    from tests.unit import (
+        TestFlextPluginConstants,
+        TestFlextPluginModels,
+        TestFlextPluginSettings,
+        TestFlextPluginTypes,
+        test_config,
+        test_constants,
+        test_models,
+        test_types,
+    )
 
     utilities = _tests_utilities
     from flext_core.decorators import FlextDecorators as d
