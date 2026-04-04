@@ -40,7 +40,8 @@ class FlextPluginProtocols(FlextProtocols):
     discovery: p.Plugin.PluginDiscovery
     """
 
-    class Plugin:
+    @runtime_checkable
+    class Plugin(Protocol):
         """Plugin domain-specific protocols."""
 
         @runtime_checkable
