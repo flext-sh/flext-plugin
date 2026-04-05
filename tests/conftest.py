@@ -16,14 +16,24 @@ from __future__ import annotations
 
 import os
 import tempfile
-from collections.abc import Generator, Mapping
+from collections.abc import Callable, Generator, Mapping
 from pathlib import Path
 
 import pytest
 
 from flext_core import FlextContainer
-from flext_plugin import FlextPluginAdapters
+from flext_plugin import FlextPluginAdapters, FlextPluginSettings
 from tests import c, m, t
+
+pytest_plugins = ["flext_tests.conftest_plugin"]
+
+
+@pytest.fixture
+def plugin_settings(
+    settings_factory: Callable[..., FlextPluginSettings],
+) -> FlextPluginSettings:
+    """Provide clean FlextPluginSettings for tests."""
+    return settings_factory(FlextPluginSettings)
 
 
 @pytest.fixture(autouse=True)
