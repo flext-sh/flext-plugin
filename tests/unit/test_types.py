@@ -21,7 +21,7 @@ class TestFlextPluginTypes:
 
     def test_types_alias_matches_facade(self) -> None:
         """T alias inherits from FlextPluginTypes facade."""
-        tm.that(issubclass(t, FlextPluginTypes), eq=True)
+        tm.that(FlextPluginTypes in t.__mro__, eq=True)
 
     def test_plugin_namespace_exposes_sub_namespaces(self) -> None:
         """Plugin namespace contains Discovery, Execution, Registry sub-namespaces."""
