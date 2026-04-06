@@ -19,7 +19,7 @@ from typing import ClassVar, Self
 from pydantic import model_validator
 
 from flext_core import FlextUtilities
-from flext_plugin import FlextPluginModels, c, m, r, t, u
+from flext_plugin import c, m, r, t
 
 
 class FlextPluginUtilities(FlextUtilities):
@@ -56,7 +56,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> r[Sequence[FlextPluginModels.Plugin.PluginMetadata]]:
+        ) -> r[Sequence[m.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
@@ -69,10 +69,10 @@ class FlextPluginUtilities(FlextUtilities):
             try:
                 search_path = Path(directory)
                 if not search_path.exists():
-                    return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                    return r[Sequence[m.Plugin.PluginMetadata]].fail(
                         f"Plugin directory does not exist: {search_path}",
                     )
-                plugins: MutableSequence[FlextPluginModels.Plugin.PluginMetadata] = []
+                plugins: MutableSequence[m.Plugin.PluginMetadata] = []
                 for plugin_file in search_path.rglob("*"):
                     if (
                         plugin_file.is_file()
@@ -92,7 +92,7 @@ class FlextPluginUtilities(FlextUtilities):
                             )
                             if metadata_result.is_success:
                                 plugins.append(metadata_result.value)
-                return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].ok(plugins)
+                return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
             except (
                 ValueError,
                 TypeError,
@@ -102,14 +102,14 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[Sequence[FlextPluginModels.Plugin.PluginMetadata]].fail(
+                return r[Sequence[m.Plugin.PluginMetadata]].fail(
                     f"Plugin discovery failed: {e}",
                 )
 
         @staticmethod
         def extract_plugin_metadata(
             plugin_path: Path,
-        ) -> r[FlextPluginModels.Plugin.PluginMetadata]:
+        ) -> r[m.Plugin.PluginMetadata]:
             """Extract metadata from plugin file.
 
             Args:
@@ -133,7 +133,7 @@ class FlextPluginUtilities(FlextUtilities):
                     doc_match = re.search(r'"""([^"]+)"""', content)
                     if doc_match:
                         description = doc_match.group(1).strip()
-                metadata = FlextPluginModels.Plugin.PluginMetadata(
+                metadata = m.Plugin.PluginMetadata(
                     name=plugin_path.stem,
                     version=version,
                     description=description,
@@ -143,7 +143,7 @@ class FlextPluginUtilities(FlextUtilities):
                     dependencies=[],
                     metadata={"discovered_at": datetime.now(UTC).isoformat()},
                 )
-                return r[FlextPluginModels.Plugin.PluginMetadata].ok(metadata)
+                return r[m.Plugin.PluginMetadata].ok(metadata)
             except (
                 ValueError,
                 TypeError,
@@ -153,7 +153,7 @@ class FlextPluginUtilities(FlextUtilities):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[FlextPluginModels.Plugin.PluginMetadata].fail(
+                return r[m.Plugin.PluginMetadata].fail(
                     f"Metadata extraction failed: {e}",
                 )
 
@@ -293,7 +293,7 @@ class FlextPluginUtilities(FlextUtilities):
                                 last_modified_raw,
                             ),
                         )
-                        if u.is_dict_like(last_modified_raw)
+                        if FlextUtilities.is_dict_like(last_modified_raw)
                         else {}
                     )
                     changed_files: MutableSequence[str] = []
@@ -488,7 +488,7 @@ class FlextPluginUtilities(FlextUtilities):
                         if dangerous_op in plugin_content:
                             security_report["safe"] = False
                             violations = security_report["violations"]
-                            if u.is_list_like(violations) and isinstance(
+                            if FlextUtilities.is_list_like(violations) and isinstance(
                                 violations, list
                             ):
                                 violations.append(
@@ -505,7 +505,9 @@ class FlextPluginUtilities(FlextUtilities):
                             )
                         ):
                             warnings = security_report["warnings"]
-                            if u.is_list_like(warnings) and isinstance(warnings, list):
+                            if FlextUtilities.is_list_like(warnings) and isinstance(
+                                warnings, list
+                            ):
                                 warnings.append(
                                     f"Potentially unsafe import: {module_name}"
                                 )
@@ -514,11 +516,15 @@ class FlextPluginUtilities(FlextUtilities):
                         or "socket" in plugin_content
                     ):
                         warnings = security_report["warnings"]
-                        if u.is_list_like(warnings) and isinstance(warnings, list):
+                        if FlextUtilities.is_list_like(warnings) and isinstance(
+                            warnings, list
+                        ):
                             warnings.append("Plugin may perform network operations")
                     if "file" in plugin_content.lower() or "write" in plugin_content:
                         warnings = security_report["warnings"]
-                        if u.is_list_like(warnings) and isinstance(warnings, list):
+                        if FlextUtilities.is_list_like(warnings) and isinstance(
+                            warnings, list
+                        ):
                             warnings.append("Plugin may perform file operations")
                     return r[t.ContainerMapping].ok(dict(security_report))
                 except (
@@ -570,7 +576,7 @@ class FlextPluginUtilities(FlextUtilities):
                         )
                     content = path.read_text(encoding="utf-8")
                     if path.suffix in {".yaml", ".yml"}:
-                        config = u.Cli.yaml_parse(content).unwrap_or({})
+                        config = FlextUtilities.Cli.yaml_parse(content).unwrap_or({})
                     elif path.suffix == ".json":
                         config = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                             content,
@@ -580,7 +586,7 @@ class FlextPluginUtilities(FlextUtilities):
                             f"Unsupported configuration format: {path.suffix}",
                         )
                     if (
-                        u.is_dict_like(config)
+                        FlextUtilities.is_dict_like(config)
                         and config.get("schema_version")
                         != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):
@@ -1058,5 +1064,6 @@ class FlextPluginUtilities(FlextUtilities):
         return self
 
 
-__all__ = ["FlextPluginUtilities", "u"]
 u = FlextPluginUtilities
+
+__all__ = ["FlextPluginUtilities", "u"]

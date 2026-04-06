@@ -10,24 +10,25 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
+from tests import u
+
 
 def test_basic_plugin_example_execution() -> None:
     """Test that basic_plugin_example.py runs successfully without errors."""
     example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
-    result = subprocess.run(
+    result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        check=False,
-        cwd=str(Path(__file__).parent.parent),
-        capture_output=True,
-        text=True,
+        cwd=Path(__file__).parent.parent,
     )
-    assert result.returncode == 0, f"Example failed with error: {result.stderr}"
+    assert result.is_success, result.error
+    assert result.value.exit_code == 0, (
+        f"Example failed with error: {result.value.stderr}"
+    )
 
 
 def test_plugin_configuration_example_execution() -> None:
@@ -35,15 +36,13 @@ def test_plugin_configuration_example_execution() -> None:
     example_path = (
         Path(__file__).parent.parent / "examples" / "02_plugin_configuration.py"
     )
-    result = subprocess.run(
+    result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        check=False,
-        cwd=str(Path(__file__).parent.parent),
-        capture_output=True,
-        text=True,
+        cwd=Path(__file__).parent.parent,
     )
-    assert result.returncode == 0, (
-        f"Configuration example failed with error: {result.stderr}"
+    assert result.is_success, result.error
+    assert result.value.exit_code == 0, (
+        f"Configuration example failed with error: {result.value.stderr}"
     )
 
 
@@ -52,15 +51,13 @@ def test_docker_integration_example_execution() -> None:
     example_path = (
         Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
     )
-    result = subprocess.run(
+    result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        check=False,
-        cwd=str(Path(__file__).parent.parent),
-        capture_output=True,
-        text=True,
+        cwd=Path(__file__).parent.parent,
     )
-    assert result.returncode == 0, (
-        f"Docker integration example failed with error: {result.stderr}"
+    assert result.is_success, result.error
+    assert result.value.exit_code == 0, (
+        f"Docker integration example failed with error: {result.value.stderr}"
     )
 
 
@@ -70,17 +67,15 @@ def test_docker_integration_example_with_connection_testing() -> None:
     example_path = (
         Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
     )
-    result = subprocess.run(
+    result = u.Cli.run_raw(
         [sys.executable, str(example_path), "--test-connections"],
-        check=False,
-        cwd=str(Path(__file__).parent.parent),
-        capture_output=True,
-        text=True,
+        cwd=Path(__file__).parent.parent,
     )
-    assert result.returncode == 0, (
-        f"Docker integration example with connections failed: {result.stderr}"
+    assert result.is_success, result.error
+    assert result.value.exit_code == 0, (
+        f"Docker integration example with connections failed: {result.value.stderr}"
     )
-    output = result.stdout
+    output = result.value.stdout
     assert "Service Connectivity Check" in output
     assert "Available" in output or "Unavailable" in output
     assert "Skipped" not in output
