@@ -14,13 +14,13 @@ from collections.abc import Callable, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
-from typing import ClassVar
+from typing import ClassVar, Self
 
 from flext_cli import FlextCliUtilities
 from pydantic import model_validator
 
 from flext_core import FlextUtilities, r
-from flext_plugin import FlextPluginModels, c, t
+from flext_plugin import FlextPluginModels, c, m, t
 
 
 class FlextPluginUtilities(FlextUtilities):
@@ -951,7 +951,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def register_plugin(
                 registry: t.ContainerMapping,
-                plugin_metadata: FlextPluginModels.Plugin.PluginMetadata,
+                plugin_metadata: m.Plugin.PluginMetadata,
             ) -> r[t.ContainerMapping]:
                 """Register plugin in registry.
 
@@ -1049,7 +1049,7 @@ class FlextPluginUtilities(FlextUtilities):
                     return r[None].fail(f"Registry save failed: {e}")
 
     @model_validator(mode="after")
-    def validate_utilities_configuration(self) -> FlextPluginUtilities:
+    def validate_utilities_configuration(self) -> Self:
         """Validate the complete utilities configuration."""
         required_classes = ["Plugin"]
         for class_name in required_classes:

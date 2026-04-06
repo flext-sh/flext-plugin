@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from flext_core import FlextContainer, FlextLogger, r
-from flext_plugin import FlextPluginModels, FlextPluginPlatform, p, t
+from flext_plugin import FlextPluginPlatform, m, p, t
 
 
 class FlextPluginApi:
@@ -33,14 +33,14 @@ class FlextPluginApi:
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
+    ) -> r[Sequence[m.Plugin.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
         if result.is_success:
             plugins = result.value
             self.logger.info(f"Discovered {len(plugins)} plugins")
-            return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)
-        return r[Sequence[FlextPluginPlatform.Plugin]].fail(
+            return r[Sequence[m.Plugin.Plugin]].ok(plugins)
+        return r[Sequence[m.Plugin.Plugin]].fail(
             result.error or "Discovery failed",
         )
 
@@ -49,11 +49,14 @@ class FlextPluginApi:
         plugin_name: str,
         context: t.ContainerMapping,
         execution_id: str | None = None,
-    ) -> r[FlextPluginPlatform.PluginExecution]:
+    ) -> r[t.ContainerMapping]:
         """Execute a plugin by name with the given context."""
-        return self.platform.execute_plugin(plugin_name, context, execution_id)
+        result = self.platform.execute_plugin(plugin_name, context, execution_id)
+        if result.is_failure:
+            return r[t.ContainerMapping].fail(result.error or "Execution failed")
+        return r[t.ContainerMapping].ok({"execution_id": str(result.value)})
 
-    def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
+    def get_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
         """Get a plugin by name."""
         return self.platform.get_plugin(_plugin_name)
 
@@ -65,20 +68,20 @@ class FlextPluginApi:
         """Check if a plugin is active."""
         return self.platform.is_plugin_active(_plugin_name)
 
-    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
+    def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
         """List all registered plugins."""
         return self.platform.list_plugins()
 
-    def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> r[m.Plugin.Plugin]:
         """Load a plugin from the given path."""
         result = self.platform.load_plugin(_plugin_path)
         if result.is_failure:
-            return r[FlextPluginPlatform.Plugin].fail(result.error or "Load failed")
+            return r[m.Plugin.Plugin].fail(result.error or "Load failed")
         plugin = result.value
         self.logger.info(f"Loaded plugin: {plugin.name}")
-        return r[FlextPluginPlatform.Plugin].ok(plugin)
+        return r[m.Plugin.Plugin].ok(plugin)
 
-    def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin) -> r[bool]:
+    def register_plugin(self, _plugin: m.Plugin.Plugin) -> r[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
