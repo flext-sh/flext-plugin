@@ -38,10 +38,13 @@ if _t.TYPE_CHECKING:
     from flext_core.utilities import FlextUtilities as u
     from tests.unit.test_types import TestFlextPluginTypes
 _LAZY_IMPORTS = {
-    "TestFlextPluginConstants": "tests.unit.test_constants",
-    "TestFlextPluginModels": "tests.unit.test_models",
-    "TestFlextPluginSettings": "tests.unit.test_config",
-    "TestFlextPluginTypes": "tests.unit.test_types",
+    "TestFlextPluginConstants": (
+        "tests.unit.test_constants",
+        "TestFlextPluginConstants",
+    ),
+    "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
+    "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
+    "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),

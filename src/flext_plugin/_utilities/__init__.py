@@ -47,15 +47,27 @@ if _t.TYPE_CHECKING:
     services = _flext_plugin__utilities_services
     from flext_plugin._utilities.services import FlextPluginService
 _LAZY_IMPORTS = {
-    "FlextPluginAdapters": "flext_plugin._utilities.adapters",
-    "FlextPluginDiscovery": "flext_plugin._utilities.discovery",
-    "FlextPluginEntities": "flext_plugin._utilities.entities",
-    "FlextPluginHandlers": "flext_plugin._utilities.handlers",
-    "FlextPluginHotReload": "flext_plugin._utilities.hot_reload",
-    "FlextPluginImplementations": "flext_plugin._utilities.implementations",
-    "FlextPluginLoader": "flext_plugin._utilities.loader",
-    "FlextPluginPlatform": "flext_plugin._utilities.plugin_platform",
-    "FlextPluginService": "flext_plugin._utilities.services",
+    "FlextPluginAdapters": ("flext_plugin._utilities.adapters", "FlextPluginAdapters"),
+    "FlextPluginDiscovery": (
+        "flext_plugin._utilities.discovery",
+        "FlextPluginDiscovery",
+    ),
+    "FlextPluginEntities": ("flext_plugin._utilities.entities", "FlextPluginEntities"),
+    "FlextPluginHandlers": ("flext_plugin._utilities.handlers", "FlextPluginHandlers"),
+    "FlextPluginHotReload": (
+        "flext_plugin._utilities.hot_reload",
+        "FlextPluginHotReload",
+    ),
+    "FlextPluginImplementations": (
+        "flext_plugin._utilities.implementations",
+        "FlextPluginImplementations",
+    ),
+    "FlextPluginLoader": ("flext_plugin._utilities.loader", "FlextPluginLoader"),
+    "FlextPluginPlatform": (
+        "flext_plugin._utilities.plugin_platform",
+        "FlextPluginPlatform",
+    ),
+    "FlextPluginService": ("flext_plugin._utilities.services", "FlextPluginService"),
     "adapters": "flext_plugin._utilities.adapters",
     "discovery": "flext_plugin._utilities.discovery",
     "entities": "flext_plugin._utilities.entities",
