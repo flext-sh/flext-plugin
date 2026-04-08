@@ -11,53 +11,39 @@ from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
-    import flext_plugin._utilities as _flext_plugin__utilities
-
-    _utilities = _flext_plugin__utilities
-    import flext_plugin.api as _flext_plugin_api
-    from flext_plugin._utilities import (
-        FlextPluginAdapters,
-        FlextPluginDiscovery,
-        FlextPluginEntities,
-        FlextPluginHandlers,
-        FlextPluginHandlers as h,
-        FlextPluginHotReload,
-        FlextPluginImplementations,
-        FlextPluginLoader,
-        FlextPluginPlatform,
-        FlextPluginService,
-    )
-
-    api = _flext_plugin_api
-    import flext_plugin.constants as _flext_plugin_constants
-    from flext_plugin.api import FlextPluginApi
-
-    constants = _flext_plugin_constants
-    import flext_plugin.models as _flext_plugin_models
-    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
-
-    models = _flext_plugin_models
-    import flext_plugin.protocols as _flext_plugin_protocols
-    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
-
-    protocols = _flext_plugin_protocols
-    import flext_plugin.settings as _flext_plugin_settings
-    from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
-
-    settings = _flext_plugin_settings
-    import flext_plugin.typings as _flext_plugin_typings
-    from flext_plugin.settings import FlextPluginSettings
-
-    typings = _flext_plugin_typings
-    import flext_plugin.utilities as _flext_plugin_utilities
-    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
-
-    utilities = _flext_plugin_utilities
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
+    from flext_plugin import (
+        _utilities,
+        api,
+        constants,
+        models,
+        protocols,
+        settings,
+        typings,
+        utilities,
+    )
+    from flext_plugin._utilities.adapters import FlextPluginAdapters
+    from flext_plugin._utilities.discovery import FlextPluginDiscovery
+    from flext_plugin._utilities.entities import FlextPluginEntities
+    from flext_plugin._utilities.handlers import (
+        FlextPluginHandlers,
+        FlextPluginHandlers as h,
+    )
+    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
+    from flext_plugin._utilities.implementations import FlextPluginImplementations
+    from flext_plugin._utilities.loader import FlextPluginLoader
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.services import FlextPluginService
+    from flext_plugin.api import FlextPluginApi
+    from flext_plugin.constants import FlextPluginConstants, FlextPluginConstants as c
+    from flext_plugin.models import FlextPluginModels, FlextPluginModels as m
+    from flext_plugin.protocols import FlextPluginProtocols, FlextPluginProtocols as p
+    from flext_plugin.settings import FlextPluginSettings
+    from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
     ("flext_plugin._utilities",),
