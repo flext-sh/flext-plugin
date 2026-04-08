@@ -13,7 +13,7 @@ from typing import override
 
 from pydantic import PrivateAttr
 
-from flext_core import FlextRegistry, FlextService, FlextSettings, r
+from flext_core import FlextRegistry, FlextSettings, r, s
 from flext_plugin import (
     FlextPluginSettings,
     c,
@@ -192,7 +192,7 @@ class FlextPluginPlatform:
             """Check if plugin is active."""
             return self.is_enabled
 
-    class PluginPlatformService(FlextService[None]):
+    class PluginPlatformService(s[None]):
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
@@ -363,7 +363,7 @@ class FlextPluginPlatform:
 
         @override
         def execute(self) -> r[None]:
-            """Execute main platform initialization (FlextService protocol)."""
+            """Execute main platform initialization (s protocol)."""
             return r[None].ok(None)
 
         def execute_plugin(

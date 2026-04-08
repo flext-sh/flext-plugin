@@ -19,7 +19,7 @@ from typing import Protocol, cast
 import pytest
 from pydantic import BaseModel
 
-from flext_core import FlextContainer, FlextExceptions
+from flext_core import FlextContainer
 from flext_plugin import (
     FlextPluginConstants,
     FlextPluginDiscovery,
@@ -686,7 +686,7 @@ class TestFlextPluginDiscoveryReal:
         """Test discover_plugins with REAL plugin files."""
         try:
             result = discovery_service.discover_plugins([str(temp_plugin_dir)])
-        except FlextExceptions.BaseError as e:
+        except e.BaseError as e:
             pytest.skip(f"Infrastructure not configured: {e}")
             return
         if result.is_failure and "not configured" in str(result.error):
@@ -892,14 +892,14 @@ class TestServicesIntegrationReal:
             plugin_discovery_result = plugin_service.discover_plugins([
                 str(temp_plugin_dir),
             ])
-        except FlextExceptions.BaseError as e:
+        except e.BaseError as e:
             pytest.skip(f"Infrastructure not configured: {e}")
             return
         try:
             service_discovery_result = discovery_service.discover_plugins([
                 str(temp_plugin_dir),
             ])
-        except FlextExceptions.BaseError as e:
+        except e.BaseError as e:
             pytest.skip(f"Infrastructure not configured: {e}")
             return
         if not plugin_discovery_result.is_success and "not configured" in str(

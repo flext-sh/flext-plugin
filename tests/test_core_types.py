@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_core import FlextExceptions
+from flext_core import e
 from tests import c
 
 
@@ -89,23 +89,23 @@ class TestPluginError:
 
     def test_plugin_error_creation(self) -> None:
         """Test creating PluginError with message."""
-        error = FlextExceptions.BaseError("Test error message")
+        error = e.BaseError("Test error message")
         assert "Test error message" in str(error)
         assert isinstance(error, Exception)
 
     def test_plugin_error_with_plugin_id(self) -> None:
         """Test PluginError with plugin_id."""
-        error = FlextExceptions.BaseError("Test error")
+        error = e.BaseError("Test error")
         assert "Test error" in str(error)
         assert isinstance(error, Exception)
 
     def test_plugin_error_with_error_code(self) -> None:
         """Test PluginError with error_code."""
-        error = FlextExceptions.BaseError("Test error")
+        error = e.BaseError("Test error")
         assert "Test error" in str(error)
         assert isinstance(error, Exception)
 
     def test_plugin_error_inheritance(self) -> None:
         """Test PluginError is proper Exception subclass."""
-        error = FlextExceptions.BaseError("Test")
+        error = e.BaseError("Test")
         assert isinstance(error, Exception)
