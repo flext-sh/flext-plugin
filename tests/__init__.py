@@ -16,29 +16,6 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from tests import (
-        conftest,
-        constants,
-        models,
-        protocols,
-        test_application_handlers,
-        test_application_services,
-        test_core_types,
-        test_discovery,
-        test_domain_entities,
-        test_domain_ports,
-        test_examples,
-        test_handlers,
-        test_hot_reload,
-        test_hot_reload_package,
-        test_imports,
-        test_loader,
-        test_manager,
-        test_plugin,
-        typings,
-        unit,
-        utilities,
-    )
     from tests.constants import (
         TestsFlextPluginConstants,
         TestsFlextPluginConstants as c,

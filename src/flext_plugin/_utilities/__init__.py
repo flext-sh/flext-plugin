@@ -29,15 +29,6 @@ _LAZY_IMPORTS = {
         "FlextPluginPlatform",
     ),
     "FlextPluginService": ("flext_plugin._utilities.services", "FlextPluginService"),
-    "adapters": "flext_plugin._utilities.adapters",
-    "discovery": "flext_plugin._utilities.discovery",
-    "entities": "flext_plugin._utilities.entities",
-    "handlers": "flext_plugin._utilities.handlers",
-    "hot_reload": "flext_plugin._utilities.hot_reload",
-    "implementations": "flext_plugin._utilities.implementations",
-    "loader": "flext_plugin._utilities.loader",
-    "plugin_platform": "flext_plugin._utilities.plugin_platform",
-    "services": "flext_plugin._utilities.services",
 }
 
 

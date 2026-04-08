@@ -16,16 +16,6 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from flext_plugin import (
-        _utilities,
-        api,
-        constants,
-        models,
-        protocols,
-        settings,
-        typings,
-        utilities,
-    )
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities
