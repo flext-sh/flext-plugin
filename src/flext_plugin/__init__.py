@@ -36,42 +36,45 @@ if _t.TYPE_CHECKING:
     from flext_plugin.typings import FlextPluginTypes, FlextPluginTypes as t
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
-    ("flext_plugin._utilities",),
+    ("._utilities",),
     {
-        "FlextPluginApi": ("flext_plugin.api", "FlextPluginApi"),
-        "FlextPluginConstants": ("flext_plugin.constants", "FlextPluginConstants"),
-        "FlextPluginModels": ("flext_plugin.models", "FlextPluginModels"),
-        "FlextPluginProtocols": ("flext_plugin.protocols", "FlextPluginProtocols"),
-        "FlextPluginSettings": ("flext_plugin.settings", "FlextPluginSettings"),
-        "FlextPluginTypes": ("flext_plugin.typings", "FlextPluginTypes"),
-        "FlextPluginUtilities": ("flext_plugin.utilities", "FlextPluginUtilities"),
-        "__author__": ("flext_plugin.__version__", "__author__"),
-        "__author_email__": ("flext_plugin.__version__", "__author_email__"),
-        "__description__": ("flext_plugin.__version__", "__description__"),
-        "__license__": ("flext_plugin.__version__", "__license__"),
-        "__title__": ("flext_plugin.__version__", "__title__"),
-        "__url__": ("flext_plugin.__version__", "__url__"),
-        "__version__": ("flext_plugin.__version__", "__version__"),
-        "__version_info__": ("flext_plugin.__version__", "__version_info__"),
-        "c": ("flext_plugin.constants", "FlextPluginConstants"),
+        "FlextPluginApi": ".api",
+        "FlextPluginConstants": ".constants",
+        "FlextPluginModels": ".models",
+        "FlextPluginProtocols": ".protocols",
+        "FlextPluginSettings": ".settings",
+        "FlextPluginTypes": ".typings",
+        "FlextPluginUtilities": ".utilities",
+        "__author__": ".__version__",
+        "__author_email__": ".__version__",
+        "__description__": ".__version__",
+        "__license__": ".__version__",
+        "__title__": ".__version__",
+        "__url__": ".__version__",
+        "__version__": ".__version__",
+        "__version_info__": ".__version__",
+        "c": (".constants", "FlextPluginConstants"),
         "d": ("flext_core.decorators", "FlextDecorators"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
-        "m": ("flext_plugin.models", "FlextPluginModels"),
-        "p": ("flext_plugin.protocols", "FlextPluginProtocols"),
+        "m": (".models", "FlextPluginModels"),
+        "p": (".protocols", "FlextPluginProtocols"),
         "r": ("flext_core.result", "FlextResult"),
         "s": ("flext_core.service", "FlextService"),
-        "t": ("flext_plugin.typings", "FlextPluginTypes"),
-        "u": ("flext_plugin.utilities", "FlextPluginUtilities"),
+        "t": (".typings", "FlextPluginTypes"),
+        "u": (".utilities", "FlextPluginUtilities"),
         "x": ("flext_core.mixins", "FlextMixins"),
     },
+    exclude_names=(
+        "cleanup_submodule_namespace",
+        "install_lazy_exports",
+        "lazy_getattr",
+        "logger",
+        "merge_lazy_imports",
+        "output",
+        "output_reporting",
+    ),
+    module_name=__name__,
 )
-_ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
-_ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
-_ = _LAZY_IMPORTS.pop("lazy_getattr", None)
-_ = _LAZY_IMPORTS.pop("logger", None)
-_ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
-_ = _LAZY_IMPORTS.pop("output", None)
-_ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
     "FlextPluginAdapters",
