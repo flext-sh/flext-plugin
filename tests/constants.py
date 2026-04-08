@@ -1,6 +1,6 @@
 """Test constants for flext-plugin tests.
 
-Provides FlextPluginTestConstants, extending FlextTestsConstants with
+Provides TestsFlextPluginConstants, extending FlextTestsConstants with
 flext-plugin-specific constants.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,7 +14,7 @@ from flext_tests import FlextTestsConstants
 from flext_plugin import FlextPluginConstants
 
 
-class FlextPluginTestConstants(FlextTestsConstants, FlextPluginConstants):
+class TestsFlextPluginConstants(FlextTestsConstants, FlextPluginConstants):
     """Test constants for flext-plugin."""
 
     class Plugin(FlextPluginConstants.Plugin):
@@ -24,5 +24,5 @@ class FlextPluginTestConstants(FlextTestsConstants, FlextPluginConstants):
             """Internal tests declarations."""
 
 
-c = FlextPluginTestConstants
-__all__ = ["FlextPluginTestConstants", "c"]
+c = TestsFlextPluginConstants
+__all__ = ["TestsFlextPluginConstants", "c"]

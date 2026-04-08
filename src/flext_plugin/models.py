@@ -18,8 +18,6 @@ from pydantic import Field, field_validator
 from flext_core import FlextModels, FlextUtilities, r
 from flext_plugin import c, t
 
-u = FlextUtilities
-
 
 class FlextPluginModels(FlextModels):
     """Plugin domain models extending flext-core patterns.
@@ -234,7 +232,9 @@ class FlextPluginModels(FlextModels):
                 if "last_error" not in self.metadata:
                     self.metadata["last_error"] = ""
 
-                error_count = u.to_int(self.metadata.get("error_count", 0))
+                error_count = FlextUtilities.to_int(
+                    self.metadata.get("error_count", 0),
+                )
                 self.metadata["error_count"] = error_count + 1
                 self.metadata["last_error"] = error_message
 
@@ -256,16 +256,24 @@ class FlextPluginModels(FlextModels):
                 if "failure_count" not in self.metadata:
                     self.metadata["failure_count"] = 0
 
-                exec_count = u.to_int(self.metadata.get("execution_count", 0))
-                total_time = u.to_float(self.metadata.get("total_execution_time", 0.0))
+                exec_count = FlextUtilities.to_int(
+                    self.metadata.get("execution_count", 0),
+                )
+                total_time = FlextUtilities.to_float(
+                    self.metadata.get("total_execution_time", 0.0),
+                )
                 self.metadata["execution_count"] = exec_count + 1
                 self.metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
-                    success_count = u.to_int(self.metadata.get("success_count", 0))
+                    success_count = FlextUtilities.to_int(
+                        self.metadata.get("success_count", 0),
+                    )
                     self.metadata["success_count"] = success_count + 1
                 else:
-                    failure_count = u.to_int(self.metadata.get("failure_count", 0))
+                    failure_count = FlextUtilities.to_int(
+                        self.metadata.get("failure_count", 0),
+                    )
                     self.metadata["failure_count"] = failure_count + 1
 
             def validate_business_rules(self) -> r[bool]:

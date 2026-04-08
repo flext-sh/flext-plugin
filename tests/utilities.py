@@ -1,6 +1,6 @@
 """Test utilities for flext-plugin.
 
-Provides FlextPluginTestUtilities, combining FlextTestsUtilities with
+Provides TestsFlextPluginUtilities, combining TestsFlextUtilities with
 FlextPluginUtilities for test-specific utility definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,8 +14,8 @@ from flext_tests import FlextTestsUtilities
 from flext_plugin import FlextPluginUtilities
 
 
-class FlextPluginTestUtilities(FlextTestsUtilities, FlextPluginUtilities):
-    """Test utilities combining FlextTestsUtilities with flext-plugin utilities."""
+class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
+    """Test utilities combining TestsFlextUtilities with flext-plugin utilities."""
 
     class Plugin(FlextPluginUtilities.Plugin):
         """Plugin test utilities namespace."""
@@ -24,5 +24,5 @@ class FlextPluginTestUtilities(FlextTestsUtilities, FlextPluginUtilities):
             """Internal tests declarations."""
 
 
-u = FlextPluginTestUtilities
-__all__ = ["FlextPluginTestUtilities", "u"]
+u = TestsFlextPluginUtilities
+__all__ = ["TestsFlextPluginUtilities", "u"]

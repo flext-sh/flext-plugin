@@ -7,33 +7,37 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
 if _t.TYPE_CHECKING:
     import tests.conftest as _tests_conftest
 
     conftest = _tests_conftest
     import tests.constants as _tests_constants
-    from tests.conftest import pytest_configure, pytest_plugins
 
     constants = _tests_constants
     import tests.models as _tests_models
-    from tests.constants import FlextPluginTestConstants, FlextPluginTestConstants as c
+    from tests.constants import (
+        TestsFlextPluginConstants,
+        TestsFlextPluginConstants as c,
+    )
 
     models = _tests_models
     import tests.protocols as _tests_protocols
-    from tests.models import FlextPluginTestModels, FlextPluginTestModels as m
+    from tests.models import TestsFlextPluginModels, TestsFlextPluginModels as m
 
     protocols = _tests_protocols
     import tests.test_application_handlers as _tests_test_application_handlers
-    from tests.protocols import FlextPluginTestProtocols, FlextPluginTestProtocols as p
+    from tests.protocols import (
+        TestsFlextPluginProtocols,
+        TestsFlextPluginProtocols as p,
+    )
 
     test_application_handlers = _tests_test_application_handlers
     import tests.test_application_services as _tests_test_application_services
 
     test_application_services = _tests_test_application_services
     import tests.test_core_types as _tests_test_core_types
-    from tests.test_application_services import PluginInterface
 
     test_core_types = _tests_test_core_types
     import tests.test_discovery as _tests_test_discovery
@@ -61,7 +65,6 @@ if _t.TYPE_CHECKING:
 
     test_imports = _tests_test_imports
     import tests.test_loader as _tests_test_loader
-    from tests.test_imports import modules_to_test
 
     test_loader = _tests_test_loader
     import tests.test_manager as _tests_test_manager
@@ -73,8 +76,11 @@ if _t.TYPE_CHECKING:
     import tests.typings as _tests_typings
 
     typings = _tests_typings
+    import tests.unit as _tests_unit
+    from tests.typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
+
+    unit = _tests_unit
     import tests.utilities as _tests_utilities
-    from tests.typings import FlextPluginTestTypes, FlextPluginTestTypes as t
 
     utilities = _tests_utilities
     from flext_core.decorators import FlextDecorators as d
@@ -83,57 +89,66 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from tests.utilities import FlextPluginTestUtilities, FlextPluginTestUtilities as u
-_LAZY_IMPORTS = {
-    "FlextPluginTestConstants": ("tests.constants", "FlextPluginTestConstants"),
-    "FlextPluginTestModels": ("tests.models", "FlextPluginTestModels"),
-    "FlextPluginTestProtocols": ("tests.protocols", "FlextPluginTestProtocols"),
-    "FlextPluginTestTypes": ("tests.typings", "FlextPluginTestTypes"),
-    "FlextPluginTestUtilities": ("tests.utilities", "FlextPluginTestUtilities"),
-    "PluginInterface": ("tests.test_application_services", "PluginInterface"),
-    "c": ("tests.constants", "FlextPluginTestConstants"),
-    "conftest": "tests.conftest",
-    "constants": "tests.constants",
-    "d": ("flext_core.decorators", "FlextDecorators"),
-    "e": ("flext_core.exceptions", "FlextExceptions"),
-    "h": ("flext_core.handlers", "FlextHandlers"),
-    "m": ("tests.models", "FlextPluginTestModels"),
-    "models": "tests.models",
-    "modules_to_test": ("tests.test_imports", "modules_to_test"),
-    "p": ("tests.protocols", "FlextPluginTestProtocols"),
-    "protocols": "tests.protocols",
-    "pytest_configure": ("tests.conftest", "pytest_configure"),
-    "pytest_plugins": ("tests.conftest", "pytest_plugins"),
-    "r": ("flext_core.result", "FlextResult"),
-    "s": ("flext_core.service", "FlextService"),
-    "t": ("tests.typings", "FlextPluginTestTypes"),
-    "test_application_handlers": "tests.test_application_handlers",
-    "test_application_services": "tests.test_application_services",
-    "test_core_types": "tests.test_core_types",
-    "test_discovery": "tests.test_discovery",
-    "test_domain_entities": "tests.test_domain_entities",
-    "test_domain_ports": "tests.test_domain_ports",
-    "test_examples": "tests.test_examples",
-    "test_handlers": "tests.test_handlers",
-    "test_hot_reload": "tests.test_hot_reload",
-    "test_hot_reload_package": "tests.test_hot_reload_package",
-    "test_imports": "tests.test_imports",
-    "test_loader": "tests.test_loader",
-    "test_manager": "tests.test_manager",
-    "test_plugin": "tests.test_plugin",
-    "typings": "tests.typings",
-    "u": ("tests.utilities", "FlextPluginTestUtilities"),
-    "utilities": "tests.utilities",
-    "x": ("flext_core.mixins", "FlextMixins"),
-}
+    from tests.utilities import (
+        TestsFlextPluginUtilities,
+        TestsFlextPluginUtilities as u,
+    )
+_LAZY_IMPORTS = merge_lazy_imports(
+    ("tests.unit",),
+    {
+        "TestsFlextPluginConstants": ("tests.constants", "TestsFlextPluginConstants"),
+        "TestsFlextPluginModels": ("tests.models", "TestsFlextPluginModels"),
+        "TestsFlextPluginProtocols": ("tests.protocols", "TestsFlextPluginProtocols"),
+        "TestsFlextPluginTypes": ("tests.typings", "TestsFlextPluginTypes"),
+        "TestsFlextPluginUtilities": ("tests.utilities", "TestsFlextPluginUtilities"),
+        "c": ("tests.constants", "TestsFlextPluginConstants"),
+        "conftest": "tests.conftest",
+        "constants": "tests.constants",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
+        "h": ("flext_core.handlers", "FlextHandlers"),
+        "m": ("tests.models", "TestsFlextPluginModels"),
+        "models": "tests.models",
+        "p": ("tests.protocols", "TestsFlextPluginProtocols"),
+        "protocols": "tests.protocols",
+        "r": ("flext_core.result", "FlextResult"),
+        "s": ("flext_core.service", "FlextService"),
+        "t": ("tests.typings", "TestsFlextPluginTypes"),
+        "test_application_handlers": "tests.test_application_handlers",
+        "test_application_services": "tests.test_application_services",
+        "test_core_types": "tests.test_core_types",
+        "test_discovery": "tests.test_discovery",
+        "test_domain_entities": "tests.test_domain_entities",
+        "test_domain_ports": "tests.test_domain_ports",
+        "test_examples": "tests.test_examples",
+        "test_handlers": "tests.test_handlers",
+        "test_hot_reload": "tests.test_hot_reload",
+        "test_hot_reload_package": "tests.test_hot_reload_package",
+        "test_imports": "tests.test_imports",
+        "test_loader": "tests.test_loader",
+        "test_manager": "tests.test_manager",
+        "test_plugin": "tests.test_plugin",
+        "typings": "tests.typings",
+        "u": ("tests.utilities", "TestsFlextPluginUtilities"),
+        "unit": "tests.unit",
+        "utilities": "tests.utilities",
+        "x": ("flext_core.mixins", "FlextMixins"),
+    },
+)
+_ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
+_ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
+_ = _LAZY_IMPORTS.pop("lazy_getattr", None)
+_ = _LAZY_IMPORTS.pop("logger", None)
+_ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
+_ = _LAZY_IMPORTS.pop("output", None)
+_ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
-    "FlextPluginTestConstants",
-    "FlextPluginTestModels",
-    "FlextPluginTestProtocols",
-    "FlextPluginTestTypes",
-    "FlextPluginTestUtilities",
-    "PluginInterface",
+    "TestsFlextPluginConstants",
+    "TestsFlextPluginModels",
+    "TestsFlextPluginProtocols",
+    "TestsFlextPluginTypes",
+    "TestsFlextPluginUtilities",
     "c",
     "conftest",
     "constants",
@@ -142,11 +157,8 @@ __all__ = [
     "h",
     "m",
     "models",
-    "modules_to_test",
     "p",
     "protocols",
-    "pytest_configure",
-    "pytest_plugins",
     "r",
     "s",
     "t",
@@ -166,6 +178,7 @@ __all__ = [
     "test_plugin",
     "typings",
     "u",
+    "unit",
     "utilities",
     "x",
 ]

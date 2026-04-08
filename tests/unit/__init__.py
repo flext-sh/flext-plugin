@@ -14,15 +14,12 @@ if _t.TYPE_CHECKING:
 
     test_config = _tests_unit_test_config
     import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_config import TestFlextPluginSettings
 
     test_constants = _tests_unit_test_constants
     import tests.unit.test_models as _tests_unit_test_models
-    from tests.unit.test_constants import TestFlextPluginConstants
 
     test_models = _tests_unit_test_models
     import tests.unit.test_types as _tests_unit_test_types
-    from tests.unit.test_models import TestFlextPluginModels
 
     test_types = _tests_unit_test_types
     from flext_core.constants import FlextConstants as c
@@ -36,15 +33,7 @@ if _t.TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from tests.unit.test_types import TestFlextPluginTypes
 _LAZY_IMPORTS = {
-    "TestFlextPluginConstants": (
-        "tests.unit.test_constants",
-        "TestFlextPluginConstants",
-    ),
-    "TestFlextPluginModels": ("tests.unit.test_models", "TestFlextPluginModels"),
-    "TestFlextPluginSettings": ("tests.unit.test_config", "TestFlextPluginSettings"),
-    "TestFlextPluginTypes": ("tests.unit.test_types", "TestFlextPluginTypes"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -63,10 +52,6 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
-    "TestFlextPluginConstants",
-    "TestFlextPluginModels",
-    "TestFlextPluginSettings",
-    "TestFlextPluginTypes",
     "c",
     "d",
     "e",

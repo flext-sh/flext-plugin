@@ -1,6 +1,6 @@
 """Test models for flext-plugin.
 
-Provides FlextPluginTestModels, combining FlextTestsModels with
+Provides TestsFlextPluginModels, combining TestsFlextModels with
 FlextPluginModels for test-specific model definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,8 +14,8 @@ from flext_tests import FlextTestsModels
 from flext_plugin import FlextPluginModels
 
 
-class FlextPluginTestModels(FlextTestsModels, FlextPluginModels):
-    """Test models combining FlextTestsModels with flext-plugin models."""
+class TestsFlextPluginModels(FlextTestsModels, FlextPluginModels):
+    """Test models combining TestsFlextModels with flext-plugin models."""
 
     class Plugin(FlextPluginModels.Plugin):
         """Plugin test namespace."""
@@ -24,6 +24,6 @@ class FlextPluginTestModels(FlextTestsModels, FlextPluginModels):
             """Internal tests declarations."""
 
 
-m = FlextPluginTestModels
+m = TestsFlextPluginModels
 
-__all__ = ["FlextPluginTestModels", "m"]
+__all__ = ["TestsFlextPluginModels", "m"]
