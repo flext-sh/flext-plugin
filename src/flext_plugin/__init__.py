@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.lazy import install_lazy_exports, merge_lazy_imports
+from flext_core.lazy import (
+    build_lazy_import_map,
+    install_lazy_exports,
+    merge_lazy_imports,
+)
 from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
@@ -35,33 +39,39 @@ if _t.TYPE_CHECKING:
     from flext_plugin.utilities import FlextPluginUtilities, FlextPluginUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
     ("._utilities",),
-    {
-        "FlextPluginApi": ".api",
-        "FlextPluginConstants": ".constants",
-        "FlextPluginModels": ".models",
-        "FlextPluginProtocols": ".protocols",
-        "FlextPluginSettings": ".settings",
-        "FlextPluginTypes": ".typings",
-        "FlextPluginUtilities": ".utilities",
-        "__author__": ".__version__",
-        "__author_email__": ".__version__",
-        "__description__": ".__version__",
-        "__license__": ".__version__",
-        "__title__": ".__version__",
-        "__url__": ".__version__",
-        "__version__": ".__version__",
-        "__version_info__": ".__version__",
-        "c": (".constants", "FlextPluginConstants"),
-        "d": ("flext_core.decorators", "FlextDecorators"),
-        "e": ("flext_core.exceptions", "FlextExceptions"),
-        "m": (".models", "FlextPluginModels"),
-        "p": (".protocols", "FlextPluginProtocols"),
-        "r": ("flext_core.result", "FlextResult"),
-        "s": ("flext_core.service", "FlextService"),
-        "t": (".typings", "FlextPluginTypes"),
-        "u": (".utilities", "FlextPluginUtilities"),
-        "x": ("flext_core.mixins", "FlextMixins"),
-    },
+    build_lazy_import_map(
+        {
+            ".__version__": (
+                "__author__",
+                "__author_email__",
+                "__description__",
+                "__license__",
+                "__title__",
+                "__url__",
+                "__version__",
+                "__version_info__",
+            ),
+            ".api": ("FlextPluginApi",),
+            ".constants": ("FlextPluginConstants",),
+            ".models": ("FlextPluginModels",),
+            ".protocols": ("FlextPluginProtocols",),
+            ".settings": ("FlextPluginSettings",),
+            ".typings": ("FlextPluginTypes",),
+            ".utilities": ("FlextPluginUtilities",),
+        },
+        alias_groups={
+            ".constants": (("c", "FlextPluginConstants"),),
+            ".models": (("m", "FlextPluginModels"),),
+            ".protocols": (("p", "FlextPluginProtocols"),),
+            ".typings": (("t", "FlextPluginTypes"),),
+            ".utilities": (("u", "FlextPluginUtilities"),),
+            "flext_core.decorators": (("d", "FlextDecorators"),),
+            "flext_core.exceptions": (("e", "FlextExceptions"),),
+            "flext_core.mixins": (("x", "FlextMixins"),),
+            "flext_core.result": (("r", "FlextResult"),),
+            "flext_core.service": (("s", "FlextService"),),
+        },
+    ),
     exclude_names=(
         "cleanup_submodule_namespace",
         "install_lazy_exports",

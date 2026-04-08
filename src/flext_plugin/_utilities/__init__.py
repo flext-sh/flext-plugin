@@ -3,19 +3,21 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-_LAZY_IMPORTS = {
-    "FlextPluginAdapters": ".adapters",
-    "FlextPluginDiscovery": ".discovery",
-    "FlextPluginEntities": ".entities",
-    "FlextPluginHandlers": ".handlers",
-    "FlextPluginHotReload": ".hot_reload",
-    "FlextPluginImplementations": ".implementations",
-    "FlextPluginLoader": ".loader",
-    "FlextPluginPlatform": ".plugin_platform",
-    "FlextPluginService": ".services",
-}
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".adapters": ("FlextPluginAdapters",),
+        ".discovery": ("FlextPluginDiscovery",),
+        ".entities": ("FlextPluginEntities",),
+        ".handlers": ("FlextPluginHandlers",),
+        ".hot_reload": ("FlextPluginHotReload",),
+        ".implementations": ("FlextPluginImplementations",),
+        ".loader": ("FlextPluginLoader",),
+        ".plugin_platform": ("FlextPluginPlatform",),
+        ".services": ("FlextPluginService",),
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
