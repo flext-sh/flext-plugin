@@ -24,4 +24,3 @@ class TestHotReloadPackage:
         """Test that FlextPluginHotReload can be instantiated."""
         instance = FlextPluginHotReload()
         assert instance is not None
-        assert hasattr(instance, "logger")

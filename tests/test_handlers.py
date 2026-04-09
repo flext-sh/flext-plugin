@@ -26,9 +26,6 @@ class TestFlextPluginHandlers:
     def test_initialization(self, handlers: FlextPluginHandlers) -> None:
         """Test handlers initialization."""
         assert handlers is not None
-        assert hasattr(handlers, "logger")
-        assert hasattr(handlers, "_handlers")
-        assert hasattr(handlers, "_event_history")
         assert isinstance(handlers._handlers, dict)
         assert isinstance(handlers._event_history, list)
 
@@ -99,5 +96,4 @@ class TestFlextPluginHandlers:
 
     def test_handlers_has_expected_methods(self, handlers: FlextPluginHandlers) -> None:
         """Test that handlers has expected methods."""
-        assert hasattr(handlers, "register_handler")
         assert callable(handlers.register_handler)

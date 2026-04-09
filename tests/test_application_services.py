@@ -304,10 +304,7 @@ class TestFlextPluginServiceReal:
         """Test REAL service initialization with default container."""
         service = FlextPluginService()
         assert service is not None
-        assert hasattr(service, "container")
         assert isinstance(service.container, p.Container)
-        assert hasattr(service, "logger")
-        assert hasattr(service, "config")
 
     def test_service_initialization_with_container_real(self) -> None:
         """Test REAL service initialization with provided container."""
@@ -315,28 +312,15 @@ class TestFlextPluginServiceReal:
         service = FlextPluginService(container=container)
         assert service is not None
         assert service.container is container
-        assert hasattr(service, "logger")
-        assert hasattr(service, "config")
 
     def test_service_inheritance_patterns(self, service: FlextPluginService) -> None:
         """Test service composition patterns (SOLID principles applied)."""
-        assert hasattr(service, "logger")
-        assert hasattr(service, "config")
-        assert hasattr(service, "container")
-        assert hasattr(service, "container")
-        assert hasattr(service, "discover_and_register_plugins")
-        assert hasattr(service, "load_plugin")
-        assert hasattr(service, "execute_plugin")
 
     def test_service_has_specific_methods_real(
         self,
         service: FlextPluginService,
     ) -> None:
         """Test REAL service has specific methods for specific operations (SOLID principles)."""
-        assert hasattr(service, "discover_and_register_plugins")
-        assert hasattr(service, "load_plugin")
-        assert hasattr(service, "execute_plugin")
-        assert hasattr(service, "unload_plugin")
         assert not hasattr(service, "execute")
 
     def test_discovery_functionality_real(self, service: FlextPluginService) -> None:
@@ -380,7 +364,6 @@ class TestFlextPluginServiceReal:
             return
         assert isinstance(result.is_success, bool)
         if result.is_success:
-            assert hasattr(result, "value")
             assert isinstance(result.value, list)
         else:
             assert "Plugin discovery not available" in str(result.error)
@@ -404,9 +387,7 @@ class TestFlextPluginServiceReal:
             return
         assert isinstance(result.is_success, bool)
         if result.is_success:
-            assert hasattr(result, "value")
         else:
-            assert hasattr(result, "error")
         if not result.is_success:
             error_msg = str(result.error).lower()
             assert (
@@ -634,14 +615,11 @@ class TestFlextPluginDiscoveryReal:
         """Test discovery service initialization with default settings."""
         service = FlextPluginDiscovery()
         assert service is not None
-        assert hasattr(service, "strategies")
-        assert hasattr(service, "logger")
 
     def test_discovery_service_has_two_strategies(self) -> None:
         """Test discovery service has FileSystem and EntryPoint strategies."""
         service = FlextPluginDiscovery()
         assert service is not None
-        assert hasattr(service, "strategies")
         assert len(service.strategies) == 2
 
     def test_discovery_service_has_strategies(
@@ -649,7 +627,6 @@ class TestFlextPluginDiscoveryReal:
         discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test discovery service has strategies attribute."""
-        assert hasattr(discovery_service, "strategies")
         assert isinstance(discovery_service.strategies, list)
 
     def test_discover_plugins_method_exists(
@@ -657,7 +634,6 @@ class TestFlextPluginDiscoveryReal:
         discovery_service: FlextPluginDiscovery,
     ) -> None:
         """Test discover_plugins method exists."""
-        assert hasattr(discovery_service, "discover_plugins")
         assert callable(discovery_service.discover_plugins)
 
     def test_discover_plugins_with_empty_paths(

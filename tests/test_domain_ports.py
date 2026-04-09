@@ -19,7 +19,6 @@ class TestFlextPluginDiscovery:
     def test_is_valid_class(self) -> None:
         """Test that FlextPluginDiscovery is a valid class."""
         assert FlextPluginDiscovery is not None
-        assert hasattr(FlextPluginDiscovery, "__name__")
 
     def test_class_exists(self) -> None:
         """Test that FlextPluginDiscovery exists and is callable."""

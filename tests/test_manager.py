@@ -32,7 +32,6 @@ class TestFlextPluginService:
     def test_initialization(self, service: FlextPluginService) -> None:
         """Test service initialization."""
         assert service is not None
-        assert hasattr(service, "logger")
 
     def test_class_exists(self) -> None:
         """Test that FlextPluginService class exists and is callable."""

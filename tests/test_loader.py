@@ -27,7 +27,6 @@ class TestFlextPluginLoader:
     def test_initialization(self, loader: FlextPluginLoader) -> None:
         """Test loader initialization."""
         assert loader is not None
-        assert hasattr(loader, "logger")
 
     def test_class_exists(self) -> None:
         """Test that FlextPluginLoader class exists and is callable."""

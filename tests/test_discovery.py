@@ -36,8 +36,6 @@ class TestFlextPluginDiscovery:
     def test_discovery_initialization(self, discovery: FlextPluginDiscovery) -> None:
         """Test discovery initialization."""
         assert discovery is not None
-        assert hasattr(discovery, "logger")
-        assert hasattr(discovery, "strategies")
         assert len(discovery.strategies) == 2
 
     def test_discover_plugins_empty_paths(

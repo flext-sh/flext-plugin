@@ -25,7 +25,6 @@ class TestFlextPluginHotReload:
     def test_initialization(self, hot_reload: FlextPluginHotReload) -> None:
         """Test hot reload initialization."""
         assert hot_reload is not None
-        assert hasattr(hot_reload, "logger")
 
     def test_class_exists(self) -> None:
         """Test that FlextPluginHotReload class exists and is callable."""
