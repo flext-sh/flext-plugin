@@ -386,8 +386,6 @@ class TestFlextPluginServiceReal:
             pytest.skip(f"Infrastructure not configured: {result.error}")
             return
         assert isinstance(result.is_success, bool)
-        if result.is_success:
-        else:
         if not result.is_success:
             error_msg = str(result.error).lower()
             assert (
