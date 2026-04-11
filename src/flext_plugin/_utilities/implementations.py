@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import override
 
 from flext_core import r
-from flext_plugin import c, m, p, t
+from flext_plugin import c, m, p, t, u
 
 
 class FlextPluginImplementations:
@@ -393,11 +393,11 @@ class FlextPluginImplementations:
                 return r[t.NormalizedValue].fail(f"Transform failed: {e!s}")
 
     class LoggerAdapter(p.Plugin.Logger):
-        """Adapter to make FlextLogger compatible with Logger."""
+        """Adapter to make a FLEXT logger protocol compatible with plugin Logger."""
 
         @override
         def __init__(self, logger: p.Logger) -> None:
-            """Initialize with FlextLogger instance."""
+            """Initialize with a `p.Logger` instance."""
             self.logger = logger
 
         @override
