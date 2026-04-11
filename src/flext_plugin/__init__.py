@@ -13,21 +13,22 @@ from flext_core.lazy import (
 from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
+    from _utilities.adapters import FlextPluginAdapters
+    from _utilities.discovery import FlextPluginDiscovery
+    from _utilities.entities import FlextPluginEntities
+    from _utilities.handlers import FlextPluginHandlers
+    from _utilities.hot_reload import FlextPluginHotReload
+    from _utilities.implementations import FlextPluginImplementations
+    from _utilities.loader import FlextPluginLoader
+    from _utilities.plugin_platform import FlextPluginPlatform
+    from _utilities.services import FlextPluginService
+
     from flext_core.decorators import d
     from flext_core.exceptions import e
     from flext_core.handlers import h
     from flext_core.mixins import x
     from flext_core.result import r
     from flext_core.service import s
-    from flext_plugin._utilities.adapters import FlextPluginAdapters
-    from flext_plugin._utilities.discovery import FlextPluginDiscovery
-    from flext_plugin._utilities.entities import FlextPluginEntities
-    from flext_plugin._utilities.handlers import FlextPluginHandlers
-    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
-    from flext_plugin._utilities.implementations import FlextPluginImplementations
-    from flext_plugin._utilities.loader import FlextPluginLoader
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
-    from flext_plugin._utilities.services import FlextPluginService
     from flext_plugin.api import FlextPluginApi
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
@@ -71,6 +72,15 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextPluginUtilities",
                 "u",
             ),
+            "_utilities.adapters": ("FlextPluginAdapters",),
+            "_utilities.discovery": ("FlextPluginDiscovery",),
+            "_utilities.entities": ("FlextPluginEntities",),
+            "_utilities.handlers": ("FlextPluginHandlers",),
+            "_utilities.hot_reload": ("FlextPluginHotReload",),
+            "_utilities.implementations": ("FlextPluginImplementations",),
+            "_utilities.loader": ("FlextPluginLoader",),
+            "_utilities.plugin_platform": ("FlextPluginPlatform",),
+            "_utilities.services": ("FlextPluginService",),
             "flext_core.decorators": ("d",),
             "flext_core.exceptions": ("e",),
             "flext_core.handlers": ("h",),
