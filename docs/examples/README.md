@@ -88,7 +88,7 @@ tap_plugin = create_flext_plugin(
     name="tap-example-api",
     version="0.9.9",
     plugin_type=PluginType.TAP,
-    config={
+    settings={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
         "singer_spec": "0.9.9",
@@ -117,7 +117,7 @@ from flext_plugin import create_flext_plugin_platform
 @pytest.fixture
 def platform():
     """Test platform fixture."""
-    platform = create_flext_plugin_platform(config={"test_mode": True})
+    platform = create_flext_plugin_platform(settings={"test_mode": True})
     yield platform
     platform.shutdown()
 
@@ -137,7 +137,7 @@ def test_plugin_activation(platform):
 examples/
 ├── basic-plugin/
 │   ├── plugin.py             # Plugin class definition
-│   ├── config.json           # Plugin configuration
+│   ├── settings.json           # Plugin configuration
 │   ├── test_plugin.py        # Unit tests
 │   └── README.md             # Documentation
 │
@@ -245,7 +245,7 @@ class ExamplePlugin(FlextPlugin):
         super().__init__(
             name="example-plugin",
             version="0.9.9",
-            config={
+            settings={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Example plugin template",
                 "author": "Your Name",
@@ -316,7 +316,7 @@ class TestExamplePlugin:
     @pytest.fixture
     def platform(self):
         """Create test platform."""
-        platform = create_flext_plugin_platform(config={"test_mode": True})
+        platform = create_flext_plugin_platform(settings={"test_mode": True})
         yield platform
         platform.shutdown()
 
@@ -490,7 +490,7 @@ Comprehensive test coverage for all plugin functionality:
 
    - `plugin.py` - Main plugin implementation
    - `test_plugin.py` - Comprehensive tests
-   - `config.json` - Configuration example
+   - `settings.json` - Configuration example
    - `README.md` - Documentation and usage
 
 1. **Update Index**:

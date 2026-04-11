@@ -79,7 +79,7 @@ hello_plugin = create_flext_plugin(
     name="hello-world",
     version="0.9.9",
     plugin_type=PluginType.UTILITY,
-    config={"description": "My first FLEXT plugin", "author": "Your Name"},
+    settings={"description": "My first FLEXT plugin", "author": "Your Name"},
 )
 
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
@@ -112,7 +112,7 @@ from flext_plugin import PluginType
 
 def main():
     # Create plugin platform
-    platform = create_flext_plugin_platform(config={"debug": True})
+    platform = create_flext_plugin_platform(settings={"debug": True})
 
     # Create plugin
     plugin = create_flext_plugin(
@@ -203,7 +203,7 @@ class GreetingPlugin(FlextPlugin):
         super().__init__(
             name="greeting-generator",
             version="0.9.9",
-            config={
+            settings={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Generates personalized greetings",
                 "author": "Your Name"
@@ -364,7 +364,7 @@ class TestGreetingPlugin:
     @pytest.fixture
     def platform(self):
         """Create test platform."""
-        platform = create_flext_plugin_platform(config={"test_mode": True})
+        platform = create_flext_plugin_platform(settings={"test_mode": True})
         yield platform
         platform.shutdown()
 
@@ -446,7 +446,9 @@ def development_server():
     )
 
     # Create platform
-    platform = create_flext_plugin_platform(config={"hot_reload": True, "debug": True})
+    platform = create_flext_plugin_platform(
+        settings={"hot_reload": True, "debug": True}
+    )
 
     print("🔥 Hot reload enabled!")
     print("Modify plugin files to see live updates...")

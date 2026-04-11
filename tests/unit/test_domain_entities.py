@@ -117,19 +117,19 @@ class TestFlextPluginSettings:
 
     def test_configuration_creation(self) -> None:
         """Test creating FlextPluginModels.Config."""
-        config = m.Plugin.PluginConfig(
+        settings = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={"enabled": True, "key": "value"},
         )
-        assert config.plugin_name == "test-plugin"
-        assert config.settings["enabled"] is True
-        assert config.settings["key"] == "value"
+        assert settings.plugin_name == "test-plugin"
+        assert settings.settings["enabled"] is True
+        assert settings.settings["key"] == "value"
 
     def test_configuration_defaults(self) -> None:
         """Test FlextPluginModels.Config default values."""
-        config = m.Plugin.PluginConfig(plugin_name="test-plugin")
-        assert config.plugin_name == "test-plugin"
-        assert config.settings == {}
+        settings = m.Plugin.PluginConfig(plugin_name="test-plugin")
+        assert settings.plugin_name == "test-plugin"
+        assert settings.settings == {}
 
     def test_configuration_with_complex_settings(self) -> None:
         """Test configuration with complex settings."""
@@ -139,13 +139,13 @@ class TestFlextPluginSettings:
             "timeout_seconds": 300,
             "nested": {"deep": "value"},
         }
-        config = m.Plugin.PluginConfig(
+        settings = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings=settings,
         )
-        assert config.settings["max_memory_mb"] == 800
-        assert config.settings["max_cpu_percent"] == 75
-        assert config.settings["timeout_seconds"] == 300
+        assert settings.settings["max_memory_mb"] == 800
+        assert settings.settings["max_cpu_percent"] == 75
+        assert settings.settings["timeout_seconds"] == 300
 
 
 class TestFlextPluginExecution:

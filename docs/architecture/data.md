@@ -64,7 +64,7 @@ class Plugin {
     +description: str
     +plugin_type: PluginType
     +status: PluginStatus
-    +config: FlextPluginSettings
+    +settings: FlextPluginSettings
     +metadata: PluginMetadata
     +created_at: datetime
     +updated_at: datetime
@@ -417,7 +417,7 @@ class FlextPluginSettings(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = Field(default_factory=list)
-    config: Dict[str, t.NormalizedValue] = Field(default_factory=dict)
+    settings: Dict[str, t.NormalizedValue] = Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -440,8 +440,8 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.ContainerMappi
 def validate_plugin_config(config_data: dict) -> r[FlextPluginSettings]:
     """Validate plugin configuration data."""
     try:
-        config = FlextPluginSettings(**config_data)
-        return r.ok(config)
+        settings = FlextPluginSettings(**config_data)
+        return r.ok(settings)
     except ValidationError as e:
         return r.fail(f"Configuration validation failed: {e}")
 ```
@@ -519,7 +519,7 @@ ______________________________________________________________________
 
 | Entity        | Description               | Key Fields                                | Relationships       |
 | ------------- | ------------------------- | ----------------------------------------- | ------------------- |
-| Plugin        | Core plugin entity        | name, version, status, config             | Has many Executions |
+| Plugin        | Core plugin entity        | name, version, status, settings             | Has many Executions |
 | Execution     | Plugin execution instance | execution_id, plugin_name, status, result | Belongs to Plugin   |
 | Registry      | Plugin registry container | name, plugins, version                    | Contains Plugins    |
 | Configuration | Plugin configuration      | dependencies, security, limits            | Belongs to Plugin   |
@@ -541,7 +541,7 @@ ______________________________________________________________________
 interface PluginRegistrationRequest {
   name: string;
   version: string;
-  config: FlextPluginSettings;
+  settings: FlextPluginSettings;
   metadata: PluginMetadata;
 }
 

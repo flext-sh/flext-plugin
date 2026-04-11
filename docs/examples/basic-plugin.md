@@ -76,7 +76,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, config: Optional[t.Dict] = None, **kwargs):
+    def __init__(self, settings: Optional[t.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -89,11 +89,14 @@ class BasicDataProcessorPlugin(FlextPlugin):
             "enable_logging": True,
         }
 
-        # Merge with provided config
-        final_config = {**default_config, **(config or {})}
+        # Merge with provided settings
+        final_config = {**default_config, **(settings or {})}
 
         super().__init__(
-            name="basic-data-processor", version="0.9.9", config=final_config, **kwargs
+            name="basic-data-processor",
+            version="0.9.9",
+            settings=final_config,
+            **kwargs,
         )
 
         # Plugin-specific attributes
@@ -313,7 +316,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
-        # Access configuration from the config t.ContainerMapping passed during initialization
+        # Access configuration from the settings t.ContainerMapping passed during initialization
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
@@ -350,10 +353,12 @@ def main():
     # Create plugin with custom configuration
     plugin_config = {"batch_size": 50, "timeout_seconds": 60, "enable_logging": True}
 
-    plugin = BasicDataProcessorPlugin(config=plugin_config)
+    plugin = BasicDataProcessorPlugin(settings=plugin_config)
 
     # Create platform
-    platform = create_flext_plugin_platform(config={"debug": True, "hot_reload": False})
+    platform = create_flext_plugin_platform(
+        settings={"debug": True, "hot_reload": False}
+    )
 
     try:
         # Register plugin
@@ -479,12 +484,12 @@ class TestBasicDataProcessorPlugin:
     @pytest.fixture
     def plugin(self, plugin_config):
         """Create plugin instance for testing."""
-        return BasicDataProcessorPlugin(config=plugin_config)
+        return BasicDataProcessorPlugin(settings=plugin_config)
 
     @pytest.fixture
     def platform(self):
         """Create test platform."""
-        platform = create_flext_plugin_platform(config={"test_mode": True})
+        platform = create_flext_plugin_platform(settings={"test_mode": True})
         yield platform
         platform.shutdown()
 
@@ -511,9 +516,9 @@ class TestBasicDataProcessorPlugin:
         assert plugin._is_initialized
 
     def test_initialization_failure(self):
-        """Test initialization failure with invalid config."""
+        """Test initialization failure with invalid settings."""
         invalid_plugin = BasicDataProcessorPlugin(
-            config={
+            settings={
                 "batch_size": -1,  # Invalid
                 "timeout_seconds": 10,
             }
@@ -644,7 +649,7 @@ class TestBasicDataProcessorPlugin:
 
     def test_full_plugin_lifecycle(self, platform):
         """Test complete plugin lifecycle through platform."""
-        plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
+        plugin = BasicDataProcessorPlugin(settings={"enable_logging": False})
 
         # Register plugin
         register_result = platform.register_plugin(plugin)
@@ -677,7 +682,7 @@ class TestBasicDataProcessorPlugin:
 
     def test_multiple_executions(self, platform):
         """Test multiple plugin executions."""
-        plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
+        plugin = BasicDataProcessorPlugin(settings={"enable_logging": False})
 
         platform.register_plugin(plugin)
         platform.activate_plugin(plugin.name)
@@ -722,7 +727,7 @@ class TestPluginPerformance:
     @pytest.fixture
     def initialized_plugin(self):
         """Create and initialize plugin for performance testing."""
-        plugin = BasicDataProcessorPlugin(config={"enable_logging": False})
+        plugin = BasicDataProcessorPlugin(settings={"enable_logging": False})
         plugin.initialize()
         plugin.activate()
         return plugin

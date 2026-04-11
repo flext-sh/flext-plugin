@@ -8,7 +8,7 @@
   - [**Core Layer** (`src/flext_plugin/core/`)](#core-layer-srcflextplugincore)
   - [**Domain Layer** (`src/flext_plugin/domain/`)](#domain-layer-srcflextplugindomain)
   - [**Application Layer** (`src/flext_plugin/application/`)](#application-layer-srcflextpluginapplication)
-  - [**Configuration Layer** (`src/flext_plugin/config/`)](#configuration-layer-srcflextpluginconfig)
+  - [**Configuration Layer** (`src/flext_plugin/settings/`)](#configuration-layer-srcflextpluginconfig)
 - [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
   - [**Public API Naming (FlextPlugin prefix)**](#public-api-naming-flextplugin-prefix)
   - [**Module-Level Naming**](#module-level-naming)
@@ -177,21 +177,21 @@ class PluginWorkflow:
         return (
             self.service
             .validate_plugin_config(plugin_config)
-            .flat_map(lambda config: self.service.create_plugin(config))
+            .flat_map(lambda settings: self.service.create_plugin(settings))
             .flat_map(lambda plugin: self.service.register_plugin(plugin))
             .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
         )
 ```
 
-### **Configuration Layer** (`src/flext_plugin/config/`)
+### **Configuration Layer** (`src/flext_plugin/settings/`)
 
 ```python
 # Plugin configuration management
-├── config/
+├── settings/
 │   ├── __init__.py          # ⚙️ Configuration exports
 │   ├── settings.py          # ⚙️ Plugin-specific settings
 │   ├── validation.py        # ⚙️ Configuration validation
-│   └── environment.py       # ⚙️ Environment-specific config
+│   └── environment.py       # ⚙️ Environment-specific settings
 ```
 
 **Responsibility**: Handle plugin system configuration, validation, and environment management.
@@ -372,7 +372,7 @@ plugin = create_flext_plugin(
     name="api-gateway",
     version="2.1.0",
     plugin_type=PluginType.API,
-    config={
+    settings={
         "description": "API Gateway plugin",
         "author": "FLEXT Team",
         "endpoints": ["/api/v1/*", "/api/v2/*"],
@@ -519,7 +519,7 @@ def create_singer_tap_plugin(
             name=f"tap-{name}",
             version=version,
             plugin_type=PluginType.TAP,
-            config={
+            settings={
                 **tap_config,
                 "singer_spec": "0.9.9",
                 "description": f"Singer tap for {name} data extraction",
@@ -531,9 +531,9 @@ def create_singer_tap_plugin(
 
 
 # Usage with railway-oriented chaining
-def deploy_tap_plugin(config: dict) -> r[FlextPlugin]:
+def deploy_tap_plugin(settings: dict) -> r[FlextPlugin]:
     return (
-        validate_tap_config(config)
+        validate_tap_config(settings)
         .flat_map(
             lambda cfg: create_singer_tap_plugin(cfg["name"], cfg["version"], cfg)
         )
@@ -1116,7 +1116,7 @@ class FlextPluginModels.Config(FlextModels.Value):
         return key in self.config_data
 
     def with_override(self, overrides: t.Dict) -> 'FlextPluginModels.Config':
-        """Create new config with overridden values."""
+        """Create new settings with overridden values."""
         new_config_data = {**self.config_data, **overrides}
         return FlextPluginModels.Config(
             config_data=new_config_data,
@@ -1313,12 +1313,12 @@ plugin_cache = PluginCache()
 
 
 @plugin_cache.cache_plugin_result(
-    cache_key_func=lambda plugin_id, config: (
-        f"plugin_execution:{plugin_id}:{hash(json.dumps(config, sort_keys=True))}"
+    cache_key_func=lambda plugin_id, settings: (
+        f"plugin_execution:{plugin_id}:{hash(json.dumps(settings, sort_keys=True))}"
     ),
     invalidate_on_plugin_change=True,
 )
-def execute_plugin_cached(plugin_id: str, config: t.Dict) -> r[t.NormalizedValue]:
+def execute_plugin_cached(plugin_id: str, settings: t.Dict) -> r[t.NormalizedValue]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass
@@ -1520,8 +1520,11 @@ class DataProcessorPlugin(FlextPlugin):
         ```
 
     Example:
-        >>> config = FlextPluginModels.Config({"batch_size": 500, "formats": ["json"]})
-        >>> plugin = DataProcessorPlugin(config=config)
+        >>> settings = FlextPluginModels.Config({
+        ...     "batch_size": 500,
+        ...     "formats": ["json"],
+        ... })
+        >>> plugin = DataProcessorPlugin(settings=settings)
         >>> plugin.initialize()
         >>> result = plugin.execute({"data": [...]})
         >>> if result.success:
@@ -1547,7 +1550,7 @@ class DataProcessorPlugin(FlextPlugin):
 
     def __init__(
         self,
-        config: Optional[FlextPluginModels.Config] = None,
+        settings: Optional[FlextPluginModels.Config] = None,
         metadata: Optional[FlextPluginModels.Metadata] = None,
         **kwargs,
     ) -> None:
@@ -1555,7 +1558,7 @@ class DataProcessorPlugin(FlextPlugin):
         Initialize data processor plugin with configuration.
 
         Args:
-            config: Plugin-specific configuration with processing parameters.
+            settings: Plugin-specific configuration with processing parameters.
                    Must include batch_size and timeout_seconds. Optional
                    formats list defaults to ["json", "csv"].
             metadata: Plugin metadata with description, author, and tags.
@@ -1569,17 +1572,17 @@ class DataProcessorPlugin(FlextPlugin):
                                     batch_size or unsupported data formats.
 
         Example:
-            >>> config = FlextPluginModels.Config({
+            >>> settings = FlextPluginModels.Config({
             ...     "batch_size": 1000,
             ...     "timeout_seconds": 60,
             ...     "formats": ["json", "parquet"],
             ... })
-            >>> plugin = DataProcessorPlugin(config=config)
+            >>> plugin = DataProcessorPlugin(settings=settings)
         """
         super().__init__(
             name="data-processor",
             version="2.1.0",
-            config=config,
+            settings=settings,
             metadata=metadata,
             **kwargs,
         )
@@ -1724,15 +1727,15 @@ from flext_core import u
 
 
 # Oracle WMS plugin (flext-oracle-wms project)
-def create_oracle_wms_plugin(config: t.Dict) -> r[FlextPlugin]:
+def create_oracle_wms_plugin(settings: t.Dict) -> r[FlextPlugin]:
     """Create Oracle WMS plugin following ecosystem standards."""
     return r[bool].ok(
         create_flext_plugin(
             name="oracle-wms-connector",
             version="0.9.9",
             plugin_type=PluginType.DATABASE,
-            config={
-                **config,
+            settings={
+                **settings,
                 "description": "Oracle WMS database connector plugin",
                 "dependencies": ["flext-core>=0.9.9", "flext-db-oracle>=0.9.9"],
             },
@@ -1748,7 +1751,7 @@ def create_oracle_tap_plugin(tap_config: t.Dict) -> r[FlextPlugin]:
             name=f"tap-oracle-{tap_config.get('schema', 'default')}",
             version="0.9.9",
             plugin_type=PluginType.TAP,
-            config={
+            settings={
                 **tap_config,
                 "singer_spec": "0.9.9",
                 "description": f"Oracle tap for {tap_config.get('schema')} schema",

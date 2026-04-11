@@ -85,12 +85,12 @@ class FlextPluginModels:
             self,
             name: str,
             plugin_version: str,
-            config: t.Dict,
+            settings: t.Dict,
         ) -> None:
             super().__init__()
             self.name = name
             self.plugin_version = plugin_version
-            self.config = config
+            self.settings = settings
             self._status = PluginStatus.INACTIVE
 
         def validate_business_rules(self) -> r[bool]:
@@ -190,12 +190,12 @@ class FlextPluginServices:
             plugin_configs = discovery_result.unwrap()
             plugins = []
 
-            for config in plugin_configs:
+            for settings in plugin_configs:
                 # Create domain entity
                 plugin = FlextPluginModels.Plugin.create(
-                    name=config["name"],
-                    plugin_version=config.get("version", "1.0.0"),
-                    config=config,
+                    name=settings["name"],
+                    plugin_version=settings.get("version", "1.0.0"),
+                    settings=settings,
                 )
 
                 # Validate business rules
@@ -537,7 +537,7 @@ class TestPluginEntity:
     def test_plugin_creation_success(self):
         """Test successful plugin creation."""
         plugin = FlextPluginModels.Plugin.create(
-            name="test-plugin", plugin_version="1.0.0", config={"type": "extension"}
+            name="test-plugin", plugin_version="1.0.0", settings={"type": "extension"}
         )
 
         assert plugin.name == "test-plugin"
@@ -548,14 +548,14 @@ class TestPluginEntity:
         """Test plugin business rule validation."""
         # Valid plugin
         plugin = FlextPluginModels.Plugin.create(
-            name="valid-plugin", plugin_version="1.0.0", config={}
+            name="valid-plugin", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
         assert result.is_success
 
         # Invalid plugin (empty name)
         plugin = FlextPluginModels.Plugin.create(
-            name="", plugin_version="1.0.0", config={}
+            name="", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
         assert result.is_failure
@@ -564,7 +564,7 @@ class TestPluginEntity:
     def test_plugin_activation_workflow(self):
         """Test plugin activation business workflow."""
         plugin = FlextPluginModels.Plugin.create(
-            name="test-plugin", plugin_version="1.0.0", config={"type": "extension"}
+            name="test-plugin", plugin_version="1.0.0", settings={"type": "extension"}
         )
 
         # Should fail validation initially
@@ -572,7 +572,7 @@ class TestPluginEntity:
         assert result.is_failure
 
         # Fix configuration and activate
-        plugin.config = {"type": "extension", "author": "test"}
+        plugin.settings = {"type": "extension", "author": "test"}
         result = plugin.validate_business_rules()
         assert result.is_success
 
@@ -707,7 +707,7 @@ def create_plugin():
     return FlextPluginModels.Plugin.create(
         name="test-plugin",
         plugin_version="1.0.0",
-        config={
+        settings={
             "type": "extension",
             "author": "test",
             "description": "Test plugin"
@@ -851,7 +851,7 @@ class FlextPlugin[ModuleName]:
         """Initialize module with dependency injection."""
         self.container = container
         self.logger = container.get("logger").unwrap()
-        self.config = container.get("config").unwrap()
+        self.settings = container.get("settings").unwrap()
 
     # Public API methods
     async def public_method(
@@ -949,7 +949,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 #### **Pydantic Configuration Pattern**
 
 ```python
-# flext_plugin/config.py
+# flext_plugin/settings.py
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 from flext_plugin import FlextPluginConstants
@@ -1038,7 +1038,7 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY pyproject.toml poetry.lock ./
-RUN pip install poetry && poetry config virtualenvs.create false
+RUN pip install poetry && poetry settings virtualenvs.create false
 RUN poetry install --no-dev --no-interaction
 
 # Copy source code

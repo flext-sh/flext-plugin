@@ -668,7 +668,7 @@ class FlextPluginModels(FlextModels):
             ]
 
         class WatcherConfig(FlextModels.Value):
-            """Watcher configuration - file system monitoring config.
+            """Watcher configuration - file system monitoring settings.
 
             Represents file watcher configuration for hot reload.
             Immutable value t.NormalizedValue.

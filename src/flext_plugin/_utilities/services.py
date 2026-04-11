@@ -80,8 +80,8 @@ class FlextPluginService(x):
 
         """
         super().__init__(
-            config_type=None,
-            config_overrides=None,
+            settings_type=None,
+            settings_overrides=None,
             initial_context=None,
         )
         if container is not None:
@@ -385,13 +385,13 @@ class FlextPluginService(x):
             return r[m.Plugin.PluginConfig].fail(
                 f"Plugin '{plugin_name}' not found",
             )
-        config_data = plugin.metadata.get("config", {})
+        config_data = plugin.metadata.get("settings", {})
         settings = self._to_general_mapping(config_data)
-        config = m.Plugin.PluginConfig(
+        settings = m.Plugin.PluginConfig(
             plugin_name=plugin.name,
             settings=settings,
         )
-        return r[m.Plugin.PluginConfig].ok(config)
+        return r[m.Plugin.PluginConfig].ok(settings)
 
     async def get_plugin_health(
         self,
@@ -747,13 +747,13 @@ class FlextPluginService(x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        config: t.ContainerMapping,
+        settings: t.ContainerMapping,
     ) -> r[bool]:
         """Update configuration for a plugin.
 
         Args:
             plugin_name: Name of the plugin
-            config: New configuration
+            settings: New configuration
 
         Returns:
             r indicating success or failure
@@ -762,12 +762,12 @@ class FlextPluginService(x):
         plugin = self.get_plugin(plugin_name)
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
-        existing_config = plugin.metadata.get("config")
+        existing_config = plugin.metadata.get("settings")
         merged_config: t.MutableContainerMapping = dict(
             self._to_general_mapping(existing_config),
         )
-        merged_config.update(config)
-        plugin.metadata["config"] = merged_config
+        merged_config.update(settings)
+        plugin.metadata["settings"] = merged_config
         return r[bool].ok(True)
 
 

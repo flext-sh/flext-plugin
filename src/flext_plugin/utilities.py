@@ -577,11 +577,11 @@ class FlextPluginUtilities(FlextUtilities):
                         )
                     content = path.read_text(encoding="utf-8")
                     if path.suffix in {".yaml", ".yml"}:
-                        config = FlextCliUtilities.Cli.yaml_parse(content).unwrap_or(
+                        settings = FlextCliUtilities.Cli.yaml_parse(content).unwrap_or(
                             {},
                         )
                     elif path.suffix == ".json":
-                        config = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
+                        settings = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                             content,
                         )
                     else:
@@ -589,15 +589,15 @@ class FlextPluginUtilities(FlextUtilities):
                             f"Unsupported configuration format: {path.suffix}",
                         )
                     if (
-                        FlextUtilities.dict_like(config)
-                        and config.get("schema_version")
+                        FlextUtilities.dict_like(settings)
+                        and settings.get("schema_version")
                         != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):
                         return r[t.ContainerMapping].fail(
-                            f"Unsupported configuration schema version: {config.get('schema_version')}",
+                            f"Unsupported configuration schema version: {settings.get('schema_version')}",
                         )
                     config_mapping: t.ContainerMapping = (
-                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(config)
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(settings)
                     )
                     return r[t.ContainerMapping].ok(config_mapping)
                 except (
@@ -649,7 +649,7 @@ class FlextPluginUtilities(FlextUtilities):
                                 merged_config[key] = nested_merge.value
                             else:
                                 return r[t.ContainerMapping].fail(
-                                    f"Failed to merge nested config for key '{key}': {nested_merge.error}",
+                                    f"Failed to merge nested settings for key '{key}': {nested_merge.error}",
                                 )
                         else:
                             merged_config[key] = value
@@ -668,11 +668,11 @@ class FlextPluginUtilities(FlextUtilities):
                     )
 
             @staticmethod
-            def validate_plugin_config(config: t.ContainerMapping) -> r[None]:
+            def validate_plugin_config(settings: t.ContainerMapping) -> r[None]:
                 """Validate plugin configuration structure and values.
 
                 Args:
-                config: Plugin configuration to validate
+                settings: Plugin configuration to validate
 
                 Returns:
                 r indicating validation success or failure
@@ -681,21 +681,21 @@ class FlextPluginUtilities(FlextUtilities):
                 try:
                     required_fields = ["name", "version", "description", "entry_point"]
                     for field in required_fields:
-                        if field not in config:
+                        if field not in settings:
                             return r[None].fail(
                                 f"Missing required configuration field: {field}",
                             )
                     name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
-                        str(config["name"]),
+                        str(settings["name"]),
                     )
                     if name_validation.failure:
                         return r[None].fail(
                             name_validation.error or "Plugin name validation failed",
                         )
                     version_pattern = "^\\d+\\.\\d+\\.\\d+$"
-                    if not re.match(version_pattern, str(config["version"])):
+                    if not re.match(version_pattern, str(settings["version"])):
                         return r[None].fail(
-                            f"Invalid version format: {config['version']}. Expected semantic version (x.y.z)",
+                            f"Invalid version format: {settings['version']}. Expected semantic version (x.y.z)",
                         )
                     return r[None].ok(None)
                 except (

@@ -78,10 +78,10 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, config: t.ContainerMapping) -> r[None]:
+        def configure(self, settings: t.ContainerMapping) -> r[None]:
             """Configure component with provided settings."""
             try:
-                self._config.update(config)
+                self._config.update(settings)
                 return r[None].ok(None)
             except (
                 ValueError,
@@ -304,21 +304,21 @@ class FlextPluginImplementations:
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
 
-        def validate_config(self, config: t.ContainerMapping) -> r[None]:
+        def validate_config(self, settings: t.ContainerMapping) -> r[None]:
             """Validate plugin configuration.
 
             Args:
-                config: Configuration to validate
+                settings: Configuration to validate
 
             Returns:
                 r indicating validation success or errors
 
             """
             required_fields = ["host", "port", "database"]
-            missing_fields = [f for f in required_fields if f not in config]
+            missing_fields = [f for f in required_fields if f not in settings]
             if missing_fields:
                 return r[None].fail(f"Missing required fields: {missing_fields}")
-            self._connection_config.update(config)
+            self._connection_config.update(settings)
             return r[None].ok(None)
 
     class ConcreteTransformPlugin(ConcretePlugin):
@@ -489,20 +489,20 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: p.Logger,
-            config: t.ContainerMapping | None = None,
+            settings: t.ContainerMapping | None = None,
             services: t.ContainerMapping | None = None,
         ) -> None:
             """Initialize the instance.
 
             Args:
                 logger: Structured logger for plugin
-                config: Plugin configuration
+                settings: Plugin configuration
                 services: Available services
 
             """
             super().__init__()
             self._logger = logger
-            self._config: t.MutableContainerMapping = dict(config) if config else {}
+            self._config: t.MutableContainerMapping = dict(settings) if settings else {}
             self._services: t.MutableContainerMapping = (
                 dict(services) if services else {}
             )

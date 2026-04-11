@@ -247,12 +247,12 @@ class FlextPluginProtocols(FlextProtocols):
             def save_config(
                 self,
                 _plugin_name: str,
-                config: t.NormalizedValue,
+                settings: t.NormalizedValue,
             ) -> r[bool]:
                 """Save configuration for a plugin."""
                 ...
 
-            def validate_config(self, config: t.NormalizedValue) -> r[bool]:
+            def validate_config(self, settings: t.NormalizedValue) -> r[bool]:
                 """Validate plugin configuration."""
                 ...
 

@@ -432,7 +432,7 @@ result = service.discover_plugins(paths)  # Business logic
 ```python
 # Services operate on domain entities
 service = FlextPluginService()
-plugin = service.create_plugin(config)  # Service operation
+plugin = service.create_plugin(settings)  # Service operation
     ↓
 entity = FlextPluginModels.Plugin()   # Domain entity
 entity.validate_business_rules()        # Business rules

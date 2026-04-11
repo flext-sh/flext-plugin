@@ -157,7 +157,7 @@ class MyPlugin(FlextPlugin):
         super().__init__(
             name="my-plugin",
             version="0.9.9",
-            config={"plugin_type": PluginType.UTILITY},
+            settings={"plugin_type": PluginType.UTILITY},
             **kwargs,
         )
 

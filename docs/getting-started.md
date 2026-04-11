@@ -91,7 +91,7 @@ platform = FlextPluginPlatform()
 plugin = create_flext_plugin(
     name="hello-world",
     version="0.9.9",
-    config={"description": "A basic plugin example", "author": "FLEXT Developer"},
+    settings={"description": "A basic plugin example", "author": "FLEXT Developer"},
 )
 
 # Load and activate plugin
@@ -142,7 +142,7 @@ plugins/
 ├── my_plugin/
 │   ├── __init__.py
 │   ├── plugin.py      # Plugin implementation
-│   └── config.json    # Plugin configuration
+│   └── settings.json    # Plugin configuration
 └── another_plugin/
     ├── __init__.py
     └── plugin.py

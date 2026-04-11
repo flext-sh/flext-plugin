@@ -78,7 +78,7 @@ def real_plugin_data() -> t.ContainerMapping:
                 "version": "1.0.0",
                 "description": "REAL tap plugin for database extraction",
                 "type": "tap",
-                "config": {"tables": ["users", "orders"]},
+                "settings": {"tables": ["users", "orders"]},
                 "enabled": True,
             },
             {
@@ -86,7 +86,7 @@ def real_plugin_data() -> t.ContainerMapping:
                 "version": "1.0.0",
                 "description": "REAL target plugin for warehouse loading",
                 "type": "target",
-                "config": {"batch_size": 1000},
+                "settings": {"batch_size": 1000},
                 "enabled": True,
             },
             {
@@ -94,7 +94,7 @@ def real_plugin_data() -> t.ContainerMapping:
                 "version": "1.0.0",
                 "description": "REAL processor plugin for transformations",
                 "type": "processor",
-                "config": {"transform_rules": ["uppercase", "trim"]},
+                "settings": {"transform_rules": ["uppercase", "trim"]},
                 "enabled": True,
             },
         ],
@@ -108,15 +108,15 @@ def real_plugin_directory() -> Generator[Path]:
         plugin_dir = Path(tmp_dir)
         tap_plugin = plugin_dir / "tap_database.py"
         tap_plugin.write_text(
-            '\n"""REAL tap plugin for database extraction."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass DatabaseTapPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "database-tap"\n        self.version = "1.0.0"\n        self.plugin_type = "tap"\n        self.config = {"tables": ["users", "orders"]}\n\n    def execute(self):\n        return {\n            "extracted_records": 150,\n            "tables": self.config["tables"],\n            "status": "success"\n        }\n\ndef get_plugin():\n    return DatabaseTapPlugin()\n',
+            '\n"""REAL tap plugin for database extraction."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass DatabaseTapPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "database-tap"\n        self.version = "1.0.0"\n        self.plugin_type = "tap"\n        self.settings = {"tables": ["users", "orders"]}\n\n    def execute(self):\n        return {\n            "extracted_records": 150,\n            "tables": self.settings["tables"],\n            "status": "success"\n        }\n\ndef get_plugin():\n    return DatabaseTapPlugin()\n',
         )
         target_plugin = plugin_dir / "target_warehouse.py"
         target_plugin.write_text(
-            '\n"""REAL target plugin for data warehouse loading."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass WarehouseTargetPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "warehouse-target"\n        self.version = "1.0.0"\n        self.plugin_type = "target"\n        self.config = {"batch_size": 1000}\n\n    def execute(self):\n        return {\n            "loaded_records": 150,\n            "batch_size": self.config["batch_size"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up warehouse resources."""\n        # Reset batch size and clear any pending batches\n        self.config["batch_size"] = 1000\n        self.config.clear()\n\ndef get_plugin():\n    return WarehouseTargetPlugin()\n',
+            '\n"""REAL target plugin for data warehouse loading."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass WarehouseTargetPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "warehouse-target"\n        self.version = "1.0.0"\n        self.plugin_type = "target"\n        self.settings = {"batch_size": 1000}\n\n    def execute(self):\n        return {\n            "loaded_records": 150,\n            "batch_size": self.settings["batch_size"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up warehouse resources."""\n        # Reset batch size and clear any pending batches\n        self.settings["batch_size"] = 1000\n        self.settings.clear()\n\ndef get_plugin():\n    return WarehouseTargetPlugin()\n',
         )
         processor_plugin = plugin_dir / "processor_transform.py"
         processor_plugin.write_text(
-            '\n"""REAL processor plugin for data transformation."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass TransformProcessorPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "transform-processor"\n        self.version = "1.0.0"\n        self.plugin_type = "processor"\n        self.config = {"transform_rules": ["uppercase", "trim"]}\n\n    def execute(self):\n        return {\n            "processed_records": 150,\n            "transforms": len(self.config["transform_rules"]),\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up processor resources."""\n        # Reset transform rules and clear any cached state\n        self.config["transform_rules"] = []\n        self.config.clear()\n\ndef get_plugin():\n    return TransformProcessorPlugin()\n',
+            '\n"""REAL processor plugin for data transformation."""\n\n# TEST CLASS - Acceptable exception for conftest.py\nclass TransformProcessorPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "transform-processor"\n        self.version = "1.0.0"\n        self.plugin_type = "processor"\n        self.settings = {"transform_rules": ["uppercase", "trim"]}\n\n    def execute(self):\n        return {\n            "processed_records": 150,\n            "transforms": len(self.settings["transform_rules"]),\n            "status": "success"\n        }\n\n    def cleanup(self):\n        """Clean up processor resources."""\n        # Reset transform rules and clear any cached state\n        self.settings["transform_rules"] = []\n        self.settings.clear()\n\ndef get_plugin():\n    return TransformProcessorPlugin()\n',
         )
         yield plugin_dir
 
@@ -199,16 +199,16 @@ def real_plugin_configs() -> Mapping[
     }
 
 
-def pytest_configure(config: pytest.Config) -> None:
+def pytest_configure(settings: pytest.Config) -> None:
     """Configure pytest markers."""
-    config.addinivalue_line("markers", "unit: Unit tests")
-    config.addinivalue_line("markers", "integration: Integration tests")
-    config.addinivalue_line("markers", "e2e: End-to-end tests")
-    config.addinivalue_line("markers", "plugin: Plugin-specific tests")
-    config.addinivalue_line("markers", "discovery: Plugin discovery tests")
-    config.addinivalue_line("markers", "lifecycle: Plugin lifecycle tests")
-    config.addinivalue_line("markers", "hot_reload: Hot reload tests")
-    config.addinivalue_line("markers", "slow: Slow tests")
+    settings.addinivalue_line("markers", "unit: Unit tests")
+    settings.addinivalue_line("markers", "integration: Integration tests")
+    settings.addinivalue_line("markers", "e2e: End-to-end tests")
+    settings.addinivalue_line("markers", "plugin: Plugin-specific tests")
+    settings.addinivalue_line("markers", "discovery: Plugin discovery tests")
+    settings.addinivalue_line("markers", "lifecycle: Plugin lifecycle tests")
+    settings.addinivalue_line("markers", "hot_reload: Hot reload tests")
+    settings.addinivalue_line("markers", "slow: Slow tests")
 
 
 @pytest.fixture

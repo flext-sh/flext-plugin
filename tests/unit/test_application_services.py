@@ -62,11 +62,11 @@ def temp_plugin_dir() -> Generator[Path]:
         plugin_dir = Path(tmp_dir)
         tap_plugin = plugin_dir / "tap_database.py"
         tap_plugin.write_text(
-            '\n\'\'\'REAL tap plugin for database extraction.\'\'\'\n\nclass DatabaseTapPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "database-tap"\n        self.version = "1.0.0"\n        self.plugin_type = "tap"\n        self.config = {\n            "database_url": "postgresql://localhost/test",\n            "tables": ["users", "orders"]\n        }\n\n    def initialize(self):\n        return {"status": "initialized", "plugin": self.name}\n\n    def execute(self):\n        return {\n            "extracted_records": 150,\n            "tables": self.config["tables"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        return {"status": "cleaned", "plugin": self.name}\n\n    def health_check(self):\n        return {"status": "healthy", "plugin": self.name}\n\ndef get_plugin():\n    return DatabaseTapPlugin()\n',
+            '\n\'\'\'REAL tap plugin for database extraction.\'\'\'\n\nclass DatabaseTapPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "database-tap"\n        self.version = "1.0.0"\n        self.plugin_type = "tap"\n        self.settings = {\n            "database_url": "postgresql://localhost/test",\n            "tables": ["users", "orders"]\n        }\n\n    def initialize(self):\n        return {"status": "initialized", "plugin": self.name}\n\n    def execute(self):\n        return {\n            "extracted_records": 150,\n            "tables": self.settings["tables"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        return {"status": "cleaned", "plugin": self.name}\n\n    def health_check(self):\n        return {"status": "healthy", "plugin": self.name}\n\ndef get_plugin():\n    return DatabaseTapPlugin()\n',
         )
         target_plugin = plugin_dir / "target_warehouse.py"
         target_plugin.write_text(
-            '\n\'\'\'REAL target plugin for data warehouse loading.\'\'\'\n\nclass WarehouseTargetPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "warehouse-target"\n        self.version = "2.0.0"\n        self.plugin_type = "target"\n        self.config = {\n            "warehouse_url": "postgresql://localhost/warehouse",\n            "batch_size": 1000\n        }\n        self.loaded_records = 0\n\n    def initialize(self):\n        return {"status": "initialized", "plugin": self.name}\n\n    def execute(self, data=None):\n        records = data.get("records", []) if data else []\n        self.loaded_records += len(records)\n        return {\n            "loaded_records": self.loaded_records,\n            "batch_size": self.config["batch_size"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        return {"status": "cleaned", "loaded_total": self.loaded_records}\n\n    def health_check(self):\n        return {"status": "healthy", "loaded_total": self.loaded_records}\n\ndef get_plugin():\n    return WarehouseTargetPlugin()\n',
+            '\n\'\'\'REAL target plugin for data warehouse loading.\'\'\'\n\nclass WarehouseTargetPlugin:\n    def __init__(self):\n        """Initialize the instance."""\n\n        self.name = "warehouse-target"\n        self.version = "2.0.0"\n        self.plugin_type = "target"\n        self.settings = {\n            "warehouse_url": "postgresql://localhost/warehouse",\n            "batch_size": 1000\n        }\n        self.loaded_records = 0\n\n    def initialize(self):\n        return {"status": "initialized", "plugin": self.name}\n\n    def execute(self, data=None):\n        records = data.get("records", []) if data else []\n        self.loaded_records += len(records)\n        return {\n            "loaded_records": self.loaded_records,\n            "batch_size": self.settings["batch_size"],\n            "status": "success"\n        }\n\n    def cleanup(self):\n        return {"status": "cleaned", "loaded_total": self.loaded_records}\n\n    def health_check(self):\n        return {"status": "healthy", "loaded_total": self.loaded_records}\n\ndef get_plugin():\n    return WarehouseTargetPlugin()\n',
         )
         processor_plugin = plugin_dir / "processor_transform.py"
         processor_plugin.write_text(
@@ -547,8 +547,10 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        config = FlextPluginModels.Plugin.PluginConfig(plugin_name="test", settings={})
-        result = service.update_plugin_config("", config.model_dump())
+        settings = FlextPluginModels.Plugin.PluginConfig(
+            plugin_name="test", settings={}
+        )
+        result = service.update_plugin_config("", settings.model_dump())
         assert not result.success
         assert (
             "not found" in str(result.error).lower()
@@ -560,11 +562,11 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with mismatched plugin name fails."""
-        config = FlextPluginModels.Plugin.PluginConfig(
+        settings = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="different-plugin",
             settings={},
         )
-        result = service.update_plugin_config("test-plugin", config.model_dump())
+        result = service.update_plugin_config("test-plugin", settings.model_dump())
         assert not result.success
 
     def test_update_plugin_config_valid_params_real(
@@ -572,11 +574,11 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with REAL valid params."""
-        config = FlextPluginModels.Plugin.PluginConfig(
+        settings = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="real-test-plugin",
             settings={},
         )
-        result = service.update_plugin_config("real-test-plugin", config.model_dump())
+        result = service.update_plugin_config("real-test-plugin", settings.model_dump())
         assert result.success or result.failure
 
     def test_is_plugin_loaded_empty_name_returns_false(
@@ -844,7 +846,7 @@ class TestServicesIntegrationReal:
         container = FlextContainer()
         test_service: t.ContainerMapping = {
             "name": "test_service",
-            "config": {"enabled": True},
+            "settings": {"enabled": True},
         }
         container.register("test_service", test_service)
         plugin_service = FlextPluginService(container=container)

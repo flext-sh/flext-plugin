@@ -80,7 +80,7 @@ class FlextPluginPlatform:
         """Get plugin configuration"""
 
     def update_plugin_config(
-        self, plugin_name: str, config: FlextPluginModels.Config
+        self, plugin_name: str, settings: FlextPluginModels.Config
     ) -> r[bool]:
         """Update plugin configuration"""
 ```
@@ -97,7 +97,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str  # Plugin identifier
     plugin_version: str  # Plugin version
     status: PluginStatus  # Current lifecycle status
-    config: t.Dict  # Plugin configuration
+    settings: t.Dict  # Plugin configuration
     metadata: FlextPluginModels.Metadata  # Plugin metadata
 
     # Business Methods
@@ -170,7 +170,7 @@ ______________________________________________________________________
 def create_flext_plugin(
     name: str,
     version: str,
-    config: t.Dict | None = None,
+    settings: t.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs,
 ) -> FlextPluginModels.Entity:
@@ -180,7 +180,7 @@ def create_flext_plugin(
 ### create_flext_plugin_platform
 
 ```python
-def create_flext_plugin_platform(config: t.Dict | None = None) -> FlextPluginPlatform:
+def create_flext_plugin_platform(settings: t.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
 
@@ -237,7 +237,7 @@ class FlextPluginError(Exception):
     """Base plugin system error"""
 
 
-class FlextPluginSettingsurationError(FlextPluginError):
+class FlextPluginConfigurationError(FlextPluginError):
     """Plugin configuration error"""
 
 
@@ -325,7 +325,7 @@ class MyTapPlugin(FlextPlugin):
         super().__init__(
             name="tap-my-source",
             version="0.9.9",
-            config={"plugin_type": PluginType.TAP},
+            settings={"plugin_type": PluginType.TAP},
             **kwargs,
         )
 ```

@@ -223,12 +223,12 @@ class TestFlextPluginModels:
 
     def test_config_creation(self) -> None:
         """Test Config model creation."""
-        config = m.Plugin.PluginConfig(
+        settings = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
             settings={"key": "value"},
         )
-        tm.that(config.plugin_name, eq="test-plugin")
-        tm.that(config.settings, eq={"key": "value"})
+        tm.that(settings.plugin_name, eq="test-plugin")
+        tm.that(settings.settings, eq={"key": "value"})
 
     def test_registry_creation(self) -> None:
         """Test Registry model creation."""

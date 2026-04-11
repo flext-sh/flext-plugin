@@ -32,7 +32,7 @@ Boundary(infrastructure_boundary, "Infrastructure Layer") {
 }
 
 Boundary(data_boundary, "Data Layer") {
-    Component(config, "FlextPluginSettings", "Python Class", "Configuration management")
+    Component(settings, "FlextPluginSettings", "Python Class", "Configuration management")
     Component(models, "FlextPluginModels", "Python Class", "Pydantic data models")
     Component(exceptions, "FlextPluginExceptions", "Python Module", "Exception hierarchy")
 }
@@ -61,7 +61,7 @@ Rel(hot_reload, utilities, "Uses", "File watching")
 
 Rel(adapters, protocols, "Implements", "Infrastructure interfaces")
 
-Rel(config, models, "Uses", "Configuration models")
+Rel(settings, models, "Uses", "Configuration models")
 Rel(exceptions, types, "Uses", "Exception types")
 
 @enduml
