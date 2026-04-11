@@ -15,7 +15,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import override
 
-from flext_core import FlextLogger, T, r
+from flext_core import T, r
 from flext_plugin import FlextPluginDiscovery, c, m, p, t
 
 
@@ -32,7 +32,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize base adapter with logger."""
             super().__init__()
-            self.logger = FlextLogger(__name__)
+            self.logger = u.fetch_logger(__name__)
 
         def _execute_safe(self, operation: Callable[[], T], error_context: str) -> r[T]:
             """Execute operation with safe error handling.

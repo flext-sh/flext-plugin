@@ -13,7 +13,7 @@ import importlib.metadata
 from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_plugin import c, m, p, t
 
 
@@ -26,7 +26,7 @@ class FlextPluginDiscovery:
 
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""
-        self.logger = FlextLogger(__name__)
+        self.logger = u.fetch_logger(__name__)
         self.strategies: Sequence[p.Plugin.DiscoveryStrategy] = [
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),

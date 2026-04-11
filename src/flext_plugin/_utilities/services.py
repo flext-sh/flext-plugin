@@ -99,7 +99,7 @@ class FlextPluginService(x):
     @override
     def container(self) -> p.Container:
         """Get the container for this service instance."""
-        return FlextContainer.get_global()
+        return FlextContainer.fetch_global()
 
     @staticmethod
     def _to_general_mapping(

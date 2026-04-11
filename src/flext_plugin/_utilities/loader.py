@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_plugin import c, m, p, t
 
 
@@ -41,7 +41,7 @@ class FlextPluginLoader:
 
     def __init__(self) -> None:
         """Initialize the plugin loader."""
-        self.logger = FlextLogger(__name__)
+        self.logger = u.fetch_logger(__name__)
         self._loaded_plugins: MutableMapping[str, ModuleType] = {}
         self._loader_strategies: Sequence[
             Callable[[Path], m.Plugin.LoadData | None]

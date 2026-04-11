@@ -11,7 +11,6 @@ import inspect
 from collections.abc import MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
-from flext_core import FlextLogger
 from flext_plugin import c, r, t
 
 
@@ -40,7 +39,7 @@ class FlextPluginHandlers:
     def __init__(self) -> None:
         """Initialize the plugin handlers."""
         super().__init__()
-        self.logger = FlextLogger(__name__)
+        self.logger = u.fetch_logger(__name__)
         self._handlers: MutableMapping[
             str,
             MutableSequence[t.Plugin.Handlers.HandlerInfo],

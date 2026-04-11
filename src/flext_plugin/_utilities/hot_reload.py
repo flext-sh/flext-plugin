@@ -16,7 +16,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_plugin import m, p, t
 
 
@@ -101,7 +101,7 @@ class FlextPluginHotReload:
             max_retries: Maximum retry attempts for failed reloads
 
         """
-        self.logger = FlextLogger(__name__)
+        self.logger = u.fetch_logger(__name__)
         self.watch_interval = watch_interval
         self.debounce_ms = debounce_ms
         self.max_retries = max_retries

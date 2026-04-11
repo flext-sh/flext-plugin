@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import FlextContainer, FlextLogger, r
+from flext_core import FlextContainer, r
 from flext_plugin import FlextPluginPlatform, m, p, t
 
 
@@ -25,7 +25,7 @@ class FlextPluginApi:
         container: Dependency injection container (uses default if None)
 
         """
-        self.logger = FlextLogger(__name__)
+        self.logger = u.fetch_logger(__name__)
         self.platform = FlextPluginPlatform.PluginPlatformService(
             container=container or FlextContainer(),
         )

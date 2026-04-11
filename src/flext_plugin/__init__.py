@@ -18,15 +18,12 @@ if _t.TYPE_CHECKING:
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities
     from flext_plugin._utilities.handlers import FlextPluginHandlers
-    from flext_plugin._utilities.hot_reload import (
-        FlextPluginFileChangeHandler,
-        FlextPluginHotReload,
-    )
+    from flext_plugin._utilities.hot_reload import FlextPluginHotReload
     from flext_plugin._utilities.implementations import FlextPluginImplementations
     from flext_plugin._utilities.loader import FlextPluginLoader
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
     from flext_plugin._utilities.services import FlextPluginService
-    from flext_plugin.api import FlextPluginApi
+    from flext_plugin.api import FlextPluginApi, plugin
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
@@ -47,7 +44,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
-            ".api": ("FlextPluginApi",),
+            ".api": (
+                "FlextPluginApi",
+                "plugin",
+            ),
             ".constants": (
                 "FlextPluginConstants",
                 "c",
@@ -100,7 +100,6 @@ __all__ = [
     "FlextPluginConstants",
     "FlextPluginDiscovery",
     "FlextPluginEntities",
-    "FlextPluginFileChangeHandler",
     "FlextPluginHandlers",
     "FlextPluginHotReload",
     "FlextPluginImplementations",
@@ -126,6 +125,7 @@ __all__ = [
     "h",
     "m",
     "p",
+    "plugin",
     "r",
     "s",
     "t",

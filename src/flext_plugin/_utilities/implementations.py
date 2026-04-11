@@ -14,7 +14,7 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_plugin import c, m, p, t
 
 
@@ -64,7 +64,7 @@ class FlextPluginImplementations:
             self._name = name
             self._version = version
             self._entity = entity
-            self.logger = FlextLogger(f"plugin.{self.name}")
+            self.logger = u.fetch_logger(f"plugin.{self.name}")
             self._initialized = False
             self._config: t.MutableContainerMapping = {}
 
@@ -543,7 +543,7 @@ class FlextPluginImplementations:
         def __init__(self) -> None:
             """Initialize plugin registry."""
             self.plugins: MutableMapping[str, m.Plugin.Plugin] = {}
-            self._logger = FlextLogger("plugin.registry")
+            self._logger = u.fetch_logger("plugin.registry")
 
         def get_plugin(
             self,
@@ -630,7 +630,7 @@ class FlextPluginImplementations:
             self._registry = (
                 registry or FlextPluginImplementations.ConcretePluginRegistry()
             )
-            self.logger = FlextLogger("plugin.loader")
+            self.logger = u.fetch_logger("plugin.loader")
 
         def discover_plugins(self, search_path: str) -> r[t.StrSequence]:
             """Discover available plugins in path.
