@@ -294,7 +294,7 @@ class FlextPluginUtilities(FlextUtilities):
                                 last_modified_raw,
                             ),
                         )
-                        if FlextUtilities.is_dict_like(last_modified_raw)
+                        if FlextUtilities.dict_like(last_modified_raw)
                         else {}
                     )
                     changed_files: MutableSequence[str] = []
@@ -489,7 +489,7 @@ class FlextPluginUtilities(FlextUtilities):
                         if dangerous_op in plugin_content:
                             security_report["safe"] = False
                             violations = security_report["violations"]
-                            if FlextUtilities.is_list_like(violations) and isinstance(
+                            if FlextUtilities.list_like(violations) and isinstance(
                                 violations, list
                             ):
                                 violations.append(
@@ -506,7 +506,7 @@ class FlextPluginUtilities(FlextUtilities):
                             )
                         ):
                             warnings = security_report["warnings"]
-                            if FlextUtilities.is_list_like(warnings) and isinstance(
+                            if FlextUtilities.list_like(warnings) and isinstance(
                                 warnings, list
                             ):
                                 warnings.append(
@@ -517,13 +517,13 @@ class FlextPluginUtilities(FlextUtilities):
                         or "socket" in plugin_content
                     ):
                         warnings = security_report["warnings"]
-                        if FlextUtilities.is_list_like(warnings) and isinstance(
+                        if FlextUtilities.list_like(warnings) and isinstance(
                             warnings, list
                         ):
                             warnings.append("Plugin may perform network operations")
                     if "file" in plugin_content.lower() or "write" in plugin_content:
                         warnings = security_report["warnings"]
-                        if FlextUtilities.is_list_like(warnings) and isinstance(
+                        if FlextUtilities.list_like(warnings) and isinstance(
                             warnings, list
                         ):
                             warnings.append("Plugin may perform file operations")
@@ -589,7 +589,7 @@ class FlextPluginUtilities(FlextUtilities):
                             f"Unsupported configuration format: {path.suffix}",
                         )
                     if (
-                        FlextUtilities.is_dict_like(config)
+                        FlextUtilities.dict_like(config)
                         and config.get("schema_version")
                         != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):

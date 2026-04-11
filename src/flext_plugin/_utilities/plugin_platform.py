@@ -112,7 +112,11 @@ class FlextPluginPlatform:
 
         def get(self, data: str) -> r[m.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
-            result = self.get_plugin(self.PLUGINS, data, scope="class")
+            result = self.fetch_plugin(
+                self.PLUGINS,
+                data,
+                scope=c.RegistrationScope.CLASS,
+            )
             if result.success:
                 try:
                     plugin = m.Plugin.Plugin.model_validate(
@@ -140,7 +144,7 @@ class FlextPluginPlatform:
             self,
             category: str = "plugins",
             *,
-            scope: str = "class",
+            scope: c.RegistrationScope = c.RegistrationScope.CLASS,
         ) -> r[t.StrSequence]:
             """List all registered plugin names.
 
@@ -151,7 +155,7 @@ class FlextPluginPlatform:
                 Result containing list of plugin names
 
             """
-            return super().list_plugins(category, scope="class")
+            return super().list_plugins(category, scope=scope)
 
         @override
         def register(
@@ -172,11 +176,20 @@ class FlextPluginPlatform:
 
             """
             _ = metadata
-            return self.register_plugin(self.PLUGINS, name, service, scope="class")
+            return self.register_plugin(
+                self.PLUGINS,
+                name,
+                service,
+                scope=c.RegistrationScope.CLASS,
+            )
 
         def unregister(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from class-level storage."""
-            return self.unregister_plugin(self.PLUGINS, plugin_name, scope="class")
+            return self.unregister_plugin(
+                self.PLUGINS,
+                plugin_name,
+                scope=c.RegistrationScope.CLASS,
+            )
 
     class Plugin(m.Plugin.Plugin):
         """Plugin entity extending the base model."""
@@ -222,7 +235,7 @@ class FlextPluginPlatform:
             value: t.RuntimeData,
         ) -> t.ContainerMapping:
             """Convert mapping-like values to a typed dict."""
-            if not u.is_dict_like(value):
+            if not u.dict_like(value):
                 result: t.ContainerMapping = {}
                 return result
             return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
@@ -320,7 +333,7 @@ class FlextPluginPlatform:
                     discovered_items = discovery_result.value
                     plugin_dicts: MutableSequence[t.ContainerMapping] = []
                     for item in discovered_items:
-                        if u.is_dict_like(item):
+                        if u.dict_like(item):
                             plugin_dicts.append(self._to_general_mapping(item))
                             continue
                         name = getattr(item, "name", "")
@@ -333,7 +346,7 @@ class FlextPluginPlatform:
                             "file_system",
                         )
                         metadata: t.NormalizedValue = getattr(item, "metadata", {})
-                        if u.is_dict_like(metadata):
+                        if u.dict_like(metadata):
                             plugin_dicts.append({
                                 "name": str(name),
                                 "version": str(version),
@@ -452,7 +465,7 @@ class FlextPluginPlatform:
                 load_result = self.loader.load_plugin(plugin_path)
                 if load_result.success:
                     load_data = load_result.value
-                    if u.is_dict_like(load_data):
+                    if u.dict_like(load_data):
                         return r[t.ContainerMapping].ok(
                             self._to_general_mapping(load_data)
                         )

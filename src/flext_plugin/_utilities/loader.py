@@ -14,7 +14,7 @@ from pathlib import Path
 from types import ModuleType
 
 from flext_core import r
-from flext_plugin import c, m, p, t
+from flext_plugin import c, m, p, t, u
 
 
 class FlextPluginLoader:
@@ -33,7 +33,7 @@ class FlextPluginLoader:
 
         # Load a plugin
         result = loader.load_plugin("./my_plugin.py")
-        if result.is_success:
+        if result.success:
             load_data = result.value
             loader.logger.info("plugin_loaded", plugin_name=load_data.name)
         ```

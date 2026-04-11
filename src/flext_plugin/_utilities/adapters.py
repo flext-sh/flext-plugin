@@ -16,7 +16,7 @@ from types import ModuleType
 from typing import override
 
 from flext_core import T, r
-from flext_plugin import FlextPluginDiscovery, c, m, p, t
+from flext_plugin import FlextPluginDiscovery, c, m, p, t, u
 
 
 class FlextPluginAdapters:

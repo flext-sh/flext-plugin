@@ -28,7 +28,7 @@ from flext_plugin import (
     FlextPluginService,
     t,
 )
-from tests import p
+from tests import e, p
 
 
 class PluginInterface(Protocol):
@@ -660,8 +660,8 @@ class TestFlextPluginDiscoveryReal:
         """Test discover_plugins with REAL plugin files."""
         try:
             result = discovery_service.discover_plugins([str(temp_plugin_dir)])
-        except e.BaseError as e:
-            pytest.skip(f"Infrastructure not configured: {e}")
+        except e.BaseError as exc:
+            pytest.skip(f"Infrastructure not configured: {exc}")
             return
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")
@@ -866,15 +866,15 @@ class TestServicesIntegrationReal:
             plugin_discovery_result = plugin_service.discover_plugins([
                 str(temp_plugin_dir),
             ])
-        except e.BaseError as e:
-            pytest.skip(f"Infrastructure not configured: {e}")
+        except e.BaseError as exc:
+            pytest.skip(f"Infrastructure not configured: {exc}")
             return
         try:
             service_discovery_result = discovery_service.discover_plugins([
                 str(temp_plugin_dir),
             ])
-        except e.BaseError as e:
-            pytest.skip(f"Infrastructure not configured: {e}")
+        except e.BaseError as exc:
+            pytest.skip(f"Infrastructure not configured: {exc}")
             return
         if not plugin_discovery_result.success and "not configured" in str(
             plugin_discovery_result.error,

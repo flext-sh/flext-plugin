@@ -45,7 +45,7 @@ class FlextPluginService(x):
 
         # Discover plugins
         result = await service.discover_and_register_plugins(["./plugins"])
-        if result.is_success:
+        if result.success:
             # Process the registered plugins
         ```
     """
@@ -164,13 +164,13 @@ class FlextPluginService(x):
                 return r[Sequence[m.Plugin.Plugin]].fail(
                     f"Discovery failed: {discovery_result.error}",
                 )
-            if not u.is_list_like(discovery_result.value):
+            if not u.list_like(discovery_result.value):
                 return r[Sequence[m.Plugin.Plugin]].fail(
                     "Discovery did not return a list",
                 )
             registered_plugins: MutableSequence[m.Plugin.Plugin] = []
             for plugin_data in discovery_result.value:
-                if u.is_dict_like(plugin_data):
+                if u.dict_like(plugin_data):
                     name = str(plugin_data.get("name", ""))
                     version = str(plugin_data.get("version", "1.0.0"))
                     metadata_value = plugin_data.get("metadata")
@@ -321,7 +321,7 @@ class FlextPluginService(x):
                     f"Execution failed: {exec_result.error}",
                 )
             execution.mark_completed(success=True)
-            if u.is_dict_like(exec_result.value):
+            if u.dict_like(exec_result.value):
                 execution.result = self._to_general_mapping(exec_result.value)
             plugin.record_execution(0.0, success=True)
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
@@ -461,7 +461,7 @@ class FlextPluginService(x):
                 return r[t.ContainerMapping].fail(
                     f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
-            if not u.is_dict_like(monitoring_result.value):
+            if not u.dict_like(monitoring_result.value):
                 return r[t.ContainerMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
@@ -606,7 +606,7 @@ class FlextPluginService(x):
                     f"Plugin loading failed: {load_result.error}",
                 )
             value = load_result.value
-            if u.is_dict_like(value):
+            if u.dict_like(value):
                 data = value
                 metadata_value = data.get("metadata")
                 metadata = self._to_general_mapping(metadata_value)

@@ -17,7 +17,7 @@ from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
 from flext_core import r
-from flext_plugin import m, p, t
+from flext_plugin import m, p, t, u
 
 
 class FlextPluginFileChangeHandler(FileSystemEventHandler):
@@ -79,7 +79,7 @@ class FlextPluginHotReload:
 
         # Start monitoring
         result = hot_reload.start_watching(["./plugins"])
-        if result.is_success:
+        if result.success:
             hot_reload.logger.info("hot_reload_monitoring_started")
 
         # Stop monitoring

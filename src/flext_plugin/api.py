@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from flext_core import FlextContainer, r
-from flext_plugin import FlextPluginPlatform, m, p, t
+from flext_plugin import FlextPluginPlatform, m, p, t, u
 
 
 class FlextPluginApi:
@@ -96,3 +96,8 @@ class FlextPluginApi:
     def unregister_plugin(self, _plugin_name: str) -> r[bool]:
         """Unregister a plugin by name."""
         return self.platform.unregister_plugin(_plugin_name)
+
+
+plugin = FlextPluginApi
+
+__all__ = ["FlextPluginApi", "plugin"]
