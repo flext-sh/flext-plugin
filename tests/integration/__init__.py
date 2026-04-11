@@ -1,17 +1,13 @@
-"""Integration tests for flext_plugin system interactions.
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Integration package."""
 
-This package contains integration tests that validate interactions between
-multiple components of the FLEXT plugin system, ensuring proper coordination
-and data flow across architectural boundaries.
+from __future__ import annotations
 
-Test Focus:
-    - Cross-component integration validation
-    - Service layer coordination testing
-    - Database and file system integration
-    - Plugin ecosystem interaction patterns
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+
+_LAZY_IMPORTS = build_lazy_import_map(
+    {},
+)
 
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

@@ -1,17 +1,13 @@
-"""Test fixtures and utilities for flext_plugin testing.
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Fixtures package."""
 
-This package contains reusable test fixtures, mock implementations, and testing
-utilities that support comprehensive validation across the FLEXT plugin system
-test suite.
+from __future__ import annotations
 
-Test Utilities:
-    - Reusable mock plugin implementations
-    - Common test data and configuration samples
-    - Shared testing utilities and helpers
-    - Enterprise-grade fixture management
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+
+_LAZY_IMPORTS = build_lazy_import_map(
+    {},
+)
 
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

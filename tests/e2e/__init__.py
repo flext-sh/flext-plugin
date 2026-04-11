@@ -1,17 +1,13 @@
-"""End-to-end tests for complete flext_plugin workflows.
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""E2e package."""
 
-This package contains comprehensive end-to-end tests that validate complete
-plugin system workflows from discovery through execution, ensuring the entire
-system functions correctly in realistic deployment scenarios.
+from __future__ import annotations
 
-Test Focus:
-    - Complete workflow validation
-    - System-wide integration testing
-    - Real-world scenario simulation
-    - Performance and scalability testing
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+
+_LAZY_IMPORTS = build_lazy_import_map(
+    {},
+)
 
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
