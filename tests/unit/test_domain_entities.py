@@ -51,13 +51,13 @@ class TestFlextPlugin:
         )
         assert plugin.is_enabled is True
         result = plugin.disable()
-        assert result.is_success
+        assert result.success
         assert not plugin.is_enabled
         result = plugin.enable()
-        assert result.is_success
+        assert result.success
         assert plugin.is_enabled is True
         result = plugin.enable()
-        assert result.is_failure
+        assert result.failure
 
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics in metadata."""
@@ -109,7 +109,7 @@ class TestFlextPlugin:
             author="Test Author",
         )
         result = plugin.validate_business_rules()
-        assert result.is_success
+        assert result.success
 
 
 class TestFlextPluginSettings:

@@ -44,7 +44,7 @@ class TestFlextPluginDiscovery:
     ) -> None:
         """Test discover_plugins with empty paths."""
         result = discovery.discover_plugins(paths=[])
-        assert result.is_success
+        assert result.success
         assert result.value is not None
         assert not result.value
 
@@ -54,7 +54,7 @@ class TestFlextPluginDiscovery:
     ) -> None:
         """Test discover_plugins with nonexistent path."""
         result = discovery.discover_plugins(paths=["/nonexistent/path"])
-        assert result.is_success
+        assert result.success
         assert result.value is not None
 
     def test_discover_plugins_with_temp_directory(
@@ -64,14 +64,14 @@ class TestFlextPluginDiscovery:
     ) -> None:
         """Test discover_plugins with actual temporary directory."""
         result = discovery.discover_plugins(paths=[str(temp_dir)])
-        assert result.is_success
+        assert result.success
         assert result.value is not None
         assert isinstance(result.value, list)
 
     def test_discover_plugin_nonexistent(self, discovery: FlextPluginDiscovery) -> None:
         """Test discover_plugin with nonexistent path."""
         result = discovery.discover_plugin(plugin_path="/nonexistent/plugin")
-        assert result.is_failure or (result.is_success and result.value is None)
+        assert result.failure or (result.success and result.value is None)
 
     def test_validate_plugin_none_data(self, discovery: FlextPluginDiscovery) -> None:
         """Test validate_plugin with None data."""
@@ -83,4 +83,4 @@ class TestFlextPluginDiscovery:
             discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
         result = discovery.validate_plugin(plugin_data=plugin_data)
-        assert result.is_success
+        assert result.success

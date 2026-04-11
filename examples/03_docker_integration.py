@@ -152,7 +152,7 @@ def main() -> None:
     FlextPluginApi(container)
     if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
         validation_result = postgres_plugin.validate_business_rules()
-        if validation_result.is_success:
+        if validation_result.success:
             pass
         else:
             sys.exit(1)
@@ -162,7 +162,7 @@ def main() -> None:
         sys.exit(1)
     if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
         validation_result = ldap_plugin.validate_business_rules()
-        if validation_result.is_success:
+        if validation_result.success:
             pass
         else:
             sys.exit(1)

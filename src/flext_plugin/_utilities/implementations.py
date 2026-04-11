@@ -127,7 +127,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Initializing plugin {self.name} v{self.version}")
                 if self._entity:
                     validation = self._entity.validate_business_rules()
-                    if validation.is_failure:
+                    if validation.failure:
                         return r[None].fail(validation.error or "Validation failed")
                     self._entity.is_enabled = True
                     self.logger.info(f"Plugin entity {self.name} activated")

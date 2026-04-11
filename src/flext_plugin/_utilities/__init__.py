@@ -11,7 +11,10 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".discovery": ("FlextPluginDiscovery",),
         ".entities": ("FlextPluginEntities",),
         ".handlers": ("FlextPluginHandlers",),
-        ".hot_reload": ("FlextPluginHotReload",),
+        ".hot_reload": (
+            "FlextPluginFileChangeHandler",
+            "FlextPluginHotReload",
+        ),
         ".implementations": ("FlextPluginImplementations",),
         ".loader": ("FlextPluginLoader",),
         ".plugin_platform": ("FlextPluginPlatform",),

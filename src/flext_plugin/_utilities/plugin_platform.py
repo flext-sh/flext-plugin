@@ -113,7 +113,7 @@ class FlextPluginPlatform:
         def get(self, data: str) -> r[m.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
             result = self.get_plugin(self.PLUGINS, data, scope="class")
-            if result.is_success:
+            if result.success:
                 try:
                     plugin = m.Plugin.Plugin.model_validate(
                         result.value,
@@ -131,7 +131,7 @@ class FlextPluginPlatform:
                     return r[m.Plugin.Plugin].fail(
                         "Plugin is not a valid Plugin type",
                     )
-            if result.is_failure:
+            if result.failure:
                 return r[m.Plugin.Plugin].fail(result.error)
             return r[m.Plugin.Plugin].fail("Plugin not found")
 
@@ -188,7 +188,7 @@ class FlextPluginPlatform:
                 return c.Plugin.PluginStatus.INACTIVE
             return c.Plugin.PluginStatus.ACTIVE
 
-        def is_active(self) -> bool:
+        def active(self) -> bool:
             """Check if plugin is active."""
             return self.is_enabled
 
@@ -260,7 +260,7 @@ class FlextPluginPlatform:
             return {
                 "total_plugins": len(self.plugins),
                 "active_plugins": sum(
-                    plugin.is_active() for plugin in self.plugins.values()
+                    plugin.active() for plugin in self.plugins.values()
                 ),
                 "total_executions": len(self.executions),
                 "running_executions": sum(
@@ -316,7 +316,7 @@ class FlextPluginPlatform:
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
-                if discovery_result.is_success:
+                if discovery_result.success:
                     discovered_items = discovery_result.value
                     plugin_dicts: MutableSequence[t.ContainerMapping] = []
                     for item in discovered_items:
@@ -429,7 +429,7 @@ class FlextPluginPlatform:
         def is_plugin_active(self, name: str) -> bool:
             """Check if plugin is active."""
             plugin = self.get_plugin(name)
-            return plugin.is_active() if plugin else False
+            return plugin.active() if plugin else False
 
         def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
             """List all executions."""
@@ -450,7 +450,7 @@ class FlextPluginPlatform:
                         "Loader protocol not configured",
                     )
                 load_result = self.loader.load_plugin(plugin_path)
-                if load_result.is_success:
+                if load_result.success:
                     load_data = load_result.value
                     if u.is_dict_like(load_data):
                         return r[t.ContainerMapping].ok(
@@ -582,12 +582,12 @@ class FlextPluginPlatform:
             }
             result = self.executor.execute_plugin(execution.plugin_name, exec_context)
             execution.mark_completed(
-                success=result.is_success,
-                error_message=result.error if result.is_failure else None,
+                success=result.success,
+                error_message=result.error if result.failure else None,
             )
-            if result.is_success:
+            if result.success:
                 execution.result = self._to_general_mapping(result.value)
-            if result.is_success:
+            if result.success:
                 return r[FlextPluginPlatform.PluginExecution].ok(execution)
             return r[FlextPluginPlatform.PluginExecution].fail(
                 result.error or "Execution failed",
@@ -642,7 +642,7 @@ class FlextPluginPlatform:
                 plugin_version=str(plugin_data.get("version", "1.0.0")),
             )
             validation_result = plugin.validate_business_rules()
-            if validation_result.is_success:
+            if validation_result.success:
                 return r[FlextPluginPlatform.Plugin].ok(plugin)
             return r[FlextPluginPlatform.Plugin].fail(
                 validation_result.error or "Plugin validation failed",
@@ -660,7 +660,7 @@ class FlextPluginPlatform:
                     plugin_version=str(data.get("version", "1.0.0")),
                 )
                 validation_result = plugin.validate_business_rules()
-                if validation_result.is_success:
+                if validation_result.success:
                     plugins.append(plugin)
             return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)
 

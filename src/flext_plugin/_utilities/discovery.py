@@ -80,13 +80,13 @@ class FlextPluginDiscovery:
             if path_obj.exists():
                 fs_strategy = self.FileSystemStrategy(self.logger)
                 result = fs_strategy.discover([plugin_path])
-                if result.is_success and result.value:
+                if result.success and result.value:
                     return r[m.Plugin.DiscoveryData].ok(
                         value=result.value[0],
                     )
             ep_strategy = self.EntryPointStrategy(self.logger)
             result = ep_strategy.discover([plugin_path])
-            if result.is_success and result.value:
+            if result.success and result.value:
                 return r[m.Plugin.DiscoveryData].ok(
                     value=result.value[0],
                 )
@@ -124,7 +124,7 @@ class FlextPluginDiscovery:
             discovered: MutableMapping[str, m.Plugin.DiscoveryData] = {}
             for strategy in self.strategies:
                 result = strategy.discover(paths)
-                if result.is_success:
+                if result.success:
                     for data in result.value:
                         if data.name not in discovered:
                             discovered[data.name] = data

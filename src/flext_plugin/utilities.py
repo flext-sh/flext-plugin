@@ -85,13 +85,13 @@ class FlextPluginUtilities(FlextUtilities):
                                 plugin_file,
                             )
                         )
-                        if validation_result.is_success:
+                        if validation_result.success:
                             metadata_result = (
                                 FlextPluginUtilities.Plugin.extract_plugin_metadata(
                                     plugin_file,
                                 )
                             )
-                            if metadata_result.is_success:
+                            if metadata_result.success:
                                 plugins.append(metadata_result.value)
                 return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
             except (
@@ -343,7 +343,7 @@ class FlextPluginUtilities(FlextUtilities):
                             plugin_path,
                         )
                     )
-                    if validation_result.is_failure:
+                    if validation_result.failure:
                         return r[None].fail(
                             f"Plugin validation failed: {validation_result.error}",
                         )
@@ -645,7 +645,7 @@ class FlextPluginUtilities(FlextUtilities):
                                 base_nested_config,
                                 override_value,
                             )
-                            if nested_merge.is_success:
+                            if nested_merge.success:
                                 merged_config[key] = nested_merge.value
                             else:
                                 return r[t.ContainerMapping].fail(
@@ -688,7 +688,7 @@ class FlextPluginUtilities(FlextUtilities):
                     name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
                         str(config["name"]),
                     )
-                    if name_validation.is_failure:
+                    if name_validation.failure:
                         return r[None].fail(
                             name_validation.error or "Plugin name validation failed",
                         )

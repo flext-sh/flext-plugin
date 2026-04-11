@@ -36,7 +36,7 @@ class FlextPluginApi:
     ) -> r[Sequence[m.Plugin.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
-        if result.is_success:
+        if result.success:
             plugins = result.value
             self.logger.info(f"Discovered {len(plugins)} plugins")
             return r[Sequence[m.Plugin.Plugin]].ok(plugins)
@@ -52,7 +52,7 @@ class FlextPluginApi:
     ) -> r[t.ContainerMapping]:
         """Execute a plugin by name with the given context."""
         result = self.platform.execute_plugin(plugin_name, context, execution_id)
-        if result.is_failure:
+        if result.failure:
             return r[t.ContainerMapping].fail(result.error or "Execution failed")
         return r[t.ContainerMapping].ok({"execution_id": str(result.value)})
 
@@ -75,7 +75,7 @@ class FlextPluginApi:
     def load_plugin(self, _plugin_path: str) -> r[m.Plugin.Plugin]:
         """Load a plugin from the given path."""
         result = self.platform.load_plugin(_plugin_path)
-        if result.is_failure:
+        if result.failure:
             return r[m.Plugin.Plugin].fail(result.error or "Load failed")
         plugin = result.value
         self.logger.info(f"Loaded plugin: {plugin.name}")

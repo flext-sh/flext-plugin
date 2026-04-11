@@ -25,7 +25,7 @@ def test_basic_plugin_example_execution() -> None:
         [sys.executable, str(example_path)],
         cwd=Path(__file__).parent.parent,
     )
-    assert result.is_success, result.error
+    assert result.success, result.error
     assert result.value.exit_code == 0, (
         f"Example failed with error: {result.value.stderr}"
     )
@@ -40,7 +40,7 @@ def test_plugin_configuration_example_execution() -> None:
         [sys.executable, str(example_path)],
         cwd=Path(__file__).parent.parent,
     )
-    assert result.is_success, result.error
+    assert result.success, result.error
     assert result.value.exit_code == 0, (
         f"Configuration example failed with error: {result.value.stderr}"
     )
@@ -55,7 +55,7 @@ def test_docker_integration_example_execution() -> None:
         [sys.executable, str(example_path)],
         cwd=Path(__file__).parent.parent,
     )
-    assert result.is_success, result.error
+    assert result.success, result.error
     assert result.value.exit_code == 0, (
         f"Docker integration example failed with error: {result.value.stderr}"
     )
@@ -71,7 +71,7 @@ def test_docker_integration_example_with_connection_testing() -> None:
         [sys.executable, str(example_path), "--test-connections"],
         cwd=Path(__file__).parent.parent,
     )
-    assert result.is_success, result.error
+    assert result.success, result.error
     assert result.value.exit_code == 0, (
         f"Docker integration example with connections failed: {result.value.stderr}"
     )

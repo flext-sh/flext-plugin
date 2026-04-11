@@ -245,7 +245,7 @@ class FlextPluginHandlers:
             ]
             for event_type, handler in handlers_to_register:
                 result = self.register_handler(event_type, handler)
-                if result.is_failure:
+                if result.failure:
                     return r[bool].fail(f"Failed to register {event_type} handler")
             self.logger.info("Registered default event handlers")
             return r[bool].ok(True)

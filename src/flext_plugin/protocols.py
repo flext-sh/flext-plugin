@@ -52,7 +52,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get list of all currently loaded plugin names."""
                 ...
 
-            def is_plugin_loaded(self, plugin_name: str) -> bool:
+            def plugin_loaded(self, plugin_name: str) -> bool:
                 """Check if a plugin is currently loaded."""
                 ...
 
@@ -104,7 +104,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get a registered plugin by name."""
                 ...
 
-            def is_plugin_registered(self, plugin_name: str) -> bool:
+            def plugin_registered(self, plugin_name: str) -> bool:
                 """Check if a plugin is registered."""
                 ...
 
@@ -186,7 +186,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get list of currently watched paths."""
                 ...
 
-            def is_watching(self) -> bool:
+            def watching(self) -> bool:
                 """Check if currently watching for changes."""
                 ...
 
@@ -220,7 +220,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Get metrics for a plugin."""
                 ...
 
-            def is_monitoring(self, _plugin_name: str) -> bool:
+            def monitoring(self, _plugin_name: str) -> bool:
                 """Check if a plugin is being monitored."""
                 ...
 

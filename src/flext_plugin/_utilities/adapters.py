@@ -186,7 +186,7 @@ class FlextPluginAdapters:
             return list(self._loaded_plugins.keys())
 
         @override
-        def is_plugin_loaded(self, plugin_name: str) -> bool:
+        def plugin_loaded(self, plugin_name: str) -> bool:
             """Check if a plugin is loaded."""
             return plugin_name in self._loaded_plugins
 
@@ -330,7 +330,7 @@ class FlextPluginAdapters:
             return r[t.NormalizedValue | None].ok(self._plugins.get(plugin_name))
 
         @override
-        def is_plugin_registered(self, plugin_name: str) -> bool:
+        def plugin_registered(self, plugin_name: str) -> bool:
             """Check if plugin is registered."""
             return plugin_name in self._plugins
 
@@ -359,7 +359,7 @@ class FlextPluginAdapters:
         ) -> r[bool]:
             """Register plugin in registry."""
             registration_result = self.register(_plugin)
-            if registration_result.is_failure:
+            if registration_result.failure:
                 return r[bool].fail(registration_result.error or "Registration failed")
             return r[bool].ok(True)
 
@@ -389,7 +389,7 @@ class FlextPluginAdapters:
             return r[t.ContainerMapping].ok({"execution_count": 0, "error_count": 0})
 
         @override
-        def is_monitoring(self, _plugin_name: str) -> bool:
+        def monitoring(self, _plugin_name: str) -> bool:
             """Check if plugin is being monitored."""
             return False
 

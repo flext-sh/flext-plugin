@@ -182,7 +182,7 @@ class FlextPluginHotReload:
                     result = self.reload_plugin(plugin_name)
                     reload_results.append({
                         "plugin_name": plugin_name,
-                        "success": result.is_success,
+                        "success": result.success,
                     })
                 elif watched_path.is_dir():
                     for py_file in watched_path.rglob("*.py"):
@@ -191,7 +191,7 @@ class FlextPluginHotReload:
                             result = self.reload_plugin(plugin_name)
                             reload_results.append({
                                 "plugin_name": plugin_name,
-                                "success": result.is_success,
+                                "success": result.success,
                             })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
             return r[t.ContainerMapping].ok({
@@ -253,7 +253,7 @@ class FlextPluginHotReload:
         """
         return [str(path) for path in self._watched_paths]
 
-    def is_watching(self) -> bool:
+    def watching(self) -> bool:
         """Check if hot reload is currently watching for changes.
 
         Returns:

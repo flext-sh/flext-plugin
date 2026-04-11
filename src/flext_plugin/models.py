@@ -605,14 +605,14 @@ class FlextPluginModels(FlextModels):
             Immutable value t.NormalizedValue.
 
             Attributes:
-            is_valid: Whether validation passed
+            valid: Whether validation passed
             errors: List of validation errors
             warnings: List of validation warnings
             details: Additional validation details
 
             """
 
-            is_valid: Annotated[bool, Field(description="Whether validation passed")]
+            valid: Annotated[bool, Field(description="Whether validation passed")]
             errors: Annotated[
                 t.StrSequence,
                 Field(

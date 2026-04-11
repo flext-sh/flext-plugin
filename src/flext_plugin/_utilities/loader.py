@@ -103,7 +103,7 @@ class FlextPluginLoader:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
             return r[t.ContainerMapping].fail(f"Plugin info error: {e!s}")
 
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
+    def plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
         Args:
@@ -174,11 +174,11 @@ class FlextPluginLoader:
                 error_msg = f"Cannot determine plugin path for: {plugin_name}"
                 return r[m.Plugin.LoadData].fail(error_msg)
             unload_result = self.unload_plugin(plugin_name)
-            if unload_result.is_failure:
+            if unload_result.failure:
                 error_msg = f"Failed to unload plugin for reload: {unload_result.error}"
                 return r[m.Plugin.LoadData].fail(error_msg)
             load_result = self.load_plugin(str(plugin_path))
-            if load_result.is_failure:
+            if load_result.failure:
                 return r[m.Plugin.LoadData].fail(
                     f"Failed to reload plugin: {load_result.error}",
                 )

@@ -38,7 +38,7 @@ class TestFlextPluginHandlers:
             return {"value": event.get("key", "default")}
 
         result = handlers.register_handler("test_event", sample_handler)
-        assert result.is_success
+        assert result.success
         assert result.value is True
         assert "test_event" in handlers._handlers
         assert len(handlers._handlers["test_event"]) == 1

@@ -160,7 +160,7 @@ class FlextPluginService(x):
                     "Plugin discovery not available",
                 )
             discovery_result = self._discovery.discover_plugins(paths)
-            if discovery_result.is_failure:
+            if discovery_result.failure:
                 return r[Sequence[m.Plugin.Plugin]].fail(
                     f"Discovery failed: {discovery_result.error}",
                 )
@@ -192,7 +192,7 @@ class FlextPluginService(x):
                     metadata=metadata,
                 )
                 validation_result = plugin.validate_business_rules()
-                if validation_result.is_failure:
+                if validation_result.failure:
                     self.logger.warning(
                         f"Plugin {plugin.name} validation failed: {validation_result.error}",
                     )
@@ -204,7 +204,7 @@ class FlextPluginService(x):
                     security_result = self._security.validate_plugin_security(
                         plugin_payload,
                     )
-                    if security_result.is_failure:
+                    if security_result.failure:
                         self.logger.warning(
                             "Plugin "
                             f"{plugin.name} security validation failed: "
@@ -216,7 +216,7 @@ class FlextPluginService(x):
                         plugin.model_dump(mode="python"),
                     )
                     register_result = self._registry.register_plugin(plugin_payload)
-                    if register_result.is_failure:
+                    if register_result.failure:
                         self.logger.warning(
                             f"Plugin {plugin.name} registration failed: "
                             f"{register_result.error if register_result.error is not None else ''}",
@@ -226,7 +226,7 @@ class FlextPluginService(x):
                 registered_plugins.append(plugin)
                 if self._monitoring:
                     monitoring_result = self._monitoring.start_monitoring(plugin.name)
-                    if monitoring_result.is_failure:
+                    if monitoring_result.failure:
                         self.logger.warning(
                             f"Plugin {plugin.name} monitoring startup failed: "
                             f"{monitoring_result.error if monitoring_result.error is not None else ''}",
@@ -315,7 +315,7 @@ class FlextPluginService(x):
             execution.mark_started()
             self._executions[execution.execution_id] = execution
             exec_result = self._executor.execute_plugin(plugin_name, context)
-            if exec_result.is_failure:
+            if exec_result.failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     f"Execution failed: {exec_result.error}",
@@ -457,7 +457,7 @@ class FlextPluginService(x):
                 )
 
             monitoring_result = operation(plugin_name)
-            if monitoring_result.is_failure:
+            if monitoring_result.failure:
                 return r[t.ContainerMapping].fail(
                     f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
@@ -547,7 +547,7 @@ class FlextPluginService(x):
 
         """
         result = self.load_plugin(plugin_path)
-        if result.is_success:
+        if result.success:
             plugin = result.value
             self._plugins[plugin.name] = plugin
             return r[m.Plugin.Plugin].ok(plugin)
@@ -555,7 +555,7 @@ class FlextPluginService(x):
             result.error or "Plugin installation failed",
         )
 
-    def is_plugin_loaded(self, plugin_name: str) -> bool:
+    def plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.
 
         Args:
@@ -601,7 +601,7 @@ class FlextPluginService(x):
                     "Plugin loader not available",
                 )
             load_result = self._loader.load_plugin(plugin_path)
-            if load_result.is_failure:
+            if load_result.failure:
                 return r[m.Plugin.Plugin].fail(
                     f"Plugin loading failed: {load_result.error}",
                 )
@@ -638,7 +638,7 @@ class FlextPluginService(x):
                     metadata={"module": module_name, "path": module_path},
                 )
             validation_result = plugin.validate_business_rules()
-            if validation_result.is_failure:
+            if validation_result.failure:
                 return r[m.Plugin.Plugin].fail(
                     f"Plugin validation failed: {validation_result.error}",
                 )
@@ -649,7 +649,7 @@ class FlextPluginService(x):
                 security_result = self._security.validate_plugin_security(
                     plugin_payload,
                 )
-                if security_result.is_failure:
+                if security_result.failure:
                     return r[m.Plugin.Plugin].fail(
                         f"Security validation failed: {security_result.error}",
                     )
@@ -658,14 +658,14 @@ class FlextPluginService(x):
                     plugin.model_dump(mode="python"),
                 )
                 register_result = self._registry.register_plugin(plugin_payload)
-                if register_result.is_failure:
+                if register_result.failure:
                     return r[m.Plugin.Plugin].fail(
                         f"Registration failed: {register_result.error}",
                     )
             self._plugins[plugin.name] = plugin
             if self._monitoring:
                 monitoring_result = self._monitoring.start_monitoring(plugin.name)
-                if monitoring_result.is_failure:
+                if monitoring_result.failure:
                     self.logger.warning(
                         f"Monitoring startup failed for plugin {plugin.name}: "
                         f"{monitoring_result.error if monitoring_result.error is not None else ''}",
@@ -714,20 +714,20 @@ class FlextPluginService(x):
                 return r[bool].fail(f"Plugin '{plugin_name}' not found")
             if self._monitoring:
                 monitoring_result = self._monitoring.stop_monitoring(plugin_name)
-                if monitoring_result.is_failure:
+                if monitoring_result.failure:
                     self.logger.warning(
                         f"Failed to stop monitoring for {plugin_name}: "
                         f"{monitoring_result.error if monitoring_result.error is not None else ''}",
                     )
             if self._registry:
                 unregister_result = self._registry.unregister_plugin(plugin_name)
-                if unregister_result.is_failure:
+                if unregister_result.failure:
                     return r[bool].fail(
                         f"Unregistration failed: {unregister_result.error}",
                     )
             if self._loader:
                 unload_result = self._loader.unload_plugin(plugin_name)
-                if unload_result.is_failure:
+                if unload_result.failure:
                     return r[bool].fail(f"Unloading failed: {unload_result.error}")
             del self._plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)

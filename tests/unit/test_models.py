@@ -202,22 +202,22 @@ class TestFlextPluginModels:
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
         result = m.Plugin.ValidationResult(
-            is_valid=True,
+            valid=True,
             errors=[],
             warnings=[],
         )
-        tm.that(result.is_valid is True, eq=True)
+        tm.that(result.valid is True, eq=True)
         tm.that(result.errors, eq=[])
         tm.that(result.warnings, eq=[])
 
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
         result = m.Plugin.ValidationResult(
-            is_valid=False,
+            valid=False,
             errors=["Error 1", "Error 2"],
             warnings=["Warning 1"],
         )
-        tm.that(result.is_valid is False, eq=True)
+        tm.that(result.valid is False, eq=True)
         tm.that(len(result.errors), eq=2)
         tm.that(len(result.warnings), eq=1)
 

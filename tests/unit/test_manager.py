@@ -105,7 +105,7 @@ class TestFlextPluginServiceStubBridges:
             monitoring=monitoring,
         )
         result = service.discover_and_register_plugins(["/tmp"])
-        assert result.is_success
+        assert result.success
         assert len(result.unwrap()) == 1
         assert security.calls == 1
         assert registry.registered == ["stub_plugin"]
@@ -172,7 +172,7 @@ class TestFlextPluginServiceStubBridges:
             monitoring=monitoring,
         )
         result = service.load_plugin("/tmp/stub_plugin.py")
-        assert result.is_success
+        assert result.success
         assert security.calls == 1
         assert registry.registered == ["stub_plugin"]
         assert monitoring.started == ["stub_plugin"]
@@ -212,9 +212,9 @@ class TestFlextPluginServiceStubBridges:
         executor = Executor()
         service = FlextPluginService(loader=Loader(), executor=executor)
         load_result = service.load_plugin("/tmp/stub_plugin.py")
-        assert load_result.is_success
+        assert load_result.success
         result = service.execute_plugin("stub_plugin", {})
-        assert result.is_success
+        assert result.success
         execution = result.unwrap()
         assert execution.result == {"status": "executed", "plugin": "stub_plugin"}
         assert executor.calls == ["stub_plugin"]
@@ -273,10 +273,10 @@ class TestFlextPluginServiceStubBridges:
             monitoring=monitoring,
         )
         load_result = service.load_plugin("/tmp/stub_plugin.py")
-        assert load_result.is_success
+        assert load_result.success
         unload_result = asyncio.run(service.unload_plugin("stub_plugin"))
-        assert unload_result.is_success
+        assert unload_result.success
         assert monitoring.stopped == ["stub_plugin"]
         assert registry.unregistered == ["stub_plugin"]
         assert loader.unloaded == ["stub_plugin"]
-        assert service.is_plugin_loaded("stub_plugin") is False
+        assert service.plugin_loaded("stub_plugin") is False

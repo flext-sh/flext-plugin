@@ -33,7 +33,7 @@ class TestFlextPluginHandlers:
             return {"status": "processed", "event": dict(event_data.items())}
 
         result = handlers.register_handler("test_event", test_handler)
-        assert result.is_success
+        assert result.success
         assert "test_event" in handlers._handlers
         assert len(handlers._handlers["test_event"]) == 1
 
@@ -52,7 +52,7 @@ class TestFlextPluginHandlers:
 
             handlers.register_handler("test_event", test_handler)
             result = await handlers.trigger_event("test_event", {"key": "value"})
-            assert result.is_success
+            assert result.success
             assert len(results) == 1
             assert results[0] == {"key": "value"}
 
@@ -170,6 +170,6 @@ class TestFlextPluginHandlers:
             handlers.register_handler("test", failing_handler)
             handlers.register_handler("test", working_handler)
             result = await handlers.trigger_event("test", {})
-            assert result.is_success
+            assert result.success
 
         asyncio.run(_inner())

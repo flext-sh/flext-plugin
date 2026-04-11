@@ -48,20 +48,20 @@ class TestDynamicLoaderAdapter:
     def test_tracks_loaded_plugin_state(self, plugin_file: Path) -> None:
         adapter = FlextPluginAdapters.DynamicLoaderAdapter()
         load_result = adapter.load_plugin(str(plugin_file))
-        assert load_result.is_success
-        assert adapter.is_plugin_loaded("sample_plugin") is True
+        assert load_result.success
+        assert adapter.plugin_loaded("sample_plugin") is True
         assert "sample_plugin" in adapter.get_loaded_plugins()
 
     def test_unload_plugin_returns_failure_when_missing(self) -> None:
         adapter = FlextPluginAdapters.DynamicLoaderAdapter()
         unload_result = adapter.unload_plugin("missing")
-        assert unload_result.is_failure
+        assert unload_result.failure
         assert "Plugin not loaded: missing" in str(unload_result.error)
 
     def test_unload_plugin_removes_loaded_plugin(self, plugin_file: Path) -> None:
         adapter = FlextPluginAdapters.DynamicLoaderAdapter()
         _ = adapter.load_plugin(str(plugin_file))
         unload_result = adapter.unload_plugin("sample_plugin")
-        assert unload_result.is_success
+        assert unload_result.success
         assert unload_result.value is True
-        assert adapter.is_plugin_loaded("sample_plugin") is False
+        assert adapter.plugin_loaded("sample_plugin") is False
