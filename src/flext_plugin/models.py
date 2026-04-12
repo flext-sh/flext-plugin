@@ -800,7 +800,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugin_name: Annotated[str, Field(description="Plugin name")]
-            settings: Annotated[
+            config: Annotated[
                 t.ContainerMapping,
                 Field(
                     description="Configuration settings",

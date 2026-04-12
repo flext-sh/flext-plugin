@@ -12,7 +12,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
 from tests import c, m
 
@@ -27,78 +26,51 @@ class TestFlextPluginModels:
 
     def test_plugin_status_enum(self) -> None:
         """Test PluginStatus enum values and methods."""
-        tm.that(c.Plugin.PluginStatus.UNKNOWN, eq="unknown")
-        tm.that(c.Plugin.PluginStatus.DISCOVERED, eq="discovered")
-        tm.that(c.Plugin.PluginStatus.LOADED, eq="loaded")
-        tm.that(c.Plugin.PluginStatus.ACTIVE, eq="active")
-        tm.that(c.Plugin.PluginStatus.INACTIVE, eq="inactive")
-        tm.that(c.Plugin.PluginStatus.LOADING, eq="loading")
-        tm.that(c.Plugin.PluginStatus.ERROR, eq="error")
-        tm.that(c.Plugin.PluginStatus.DISABLED, eq="disabled")
-        tm.that(c.Plugin.PluginStatus.HEALTHY, eq="healthy")
-        tm.that(c.Plugin.PluginStatus.UNHEALTHY, eq="unhealthy")
+        assert c.Plugin.PluginStatus.UNKNOWN == "unknown"
+        assert c.Plugin.PluginStatus.DISCOVERED == "discovered"
+        assert c.Plugin.PluginStatus.LOADED == "loaded"
+        assert c.Plugin.PluginStatus.ACTIVE == "active"
+        assert c.Plugin.PluginStatus.INACTIVE == "inactive"
+        assert c.Plugin.PluginStatus.LOADING == "loading"
+        assert c.Plugin.PluginStatus.ERROR == "error"
+        assert c.Plugin.PluginStatus.DISABLED == "disabled"
+        assert c.Plugin.PluginStatus.HEALTHY == "healthy"
+        assert c.Plugin.PluginStatus.UNHEALTHY == "unhealthy"
         operational_statuses = c.Plugin.PluginStatus.get_operational_statuses()
-        tm.that(
-            operational_statuses,
-            has=c.Plugin.PluginStatus.ACTIVE,
-        )
-        tm.that(
-            operational_statuses,
-            has=c.Plugin.PluginStatus.HEALTHY,
-        )
-        tm.that(
-            operational_statuses,
-            has=c.Plugin.PluginStatus.LOADED,
-        )
+        assert c.Plugin.PluginStatus.ACTIVE in operational_statuses
+        assert c.Plugin.PluginStatus.HEALTHY in operational_statuses
+        assert c.Plugin.PluginStatus.LOADED in operational_statuses
         error_statuses = c.Plugin.PluginStatus.get_error_statuses()
-        tm.that(error_statuses, has=c.Plugin.PluginStatus.ERROR)
-        tm.that(error_statuses, has=c.Plugin.PluginStatus.UNHEALTHY)
-        tm.that(error_statuses, has=c.Plugin.PluginStatus.DISABLED)
-        tm.that(
-            c.Plugin.PluginStatus.ACTIVE.is_operational(),
-            eq=True,
-        )
-        tm.that(
-            not c.Plugin.PluginStatus.ERROR.is_operational(),
-            eq=True,
-        )
-        tm.that(
-            c.Plugin.PluginStatus.ERROR.is_error_state(),
-            eq=True,
-        )
-        tm.that(
-            not c.Plugin.PluginStatus.ACTIVE.is_error_state(),
-            eq=True,
-        )
+        assert c.Plugin.PluginStatus.ERROR in error_statuses
+        assert c.Plugin.PluginStatus.UNHEALTHY in error_statuses
+        assert c.Plugin.PluginStatus.DISABLED in error_statuses
+        assert c.Plugin.PluginStatus.ACTIVE.is_operational() is True
+        assert c.Plugin.PluginStatus.ERROR.is_operational() is False
+        assert c.Plugin.PluginStatus.ERROR.is_error_state() is True
+        assert c.Plugin.PluginStatus.ACTIVE.is_error_state() is False
 
     def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values."""
-        tm.that(c.Plugin.PluginType.TAP, eq="tap")
-        tm.that(c.Plugin.PluginType.TARGET, eq="target")
-        tm.that(c.Plugin.PluginType.TRANSFORM, eq="transform")
-        tm.that(c.Plugin.PluginType.EXTENSION, eq="extension")
-        tm.that(c.Plugin.PluginType.SERVICE, eq="service")
-        tm.that(c.Plugin.PluginType.MIDDLEWARE, eq="middleware")
-        tm.that(c.Plugin.PluginType.TRANSFORMER, eq="transformer")
-        tm.that(c.Plugin.PluginType.API, eq="api")
-        tm.that(c.Plugin.PluginType.DATABASE, eq="database")
-        tm.that(c.Plugin.PluginType.NOTIFICATION, eq="notification")
-        tm.that(
-            c.Plugin.PluginType.AUTHENTICATION,
-            eq="authentication",
-        )
-        tm.that(
-            c.Plugin.PluginType.AUTHORIZATION,
-            eq="authorization",
-        )
-        tm.that(c.Plugin.PluginType.UTILITY, eq="utility")
-        tm.that(c.Plugin.PluginType.TOOL, eq="tool")
-        tm.that(c.Plugin.PluginType.HANDLER, eq="handler")
-        tm.that(c.Plugin.PluginType.PROCESSOR, eq="processor")
-        tm.that(c.Plugin.PluginType.CORE, eq="core")
-        tm.that(c.Plugin.PluginType.ADDON, eq="addon")
-        tm.that(c.Plugin.PluginType.THEME, eq="theme")
-        tm.that(c.Plugin.PluginType.LANGUAGE, eq="language")
+        assert c.Plugin.PluginType.TAP == "tap"
+        assert c.Plugin.PluginType.TARGET == "target"
+        assert c.Plugin.PluginType.TRANSFORM == "transform"
+        assert c.Plugin.PluginType.EXTENSION == "extension"
+        assert c.Plugin.PluginType.SERVICE == "service"
+        assert c.Plugin.PluginType.MIDDLEWARE == "middleware"
+        assert c.Plugin.PluginType.TRANSFORMER == "transformer"
+        assert c.Plugin.PluginType.API == "api"
+        assert c.Plugin.PluginType.DATABASE == "database"
+        assert c.Plugin.PluginType.NOTIFICATION == "notification"
+        assert c.Plugin.PluginType.AUTHENTICATION == "authentication"
+        assert c.Plugin.PluginType.AUTHORIZATION == "authorization"
+        assert c.Plugin.PluginType.UTILITY == "utility"
+        assert c.Plugin.PluginType.TOOL == "tool"
+        assert c.Plugin.PluginType.HANDLER == "handler"
+        assert c.Plugin.PluginType.PROCESSOR == "processor"
+        assert c.Plugin.PluginType.CORE == "core"
+        assert c.Plugin.PluginType.ADDON == "addon"
+        assert c.Plugin.PluginType.THEME == "theme"
+        assert c.Plugin.PluginType.LANGUAGE == "language"
 
     def test_plugin_model_creation(self) -> None:
         """Test Plugin model creation."""
@@ -110,10 +82,10 @@ class TestFlextPluginModels:
             plugin_type=c.Plugin.PluginType.UTILITY,
             is_enabled=True,
         )
-        tm.that(plugin.name, eq="test-plugin")
-        tm.that(plugin.plugin_version, eq="1.0.0")
-        tm.that(plugin.plugin_type, eq=c.Plugin.PluginType.UTILITY)
-        tm.that(plugin.is_enabled is True, eq=True)
+        assert plugin.name == "test-plugin"
+        assert plugin.plugin_version == "1.0.0"
+        assert plugin.plugin_type == c.Plugin.PluginType.UTILITY
+        assert plugin.is_enabled is True
 
     def test_plugin_model_validation(self) -> None:
         """Test Plugin model validation rules."""
@@ -125,7 +97,7 @@ class TestFlextPluginModels:
             plugin_type=c.Plugin.PluginType.UTILITY,
             is_enabled=True,
         )
-        tm.that(plugin.name, eq="valid-plugin")
+        assert plugin.name == "valid-plugin"
         with pytest.raises(ValueError):
             m.Plugin.Plugin(
                 name="",
@@ -153,9 +125,9 @@ class TestFlextPluginModels:
             error="",
             execution_time_ms=1500.0,
         )
-        tm.that(result.success is True, eq=True)
-        tm.that(result.data, eq={"output": "result"})
-        tm.that(not result.error, eq=True)
+        assert result.success is True
+        assert result.data == {"output": "result"}
+        assert not result.error
         assert math.isclose(result.execution_time_ms, 1500.0)
 
     def test_execution_result_failure(self) -> None:
@@ -166,8 +138,8 @@ class TestFlextPluginModels:
             error="Plugin execution failed",
             execution_time_ms=500.0,
         )
-        tm.that(result.success is False, eq=True)
-        tm.that(result.error, eq="Plugin execution failed")
+        assert result.success is False
+        assert result.error == "Plugin execution failed"
 
     def test_discovery_data_creation(self) -> None:
         """Test DiscoveryData creation."""
@@ -178,11 +150,11 @@ class TestFlextPluginModels:
             discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
             discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
         )
-        tm.that(discovery.name, eq="test-plugin")
-        tm.that(discovery.version, eq="1.0.0")
-        tm.that(discovery.path, eq=Path("/path/to/plugin"))
-        tm.that(discovery.discovery_type, eq="file")
-        tm.that(discovery.discovery_method, eq="file_system")
+        assert discovery.name == "test-plugin"
+        assert discovery.version == "1.0.0"
+        assert discovery.path == Path("/path/to/plugin")
+        assert discovery.discovery_type == "file"
+        assert discovery.discovery_method == "file_system"
 
     def test_plugin_metadata_creation(self) -> None:
         """Test PluginMetadata creation."""
@@ -194,10 +166,10 @@ class TestFlextPluginModels:
             description="Test plugin description",
             plugin_type="extension",
         )
-        tm.that(metadata.name, eq="test-plugin")
-        tm.that(metadata.version, eq="1.0.0")
-        tm.that(metadata.author, eq="Test Author")
-        tm.that(metadata.description, eq="Test plugin description")
+        assert metadata.name == "test-plugin"
+        assert metadata.version == "1.0.0"
+        assert metadata.author == "Test Author"
+        assert metadata.description == "Test plugin description"
 
     def test_validation_result_creation(self) -> None:
         """Test ValidationResult creation."""
@@ -206,9 +178,9 @@ class TestFlextPluginModels:
             errors=[],
             warnings=[],
         )
-        tm.that(result.valid is True, eq=True)
-        tm.that(result.errors, eq=[])
-        tm.that(result.warnings, eq=[])
+        assert result.valid is True
+        assert result.errors == []
+        assert result.warnings == []
 
     def test_validation_result_with_errors(self) -> None:
         """Test ValidationResult with errors."""
@@ -217,22 +189,22 @@ class TestFlextPluginModels:
             errors=["Error 1", "Error 2"],
             warnings=["Warning 1"],
         )
-        tm.that(result.valid is False, eq=True)
-        tm.that(len(result.errors), eq=2)
-        tm.that(len(result.warnings), eq=1)
+        assert result.valid is False
+        assert len(result.errors) == 2
+        assert len(result.warnings) == 1
 
     def test_config_creation(self) -> None:
         """Test Config model creation."""
         settings = m.Plugin.PluginConfig(
             plugin_name="test-plugin",
-            settings={"key": "value"},
+            config={"key": "value"},
         )
-        tm.that(settings.plugin_name, eq="test-plugin")
-        tm.that(settings.settings, eq={"key": "value"})
+        assert settings.plugin_name == "test-plugin"
+        assert settings.config == {"key": "value"}
 
     def test_registry_creation(self) -> None:
         """Test Registry model creation."""
         registry = m.Plugin.Registry(plugins={"plugin1": {}})
-        tm.that(registry.plugins, has="plugin1")
-        tm.that(registry.last_updated, is_=datetime)
-        tm.that(registry.created_at, is_=datetime)
+        assert "plugin1" in registry.plugins
+        assert isinstance(registry.last_updated, datetime)
+        assert isinstance(registry.created_at, datetime)

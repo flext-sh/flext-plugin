@@ -547,9 +547,7 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test update_plugin_config with empty name fails."""
-        settings = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="test", settings={}
-        )
+        settings = FlextPluginModels.Plugin.PluginConfig(plugin_name="test", config={})
         result = service.update_plugin_config("", settings.model_dump())
         assert not result.success
         assert (
@@ -564,7 +562,7 @@ class TestFlextPluginServiceReal:
         """Test update_plugin_config with mismatched plugin name fails."""
         settings = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="different-plugin",
-            settings={},
+            config={},
         )
         result = service.update_plugin_config("test-plugin", settings.model_dump())
         assert not result.success
@@ -576,7 +574,7 @@ class TestFlextPluginServiceReal:
         """Test update_plugin_config with REAL valid params."""
         settings = FlextPluginModels.Plugin.PluginConfig(
             plugin_name="real-test-plugin",
-            settings={},
+            config={},
         )
         result = service.update_plugin_config("real-test-plugin", settings.model_dump())
         assert result.success or result.failure

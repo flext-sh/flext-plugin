@@ -386,10 +386,10 @@ class FlextPluginService(x):
                 f"Plugin '{plugin_name}' not found",
             )
         config_data = plugin.metadata.get("settings", {})
-        settings = self._to_general_mapping(config_data)
+        config = self._to_general_mapping(config_data)
         settings = m.Plugin.PluginConfig(
             plugin_name=plugin.name,
-            settings=settings,
+            config=config,
         )
         return r[m.Plugin.PluginConfig].ok(settings)
 

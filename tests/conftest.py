@@ -122,7 +122,7 @@ def real_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_container_with_adapters() -> FlextContainer:
+def real_container_with_adapters() -> p.Container:
     """Create FlextContainer with REAL adapters registered."""
     container = FlextContainer()
     discovery_svc: t.RegisterableService = dict(

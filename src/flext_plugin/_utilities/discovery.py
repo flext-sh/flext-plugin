@@ -191,6 +191,9 @@ class FlextPluginDiscovery:
             try:
                 discovered: MutableSequence[m.Plugin.DiscoveryData] = []
                 for path_str in paths:
+                    if not path_str.strip():
+                        self.logger.debug("Skipping blank plugin discovery path")
+                        continue
                     path = Path(path_str).expanduser().resolve()
                     if not path.exists():
                         self.logger.warning("Path does not exist: %s", path_str)
