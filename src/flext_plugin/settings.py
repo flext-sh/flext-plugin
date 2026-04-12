@@ -1,4 +1,4 @@
-"""FLEXT Plugin Config - Plugin system configuration management.
+"""FLEXT Plugin Settings - Plugin system settings management.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -16,11 +16,10 @@ from flext_core import FlextSettings
 
 @FlextSettings.auto_register("plugin")
 class FlextPluginSettings(FlextSettings):
-    """Plugin system configuration settings."""
+    """Plugin system runtime settings."""
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-        env_prefix="FLEXT_PLUGIN_",
-        extra="ignore",
+        env_prefix="FLEXT_PLUGIN_", extra="ignore"
     )
 
 

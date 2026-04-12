@@ -199,16 +199,16 @@ def real_plugin_configs() -> Mapping[
     }
 
 
-def pytest_configure(settings: pytest.Config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers."""
-    settings.addinivalue_line("markers", "unit: Unit tests")
-    settings.addinivalue_line("markers", "integration: Integration tests")
-    settings.addinivalue_line("markers", "e2e: End-to-end tests")
-    settings.addinivalue_line("markers", "plugin: Plugin-specific tests")
-    settings.addinivalue_line("markers", "discovery: Plugin discovery tests")
-    settings.addinivalue_line("markers", "lifecycle: Plugin lifecycle tests")
-    settings.addinivalue_line("markers", "hot_reload: Hot reload tests")
-    settings.addinivalue_line("markers", "slow: Slow tests")
+    config.addinivalue_line("markers", "unit: Unit tests")
+    config.addinivalue_line("markers", "integration: Integration tests")
+    config.addinivalue_line("markers", "e2e: End-to-end tests")
+    config.addinivalue_line("markers", "plugin: Plugin-specific tests")
+    config.addinivalue_line("markers", "discovery: Plugin discovery tests")
+    config.addinivalue_line("markers", "lifecycle: Plugin lifecycle tests")
+    config.addinivalue_line("markers", "hot_reload: Hot reload tests")
+    config.addinivalue_line("markers", "slow: Slow tests")
 
 
 @pytest.fixture

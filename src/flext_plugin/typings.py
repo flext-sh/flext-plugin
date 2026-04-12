@@ -40,7 +40,6 @@ class FlextPluginTypes(FlextTypes):
         type PluginList = Sequence[FlextTypes.GeneralValueMapping]
         type PluginDict = FlextTypes.GeneralValueMapping
         type ConfigDict = FlextTypes.GeneralValueMapping
-        type SettingsDict = FlextTypes.GeneralValueMapping
         type MetadataDict = FlextTypes.GeneralValueMapping
         type InputDict = FlextTypes.GeneralValueMapping
         type OutputDict = FlextTypes.GeneralValueMapping
