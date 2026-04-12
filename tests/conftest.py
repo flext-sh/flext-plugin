@@ -23,7 +23,7 @@ import pytest
 
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginAdapters, FlextPluginSettings
-from tests import c, m, t
+from tests import c, m, p, t
 
 pytest_plugins = ["flext_tests.conftest_plugin"]
 

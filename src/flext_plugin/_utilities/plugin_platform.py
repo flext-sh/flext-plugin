@@ -13,7 +13,7 @@ from typing import override
 
 from pydantic import PrivateAttr
 
-from flext_core import FlextRegistry, FlextSettings, r, s
+from flext_core import FlextSettings, r, s
 from flext_plugin import (
     FlextPluginSettings,
     c,
@@ -76,20 +76,16 @@ class FlextPluginPlatform:
             self.is_running = True
             self.started_at = u.generate_iso_timestamp()
 
-    class PluginRegistry(FlextRegistry):
-        """Plugin registry for managing plugin lifecycle.
-
-        Extends FlextRegistry to provide plugin-specific registration with
-        class-level storage for auto-discovery patterns.
-        """
+    class PluginRegistry:
+        """Plugin registry for managing plugin lifecycle via `p.Registry`."""
 
         PLUGINS: str = "plugins"
+        _registry: p.Registry
 
-        def __init__(self) -> None:
+        def __init__(self, dispatcher: p.Dispatcher | None = None) -> None:
             """Initialize plugin registry."""
-            super().__init__()
+            self._registry = u.build_registry(dispatcher=dispatcher)
 
-        @override
         @classmethod
         def create(
             cls,
@@ -107,8 +103,8 @@ class FlextPluginPlatform:
                 New PluginRegistry instance
 
             """
-            _ = (dispatcher, auto_discover_handlers)
-            return cls()
+            _ = auto_discover_handlers
+            return cls(dispatcher=dispatcher)
 
         def get(self, data: str) -> r[m.Plugin.Plugin]:
             """Get plugin by name from class-level storage."""
@@ -139,7 +135,6 @@ class FlextPluginPlatform:
                 return r[m.Plugin.Plugin].fail(result.error)
             return r[m.Plugin.Plugin].fail("Plugin not found")
 
-        @override
         def list_plugins(
             self,
             category: str = "plugins",
@@ -155,9 +150,10 @@ class FlextPluginPlatform:
                 Result containing list of plugin names
 
             """
-            return super().list_plugins(category, scope=scope)
+            return r[t.StrSequence].from_result(
+                self._registry.list_plugins(category, scope=scope),
+            )
 
-        @override
         def register(
             self,
             name: str,
@@ -176,19 +172,35 @@ class FlextPluginPlatform:
 
             """
             _ = metadata
-            return self.register_plugin(
-                self.PLUGINS,
-                name,
-                service,
-                scope=c.RegistrationScope.CLASS,
+            return r[bool].from_result(
+                self._registry.register_plugin(
+                    self.PLUGINS,
+                    name,
+                    service,
+                    scope=c.RegistrationScope.CLASS,
+                ),
             )
 
         def unregister(self, plugin_name: str) -> r[bool]:
             """Unregister plugin from class-level storage."""
-            return self.unregister_plugin(
-                self.PLUGINS,
-                plugin_name,
-                scope=c.RegistrationScope.CLASS,
+            return r[bool].from_result(
+                self._registry.unregister_plugin(
+                    self.PLUGINS,
+                    plugin_name,
+                    scope=c.RegistrationScope.CLASS,
+                ),
+            )
+
+        def fetch_plugin(
+            self,
+            category: str,
+            name: str,
+            *,
+            scope: c.RegistrationScope = c.RegistrationScope.INSTANCE,
+        ) -> r[t.RuntimeAtomic | None]:
+            """Delegate plugin lookup to the canonical registry."""
+            return r[t.RuntimeAtomic | None].from_result(
+                self._registry.fetch_plugin(category, name, scope=scope),
             )
 
     class Plugin(m.Plugin.Plugin):

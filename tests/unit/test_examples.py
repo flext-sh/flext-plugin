@@ -18,12 +18,16 @@ import pytest
 from tests import u
 
 
+def _examples_dir() -> Path:
+    return Path(__file__).resolve().parents[2] / "examples"
+
+
 def test_basic_plugin_example_execution() -> None:
     """Test that basic_plugin_example.py runs successfully without errors."""
-    example_path = Path(__file__).parent.parent / "examples" / "01_basic_plugin.py"
+    example_path = _examples_dir() / "01_basic_plugin.py"
     result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        cwd=Path(__file__).parent.parent,
+        cwd=_examples_dir().parent,
     )
     assert result.success, result.error
     assert result.value.exit_code == 0, (
@@ -33,12 +37,10 @@ def test_basic_plugin_example_execution() -> None:
 
 def test_plugin_configuration_example_execution() -> None:
     """Test that plugin_configuration_example.py runs successfully without errors."""
-    example_path = (
-        Path(__file__).parent.parent / "examples" / "02_plugin_configuration.py"
-    )
+    example_path = _examples_dir() / "02_plugin_configuration.py"
     result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        cwd=Path(__file__).parent.parent,
+        cwd=_examples_dir().parent,
     )
     assert result.success, result.error
     assert result.value.exit_code == 0, (
@@ -48,12 +50,10 @@ def test_plugin_configuration_example_execution() -> None:
 
 def test_docker_integration_example_execution() -> None:
     """Test that 03_docker_integration.py runs successfully without errors."""
-    example_path = (
-        Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
-    )
+    example_path = _examples_dir() / "03_docker_integration.py"
     result = u.Cli.run_raw(
         [sys.executable, str(example_path)],
-        cwd=Path(__file__).parent.parent,
+        cwd=_examples_dir().parent,
     )
     assert result.success, result.error
     assert result.value.exit_code == 0, (
@@ -64,12 +64,10 @@ def test_docker_integration_example_execution() -> None:
 @pytest.mark.skip(reason="Requires Docker services to be running")
 def test_docker_integration_example_with_connection_testing() -> None:
     """Test docker integration example with connection testing enabled."""
-    example_path = (
-        Path(__file__).parent.parent / "examples" / "03_docker_integration.py"
-    )
+    example_path = _examples_dir() / "03_docker_integration.py"
     result = u.Cli.run_raw(
         [sys.executable, str(example_path), "--test-connections"],
-        cwd=Path(__file__).parent.parent,
+        cwd=_examples_dir().parent,
     )
     assert result.success, result.error
     assert result.value.exit_code == 0, (
