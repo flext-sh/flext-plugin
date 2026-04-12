@@ -33,8 +33,8 @@ class TestFlextPluginHandlers:
         """Test successful handler registration."""
 
         async def sample_handler(
-            event: t.ContainerMapping,
-        ) -> t.ContainerMapping:
+            event: t.RecursiveContainerMapping,
+        ) -> t.RecursiveContainerMapping:
             return {"value": event.get("key", "default")}
 
         result = handlers.register_handler("test_event", sample_handler)
@@ -50,14 +50,14 @@ class TestFlextPluginHandlers:
         """Test handler registration with priority."""
 
         async def handler1(
-            event: t.ContainerMapping,
-        ) -> t.ContainerMapping:
+            event: t.RecursiveContainerMapping,
+        ) -> t.RecursiveContainerMapping:
             _ = event
             return {"handler": "handler1"}
 
         async def handler2(
-            event: t.ContainerMapping,
-        ) -> t.ContainerMapping:
+            event: t.RecursiveContainerMapping,
+        ) -> t.RecursiveContainerMapping:
             _ = event
             return {"handler": "handler2"}
 
@@ -71,14 +71,14 @@ class TestFlextPluginHandlers:
         """Test registering multiple handlers for different events."""
 
         async def handler_a(
-            event: t.ContainerMapping,
-        ) -> t.ContainerMapping:
+            event: t.RecursiveContainerMapping,
+        ) -> t.RecursiveContainerMapping:
             _ = event
             return {"handler": "a"}
 
         async def handler_b(
-            event: t.ContainerMapping,
-        ) -> t.ContainerMapping:
+            event: t.RecursiveContainerMapping,
+        ) -> t.RecursiveContainerMapping:
             _ = event
             return {"handler": "b"}
 

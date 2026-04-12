@@ -17,7 +17,7 @@ from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi, t
 
 
-def create_database_plugin_config() -> t.ContainerMapping:
+def create_database_plugin_config() -> t.RecursiveContainerMapping:
     """Create configuration for a database plugin."""
     return {
         "database": {
@@ -43,7 +43,7 @@ def create_database_plugin_config() -> t.ContainerMapping:
     }
 
 
-def create_ldap_plugin_config() -> t.ContainerMapping:
+def create_ldap_plugin_config() -> t.RecursiveContainerMapping:
     """Create configuration for an LDAP plugin."""
     return {
         "ldap": {

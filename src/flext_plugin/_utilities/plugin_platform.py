@@ -33,7 +33,7 @@ class FlextPluginPlatform:
         def __init__(
             self,
             plugin_name: str,
-            execution_config: t.ContainerMapping,
+            execution_config: t.RecursiveContainerMapping,
             execution_id: str | None = None,
         ) -> None:
             """Initialize plugin execution."""
@@ -44,7 +44,7 @@ class FlextPluginPlatform:
             self.is_completed = False
             self.success = False
             self.error_message: str | None = None
-            self.result: t.ContainerMapping | None = None
+            self.result: t.RecursiveContainerMapping | None = None
             self.started_at: str | None = None
             self.completed_at: str | None = None
 
@@ -52,7 +52,7 @@ class FlextPluginPlatform:
         def create(
             cls,
             plugin_name: str,
-            execution_config: t.ContainerMapping,
+            execution_config: t.RecursiveContainerMapping,
             execution_id: str | None = None,
         ) -> FlextPluginPlatform.PluginExecution:
             """Create new plugin execution."""
@@ -245,10 +245,10 @@ class FlextPluginPlatform:
         @staticmethod
         def _to_general_mapping(
             value: t.RuntimeData,
-        ) -> t.ContainerMapping:
+        ) -> t.RecursiveContainerMapping:
             """Convert mapping-like values to a typed dict."""
             if not u.dict_like(value):
-                result: t.ContainerMapping = {}
+                result: t.RecursiveContainerMapping = {}
                 return result
             return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
 
@@ -280,7 +280,7 @@ class FlextPluginPlatform:
             return self._executor
 
         @property
-        def get_platform_status(self) -> t.ContainerMapping:
+        def get_platform_status(self) -> t.RecursiveContainerMapping:
             """Get platform status information."""
             return {
                 "total_plugins": len(self.plugins),
@@ -334,16 +334,16 @@ class FlextPluginPlatform:
             """Discover plugins with railway composition."""
 
             def discover_and_validate(
-                _checked: t.NormalizedValue,
-            ) -> r[Sequence[t.ContainerMapping]]:
+                _checked: t.RecursiveContainer,
+            ) -> r[Sequence[t.RecursiveContainerMapping]]:
                 if not self.discovery:
-                    return r[Sequence[t.ContainerMapping]].fail(
+                    return r[Sequence[t.RecursiveContainerMapping]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.success:
                     discovered_items = discovery_result.value
-                    plugin_dicts: MutableSequence[t.ContainerMapping] = []
+                    plugin_dicts: MutableSequence[t.RecursiveContainerMapping] = []
                     for item in discovered_items:
                         if u.dict_like(item):
                             plugin_dicts.append(self._to_general_mapping(item))
@@ -357,7 +357,7 @@ class FlextPluginPlatform:
                             "discovery_method",
                             "file_system",
                         )
-                        metadata: t.NormalizedValue = getattr(item, "metadata", {})
+                        metadata: t.RecursiveContainer = getattr(item, "metadata", {})
                         if u.dict_like(metadata):
                             plugin_dicts.append({
                                 "name": str(name),
@@ -367,18 +367,18 @@ class FlextPluginPlatform:
                                 "discovery_method": str(discovery_method),
                                 "metadata": self._to_general_mapping(metadata),
                             })
-                    return r[Sequence[t.ContainerMapping]].ok(plugin_dicts)
-                return r[Sequence[t.ContainerMapping]].fail(
+                    return r[Sequence[t.RecursiveContainerMapping]].ok(plugin_dicts)
+                return r[Sequence[t.RecursiveContainerMapping]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: Sequence[t.ContainerMapping],
+                data: Sequence[t.RecursiveContainerMapping],
             ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
             checked: r[bool] = self._require_protocol(self.discovery, "Discovery")
-            discovered: r[Sequence[t.ContainerMapping]] = checked.flat_map(
+            discovered: r[Sequence[t.RecursiveContainerMapping]] = checked.flat_map(
                 discover_and_validate
             )
             plugins: r[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(
@@ -394,7 +394,7 @@ class FlextPluginPlatform:
         def execute_plugin(
             self,
             plugin_name: str,
-            context: t.ContainerMapping,
+            context: t.RecursiveContainerMapping,
             execution_id: str | None = None,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Execute plugin with async composition."""
@@ -468,21 +468,21 @@ class FlextPluginPlatform:
             """Load single plugin with composition."""
 
             def load_and_validate(
-                _checked: t.NormalizedValue,
-            ) -> r[t.ContainerMapping]:
+                _checked: t.RecursiveContainer,
+            ) -> r[t.RecursiveContainerMapping]:
                 if not self.loader:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         "Loader protocol not configured",
                     )
                 load_result = self.loader.load_plugin(plugin_path)
                 if load_result.success:
                     load_data = load_result.value
                     if u.dict_like(load_data):
-                        return r[t.ContainerMapping].ok(
+                        return r[t.RecursiveContainerMapping].ok(
                             self._to_general_mapping(load_data)
                         )
                     if getattr(load_data, "name", None):
-                        plugin_dict: t.ContainerMapping = {
+                        plugin_dict: t.RecursiveContainerMapping = {
                             "name": str(getattr(load_data, "name", "")),
                             "version": str(getattr(load_data, "version", "1.0.0")),
                             "path": str(getattr(load_data, "path", "")),
@@ -492,21 +492,23 @@ class FlextPluginPlatform:
                             if getattr(load_data, "entry_file", None)
                             else None,
                         }
-                        return r[t.ContainerMapping].ok(plugin_dict)
-                    return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].ok(plugin_dict)
+                    return r[t.RecursiveContainerMapping].fail(
                         "Invalid load data format",
                     )
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     load_result.error or "Load failed",
                 )
 
             def create_plugin_from_load_data(
-                data: t.ContainerMapping,
+                data: t.RecursiveContainerMapping,
             ) -> r[FlextPluginPlatform.Plugin]:
                 return self._validate_and_create_plugin(data)
 
             checked_l: r[bool] = self._require_protocol(self.loader, "Loader")
-            loaded: r[t.ContainerMapping] = checked_l.flat_map(load_and_validate)
+            loaded: r[t.RecursiveContainerMapping] = checked_l.flat_map(
+                load_and_validate
+            )
             plugin_r2: r[FlextPluginPlatform.Plugin] = loaded.flat_map(
                 create_plugin_from_load_data
             )
@@ -518,10 +520,10 @@ class FlextPluginPlatform:
         ) -> r[bool]:
             """Register plugin with validation chain."""
 
-            def validate_plugin_result(_: t.NormalizedValue) -> r[bool]:
+            def validate_plugin_result(_: t.RecursiveContainer) -> r[bool]:
                 return self.registry.register(plugin.name, plugin)
 
-            def add_to_plugins_result(_registry_result: t.NormalizedValue) -> bool:
+            def add_to_plugins_result(_registry_result: t.RecursiveContainer) -> bool:
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
@@ -546,7 +548,9 @@ class FlextPluginPlatform:
         def unregister_plugin(self, plugin_name: str) -> r[bool]:
             """Unregister with cleanup chain."""
 
-            def unregister_from_registry(_registry_result: t.NormalizedValue) -> bool:
+            def unregister_from_registry(
+                _registry_result: t.RecursiveContainer,
+            ) -> bool:
                 if _registry_result is not True:
                     error_msg = "Plugin unregistration failed"
                     raise ValueError(error_msg)
@@ -575,7 +579,7 @@ class FlextPluginPlatform:
         def _create_execution(
             self,
             plugin: FlextPluginPlatform.Plugin,
-            context: t.ContainerMapping,
+            context: t.RecursiveContainerMapping,
             execution_id: str | None,
         ) -> r[FlextPluginPlatform.PluginExecution]:
             """Create execution entity."""
@@ -599,7 +603,7 @@ class FlextPluginPlatform:
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     "Executor not configured",
                 )
-            exec_context: t.ContainerMapping = {
+            exec_context: t.RecursiveContainerMapping = {
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
                 "input_data": execution.input_data,
@@ -659,7 +663,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugin(
             self,
-            plugin_data: t.ContainerMapping,
+            plugin_data: t.RecursiveContainerMapping,
         ) -> r[FlextPluginPlatform.Plugin]:
             """Create single validated plugin."""
             plugin = FlextPluginPlatform.Plugin.create(
@@ -675,7 +679,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: Sequence[t.ContainerMapping],
+            plugin_data: Sequence[t.RecursiveContainerMapping],
         ) -> r[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: MutableSequence[FlextPluginPlatform.Plugin] = []

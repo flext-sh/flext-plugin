@@ -59,7 +59,7 @@ class FlextPluginProtocols(FlextProtocols):
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Load a plugin from the specified path."""
                 ...
 
@@ -74,25 +74,27 @@ class FlextPluginProtocols(FlextProtocols):
             def discover_plugin(
                 self,
                 _plugin_path: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> r[Sequence[t.ContainerMapping]]:
+            ) -> r[Sequence[t.RecursiveContainerMapping]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
                 self,
-                _plugin_data: t.ContainerMapping,
+                _plugin_data: t.RecursiveContainerMapping,
             ) -> r[bool]:
                 """Validate plugin discovery data."""
                 ...
 
-            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+            def validate_plugin_security(
+                self, _plugin: t.RecursiveContainer
+            ) -> r[bool]:
                 """Validate plugin for security."""
                 ...
 
@@ -100,7 +102,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
+            def get_plugin(self, plugin_name: str) -> r[t.RecursiveContainer | None]:
                 """Get a registered plugin by name."""
                 ...
 
@@ -108,18 +110,20 @@ class FlextPluginProtocols(FlextProtocols):
                 """Check if a plugin is registered."""
                 ...
 
-            def list_plugins(self) -> r[Sequence[t.ContainerMapping]]:
+            def list_plugins(self) -> r[Sequence[t.RecursiveContainerMapping]]:
                 """List all registered plugins."""
                 ...
 
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.NormalizedValue,
+                _plugin: m.Plugin.Plugin | t.RecursiveContainer,
             ) -> r[bool]:
                 """Register a plugin."""
                 ...
 
-            def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
+            def register(
+                self, plugin: m.Plugin.Plugin | t.RecursiveContainer
+            ) -> r[None]:
                 """Register a plugin with normalized API."""
                 ...
 
@@ -134,8 +138,8 @@ class FlextPluginProtocols(FlextProtocols):
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: t.ContainerMapping,
-            ) -> r[t.ContainerMapping]:
+                _context: t.RecursiveContainerMapping,
+            ) -> r[t.RecursiveContainerMapping]:
                 """Execute a plugin with the given context."""
                 ...
 
@@ -170,11 +174,13 @@ class FlextPluginProtocols(FlextProtocols):
             def scan_plugin_security(
                 self,
                 _plugin_path: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Scan plugin for security vulnerabilities."""
                 ...
 
-            def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+            def validate_plugin_security(
+                self, _plugin: t.RecursiveContainer
+            ) -> r[bool]:
                 """Validate plugin security compliance."""
                 ...
 
@@ -209,14 +215,14 @@ class FlextPluginProtocols(FlextProtocols):
             def get_plugin_health(
                 self,
                 _plugin_name: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Get health status of a plugin."""
                 ...
 
             def get_plugin_metrics(
                 self,
                 _plugin_name: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Get metrics for a plugin."""
                 ...
 
@@ -236,23 +242,23 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def get_default_config(self, plugin_type: str) -> r[t.NormalizedValue]:
+            def get_default_config(self, plugin_type: str) -> r[t.RecursiveContainer]:
                 """Get default configuration for a plugin type."""
                 ...
 
-            def load_config(self, _plugin_name: str) -> r[t.NormalizedValue]:
+            def load_config(self, _plugin_name: str) -> r[t.RecursiveContainer]:
                 """Load configuration for a plugin."""
                 ...
 
             def save_config(
                 self,
                 _plugin_name: str,
-                settings: t.NormalizedValue,
+                settings: t.RecursiveContainer,
             ) -> r[bool]:
                 """Save configuration for a plugin."""
                 ...
 
-            def validate_config(self, settings: t.NormalizedValue) -> r[bool]:
+            def validate_config(self, settings: t.RecursiveContainer) -> r[bool]:
                 """Validate plugin configuration."""
                 ...
 
@@ -302,7 +308,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def validate_plugin_structure(
                 self,
-                _plugin_data: t.NormalizedValue,
+                _plugin_data: t.RecursiveContainer,
             ) -> r[bool]:
                 """Validate plugin structure."""
                 ...
@@ -327,7 +333,7 @@ class FlextPluginProtocols(FlextProtocols):
                 """Retrieve stored plugin data."""
                 ...
 
-            def store_plugin(self, _plugin_data: t.NormalizedValue) -> r[bool]:
+            def store_plugin(self, _plugin_data: t.RecursiveContainer) -> r[bool]:
                 """Store plugin data."""
                 ...
 
@@ -338,7 +344,7 @@ class FlextPluginProtocols(FlextProtocols):
             def critical(
                 self,
                 message: str,
-                *args: t.NormalizedValue,
+                *args: t.RecursiveContainer,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log critical message."""
@@ -347,7 +353,7 @@ class FlextPluginProtocols(FlextProtocols):
             def debug(
                 self,
                 message: str,
-                *args: t.NormalizedValue,
+                *args: t.RecursiveContainer,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log debug message."""
@@ -356,7 +362,7 @@ class FlextPluginProtocols(FlextProtocols):
             def error(
                 self,
                 message: str,
-                *args: t.NormalizedValue,
+                *args: t.RecursiveContainer,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log error message."""
@@ -365,7 +371,7 @@ class FlextPluginProtocols(FlextProtocols):
             def info(
                 self,
                 message: str,
-                *args: t.NormalizedValue,
+                *args: t.RecursiveContainer,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log info message."""
@@ -374,7 +380,7 @@ class FlextPluginProtocols(FlextProtocols):
             def warning(
                 self,
                 message: str,
-                *args: t.NormalizedValue,
+                *args: t.RecursiveContainer,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log warning message."""

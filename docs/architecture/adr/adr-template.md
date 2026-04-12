@@ -182,7 +182,7 @@
 
 ## Notes
 
-[t.NormalizedValue additional information, implementation details, or future considerations]
+[t.RecursiveContainer additional information, implementation details, or future considerations]
 
 ## Decision Log
 

@@ -230,8 +230,8 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def create_file_watcher(
                 watch_path: Path | str,
-                callback_function: Callable[..., t.NormalizedValue] | None = None,
-            ) -> r[t.ContainerMapping]:
+                callback_function: Callable[..., t.RecursiveContainer] | None = None,
+            ) -> r[t.RecursiveContainerMapping]:
                 """Create file system watcher for plugin hot reload.
 
                 Args:
@@ -245,10 +245,10 @@ class FlextPluginUtilities(FlextUtilities):
                 try:
                     path = Path(watch_path)
                     if not path.exists():
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Watch path does not exist: {path}",
                         )
-                    watcher_config: t.ContainerMapping = {
+                    watcher_config: t.RecursiveContainerMapping = {
                         "watch_path": str(path),
                         "callback": callback_function.__name__
                         if callback_function
@@ -258,7 +258,7 @@ class FlextPluginUtilities(FlextUtilities):
                         "active": False,
                         "created_at": datetime.now(UTC).isoformat(),
                     }
-                    return r[t.ContainerMapping].ok(watcher_config)
+                    return r[t.RecursiveContainerMapping].ok(watcher_config)
                 except (
                     ValueError,
                     TypeError,
@@ -268,13 +268,13 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"File watcher creation failed: {e}",
                     )
 
             @staticmethod
             def detect_file_changes(
-                watcher_config: t.ContainerMapping,
+                watcher_config: t.RecursiveContainerMapping,
             ) -> r[t.Plugin.StringList]:
                 """Detect file changes in watched directory.
 
@@ -288,7 +288,7 @@ class FlextPluginUtilities(FlextUtilities):
                 try:
                     watch_path = Path(str(watcher_config["watch_path"]))
                     last_modified_raw = watcher_config.get("last_modified", {})
-                    last_modified: t.MutableContainerMapping = (
+                    last_modified: t.MutableRecursiveContainerMapping = (
                         dict(
                             t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                                 last_modified_raw,
@@ -423,7 +423,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def create_sandbox_config(
                 plugin_name: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Create sandbox configuration for plugin execution.
 
                 Args:
@@ -434,8 +434,8 @@ class FlextPluginUtilities(FlextUtilities):
 
                 """
 
-                def _create_sandbox_config() -> t.ContainerMapping:
-                    sandbox_config: t.ContainerMapping = {
+                def _create_sandbox_config() -> t.RecursiveContainerMapping:
+                    sandbox_config: t.RecursiveContainerMapping = {
                         "plugin_name": plugin_name,
                         "max_memory_mb": FlextPluginUtilities.Plugin.SecurityValidation.MAX_MEMORY_MB,
                         "max_execution_time": FlextPluginUtilities.Plugin.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
@@ -468,7 +468,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def validate_plugin_security(
                 plugin_content: str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Validate plugin security before execution.
 
                 Args:
@@ -479,7 +479,7 @@ class FlextPluginUtilities(FlextUtilities):
 
                 """
                 try:
-                    security_report: t.MutableContainerMapping = {
+                    security_report: t.MutableRecursiveContainerMapping = {
                         "safe": True,
                         "violations": list[str](),
                         "warnings": list[str](),
@@ -527,7 +527,7 @@ class FlextPluginUtilities(FlextUtilities):
                             warnings, list
                         ):
                             warnings.append("Plugin may perform file operations")
-                    return r[t.ContainerMapping].ok(dict(security_report))
+                    return r[t.RecursiveContainerMapping].ok(dict(security_report))
                 except (
                     ValueError,
                     TypeError,
@@ -537,7 +537,7 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"Security validation failed: {e}",
                     )
 
@@ -551,7 +551,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def load_plugin_config(
                 config_path: Path | str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Load plugin configuration from file.
 
                 Args:
@@ -564,7 +564,7 @@ class FlextPluginUtilities(FlextUtilities):
                 try:
                     path = Path(config_path)
                     if not path.exists():
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Configuration file not found: {path}",
                         )
                     file_size_kb = path.stat().st_size / 1024
@@ -572,7 +572,7 @@ class FlextPluginUtilities(FlextUtilities):
                         file_size_kb
                         > FlextPluginUtilities.Plugin.ConfigurationManager.MAX_CONFIG_SIZE_KB
                     ):
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Configuration file too large: {file_size_kb:.1f}KB",
                         )
                     content = path.read_text(encoding="utf-8")
@@ -585,7 +585,7 @@ class FlextPluginUtilities(FlextUtilities):
                             content,
                         )
                     else:
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Unsupported configuration format: {path.suffix}",
                         )
                     if (
@@ -593,13 +593,13 @@ class FlextPluginUtilities(FlextUtilities):
                         and settings.get("schema_version")
                         != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Unsupported configuration schema version: {settings.get('schema_version')}",
                         )
-                    config_mapping: t.ContainerMapping = (
+                    config_mapping: t.RecursiveContainerMapping = (
                         t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(settings)
                     )
-                    return r[t.ContainerMapping].ok(config_mapping)
+                    return r[t.RecursiveContainerMapping].ok(config_mapping)
                 except (
                     ValueError,
                     TypeError,
@@ -609,15 +609,15 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"Configuration loading failed: {e}",
                     )
 
             @staticmethod
             def merge_plugin_configs(
-                base_config: t.ContainerMapping,
-                override_config: t.ContainerMapping,
-            ) -> r[t.ContainerMapping]:
+                base_config: t.RecursiveContainerMapping,
+                override_config: t.RecursiveContainerMapping,
+            ) -> r[t.RecursiveContainerMapping]:
                 """Merge plugin configurations with override precedence.
 
                 Args:
@@ -633,12 +633,12 @@ class FlextPluginUtilities(FlextUtilities):
                     for key, value in override_config.items():
                         existing_value = merged_config.get(key)
                         if isinstance(value, dict) and isinstance(existing_value, dict):
-                            base_nested_config: t.ContainerMapping = (
+                            base_nested_config: t.RecursiveContainerMapping = (
                                 t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                                     existing_value
                                 )
                             )
-                            override_value: t.ContainerMapping = (
+                            override_value: t.RecursiveContainerMapping = (
                                 t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
                             )
                             nested_merge = FlextPluginUtilities.Plugin.ConfigurationManager.merge_plugin_configs(
@@ -648,12 +648,12 @@ class FlextPluginUtilities(FlextUtilities):
                             if nested_merge.success:
                                 merged_config[key] = nested_merge.value
                             else:
-                                return r[t.ContainerMapping].fail(
+                                return r[t.RecursiveContainerMapping].fail(
                                     f"Failed to merge nested settings for key '{key}': {nested_merge.error}",
                                 )
                         else:
                             merged_config[key] = value
-                    return r[t.ContainerMapping].ok(merged_config)
+                    return r[t.RecursiveContainerMapping].ok(merged_config)
                 except (
                     ValueError,
                     TypeError,
@@ -663,12 +663,14 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"Configuration merge failed: {e}",
                     )
 
             @staticmethod
-            def validate_plugin_config(settings: t.ContainerMapping) -> r[None]:
+            def validate_plugin_config(
+                settings: t.RecursiveContainerMapping,
+            ) -> r[None]:
                 """Validate plugin configuration structure and values.
 
                 Args:
@@ -726,9 +728,9 @@ class FlextPluginUtilities(FlextUtilities):
             def execute_plugin_function(
                 plugin_module: ModuleType,
                 function_name: str,
-                args: t.ContainerList | None = None,
-                kwargs: t.ContainerMapping | None = None,
-            ) -> r[t.NormalizedValue]:
+                args: t.RecursiveContainerList | None = None,
+                kwargs: t.RecursiveContainerMapping | None = None,
+            ) -> r[t.RecursiveContainer]:
                 """Execute a specific function within a plugin module.
 
                 Args:
@@ -743,15 +745,15 @@ class FlextPluginUtilities(FlextUtilities):
                 """
                 plugin_function = getattr(plugin_module, function_name, None)
                 if plugin_function is None:
-                    return r[t.NormalizedValue].fail(
+                    return r[t.RecursiveContainer].fail(
                         f"Function '{function_name}' not found in plugin module",
                     )
                 if not callable(plugin_function):
-                    return r[t.NormalizedValue].fail(
+                    return r[t.RecursiveContainer].fail(
                         f"'{function_name}' is not callable"
                     )
 
-                def _execute_plugin_function() -> t.NormalizedValue:
+                def _execute_plugin_function() -> t.RecursiveContainer:
                     execution_args = args or []
                     execution_kwargs = kwargs or {}
                     raw_result = plugin_function(
@@ -910,7 +912,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def load_plugin_registry(
                 registry_path: Path | str,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Load plugin registry from file.
 
                 Args:
@@ -923,26 +925,26 @@ class FlextPluginUtilities(FlextUtilities):
                 try:
                     path = Path(registry_path)
                     if not path.exists():
-                        registry: t.ContainerMapping = {
+                        registry: t.RecursiveContainerMapping = {
                             "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
                             "plugins": dict[str, t.ContainerValue](),
                             "last_updated": datetime.now(UTC).isoformat(),
                             "created_at": datetime.now(UTC).isoformat(),
                         }
-                        return r[t.ContainerMapping].ok(registry)
+                        return r[t.RecursiveContainerMapping].ok(registry)
                     file_size_mb = path.stat().st_size / (1024 * 1024)
                     if (
                         file_size_mb
                         > FlextPluginUtilities.Plugin.RegistryOperations.MAX_REGISTRY_SIZE_MB
                     ):
-                        return r[t.ContainerMapping].fail(
+                        return r[t.RecursiveContainerMapping].fail(
                             f"Registry file too large: {file_size_mb:.1f}MB",
                         )
                     content = path.read_text(encoding="utf-8")
                     registry = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                         content,
                     )
-                    return r[t.ContainerMapping].ok(registry)
+                    return r[t.RecursiveContainerMapping].ok(registry)
                 except (
                     ValueError,
                     TypeError,
@@ -952,15 +954,15 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"Registry loading failed: {e}",
                     )
 
             @staticmethod
             def register_plugin(
-                registry: t.ContainerMapping,
+                registry: t.RecursiveContainerMapping,
                 plugin_metadata: m.Plugin.PluginMetadata,
-            ) -> r[t.ContainerMapping]:
+            ) -> r[t.RecursiveContainerMapping]:
                 """Register plugin in registry.
 
                 Args:
@@ -972,9 +974,11 @@ class FlextPluginUtilities(FlextUtilities):
 
                 """
                 try:
-                    mutable_registry: t.MutableContainerMapping = dict(registry)
+                    mutable_registry: t.MutableRecursiveContainerMapping = dict(
+                        registry
+                    )
                     if "plugins" not in mutable_registry:
-                        mutable_registry["plugins"] = dict[str, t.NormalizedValue]()
+                        mutable_registry["plugins"] = dict[str, t.RecursiveContainer]()
                     plugin_info = {
                         "name": plugin_metadata.name,
                         "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
@@ -990,7 +994,7 @@ class FlextPluginUtilities(FlextUtilities):
                     plugins = mutable_registry["plugins"]
                     if isinstance(plugins, dict):
                         plugins[plugin_metadata.name] = plugin_info
-                    return r[t.ContainerMapping].ok(mutable_registry)
+                    return r[t.RecursiveContainerMapping].ok(mutable_registry)
                 except (
                     ValueError,
                     TypeError,
@@ -1000,13 +1004,13 @@ class FlextPluginUtilities(FlextUtilities):
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    return r[t.ContainerMapping].fail(
+                    return r[t.RecursiveContainerMapping].fail(
                         f"Plugin registration failed: {e}",
                     )
 
             @staticmethod
             def save_plugin_registry(
-                registry: t.ContainerMapping,
+                registry: t.RecursiveContainerMapping,
                 registry_path: Path | str,
             ) -> r[None]:
                 """Save plugin registry to file with backup.

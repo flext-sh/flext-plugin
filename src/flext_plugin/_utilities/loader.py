@@ -59,7 +59,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(self, plugin_name: str) -> r[t.ContainerMapping]:
+    def get_plugin_info(self, plugin_name: str) -> r[t.RecursiveContainerMapping]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -72,7 +72,7 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[t.ContainerMapping].fail(error_msg)
+                return r[t.RecursiveContainerMapping].fail(error_msg)
             module = self._loaded_plugins[plugin_name]
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
@@ -90,7 +90,7 @@ class FlextPluginLoader:
                 "available_methods": callable_methods,
                 "all_attributes": methods,
             }
-            return r[t.ContainerMapping].ok(plugin_info)
+            return r[t.RecursiveContainerMapping].ok(plugin_info)
         except (
             ValueError,
             TypeError,
@@ -101,7 +101,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return r[t.ContainerMapping].fail(f"Plugin info error: {e!s}")
+            return r[t.RecursiveContainerMapping].fail(f"Plugin info error: {e!s}")
 
     def plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.

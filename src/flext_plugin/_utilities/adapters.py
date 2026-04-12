@@ -68,7 +68,7 @@ class FlextPluginAdapters:
         def discover_plugin(
             self,
             _plugin_path: str,
-        ) -> r[t.ContainerMapping]:
+        ) -> r[t.RecursiveContainerMapping]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
@@ -81,7 +81,7 @@ class FlextPluginAdapters:
         def discover_plugins(
             self,
             paths: t.StrSequence,
-        ) -> r[Sequence[t.ContainerMapping]]:
+        ) -> r[Sequence[t.RecursiveContainerMapping]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
@@ -93,13 +93,13 @@ class FlextPluginAdapters:
         @override
         def validate_plugin(
             self,
-            _plugin_data: t.ContainerMapping,
+            _plugin_data: t.RecursiveContainerMapping,
         ) -> r[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(lambda: True, "Plugin validation failed")
 
         @override
-        def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+        def validate_plugin_security(self, _plugin: t.RecursiveContainer) -> r[bool]:
             return r[bool].ok(value=True)
 
         def _discover_all(
@@ -165,7 +165,7 @@ class FlextPluginAdapters:
         def _discovery_data_to_dict(
             self,
             data: m.Plugin.DiscoveryData,
-        ) -> t.ContainerMapping:
+        ) -> t.RecursiveContainerMapping:
             """Convert DiscoveryData model to JsonMapping."""
             return {
                 "name": data.name,
@@ -194,7 +194,7 @@ class FlextPluginAdapters:
             return plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(self, plugin_path: str) -> r[t.ContainerMapping]:
+        def load_plugin(self, plugin_path: str) -> r[t.RecursiveContainerMapping]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(plugin_path),
@@ -245,7 +245,7 @@ class FlextPluginAdapters:
         def _load_module_as_dict(
             self,
             plugin_path: str,
-        ) -> t.ContainerMapping:
+        ) -> t.RecursiveContainerMapping:
             """Load module and convert to JsonMapping."""
             data = self._load_module(plugin_path)
             self._loaded_plugins[data.name] = data.module
@@ -264,8 +264,8 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: t.ContainerMapping,
-        ) -> r[t.ContainerMapping]:
+            _context: t.RecursiveContainerMapping,
+        ) -> r[t.RecursiveContainerMapping]:
             """Execute plugin."""
             return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
@@ -308,14 +308,14 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> r[t.ContainerMapping]:
+        ) -> r[t.RecursiveContainerMapping]:
             """Scan plugin for security issues."""
-            return r[t.ContainerMapping].ok({
+            return r[t.RecursiveContainerMapping].ok({
                 "security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM
             })
 
         @override
-        def validate_plugin_security(self, _plugin: t.NormalizedValue) -> r[bool]:
+        def validate_plugin_security(self, _plugin: t.RecursiveContainer) -> r[bool]:
             """Validate plugin for security."""
             return r[bool].ok(True)
 
@@ -325,12 +325,12 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: t.MutableContainerMapping = {}
+            self._plugins: t.MutableRecursiveContainerMapping = {}
 
         @override
-        def get_plugin(self, plugin_name: str) -> r[t.NormalizedValue | None]:
+        def get_plugin(self, plugin_name: str) -> r[t.RecursiveContainer | None]:
             """Get plugin from registry."""
-            return r[t.NormalizedValue | None].ok(self._plugins.get(plugin_name))
+            return r[t.RecursiveContainer | None].ok(self._plugins.get(plugin_name))
 
         @override
         def plugin_registered(self, plugin_name: str) -> bool:
@@ -338,12 +338,12 @@ class FlextPluginAdapters:
             return plugin_name in self._plugins
 
         @override
-        def list_plugins(self) -> r[Sequence[t.ContainerMapping]]:
+        def list_plugins(self) -> r[Sequence[t.RecursiveContainerMapping]]:
             """List all plugins in registry."""
-            return r[Sequence[t.ContainerMapping]].ok([])
+            return r[Sequence[t.RecursiveContainerMapping]].ok([])
 
         @override
-        def register(self, plugin: m.Plugin.Plugin | t.NormalizedValue) -> r[None]:
+        def register(self, plugin: m.Plugin.Plugin | t.RecursiveContainer) -> r[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
             plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
@@ -358,7 +358,7 @@ class FlextPluginAdapters:
         @override
         def register_plugin(
             self,
-            _plugin: m.Plugin.Plugin | t.NormalizedValue,
+            _plugin: m.Plugin.Plugin | t.RecursiveContainer,
         ) -> r[bool]:
             """Register plugin in registry."""
             registration_result = self.register(_plugin)
@@ -379,17 +379,22 @@ class FlextPluginAdapters:
         def get_plugin_health(
             self,
             _plugin_name: str,
-        ) -> r[t.ContainerMapping]:
+        ) -> r[t.RecursiveContainerMapping]:
             """Get plugin health information."""
-            return r[t.ContainerMapping].ok({"status": c.Plugin.PluginStatus.HEALTHY})
+            return r[t.RecursiveContainerMapping].ok({
+                "status": c.Plugin.PluginStatus.HEALTHY
+            })
 
         @override
         def get_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> r[t.ContainerMapping]:
+        ) -> r[t.RecursiveContainerMapping]:
             """Get plugin metrics."""
-            return r[t.ContainerMapping].ok({"execution_count": 0, "error_count": 0})
+            return r[t.RecursiveContainerMapping].ok({
+                "execution_count": 0,
+                "error_count": 0,
+            })
 
         @override
         def monitoring(self, _plugin_name: str) -> bool:

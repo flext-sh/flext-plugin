@@ -315,7 +315,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
-        # Access configuration from the settings t.ContainerMapping passed during initialization
+        # Access configuration from the settings t.RecursiveContainerMapping passed during initialization
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
@@ -706,7 +706,7 @@ class TestBasicDataProcessorPlugin:
         plugin.activate()
 
         # Force an error by providing non-dict data
-        with patch.t.NormalizedValue(
+        with patch.t.RecursiveContainer(
             plugin, "_process_data", side_effect=Exception("Processing error")
         ):
             result = plugin.execute({"payload": {"test": "data"}})

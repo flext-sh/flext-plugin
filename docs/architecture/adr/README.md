@@ -131,7 +131,7 @@ All ADRs follow a standardized template for consistency and completeness.
 
 ## Notes
 
-[t.NormalizedValue additional information or implementation details]
+[t.RecursiveContainer additional information or implementation details]
 ```
 
 ______________________________________________________________________

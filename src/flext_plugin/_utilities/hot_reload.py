@@ -163,7 +163,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> r[t.ContainerMapping]:
+    def force_reload_all(self) -> r[t.RecursiveContainerMapping]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -172,10 +172,10 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: MutableSequence[t.ContainerMapping] = []
+            reload_results: MutableSequence[t.RecursiveContainerMapping] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -194,7 +194,7 @@ class FlextPluginHotReload:
                                 "success": result.success,
                             })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return r[t.ContainerMapping].ok({
+            return r[t.RecursiveContainerMapping].ok({
                 "plugin_results": reload_results,
                 "count": len(reload_results),
             })
@@ -208,9 +208,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[t.ContainerMapping].fail(f"Force reload error: {e!s}")
+            return r[t.RecursiveContainerMapping].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> t.ContainerMapping:
+    def get_hot_reload_status(self) -> t.RecursiveContainerMapping:
         """Get the current status of the hot reload service.
 
         Returns:

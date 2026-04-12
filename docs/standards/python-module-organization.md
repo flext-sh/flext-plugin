@@ -253,7 +253,7 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 # Core plugin patterns
 FlextPlugin  # Main plugin entity
 FlextPluginModels.Config  # Plugin configuration entity
-FlextPluginModels.Metadata  # Plugin metadata value t.NormalizedValue
+FlextPluginModels.Metadata  # Plugin metadata value t.RecursiveContainer
 FlextPluginModels.Registry  # Plugin collection aggregate
 FlextPluginPlatform  # Main platform orchestrator
 
@@ -1036,7 +1036,7 @@ from typing import List, Dict, Optional
 
 class FlextPluginModels.Metadata(FlextModels.Value):
     """
-    Immutable plugin metadata value t.NormalizedValue.
+    Immutable plugin metadata value t.RecursiveContainer.
 
     Contains descriptive information about the plugin that doesn't
     change frequently and doesn't affect plugin identity.
@@ -1079,7 +1079,7 @@ class FlextPluginModels.Metadata(FlextModels.Value):
 
 class FlextPluginModels.Config(FlextModels.Value):
     """
-    Immutable plugin configuration value t.NormalizedValue.
+    Immutable plugin configuration value t.RecursiveContainer.
 
     Contains plugin-specific configuration that affects plugin
     behavior but doesn't change plugin identity.
@@ -1146,7 +1146,7 @@ class LazyPluginLoader:
         self._loaded_modules: t.Dict = {}
 
     @cached_property
-    def plugin_module(self) -> r[t.NormalizedValue]:
+    def plugin_module(self) -> r[t.RecursiveContainer]:
         """Lazy load plugin module."""
         try:
             module_path = self.plugin_config.get("module_path")
@@ -1227,9 +1227,9 @@ class PluginCache:
     ):
         """Decorator for caching plugin operation results."""
 
-        def decorator(func: Callable[..., r[t.NormalizedValue]]):
+        def decorator(func: Callable[..., r[t.RecursiveContainer]]):
             @wraps(func)
-            def wrapper(*args, **kwargs) -> r[t.NormalizedValue]:
+            def wrapper(*args, **kwargs) -> r[t.RecursiveContainer]:
                 # Generate cache key
                 cache_key = cache_key_func(*args, **kwargs)
 
@@ -1267,7 +1267,7 @@ class PluginCache:
         for key in keys_to_remove:
             del self._cache[key]
 
-    def _get_cached_result(self, cache_key: str) -> Optional[t.NormalizedValue]:
+    def _get_cached_result(self, cache_key: str) -> Optional[t.RecursiveContainer]:
         """Get cached result if still valid."""
         if cache_key not in self._cache:
             return None
@@ -1311,7 +1311,7 @@ plugin_cache = PluginCache()
     ),
     invalidate_on_plugin_change=True,
 )
-def execute_plugin_cached(plugin_id: str, settings: t.Dict) -> r[t.NormalizedValue]:
+def execute_plugin_cached(plugin_id: str, settings: t.Dict) -> r[t.RecursiveContainer]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass

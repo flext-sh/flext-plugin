@@ -66,7 +66,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = u.fetch_logger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: t.MutableContainerMapping = {}
+            self._config: t.MutableRecursiveContainerMapping = {}
 
         @property
         def name(self) -> str:
@@ -78,7 +78,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, settings: t.ContainerMapping) -> r[None]:
+        def configure(self, settings: t.RecursiveContainerMapping) -> r[None]:
             """Configure component with provided settings."""
             try:
                 self._config.update(settings)
@@ -95,11 +95,11 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
 
-        def get_config(self) -> t.ContainerMapping:
+        def get_config(self) -> t.RecursiveContainerMapping:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
-        def get_info(self) -> t.ContainerMapping:
+        def get_info(self) -> t.RecursiveContainerMapping:
             """Get plugin information.
 
             Returns:
@@ -113,7 +113,7 @@ class FlextPluginImplementations:
                 "entity_present": self._entity is not None,
             }
 
-        def initialize(self, _context: t.ContainerMapping) -> r[None]:
+        def initialize(self, _context: t.RecursiveContainerMapping) -> r[None]:
             """Initialize plugin with context.
 
             Args:
@@ -183,7 +183,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            operations: t.ContainerMapping | None = None,
+            operations: t.RecursiveContainerMapping | None = None,
             entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize executable plugin.
@@ -201,8 +201,8 @@ class FlextPluginImplementations:
         def execute(
             self,
             operation: str,
-            _params: t.ContainerMapping,
-        ) -> r[t.NormalizedValue]:
+            _params: t.RecursiveContainerMapping,
+        ) -> r[t.RecursiveContainer]:
             """Execute a plugin operation.
 
             Args:
@@ -214,9 +214,11 @@ class FlextPluginImplementations:
 
             """
             if not self._initialized:
-                return r[t.NormalizedValue].fail("Plugin not initialized")
+                return r[t.RecursiveContainer].fail("Plugin not initialized")
             if operation not in self._operations:
-                return r[t.NormalizedValue].fail(f"Unsupported operation: {operation}")
+                return r[t.RecursiveContainer].fail(
+                    f"Unsupported operation: {operation}"
+                )
             try:
                 self.logger.info(
                     f"Executing operation {operation} on plugin {self.name}",
@@ -224,7 +226,7 @@ class FlextPluginImplementations:
                 if self._entity:
                     self._entity.record_execution(0.0, success=True)
                 result = self._operations[operation]
-                return r[t.NormalizedValue].ok(result)
+                return r[t.RecursiveContainer].ok(result)
             except (
                 ValueError,
                 TypeError,
@@ -237,7 +239,7 @@ class FlextPluginImplementations:
                 self.logger.exception("Operation %s failed", operation)
                 if self._entity:
                     self._entity.record_error(str(e))
-                return r[t.NormalizedValue].fail(f"Operation failed: {e!s}")
+                return r[t.RecursiveContainer].fail(f"Operation failed: {e!s}")
 
         def get_supported_operations(self) -> t.StrSequence:
             """Get list of supported operations.
@@ -260,7 +262,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            connection_config: t.ContainerMapping | None = None,
+            connection_config: t.RecursiveContainerMapping | None = None,
             entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize data plugin.
@@ -304,7 +306,7 @@ class FlextPluginImplementations:
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
 
-        def validate_config(self, settings: t.ContainerMapping) -> r[None]:
+        def validate_config(self, settings: t.RecursiveContainerMapping) -> r[None]:
             """Validate plugin configuration.
 
             Args:
@@ -333,7 +335,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            schema: t.ContainerMapping | None = None,
+            schema: t.RecursiveContainerMapping | None = None,
             entity: m.Plugin.Plugin | None = None,
         ) -> None:
             """Initialize transform plugin.
@@ -348,7 +350,7 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def get_schema(self) -> r[t.ContainerMapping]:
+        def get_schema(self) -> r[t.RecursiveContainerMapping]:
             """Get transformation schema.
 
             Returns:
@@ -356,10 +358,10 @@ class FlextPluginImplementations:
 
             """
             if not self._schema:
-                return r[t.ContainerMapping].fail("No schema defined")
-            return r[t.ContainerMapping].ok(self._schema)
+                return r[t.RecursiveContainerMapping].fail("No schema defined")
+            return r[t.RecursiveContainerMapping].ok(self._schema)
 
-        def transform(self, data: t.NormalizedValue) -> r[t.NormalizedValue]:
+        def transform(self, data: t.RecursiveContainer) -> r[t.RecursiveContainer]:
             """Transform input data.
 
             Args:
@@ -372,14 +374,16 @@ class FlextPluginImplementations:
             try:
                 self.logger.info(f"Transforming data with plugin {self.name}")
                 if not isinstance(data, dict):
-                    return r[t.NormalizedValue].fail("Input data must be a dictionary")
+                    return r[t.RecursiveContainer].fail(
+                        "Input data must be a dictionary"
+                    )
                 validated = t.CONTAINER_MAPPING_ADAPTER.validate_python(
                     data,
                 )
-                transformed: t.MutableContainerMapping = dict(validated)
+                transformed: t.MutableRecursiveContainerMapping = dict(validated)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
-                return r[t.NormalizedValue].ok(transformed)
+                return r[t.RecursiveContainer].ok(transformed)
             except (
                 ValueError,
                 TypeError,
@@ -390,7 +394,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Transformation failed")
-                return r[t.NormalizedValue].fail(f"Transform failed: {e!s}")
+                return r[t.RecursiveContainer].fail(f"Transform failed: {e!s}")
 
     class LoggerAdapter(p.Plugin.Logger):
         """Adapter to make a FLEXT logger protocol compatible with plugin Logger."""
@@ -404,7 +408,7 @@ class FlextPluginImplementations:
         def critical(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log critical message."""
@@ -414,7 +418,7 @@ class FlextPluginImplementations:
         def debug(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log debug message."""
@@ -424,7 +428,7 @@ class FlextPluginImplementations:
         def error(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log error message."""
@@ -444,7 +448,7 @@ class FlextPluginImplementations:
         def info(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log info message."""
@@ -454,7 +458,7 @@ class FlextPluginImplementations:
             self,
             level: str,
             message: str,
-            _context: t.ContainerMapping | None = None,
+            _context: t.RecursiveContainerMapping | None = None,
         ) -> None:
             """Log a message with optional context."""
             getattr(self.logger, level.lower(), self.logger.debug)(message)
@@ -462,7 +466,7 @@ class FlextPluginImplementations:
         def trace(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log trace message."""
@@ -472,7 +476,7 @@ class FlextPluginImplementations:
         def warning(
             self,
             message: str,
-            *_args: t.NormalizedValue,
+            *_args: t.RecursiveContainer,
             **_kwargs: t.Scalar,
         ) -> None:
             """Log warning message."""
@@ -489,8 +493,8 @@ class FlextPluginImplementations:
         def __init__(
             self,
             logger: p.Logger,
-            settings: t.ContainerMapping | None = None,
-            services: t.ContainerMapping | None = None,
+            settings: t.RecursiveContainerMapping | None = None,
+            services: t.RecursiveContainerMapping | None = None,
         ) -> None:
             """Initialize the instance.
 
@@ -502,8 +506,10 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: t.MutableContainerMapping = dict(settings) if settings else {}
-            self._services: t.MutableContainerMapping = (
+            self._config: t.MutableRecursiveContainerMapping = (
+                dict(settings) if settings else {}
+            )
+            self._services: t.MutableRecursiveContainerMapping = (
                 dict(services) if services else {}
             )
 
@@ -512,7 +518,7 @@ class FlextPluginImplementations:
             """Plugin logger."""
             return self._logger
 
-        def get_config(self) -> t.ContainerMapping:
+        def get_config(self) -> t.RecursiveContainerMapping:
             """Get configuration for plugin."""
             return dict(self._config)
 
@@ -520,7 +526,7 @@ class FlextPluginImplementations:
             """Get logger instance for plugin."""
             return FlextPluginImplementations.LoggerAdapter(self.logger)
 
-        def get_service(self, service_name: str) -> r[t.NormalizedValue]:
+        def get_service(self, service_name: str) -> r[t.RecursiveContainer]:
             """Get service by name from container.
 
             Args:
@@ -531,8 +537,10 @@ class FlextPluginImplementations:
 
             """
             if service_name not in self._services:
-                return r[t.NormalizedValue].fail(f"Service not found: {service_name}")
-            return r[t.NormalizedValue].ok(self._services[service_name])
+                return r[t.RecursiveContainer].fail(
+                    f"Service not found: {service_name}"
+                )
+            return r[t.RecursiveContainer].ok(self._services[service_name])
 
     class ConcretePluginRegistry:
         """Concrete implementation of plugin registry.
@@ -569,7 +577,7 @@ class FlextPluginImplementations:
             """
             return list(self.plugins.values())
 
-        def register_plugin(self, _plugin: t.NormalizedValue) -> r[bool]:
+        def register_plugin(self, _plugin: t.RecursiveContainer) -> r[bool]:
             """Register a plugin via protocol interface."""
             if isinstance(_plugin, m.Plugin.Plugin):
                 return self.register(_plugin).map(lambda _: True)

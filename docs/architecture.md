@@ -97,7 +97,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     metadata: FlextPluginModels.Metadata
 
     class Config:
-        frozen = True  # Immutable value t.NormalizedValue
+        frozen = True  # Immutable value t.RecursiveContainer
 ```
 
 ### Services

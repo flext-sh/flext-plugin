@@ -103,10 +103,10 @@ class FlextPluginService(x):
 
     @staticmethod
     def _to_general_mapping(
-        value: t.NormalizedValue,
-    ) -> t.ContainerMapping:
+        value: t.RecursiveContainer,
+    ) -> t.RecursiveContainerMapping:
         if not isinstance(value, Mapping):
-            result: t.ContainerMapping = {}
+            result: t.RecursiveContainerMapping = {}
             return result
         return t.CONTAINER_MAPPING_ADAPTER.validate_python(value)
 
@@ -283,7 +283,7 @@ class FlextPluginService(x):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: t.ContainerMapping,
+        context: t.RecursiveContainerMapping,
         execution_id: str | None = None,
     ) -> r[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.
@@ -396,7 +396,7 @@ class FlextPluginService(x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[t.ContainerMapping]:
+    ) -> r[t.RecursiveContainerMapping]:
         """Get health status for a specific plugin.
 
         Args:
@@ -418,7 +418,7 @@ class FlextPluginService(x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[t.ContainerMapping]:
+    ) -> r[t.RecursiveContainerMapping]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -440,32 +440,32 @@ class FlextPluginService(x):
     def _get_plugin_monitoring_data(
         self,
         plugin_name: str,
-        operation: Callable[[str], r[t.ContainerMapping]],
+        operation: Callable[[str], r[t.RecursiveContainerMapping]],
         operation_name: str,
         operation_failure_prefix: str,
         response_label: str,
         operation_error_prefix: str,
-    ) -> r[t.ContainerMapping]:
+    ) -> r[t.RecursiveContainerMapping]:
         try:
             if not self._monitoring:
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     "Plugin monitoring not available",
                 )
             if plugin_name not in self._plugins:
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     f"Plugin '{plugin_name}' not found",
                 )
 
             monitoring_result = operation(plugin_name)
             if monitoring_result.failure:
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
             if not u.dict_like(monitoring_result.value):
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
-            return r[t.ContainerMapping].ok(
+            return r[t.RecursiveContainerMapping].ok(
                 self._to_general_mapping(monitoring_result.value)
             )
         except (
@@ -482,7 +482,7 @@ class FlextPluginService(x):
                 operation_name,
                 plugin_name,
             )
-            return r[t.ContainerMapping].fail(
+            return r[t.RecursiveContainerMapping].fail(
                 f"{operation_error_prefix}: {e!s}",
             )
 
@@ -512,7 +512,7 @@ class FlextPluginService(x):
         """
         return [e for e in self._executions.values() if e.is_running]
 
-    def get_service_status(self) -> t.ContainerMapping:
+    def get_service_status(self) -> t.RecursiveContainerMapping:
         """Get the current status of the plugin service.
 
         Returns:
@@ -747,7 +747,7 @@ class FlextPluginService(x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        settings: t.ContainerMapping,
+        settings: t.RecursiveContainerMapping,
     ) -> r[bool]:
         """Update configuration for a plugin.
 
@@ -763,7 +763,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("settings")
-        merged_config: t.MutableContainerMapping = dict(
+        merged_config: t.MutableRecursiveContainerMapping = dict(
             self._to_general_mapping(existing_config),
         )
         merged_config.update(settings)

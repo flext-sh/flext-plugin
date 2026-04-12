@@ -98,7 +98,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=True, description="Plugin enabled state"),
             ]
             metadata: Annotated[
-                t.MutableContainerMapping,
+                t.MutableRecursiveContainerMapping,
                 Field(
                     description="Extensible plugin metadata",
                 ),
@@ -114,7 +114,7 @@ class FlextPluginModels(FlextModels):
                 author: str = "",
                 plugin_type: str = c.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: t.ContainerMapping | None = None,
+                metadata: t.RecursiveContainerMapping | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -133,10 +133,10 @@ class FlextPluginModels(FlextModels):
                 New Plugin entity instance
 
                 """
-                metadata_payload: t.ContainerMapping = (
+                metadata_payload: t.RecursiveContainerMapping = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: t.MutableContainerMapping = {
+                payload: t.MutableRecursiveContainerMapping = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,
@@ -351,7 +351,7 @@ class FlextPluginModels(FlextModels):
 
             success: Annotated[bool, Field(description="Whether execution succeeded")]
             data: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Execution output data",
                 ),
@@ -375,7 +375,7 @@ class FlextPluginModels(FlextModels):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
-            (file system, entry points, etc_constants.). Immutable value t.NormalizedValue.
+            (file system, entry points, etc_constants.). Immutable value t.RecursiveContainer.
 
             Attributes:
             name: Plugin unique identifier name
@@ -417,7 +417,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
             metadata: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Extensible discovery metadata",
                 ),
@@ -443,13 +443,13 @@ class FlextPluginModels(FlextModels):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
-            module t.NormalizedValue and load metadata. Immutable value t.NormalizedValue.
+            module t.RecursiveContainer and load metadata. Immutable value t.RecursiveContainer.
 
             Attributes:
             name: Plugin unique identifier name
             version: Plugin semantic version
             path: File system path to plugin
-            module: The loaded Python module t.NormalizedValue
+            module: The loaded Python module t.RecursiveContainer
             load_type: Type of loaded plugin (file, directory, entry_point)
             loaded_at: Timestamp when plugin was loaded
             entry_file: Entry file path for directory-based plugins
@@ -475,7 +475,7 @@ class FlextPluginModels(FlextModels):
             module: Annotated[
                 types.ModuleType,
                 Field(
-                    description="The loaded Python module t.NormalizedValue",
+                    description="The loaded Python module t.RecursiveContainer",
                 ),
             ]
             load_type: Annotated[
@@ -499,7 +499,7 @@ class FlextPluginModels(FlextModels):
             """Plugin reload record - immutable reload history entry.
 
             Records information about a plugin reload event including timing,
-            success/failure status, and optional error details. Immutable value t.NormalizedValue.
+            success/failure status, and optional error details. Immutable value t.RecursiveContainer.
 
             Attributes:
             plugin_name: Name of reloaded plugin
@@ -529,10 +529,10 @@ class FlextPluginModels(FlextModels):
             ] = 0.0
 
         class PluginMetadata(FlextModels.Value):
-            """Plugin metadata - immutable metadata value t.NormalizedValue.
+            """Plugin metadata - immutable metadata value t.RecursiveContainer.
 
             Represents complete metadata about a plugin including discovery
-            and description information. Immutable value t.NormalizedValue.
+            and description information. Immutable value t.RecursiveContainer.
 
             Attributes:
             name: Plugin unique identifier
@@ -568,7 +568,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=list)
             metadata: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Additional metadata",
                 ),
@@ -578,7 +578,7 @@ class FlextPluginModels(FlextModels):
             """Event data - immutable event information.
 
             Represents structured event data with context and metadata.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             event_type: Type of event
@@ -592,7 +592,7 @@ class FlextPluginModels(FlextModels):
             plugin_name: Annotated[str, Field(description="Associated plugin name")]
             timestamp: Annotated[datetime, Field(description="When event occurred")]
             data: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Event-specific data",
                 ),
@@ -602,7 +602,7 @@ class FlextPluginModels(FlextModels):
             """Validation result - immutable validation outcome.
 
             Represents result of plugin validation including status and details.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             valid: Whether validation passed
@@ -626,7 +626,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=list)
             details: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Additional validation details",
                 ),
@@ -636,7 +636,7 @@ class FlextPluginModels(FlextModels):
             """Security report - immutable security scan result.
 
             Represents security scanning results for plugins.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             is_safe: Whether plugin passed security checks
@@ -671,7 +671,7 @@ class FlextPluginModels(FlextModels):
             """Watcher configuration - file system monitoring settings.
 
             Represents file watcher configuration for hot reload.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             watch_path: Path being watched
@@ -689,7 +689,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
-                Callable[..., t.NormalizedValue] | None,
+                Callable[..., t.RecursiveContainer] | None,
                 Field(
                     default=None,
                     description="Callback function reference",
@@ -700,7 +700,7 @@ class FlextPluginModels(FlextModels):
                 Field(default=False, description="Whether watcher is active"),
             ]
             last_modified: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="File modification tracking",
                 ),
@@ -714,7 +714,7 @@ class FlextPluginModels(FlextModels):
             """Sandbox configuration - plugin execution sandbox settings.
 
             Represents security sandbox configuration for plugin execution.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             plugin_name: Name of plugin to sandbox
@@ -763,7 +763,7 @@ class FlextPluginModels(FlextModels):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
-            Immutable value t.NormalizedValue.
+            Immutable value t.RecursiveContainer.
 
             Attributes:
             version: Registry schema version
@@ -775,7 +775,7 @@ class FlextPluginModels(FlextModels):
 
             version: Annotated[str, Field(description="Registry schema version")]
             plugins: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Dictionary of registered plugins",
                 ),
@@ -801,7 +801,7 @@ class FlextPluginModels(FlextModels):
 
             plugin_name: Annotated[str, Field(description="Plugin name")]
             config: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Configuration settings",
                 ),
@@ -814,7 +814,7 @@ class FlextPluginModels(FlextModels):
             """
 
             plugins: Annotated[
-                t.ContainerMapping,
+                t.RecursiveContainerMapping,
                 Field(
                     description="Dictionary of registered plugins",
                 ),

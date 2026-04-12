@@ -47,14 +47,16 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: t.ContainerMapping,
+        context: t.RecursiveContainerMapping,
         execution_id: str | None = None,
-    ) -> r[t.ContainerMapping]:
+    ) -> r[t.RecursiveContainerMapping]:
         """Execute a plugin by name with the given context."""
         result = self.platform.execute_plugin(plugin_name, context, execution_id)
         if result.failure:
-            return r[t.ContainerMapping].fail(result.error or "Execution failed")
-        return r[t.ContainerMapping].ok({"execution_id": str(result.value)})
+            return r[t.RecursiveContainerMapping].fail(
+                result.error or "Execution failed"
+            )
+        return r[t.RecursiveContainerMapping].ok({"execution_id": str(result.value)})
 
     def get_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
         """Get a plugin by name."""
