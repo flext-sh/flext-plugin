@@ -407,4 +407,4 @@ class FlextPluginAdapters:
             return r[bool].ok(True)
 
 
-__all__ = ["FlextPluginAdapters"]
+__all__: list[str] = ["FlextPluginAdapters"]

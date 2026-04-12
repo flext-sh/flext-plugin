@@ -395,4 +395,4 @@ class FlextPluginLoader:
             return None
 
 
-__all__ = ["FlextPluginLoader"]
+__all__: list[str] = ["FlextPluginLoader"]

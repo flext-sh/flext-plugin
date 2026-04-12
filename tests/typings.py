@@ -25,4 +25,4 @@ class TestsFlextPluginTypes(FlextTestsTypes, FlextPluginTypes):
 
 
 t = TestsFlextPluginTypes
-__all__ = ["TestsFlextPluginTypes", "t"]
+__all__: list[str] = ["TestsFlextPluginTypes", "t"]

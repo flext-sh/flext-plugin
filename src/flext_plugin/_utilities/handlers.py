@@ -460,4 +460,4 @@ class FlextPluginHandlers:
         return inspect.iscoroutinefunction(func)
 
 
-__all__ = ["FlextPluginHandlers"]
+__all__: list[str] = ["FlextPluginHandlers"]

@@ -314,4 +314,4 @@ class FlextPluginDiscovery:
                 )
 
 
-__all__ = ["FlextPluginDiscovery"]
+__all__: list[str] = ["FlextPluginDiscovery"]

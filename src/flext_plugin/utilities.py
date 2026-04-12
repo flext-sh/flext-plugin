@@ -1069,4 +1069,4 @@ class FlextPluginUtilities(FlextUtilities):
 
 u = FlextPluginUtilities
 
-__all__ = ["FlextPluginUtilities", "u"]
+__all__: list[str] = ["FlextPluginUtilities", "u"]

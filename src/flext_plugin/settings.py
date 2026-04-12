@@ -23,4 +23,4 @@ class FlextPluginSettings(FlextSettings):
     )
 
 
-__all__ = ["FlextPluginSettings"]
+__all__: list[str] = ["FlextPluginSettings"]

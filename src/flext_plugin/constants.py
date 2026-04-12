@@ -425,4 +425,4 @@ class FlextPluginConstants(FlextConstants):
 
 
 c = FlextPluginConstants
-__all__ = ["FlextPluginConstants", "c"]
+__all__: list[str] = ["FlextPluginConstants", "c"]

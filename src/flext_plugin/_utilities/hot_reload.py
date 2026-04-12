@@ -490,4 +490,4 @@ class FlextPluginHotReload:
         return Path(path_str).expanduser().resolve()
 
 
-__all__ = ["FlextPluginHotReload"]
+__all__: list[str] = ["FlextPluginHotReload"]

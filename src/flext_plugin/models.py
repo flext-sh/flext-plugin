@@ -835,4 +835,4 @@ class FlextPluginModels(FlextModels):
 
 m = FlextPluginModels
 
-__all__ = ["FlextPluginModels", "m"]
+__all__: list[str] = ["FlextPluginModels", "m"]

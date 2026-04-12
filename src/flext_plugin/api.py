@@ -100,4 +100,4 @@ class FlextPluginApi:
 
 plugin = FlextPluginApi
 
-__all__ = ["FlextPluginApi", "plugin"]
+__all__: list[str] = ["FlextPluginApi", "plugin"]

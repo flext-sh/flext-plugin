@@ -25,4 +25,4 @@ class TestsFlextPluginConstants(FlextTestsConstants, FlextPluginConstants):
 
 
 c = TestsFlextPluginConstants
-__all__ = ["TestsFlextPluginConstants", "c"]
+__all__: list[str] = ["TestsFlextPluginConstants", "c"]

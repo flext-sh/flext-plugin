@@ -394,4 +394,4 @@ class FlextPluginProtocols(FlextProtocols):
 
 p = FlextPluginProtocols
 
-__all__ = ["FlextPluginProtocols", "p"]
+__all__: list[str] = ["FlextPluginProtocols", "p"]

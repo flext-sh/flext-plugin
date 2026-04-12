@@ -690,4 +690,4 @@ class FlextPluginPlatform:
             return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)
 
 
-__all__ = ["FlextPluginPlatform"]
+__all__: list[str] = ["FlextPluginPlatform"]

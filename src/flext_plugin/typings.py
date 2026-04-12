@@ -126,4 +126,4 @@ class FlextPluginTypes(FlextTypes):
 
 
 t = FlextPluginTypes
-__all__ = ["FlextPluginTypes", "t"]
+__all__: list[str] = ["FlextPluginTypes", "t"]

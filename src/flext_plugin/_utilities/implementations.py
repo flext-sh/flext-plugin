@@ -698,4 +698,4 @@ class FlextPluginImplementations:
                 )
 
 
-__all__ = ["FlextPluginImplementations"]
+__all__: list[str] = ["FlextPluginImplementations"]

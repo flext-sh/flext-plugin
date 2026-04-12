@@ -61,4 +61,4 @@ class FlextPluginEntities:
         """
 
 
-__all__ = ["FlextPluginEntities"]
+__all__: list[str] = ["FlextPluginEntities"]

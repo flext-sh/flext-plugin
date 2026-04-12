@@ -771,4 +771,4 @@ class FlextPluginService(x):
         return r[bool].ok(True)
 
 
-__all__ = ["FlextPluginService"]
+__all__: list[str] = ["FlextPluginService"]
