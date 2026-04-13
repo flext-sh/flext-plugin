@@ -132,9 +132,9 @@ def real_container_with_adapters() -> p.Container:
     manager_svc: t.RegisterableService = dict(
         vars(FlextPluginAdapters.PluginExecutorAdapter()),
     )
-    container.register("plugin_discovery_port", discovery_svc)
-    container.register("plugin_loader_port", loader_svc)
-    container.register("plugin_manager_port", manager_svc)
+    container.bind("plugin_discovery_port", discovery_svc)
+    container.bind("plugin_loader_port", loader_svc)
+    container.bind("plugin_manager_port", manager_svc)
     return container
 
 

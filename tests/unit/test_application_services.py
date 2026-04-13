@@ -99,11 +99,11 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
     loader_adapter = FlextPluginLoader()
-    container.register(
+    container.bind(
         "plugin_discovery_port",
         cast("t.RegisterableService", discovery_adapter),
     )
-    container.register(
+    container.bind(
         "plugin_loader_port",
         cast("t.RegisterableService", loader_adapter),
     )
@@ -115,7 +115,7 @@ def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginSe
     """Create FlextPluginService with REAL discovery adapters."""
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
-    container.register(
+    container.bind(
         "plugin_discovery_port",
         cast("t.RegisterableService", discovery_adapter),
     )
@@ -848,9 +848,9 @@ class TestServicesIntegrationReal:
             "name": "test_service",
             "settings": {"enabled": True},
         }
-        container.register("test_service", test_service)
+        container.bind("test_service", test_service)
         plugin_service = FlextPluginService(container=container)
-        result1 = plugin_service.container.get("test_service")
+        result1 = plugin_service.container.resolve("test_service")
         assert result1.success
         value = result1.value
         normalized_value = value.model_dump() if isinstance(value, BaseModel) else value
