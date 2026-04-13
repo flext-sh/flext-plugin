@@ -13,12 +13,14 @@ from typing import override
 
 from pydantic import PrivateAttr
 
-from flext_core import FlextSettings, p, r, s
+from flext_core import FlextSettings
 from flext_plugin import (
     FlextPluginSettings,
     c,
     m,
     p,
+    r,
+    s,
     t,
     u,
 )

@@ -14,8 +14,7 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from flext_core import p, r
-from flext_plugin import c, m, p, t, u
+from flext_plugin import c, m, p, r, t, u
 
 
 class FlextPluginImplementations:

@@ -15,8 +15,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import override
 
-from flext_core import T, r
-from flext_plugin import FlextPluginDiscovery, c, m, p, t, u
+from flext_core import T
+from flext_plugin import FlextPluginDiscovery, c, m, p, r, t, u
 
 
 class FlextPluginAdapters:

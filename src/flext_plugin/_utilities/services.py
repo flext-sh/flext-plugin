@@ -10,15 +10,17 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from flext_core import FlextContainer, p, r, x
+from flext_core import FlextContainer
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginPlatform,
     c,
     m,
     p,
+    r,
     t,
     u,
+    x,
 )
 
 

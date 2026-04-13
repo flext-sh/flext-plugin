@@ -13,8 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 
-from flext_core import p, r
-from flext_plugin import c, m, p, t, u
+from flext_plugin import c, m, p, r, t, u
 
 
 class FlextPluginLoader:

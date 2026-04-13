@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import FlextContainer, r
-from flext_plugin import FlextPluginPlatform, m, p, t, u
+from flext_core import FlextContainer
+from flext_plugin import FlextPluginPlatform, m, p, r, t, u
 
 
 class FlextPluginApi:
