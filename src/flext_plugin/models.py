@@ -15,11 +15,11 @@ from typing import Annotated, Self
 
 from pydantic import Field, field_validator
 
-from flext_core import FlextModels, FlextUtilities, r
-from flext_plugin import c, t
+from flext_core import m, u
+from flext_plugin import c, p, r, t
 
 
-class FlextPluginModels(FlextModels):
+class FlextPluginModels(m):
     """Plugin domain models extending flext-core patterns.
 
     Provides standardized models for all plugin operations including plugin
@@ -32,10 +32,10 @@ class FlextPluginModels(FlextModels):
     class Plugin:
         """Plugin domain namespace."""
 
-        class Entity(FlextModels.Entity):
+        class Entity(m.Entity):
             """Entity - real inheritance."""
 
-        class Plugin(FlextModels.Entity):
+        class Plugin(m.Entity):
             """Plugin entity - core domain entity with identity and lifecycle.
 
             Represents a plugin with identity, lifecycle management, and mutable state.
@@ -232,7 +232,7 @@ class FlextPluginModels(FlextModels):
                 if "last_error" not in self.metadata:
                     self.metadata["last_error"] = ""
 
-                error_count = FlextUtilities.to_int(
+                error_count = u.to_int(
                     self.metadata.get("error_count", 0),
                 )
                 self.metadata["error_count"] = error_count + 1
@@ -256,22 +256,22 @@ class FlextPluginModels(FlextModels):
                 if "failure_count" not in self.metadata:
                     self.metadata["failure_count"] = 0
 
-                exec_count = FlextUtilities.to_int(
+                exec_count = u.to_int(
                     self.metadata.get("execution_count", 0),
                 )
-                total_time = FlextUtilities.to_float(
+                total_time = u.to_float(
                     self.metadata.get("total_execution_time", 0.0),
                 )
                 self.metadata["execution_count"] = exec_count + 1
                 self.metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
-                    success_count = FlextUtilities.to_int(
+                    success_count = u.to_int(
                         self.metadata.get("success_count", 0),
                     )
                     self.metadata["success_count"] = success_count + 1
                 else:
-                    failure_count = FlextUtilities.to_int(
+                    failure_count = u.to_int(
                         self.metadata.get("failure_count", 0),
                     )
                     self.metadata["failure_count"] = failure_count + 1
@@ -335,7 +335,7 @@ class FlextPluginModels(FlextModels):
 
                 return r[bool].ok(value=True)
 
-        class ExecutionResult(FlextModels.Value):
+        class ExecutionResult(m.Value):
             """Plugin execution result - immutable execution outcome.
 
             Represents the result of a plugin execution including success status,
@@ -371,7 +371,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
 
-        class DiscoveryData(FlextModels.Value):
+        class DiscoveryData(m.Value):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
@@ -439,7 +439,7 @@ class FlextPluginModels(FlextModels):
                     raise ValueError(error_msg)
                 return value
 
-        class LoadData(FlextModels.Value):
+        class LoadData(m.Value):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
@@ -495,7 +495,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = None
 
-        class ReloadRecord(FlextModels.Value):
+        class ReloadRecord(m.Value):
             """Plugin reload record - immutable reload history entry.
 
             Records information about a plugin reload event including timing,
@@ -528,7 +528,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = 0.0
 
-        class PluginMetadata(FlextModels.Value):
+        class PluginMetadata(m.Value):
             """Plugin metadata - immutable metadata value t.RecursiveContainer.
 
             Represents complete metadata about a plugin including discovery
@@ -574,7 +574,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=dict)
 
-        class EventData(FlextModels.Value):
+        class EventData(m.Value):
             """Event data - immutable event information.
 
             Represents structured event data with context and metadata.
@@ -598,7 +598,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=dict)
 
-        class ValidationResult(FlextModels.Value):
+        class ValidationResult(m.Value):
             """Validation result - immutable validation outcome.
 
             Represents result of plugin validation including status and details.
@@ -632,7 +632,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=dict)
 
-        class SecurityReport(FlextModels.Value):
+        class SecurityReport(m.Value):
             """Security report - immutable security scan result.
 
             Represents security scanning results for plugins.
@@ -667,7 +667,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="When analysis was performed"),
             ]
 
-        class WatcherConfig(FlextModels.Value):
+        class WatcherConfig(m.Value):
             """Watcher configuration - file system monitoring settings.
 
             Represents file watcher configuration for hot reload.
@@ -710,7 +710,7 @@ class FlextPluginModels(FlextModels):
                 Field(description="Configuration creation time"),
             ]
 
-        class SandboxConfig(FlextModels.Value):
+        class SandboxConfig(m.Value):
             """Sandbox configuration - plugin execution sandbox settings.
 
             Represents security sandbox configuration for plugin execution.
@@ -759,7 +759,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ]
 
-        class PluginRegistry(FlextModels.Value):
+        class PluginRegistry(m.Value):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
@@ -793,7 +793,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=datetime.now)
 
-        class PluginConfig(FlextModels.Value):
+        class PluginConfig(m.Value):
             """Plugin configuration model.
 
             Represents configuration for a plugin with key-value pairs.
@@ -807,7 +807,7 @@ class FlextPluginModels(FlextModels):
                 ),
             ] = Field(default_factory=dict)
 
-        class Registry(FlextModels.Value):
+        class Registry(m.Value):
             """Plugin registry model.
 
             Represents a registry of plugins with metadata.
