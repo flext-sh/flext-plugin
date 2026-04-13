@@ -82,7 +82,7 @@ class FlextPlugin(FlextModels.Entity):
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""
 
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Domain validation logic"""
 ```
 
@@ -120,10 +120,12 @@ class FlextPluginPlatform:
         self.container = container or FlextContainer()
         self._setup_services()
 
-    def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
         """Coordinate plugin loading across services"""
 
-    def discover_plugins(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
+    def discover_plugins(
+        self, path: str
+    ) -> p.Result[Sequence[FlextPluginModels.Entity]]:
         """Coordinate plugin discovery"""
 ```
 
@@ -145,7 +147,7 @@ ______________________________________________________________________
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
-    def scan_directory(self, path: str) -> r[Sequence[PluginInfo]]:
+    def scan_directory(self, path: str) -> p.Result[Sequence[PluginInfo]]:
         """Scan directory for plugin files"""
 ```
 
@@ -170,7 +172,7 @@ ______________________________________________________________________
 All operations return `r[T]` for railway-oriented programming:
 
 ```python
-def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
+def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
         # Plugin loading logic
         return r[bool].ok(True)

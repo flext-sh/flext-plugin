@@ -16,7 +16,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_core import r
+from flext_core import p, r
 from flext_plugin import m, p, t, u
 
 
@@ -121,7 +121,7 @@ class FlextPluginHotReload:
         """
         self._reload_callbacks.append(callback)
 
-    def add_watch_path(self, path: str) -> r[bool]:
+    def add_watch_path(self, path: str) -> p.Result[bool]:
         """Add a new path to watch.
 
         Args:
@@ -163,7 +163,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> r[t.RecursiveContainerMapping]:
+    def force_reload_all(self) -> p.Result[t.RecursiveContainerMapping]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -262,7 +262,7 @@ class FlextPluginHotReload:
         """
         return self._is_watching
 
-    def reload_plugin(self, plugin_name: str) -> r[bool]:
+    def reload_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Reload a specific plugin.
 
         Args:
@@ -327,7 +327,7 @@ class FlextPluginHotReload:
         except ValueError:
             return False
 
-    def remove_watch_path(self, path: str) -> r[bool]:
+    def remove_watch_path(self, path: str) -> p.Result[bool]:
         """Remove a path from watch list.
 
         Args:
@@ -356,7 +356,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to remove watch path: %s", path)
             return r[bool].fail(f"Remove watch path error: {e!s}")
 
-    def start_watching(self, paths: t.StrSequence) -> r[bool]:
+    def start_watching(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start watching the given paths for changes.
 
         Args:
@@ -417,7 +417,7 @@ class FlextPluginHotReload:
             self.logger.exception("Failed to start hot reload watching")
             return r[bool].fail(f"Start watching error: {e!s}")
 
-    def stop_watching(self) -> r[bool]:
+    def stop_watching(self) -> p.Result[bool]:
         """Stop watching for changes.
 
         Returns:

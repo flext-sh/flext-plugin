@@ -196,7 +196,7 @@ class FlextPluginModels(FlextModels):
                     raise ValueError(error_msg)
                 return value
 
-            def disable(self) -> r[bool]:
+            def disable(self) -> p.Result[bool]:
                 """Disable the plugin.
 
                 Returns:
@@ -208,7 +208,7 @@ class FlextPluginModels(FlextModels):
                 self.is_enabled = False
                 return r[bool].ok(value=True)
 
-            def enable(self) -> r[bool]:
+            def enable(self) -> p.Result[bool]:
                 """Enable the plugin.
 
                 Returns:
@@ -276,7 +276,7 @@ class FlextPluginModels(FlextModels):
                     )
                     self.metadata["failure_count"] = failure_count + 1
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 """Validate plugin business rules.
 
                 Business Rules:

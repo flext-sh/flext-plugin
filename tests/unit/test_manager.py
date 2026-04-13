@@ -16,7 +16,7 @@ from typing import override
 
 import pytest
 
-from flext_core import r
+from flext_core import p, r
 from flext_plugin import FlextPluginAdapters, FlextPluginService
 from tests import m, t
 
@@ -49,7 +49,7 @@ class TestFlextPluginServiceStubBridges:
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> r[Sequence[t.RecursiveContainerMapping]]:
+            ) -> p.Result[Sequence[t.RecursiveContainerMapping]]:
                 _ = paths
                 return r[Sequence[t.RecursiveContainerMapping]].ok([
                     {
@@ -67,7 +67,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def validate_plugin_security(
                 self, _plugin: t.RecursiveContainer
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -80,7 +80,7 @@ class TestFlextPluginServiceStubBridges:
             def register_plugin(
                 self,
                 _plugin: m.Plugin.Plugin | t.RecursiveContainer,
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -93,7 +93,7 @@ class TestFlextPluginServiceStubBridges:
                 self.started: MutableSequence[str] = []
 
             @override
-            def start_monitoring(self, _plugin_name: str) -> r[bool]:
+            def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
                 self.started.append(_plugin_name)
                 return r[bool].ok(True)
 
@@ -120,7 +120,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 _ = plugin_path
                 return r[t.RecursiveContainerMapping].ok({
                     "name": "stub_plugin",
@@ -136,7 +136,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def validate_plugin_security(
                 self, _plugin: t.RecursiveContainer
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -149,7 +149,7 @@ class TestFlextPluginServiceStubBridges:
             def register_plugin(
                 self,
                 _plugin: m.Plugin.Plugin | t.RecursiveContainer,
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
                 else:
@@ -162,7 +162,7 @@ class TestFlextPluginServiceStubBridges:
                 self.started: MutableSequence[str] = []
 
             @override
-            def start_monitoring(self, _plugin_name: str) -> r[bool]:
+            def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
                 self.started.append(_plugin_name)
                 return r[bool].ok(True)
 
@@ -188,7 +188,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 _ = plugin_path
                 return r[t.RecursiveContainerMapping].ok({
                     "name": "stub_plugin",
@@ -206,7 +206,7 @@ class TestFlextPluginServiceStubBridges:
                 self,
                 _plugin_name: str,
                 _context: t.RecursiveContainerMapping,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 self.calls.append(_plugin_name)
                 return r[t.RecursiveContainerMapping].ok({
                     "status": "executed",
@@ -234,7 +234,7 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 _ = plugin_path
                 self._loaded_plugins["stub_plugin"] = ModuleType("stub_plugin")
                 return r[t.RecursiveContainerMapping].ok({
@@ -244,7 +244,7 @@ class TestFlextPluginServiceStubBridges:
                 })
 
             @override
-            def unload_plugin(self, plugin_name: str) -> r[bool]:
+            def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
                 self.unloaded.append(plugin_name)
                 return super().unload_plugin(plugin_name)
 
@@ -254,7 +254,7 @@ class TestFlextPluginServiceStubBridges:
                 self.unregistered: MutableSequence[str] = []
 
             @override
-            def unregister_plugin(self, plugin_name: str) -> r[bool]:
+            def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
                 self.unregistered.append(plugin_name)
                 return r[bool].ok(True)
 
@@ -264,7 +264,7 @@ class TestFlextPluginServiceStubBridges:
                 self.stopped: MutableSequence[str] = []
 
             @override
-            def stop_monitoring(self, _plugin_name: str) -> r[bool]:
+            def stop_monitoring(self, _plugin_name: str) -> p.Result[bool]:
                 self.stopped.append(_plugin_name)
                 return r[bool].ok(True)
 

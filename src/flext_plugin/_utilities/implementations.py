@@ -14,7 +14,7 @@ from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import override
 
-from flext_core import r
+from flext_core import p, r
 from flext_plugin import c, m, p, t, u
 
 
@@ -78,7 +78,7 @@ class FlextPluginImplementations:
             """Get plugin version."""
             return self._version
 
-        def configure(self, settings: t.RecursiveContainerMapping) -> r[None]:
+        def configure(self, settings: t.RecursiveContainerMapping) -> p.Result[None]:
             """Configure component with provided settings."""
             try:
                 self._config.update(settings)
@@ -113,7 +113,7 @@ class FlextPluginImplementations:
                 "entity_present": self._entity is not None,
             }
 
-        def initialize(self, _context: t.RecursiveContainerMapping) -> r[None]:
+        def initialize(self, _context: t.RecursiveContainerMapping) -> p.Result[None]:
             """Initialize plugin with context.
 
             Args:
@@ -145,7 +145,7 @@ class FlextPluginImplementations:
                 self.logger.exception(f"Failed to initialize plugin {self.name}")
                 return r[None].fail(f"Initialization failed: {e!s}")
 
-        def shutdown(self) -> r[None]:
+        def shutdown(self) -> p.Result[None]:
             """Shutdown plugin and release resources.
 
             Returns:
@@ -202,7 +202,7 @@ class FlextPluginImplementations:
             self,
             operation: str,
             _params: t.RecursiveContainerMapping,
-        ) -> r[t.RecursiveContainer]:
+        ) -> p.Result[t.RecursiveContainer]:
             """Execute a plugin operation.
 
             Args:
@@ -280,7 +280,7 @@ class FlextPluginImplementations:
             )
             self._connection_valid = False
 
-        def test_connection(self) -> r[None]:
+        def test_connection(self) -> p.Result[None]:
             """Test connection to data source/destination.
 
             Returns:
@@ -306,7 +306,9 @@ class FlextPluginImplementations:
                 self._connection_valid = False
                 return r[None].fail(f"Connection failed: {e!s}")
 
-        def validate_config(self, settings: t.RecursiveContainerMapping) -> r[None]:
+        def validate_config(
+            self, settings: t.RecursiveContainerMapping
+        ) -> p.Result[None]:
             """Validate plugin configuration.
 
             Args:
@@ -350,7 +352,7 @@ class FlextPluginImplementations:
             super().__init__(name, version, entity)
             self._schema = schema or {}
 
-        def get_schema(self) -> r[t.RecursiveContainerMapping]:
+        def get_schema(self) -> p.Result[t.RecursiveContainerMapping]:
             """Get transformation schema.
 
             Returns:
@@ -361,7 +363,9 @@ class FlextPluginImplementations:
                 return r[t.RecursiveContainerMapping].fail("No schema defined")
             return r[t.RecursiveContainerMapping].ok(self._schema)
 
-        def transform(self, data: t.RecursiveContainer) -> r[t.RecursiveContainer]:
+        def transform(
+            self, data: t.RecursiveContainer
+        ) -> p.Result[t.RecursiveContainer]:
             """Transform input data.
 
             Args:
@@ -526,7 +530,7 @@ class FlextPluginImplementations:
             """Get logger instance for plugin."""
             return FlextPluginImplementations.LoggerAdapter(self.logger)
 
-        def get_service(self, service_name: str) -> r[t.RecursiveContainer]:
+        def get_service(self, service_name: str) -> p.Result[t.RecursiveContainer]:
             """Get service by name from container.
 
             Args:
@@ -577,13 +581,13 @@ class FlextPluginImplementations:
             """
             return list(self.plugins.values())
 
-        def register_plugin(self, _plugin: t.RecursiveContainer) -> r[bool]:
+        def register_plugin(self, _plugin: t.RecursiveContainer) -> p.Result[bool]:
             """Register a plugin via protocol interface."""
             if isinstance(_plugin, m.Plugin.Plugin):
                 return self.register(_plugin).map(lambda _: True)
             return r[bool].fail("Invalid plugin type for registration")
 
-        def register(self, plugin: m.Plugin.Plugin) -> r[None]:
+        def register(self, plugin: m.Plugin.Plugin) -> p.Result[None]:
             """Register a plugin.
 
             Args:
@@ -600,7 +604,7 @@ class FlextPluginImplementations:
             self._logger.info("Registered plugin %s", plugin_name)
             return r[None].ok(None)
 
-        def unregister(self, plugin_name: str) -> r[None]:
+        def unregister(self, plugin_name: str) -> p.Result[None]:
             """Unregister a plugin by name.
 
             Args:
@@ -640,7 +644,7 @@ class FlextPluginImplementations:
             )
             self.logger = u.fetch_logger("plugin.loader")
 
-        def discover_plugins(self, search_path: str) -> r[t.StrSequence]:
+        def discover_plugins(self, search_path: str) -> p.Result[t.StrSequence]:
             """Discover available plugins in path.
 
             Args:
@@ -669,7 +673,7 @@ class FlextPluginImplementations:
         def load_plugin(
             self,
             plugin_path: str | Path,
-        ) -> r[FlextPluginImplementations.ConcretePlugin]:
+        ) -> p.Result[FlextPluginImplementations.ConcretePlugin]:
             """Load plugin from path.
 
             Args:

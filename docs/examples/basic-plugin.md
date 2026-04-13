@@ -54,7 +54,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
@@ -106,7 +106,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         }
         self._is_initialized = False
 
-    def initialize(self) -> r[bool]:
+    def initialize(self) -> p.Result[bool]:
         """
         Initialize plugin resources and validate configuration.
 
@@ -138,7 +138,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def execute(self, data: t.Dict) -> r[t.Dict]:
+    def execute(self, data: t.Dict) -> p.Result[t.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -193,7 +193,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def cleanup(self) -> r[bool]:
+    def cleanup(self) -> p.Result[bool]:
         """
         Cleanup plugin resources and save final state.
 
@@ -222,7 +222,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Plugin-specific helper methods
 
-    def _validate_configuration(self) -> r[bool]:
+    def _validate_configuration(self) -> p.Result[bool]:
         """Validate plugin configuration."""
         try:
             batch_size = self._get_config_value("batch_size", 100)
@@ -238,7 +238,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: t.Dict) -> r[bool]:
+    def _validate_input_data(self, data: t.Dict) -> p.Result[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):

@@ -229,7 +229,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
@@ -252,7 +252,7 @@ class ExamplePlugin(FlextPlugin):
             **kwargs,
         )
 
-    def initialize(self) -> r[bool]:
+    def initialize(self) -> p.Result[bool]:
         """Initialize plugin resources."""
         try:
             # Setup plugin resources
@@ -261,7 +261,7 @@ class ExamplePlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Initialization failed: {e}")
 
-    def execute(self, data: t.Dict) -> r[t.Dict]:
+    def execute(self, data: t.Dict) -> p.Result[t.Dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
@@ -275,7 +275,7 @@ class ExamplePlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> r[bool]:
+    def cleanup(self) -> p.Result[bool]:
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
@@ -417,7 +417,7 @@ except Exception as e:
 Proper resource cleanup in plugin lifecycle:
 
 ```python
-def cleanup(self) -> r[bool]:
+def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
     try:
         if hasattr(self, "_connection") and self._connection:
@@ -452,14 +452,14 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
 from flext_core import u
 
 
-def process_data(self, data: t.Dict) -> r[t.Dict]:
+def process_data(self, data: t.Dict) -> p.Result[t.Dict]:
     """Type-safe data processing."""
     pass
 ```

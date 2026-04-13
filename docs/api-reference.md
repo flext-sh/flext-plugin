@@ -44,44 +44,44 @@ class FlextPluginPlatform:
         """Initialize platform with dependency injection container"""
 
     # Plugin Lifecycle
-    def load_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
         """Load a plugin into the system"""
 
-    def unload_plugin(self, plugin_name: str) -> r[bool]:
+    def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unload a plugin from the system"""
 
-    def enable_plugin(self, plugin_name: str) -> r[bool]:
+    def enable_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Enable an already loaded plugin"""
 
-    def disable_plugin(self, plugin_name: str) -> r[bool]:
+    def disable_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Disable an active plugin"""
 
     # Plugin Management
-    def install_plugin(self, plugin_path: str) -> r[FlextPluginModels.Entity]:
+    def install_plugin(self, plugin_path: str) -> p.Result[FlextPluginModels.Entity]:
         """Install a plugin from file system path"""
 
-    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Uninstall a plugin completely"""
 
-    def is_plugin_loaded(self, plugin_name: str) -> r[bool]:
+    def is_plugin_loaded(self, plugin_name: str) -> p.Result[bool]:
         """Check if plugin is currently loaded"""
 
     # Discovery
     def scan_directory(
         self, directory_path: str
-    ) -> r[Sequence[FlextPluginModels.Entity]]:
+    ) -> p.Result[Sequence[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin(self, plugin: FlextPluginModels.Entity) -> r[bool]:
+    def validate_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
         """Validate plugin integrity and requirements"""
 
     # Configuration
-    def get_plugin_config(self, plugin_name: str) -> r[FlextPluginModels.Config]:
+    def get_plugin_config(self, plugin_name: str) -> p.Result[FlextPluginModels.Config]:
         """Get plugin configuration"""
 
     def update_plugin_config(
         self, plugin_name: str, settings: FlextPluginModels.Config
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Update plugin configuration"""
 ```
 
@@ -107,7 +107,7 @@ class FlextPlugin(FlextModels.Entity):
     def deactivate(self) -> bool:
         """Deactivate plugin"""
 
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate plugin business rules"""
 ```
 
@@ -126,7 +126,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     dependencies: t.StringList            # Plugin dependencies
     metadata: FlextPluginModels.Metadata      # Additional metadata
 
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate configuration business rules"""
 ```
 
@@ -194,10 +194,12 @@ ______________________________________________________________________
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
-    def scan_directory(self, path: str) -> r[Sequence[FlextPluginModels.Entity]]:
+    def scan_directory(self, path: str) -> p.Result[Sequence[FlextPluginModels.Entity]]:
         """Scan directory for plugins"""
 
-    def validate_plugin_integrity(self, plugin: FlextPluginModels.Entity) -> r[bool]:
+    def validate_plugin_integrity(
+        self, plugin: FlextPluginModels.Entity
+    ) -> p.Result[bool]:
         """Validate plugin integrity"""
 ```
 
@@ -271,14 +273,14 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
 from flext_core import u
 
 
-def plugin_operation() -> r[bool]:
+def plugin_operation() -> p.Result[bool]:
     try:
         # Plugin operation
         return r[bool].ok(True)
@@ -301,7 +303,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t

@@ -13,7 +13,7 @@ import importlib.metadata
 from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 
-from flext_core import r
+from flext_core import p, r
 from flext_plugin import c, m, p, t, u
 
 
@@ -65,7 +65,7 @@ class FlextPluginDiscovery:
     def discover_plugin(
         self,
         plugin_path: str,
-    ) -> r[m.Plugin.DiscoveryData]:
+    ) -> p.Result[m.Plugin.DiscoveryData]:
         """Discover single plugin at path.
 
         Args:
@@ -110,7 +110,7 @@ class FlextPluginDiscovery:
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[m.Plugin.DiscoveryData]]:
+    ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
         Args:
@@ -149,7 +149,7 @@ class FlextPluginDiscovery:
     def validate_plugin(
         self,
         plugin_data: m.Plugin.DiscoveryData,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Validate discovered plugin data.
 
         Pydantic automatically validates on model creation.
@@ -186,7 +186,7 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> r[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
                 discovered: MutableSequence[m.Plugin.DiscoveryData] = []
@@ -265,7 +265,7 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> r[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             _ = paths
             try:

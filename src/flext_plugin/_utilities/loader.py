@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 
-from flext_core import r
+from flext_core import p, r
 from flext_plugin import c, m, p, t, u
 
 
@@ -59,7 +59,9 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(self, plugin_name: str) -> r[t.RecursiveContainerMapping]:
+    def get_plugin_info(
+        self, plugin_name: str
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -115,7 +117,7 @@ class FlextPluginLoader:
         """
         return plugin_name in self._loaded_plugins
 
-    def load_plugin(self, plugin_path: str) -> r[m.Plugin.LoadData]:
+    def load_plugin(self, plugin_path: str) -> p.Result[m.Plugin.LoadData]:
         """Load a plugin from the specified path.
 
         Args:
@@ -150,7 +152,7 @@ class FlextPluginLoader:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[m.Plugin.LoadData].fail(f"Loading error: {e!s}")
 
-    def reload_plugin(self, plugin_name: str) -> r[m.Plugin.LoadData]:
+    def reload_plugin(self, plugin_name: str) -> p.Result[m.Plugin.LoadData]:
         """Reload a plugin by name.
 
         Args:
@@ -196,7 +198,7 @@ class FlextPluginLoader:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
             return r[m.Plugin.LoadData].fail(f"Reload error: {e!s}")
 
-    def unload_plugin(self, plugin_name: str) -> r[bool]:
+    def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unload a plugin by name.
 
         Args:
@@ -225,7 +227,7 @@ class FlextPluginLoader:
             self.logger.exception("Failed to unload plugin %s", plugin_name)
             return r[bool].fail(f"Unloading error: {e!s}")
 
-    def validate_plugin_dependencies(self, plugin_name: str) -> r[bool]:
+    def validate_plugin_dependencies(self, plugin_name: str) -> p.Result[bool]:
         """Validate dependencies for a loaded plugin.
 
         Args:

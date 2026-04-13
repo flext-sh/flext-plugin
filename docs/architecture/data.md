@@ -439,7 +439,7 @@ def migrate_plugin_data(
 
 ```python
 # Runtime data validation
-def validate_plugin_config(config_data: dict) -> r[FlextPluginSettings]:
+def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
     """Validate plugin configuration data."""
     try:
         settings = FlextPluginSettings(**config_data)

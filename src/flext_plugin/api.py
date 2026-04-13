@@ -33,7 +33,7 @@ class FlextPluginApi:
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[m.Plugin.Plugin]]:
+    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
         if result.success:
@@ -49,7 +49,7 @@ class FlextPluginApi:
         plugin_name: str,
         context: t.RecursiveContainerMapping,
         execution_id: str | None = None,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Execute a plugin by name with the given context."""
         result = self.platform.execute_plugin(plugin_name, context, execution_id)
         if result.failure:
@@ -74,7 +74,7 @@ class FlextPluginApi:
         """List all registered plugins."""
         return self.platform.list_plugins()
 
-    def load_plugin(self, _plugin_path: str) -> r[m.Plugin.Plugin]:
+    def load_plugin(self, _plugin_path: str) -> p.Result[m.Plugin.Plugin]:
         """Load a plugin from the given path."""
         result = self.platform.load_plugin(_plugin_path)
         if result.failure:
@@ -83,19 +83,19 @@ class FlextPluginApi:
         self.logger.info(f"Loaded plugin: {plugin.name}")
         return r[m.Plugin.Plugin].ok(plugin)
 
-    def register_plugin(self, _plugin: m.Plugin.Plugin) -> r[bool]:
+    def register_plugin(self, _plugin: m.Plugin.Plugin) -> p.Result[bool]:
         """Register a plugin in the platform."""
         return self.platform.register_plugin(_plugin)
 
-    def start_hot_reload(self, paths: t.StrSequence) -> r[bool]:
+    def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start hot reload monitoring for the given paths."""
         return self.platform.start_hot_reload(paths)
 
-    def stop_hot_reload(self) -> r[bool]:
+    def stop_hot_reload(self) -> p.Result[bool]:
         """Stop hot reload monitoring."""
         return self.platform.stop_hot_reload()
 
-    def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+    def unregister_plugin(self, _plugin_name: str) -> p.Result[bool]:
         """Unregister a plugin by name."""
         return self.platform.unregister_plugin(_plugin_name)
 

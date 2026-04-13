@@ -20,7 +20,7 @@ from flext_cli import FlextCliUtilities
 from pydantic import model_validator
 
 from flext_core import FlextUtilities
-from flext_plugin import c, m, r, t
+from flext_plugin import c, m, p, r, t
 
 
 class FlextPluginUtilities(FlextUtilities):
@@ -57,7 +57,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def discover_plugins(
             directory: Path | str,
-        ) -> r[Sequence[m.Plugin.PluginMetadata]]:
+        ) -> p.Result[Sequence[m.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
             Args:
@@ -110,7 +110,7 @@ class FlextPluginUtilities(FlextUtilities):
         @staticmethod
         def extract_plugin_metadata(
             plugin_path: Path,
-        ) -> r[m.Plugin.PluginMetadata]:
+        ) -> p.Result[m.Plugin.PluginMetadata]:
             """Extract metadata from plugin file.
 
             Args:
@@ -159,7 +159,7 @@ class FlextPluginUtilities(FlextUtilities):
                 )
 
         @staticmethod
-        def validate_plugin_file(plugin_path: Path) -> r[None]:
+        def validate_plugin_file(plugin_path: Path) -> p.Result[None]:
             """Validate plugin file structure and safety.
 
             Args:
@@ -204,7 +204,7 @@ class FlextPluginUtilities(FlextUtilities):
                 return r[None].fail(f"Plugin file validation failed: {e}")
 
         @staticmethod
-        def validate_plugin_name(name: str) -> r[None]:
+        def validate_plugin_name(name: str) -> p.Result[None]:
             """Validate plugin name follows naming conventions.
 
             Args:
@@ -231,7 +231,7 @@ class FlextPluginUtilities(FlextUtilities):
             def create_file_watcher(
                 watch_path: Path | str,
                 callback_function: Callable[..., t.RecursiveContainer] | None = None,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Create file system watcher for plugin hot reload.
 
                 Args:
@@ -275,7 +275,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def detect_file_changes(
                 watcher_config: t.RecursiveContainerMapping,
-            ) -> r[t.Plugin.StringList]:
+            ) -> p.Result[t.Plugin.StringList]:
                 """Detect file changes in watched directory.
 
                 Args:
@@ -327,7 +327,7 @@ class FlextPluginUtilities(FlextUtilities):
                     )
 
             @staticmethod
-            def validate_reload_safety(plugin_path: Path) -> r[None]:
+            def validate_reload_safety(plugin_path: Path) -> p.Result[None]:
                 """Validate that plugin can be safely reloaded.
 
                 Args:
@@ -391,7 +391,7 @@ class FlextPluginUtilities(FlextUtilities):
             MAX_EXECUTION_TIME_SECONDS: ClassVar[int] = 300
 
             @staticmethod
-            def calculate_plugin_hash(plugin_content: str) -> r[str]:
+            def calculate_plugin_hash(plugin_content: str) -> p.Result[str]:
                 """Calculate secure hash of plugin content for integrity verification.
 
                 Args:
@@ -423,7 +423,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def create_sandbox_config(
                 plugin_name: str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Create sandbox configuration for plugin execution.
 
                 Args:
@@ -468,7 +468,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def validate_plugin_security(
                 plugin_content: str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Validate plugin security before execution.
 
                 Args:
@@ -551,7 +551,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def load_plugin_config(
                 config_path: Path | str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Load plugin configuration from file.
 
                 Args:
@@ -617,7 +617,7 @@ class FlextPluginUtilities(FlextUtilities):
             def merge_plugin_configs(
                 base_config: t.RecursiveContainerMapping,
                 override_config: t.RecursiveContainerMapping,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Merge plugin configurations with override precedence.
 
                 Args:
@@ -670,7 +670,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def validate_plugin_config(
                 settings: t.RecursiveContainerMapping,
-            ) -> r[None]:
+            ) -> p.Result[None]:
                 """Validate plugin configuration structure and values.
 
                 Args:
@@ -730,7 +730,7 @@ class FlextPluginUtilities(FlextUtilities):
                 function_name: str,
                 args: t.RecursiveContainerList | None = None,
                 kwargs: t.RecursiveContainerMapping | None = None,
-            ) -> r[t.RecursiveContainer]:
+            ) -> p.Result[t.RecursiveContainer]:
                 """Execute a specific function within a plugin module.
 
                 Args:
@@ -780,7 +780,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ).map_error(lambda e: f"Plugin function execution failed: {e}")
 
             @staticmethod
-            def load_plugin_module(plugin_path: Path | str) -> r[ModuleType]:
+            def load_plugin_module(plugin_path: Path | str) -> p.Result[ModuleType]:
                 """Load plugin module from file path.
 
                 Args:
@@ -821,7 +821,7 @@ class FlextPluginUtilities(FlextUtilities):
             def validate_plugin_interface(
                 plugin_module: ModuleType,
                 required_functions: t.Plugin.StringList,
-            ) -> r[None]:
+            ) -> p.Result[None]:
                 """Validate that plugin module implements required interface.
 
                 Args:
@@ -876,7 +876,7 @@ class FlextPluginUtilities(FlextUtilities):
             MAX_REGISTRY_SIZE_MB: ClassVar[int] = 10
 
             @staticmethod
-            def cleanup_registry_backups(registry_directory: Path) -> r[None]:
+            def cleanup_registry_backups(registry_directory: Path) -> p.Result[None]:
                 """Clean up old registry backup files.
 
                 Args:
@@ -912,7 +912,7 @@ class FlextPluginUtilities(FlextUtilities):
             @staticmethod
             def load_plugin_registry(
                 registry_path: Path | str,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Load plugin registry from file.
 
                 Args:
@@ -962,7 +962,7 @@ class FlextPluginUtilities(FlextUtilities):
             def register_plugin(
                 registry: t.RecursiveContainerMapping,
                 plugin_metadata: m.Plugin.PluginMetadata,
-            ) -> r[t.RecursiveContainerMapping]:
+            ) -> p.Result[t.RecursiveContainerMapping]:
                 """Register plugin in registry.
 
                 Args:
@@ -1012,7 +1012,7 @@ class FlextPluginUtilities(FlextUtilities):
             def save_plugin_registry(
                 registry: t.RecursiveContainerMapping,
                 registry_path: Path | str,
-            ) -> r[None]:
+            ) -> p.Result[None]:
                 """Save plugin registry to file with backup.
 
                 Args:

@@ -11,7 +11,7 @@ import inspect
 from collections.abc import MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
-from flext_plugin import c, r, t, u
+from flext_plugin import c, p, r, t, u
 
 
 class FlextPluginHandlers:
@@ -227,7 +227,7 @@ class FlextPluginHandlers:
         self.logger.info("Plugin unloaded: %s", name_str)
         return {"success": True, "plugin_name": plugin_name}
 
-    def register_default_handlers(self) -> r[bool]:
+    def register_default_handlers(self) -> p.Result[bool]:
         """Register default event handlers for common plugin operations.
 
         Returns:
@@ -265,7 +265,7 @@ class FlextPluginHandlers:
         event_type: str,
         handler: t.Plugin.Handlers.EventHandler,
         priority: int = 0,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Register an event handler for a specific event type.
 
         Args:
@@ -311,7 +311,7 @@ class FlextPluginHandlers:
         self,
         event_type: str,
         event_data: t.RecursiveContainerMapping,
-    ) -> r[t.RecursiveContainerList]:
+    ) -> p.Result[t.RecursiveContainerList]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -372,7 +372,7 @@ class FlextPluginHandlers:
         self,
         event_type: str,
         handler: t.Plugin.Handlers.EventHandler,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Unregister an event handler.
 
         Args:

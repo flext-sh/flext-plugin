@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from flext_core import FlextContainer, r, x
+from flext_core import FlextContainer, p, r, x
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginPlatform,
@@ -125,7 +125,7 @@ class FlextPluginService(x):
         self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
         return len(completed_executions)
 
-    def disable_plugin(self, plugin_name: str) -> r[bool]:
+    def disable_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Disable a plugin by name.
 
         Args:
@@ -144,7 +144,7 @@ class FlextPluginService(x):
     def discover_and_register_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[m.Plugin.Plugin]]:
+    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
         """Discover plugins and register them in the service.
 
         Args:
@@ -250,7 +250,7 @@ class FlextPluginService(x):
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> r[Sequence[m.Plugin.Plugin]]:
+    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
         """Discover plugins from the specified paths.
 
         Alias for discover_and_register_plugins.
@@ -264,7 +264,7 @@ class FlextPluginService(x):
         """
         return self.discover_and_register_plugins(paths)
 
-    def enable_plugin(self, plugin_name: str) -> r[bool]:
+    def enable_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Enable a plugin by name.
 
         Args:
@@ -285,7 +285,7 @@ class FlextPluginService(x):
         plugin_name: str,
         context: t.RecursiveContainerMapping,
         execution_id: str | None = None,
-    ) -> r[FlextPluginPlatform.PluginExecution]:
+    ) -> p.Result[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.
 
         Args:
@@ -370,7 +370,7 @@ class FlextPluginService(x):
     def get_plugin_config(
         self,
         plugin_name: str,
-    ) -> r[m.Plugin.PluginConfig]:
+    ) -> p.Result[m.Plugin.PluginConfig]:
         """Get configuration for a plugin.
 
         Args:
@@ -396,7 +396,7 @@ class FlextPluginService(x):
     async def get_plugin_health(
         self,
         plugin_name: str,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Get health status for a specific plugin.
 
         Args:
@@ -418,7 +418,7 @@ class FlextPluginService(x):
     async def get_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -445,7 +445,7 @@ class FlextPluginService(x):
         operation_failure_prefix: str,
         response_label: str,
         operation_error_prefix: str,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         try:
             if not self._monitoring:
                 return r[t.RecursiveContainerMapping].fail(
@@ -534,7 +534,7 @@ class FlextPluginService(x):
             "registry_available": True,
         }
 
-    def install_plugin(self, plugin_path: str) -> r[m.Plugin.Plugin]:
+    def install_plugin(self, plugin_path: str) -> p.Result[m.Plugin.Plugin]:
         """Install a plugin from the specified path.
 
         This loads and registers the plugin.
@@ -585,7 +585,7 @@ class FlextPluginService(x):
         """
         return list(self._plugins.values())
 
-    def load_plugin(self, plugin_path: str) -> r[m.Plugin.Plugin]:
+    def load_plugin(self, plugin_path: str) -> p.Result[m.Plugin.Plugin]:
         """Load a single plugin from the specified path.
 
         Args:
@@ -684,7 +684,7 @@ class FlextPluginService(x):
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[m.Plugin.Plugin].fail(f"Loading error: {e!s}")
 
-    def uninstall_plugin(self, plugin_name: str) -> r[bool]:
+    def uninstall_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Uninstall a plugin by name.
 
         Args:
@@ -699,7 +699,7 @@ class FlextPluginService(x):
         del self._plugins[plugin_name]
         return r[bool].ok(True)
 
-    async def unload_plugin(self, plugin_name: str) -> r[bool]:
+    async def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unload a plugin from the service.
 
         Args:
@@ -748,7 +748,7 @@ class FlextPluginService(x):
         self,
         plugin_name: str,
         settings: t.RecursiveContainerMapping,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Update configuration for a plugin.
 
         Args:

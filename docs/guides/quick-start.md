@@ -188,7 +188,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
@@ -210,13 +210,13 @@ class GreetingPlugin(FlextPlugin):
             **kwargs
         )
 
-    def initialize(self) -> r[bool]:
+    def initialize(self) -> p.Result[bool]:
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
         return r[bool].ok(data=True)
 
-    def execute(self, data: t.Dict) -> r[t.Dict]:
+    def execute(self, data: t.Dict) -> p.Result[t.Dict]:
         """Generate greeting based on input data."""
         try:
             # Validate plugin is active
@@ -251,7 +251,7 @@ class GreetingPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Execution failed: {e}")
 
-    def cleanup(self) -> r[bool]:
+    def cleanup(self) -> p.Result[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
         return r[bool].ok(data=True)
