@@ -38,7 +38,7 @@ This guide provides practical implementation guidance for developing with the FL
 
 - **Clean Architecture First**: Domain-driven design with clear layer boundaries
 - **Type Safety**: 100% type annotations with Python 3.13+ features
-- **Railway Pattern**: r[T] for composable error handling
+- **Railway Pattern**: p.Result[T] for composable error handling
 - **Single Responsibility**: One class per module following FLEXT standards
 - **Test-Driven Development**: Comprehensive testing with high coverage targets
 

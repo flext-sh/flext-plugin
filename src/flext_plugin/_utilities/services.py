@@ -442,7 +442,7 @@ class FlextPluginService(x):
     def _get_plugin_monitoring_data(
         self,
         plugin_name: str,
-        operation: Callable[[str], r[t.RecursiveContainerMapping]],
+        operation: Callable[[str], p.Result[t.RecursiveContainerMapping]],
         operation_name: str,
         operation_failure_prefix: str,
         response_label: str,

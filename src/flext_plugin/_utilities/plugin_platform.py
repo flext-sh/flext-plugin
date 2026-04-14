@@ -379,12 +379,14 @@ class FlextPluginPlatform:
             ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
-            checked: r[bool] = self._require_protocol(self.discovery, "Discovery")
-            discovered: r[Sequence[t.RecursiveContainerMapping]] = checked.flat_map(
-                discover_and_validate
+            checked: p.Result[bool] = self._require_protocol(
+                self.discovery, "Discovery"
             )
-            plugins: r[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(
-                create_plugins_from_data
+            discovered: p.Result[Sequence[t.RecursiveContainerMapping]] = (
+                checked.flat_map(discover_and_validate)
+            )
+            plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = (
+                discovered.flat_map(create_plugins_from_data)
             )
             return plugins.map(self._register_all)
 
@@ -421,11 +423,13 @@ class FlextPluginPlatform:
             ) -> p.Result[FlextPluginPlatform.PluginExecution]:
                 return self._execute_with_executor(execution)
 
-            plugin_r: r[FlextPluginPlatform.Plugin] = get_plugin_result(plugin_name)
-            exec_r: r[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(
+            plugin_r: p.Result[FlextPluginPlatform.Plugin] = get_plugin_result(
+                plugin_name
+            )
+            exec_r: p.Result[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(
                 create_execution_from_plugin
             )
-            prepared_r: r[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(
+            prepared_r: p.Result[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(
                 prepare_execution_result
             )
             return prepared_r.flat_map(execute_with_executor_result)
@@ -507,11 +511,11 @@ class FlextPluginPlatform:
             ) -> p.Result[FlextPluginPlatform.Plugin]:
                 return self._validate_and_create_plugin(data)
 
-            checked_l: r[bool] = self._require_protocol(self.loader, "Loader")
-            loaded: r[t.RecursiveContainerMapping] = checked_l.flat_map(
+            checked_l: p.Result[bool] = self._require_protocol(self.loader, "Loader")
+            loaded: p.Result[t.RecursiveContainerMapping] = checked_l.flat_map(
                 load_and_validate
             )
-            plugin_r2: r[FlextPluginPlatform.Plugin] = loaded.flat_map(
+            plugin_r2: p.Result[FlextPluginPlatform.Plugin] = loaded.flat_map(
                 create_plugin_from_load_data
             )
             return plugin_r2.map(self._register_single)
@@ -534,8 +538,8 @@ class FlextPluginPlatform:
                 )
                 return self._add_to_plugins(plugin_entity)
 
-            validated_biz: r[bool] = plugin.validate_business_rules()
-            registered: r[bool] = validated_biz.flat_map(validate_plugin_result)
+            validated_biz: p.Result[bool] = plugin.validate_business_rules()
+            registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
             return registered.map(add_to_plugins_result)
 
         def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:

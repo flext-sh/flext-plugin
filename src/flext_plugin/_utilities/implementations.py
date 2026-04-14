@@ -692,7 +692,7 @@ class FlextPluginImplementations:
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )
-                _: r[None] = self._registry.register(plugin_entity)
+                _: p.Result[None] = self._registry.register(plugin_entity)
                 return r[FlextPluginImplementations.ConcretePlugin].ok(concrete_plugin)
             except (
                 ValueError,

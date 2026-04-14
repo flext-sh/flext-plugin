@@ -398,7 +398,7 @@ ______________________________________________________________________
 
 #### **Data Processing**
 
-- **Railway Pattern**: r[T] for composable data operations
+- **Railway Pattern**: p.Result[T] for composable data operations
 - **Functional Programming**: Immutable data transformations
 - **Streaming Processing**: Memory-efficient large data handling
 

@@ -223,7 +223,7 @@ All modules follow the FLEXT single-class-per-module standard with nested helper
 - ✅ **Domain-Driven Design**: Entities with business rules and validation
 - ✅ **FLEXT Compliance**: Single-class-per-module standard achieved across all modules
 - ✅ **Type Safety**: Complete MyPy compliance with Python 3.13+ features
-- ✅ **Railway Pattern**: r[T] throughout for composable error handling
+- ✅ **Railway Pattern**: p.Result[T] throughout for composable error handling
 
 ______________________________________________________________________
 

@@ -52,7 +52,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Single Responsibility**: Each component has one primary responsibility
 - **Dependency Inversion**: Components depend on abstractions, not concretions
 - **Interface Segregation**: Small, focused interfaces for better testability
-- **Railway Pattern**: r[T] for composable error handling throughout
+- **Railway Pattern**: p.Result[T] for composable error handling throughout
 
 ______________________________________________________________________
 
