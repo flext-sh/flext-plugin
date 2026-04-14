@@ -18,7 +18,7 @@
   - [Technical Debt](#technical-debt)
 - [🚀 Architecture Evolution](#architecture-evolution)
   - [Version 0.9.0 (Current)](#version-090-current)
-  - [Version 0.10.0 (Next)](#version-0100-next)
+  - [Version 0.12.0-dev (Next)](#version-0100-next)
   - [Version 1.0.0 (Future)](#version-100-future)
 - [🛠️ Documentation Tools and Workflow](#documentation-tools-and-workflow)
   - [Generation Tools](#generation-tools)
@@ -191,7 +191,7 @@ ______________________________________________________________________
 - ✅ File-based plugin discovery
 - ✅ Hot reload capabilities
 
-### Version 0.10.0 (Next)
+### Version 0.12.0-dev (Next)
 
 - 🔄 Entry points discovery (setuptools integration)
 - 🔄 CLI integration (enable command-line interface)

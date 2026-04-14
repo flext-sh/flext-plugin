@@ -225,7 +225,7 @@ All API methods return `r[T]` for consistent error handling:
 result = platform.load_plugin(plugin)
 if result.success:
     # Plugin loaded successfully
-    plugin_data = result.data
+    plugin_data = result.value
 else:
     # Handle error
     error_message = result.error
@@ -359,7 +359,7 @@ if result.success:
 # Discover plugins in directory
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
-    for plugin in discovery_result.data:
+    for plugin in discovery_result.value:
         print(f"Found: {plugin.name} v{plugin.plugin_version}")
 
         # Validate each plugin

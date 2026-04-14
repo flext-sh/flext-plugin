@@ -106,7 +106,7 @@ class FlextPluginModels:
         def activate(self) -> p.Result[bool]:
             """Business logic for plugin activation."""
             validation = self.validate_business_rules()
-            if validation.is_failure:
+            if validation.failure:
                 return validation
 
             self._status = PluginStatus.ACTIVE
@@ -182,7 +182,7 @@ class FlextPluginServices:
         try:
             # Use domain service (infrastructure adapter)
             discovery_result = await discovery_service.discover_plugins(paths)
-            if discovery_result.is_failure:
+            if discovery_result.failure:
                 return discovery_result
 
             plugin_configs = discovery_result.unwrap()
@@ -198,7 +198,7 @@ class FlextPluginServices:
 
                 # Validate business rules
                 validation = plugin.validate_business_rules()
-                if validation.is_success:
+                if validation.success:
                     plugins.append(plugin)
                 else:
                     # Log validation failure but continue
@@ -230,7 +230,7 @@ class FlextPluginServices:
 
             # Execute via infrastructure
             execution_result = await executor.execute_plugin(plugin, context)
-            if execution_result.is_success:
+            if execution_result.success:
                 execution.mark_completed(execution_result.unwrap())
             else:
                 execution.mark_failed(execution_result.error)
@@ -276,7 +276,7 @@ class FlextPluginDiscovery:
 
     def __init__(self, container: FlextContainer) -> None:
         self.container = container
-        self.logger = container.get("logger").unwrap()
+        self.logger = container.resolve("logger").unwrap()
 
     async def discover_plugins(self, paths: t.StringList) -> p.Result[List[Dict[str, t.RecursiveContainer]]]:
         """Discover plugins from file system."""
@@ -509,7 +509,7 @@ async def _load_plugins(
     plugins = []
     for name in names:
         plugin_result = await self._load_single_plugin(name)
-        if plugin_result.is_failure:
+        if plugin_result.failure:
             return plugin_result  # Early return on failure
         plugins.append(plugin_result.unwrap())
 
@@ -550,14 +550,14 @@ class TestPluginEntity:
             name="valid-plugin", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.is_success
+        assert result.success
 
         # Invalid plugin (empty name)
         plugin = FlextPluginModels.Plugin.create(
             name="", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.is_failure
+        assert result.failure
         assert "name cannot be empty" in result.error
 
     def test_plugin_activation_workflow(self):
@@ -568,15 +568,15 @@ class TestPluginEntity:
 
         # Should fail validation initially
         result = plugin.validate_business_rules()
-        assert result.is_failure
+        assert result.failure
 
         # Fix configuration and activate
         plugin.settings = {"type": "extension", "author": "test"}
         result = plugin.validate_business_rules()
-        assert result.is_success
+        assert result.success
 
         activation_result = plugin.activate()
-        assert activation_result.is_success
+        assert activation_result.success
         assert plugin.status == PluginStatus.ACTIVE
 ```
 
@@ -622,7 +622,7 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Verify results
-        assert result.is_success
+        assert result.success
         plugins = result.unwrap()
         assert len(plugins) == 1
         assert plugins[0].name == "test-plugin"
@@ -643,7 +643,7 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Should succeed but with empty list (invalid plugin filtered out)
-        assert result.is_success
+        assert result.success
         plugins = result.unwrap()
         assert len(plugins) == 0
 ```
@@ -720,7 +720,7 @@ def create_plugin():
         """Test complete plugin lifecycle from discovery to execution."""
         # 1. Discover plugins
         discovery_result = await platform.discover_plugins([str(temp_plugin_dir)])
-        assert discovery_result.is_success
+        assert discovery_result.success
 
         plugins = discovery_result.unwrap()
         assert len(plugins) == 1
@@ -732,14 +732,14 @@ def create_plugin():
         load_result = await platform.load_plugin(
             str(temp_plugin_dir / "test_plugin.py")
         )
-        assert load_result.is_success
+        assert load_result.success
 
         loaded_plugin = load_result.unwrap()
         assert loaded_plugin.name == "test-plugin"
 
         # 3. Register plugin
         register_result = await platform.register_plugin(loaded_plugin)
-        assert register_result.is_success
+        assert register_result.success
 
         # 4. Execute plugin
         context = {"input": "test data", "operation": "test"}
@@ -748,7 +748,7 @@ def create_plugin():
         )
 
         # Execution might fail for test plugin, but should return proper result
-        assert execution_result.is_success or execution_result.is_failure
+        assert execution_result.success or execution_result.failure
         # (Actual execution depends on plugin implementation)
 
         # 5. Verify execution history
@@ -757,7 +757,7 @@ def create_plugin():
 
         # 6. Unregister plugin
         unregister_result = await platform.unregister_plugin("test-plugin")
-        assert unregister_result.is_success
+        assert unregister_result.success
 ```
 
 ______________________________________________________________________
@@ -846,8 +846,8 @@ class FlextPlugin[ModuleName]:
     def __init__(self, container: FlextContainer) -> None:
         """Initialize module with dependency injection."""
         self.container = container
-        self.logger = container.get("logger").unwrap()
-        self.settings = container.get("settings").unwrap()
+        self.logger = container.resolve("logger").unwrap()
+        self.settings = container.resolve("settings").unwrap()
 
     # Public API methods
     async def public_method(
@@ -857,7 +857,7 @@ class FlextPlugin[ModuleName]:
         try:
             # Validation
             validation = self._validate_param(param)
-            if validation.is_failure:
+            if validation.failure:
                 return validation
 
             # Business logic
@@ -1382,7 +1382,7 @@ class FlextPluginExecutor:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 errors.append(f"Plugin {plugins[i].name}: {result}")
-            elif result.is_failure:
+            elif result.failure:
                 errors.append(f"Plugin {plugins[i].name}: {result.error}")
             else:
                 executions.append(result.unwrap())

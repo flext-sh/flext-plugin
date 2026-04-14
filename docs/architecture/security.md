@@ -33,7 +33,7 @@
   - [Compliance Metrics](#compliance-metrics)
 - [🚀 Security Architecture Evolution](#security-architecture-evolution)
   - [Current Security (v0.9.0)](#current-security-v090)
-  - [Enhanced Security (v0.10.0)](#enhanced-security-v0100)
+  - [Enhanced Security (v0.12.0-dev)](#enhanced-security-v0100)
   - [Enterprise Security (v1.0.0)](#enterprise-security-v100)
 - [📚 Security Architecture Documentation](#security-architecture-documentation)
   - [Security Documentation Index](#security-documentation-index)
@@ -618,7 +618,7 @@ ______________________________________________________________________
 - ✅ Audit logging framework
 - ✅ File-based security policies
 
-### Enhanced Security (v0.10.0)
+### Enhanced Security (v0.12.0-dev)
 
 - 🔄 Container-based isolation
 - 🔄 Advanced threat detection

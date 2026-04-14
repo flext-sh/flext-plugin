@@ -118,7 +118,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate configuration
             validation_result = self._validate_configuration()
-            if not validation_result.success():
+            if validation_result.failure():
                 return validation_result
 
             # Setup logging if enabled
@@ -158,7 +158,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate input data
             validation_result = self._validate_input_data(data)
-            if not validation_result.success():
+            if validation_result.failure():
                 return validation_result
 
             # Record execution start
@@ -363,7 +363,7 @@ def main():
         # Register plugin
         logger.info("Registering plugin...")
         register_result = platform.register_plugin(plugin)
-        if not register_result.success():
+        if register_result.failure():
             logger.error(f"Registration failed: {register_result.error}")
             return
 
@@ -372,7 +372,7 @@ def main():
         # Activate plugin
         logger.info("Activating plugin...")
         activate_result = platform.activate_plugin(plugin.name)
-        if not activate_result.success():
+        if activate_result.failure():
             logger.error(f"Activation failed: {activate_result.error}")
             return
 
@@ -396,7 +396,7 @@ def main():
             logger.info("Plugin execution successful!")
 
             # Extract result data
-            result_data = execution_result.data
+            result_data = execution_result.value
             print("\n--- Execution Results ---")
             print(f"Success: {result_data.get('success')}")
             print(
@@ -524,7 +524,7 @@ class TestBasicDataProcessorPlugin:
         )
 
         result = invalid_plugin.initialize()
-        assert result.is_failure()
+        assert result.failure()
         assert "batch_size must be a positive integer" in result.error
 
     # Execution Tests
@@ -549,11 +549,11 @@ class TestBasicDataProcessorPlugin:
         result = plugin.execute(test_data)
 
         assert result.success()
-        assert "processed_data" in result.data
-        assert "metadata" in result.data
+        assert "processed_data" in result.value
+        assert "metadata" in result.value
 
         # Check processed data
-        processed_data = result.data["processed_data"]
+        processed_data = result.value["processed_data"]
         assert processed_data["processed_payload"]["processed_name"] == "TEST USER"
         assert processed_data["processed_payload"]["processed_age"] == 50
         assert processed_data["processed_payload"]["processed_scores_count"] == 3
@@ -566,7 +566,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.is_failure()
+        assert result.failure()
         assert "Plugin not initialized" in result.error
 
     def test_execution_when_inactive(self, plugin):
@@ -577,7 +577,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.is_failure()
+        assert result.failure()
         assert "Plugin not active" in result.error
 
     def test_execution_invalid_input(self, plugin):
@@ -589,7 +589,7 @@ class TestBasicDataProcessorPlugin:
         invalid_data = {"invalid": "data"}
         result = plugin.execute(invalid_data)
 
-        assert result.is_failure()
+        assert result.failure()
         assert "Input data must contain 'payload' key" in result.error
 
     # Statistics Tests
@@ -665,7 +665,7 @@ class TestBasicDataProcessorPlugin:
         assert execute_result.success()
 
         # Verify execution result
-        result_data = execute_result.data
+        result_data = execute_result.value
         assert result_data["success"] is True
         assert "processed_data" in result_data
         assert "metadata" in result_data
@@ -711,7 +711,7 @@ class TestBasicDataProcessorPlugin:
         ):
             result = plugin.execute({"payload": {"test": "data"}})
 
-            assert result.is_failure()
+            assert result.failure()
             assert "Processing error" in result.error
 
             # Check error statistics
@@ -753,7 +753,7 @@ class TestPluginPerformance:
         assert execution_time < 1.0  # Should complete in under 1 second
 
         # Verify processing time is recorded
-        processing_time = result.data["metadata"]["processing_time"]
+        processing_time = result.value["metadata"]["processing_time"]
         assert processing_time > 0
         assert processing_time < 1.0
 

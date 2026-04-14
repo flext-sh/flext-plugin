@@ -282,7 +282,7 @@ from flext_plugin import create_flext_plugin_platform
         for test_data in test_cases:
             result = platform.execute_plugin(plugin.name, test_data)
             if result.success():
-                data = result.data
+                data = result.value
                 print(f"✅ {data['greeting']} (Language: {data['language']})")
             else:
                 print(f"❌ Failed: {result.error}")
@@ -330,7 +330,7 @@ def discover_plugins():
     result = discovery.discover_plugins("./")
 
     if result.success():
-        plugins = result.data
+        plugins = result.value
         print(f"Found {len(plugins)} plugins:")
         for plugin in plugins:
             print(f"  - {plugin.name} v{plugin.plugin_version} ({plugin.status})")
@@ -386,12 +386,12 @@ class TestGreetingPlugin:
         # Test English greeting
         result = plugin.execute({"name": "Test", "language": "english"})
         assert result.success()
-        assert result.data["greeting"] == "Hello, Test!"
+        assert result.value["greeting"] == "Hello, Test!"
 
         # Test Spanish greeting
         result = plugin.execute({"name": "Test", "language": "spanish"})
         assert result.success()
-        assert result.data["greeting"] == "¡Hola, Test!"
+        assert result.value["greeting"] == "¡Hola, Test!"
 
     def test_platform_integration(self, platform, plugin):
         """Test plugin integration with platform."""
@@ -408,7 +408,7 @@ class TestGreetingPlugin:
             plugin.name, {"name": "Platform", "language": "english"}
         )
         assert execute_result.success()
-        assert "Hello, Platform!" in str(execute_result.data)
+        assert "Hello, Platform!" in str(execute_result.value)
 
 
 # Run tests

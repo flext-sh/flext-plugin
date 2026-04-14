@@ -580,7 +580,7 @@ class PluginLifecycleManager:
 
             # Run initialization logic
             init_result = plugin.initialize()
-            if init_result.is_failure:
+            if init_result.failure:
                 self._cleanup_plugin_resources(plugin)
                 return init_result
 
@@ -601,7 +601,7 @@ class PluginLifecycleManager:
 
         # Check dependencies
         dependency_check = self._validate_plugin_dependencies(plugin)
-        if dependency_check.is_failure:
+        if dependency_check.failure:
             return dependency_check
 
         # Activate plugin
@@ -617,7 +617,7 @@ class PluginLifecycleManager:
         try:
             # Get current plugin
             current_plugin = self._get_plugin(plugin_id)
-            if current_plugin.is_failure:
+            if current_plugin.failure:
                 return current_plugin
 
             plugin = current_plugin.data
@@ -631,12 +631,12 @@ class PluginLifecycleManager:
 
             # Reload plugin
             reload_result = self._reload_plugin_from_file(plugin_id)
-            if reload_result.is_failure:
+            if reload_result.failure:
                 # Restore from backup
                 self._restore_plugin_state(plugin, state_backup.data)
                 return reload_result
 
-            new_plugin = reload_result.data
+            new_plugin = reload_result.value
 
             # Restore state and reactivate
             self._restore_plugin_state(new_plugin, state_backup.data)
@@ -694,7 +694,7 @@ class AdvancedPluginDiscovery:
                     # Filter by type
                     typed_plugins = [
                         p
-                        for p in result.data
+                        for p in result.value
                         if hasattr(p, "plugin_type") and p.plugin_type == plugin_type
                     ]
                     all_plugins.extend(typed_plugins)
@@ -732,7 +732,7 @@ class AdvancedPluginDiscovery:
             for category, plugins_result in singer_plugins.items():
                 if plugins_result.success:
                     validated = self._validate_against_meltano_config(
-                        plugins_result.data, meltano_config.get(category, [])
+                        plugins_result.value, meltano_config.get(category, [])
                     )
                     validated_plugins[category] = (
                         validated.data if validated.success else []
@@ -827,7 +827,7 @@ class FlextPlugin(FlextModels.Entity):
     def activate(self) -> p.Result[bool]:
         """Activate plugin with business validation and event generation."""
         validation = self.can_activate()
-        if validation.is_failure:
+        if validation.failure:
             return validation
 
         # Perform activation
@@ -1245,7 +1245,7 @@ class PluginCache:
                 if result.success:
                     self._cache_result(
                         cache_key,
-                        result.data,
+                        result.value,
                         {"invalidate_on_plugin_change": invalidate_on_plugin_change},
                     )
 
@@ -1380,11 +1380,11 @@ def process_plugin_data(
     """Process plugin data with complete type safety."""
     execution_result = plugin.execute(data)
 
-    if execution_result.is_failure:
+    if execution_result.failure:
         return r[bool].fail(execution_result.error)
 
     try:
-        transformed_data = transformer(execution_result.data)
+        transformed_data = transformer(execution_result.value)
         return validator(transformed_data)
     except Exception as e:
         return r[bool].fail(f"Data processing failed: {e}")
@@ -1411,13 +1411,13 @@ def safe_plugin_operation(plugin: FlextPlugin) -> p.Result[bool]:
 
         # Check plugin dependencies
         dependency_check = validate_plugin_dependencies(plugin)
-        if dependency_check.is_failure:
+        if dependency_check.failure:
             return dependency_check
 
         # Execute plugin operation
         result = plugin.execute({})
 
-        if result.is_failure:
+        if result.failure:
             # Log plugin-specific error
             logger.error(
                 "Plugin execution failed",
@@ -1522,7 +1522,7 @@ class DataProcessorPlugin(FlextPlugin):
         >>> plugin.initialize()
         >>> result = plugin.execute({"data": [...]})
         >>> if result.success:
-        ...     print(f"Processed {len(result.data)} records")
+        ...     print(f"Processed {len(result.value)} records")
 
     Singer Integration:
         When used as a Singer transform, the plugin automatically adapts
@@ -1639,7 +1639,7 @@ class DataProcessorPlugin(FlextPlugin):
             ... }
             >>> result = plugin.execute(input_data)
             >>> if result.success:
-            ...     stats = result.data["statistics"]
+            ...     stats = result.value["statistics"]
             ...     print(f"Processed {stats['records_processed']} records")
             ...     print(f"Processing time: {stats['processing_time']}s")
         """
@@ -1835,7 +1835,7 @@ class EcosystemPluginManager:
         for source_path in plugin_sources:
             discovery_result = self.platform.discover_plugins(source_path)
             if discovery_result.success:
-                for plugin in discovery_result.data:
+                for plugin in discovery_result.value:
                     register_result = self.registry.register_plugin(plugin)
                     if register_result.success:
                         registered_plugins.append(plugin.name)
@@ -1848,4 +1848,4 @@ ______________________________________________________________________
 **Last Updated**: August 3, 2025
 **Target Audience**: FLEXT Plugin developers and ecosystem contributors
 **Scope**: Python module organization for plugin system development
-**Version**: 0.9.9 RC → 0.9.9 development guidelines for plugin architecture
+**Version**: 0.12.0-dev → 0.9.9 development guidelines for plugin architecture

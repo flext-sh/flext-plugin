@@ -233,7 +233,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Use platform validation
 result = platform.validate_plugin(plugin)
-if result.is_failure:
+if result.failure:
     print(f"Validation error: {result.error}")
 ```
 

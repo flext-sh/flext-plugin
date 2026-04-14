@@ -187,9 +187,7 @@ Uses FlextContainer for service management:
 ```python
 def _setup_services(self) -> None:
     """Register services in DI container"""
-    self.container.register(
-        "plugin_service", FlextPluginService(container=self.container)
-    )
+    self.container.bind("plugin_service", FlextPluginService(container=self.container))
 ```
 
 ### Singer Ecosystem Integration

@@ -16,8 +16,8 @@
 - [Related Documentation](#related-documentation)
 <!-- TOC END -->
 
-**Version**: 0.9.9 RC
-**Last Updated**: 2025-09-17
+**Version**: 0.12.0-dev
+**Last Updated**: 2026-04-14
 
 ______________________________________________________________________
 
@@ -113,7 +113,7 @@ platform = FlextPluginPlatform()
 # Discover plugins in directory
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
-    plugins = discovery_result.data
+    plugins = discovery_result.value
     print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
         print(f"- {plugin.name} v{plugin.plugin_version}")

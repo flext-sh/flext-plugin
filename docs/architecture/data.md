@@ -18,7 +18,7 @@
   - [Data Quality Management](#data-quality-management)
 - [🚀 Data Architecture Evolution](#data-architecture-evolution)
   - [Current Architecture (v0.9.0)](#current-architecture-v090)
-  - [Planned Enhancements (v0.10.0)](#planned-enhancements-v0100)
+  - [Planned Enhancements (v0.12.0-dev)](#planned-enhancements-v0100)
   - [Future Architecture (v1.0.0)](#future-architecture-v100)
 - [🛠️ Data Architecture Tools and Technologies](#data-architecture-tools-and-technologies)
   - [Core Technologies](#core-technologies)
@@ -364,7 +364,7 @@ ______________________________________________________________________
 - ✅ Basic audit logging
 - ✅ JSON/YAML serialization
 
-### Planned Enhancements (v0.10.0)
+### Planned Enhancements (v0.12.0-dev)
 
 - 🔄 Database integration option (SQLite/PostgreSQL)
 - 🔄 Advanced audit logging with structured events
