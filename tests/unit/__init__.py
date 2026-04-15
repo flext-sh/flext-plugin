@@ -25,6 +25,19 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_models": ("test_models",),
         ".test_plugin": ("test_plugin",),
         ".test_types": ("test_types",),
+        "flext_plugin": (
+            "c",
+            "d",
+            "e",
+            "h",
+            "m",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "x",
+        ),
     },
 )
 
