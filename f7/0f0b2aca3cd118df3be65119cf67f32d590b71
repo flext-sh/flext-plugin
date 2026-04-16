@@ -1,0 +1,26 @@
+docs/guides/development.md
+  h_9db9d35f50cf33 192,195,201,205,349,352,355
+docs/architecture/data.md
+  h_9db9d35f50cf33 416-420,447
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 249,517
+src/flext_plugin/models.py
+  h_9db9d35f50cf33 16,57,67,91,549,561,735,739,804,807,810
+docs/guides/configuration.md
+  h_9db9d35f50cf33 256,381,384,388
+docs/architecture/implementation.md
+  h_9db9d35f50cf33 958,963,965-966,969-970,973-974,977-979
+src/flext_plugin/typings.py
+  h_9db9d35f50cf33 15,26,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "f70f0b2aca3cd118df3be65119cf67f32d590b71",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
