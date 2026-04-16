@@ -31,8 +31,8 @@ class FlextPluginEntities:
     Nested Classes:
     ===============
     - Plugin: Core plugin entity with lifecycle (Entity pattern)
-    - PluginConfig: Plugin configuration value t.RecursiveContainer (Value pattern)
-    - PluginMetadata: Plugin metadata value t.RecursiveContainer (Value pattern)
+    - PluginConfig: Plugin configuration value object (Value pattern)
+    - PluginMetadata: Plugin metadata value object (Value pattern)
     - PluginRegistry: Collection aggregate root (AggregateRoot pattern)
     - DomainEvents: Significant plugin domain events (Event pattern)
 

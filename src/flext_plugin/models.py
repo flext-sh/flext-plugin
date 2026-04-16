@@ -375,7 +375,7 @@ class FlextPluginModels(m):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
-            (file system, entry points, etc_constants.). Immutable value t.RecursiveContainer.
+            (file system, entry points, etc_constants.). Immutable value object.
 
             Attributes:
             name: Plugin unique identifier name
@@ -443,7 +443,7 @@ class FlextPluginModels(m):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
-            module t.RecursiveContainer and load metadata. Immutable value t.RecursiveContainer.
+            module t.RecursiveContainer and load metadata. Immutable value object.
 
             Attributes:
             name: Plugin unique identifier name
@@ -499,7 +499,7 @@ class FlextPluginModels(m):
             """Plugin reload record - immutable reload history entry.
 
             Records information about a plugin reload event including timing,
-            success/failure status, and optional error details. Immutable value t.RecursiveContainer.
+            success/failure status, and optional error details. Immutable value object.
 
             Attributes:
             plugin_name: Name of reloaded plugin
@@ -529,10 +529,10 @@ class FlextPluginModels(m):
             ] = 0.0
 
         class PluginMetadata(m.Value):
-            """Plugin metadata - immutable metadata value t.RecursiveContainer.
+            """Plugin metadata - immutable metadata value object.
 
             Represents complete metadata about a plugin including discovery
-            and description information. Immutable value t.RecursiveContainer.
+            and description information. Immutable value object.
 
             Attributes:
             name: Plugin unique identifier
@@ -578,7 +578,7 @@ class FlextPluginModels(m):
             """Event data - immutable event information.
 
             Represents structured event data with context and metadata.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             event_type: Type of event
@@ -602,7 +602,7 @@ class FlextPluginModels(m):
             """Validation result - immutable validation outcome.
 
             Represents result of plugin validation including status and details.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             valid: Whether validation passed
@@ -636,7 +636,7 @@ class FlextPluginModels(m):
             """Security report - immutable security scan result.
 
             Represents security scanning results for plugins.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             is_safe: Whether plugin passed security checks
@@ -671,7 +671,7 @@ class FlextPluginModels(m):
             """Watcher configuration - file system monitoring settings.
 
             Represents file watcher configuration for hot reload.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             watch_path: Path being watched
@@ -714,7 +714,7 @@ class FlextPluginModels(m):
             """Sandbox configuration - plugin execution sandbox settings.
 
             Represents security sandbox configuration for plugin execution.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             plugin_name: Name of plugin to sandbox
@@ -763,7 +763,7 @@ class FlextPluginModels(m):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
-            Immutable value t.RecursiveContainer.
+            Immutable value object.
 
             Attributes:
             version: Registry schema version

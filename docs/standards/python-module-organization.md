@@ -253,7 +253,7 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 # Core plugin patterns
 FlextPlugin  # Main plugin entity
 FlextPluginModels.Config  # Plugin configuration entity
-FlextPluginModels.Metadata  # Plugin metadata value t.RecursiveContainer
+FlextPluginModels.Metadata  # Plugin metadata value object
 FlextPluginModels.Registry  # Plugin collection aggregate
 FlextPluginPlatform  # Main platform orchestrator
 
@@ -1036,7 +1036,7 @@ from typing import List, Dict, Optional
 
 class FlextPluginModels.Metadata(FlextModels.Value):
     """
-    Immutable plugin metadata value t.RecursiveContainer.
+    Immutable plugin metadata value object.
 
     Contains descriptive information about the plugin that doesn't
     change frequently and doesn't affect plugin identity.
@@ -1079,7 +1079,7 @@ class FlextPluginModels.Metadata(FlextModels.Value):
 
 class FlextPluginModels.Config(FlextModels.Value):
     """
-    Immutable plugin configuration value t.RecursiveContainer.
+    Immutable plugin configuration value object.
 
     Contains plugin-specific configuration that affects plugin
     behavior but doesn't change plugin identity.
