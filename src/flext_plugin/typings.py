@@ -12,7 +12,7 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 from pydantic import TypeAdapter
 
 from flext_core import FlextTypes
-from flext_plugin import c
+from flext_plugin import c, m
 
 
 class FlextPluginTypes(FlextTypes):
@@ -23,10 +23,10 @@ class FlextPluginTypes(FlextTypes):
     - Canonical container contracts inherited from core `t.*`
     """
 
-    CONTAINER_MAPPING_ADAPTER: TypeAdapter[FlextTypes.ContainerMapping] = TypeAdapter(
+    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[FlextTypes.ContainerMapping] = TypeAdapter(
         FlextTypes.ContainerMapping
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: TypeAdapter[FlextTypes.ContainerValueMapping] = (
+    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[FlextTypes.ContainerValueMapping] = (
         TypeAdapter(FlextTypes.ContainerValueMapping)
     )
 

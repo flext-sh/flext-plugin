@@ -413,11 +413,11 @@ from typing import List, Dict, t.RecursiveContainer
 
 
 
-class FlextPluginSettings(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
-    version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
-    dependencies: t.StringList = Field(default_factory=list)
-    settings: Dict[str, t.RecursiveContainer] = Field(default_factory=dict)
+class FlextPluginSettings(m.BaseModel):
+    name: str = m.Field(min_length=1, max_length=100)
+    version: str = m.Field(pattern=r"^\d+\.\d+\.\d+$")
+    dependencies: t.StringList = m.Field(default_factory=list)
+    settings: Dict[str, t.RecursiveContainer] = m.Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -444,7 +444,7 @@ def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
     try:
         settings = FlextPluginSettings(**config_data)
         return r.ok(settings)
-    except ValidationError as e:
+    except c.ValidationError as e:
         return r.fail(f"Configuration validation failed: {e}")
 ```
 

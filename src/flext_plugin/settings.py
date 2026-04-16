@@ -9,16 +9,15 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from pydantic_settings import SettingsConfigDict
-
 from flext_core import FlextSettings
+from flext_plugin import m
 
 
 @FlextSettings.auto_register("plugin")
 class FlextPluginSettings(FlextSettings):
     """Plugin system runtime settings."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+    model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_PLUGIN_", extra="ignore"
     )
 

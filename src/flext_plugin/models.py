@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from pydantic import Field, field_validator
+from pydantic import field_validator
 
 from flext_core import m, u
 from flext_plugin import c, p, r, t
@@ -54,7 +54,7 @@ class FlextPluginModels(m):
 
             name: Annotated[
                 str,
-                Field(
+                m.Field(
                     ...,
                     min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
                     max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
@@ -64,45 +64,40 @@ class FlextPluginModels(m):
             ]
             plugin_version: Annotated[
                 str,
-                Field(
-                    default="1.0.0",
+                m.Field(
                     pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
-            ]
+            ] = "1.0.0"
             description: Annotated[
                 str,
-                Field(
-                    default="",
+                m.Field(
                     max_length=c.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
                     description="Plugin functionality description",
                 ),
-            ]
+            ] = ""
             author: Annotated[
                 str,
-                Field(
-                    default="",
+                m.Field(
                     max_length=c.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
                     description="Plugin author/maintainer",
                 ),
-            ]
+            ] = ""
             plugin_type: Annotated[
                 str,
-                Field(
-                    default=c.Plugin.PluginType.UTILITY,
+                m.Field(
                     description="Plugin type classification",
                 ),
-            ]
-            is_enabled: Annotated[
-                bool,
-                Field(default=True, description="Plugin enabled state"),
-            ]
+            ] = c.Plugin.PluginType.UTILITY
+            is_enabled: Annotated[bool, m.Field(description="Plugin enabled state")] = (
+                True
+            )
             metadata: Annotated[
                 t.MutableRecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Extensible plugin metadata",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
             @classmethod
             def create(
@@ -349,27 +344,25 @@ class FlextPluginModels(m):
 
             """
 
-            success: Annotated[bool, Field(description="Whether execution succeeded")]
+            success: Annotated[bool, m.Field(description="Whether execution succeeded")]
             data: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Execution output data",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
             error: Annotated[
                 str,
-                Field(
-                    default="",
+                m.Field(
                     description="Error message if execution failed",
                 ),
-            ]
+            ] = ""
             execution_time_ms: Annotated[
                 t.NonNegativeFloat,
-                Field(
-                    default=0.0,
+                m.Field(
                     description="Execution time in milliseconds",
                 ),
-            ]
+            ] = 0.0
 
         class DiscoveryData(m.Value):
             """Plugin discovery data - immutable discovery result.
@@ -389,7 +382,7 @@ class FlextPluginModels(m):
 
             name: Annotated[
                 str,
-                Field(
+                m.Field(
                     min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
                     max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
                     pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
@@ -398,30 +391,30 @@ class FlextPluginModels(m):
             ]
             version: Annotated[
                 str,
-                Field(
+                m.Field(
                     pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
             ]
-            path: Annotated[Path, Field(description="File system path to plugin")]
+            path: Annotated[Path, m.Field(description="File system path to plugin")]
             discovery_type: Annotated[
                 c.Plugin.DiscoveryTypeLiteral,
-                Field(
+                m.Field(
                     description="Type of discovered plugin",
                 ),
             ]
             discovery_method: Annotated[
                 c.Plugin.DiscoveryMethodLiteral,
-                Field(
+                m.Field(
                     description="Discovery method used",
                 ),
             ]
             metadata: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Extensible discovery metadata",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
             @field_validator("version", mode="before")
             @classmethod
@@ -458,7 +451,7 @@ class FlextPluginModels(m):
 
             name: Annotated[
                 str,
-                Field(
+                m.Field(
                     min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
                     max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
                     description="Plugin unique identifier name",
@@ -466,31 +459,31 @@ class FlextPluginModels(m):
             ]
             version: Annotated[
                 str,
-                Field(
+                m.Field(
                     pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
             ]
-            path: Annotated[Path, Field(description="File system path to plugin")]
+            path: Annotated[Path, m.Field(description="File system path to plugin")]
             module: Annotated[
                 types.ModuleType,
-                Field(
+                m.Field(
                     description="The loaded Python module t.RecursiveContainer",
                 ),
             ]
             load_type: Annotated[
                 c.Plugin.LoadTypeLiteral,
-                Field(
+                m.Field(
                     description="Type of loaded plugin",
                 ),
             ]
             loaded_at: Annotated[
                 datetime,
-                Field(description="Timestamp when plugin was loaded"),
+                m.Field(description="Timestamp when plugin was loaded"),
             ]
             entry_file: Annotated[
                 Path | None,
-                Field(
+                m.Field(
                     description="Entry file path for directory-based plugins",
                 ),
             ] = None
@@ -511,19 +504,19 @@ class FlextPluginModels(m):
 
             """
 
-            plugin_name: Annotated[str, Field(description="Name of reloaded plugin")]
-            plugin_path: Annotated[Path, Field(description="Path to reloaded plugin")]
-            timestamp: Annotated[datetime, Field(description="When reload occurred")]
-            success: Annotated[bool, Field(description="Whether reload succeeded")]
+            plugin_name: Annotated[str, m.Field(description="Name of reloaded plugin")]
+            plugin_path: Annotated[Path, m.Field(description="Path to reloaded plugin")]
+            timestamp: Annotated[datetime, m.Field(description="When reload occurred")]
+            success: Annotated[bool, m.Field(description="Whether reload succeeded")]
             error: Annotated[
                 str | None,
-                Field(
+                m.Field(
                     description="Error message if reload failed",
                 ),
             ] = None
             duration_ms: Annotated[
                 t.NonNegativeFloat,
-                Field(
+                m.Field(
                     description="Reload duration in milliseconds",
                 ),
             ] = 0.0
@@ -546,33 +539,26 @@ class FlextPluginModels(m):
 
             """
 
-            name: Annotated[str, Field(description="Plugin unique identifier")]
-            version: Annotated[str, Field(description="Plugin semantic version")]
-            description: Annotated[
-                str,
-                Field(default="", description="Plugin description"),
-            ]
-            author: Annotated[
-                str,
-                Field(default="Unknown", description="Plugin author"),
-            ]
-            plugin_type: Annotated[
-                str,
-                Field(default="extension", description="Type of plugin"),
-            ]
-            entry_point: Annotated[str, Field(description="Entry point for plugin")]
+            name: Annotated[str, m.Field(description="Plugin unique identifier")]
+            version: Annotated[str, m.Field(description="Plugin semantic version")]
+            description: Annotated[str, m.Field(description="Plugin description")] = ""
+            author: Annotated[str, m.Field(description="Plugin author")] = "Unknown"
+            plugin_type: Annotated[str, m.Field(description="Type of plugin")] = (
+                "extension"
+            )
+            entry_point: Annotated[str, m.Field(description="Entry point for plugin")]
             dependencies: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="List of plugin dependencies",
                 ),
-            ] = Field(default_factory=list)
+            ] = m.Field(default_factory=list)
             metadata: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Additional metadata",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
         class EventData(m.Value):
             """Event data - immutable event information.
@@ -588,15 +574,15 @@ class FlextPluginModels(m):
 
             """
 
-            event_type: Annotated[str, Field(description="Type of event")]
-            plugin_name: Annotated[str, Field(description="Associated plugin name")]
-            timestamp: Annotated[datetime, Field(description="When event occurred")]
+            event_type: Annotated[str, m.Field(description="Type of event")]
+            plugin_name: Annotated[str, m.Field(description="Associated plugin name")]
+            timestamp: Annotated[datetime, m.Field(description="When event occurred")]
             data: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Event-specific data",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
         class ValidationResult(m.Value):
             """Validation result - immutable validation outcome.
@@ -612,25 +598,25 @@ class FlextPluginModels(m):
 
             """
 
-            valid: Annotated[bool, Field(description="Whether validation passed")]
+            valid: Annotated[bool, m.Field(description="Whether validation passed")]
             errors: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="List of validation errors",
                 ),
-            ] = Field(default_factory=list)
+            ] = m.Field(default_factory=list)
             warnings: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="List of validation warnings",
                 ),
-            ] = Field(default_factory=list)
+            ] = m.Field(default_factory=list)
             details: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Additional validation details",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
         class SecurityReport(m.Value):
             """Security report - immutable security scan result.
@@ -648,23 +634,23 @@ class FlextPluginModels(m):
 
             is_safe: Annotated[
                 bool,
-                Field(description="Whether plugin passed security checks"),
+                m.Field(description="Whether plugin passed security checks"),
             ]
             violations: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="List of security violations",
                 ),
-            ] = Field(default_factory=list)
+            ] = m.Field(default_factory=list)
             warnings: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="List of security warnings",
                 ),
-            ] = Field(default_factory=list)
+            ] = m.Field(default_factory=list)
             analysis_time: Annotated[
                 datetime,
-                Field(description="When analysis was performed"),
+                m.Field(description="When analysis was performed"),
             ]
 
         class WatcherConfig(m.Value):
@@ -683,31 +669,29 @@ class FlextPluginModels(m):
 
             """
 
-            watch_path: Annotated[str, Field(description="Path being watched")]
+            watch_path: Annotated[str, m.Field(description="Path being watched")]
             watch_interval: Annotated[
                 t.PositiveFloat,
-                Field(description="Polling interval in seconds"),
+                m.Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
                 Callable[..., t.RecursiveContainer] | None,
-                Field(
-                    default=None,
+                m.Field(
                     description="Callback function reference",
                 ),
-            ]
+            ] = None
             active: Annotated[
-                bool,
-                Field(default=False, description="Whether watcher is active"),
-            ]
+                bool, m.Field(description="Whether watcher is active")
+            ] = False
             last_modified: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="File modification tracking",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
             created_at: Annotated[
                 datetime,
-                Field(description="Configuration creation time"),
+                m.Field(description="Configuration creation time"),
             ]
 
         class SandboxConfig(m.Value):
@@ -727,34 +711,36 @@ class FlextPluginModels(m):
 
             """
 
-            plugin_name: Annotated[str, Field(description="Name of plugin to sandbox")]
+            plugin_name: Annotated[
+                str, m.Field(description="Name of plugin to sandbox")
+            ]
             max_memory_mb: Annotated[
                 t.PositiveInt,
-                Field(description="Maximum memory in MB"),
+                m.Field(description="Maximum memory in MB"),
             ]
             max_execution_time: Annotated[
                 t.PositiveInt,
-                Field(
+                m.Field(
                     description="Maximum execution time in seconds",
                 ),
             ]
             allowed_modules: Annotated[
                 t.StrSequence,
-                Field(
+                m.Field(
                     description="Allowed import modules",
                 ),
             ]
             network_access: Annotated[
                 bool,
-                Field(description="Whether network access allowed"),
+                m.Field(description="Whether network access allowed"),
             ]
             file_system_access: Annotated[
                 str,
-                Field(description="File system access level"),
+                m.Field(description="File system access level"),
             ]
             environment_variables: Annotated[
                 t.StrMapping,
-                Field(
+                m.Field(
                     description="Environment variable settings",
                 ),
             ]
@@ -773,25 +759,25 @@ class FlextPluginModels(m):
 
             """
 
-            version: Annotated[str, Field(description="Registry schema version")]
+            version: Annotated[str, m.Field(description="Registry schema version")]
             plugins: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Dictionary of registered plugins",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
             last_updated: Annotated[
                 datetime,
-                Field(
+                m.Field(
                     description="Last update timestamp",
                 ),
-            ] = Field(default_factory=datetime.now)
+            ] = m.Field(default_factory=datetime.now)
             created_at: Annotated[
                 datetime,
-                Field(
+                m.Field(
                     description="Registry creation timestamp",
                 ),
-            ] = Field(default_factory=datetime.now)
+            ] = m.Field(default_factory=datetime.now)
 
         class PluginConfig(m.Value):
             """Plugin configuration model.
@@ -799,13 +785,13 @@ class FlextPluginModels(m):
             Represents configuration for a plugin with key-value pairs.
             """
 
-            plugin_name: Annotated[str, Field(description="Plugin name")]
+            plugin_name: Annotated[str, m.Field(description="Plugin name")]
             config: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Configuration settings",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
 
         class Registry(m.Value):
             """Plugin registry model.
@@ -815,22 +801,22 @@ class FlextPluginModels(m):
 
             plugins: Annotated[
                 t.RecursiveContainerMapping,
-                Field(
+                m.Field(
                     description="Dictionary of registered plugins",
                 ),
-            ] = Field(default_factory=dict)
+            ] = m.Field(default_factory=dict)
             last_updated: Annotated[
                 datetime,
-                Field(
+                m.Field(
                     description="Last update timestamp",
                 ),
-            ] = Field(default_factory=datetime.now)
+            ] = m.Field(default_factory=datetime.now)
             created_at: Annotated[
                 datetime,
-                Field(
+                m.Field(
                     description="Registry creation timestamp",
                 ),
-            ] = Field(default_factory=datetime.now)
+            ] = m.Field(default_factory=datetime.now)
 
 
 m = FlextPluginModels
