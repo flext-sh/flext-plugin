@@ -11,8 +11,6 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
-from pydantic import PrivateAttr
-
 from flext_core import FlextSettings
 from flext_plugin import (
     FlextPluginSettings,
@@ -222,26 +220,28 @@ class FlextPluginPlatform:
     class PluginPlatformService(s[None]):
         """railway-oriented plugin platform with functional composition."""
 
-        _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = PrivateAttr(
+        _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = u.PrivateAttr(
             default_factory=lambda: dict[str, FlextPluginPlatform.Plugin](),
         )
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
-            PrivateAttr(
+            u.PrivateAttr(
                 default_factory=lambda: dict[
                     str,
                     FlextPluginPlatform.PluginExecution,
                 ](),
             )
         )
-        _registry: FlextPluginPlatform.PluginRegistry | None = PrivateAttr(default=None)
-        _discovery: p.Plugin.PluginDiscovery | None = PrivateAttr(
-            default=None,
+        _registry: FlextPluginPlatform.PluginRegistry | None = u.PrivateAttr(
+            default_factory=lambda: None
         )
-        _loader: p.Plugin.PluginLoader | None = PrivateAttr(
-            default=None,
+        _discovery: p.Plugin.PluginDiscovery | None = u.PrivateAttr(
+            default_factory=lambda: None,
         )
-        _executor: p.Plugin.PluginExecution | None = PrivateAttr(
-            default=None,
+        _loader: p.Plugin.PluginLoader | None = u.PrivateAttr(
+            default_factory=lambda: None,
+        )
+        _executor: p.Plugin.PluginExecution | None = u.PrivateAttr(
+            default_factory=lambda: None,
         )
 
         @staticmethod

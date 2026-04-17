@@ -39,8 +39,8 @@ This document provides a chronological record of all architectural decisions mad
 
 ### Decision Log Structure
 
-| Date       | ADR     | Decision                       | Category     | Status      | Impact |
-| ---------- | ------- | ------------------------------ | ------------ | ----------- | ------ |
+| Date       | ADR     | Decision                       | Category     | Status     | Impact |
+| ---------- | ------- | ------------------------------ | ------------ | ---------- | ------ |
 | 2025-01-15 | ADR-001 | Adopt Clean Architecture       | Architecture | ✅ Accepted | High   |
 | 2025-01-20 | ADR-002 | Implement Domain-Driven Design | Architecture | ✅ Accepted | High   |
 | 2025-02-01 | ADR-003 | Plugin Discovery Mechanism     | Discovery    | ✅ Accepted | Medium |

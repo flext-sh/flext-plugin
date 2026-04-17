@@ -58,8 +58,8 @@ ______________________________________________________________________
 
 ### Core Architecture Documentation
 
-| Document                   | Framework  | Status      | Description                           |
-| -------------------------- | ---------- | ----------- | ------------------------------------- |
+| Document                   | Framework  | Status     | Description                           |
+| -------------------------- | ---------- | ---------- | ------------------------------------- |
 | **System Context**         | C4 Level 1 | ✅ Complete | System in FLEXT ecosystem             |
 | **Container Architecture** | C4 Level 2 | ✅ Complete | Technology stack and deployment       |
 | **Component Architecture** | C4 Level 3 | ✅ Complete | Module structure and relationships    |
@@ -70,16 +70,16 @@ ______________________________________________________________________
 
 ### Decision Documentation
 
-| Document         | Framework | Status      | Description                    |
-| ---------------- | --------- | ----------- | ------------------------------ |
+| Document         | Framework | Status     | Description                    |
+| ---------------- | --------- | ---------- | ------------------------------ |
 | **ADR Index**    | ADR       | ✅ Complete | All architectural decisions    |
 | **ADR Template** | ADR       | ✅ Complete | ADR creation template          |
 | **Decision Log** | ADR       | ✅ Complete | Chronological decision history |
 
 ### Implementation Documentation
 
-| Document                 | Framework | Status      | Description                        |
-| ------------------------ | --------- | ----------- | ---------------------------------- |
+| Document                 | Framework | Status     | Description                        |
+| ------------------------ | --------- | ---------- | ---------------------------------- |
 | **Implementation Guide** | Custom    | ✅ Complete | Development patterns and practices |
 | **API Reference**        | Custom    | ✅ Complete | Public API documentation           |
 | **Migration Guide**      | Custom    | ✅ Complete | Version migration strategies       |

@@ -17,13 +17,12 @@ from types import ModuleType
 from typing import ClassVar, Self
 
 from flext_cli import FlextCliUtilities
-from pydantic import model_validator
 
-from flext_core import FlextUtilities
+from flext_core import u
 from flext_plugin import c, m, p, r, t
 
 
-class FlextPluginUtilities(FlextUtilities):
+class FlextPluginUtilities(u):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin:
@@ -294,7 +293,7 @@ class FlextPluginUtilities(FlextUtilities):
                                 last_modified_raw,
                             ),
                         )
-                        if FlextUtilities.dict_like(last_modified_raw)
+                        if u.dict_like(last_modified_raw)
                         else {}
                     )
                     changed_files: MutableSequence[str] = []
@@ -489,9 +488,7 @@ class FlextPluginUtilities(FlextUtilities):
                         if dangerous_op in plugin_content:
                             security_report["safe"] = False
                             violations = security_report["violations"]
-                            if FlextUtilities.list_like(violations) and isinstance(
-                                violations, list
-                            ):
+                            if u.list_like(violations) and isinstance(violations, list):
                                 violations.append(
                                     f"Dangerous operation detected: {dangerous_op}",
                                 )
@@ -506,9 +503,7 @@ class FlextPluginUtilities(FlextUtilities):
                             )
                         ):
                             warnings = security_report["warnings"]
-                            if FlextUtilities.list_like(warnings) and isinstance(
-                                warnings, list
-                            ):
+                            if u.list_like(warnings) and isinstance(warnings, list):
                                 warnings.append(
                                     f"Potentially unsafe import: {module_name}"
                                 )
@@ -517,15 +512,11 @@ class FlextPluginUtilities(FlextUtilities):
                         or "socket" in plugin_content
                     ):
                         warnings = security_report["warnings"]
-                        if FlextUtilities.list_like(warnings) and isinstance(
-                            warnings, list
-                        ):
+                        if u.list_like(warnings) and isinstance(warnings, list):
                             warnings.append("Plugin may perform network operations")
                     if "file" in plugin_content.lower() or "write" in plugin_content:
                         warnings = security_report["warnings"]
-                        if FlextUtilities.list_like(warnings) and isinstance(
-                            warnings, list
-                        ):
+                        if u.list_like(warnings) and isinstance(warnings, list):
                             warnings.append("Plugin may perform file operations")
                     return r[t.RecursiveContainerMapping].ok(dict(security_report))
                 except (
@@ -589,7 +580,7 @@ class FlextPluginUtilities(FlextUtilities):
                             f"Unsupported configuration format: {path.suffix}",
                         )
                     if (
-                        FlextUtilities.dict_like(settings)
+                        u.dict_like(settings)
                         and settings.get("schema_version")
                         != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
                     ):
@@ -1060,7 +1051,7 @@ class FlextPluginUtilities(FlextUtilities):
                 ) as e:
                     return r[None].fail(f"Registry save failed: {e}")
 
-    @model_validator(mode="after")
+    @u.model_validator(mode="after")
     def validate_utilities_configuration(self) -> Self:
         """Validate the complete utilities configuration."""
         required_classes = ["Plugin"]

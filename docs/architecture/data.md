@@ -408,16 +408,16 @@ ______________________________________________________________________
 
 ```python
 # Pydantic data models with validation
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, u.Field
 from typing import List, Dict, t.RecursiveContainer
 
 
 
 class FlextPluginSettings(m.BaseModel):
-    name: str = m.Field(min_length=1, max_length=100)
-    version: str = m.Field(pattern=r"^\d+\.\d+\.\d+$")
-    dependencies: t.StringList = m.Field(default_factory=list)
-    settings: Dict[str, t.RecursiveContainer] = m.Field(default_factory=dict)
+    name: str = u.Field(min_length=1, max_length=100)
+    version: str = u.Field(pattern=r"^\d+\.\d+\.\d+$")
+    dependencies: t.StringList = u.Field(default_factory=list)
+    settings: Dict[str, t.RecursiveContainer] = u.Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -519,9 +519,9 @@ ______________________________________________________________________
 
 #### **Core Entities**
 
-| Entity        | Description               | Key Fields                                | Relationships       |
+| Entity        | Description               | Key u.Fields                              | Relationships       |
 | ------------- | ------------------------- | ----------------------------------------- | ------------------- |
-| Plugin        | Core plugin entity        | name, version, status, settings             | Has many Executions |
+| Plugin        | Core plugin entity        | name, version, status, settings           | Has many Executions |
 | Execution     | Plugin execution instance | execution_id, plugin_name, status, result | Belongs to Plugin   |
 | Registry      | Plugin registry container | name, plugins, version                    | Contains Plugins    |
 | Configuration | Plugin configuration      | dependencies, security, limits            | Belongs to Plugin   |

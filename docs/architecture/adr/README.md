@@ -68,8 +68,8 @@ ______________________________________________________________________
 
 ### Core Architecture Decisions
 
-| ADR     | Title                            | Status      | Date       | Category     |
-| ------- | -------------------------------- | ----------- | ---------- | ------------ |
+| ADR     | Title                            | Status     | Date       | Category     |
+| ------- | -------------------------------- | ---------- | ---------- | ------------ |
 | ADR-001 | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
 | ADR-002 | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
 | ADR-003 | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
@@ -78,8 +78,8 @@ ______________________________________________________________________
 
 ### Implementation Decisions
 
-| ADR     | Title                           | Status      | Date       | Category       |
-| ------- | ------------------------------- | ----------- | ---------- | -------------- |
+| ADR     | Title                           | Status     | Date       | Category       |
+| ------- | ------------------------------- | ---------- | ---------- | -------------- |
 | ADR-006 | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
 | ADR-007 | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
 | ADR-008 | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
@@ -88,8 +88,8 @@ ______________________________________________________________________
 
 ### Future Decisions (Proposed)
 
-| ADR     | Title                           | Status      | Date       | Category    |
-| ------- | ------------------------------- | ----------- | ---------- | ----------- |
+| ADR     | Title                           | Status     | Date       | Category    |
+| ------- | ------------------------------- | ---------- | ---------- | ----------- |
 | ADR-011 | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
 | ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
 | ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |

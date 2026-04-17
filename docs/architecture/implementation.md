@@ -946,7 +946,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 
 ```python
 # flext_plugin/settings.py
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, u.Field, validator
 from typing import List, Optional
 from flext_plugin import FlextPluginConstants
 
@@ -955,28 +955,28 @@ class FlextPluginSettings:
     """Plugin system configuration using Pydantic."""
 
     # Plugin discovery settings
-    plugin_paths: t.StringList = m.Field(
+    plugin_paths: t.StringList = u.Field(
         default_factory=lambda: ["./plugins", "~/.flext/plugins", "/opt/flext/plugins"]
     )
 
     # Security settings
-    security_level: str = m.Field(default="HIGH", regex="^(LOW|MEDIUM|HIGH)$")
+    security_level: str = u.Field(default="HIGH", regex="^(LOW|MEDIUM|HIGH)$")
 
-    enable_plugin_validation: bool = m.Field(default=True)
-    enable_sandboxing: bool = m.Field(default=True)
+    enable_plugin_validation: bool = u.Field(default=True)
+    enable_sandboxing: bool = u.Field(default=True)
 
     # Performance settings
-    max_concurrent_plugins: int = m.Field(default=100, ge=1, le=1000)
-    plugin_timeout_seconds: int = m.Field(default=300, ge=1, le=3600)
+    max_concurrent_plugins: int = u.Field(default=100, ge=1, le=1000)
+    plugin_timeout_seconds: int = u.Field(default=300, ge=1, le=3600)
 
     # Hot reload settings
-    enable_hot_reload: bool = m.Field(default=True)
-    hot_reload_interval: int = m.Field(default=2, ge=1, le=60)
+    enable_hot_reload: bool = u.Field(default=True)
+    hot_reload_interval: int = u.Field(default=2, ge=1, le=60)
 
     # Monitoring settings
-    enable_metrics: bool = m.Field(default=True)
-    enable_tracing: bool = m.Field(default=True)
-    metrics_interval: int = m.Field(default=60, ge=10, le=3600)
+    enable_metrics: bool = u.Field(default=True)
+    enable_tracing: bool = u.Field(default=True)
+    metrics_interval: int = u.Field(default=60, ge=10, le=3600)
 
     @validator("plugin_paths")
     def validate_plugin_paths(cls, paths):
