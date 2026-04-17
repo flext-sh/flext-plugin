@@ -1,0 +1,42 @@
+docs/guides/configuration.md
+  h_9db9d35f50cf33 370,384,388
+src/flext_plugin/models.py
+  h_9db9d35f50cf33 55,65,72,79,86,90,95,98,145,176,345,348,351,354,360,383,392,397,400,406,412,415,417,452,460,465,468,474,480,484,505-508,511,517,540-544,547,550,553,556,559,575-577,580,583,599,602,605,608,611,614,617,635,639,642,645,648,651,670,673,677,682,686,689,692,713,717,721,727,733,737,741,760,763,766,769,772,775,778,786,789,792,802,805,808,811,814,817
+docs/architecture/implementation.md
+  h_9db9d35f50cf33 949,958,963,965-966,969-970,973-974,977-979
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 594
+docs/architecture/data.md
+  h_9db9d35f50cf33 411,417-420,522
+src/flext_plugin/utilities.py
+  h_9db9d35f50cf33 21,25,296,583,1054
+  042872ef4e0005dc 491,506,515,519
+src/flext_plugin/_utilities/plugin_platform.py
+  h_9db9d35f50cf33 223,227,237,240,243
+  042872ef4e0005dc 234-235,238,241,244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "ad5c1f9577687ca43c21ef26ae5a42649f728e64",
+  "prompts": {
+    "042872ef4e0005dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5bfd9f1e-a74b-4952-b429-f2c6cb088948",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 19,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
