@@ -1,0 +1,38 @@
+src/flext_plugin/constants.py
+  h_9db9d35f50cf33 40,44,126,131,142,145-146,151,208,214
+src/flext_plugin/_utilities/adapters.py
+  h_9db9d35f50cf33 339,341,343
+src/flext_plugin/_utilities/plugin_platform.py
+  h_9db9d35f50cf33 285-286,436,438,440,443-444,447-449,452,455,462-464
+src/flext_plugin/api.py
+  h_9db9d35f50cf33 61-63,65-67,69-71
+tests/conftest.py
+  h_9db9d35f50cf33 28-29
+tests/unit/test_domain_entities.py
+  h_9db9d35f50cf33 267-268
+src/flext_plugin/_utilities/services.py
+  h_9db9d35f50cf33 140,279,345,349,360-361,385,491-492,501,508-509,517-518,764
+src/flext_plugin/protocols.py
+  h_9db9d35f50cf33 105,108,285-286
+tests/unit/test_plugin.py
+  h_9db9d35f50cf33 138-142
+src/flext_plugin/_utilities/implementations.py
+  h_9db9d35f50cf33 559,563
+pyproject.toml
+  h_9db9d35f50cf33 63
+src/flext_plugin/models.py
+  h_9db9d35f50cf33 14,55,355,419,557,563,587,609,615,621,646,652,693,770,796,809
+src/flext_plugin/__version__.py
+  h_9db9d35f50cf33 14,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "f78e96c1647e70510a3307d8bf07b4e7ce5ed6f9",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
