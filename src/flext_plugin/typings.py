@@ -9,41 +9,40 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 
-from pydantic import TypeAdapter
+from flext_cli import m, t
 
-from flext_core import FlextTypes
-from flext_plugin import c, m
+from flext_plugin import c
 
 
-class FlextPluginTypes(FlextTypes):
+class FlextPluginTypes(t):
     """Plugin type system with Python 3.13+ patterns.
 
     Follows FLEXT ecosystem namespace conventions:
-    - FlextTypes.Plugin.* for plugin-specific types
+    - t.Plugin.* for plugin-specific types
     - Canonical container contracts inherited from core `t.*`
     """
 
-    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[FlextTypes.ContainerMapping] = TypeAdapter(
-        FlextTypes.ContainerMapping
+    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerMapping] = m.TypeAdapter(
+        t.ContainerMapping
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[FlextTypes.ContainerValueMapping] = (
-        TypeAdapter(FlextTypes.ContainerValueMapping)
+    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerValueMapping] = (
+        m.TypeAdapter(t.ContainerValueMapping)
     )
 
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = FlextTypes.StrSequence
+        type StringList = t.StrSequence
         type StringSet = set[str]
-        type StringDict = FlextTypes.StrMapping
+        type StringDict = t.StrMapping
         type FloatDict = Mapping[str, float]
-        type PluginList = Sequence[FlextTypes.GeneralValueMapping]
-        type PluginDict = FlextTypes.GeneralValueMapping
-        type ConfigDict = FlextTypes.GeneralValueMapping
-        type MetadataDict = FlextTypes.GeneralValueMapping
-        type InputDict = FlextTypes.GeneralValueMapping
-        type OutputDict = FlextTypes.GeneralValueMapping
-        type PluginEntity = FlextTypes.GeneralValueMapping
+        type PluginList = Sequence[t.GeneralValueMapping]
+        type PluginDict = t.GeneralValueMapping
+        type ConfigDict = t.GeneralValueMapping
+        type MetadataDict = t.GeneralValueMapping
+        type InputDict = t.GeneralValueMapping
+        type OutputDict = t.GeneralValueMapping
+        type PluginEntity = t.GeneralValueMapping
         DiscoveryTypeLiteral = c.Plugin.DiscoveryTypeLiteral
         DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
         LoadTypeLiteral = c.Plugin.LoadTypeLiteral
@@ -52,8 +51,8 @@ class FlextPluginTypes(FlextTypes):
             """Event handler type definitions."""
 
             type EventHandler = Callable[
-                [FlextTypes.ContainerMapping],
-                Awaitable[FlextTypes.ContainerMapping],
+                [t.ContainerMapping],
+                Awaitable[t.ContainerMapping],
             ]
 
             class HandlerInfo:
@@ -62,8 +61,8 @@ class FlextPluginTypes(FlextTypes):
                 def __init__(
                     self,
                     handler: Callable[
-                        [FlextTypes.ContainerMapping],
-                        Awaitable[FlextTypes.ContainerMapping],
+                        [t.ContainerMapping],
+                        Awaitable[t.ContainerMapping],
                     ],
                     priority: int = 0,
                 ) -> None:
@@ -84,45 +83,45 @@ class FlextPluginTypes(FlextTypes):
 
             type SecurityLevel = str
             type Permission = str
-            type SecurityConfig = FlextTypes.GeneralValueMapping
+            type SecurityConfig = t.GeneralValueMapping
             SecurityLevelLiteral = c.Plugin.SecurityLevelLiteral
 
         class Performance:
             """Performance metrics and monitoring type aliases."""
 
-            type Metrics = FlextTypes.GeneralValueMapping
-            type PerformanceData = FlextTypes.GeneralValueMapping
-            type ResourceUsage = FlextTypes.GeneralValueMapping
+            type Metrics = t.GeneralValueMapping
+            type PerformanceData = t.GeneralValueMapping
+            type ResourceUsage = t.GeneralValueMapping
 
         class Discovery:
             """Plugin discovery type aliases."""
 
             type DiscoveryPath = str
-            type DiscoveryResult = FlextTypes.GeneralValueMapping
-            type PluginLoader = FlextTypes.GeneralValueType
+            type DiscoveryResult = t.GeneralValueMapping
+            type PluginLoader = t.GeneralValueType
             type EntryPoint = str
 
         class Execution:
             """Plugin execution type aliases."""
 
-            type ExecutionContext = FlextTypes.GeneralValueMapping
-            type ExecutionResult = FlextTypes.GeneralValueMapping
+            type ExecutionContext = t.GeneralValueMapping
+            type ExecutionResult = t.GeneralValueMapping
             type ExecutionError = str
-            type ResourceLimits = FlextTypes.GeneralValueMapping
+            type ResourceLimits = t.GeneralValueMapping
 
         class Registry:
             """Plugin registry type aliases."""
 
-            type RegistryConfig = FlextTypes.GeneralValueMapping
-            type RegistryEntry = FlextTypes.GeneralValueMapping
-            type RegistrySync = FlextTypes.GeneralValueMapping
+            type RegistryConfig = t.GeneralValueMapping
+            type RegistryEntry = t.GeneralValueMapping
+            type RegistrySync = t.GeneralValueMapping
 
         class HotReload:
             """Hot reload and file watching type aliases."""
 
-            type WatchConfig = FlextTypes.GeneralValueMapping
-            type ReloadEvent = FlextTypes.GeneralValueMapping
-            type FileWatcher = FlextTypes.GeneralValueType
+            type WatchConfig = t.GeneralValueMapping
+            type ReloadEvent = t.GeneralValueMapping
+            type FileWatcher = t.GeneralValueType
 
 
 t = FlextPluginTypes
