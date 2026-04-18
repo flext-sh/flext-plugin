@@ -112,7 +112,7 @@ class TestFlextPlugin:
         assert result.success
 
 
-class TestFlextPluginSettings:
+class TestFlextPluginSettingsEntities:
     """Test FlextPluginModels.Config entity functionality."""
 
     def test_configuration_creation(self) -> None:

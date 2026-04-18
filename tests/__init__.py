@@ -45,7 +45,10 @@ if _t.TYPE_CHECKING:
         TestFlextPluginExecution,
         TestFlextPluginMetadata,
         TestFlextPluginRegistryEntity,
+        TestFlextPluginSettingsEntities,
     )
+    from tests.unit.test_domain_ports import TestFlextPluginDiscoveryPorts
+    from tests.unit.test_handlers import TestFlextPluginHandlersHandlers
     from tests.unit.test_hot_reload import TestFlextPluginHotReload
     from tests.unit.test_hot_reload_package import TestHotReloadPackage
     from tests.unit.test_loader import TestDynamicLoaderAdapter, TestFlextPluginLoader
@@ -107,7 +110,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestFlextPluginExecution",
                 "TestFlextPluginMetadata",
                 "TestFlextPluginRegistryEntity",
+                "TestFlextPluginSettingsEntities",
             ),
+            ".unit.test_domain_ports": ("TestFlextPluginDiscoveryPorts",),
+            ".unit.test_handlers": ("TestFlextPluginHandlersHandlers",),
             ".unit.test_hot_reload": ("TestFlextPluginHotReload",),
             ".unit.test_hot_reload_package": ("TestHotReloadPackage",),
             ".unit.test_loader": (
@@ -170,9 +176,11 @@ __all__: list[str] = [
     "TestFlextPluginConstantsLifecycle",
     "TestFlextPluginConstantsPluginType",
     "TestFlextPluginDiscovery",
+    "TestFlextPluginDiscoveryPorts",
     "TestFlextPluginDiscoveryReal",
     "TestFlextPluginExecution",
     "TestFlextPluginHandlers",
+    "TestFlextPluginHandlersHandlers",
     "TestFlextPluginHotReload",
     "TestFlextPluginLoader",
     "TestFlextPluginMetadata",
@@ -183,6 +191,7 @@ __all__: list[str] = [
     "TestFlextPluginServiceStubBridges",
     "TestFlextPluginServiceWithRealAdapters",
     "TestFlextPluginSettings",
+    "TestFlextPluginSettingsEntities",
     "TestFlextPluginTypes",
     "TestHotReloadPackage",
     "TestPluginError",
