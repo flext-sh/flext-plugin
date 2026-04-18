@@ -22,8 +22,8 @@ class FlextPluginTypes(t):
     - Canonical container contracts inherited from core `t.*`
     """
 
-    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerMapping] = m.TypeAdapter(
-        t.ContainerMapping
+    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[t.RecursiveContainerMapping] = (
+        m.TypeAdapter(t.RecursiveContainerMapping)
     )
     CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerValueMapping] = (
         m.TypeAdapter(t.ContainerValueMapping)
@@ -51,8 +51,8 @@ class FlextPluginTypes(t):
             """Event handler type definitions."""
 
             type EventHandler = Callable[
-                [t.ContainerMapping],
-                Awaitable[t.ContainerMapping],
+                [t.RecursiveContainerMapping],
+                Awaitable[t.RecursiveContainerMapping],
             ]
 
             class HandlerInfo:
@@ -61,8 +61,8 @@ class FlextPluginTypes(t):
                 def __init__(
                     self,
                     handler: Callable[
-                        [t.ContainerMapping],
-                        Awaitable[t.ContainerMapping],
+                        [t.RecursiveContainerMapping],
+                        Awaitable[t.RecursiveContainerMapping],
                     ],
                     priority: int = 0,
                 ) -> None:
