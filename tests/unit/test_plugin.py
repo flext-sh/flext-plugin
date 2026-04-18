@@ -135,8 +135,11 @@ class TestPluginRegistry:
     @pytest.fixture(autouse=True)
     def reset_registry(self) -> None:
         """Reset class-level storage before each test."""
-        FlextPluginPlatform.PluginRegistry._class_plugin_storage = {}
-        FlextPluginPlatform.PluginRegistry._class_registered_keys = set()
+        registry = FlextPluginPlatform.PluginRegistry.create()
+        plugins_result = registry.list_plugins()
+        if plugins_result.success:
+            for plugin_name in plugins_result.value:
+                _ = registry.unregister(plugin_name)
 
     @pytest.fixture
     def registry(self) -> FlextPluginPlatform.PluginRegistry:

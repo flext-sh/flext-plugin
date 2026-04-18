@@ -336,8 +336,11 @@ class FlextPluginAdapters:
             self._plugins: t.MutableRecursiveContainerMapping = {}
 
         @override
-        def get_plugin(self, plugin_name: str) -> p.Result[t.RecursiveContainer | None]:
-            """Get plugin from registry."""
+        def fetch_plugin(
+            self,
+            plugin_name: str,
+        ) -> p.Result[t.RecursiveContainer | None]:
+            """Fetch a plugin from registry."""
             return r[t.RecursiveContainer | None].ok(self._plugins.get(plugin_name))
 
         @override

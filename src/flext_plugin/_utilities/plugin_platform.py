@@ -282,8 +282,8 @@ class FlextPluginPlatform:
             return self._executor
 
         @property
-        def get_platform_status(self) -> t.RecursiveContainerMapping:
-            """Get platform status information."""
+        def platform_status(self) -> t.RecursiveContainerMapping:
+            """Return platform status information."""
             return {
                 "total_plugins": len(self.plugins),
                 "active_plugins": sum(
@@ -312,7 +312,6 @@ class FlextPluginPlatform:
                 self._registry = FlextPluginPlatform.PluginRegistry.create()
             return self._registry
 
-        @override
         @classmethod
         def _get_service_config_type(cls) -> type[FlextSettings]:
             """Return FlextPluginSettings as the settings type for this service."""
@@ -434,32 +433,35 @@ class FlextPluginPlatform:
             )
             return prepared_r.flat_map(execute_with_executor_result)
 
-        def get_execution(self, eid: str) -> FlextPluginPlatform.PluginExecution | None:
-            """Get execution by ID."""
+        def fetch_execution(
+            self,
+            eid: str,
+        ) -> FlextPluginPlatform.PluginExecution | None:
+            """Fetch an execution by ID."""
             return self.executions.get(eid)
 
-        def get_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
-            """Get plugin by name."""
+        def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
+            """Fetch a plugin by name."""
             return self.plugins.get(name)
 
-        def get_plugin_status(self, name: str) -> str | None:
-            """Get plugin status."""
-            plugin = self.get_plugin(name)
+        def fetch_plugin_status(self, name: str) -> str | None:
+            """Fetch a plugin status label."""
+            plugin = self.fetch_plugin(name)
             return plugin.status if plugin else None
 
-        def get_running_executions(
+        def list_running_executions(
             self,
         ) -> Sequence[FlextPluginPlatform.PluginExecution]:
-            """Get all running executions."""
+            """List all running executions."""
             return [
                 execution
                 for execution in self.executions.values()
                 if execution.is_running
             ]
 
-        def is_plugin_active(self, name: str) -> bool:
-            """Check if plugin is active."""
-            plugin = self.get_plugin(name)
+        def resolve_plugin_active(self, name: str) -> bool:
+            """Resolve whether a plugin is active."""
+            plugin = self.fetch_plugin(name)
             return plugin.active() if plugin else False
 
         def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:

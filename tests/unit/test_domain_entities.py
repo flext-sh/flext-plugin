@@ -264,8 +264,8 @@ class TestFlextPluginMetadata:
         assert metadata.name == "minimal-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.description == ""
-        assert metadata.dependencies == []
-        assert metadata.metadata == {}
+        assert metadata.dependencies == ()
+        assert dict(metadata.metadata) == {}
 
     def test_metadata_with_all_fields(self) -> None:
         """Test PluginMetadata with all fields."""

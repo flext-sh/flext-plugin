@@ -137,7 +137,7 @@ class FlextPluginService(x):
             r indicating success or failure
 
         """
-        plugin = self.get_plugin(plugin_name)
+        plugin = self.fetch_plugin(plugin_name)
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         plugin.is_enabled = False
@@ -276,7 +276,7 @@ class FlextPluginService(x):
             r indicating success or failure
 
         """
-        plugin = self.get_plugin(plugin_name)
+        plugin = self.fetch_plugin(plugin_name)
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         plugin.is_enabled = True
@@ -342,11 +342,11 @@ class FlextPluginService(x):
                 f"Execution error: {e!s}",
             )
 
-    def get_execution(
+    def fetch_execution(
         self,
         execution_id: str,
     ) -> FlextPluginPlatform.PluginExecution | None:
-        """Get an execution by ID.
+        """Fetch an execution by ID.
 
         Args:
         execution_id: ID of the execution to retrieve
@@ -357,8 +357,8 @@ class FlextPluginService(x):
         """
         return self._executions.get(execution_id)
 
-    def get_plugin(self, plugin_name: str) -> m.Plugin.Plugin | None:
-        """Get a plugin by name.
+    def fetch_plugin(self, plugin_name: str) -> m.Plugin.Plugin | None:
+        """Fetch a plugin by name.
 
         Args:
         plugin_name: Name of the plugin to retrieve
@@ -382,7 +382,7 @@ class FlextPluginService(x):
             r containing plugin configuration
 
         """
-        plugin = self.get_plugin(plugin_name)
+        plugin = self.fetch_plugin(plugin_name)
         if plugin is None:
             return r[m.Plugin.PluginConfig].fail(
                 f"Plugin '{plugin_name}' not found",
@@ -488,8 +488,8 @@ class FlextPluginService(x):
                 f"{operation_error_prefix}: {e!s}",
             )
 
-    def get_plugin_status(self, plugin_name: str) -> str | None:
-        """Get the status of a specific plugin.
+    def fetch_plugin_status(self, plugin_name: str) -> str | None:
+        """Fetch the status of a specific plugin.
 
         Args:
         plugin_name: Name of the plugin
@@ -498,15 +498,15 @@ class FlextPluginService(x):
         Plugin status if found, None otherwise
 
         """
-        plugin = self.get_plugin(plugin_name)
+        plugin = self.fetch_plugin(plugin_name)
         if plugin is None:
             return None
         if plugin.is_enabled:
             return c.Plugin.PluginStatus.ACTIVE
         return c.Plugin.PluginStatus.INACTIVE
 
-    def get_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
-        """Get all currently running executions.
+    def list_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+        """List all currently running executions.
 
         Returns:
         List of running execution entities
@@ -514,8 +514,8 @@ class FlextPluginService(x):
         """
         return [e for e in self._executions.values() if e.is_running]
 
-    def get_service_status(self) -> t.RecursiveContainerMapping:
-        """Get the current status of the plugin service.
+    def fetch_service_status(self) -> t.RecursiveContainerMapping:
+        """Fetch the current status of the plugin service.
 
         Returns:
         Dictionary containing service status information
@@ -761,7 +761,7 @@ class FlextPluginService(x):
             r indicating success or failure
 
         """
-        plugin = self.get_plugin(plugin_name)
+        plugin = self.fetch_plugin(plugin_name)
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("settings")

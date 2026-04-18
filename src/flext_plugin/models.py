@@ -11,7 +11,7 @@ import types
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Self
+from typing import Annotated, ClassVar, Self
 
 from flext_cli import m
 
@@ -51,6 +51,8 @@ class FlextPluginModels(m):
             metadata: Extensible plugin metadata
 
             """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             name: Annotated[
                 str,
@@ -350,7 +352,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Execution output data",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
             error: Annotated[
                 str,
                 u.Field(
@@ -414,7 +416,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Extensible discovery metadata",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @u.field_validator("version", mode="before")
             @classmethod
@@ -552,13 +554,13 @@ class FlextPluginModels(m):
                 u.Field(
                     description="List of plugin dependencies",
                 ),
-            ] = u.Field(default_factory=list)
+            ] = u.Field(default_factory=tuple)
             metadata: Annotated[
                 t.RecursiveContainerMapping,
                 u.Field(
                     description="Additional metadata",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
         class EventData(m.Value):
             """Event data - immutable event information.
@@ -582,7 +584,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Event-specific data",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
         class ValidationResult(m.Value):
             """Validation result - immutable validation outcome.
@@ -604,19 +606,19 @@ class FlextPluginModels(m):
                 u.Field(
                     description="List of validation errors",
                 ),
-            ] = u.Field(default_factory=list)
+            ] = u.Field(default_factory=tuple)
             warnings: Annotated[
                 t.StrSequence,
                 u.Field(
                     description="List of validation warnings",
                 ),
-            ] = u.Field(default_factory=list)
+            ] = u.Field(default_factory=tuple)
             details: Annotated[
                 t.RecursiveContainerMapping,
                 u.Field(
                     description="Additional validation details",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
         class SecurityReport(m.Value):
             """Security report - immutable security scan result.
@@ -641,13 +643,13 @@ class FlextPluginModels(m):
                 u.Field(
                     description="List of security violations",
                 ),
-            ] = u.Field(default_factory=list)
+            ] = u.Field(default_factory=tuple)
             warnings: Annotated[
                 t.StrSequence,
                 u.Field(
                     description="List of security warnings",
                 ),
-            ] = u.Field(default_factory=list)
+            ] = u.Field(default_factory=tuple)
             analysis_time: Annotated[
                 datetime,
                 u.Field(description="When analysis was performed"),
@@ -688,7 +690,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="File modification tracking",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
             created_at: Annotated[
                 datetime,
                 u.Field(description="Configuration creation time"),
@@ -765,7 +767,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
             last_updated: Annotated[
                 datetime,
                 u.Field(
@@ -791,7 +793,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Configuration settings",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
         class Registry(m.Value):
             """Plugin registry model.
@@ -804,7 +806,7 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
             last_updated: Annotated[
                 datetime,
                 u.Field(

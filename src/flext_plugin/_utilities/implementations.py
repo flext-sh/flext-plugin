@@ -556,11 +556,11 @@ class FlextPluginImplementations:
             self.plugins: MutableMapping[str, m.Plugin.Plugin] = {}
             self._logger = u.fetch_logger("plugin.registry")
 
-        def get_plugin(
+        def fetch_plugin(
             self,
             plugin_name: str,
         ) -> m.Plugin.Plugin | None:
-            """Get plugin by name.
+            """Fetch a plugin by name.
 
             Args:
                 plugin_name: Name of plugin to retrieve

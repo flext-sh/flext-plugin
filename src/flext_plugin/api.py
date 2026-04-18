@@ -58,17 +58,17 @@ class FlextPluginApi:
             )
         return r[t.RecursiveContainerMapping].ok({"execution_id": str(result.value)})
 
-    def get_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
-        """Get a plugin by name."""
-        return self.platform.get_plugin(_plugin_name)
+    def fetch_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
+        """Fetch a plugin by name."""
+        return self.platform.fetch_plugin(_plugin_name)
 
-    def get_plugin_status(self, _plugin_name: str) -> str | None:
-        """Get the status of a plugin by name."""
-        return self.platform.get_plugin_status(_plugin_name)
+    def fetch_plugin_status(self, _plugin_name: str) -> str | None:
+        """Fetch the status of a plugin by name."""
+        return self.platform.fetch_plugin_status(_plugin_name)
 
-    def is_plugin_active(self, _plugin_name: str) -> bool:
-        """Check if a plugin is active."""
-        return self.platform.is_plugin_active(_plugin_name)
+    def resolve_plugin_active(self, _plugin_name: str) -> bool:
+        """Resolve whether a plugin is active."""
+        return self.platform.resolve_plugin_active(_plugin_name)
 
     def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
         """List all registered plugins."""

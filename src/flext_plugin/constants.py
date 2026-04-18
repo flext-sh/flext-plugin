@@ -37,11 +37,11 @@ class FlextPluginConstants(FlextConstants):
 
             DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
-            DEFAULT_PLUGIN_PATHS: Final[t.StrSequence] = [
+            DEFAULT_PLUGIN_PATHS: Final[t.StrSequence] = (
                 "/opt/flext/plugins",
                 "~/.flext/plugins",
                 "./plugins",
-            ]
+            )
             MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
             VALID_PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
@@ -123,12 +123,12 @@ class FlextPluginConstants(FlextConstants):
         class PluginSecurity:
             """Plugin security level constants."""
 
-            SECURITY_LEVELS: Final[t.StrSequence] = [
+            SECURITY_LEVELS: Final[t.StrSequence] = (
                 "LOW",
                 "MEDIUM",
                 "HIGH",
                 "CRITICAL",
-            ]
+            )
             DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
             SECURITY_LOW: Final[str] = "low"
             SECURITY_MEDIUM: Final[str] = "medium"
@@ -139,16 +139,16 @@ class FlextPluginConstants(FlextConstants):
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
             SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
-            DEFAULT_ALLOWED_IMPORTS: Final[t.StrSequence] = [
+            DEFAULT_ALLOWED_IMPORTS: Final[t.StrSequence] = (
                 "flext_core",
                 "flext_plugin",
-            ]
-            DEFAULT_BLOCKED_IMPORTS: Final[t.StrSequence] = [
+            )
+            DEFAULT_BLOCKED_IMPORTS: Final[t.StrSequence] = (
                 "os",
                 "sys",
                 "subprocess",
                 "importlib",
-            ]
+            )
 
         class PluginPerformance:
             """Plugin performance metric constants."""
@@ -205,13 +205,13 @@ class FlextPluginConstants(FlextConstants):
         class Monitoring:
             """Monitoring configuration constants."""
 
-            LOG_LEVELS: Final[t.StrSequence] = [
+            LOG_LEVELS: Final[t.StrSequence] = (
                 "DEBUG",
                 "INFO",
                 "WARNING",
                 "ERROR",
                 "CRITICAL",
-            ]
+            )
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
             DEFAULT_RETENTION_DAYS: Final[int] = 30
             MIN_RETENTION_DAYS: Final[int] = 1

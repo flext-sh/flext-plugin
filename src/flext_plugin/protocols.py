@@ -102,10 +102,10 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def get_plugin(
+            def fetch_plugin(
                 self, plugin_name: str
             ) -> p.Result[t.RecursiveContainer | None]:
-                """Get a registered plugin by name."""
+                """Fetch a registered plugin by name."""
                 ...
 
             def plugin_registered(self, plugin_name: str) -> bool:
@@ -282,8 +282,8 @@ class FlextPluginProtocols(FlextProtocols):
                 """Destroy a plugin."""
                 ...
 
-            def get_plugin_status(self, _plugin_name: str) -> p.Result[str]:
-                """Get the status of a plugin."""
+            def fetch_plugin_status(self, _plugin_name: str) -> p.Result[str]:
+                """Fetch the status of a plugin."""
                 ...
 
             def initialize_plugin(self, _plugin_name: str) -> p.Result[bool]:
