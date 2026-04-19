@@ -1,0 +1,80 @@
+src/flext_plugin/_utilities/plugin_platform.py
+  h_9db9d35f50cf33 36,47,55,161,200,202,250,253,285,338-339,341,347,361,371-372,377,384,400,479-480,482,489,493,503-504,507,512,517,531,534,560,590,614,674,690
+docs/standards/python-module-organization.md
+  h_9db9d35f50cf33 512,865,982,1088,1111,1144,1146,1149,1221,1230,1232,1270,1286,1314,1358,1374-1375,1582,1606,1721,1738
+src/flext_plugin/_utilities/adapters.py
+  h_9db9d35f50cf33 73,86,98,397
+docs/examples/basic-plugin.md
+  h_9db9d35f50cf33 78,141,149,241,255,318,323,709
+tests/unit/test_domain_entities.py
+  h_9db9d35f50cf33 136,189,216
+src/flext_plugin/_utilities/hot_reload.py
+  h_9db9d35f50cf33 165,174,177,196,210,212
+src/flext_plugin/_utilities/implementations.py
+  h_9db9d35f50cf33 13,80,97,101,115,185,203-204,216,218,363
+docs/api-reference.md
+  h_9db9d35f50cf33 100,173,183
+docs/architecture.md
+  h_9db9d35f50cf33 80
+tests/unit/test_application_handlers.py
+  h_9db9d35f50cf33 32,49,84,91,112,119,159,166
+examples/02_plugin_configuration.py
+  h_9db9d35f50cf33 20,46
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 141,155
+tests/conftest.py
+  h_9db9d35f50cf33 50,72,178,267
+docs/architecture/implementation.md
+  h_9db9d35f50cf33 87,121,217,270,281,339,360,392,407-408,443,1155,1165,1200,1214,1229,1254,1282,1287,1313,1331,1365,1396,1424
+src/flext_plugin/_utilities/loader.py
+  h_9db9d35f50cf33 63,76,94,105
+src/flext_plugin/_utilities/handlers.py
+  h_9db9d35f50cf33 11,65,93,122-123,140-141,164-165,196-197,214-215,313,338,414-415,450
+examples/03_docker_integration.py
+  h_9db9d35f50cf33 15
+docs/development.md
+  h_9db9d35f50cf33 164,168,170
+src/flext_plugin/utilities.py
+  h_9db9d35f50cf33 232-233,247,250,260,270,276,425,436-437,470,521,531,545,558,566,579,587,590,593,603,609-611,627,632,642,647,657,663,723-724,739,743,745,904,917,923,929,936,946,952,954,970,986,996,1002
+docs/architecture/adr/adr-001-clean-architecture.md
+  h_9db9d35f50cf33 206
+src/flext_plugin/api.py
+  h_9db9d35f50cf33 10,50,52,56
+tests/unit/test_manager.py
+  h_9db9d35f50cf33 51,53,122
+docs/architecture/adr/README.md
+  h_9db9d35f50cf33 134
+src/flext_plugin/_utilities/services.py
+  h_9db9d35f50cf33 108-109,111,288,401,423,445,450,453,457,463,467,470,487,517,752
+docs/guides/development.md
+  h_9db9d35f50cf33 154,193,196,202,353,356,405
+src/flext_plugin/protocols.py
+  h_9db9d35f50cf33 10,62,77,84,90,345
+docs/guides/quick-start.md
+  h_9db9d35f50cf33 219
+docs/examples/README.md
+  h_9db9d35f50cf33 264,290,462
+src/flext_plugin/models.py
+  h_9db9d35f50cf33 11,116,135,355,419,445,451,477,563,587,623,686,695,772,798,811
+src/flext_plugin/typings.py
+  h_9db9d35f50cf33 25-26,54-55,64-65
+docs/architecture/adr/adr-template.md
+  h_9db9d35f50cf33 185
+docs/guides/testing.md
+  h_9db9d35f50cf33 528
+docs/architecture/data.md
+  h_9db9d35f50cf33 103,412,420,432
+tests/unit/test_application_services.py
+  h_9db9d35f50cf33 18,49,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "0a5728029dec6545da2636e009e084b8ff81b917",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
