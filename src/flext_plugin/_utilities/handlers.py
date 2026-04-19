@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
-from collections.abc import MutableMapping, MutableSequence, Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 
 from flext_plugin import c, p, r, t, u
@@ -62,7 +62,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> Sequence[t.RecursiveContainerMapping]:
+    ) -> Sequence[Mapping[str, t.Container]]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -90,7 +90,7 @@ class FlextPluginHandlers:
         """
         return len(self._handlers.get(event_type, []))
 
-    def get_handler_status(self) -> t.RecursiveContainerMapping:
+    def get_handler_status(self) -> Mapping[str, t.Container]:
         """Get the current status of the event handlers.
 
         Returns:
@@ -119,8 +119,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Handle plugin discovered event.
 
         Args:
@@ -137,8 +137,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Handle plugin error event.
 
         Args:
@@ -161,8 +161,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Handle plugin executed event.
 
         Args:
@@ -193,8 +193,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Handle plugin loaded event.
 
         Args:
@@ -211,8 +211,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Handle plugin unloaded event.
 
         Args:
@@ -310,7 +310,7 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: t.RecursiveContainerMapping,
+        event_data: Mapping[str, t.Container],
     ) -> p.Result[t.RecursiveContainerList]:
         """Trigger an event and execute all registered handlers.
 
@@ -335,7 +335,7 @@ class FlextPluginHandlers:
                     event_type,
                 )
                 return r[t.RecursiveContainerList].ok([])
-            results: t.MutableRecursiveContainerList = []
+            results: list[t.Container] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
@@ -411,8 +411,8 @@ class FlextPluginHandlers:
     async def _execute_handler(
         self,
         handler: t.Plugin.Handlers.EventHandler,
-        event_data: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -447,7 +447,7 @@ class FlextPluginHandlers:
         """
         return datetime.now(UTC).isoformat()
 
-    def _is_async_function(self, func: t.RecursiveContainer) -> bool:
+    def _is_async_function(self, func: t.Container) -> bool:
         """Check if a function is async.
 
         Args:

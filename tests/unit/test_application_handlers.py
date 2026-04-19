@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 
 from flext_plugin import FlextPluginHandlers
 from tests import t
@@ -28,8 +29,8 @@ class TestFlextPluginHandlers:
         handlers = FlextPluginHandlers()
 
         async def test_handler(
-            event_data: t.RecursiveContainerMapping,
-        ) -> t.RecursiveContainerMapping:
+            event_data: Mapping[str, t.Container],
+        ) -> Mapping[str, t.Container]:
             return {"status": "processed", "event": dict(event_data.items())}
 
         result = handlers.register_handler("test_event", test_handler)
@@ -42,11 +43,11 @@ class TestFlextPluginHandlers:
 
         async def _inner() -> None:
             handlers = FlextPluginHandlers()
-            results: list[t.RecursiveContainerMapping] = []
+            results: list[Mapping[str, t.Container]] = []
 
             async def test_handler(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 results.append(event_data)
                 return {"status": "handled"}
 
@@ -80,15 +81,15 @@ class TestFlextPluginHandlers:
             results: list[str] = []
 
             async def handler_low(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 results.append("low")
                 return {"handler": "low"}
 
             async def handler_high(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 results.append("high")
                 return {"handler": "high"}
@@ -108,15 +109,15 @@ class TestFlextPluginHandlers:
             results: list[str] = []
 
             async def handler1(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 results.append("handler1")
                 return {"handler": "handler1"}
 
             async def handler2(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 results.append("handler2")
                 return {"handler": "handler2"}
@@ -155,15 +156,15 @@ class TestFlextPluginHandlers:
             handlers = FlextPluginHandlers()
 
             async def failing_handler(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 msg = "Handler failed"
                 raise ValueError(msg)
 
             async def working_handler(
-                event_data: t.RecursiveContainerMapping,
-            ) -> t.RecursiveContainerMapping:
+                event_data: Mapping[str, t.Container],
+            ) -> Mapping[str, t.Container]:
                 _ = event_data
                 return {"status": "success"}
 

@@ -75,7 +75,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, settings: Optional[t.Dict] = None, **kwargs):
+    def __init__(self, settings: Optional[m.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -138,7 +138,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def execute(self, data: t.Dict) -> p.Result[t.Dict]:
+    def execute(self, data: m.Dict) -> p.Result[m.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -146,7 +146,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            r[t.Dict]: Processing results or error
+            r[m.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -238,7 +238,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: t.Dict) -> p.Result[bool]:
+    def _validate_input_data(self, data: m.Dict) -> p.Result[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -252,7 +252,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: t.Dict) -> t.Dict:
+    def _process_data(self, data: m.Dict) -> m.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -315,12 +315,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
-        # Access configuration from the settings t.RecursiveContainerMapping passed during initialization
+        # Access configuration from the settings Mapping[str, t.Container] passed during initialization
         return getattr(self, "_config", {}).get(key, default)
 
     # Public utility methods
 
-    def get_statistics(self) -> t.Dict:
+    def get_statistics(self) -> m.Dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 
@@ -706,7 +706,7 @@ class TestBasicDataProcessorPlugin:
         plugin.activate()
 
         # Force an error by providing non-dict data
-        with patch.t.RecursiveContainer(
+        with patch.t.Container(
             plugin, "_process_data", side_effect=Exception("Processing error")
         ):
             result = plugin.execute({"payload": {"test": "data"}})

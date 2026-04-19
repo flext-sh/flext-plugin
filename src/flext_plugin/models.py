@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, ClassVar, Self
@@ -113,7 +113,7 @@ class FlextPluginModels(m):
                 author: str = "",
                 plugin_type: str = c.Plugin.PluginType.UTILITY,
                 is_enabled: bool = True,
-                metadata: t.RecursiveContainerMapping | None = None,
+                metadata: Mapping[str, t.Container] | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -132,7 +132,7 @@ class FlextPluginModels(m):
                 New Plugin entity instance
 
                 """
-                metadata_payload: t.RecursiveContainerMapping = (
+                metadata_payload: Mapping[str, t.Container] = (
                     dict(metadata.items()) if metadata else {}
                 )
                 payload: t.MutableRecursiveContainerMapping = {
@@ -352,7 +352,7 @@ class FlextPluginModels(m):
 
             success: Annotated[bool, u.Field(description="Whether execution succeeded")]
             data: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Execution output data",
                 ),
@@ -416,7 +416,7 @@ class FlextPluginModels(m):
                 ),
             ]
             metadata: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Extensible discovery metadata",
                 ),
@@ -442,13 +442,13 @@ class FlextPluginModels(m):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
-            module t.RecursiveContainer and load metadata. Immutable value object.
+            module t.Container and load metadata. Immutable value object.
 
             Attributes:
             name: Plugin unique identifier name
             version: Plugin semantic version
             path: File system path to plugin
-            module: The loaded Python module t.RecursiveContainer
+            module: The loaded Python module t.Container
             load_type: Type of loaded plugin (file, directory, entry_point)
             loaded_at: Timestamp when plugin was loaded
             entry_file: Entry file path for directory-based plugins
@@ -474,7 +474,7 @@ class FlextPluginModels(m):
             module: Annotated[
                 types.ModuleType,
                 u.Field(
-                    description="The loaded Python module t.RecursiveContainer",
+                    description="The loaded Python module t.Container",
                 ),
             ]
             load_type: Annotated[
@@ -560,7 +560,7 @@ class FlextPluginModels(m):
                 ),
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Additional metadata",
                 ),
@@ -584,7 +584,7 @@ class FlextPluginModels(m):
             plugin_name: Annotated[str, u.Field(description="Associated plugin name")]
             timestamp: Annotated[datetime, u.Field(description="When event occurred")]
             data: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Event-specific data",
                 ),
@@ -620,7 +620,7 @@ class FlextPluginModels(m):
                 ),
             ] = u.Field(default_factory=tuple)
             details: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Additional validation details",
                 ),
@@ -683,7 +683,7 @@ class FlextPluginModels(m):
                 u.Field(description="Polling interval in seconds"),
             ]
             callback: Annotated[
-                Callable[..., t.RecursiveContainer] | None,
+                Callable[..., t.Container] | None,
                 u.Field(
                     description="Callback function reference",
                 ),
@@ -692,7 +692,7 @@ class FlextPluginModels(m):
                 bool, u.Field(description="Whether watcher is active")
             ] = False
             last_modified: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="File modification tracking",
                 ),
@@ -769,7 +769,7 @@ class FlextPluginModels(m):
 
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),
@@ -795,7 +795,7 @@ class FlextPluginModels(m):
 
             plugin_name: Annotated[str, u.Field(description="Plugin name")]
             config: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Configuration settings",
                 ),
@@ -808,7 +808,7 @@ class FlextPluginModels(m):
             """
 
             plugins: Annotated[
-                t.RecursiveContainerMapping,
+                Mapping[str, t.Container],
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),

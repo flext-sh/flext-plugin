@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, MutableSequence, Sequence
+from collections.abc import Callable, Mapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import override
@@ -162,7 +162,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> p.Result[t.RecursiveContainerMapping]:
+    def force_reload_all(self) -> p.Result[Mapping[str, t.Container]]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -171,10 +171,10 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[t.RecursiveContainerMapping].fail(
+                return r[Mapping[str, t.Container]].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: MutableSequence[t.RecursiveContainerMapping] = []
+            reload_results: MutableSequence[Mapping[str, t.Container]] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -193,7 +193,7 @@ class FlextPluginHotReload:
                                 "success": result.success,
                             })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return r[t.RecursiveContainerMapping].ok({
+            return r[Mapping[str, t.Container]].ok({
                 "plugin_results": reload_results,
                 "count": len(reload_results),
             })
@@ -207,9 +207,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[t.RecursiveContainerMapping].fail(f"Force reload error: {e!s}")
+            return r[Mapping[str, t.Container]].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> t.RecursiveContainerMapping:
+    def get_hot_reload_status(self) -> Mapping[str, t.Container]:
         """Get the current status of the hot reload service.
 
         Returns:

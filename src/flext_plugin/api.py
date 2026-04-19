@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginPlatform, m, p, r, t, u
@@ -47,16 +47,14 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: t.RecursiveContainerMapping,
+        context: Mapping[str, t.Container],
         execution_id: str | None = None,
-    ) -> p.Result[t.RecursiveContainerMapping]:
+    ) -> p.Result[Mapping[str, t.Container]]:
         """Execute a plugin by name with the given context."""
         result = self.platform.execute_plugin(plugin_name, context, execution_id)
         if result.failure:
-            return r[t.RecursiveContainerMapping].fail(
-                result.error or "Execution failed"
-            )
-        return r[t.RecursiveContainerMapping].ok({"execution_id": str(result.value)})
+            return r[Mapping[str, t.Container]].fail(result.error or "Execution failed")
+        return r[Mapping[str, t.Container]].ok({"execution_id": str(result.value)})
 
     def fetch_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
         """Fetch a plugin by name."""

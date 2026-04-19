@@ -100,7 +100,7 @@ class Execution {
 }
 
 class ExecutionContext {
-    +input_data: Dict[str, t.RecursiveContainer]
+    +input_data: Dict[str, t.Container]
     +environment: Dict[str, str]
     +user_id: str
     +correlation_id: str
@@ -409,7 +409,7 @@ ______________________________________________________________________
 ```python
 # Pydantic data models with validation
 from pydantic import BaseModel, u.Field
-from typing import List, Dict, t.RecursiveContainer
+from typing import List, Dict, t.Container
 
 
 
@@ -417,7 +417,7 @@ class FlextPluginSettings(m.BaseModel):
     name: str = u.Field(min_length=1, max_length=100)
     version: str = u.Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = u.Field(default_factory=list)
-    settings: Dict[str, t.RecursiveContainer] = u.Field(default_factory=dict)
+    settings: Dict[str, t.Container] = u.Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -429,7 +429,7 @@ class FlextPluginSettings(m.BaseModel):
 # Schema evolution and data migration
 def migrate_plugin_data(
     old_data: dict, target_version: str
-) -> t.RecursiveContainerMapping:
+) -> Mapping[str, t.Container]:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
     pass

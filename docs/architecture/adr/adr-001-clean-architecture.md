@@ -203,7 +203,7 @@ Infrastructure Layer (External Systems/Databases)
 - Ecosystem integration challenges
 - Performance concerns with large data structures
 
-**Why Rejected**: Team lacks functional programming experience. Python ecosystem is primarily t.RecursiveContainer-oriented. Would require complete paradigm shift.
+**Why Rejected**: Team lacks functional programming experience. Python ecosystem is primarily t.Container-oriented. Would require complete paradigm shift.
 
 ## Implementation Plan
 

@@ -97,7 +97,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str  # Plugin identifier
     plugin_version: str  # Plugin version
     status: PluginStatus  # Current lifecycle status
-    settings: t.Dict  # Plugin configuration
+    settings: m.Dict  # Plugin configuration
     metadata: FlextPluginModels.Metadata  # Plugin metadata
 
     # Business Methods
@@ -170,7 +170,7 @@ ______________________________________________________________________
 def create_flext_plugin(
     name: str,
     version: str,
-    settings: t.Dict | None = None,
+    settings: m.Dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs,
 ) -> FlextPluginModels.Entity:
@@ -180,7 +180,7 @@ def create_flext_plugin(
 ### create_flext_plugin_platform
 
 ```python
-def create_flext_plugin_platform(settings: t.Dict | None = None) -> FlextPluginPlatform:
+def create_flext_plugin_platform(settings: m.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
 

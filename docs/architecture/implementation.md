@@ -84,7 +84,7 @@ class FlextPluginModels:
             self,
             name: str,
             plugin_version: str,
-            settings: t.Dict,
+            settings: m.Dict,
         ) -> None:
             super().__init__()
             self.name = name
@@ -118,7 +118,7 @@ class FlextPluginModels:
         def __init__(
             self,
             plugin_name: str,
-            context: t.Dict,
+            context: m.Dict,
             execution_id: Optional[str] = None,
         ) -> None:
             super().__init__()
@@ -214,7 +214,7 @@ class FlextPluginServices:
     async def execute_plugin(
         self,
         plugin: FlextPluginModels.Plugin,
-        context: t.Dict,
+        context: m.Dict,
         executor: PluginExecution,
     ) -> p.Result[FlextPluginModels.Execution]:
         """Application service orchestrating plugin execution."""
@@ -267,7 +267,7 @@ from flext_core import u
 from flext_plugin import FlextPluginProtocols
 import os
 from pathlib import Path
-from typing import List, Dict, t.RecursiveContainer
+from typing import List, Dict, t.Container
 
 
 
@@ -278,7 +278,7 @@ class FlextPluginDiscovery:
         self.container = container
         self.logger = container.resolve("logger").unwrap()
 
-    async def discover_plugins(self, paths: t.StringList) -> p.Result[List[Dict[str, t.RecursiveContainer]]]:
+    async def discover_plugins(self, paths: t.StringList) -> p.Result[List[Dict[str, t.Container]]]:
         """Discover plugins from file system."""
 
         try:
@@ -336,7 +336,7 @@ class FlextPluginDiscovery:
         # Additional validation logic...
         return True
 
-    def _parse_plugin_file(self, file_path: Path) -> Optional[Dict[str, t.RecursiveContainer]]:
+    def _parse_plugin_file(self, file_path: Path) -> Optional[Dict[str, t.Container]]:
         """Parse plugin configuration from file."""
         try:
             if file_path.suffix.lower() == ".py":
@@ -357,7 +357,7 @@ class FlextPluginDiscovery:
 
 ```python
 # flext_plugin/protocols.py - Structural typing protocols
-from typing import Protocol, List, Dict, t.RecursiveContainer, Optional
+from typing import Protocol, List, Dict, t.Container, Optional
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -389,7 +389,7 @@ class FlextPluginProtocols:
 
         async def discover_plugins(
             self, paths: t.StringList
-        ) -> p.Result[List[Dict[str, t.RecursiveContainer]]]:
+        ) -> p.Result[List[Dict[str, t.Container]]]:
             """Discover plugins from specified paths."""
             ...
 
@@ -404,8 +404,8 @@ class FlextPluginProtocols:
         """Protocol for plugin execution mechanisms."""
 
         async def execute_plugin(
-            self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.RecursiveContainer]
-        ) -> p.Result[t.RecursiveContainer]:
+            self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.Container]
+        ) -> p.Result[t.Container]:
             """Execute plugin with given context."""
             ...
 
@@ -440,7 +440,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
     async def discover_plugins(
         self, paths: t.StringList
-    ) -> p.Result[List[Dict[str, t.RecursiveContainer]]]:
+    ) -> p.Result[List[Dict[str, t.Container]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
         return r.ok([])
@@ -1152,7 +1152,7 @@ from flext_core import u
 from flext_core import s
 from flext_core import t
 from flext_core import u
-from typing import Dict, t.RecursiveContainer
+from typing import Dict, t.Container
 
 
 
@@ -1162,7 +1162,7 @@ class FlextPluginHealth:
     def __init__(self, platform: FlextPluginPlatform):
         self.platform = platform
 
-    async def check_overall_health(self) -> p.Result[Dict[str, t.RecursiveContainer]]:
+    async def check_overall_health(self) -> p.Result[Dict[str, t.Container]]:
         """Comprehensive health check."""
         try:
             health_status = {
@@ -1197,7 +1197,7 @@ class FlextPluginHealth:
         except Exception as e:
             return r.fail(f"Health check failed: {e!s}")
 
-    async def _check_platform_health(self) -> Dict[str, t.RecursiveContainer]:
+    async def _check_platform_health(self) -> Dict[str, t.Container]:
         """Check platform operational health."""
         try:
             # Test basic platform operations
@@ -1211,7 +1211,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_plugin_health(self) -> Dict[str, t.RecursiveContainer]:
+    async def _check_plugin_health(self) -> Dict[str, t.Container]:
         """Check plugin system health."""
         try:
             plugins = self.platform.list_plugins()
@@ -1226,7 +1226,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_registry_health(self) -> Dict[str, t.RecursiveContainer]:
+    async def _check_registry_health(self) -> Dict[str, t.Container]:
         """Check plugin registry health."""
         try:
             # Test registry operations
@@ -1251,7 +1251,7 @@ ______________________________________________________________________
 
 ```python
 # flext_plugin/cache.py
-from typing import Dict, t.RecursiveContainer, Optional
+from typing import Dict, t.Container, Optional
 import asyncio
 from datetime import datetime, timedelta
 from flext_core import FlextBus
@@ -1279,12 +1279,12 @@ class FlextPluginCache:
     """Multi-level caching for plugin system performance."""
 
     def __init__(self, max_memory_items: int = 1000, ttl_seconds: int = 3600):
-        self.memory_cache: Dict[str, Dict[str, t.RecursiveContainer]] = {}
+        self.memory_cache: Dict[str, Dict[str, t.Container]] = {}
         self.max_memory_items = max_memory_items
         self.ttl_seconds = ttl_seconds
         self._lock = asyncio.Lock()
 
-    async def get(self, key: str) -> Optional[t.RecursiveContainer]:
+    async def get(self, key: str) -> Optional[t.Container]:
         """Get item from cache with TTL check."""
         async with self._lock:
             if key in self.memory_cache:
@@ -1310,7 +1310,7 @@ class FlextPluginCache:
                 "ttl": timedelta(seconds=self.ttl_seconds),
             }
 
-    def _is_expired(self, entry: Dict[str, t.RecursiveContainer]) -> bool:
+    def _is_expired(self, entry: Dict[str, t.Container]) -> bool:
         """Check if cache entry is expired."""
         return datetime.now(UTC) > entry["timestamp"] + entry["ttl"]
 
@@ -1328,7 +1328,7 @@ class FlextPluginCache:
 ```python
 # flext_plugin/executor.py
 import asyncio
-from typing import List, Dict, t.RecursiveContainer
+from typing import List, Dict, t.Container
 from concurrent.futures import ThreadPoolExecutor
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -1362,7 +1362,7 @@ class FlextPluginExecutor:
         self.executor = ThreadPoolExecutor(max_workers=thread_pool_size)
 
     async def execute_plugins_concurrent(
-        self, plugins: List[FlextPluginModels.Plugin], context: Dict[str, t.RecursiveContainer]
+        self, plugins: List[FlextPluginModels.Plugin], context: Dict[str, t.Container]
     ) -> p.Result[List[FlextPluginModels.Execution]]:
         """Execute multiple plugins concurrently with resource limits."""
 
@@ -1393,7 +1393,7 @@ class FlextPluginExecutor:
         return r.ok(executions)
 
     async def _execute_plugin_safe(
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.RecursiveContainer]
+        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.Container]
     ) -> p.Result[FlextPluginModels.Execution]:
         """Execute single plugin with error isolation."""
         try:
@@ -1421,7 +1421,7 @@ class FlextPluginExecutor:
             return r.ok(execution)  # Return failed execution, not error
 
     def _execute_plugin_sync(
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.RecursiveContainer]
+        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.Container]
     ):
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic

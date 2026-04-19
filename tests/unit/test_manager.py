@@ -48,9 +48,9 @@ class TestFlextPluginServiceStubBridges:
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[Sequence[t.RecursiveContainerMapping]]:
+            ) -> p.Result[Sequence[Mapping[str, t.Container]]]:
                 _ = paths
-                return r[Sequence[t.RecursiveContainerMapping]].ok([
+                return r[Sequence[Mapping[str, t.Container]]].ok([
                     {
                         "name": "stub_plugin",
                         "version": "1.0.0",
@@ -64,9 +64,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(
-                self, _plugin: t.RecursiveContainer
-            ) -> p.Result[bool]:
+            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -78,7 +76,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.RecursiveContainer,
+                _plugin: m.Plugin.Plugin | t.Container,
             ) -> p.Result[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
@@ -119,9 +117,9 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[t.RecursiveContainerMapping]:
+            ) -> p.Result[Mapping[str, t.Container]]:
                 _ = plugin_path
-                return r[t.RecursiveContainerMapping].ok({
+                return r[Mapping[str, t.Container]].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},
@@ -133,9 +131,7 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(
-                self, _plugin: t.RecursiveContainer
-            ) -> p.Result[bool]:
+            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -147,7 +143,7 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.RecursiveContainer,
+                _plugin: m.Plugin.Plugin | t.Container,
             ) -> p.Result[bool]:
                 if isinstance(_plugin, Mapping):
                     self.registered.append(str(_plugin.get("name", "")))
@@ -187,9 +183,9 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[t.RecursiveContainerMapping]:
+            ) -> p.Result[Mapping[str, t.Container]]:
                 _ = plugin_path
-                return r[t.RecursiveContainerMapping].ok({
+                return r[Mapping[str, t.Container]].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},
@@ -204,10 +200,10 @@ class TestFlextPluginServiceStubBridges:
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: t.RecursiveContainerMapping,
-            ) -> p.Result[t.RecursiveContainerMapping]:
+                _context: Mapping[str, t.Container],
+            ) -> p.Result[Mapping[str, t.Container]]:
                 self.calls.append(_plugin_name)
-                return r[t.RecursiveContainerMapping].ok({
+                return r[Mapping[str, t.Container]].ok({
                     "status": "executed",
                     "plugin": _plugin_name,
                 })
@@ -233,10 +229,10 @@ class TestFlextPluginServiceStubBridges:
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[t.RecursiveContainerMapping]:
+            ) -> p.Result[Mapping[str, t.Container]]:
                 _ = plugin_path
                 self._loaded_plugins["stub_plugin"] = ModuleType("stub_plugin")
-                return r[t.RecursiveContainerMapping].ok({
+                return r[Mapping[str, t.Container]].ok({
                     "name": "stub_plugin",
                     "version": "1.0.0",
                     "metadata": {"plugin_type": "utility"},

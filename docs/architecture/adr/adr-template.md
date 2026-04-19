@@ -182,7 +182,7 @@
 
 ## Notes
 
-[t.RecursiveContainer additional information, implementation details, or future considerations]
+[t.Container additional information, implementation details, or future considerations]
 
 ## Decision Log
 

@@ -47,7 +47,7 @@ def set_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_plugin_config() -> t.RecursiveContainerMapping:
+def real_plugin_config() -> Mapping[str, t.Container]:
     """REAL plugin configuration for testing."""
     return {
         "plugin_directory": tempfile.mkdtemp(prefix="test_plugins_"),
@@ -69,7 +69,7 @@ def simple_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_plugin_data() -> t.RecursiveContainerMapping:
+def real_plugin_data() -> Mapping[str, t.Container]:
     """REAL plugin data matching actual plugin files."""
     return {
         "plugins": [
@@ -175,7 +175,7 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 @pytest.fixture
 def real_plugin_configs() -> Mapping[
     str,
-    Mapping[str, t.RecursiveContainerMapping | t.StrSequence | t.RecursiveContainer],
+    Mapping[str, Mapping[str, t.Container] | t.StrSequence | t.Container],
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
@@ -264,7 +264,7 @@ def real_plugin_dependencies() -> Mapping[str, t.StrSequence]:
 
 
 @pytest.fixture
-def performance_config() -> t.RecursiveContainerMapping:
+def performance_config() -> Mapping[str, t.Container]:
     """Configuration for REAL plugin performance testing."""
     return {
         "max_load_time": 2.0,
