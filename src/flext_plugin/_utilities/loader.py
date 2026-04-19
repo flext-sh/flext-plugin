@@ -58,7 +58,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def get_plugin_info(
+    def fetch_plugin_info(
         self, plugin_name: str
     ) -> p.Result[t.RecursiveContainerMapping]:
         """Get detailed information about a loaded plugin.

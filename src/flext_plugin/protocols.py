@@ -214,14 +214,14 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginMonitoring(Protocol):
             """Protocol for plugin monitoring operations."""
 
-            def get_plugin_health(
+            def fetch_plugin_health(
                 self,
                 _plugin_name: str,
             ) -> p.Result[t.RecursiveContainerMapping]:
                 """Get health status of a plugin."""
                 ...
 
-            def get_plugin_metrics(
+            def fetch_plugin_metrics(
                 self,
                 _plugin_name: str,
             ) -> p.Result[t.RecursiveContainerMapping]:
@@ -244,7 +244,7 @@ class FlextPluginProtocols(FlextProtocols):
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def get_default_config(
+            def fetch_default_config(
                 self, plugin_type: str
             ) -> p.Result[t.RecursiveContainer]:
                 """Get default configuration for a plugin type."""

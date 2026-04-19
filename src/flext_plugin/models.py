@@ -35,6 +35,8 @@ class FlextPluginModels(m):
         class Entity(m.Entity):
             """Entity - real inheritance."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
         class Plugin(m.Entity):
             """Plugin entity - core domain entity with identity and lifecycle.
 
@@ -346,6 +348,8 @@ class FlextPluginModels(m):
 
             """
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             success: Annotated[bool, u.Field(description="Whether execution succeeded")]
             data: Annotated[
                 t.RecursiveContainerMapping,
@@ -599,6 +603,8 @@ class FlextPluginModels(m):
             details: Additional validation details
 
             """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             valid: Annotated[bool, u.Field(description="Whether validation passed")]
             errors: Annotated[

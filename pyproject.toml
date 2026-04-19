@@ -150,7 +150,7 @@ omit = [ "*/dependency_injector/providers.pyx" ]
 
 # [MANAGED] deptry
 [tool.deptry]
-known_first_party = [ "flext_core", "flext_plugin" ]
+known_first_party = [ "flext_core", "flext_plugin", "flext_tests" ]
 pep621_dev_dependency_groups = [ "dev" ]
 
 [tool.flext.docs]
@@ -369,7 +369,7 @@ root = "tests"
 
 # [MANAGED] pytest
 [tool.pytest.ini_options]
-addopts = [ "--markdown-check", "--strict-markers" ]
+addopts = [ "--markdown-docs", "--strict-markers" ]
 markers = [
   "docker: tests requiring Docker",
   "e2e: end-to-end integration tests",
@@ -480,7 +480,7 @@ select = [ "ALL" ]
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
-known-first-party = [ "flext_core", "flext_plugin" ]
+known-first-party = [ "flext_core", "flext_plugin", "flext_tests" ]
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]

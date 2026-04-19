@@ -369,7 +369,7 @@ class FlextPluginService(x):
         """
         return self._plugins.get(plugin_name)
 
-    def get_plugin_config(
+    def fetch_plugin_config(
         self,
         plugin_name: str,
     ) -> p.Result[m.Plugin.PluginConfig]:
@@ -395,7 +395,7 @@ class FlextPluginService(x):
         )
         return r[m.Plugin.PluginConfig].ok(settings)
 
-    async def get_plugin_health(
+    async def fetch_plugin_health(
         self,
         plugin_name: str,
     ) -> p.Result[t.RecursiveContainerMapping]:
@@ -410,14 +410,14 @@ class FlextPluginService(x):
         """
         return self._get_plugin_monitoring_data(
             plugin_name=plugin_name,
-            operation=self._monitoring.get_plugin_health,
+            operation=self._monitoring.fetch_plugin_health,
             operation_name="health",
             operation_failure_prefix="Health check failed",
             response_label="Health",
             operation_error_prefix="Health check error",
         )
 
-    async def get_plugin_metrics(
+    async def fetch_plugin_metrics(
         self,
         plugin_name: str,
     ) -> p.Result[t.RecursiveContainerMapping]:
@@ -432,7 +432,7 @@ class FlextPluginService(x):
         """
         return self._get_plugin_monitoring_data(
             plugin_name=plugin_name,
-            operation=self._monitoring.get_plugin_metrics,
+            operation=self._monitoring.fetch_plugin_metrics,
             operation_name="metrics",
             operation_failure_prefix="Metrics retrieval failed",
             response_label="Metrics",

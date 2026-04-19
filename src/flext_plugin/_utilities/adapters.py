@@ -389,7 +389,7 @@ class FlextPluginAdapters:
         """Plugin monitoring - synchronous."""
 
         @override
-        def get_plugin_health(
+        def fetch_plugin_health(
             self,
             _plugin_name: str,
         ) -> p.Result[t.RecursiveContainerMapping]:
@@ -399,7 +399,7 @@ class FlextPluginAdapters:
             })
 
         @override
-        def get_plugin_metrics(
+        def fetch_plugin_metrics(
             self,
             _plugin_name: str,
         ) -> p.Result[t.RecursiveContainerMapping]:

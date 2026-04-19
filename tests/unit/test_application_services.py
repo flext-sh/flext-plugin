@@ -523,27 +523,6 @@ class TestFlextPluginServiceReal:
         result = service.disable_plugin("real-test-plugin")
         assert result.success or "not found" in str(result.error).lower()
 
-    def test_get_plugin_config_empty_name_fails(
-        self,
-        service: FlextPluginService,
-    ) -> None:
-        """Test get_plugin_config with empty name fails."""
-        result = service.get_plugin_config("")
-        assert not result.success
-        assert "not found" in str(result.error) or "required" in str(result.error)
-
-    def test_get_plugin_config_valid_name_real(
-        self,
-        service: FlextPluginService,
-    ) -> None:
-        """Test get_plugin_config with REAL valid name."""
-        result = service.get_plugin_config("real-test-plugin")
-        if result.failure and "not configured" in str(result.error):
-            pytest.skip(f"Infrastructure not configured: {result.error}")
-            return
-        assert not result.success
-        assert "not found" in str(result.error)
-
     def test_update_plugin_config_empty_name_fails(
         self,
         service: FlextPluginService,

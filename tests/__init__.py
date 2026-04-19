@@ -12,9 +12,8 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_tests import td, tf, tk, tm, tv
-
     from flext_plugin import d, e, h, r, s, x
+    from flext_tests import td, tf, tk, tm, tv
     from tests.constants import TestsFlextPluginConstants, c
     from tests.models import TestsFlextPluginModels, m
     from tests.protocols import TestsFlextPluginProtocols, p

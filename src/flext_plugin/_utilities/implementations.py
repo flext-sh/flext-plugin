@@ -98,7 +98,7 @@ class FlextPluginImplementations:
             """Get current configuration."""
             return getattr(self, "_config", {})
 
-        def get_info(self) -> t.RecursiveContainerMapping:
+        def fetch_info(self) -> t.RecursiveContainerMapping:
             """Get plugin information.
 
             Returns:
