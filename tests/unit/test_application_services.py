@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-from pydantic import BaseModel
 
 from flext_core import FlextContainer
 from flext_plugin import (
@@ -28,7 +27,7 @@ from flext_plugin import (
     FlextPluginService,
     t,
 )
-from tests import e, p
+from tests import e, m, p
 
 
 class PluginInterface(Protocol):
@@ -832,7 +831,9 @@ class TestServicesIntegrationReal:
         result1 = plugin_service.container.resolve("test_service")
         assert result1.success
         value = result1.value
-        normalized_value = value.model_dump() if isinstance(value, BaseModel) else value
+        normalized_value = (
+            value.model_dump() if isinstance(value, m.BaseModel) else value
+        )
         assert isinstance(normalized_value, dict)
         assert normalized_value["name"] == "test_service"
         discovery_service = FlextPluginDiscovery()

@@ -13,8 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_core import e
-from tests import c
+from tests import c, e
 
 
 class TestFlextPluginConstantsPluginType:

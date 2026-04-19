@@ -16,9 +16,8 @@ from typing import override
 
 import pytest
 
-from flext_core import r
 from flext_plugin import FlextPluginAdapters, FlextPluginService
-from tests import m, p, t
+from tests import m, p, r, t
 
 
 class TestFlextPluginService:
