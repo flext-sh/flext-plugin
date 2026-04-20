@@ -8,7 +8,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import inspect
-from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import (
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 from datetime import UTC, datetime
 
 from flext_plugin import c, p, r, t, u

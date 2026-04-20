@@ -8,7 +8,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable, Mapping, MutableMapping, Sequence
+from collections.abc import (
+    Callable,
+    Mapping,
+    MutableMapping,
+    Sequence,
+)
 from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType

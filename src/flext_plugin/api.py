@@ -7,7 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import (
+    Mapping,
+    Sequence,
+)
 
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginPlatform, m, p, r, t, u

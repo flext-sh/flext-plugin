@@ -10,7 +10,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Mapping, MutableSequence, Sequence
+from collections.abc import (
+    Mapping,
+    MutableSequence,
+    Sequence,
+)
 from types import ModuleType
 from typing import override
 

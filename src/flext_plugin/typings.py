@@ -7,7 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping, Sequence
+from collections.abc import (
+    Awaitable,
+    Callable,
+    Mapping,
+    Sequence,
+)
 
 from flext_cli import m, t
 

@@ -16,7 +16,11 @@ from __future__ import annotations
 
 import os
 import tempfile
-from collections.abc import Callable, Generator, Mapping
+from collections.abc import (
+    Callable,
+    Generator,
+    Mapping,
+)
 from pathlib import Path
 
 import pytest

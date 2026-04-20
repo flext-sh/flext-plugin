@@ -12,7 +12,9 @@ from __future__ import annotations
 import argparse
 import socket
 import sys
-from collections.abc import Mapping
+from collections.abc import (
+    Mapping,
+)
 
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t

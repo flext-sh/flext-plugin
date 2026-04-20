@@ -13,6 +13,10 @@ Docker Usage:
 
 from __future__ import annotations
 
+from collections.abc import (
+    Mapping,
+)
+
 from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi, t
 

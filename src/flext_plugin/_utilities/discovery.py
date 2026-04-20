@@ -10,7 +10,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import importlib.metadata
-from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
+from collections.abc import (
+    Callable,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 from pathlib import Path
 
 from flext_plugin import c, m, p, r, t, u

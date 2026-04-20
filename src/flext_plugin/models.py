@@ -8,7 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import Callable, Mapping
+from collections.abc import (
+    Callable,
+    Mapping,
+)
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, ClassVar, Self

@@ -10,7 +10,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import tempfile
-from collections.abc import Generator
+from collections.abc import (
+    Generator,
+)
 from pathlib import Path
 
 import pytest
