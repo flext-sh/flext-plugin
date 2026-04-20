@@ -22,8 +22,8 @@ from types import ModuleType
 from typing import ClassVar, Self
 
 from flext_cli import FlextCliUtilities
-
 from flext_core import u
+
 from flext_plugin import c, m, p, r, t
 
 

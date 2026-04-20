@@ -10,10 +10,12 @@ from flext_core.lazy import (
     install_lazy_exports,
     merge_lazy_imports,
 )
+
 from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
+
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.entities import FlextPluginEntities

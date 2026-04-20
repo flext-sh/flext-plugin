@@ -18,6 +18,7 @@ from collections.abc import (
 )
 
 from flext_core import FlextContainer
+
 from flext_plugin import FlextPluginApi, t
 
 

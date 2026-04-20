@@ -20,8 +20,8 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-
 from flext_core import FlextContainer
+
 from flext_plugin import (
     FlextPluginConstants,
     FlextPluginDiscovery,

@@ -17,6 +17,7 @@ from collections.abc import (
 from typing import override
 
 from flext_core import FlextContainer
+
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginPlatform,

@@ -10,8 +10,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin import FlextPluginTypes
 from flext_tests import tm
+
+from flext_plugin import FlextPluginTypes
 from tests import t
 
 
