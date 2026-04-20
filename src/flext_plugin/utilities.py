@@ -258,7 +258,7 @@ class FlextPluginUtilities(u):
                         if callback_function
                         else None,
                         "watch_interval": FlextPluginUtilities.Plugin.HotReloadManager.DEFAULT_WATCH_INTERVAL,
-                        "last_modified": dict[str, t.ContainerValue](),
+                        "last_modified": dict[str, t.Container](),
                         "active": False,
                         "created_at": datetime.now(UTC).isoformat(),
                     }
@@ -292,7 +292,7 @@ class FlextPluginUtilities(u):
                 try:
                     watch_path = Path(str(watcher_config["watch_path"]))
                     last_modified_raw = watcher_config.get("last_modified", {})
-                    last_modified: t.MutableRecursiveContainerMapping = (
+                    last_modified: t.MutableFlatContainerMapping = (
                         dict(
                             t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                                 last_modified_raw,
@@ -483,7 +483,7 @@ class FlextPluginUtilities(u):
 
                 """
                 try:
-                    security_report: t.MutableRecursiveContainerMapping = {
+                    security_report: t.MutableFlatContainerMapping = {
                         "safe": True,
                         "violations": list[str](),
                         "warnings": list[str](),
@@ -724,7 +724,7 @@ class FlextPluginUtilities(u):
             def execute_plugin_function(
                 plugin_module: ModuleType,
                 function_name: str,
-                args: t.RecursiveContainerList | None = None,
+                args: t.FlatContainerList | None = None,
                 kwargs: Mapping[str, t.Container] | None = None,
             ) -> p.Result[t.Container]:
                 """Execute a specific function within a plugin module.
@@ -921,7 +921,7 @@ class FlextPluginUtilities(u):
                     if not path.exists():
                         registry: Mapping[str, t.Container] = {
                             "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
-                            "plugins": dict[str, t.ContainerValue](),
+                            "plugins": dict[str, t.Container](),
                             "last_updated": datetime.now(UTC).isoformat(),
                             "created_at": datetime.now(UTC).isoformat(),
                         }
@@ -968,9 +968,7 @@ class FlextPluginUtilities(u):
 
                 """
                 try:
-                    mutable_registry: t.MutableRecursiveContainerMapping = dict(
-                        registry
-                    )
+                    mutable_registry: t.MutableFlatContainerMapping = dict(registry)
                     if "plugins" not in mutable_registry:
                         mutable_registry["plugins"] = dict[str, t.Container]()
                     plugin_info = {

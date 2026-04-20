@@ -49,7 +49,7 @@ class FlextPluginHandlers:
             str,
             MutableSequence[t.Plugin.Handlers.HandlerInfo],
         ] = {}
-        self._event_history: MutableSequence[t.MutableRecursiveContainerMapping] = []
+        self._event_history: MutableSequence[t.MutableFlatContainerMapping] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -316,7 +316,7 @@ class FlextPluginHandlers:
         self,
         event_type: str,
         event_data: Mapping[str, t.Container],
-    ) -> p.Result[t.RecursiveContainerList]:
+    ) -> p.Result[t.FlatContainerList]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -328,7 +328,7 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: t.MutableRecursiveContainerMapping = {
+            event_record: t.MutableFlatContainerMapping = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -339,7 +339,7 @@ class FlextPluginHandlers:
                     "No handlers registered for event type: %s",
                     event_type,
                 )
-                return r[t.RecursiveContainerList].ok([])
+                return r[t.FlatContainerList].ok([])
             results: list[t.Container] = []
             for handler_info in self._handlers[event_type]:
                 try:
@@ -360,7 +360,7 @@ class FlextPluginHandlers:
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
-            return r[t.RecursiveContainerList].ok(results)
+            return r[t.FlatContainerList].ok(results)
         except (
             ValueError,
             TypeError,
@@ -371,7 +371,7 @@ class FlextPluginHandlers:
             ImportError,
         ) as e:
             self.logger.exception("Failed to trigger event %s", event_type)
-            return r[t.RecursiveContainerList].fail(f"Event triggering error: {e!s}")
+            return r[t.FlatContainerList].fail(f"Event triggering error: {e!s}")
 
     def unregister_handler(
         self,

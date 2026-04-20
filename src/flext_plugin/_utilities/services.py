@@ -771,7 +771,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("settings")
-        merged_config: t.MutableRecursiveContainerMapping = dict(
+        merged_config: t.MutableFlatContainerMapping = dict(
             self._to_general_mapping(existing_config),
         )
         merged_config.update(settings)

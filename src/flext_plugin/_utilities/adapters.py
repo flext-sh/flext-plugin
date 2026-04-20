@@ -333,7 +333,7 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: t.MutableRecursiveContainerMapping = {}
+            self._plugins: t.MutableFlatContainerMapping = {}
 
         @override
         def fetch_plugin(

@@ -100,7 +100,7 @@ class FlextPluginModels(m):
                 True
             )
             metadata: Annotated[
-                t.MutableRecursiveContainerMapping,
+                t.MutableFlatContainerMapping,
                 u.Field(
                     description="Extensible plugin metadata",
                 ),
@@ -138,7 +138,7 @@ class FlextPluginModels(m):
                 metadata_payload: Mapping[str, t.Container] = (
                     dict(metadata.items()) if metadata else {}
                 )
-                payload: t.MutableRecursiveContainerMapping = {
+                payload: t.MutableFlatContainerMapping = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,

@@ -330,7 +330,7 @@ class FlextPluginProtocols(FlextProtocols):
 
             def retrieve_plugin(
                 self, _plugin_name: str
-            ) -> p.Result[t.ContainerValue | None]:
+            ) -> p.Result[t.Container | None]:
                 """Retrieve stored plugin data."""
                 ...
 

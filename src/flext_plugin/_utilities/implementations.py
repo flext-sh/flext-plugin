@@ -69,7 +69,7 @@ class FlextPluginImplementations:
             self._entity = entity
             self.logger = u.fetch_logger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: t.MutableRecursiveContainerMapping = {}
+            self._config: t.MutableFlatContainerMapping = {}
 
         @property
         def name(self) -> str:
@@ -381,7 +381,7 @@ class FlextPluginImplementations:
                 validated = t.CONTAINER_MAPPING_ADAPTER.validate_python(
                     data,
                 )
-                transformed: t.MutableRecursiveContainerMapping = dict(validated)
+                transformed: t.MutableFlatContainerMapping = dict(validated)
                 transformed["_transformed_by"] = self._name
                 transformed["_transform_version"] = self._version
                 return r[t.Container].ok(transformed)
@@ -507,10 +507,10 @@ class FlextPluginImplementations:
             """
             super().__init__()
             self._logger = logger
-            self._config: t.MutableRecursiveContainerMapping = (
+            self._config: t.MutableFlatContainerMapping = (
                 dict(settings) if settings else {}
             )
-            self._services: t.MutableRecursiveContainerMapping = (
+            self._services: t.MutableFlatContainerMapping = (
                 dict(services) if services else {}
             )
 
