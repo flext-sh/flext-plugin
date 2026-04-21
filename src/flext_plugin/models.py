@@ -14,7 +14,7 @@ from collections.abc import (
 )
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, ClassVar, Self
+from typing import Annotated, Self
 
 from flext_cli import m
 from flext_core import u
@@ -38,8 +38,6 @@ class FlextPluginModels(m):
         class Entity(m.Entity):
             """Entity - real inheritance."""
 
-            _flext_enforcement_exempt: ClassVar[bool] = True
-
         class Plugin(m.Entity):
             """Plugin entity - core domain entity with identity and lifecycle.
 
@@ -56,8 +54,6 @@ class FlextPluginModels(m):
             metadata: Extensible plugin metadata
 
             """
-
-            _flext_enforcement_exempt: ClassVar[bool] = True
 
             name: Annotated[
                 str,
@@ -351,8 +347,6 @@ class FlextPluginModels(m):
 
             """
 
-            _flext_enforcement_exempt: ClassVar[bool] = True
-
             success: Annotated[bool, u.Field(description="Whether execution succeeded")]
             data: Annotated[
                 Mapping[str, t.Container],
@@ -606,8 +600,6 @@ class FlextPluginModels(m):
             details: Additional validation details
 
             """
-
-            _flext_enforcement_exempt: ClassVar[bool] = True
 
             valid: Annotated[bool, u.Field(description="Whether validation passed")]
             errors: Annotated[
