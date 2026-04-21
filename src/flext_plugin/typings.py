@@ -41,13 +41,13 @@ class FlextPluginTypes(t):
         type StringSet = set[str]
         type StringDict = t.StrMapping
         type FloatDict = Mapping[str, float]
-        type PluginList = Sequence[t.GeneralValueMapping]
-        type PluginDict = t.GeneralValueMapping
-        type ConfigDict = t.GeneralValueMapping
-        type MetadataDict = t.GeneralValueMapping
-        type InputDict = t.GeneralValueMapping
-        type OutputDict = t.GeneralValueMapping
-        type PluginEntity = t.GeneralValueMapping
+        type PluginList = Sequence[t.Container]
+        type PluginDict = t.Container
+        type ConfigDict = t.Container
+        type MetadataDict = t.Container
+        type InputDict = t.Container
+        type OutputDict = t.Container
+        type PluginEntity = t.Container
         DiscoveryTypeLiteral = c.Plugin.DiscoveryTypeLiteral
         DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
         LoadTypeLiteral = c.Plugin.LoadTypeLiteral
@@ -88,44 +88,44 @@ class FlextPluginTypes(t):
 
             type SecurityLevel = str
             type Permission = str
-            type SecurityConfig = t.GeneralValueMapping
+            type SecurityConfig = t.Container
             SecurityLevelLiteral = c.Plugin.SecurityLevelLiteral
 
         class Performance:
             """Performance metrics and monitoring type aliases."""
 
-            type Metrics = t.GeneralValueMapping
-            type PerformanceData = t.GeneralValueMapping
-            type ResourceUsage = t.GeneralValueMapping
+            type Metrics = t.Container
+            type PerformanceData = t.Container
+            type ResourceUsage = t.Container
 
         class Discovery:
             """Plugin discovery type aliases."""
 
             type DiscoveryPath = str
-            type DiscoveryResult = t.GeneralValueMapping
+            type DiscoveryResult = t.Container
             type PluginLoader = t.GeneralValueType
             type EntryPoint = str
 
         class Execution:
             """Plugin execution type aliases."""
 
-            type ExecutionContext = t.GeneralValueMapping
-            type ExecutionResult = t.GeneralValueMapping
+            type ExecutionContext = t.Container
+            type ExecutionResult = t.Container
             type ExecutionError = str
-            type ResourceLimits = t.GeneralValueMapping
+            type ResourceLimits = t.Container
 
         class Registry:
             """Plugin registry type aliases."""
 
-            type RegistryConfig = t.GeneralValueMapping
-            type RegistryEntry = t.GeneralValueMapping
-            type RegistrySync = t.GeneralValueMapping
+            type RegistryConfig = t.Container
+            type RegistryEntry = t.Container
+            type RegistrySync = t.Container
 
         class HotReload:
             """Hot reload and file watching type aliases."""
 
-            type WatchConfig = t.GeneralValueMapping
-            type ReloadEvent = t.GeneralValueMapping
+            type WatchConfig = t.Container
+            type ReloadEvent = t.Container
             type FileWatcher = t.GeneralValueType
 
 
