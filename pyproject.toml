@@ -150,17 +150,7 @@ omit = [ "*/dependency_injector/providers.pyx" ]
 
 # [MANAGED] deptry
 [tool.deptry]
-known_first_party = [
-  "anyio",
-  "flext-core",
-  "flext_plugin",
-  "jsonschema",
-  "psutil",
-  "pydantic",
-  "pydantic-core",
-  "pydantic-settings",
-  "watchdog",
-]
+known_first_party = [ "flext_plugin" ]
 pep621_dev_dependency_groups = [ "dev" ]
 
 [tool.flext.docs]
@@ -490,17 +480,7 @@ select = [ "ALL" ]
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
-known-first-party = [
-  "anyio",
-  "flext-core",
-  "flext_plugin",
-  "jsonschema",
-  "psutil",
-  "pydantic",
-  "pydantic-core",
-  "pydantic-settings",
-  "watchdog",
-]
+known-first-party = [ "flext_plugin" ]
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
