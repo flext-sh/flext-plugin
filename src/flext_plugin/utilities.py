@@ -21,8 +21,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import ClassVar, Self
 
-from flext_cli import FlextCliUtilities
-from flext_core import u
+from flext_cli import u
 
 from flext_plugin import c, m, p, r, t
 
@@ -573,7 +572,7 @@ class FlextPluginUtilities(u):
                         )
                     content = path.read_text(encoding="utf-8")
                     if path.suffix in {".yaml", ".yml"}:
-                        settings = FlextCliUtilities.Cli.yaml_parse(content).unwrap_or(
+                        settings = u.Cli.yaml_parse(content).unwrap_or(
                             {},
                         )
                     elif path.suffix == ".json":

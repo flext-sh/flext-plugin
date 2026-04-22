@@ -1,6 +1,6 @@
 """FLEXT Plugin Constants - constant definitions.
 
-Copyright (FlextConstants) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
@@ -10,10 +10,10 @@ from __future__ import annotations
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
-from flext_core import FlextConstants, t
+from flext_cli import c, t
 
 
-class FlextPluginConstants(FlextConstants):
+class FlextPluginConstants(c):
     """plugin constants with Python 3.13+ patterns.
 
     Usage:
@@ -35,7 +35,7 @@ class FlextPluginConstants(FlextConstants):
         class Discovery:
             """Discovery-related constants."""
 
-            DEFAULT_TIMEOUT_SECONDS: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
+            DEFAULT_TIMEOUT_SECONDS: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
             DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
             DEFAULT_PLUGIN_PATHS: Final[t.StrSequence] = (
                 "/opt/flext/plugins",
@@ -138,7 +138,7 @@ class FlextPluginConstants(FlextConstants):
             PERMISSION_FILESYSTEM: Final[str] = "filesystem"
             PERMISSION_DATABASE: Final[str] = "database"
             PERMISSION_EXTERNAL_API: Final[str] = "external_api"
-            SECURITY_SCAN_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
+            SECURITY_SCAN_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
             DEFAULT_ALLOWED_IMPORTS: Final[t.StrSequence] = (
                 "flext_core",
                 "flext_plugin",
@@ -196,7 +196,7 @@ class FlextPluginConstants(FlextConstants):
 
             DEFAULT_INTERVAL_SECONDS: Final[int] = 2
             DEBOUNCE_MS: Final[int] = 500
-            MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
+            MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
             EVENT_CREATED: Final[str] = "created"
             EVENT_MODIFIED: Final[str] = "modified"
             EVENT_DELETED: Final[str] = "deleted"
@@ -224,13 +224,13 @@ class FlextPluginConstants(FlextConstants):
         class Files:
             """File extension constants."""
 
-            PYTHON_EXTENSION: Final[str] = FlextConstants.FileExtension.PYTHON.value
-            YAML_CONFIG_EXTENSION: Final[str] = FlextConstants.FileExtension.YAML.value
-            JSON_CONFIG_EXTENSION: Final[str] = FlextConstants.FileExtension.JSON.value
-            TOML_CONFIG_EXTENSION: Final[str] = FlextConstants.FileExtension.TOML.value
+            PYTHON_EXTENSION: Final[str] = c.FileExtension.PYTHON.value
+            YAML_CONFIG_EXTENSION: Final[str] = c.FileExtension.YAML.value
+            JSON_CONFIG_EXTENSION: Final[str] = c.FileExtension.JSON.value
+            TOML_CONFIG_EXTENSION: Final[str] = c.FileExtension.TOML.value
             DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
             DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-            DEFAULT_CONFIG_DIR: Final[str] = FlextConstants.Directory.CONFIG.value
+            DEFAULT_CONFIG_DIR: Final[str] = c.Directory.CONFIG.value
             DEFAULT_CONFIG_FILE: Final[str] = "plugin.yaml"
             CONFIG_SCHEMA_VERSION: Final[str] = "1.0"
 

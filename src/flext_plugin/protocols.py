@@ -13,7 +13,7 @@ from collections.abc import (
 )
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_core import FlextProtocols
+from flext_cli import p
 
 from flext_plugin import t
 
@@ -21,14 +21,14 @@ if TYPE_CHECKING:
     from flext_plugin import m
 
 
-class FlextPluginProtocols(FlextProtocols):
-    """Unified plugin protocols extending FlextProtocols.
+class FlextPluginProtocols(p):
+    """Unified plugin protocols extending p.
 
-    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    Extends p to inherit all foundation protocols (Result, Service, etc.)
     and adds plugin-specific protocols in the Plugin namespace.
 
     Architecture:
-    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - EXTENDS: p (inherits Foundation, Domain, Application, etc.)
     - ADDS: Plugin-specific protocols in Plugin namespace
     - PROVIDES: Root-level alias `p` for convenient access
 
