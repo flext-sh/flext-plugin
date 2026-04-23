@@ -154,7 +154,7 @@ ______________________________________________________________________
 ```bash
 # Setup and validation
 make setup                 # Complete development setup
-make validate              # Full validation pipeline
+make val              # Full validation pipeline
 make check                 # Quick lint and type check
 
 # Testing

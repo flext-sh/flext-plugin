@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import (
-    Mapping,
     Sequence,
 )
 
@@ -51,14 +50,14 @@ class FlextPluginApi:
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Mapping[str, t.Container],
+        context: t.JsonMapping,
         execution_id: str | None = None,
-    ) -> p.Result[Mapping[str, t.Container]]:
+    ) -> p.Result[t.JsonMapping]:
         """Execute a plugin by name with the given context."""
         result = self.platform.execute_plugin(plugin_name, context, execution_id)
         if result.failure:
-            return r[Mapping[str, t.Container]].fail(result.error or "Execution failed")
-        return r[Mapping[str, t.Container]].ok({"execution_id": str(result.value)})
+            return r[t.JsonMapping].fail(result.error or "Execution failed")
+        return r[t.JsonMapping].ok({"execution_id": str(result.value)})
 
     def fetch_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
         """Fetch a plugin by name."""

@@ -14,7 +14,7 @@ from flext_core.lazy import (
 from flext_plugin.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
+    from flext_cli import d, e, h, r, s, x
 
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
@@ -80,7 +80,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextPluginUtilities",
                 "u",
             ),
-            "flext_core": (
+            "flext_cli": (
                 "d",
                 "e",
                 "h",

@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import (
-    Mapping,
     Sequence,
 )
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
@@ -63,7 +62,7 @@ class FlextPluginProtocols(p):
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[Mapping[str, t.Container]]:
+            ) -> p.Result[t.JsonMapping]:
                 """Load a plugin from the specified path."""
                 ...
 
@@ -78,25 +77,25 @@ class FlextPluginProtocols(p):
             def discover_plugin(
                 self,
                 _plugin_path: str,
-            ) -> p.Result[Mapping[str, t.Container]]:
+            ) -> p.Result[t.JsonMapping]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+            ) -> p.Result[Sequence[t.JsonMapping]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
                 self,
-                _plugin_data: Mapping[str, t.Container],
+                _plugin_data: t.JsonMapping,
             ) -> p.Result[bool]:
                 """Validate plugin discovery data."""
                 ...
 
-            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+            def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
                 """Validate plugin for security."""
                 ...
 
@@ -104,7 +103,7 @@ class FlextPluginProtocols(p):
         class PluginRegistry(Protocol):
             """Protocol for plugin registry operations."""
 
-            def fetch_plugin(self, plugin_name: str) -> p.Result[t.Container | None]:
+            def fetch_plugin(self, plugin_name: str) -> p.Result[t.JsonValue | None]:
                 """Fetch a registered plugin by name."""
                 ...
 
@@ -112,18 +111,18 @@ class FlextPluginProtocols(p):
                 """Check if a plugin is registered."""
                 ...
 
-            def list_plugins(self) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+            def list_plugins(self) -> p.Result[Sequence[t.JsonMapping]]:
                 """List all registered plugins."""
                 ...
 
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.Container,
+                _plugin: m.Plugin.Plugin | t.JsonValue,
             ) -> p.Result[bool]:
                 """Register a plugin."""
                 ...
 
-            def register(self, plugin: m.Plugin.Plugin | t.Container) -> p.Result[None]:
+            def register(self, plugin: m.Plugin.Plugin | t.JsonValue) -> p.Result[None]:
                 """Register a plugin with normalized API."""
                 ...
 
@@ -138,8 +137,8 @@ class FlextPluginProtocols(p):
             def execute_plugin(
                 self,
                 _plugin_name: str,
-                _context: Mapping[str, t.Container],
-            ) -> p.Result[Mapping[str, t.Container]]:
+                _context: t.JsonMapping,
+            ) -> p.Result[t.JsonMapping]:
                 """Execute a plugin with the given context."""
                 ...
 
@@ -174,11 +173,11 @@ class FlextPluginProtocols(p):
             def scan_plugin_security(
                 self,
                 _plugin_path: str,
-            ) -> p.Result[Mapping[str, t.Container]]:
+            ) -> p.Result[t.JsonMapping]:
                 """Scan plugin for security vulnerabilities."""
                 ...
 
-            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+            def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
                 """Validate plugin security compliance."""
                 ...
 
@@ -213,14 +212,14 @@ class FlextPluginProtocols(p):
             def fetch_plugin_health(
                 self,
                 _plugin_name: str,
-            ) -> p.Result[Mapping[str, t.Container]]:
+            ) -> p.Result[t.JsonMapping]:
                 """Get health status of a plugin."""
                 ...
 
             def fetch_plugin_metrics(
                 self,
                 _plugin_name: str,
-            ) -> p.Result[Mapping[str, t.Container]]:
+            ) -> p.Result[t.JsonMapping]:
                 """Get metrics for a plugin."""
                 ...
 
@@ -240,23 +239,23 @@ class FlextPluginProtocols(p):
         class PluginConfiguration(Protocol):
             """Protocol for plugin configuration operations."""
 
-            def fetch_default_config(self, plugin_type: str) -> p.Result[t.Container]:
+            def fetch_default_config(self, plugin_type: str) -> p.Result[t.JsonValue]:
                 """Get default configuration for a plugin type."""
                 ...
 
-            def load_config(self, _plugin_name: str) -> p.Result[t.Container]:
+            def load_config(self, _plugin_name: str) -> p.Result[t.JsonValue]:
                 """Load configuration for a plugin."""
                 ...
 
             def save_config(
                 self,
                 _plugin_name: str,
-                settings: t.Container,
+                settings: t.JsonValue,
             ) -> p.Result[bool]:
                 """Save configuration for a plugin."""
                 ...
 
-            def validate_config(self, settings: t.Container) -> p.Result[bool]:
+            def validate_config(self, settings: t.JsonValue) -> p.Result[bool]:
                 """Validate plugin configuration."""
                 ...
 
@@ -308,7 +307,7 @@ class FlextPluginProtocols(p):
 
             def validate_plugin_structure(
                 self,
-                _plugin_data: t.Container,
+                _plugin_data: t.JsonValue,
             ) -> p.Result[bool]:
                 """Validate plugin structure."""
                 ...
@@ -331,11 +330,11 @@ class FlextPluginProtocols(p):
 
             def retrieve_plugin(
                 self, _plugin_name: str
-            ) -> p.Result[t.Container | None]:
+            ) -> p.Result[t.JsonValue | None]:
                 """Retrieve stored plugin data."""
                 ...
 
-            def store_plugin(self, _plugin_data: t.Container) -> p.Result[bool]:
+            def store_plugin(self, _plugin_data: t.JsonValue) -> p.Result[bool]:
                 """Store plugin data."""
                 ...
 
@@ -346,7 +345,7 @@ class FlextPluginProtocols(p):
             def critical(
                 self,
                 message: str,
-                *args: t.Container,
+                *args: t.JsonValue,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log critical message."""
@@ -355,7 +354,7 @@ class FlextPluginProtocols(p):
             def debug(
                 self,
                 message: str,
-                *args: t.Container,
+                *args: t.JsonValue,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log debug message."""
@@ -364,7 +363,7 @@ class FlextPluginProtocols(p):
             def error(
                 self,
                 message: str,
-                *args: t.Container,
+                *args: t.JsonValue,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log error message."""
@@ -373,7 +372,7 @@ class FlextPluginProtocols(p):
             def info(
                 self,
                 message: str,
-                *args: t.Container,
+                *args: t.JsonValue,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log info message."""
@@ -382,7 +381,7 @@ class FlextPluginProtocols(p):
             def warning(
                 self,
                 message: str,
-                *args: t.Container,
+                *args: t.JsonValue,
                 **kwargs: t.Scalar,
             ) -> None:
                 """Log warning message."""

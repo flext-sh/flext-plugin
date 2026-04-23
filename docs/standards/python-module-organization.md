@@ -1146,7 +1146,7 @@ class LazyPluginLoader:
         self._loaded_modules: m.Dict = {}
 
     @cached_property
-    def plugin_module(self) -> p.Result[t.Container]:
+    def plugin_module(self) -> p.Result[t.JsonValue]:
         """Lazy load plugin module."""
         try:
             module_path = self.plugin_config.get("module_path")
@@ -1227,9 +1227,9 @@ class PluginCache:
     ):
         """Decorator for caching plugin operation results."""
 
-        def decorator(func: Callable[..., r[t.Container]]):
+        def decorator(func: Callable[..., r[t.JsonValue]]):
             @wraps(func)
-            def wrapper(*args, **kwargs) -> p.Result[t.Container]:
+            def wrapper(*args, **kwargs) -> p.Result[t.JsonValue]:
                 # Generate cache key
                 cache_key = cache_key_func(*args, **kwargs)
 
@@ -1267,7 +1267,7 @@ class PluginCache:
         for key in keys_to_remove:
             del self._cache[key]
 
-    def _get_cached_result(self, cache_key: str) -> Optional[t.Container]:
+    def _get_cached_result(self, cache_key: str) -> Optional[t.JsonValue]:
         """Get cached result if still valid."""
         if cache_key not in self._cache:
             return None
@@ -1311,7 +1311,7 @@ plugin_cache = PluginCache()
     ),
     invalidate_on_plugin_change=True,
 )
-def execute_plugin_cached(plugin_id: str, settings: m.Dict) -> p.Result[t.Container]:
+def execute_plugin_cached(plugin_id: str, settings: m.Dict) -> p.Result[t.JsonValue]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
     pass

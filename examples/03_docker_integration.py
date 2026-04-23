@@ -12,9 +12,6 @@ from __future__ import annotations
 import argparse
 import socket
 import sys
-from collections.abc import (
-    Mapping,
-)
 
 from flext_core import FlextContainer
 
@@ -35,10 +32,10 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
 
 def create_docker_postgres_plugin() -> tuple[
     FlextPluginModels.Plugin.Plugin,
-    Mapping[str, t.Container],
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
-    postgres_config: Mapping[str, t.Container] = {
+    postgres_config = {
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
@@ -63,10 +60,10 @@ def create_docker_postgres_plugin() -> tuple[
 
 def create_docker_redis_plugin() -> tuple[
     FlextPluginModels.Plugin.Plugin,
-    Mapping[str, t.Container],
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
-    redis_config: Mapping[str, t.Container] = {
+    redis_config = {
         "host": "localhost",
         "port": 6379,
         "password": "flext_redis_password",
@@ -92,10 +89,10 @@ def create_docker_redis_plugin() -> tuple[
 
 def create_docker_ldap_plugin() -> tuple[
     FlextPluginModels.Plugin.Plugin,
-    Mapping[str, t.Container],
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
-    ldap_config: Mapping[str, t.Container] = {
+    ldap_config = {
         "host": "localhost",
         "port": 389,
         "use_ssl": False,

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import (
-    Mapping,
     MutableMapping,
     MutableSequence,
     Sequence,
@@ -49,7 +48,7 @@ class FlextPluginHandlers:
             str,
             MutableSequence[t.Plugin.Handlers.HandlerInfo],
         ] = {}
-        self._event_history: MutableSequence[t.MutableFlatContainerMapping] = []
+        self._event_history: MutableSequence[t.MutableJsonMapping] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -67,7 +66,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> Sequence[Mapping[str, t.Container]]:
+    ) -> Sequence[t.JsonMapping]:
         """Get event history, optionally filtered by event type.
 
         Args:
@@ -95,7 +94,7 @@ class FlextPluginHandlers:
         """
         return len(self._handlers.get(event_type, []))
 
-    def get_handler_status(self) -> Mapping[str, t.Container]:
+    def get_handler_status(self) -> t.JsonMapping:
         """Get the current status of the event handlers.
 
         Returns:
@@ -124,8 +123,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_discovered(
         self,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Handle plugin discovered event.
 
         Args:
@@ -142,8 +141,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_error(
         self,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Handle plugin error event.
 
         Args:
@@ -166,8 +165,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_executed(
         self,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Handle plugin executed event.
 
         Args:
@@ -198,8 +197,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_loaded(
         self,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Handle plugin loaded event.
 
         Args:
@@ -216,8 +215,8 @@ class FlextPluginHandlers:
 
     async def handle_plugin_unloaded(
         self,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Handle plugin unloaded event.
 
         Args:
@@ -315,8 +314,8 @@ class FlextPluginHandlers:
     async def trigger_event(
         self,
         event_type: str,
-        event_data: Mapping[str, t.Container],
-    ) -> p.Result[t.FlatContainerList]:
+        event_data: t.JsonMapping,
+    ) -> p.Result[t.JsonList]:
         """Trigger an event and execute all registered handlers.
 
         Args:
@@ -328,7 +327,7 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: t.MutableFlatContainerMapping = {
+            event_record: t.MutableJsonMapping = {
                 "event_type": event_type,
                 "event_data": event_data,
                 "timestamp": self._get_current_timestamp(),
@@ -339,8 +338,8 @@ class FlextPluginHandlers:
                     "No handlers registered for event type: %s",
                     event_type,
                 )
-                return r[t.FlatContainerList].ok([])
-            results: list[t.Container] = []
+                return r[t.JsonList].ok([])
+            results: list[t.JsonValue] = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
@@ -360,7 +359,7 @@ class FlextPluginHandlers:
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
-            return r[t.FlatContainerList].ok(results)
+            return r[t.JsonList].ok(results)
         except (
             ValueError,
             TypeError,
@@ -371,7 +370,7 @@ class FlextPluginHandlers:
             ImportError,
         ) as e:
             self.logger.exception("Failed to trigger event %s", event_type)
-            return r[t.FlatContainerList].fail(f"Event triggering error: {e!s}")
+            return r[t.JsonList].fail(f"Event triggering error: {e!s}")
 
     def unregister_handler(
         self,
@@ -416,8 +415,8 @@ class FlextPluginHandlers:
     async def _execute_handler(
         self,
         handler: t.Plugin.Handlers.EventHandler,
-        event_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container]:
+        event_data: t.JsonMapping,
+    ) -> t.JsonMapping:
         """Execute a single handler with proper error handling.
 
         Args:
@@ -452,7 +451,7 @@ class FlextPluginHandlers:
         """
         return datetime.now(UTC).isoformat()
 
-    def _is_async_function(self, func: t.Container) -> bool:
+    def _is_async_function(self, func: t.JsonValue) -> bool:
         """Check if a function is async.
 
         Args:

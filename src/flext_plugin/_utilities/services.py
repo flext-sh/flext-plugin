@@ -112,11 +112,10 @@ class FlextPluginService(x):
 
     @staticmethod
     def _to_general_mapping(
-        value: t.Container,
-    ) -> Mapping[str, t.Container]:
+        value: t.JsonValue,
+    ) -> t.JsonMapping:
         if not isinstance(value, Mapping):
-            result: Mapping[str, t.Container] = {}
-            return result
+            return {}
         return t.CONTAINER_MAPPING_ADAPTER.validate_python(value)
 
     def cleanup_executions(self) -> int:
@@ -292,7 +291,7 @@ class FlextPluginService(x):
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Mapping[str, t.Container],
+        context: t.JsonMapping,
         execution_id: str | None = None,
     ) -> p.Result[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the given context.
@@ -405,7 +404,7 @@ class FlextPluginService(x):
     async def fetch_plugin_health(
         self,
         plugin_name: str,
-    ) -> p.Result[Mapping[str, t.Container]]:
+    ) -> p.Result[t.JsonMapping]:
         """Get health status for a specific plugin.
 
         Args:
@@ -427,7 +426,7 @@ class FlextPluginService(x):
     async def fetch_plugin_metrics(
         self,
         plugin_name: str,
-    ) -> p.Result[Mapping[str, t.Container]]:
+    ) -> p.Result[t.JsonMapping]:
         """Get metrics for a specific plugin.
 
         Args:
@@ -449,32 +448,32 @@ class FlextPluginService(x):
     def _get_plugin_monitoring_data(
         self,
         plugin_name: str,
-        operation: Callable[[str], p.Result[Mapping[str, t.Container]]],
+        operation: Callable[[str], p.Result[t.JsonMapping]],
         operation_name: str,
         operation_failure_prefix: str,
         response_label: str,
         operation_error_prefix: str,
-    ) -> p.Result[Mapping[str, t.Container]]:
+    ) -> p.Result[t.JsonMapping]:
         try:
             if not self._monitoring:
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     "Plugin monitoring not available",
                 )
             if plugin_name not in self._plugins:
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     f"Plugin '{plugin_name}' not found",
                 )
 
             monitoring_result = operation(plugin_name)
             if monitoring_result.failure:
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     f"{operation_failure_prefix}: {monitoring_result.error}",
                 )
             if not u.dict_like(monitoring_result.value):
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     f"{response_label} response is not a mapping",
                 )
-            return r[Mapping[str, t.Container]].ok(
+            return r[t.JsonMapping].ok(
                 self._to_general_mapping(monitoring_result.value)
             )
         except (
@@ -491,7 +490,7 @@ class FlextPluginService(x):
                 operation_name,
                 plugin_name,
             )
-            return r[Mapping[str, t.Container]].fail(
+            return r[t.JsonMapping].fail(
                 f"{operation_error_prefix}: {e!s}",
             )
 
@@ -521,7 +520,7 @@ class FlextPluginService(x):
         """
         return [e for e in self._executions.values() if e.is_running]
 
-    def fetch_service_status(self) -> Mapping[str, t.Container]:
+    def fetch_service_status(self) -> t.JsonMapping:
         """Fetch the current status of the plugin service.
 
         Returns:
@@ -756,7 +755,7 @@ class FlextPluginService(x):
     def update_plugin_config(
         self,
         plugin_name: str,
-        settings: Mapping[str, t.Container],
+        settings: t.JsonMapping,
     ) -> p.Result[bool]:
         """Update configuration for a plugin.
 
@@ -772,7 +771,7 @@ class FlextPluginService(x):
         if plugin is None:
             return r[bool].fail(f"Plugin '{plugin_name}' not found")
         existing_config = plugin.metadata.get("settings")
-        merged_config: t.MutableFlatContainerMapping = dict(
+        merged_config: t.MutableJsonMapping = dict(
             self._to_general_mapping(existing_config),
         )
         merged_config.update(settings)

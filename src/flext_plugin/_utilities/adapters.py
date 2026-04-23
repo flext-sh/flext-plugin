@@ -77,7 +77,7 @@ class FlextPluginAdapters:
         def discover_plugin(
             self,
             _plugin_path: str,
-        ) -> p.Result[Mapping[str, t.Container]]:
+        ) -> p.Result[t.JsonMapping]:
             """Discover single plugin at path."""
             return self._execute_safe(
                 lambda: self._discovery_data_to_dict(
@@ -90,7 +90,7 @@ class FlextPluginAdapters:
         def discover_plugins(
             self,
             paths: t.StrSequence,
-        ) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+        ) -> p.Result[Sequence[t.JsonMapping]]:
             """Discover plugins in given paths."""
             return self._execute_safe(
                 lambda: [
@@ -102,13 +102,13 @@ class FlextPluginAdapters:
         @override
         def validate_plugin(
             self,
-            _plugin_data: Mapping[str, t.Container],
+            _plugin_data: t.JsonMapping,
         ) -> p.Result[bool]:
             """Validate discovered plugin data."""
             return self._execute_safe(lambda: True, "Plugin validation failed")
 
         @override
-        def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+        def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
             return r[bool].ok(value=True)
 
         def _discover_all(
@@ -174,7 +174,7 @@ class FlextPluginAdapters:
         def _discovery_data_to_dict(
             self,
             data: m.Plugin.DiscoveryData,
-        ) -> Mapping[str, t.Container]:
+        ) -> t.JsonMapping:
             """Convert DiscoveryData model to JsonMapping."""
             return {
                 "name": data.name,
@@ -203,7 +203,7 @@ class FlextPluginAdapters:
             return plugin_name in self._loaded_plugins
 
         @override
-        def load_plugin(self, plugin_path: str) -> p.Result[Mapping[str, t.Container]]:
+        def load_plugin(self, plugin_path: str) -> p.Result[t.JsonMapping]:
             """Load plugin from path."""
             return self._execute_safe(
                 lambda: self._load_module_as_dict(plugin_path),
@@ -254,7 +254,7 @@ class FlextPluginAdapters:
         def _load_module_as_dict(
             self,
             plugin_path: str,
-        ) -> Mapping[str, t.Container]:
+        ) -> t.JsonMapping:
             """Load module and convert to JsonMapping."""
             data = self._load_module(plugin_path)
             self._loaded_plugins[data.name] = data.module
@@ -273,8 +273,8 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             _plugin_name: str,
-            _context: Mapping[str, t.Container],
-        ) -> p.Result[Mapping[str, t.Container]]:
+            _context: t.JsonMapping,
+        ) -> p.Result[t.JsonMapping]:
             """Execute plugin."""
             return self._execute_safe(
                 lambda: {"status": "executed", "plugin": _plugin_name},
@@ -317,14 +317,14 @@ class FlextPluginAdapters:
         def scan_plugin_security(
             self,
             _plugin_path: str,
-        ) -> p.Result[Mapping[str, t.Container]]:
+        ) -> p.Result[t.JsonMapping]:
             """Scan plugin for security issues."""
-            return r[Mapping[str, t.Container]].ok({
+            return r[t.JsonMapping].ok({
                 "security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM
             })
 
         @override
-        def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+        def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
             """Validate plugin for security."""
             return r[bool].ok(True)
 
@@ -334,15 +334,15 @@ class FlextPluginAdapters:
         def __init__(self) -> None:
             """Initialize registry adapter."""
             super().__init__()
-            self._plugins: t.MutableFlatContainerMapping = {}
+            self._plugins: t.MutableJsonMapping = {}
 
         @override
         def fetch_plugin(
             self,
             plugin_name: str,
-        ) -> p.Result[t.Container | None]:
+        ) -> p.Result[t.JsonValue | None]:
             """Fetch a plugin from registry."""
-            return r[t.Container | None].ok(self._plugins.get(plugin_name))
+            return r[t.JsonValue | None].ok(self._plugins.get(plugin_name))
 
         @override
         def plugin_registered(self, plugin_name: str) -> bool:
@@ -350,12 +350,12 @@ class FlextPluginAdapters:
             return plugin_name in self._plugins
 
         @override
-        def list_plugins(self) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+        def list_plugins(self) -> p.Result[Sequence[t.JsonMapping]]:
             """List all plugins in registry."""
-            return r[Sequence[Mapping[str, t.Container]]].ok([])
+            return r[Sequence[t.JsonMapping]].ok([])
 
         @override
-        def register(self, plugin: m.Plugin.Plugin | t.Container) -> p.Result[None]:
+        def register(self, plugin: m.Plugin.Plugin | t.JsonValue) -> p.Result[None]:
             if not isinstance(plugin, Mapping):
                 return r[None].fail("Plugin payload must be a mapping")
             plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
@@ -370,7 +370,7 @@ class FlextPluginAdapters:
         @override
         def register_plugin(
             self,
-            _plugin: m.Plugin.Plugin | t.Container,
+            _plugin: m.Plugin.Plugin | t.JsonValue,
         ) -> p.Result[bool]:
             """Register plugin in registry."""
             registration_result = self.register(_plugin)
@@ -391,19 +391,17 @@ class FlextPluginAdapters:
         def fetch_plugin_health(
             self,
             _plugin_name: str,
-        ) -> p.Result[Mapping[str, t.Container]]:
+        ) -> p.Result[t.JsonMapping]:
             """Get plugin health information."""
-            return r[Mapping[str, t.Container]].ok({
-                "status": c.Plugin.PluginStatus.HEALTHY
-            })
+            return r[t.JsonMapping].ok({"status": c.Plugin.PluginStatus.HEALTHY})
 
         @override
         def fetch_plugin_metrics(
             self,
             _plugin_name: str,
-        ) -> p.Result[Mapping[str, t.Container]]:
+        ) -> p.Result[t.JsonMapping]:
             """Get plugin metrics."""
-            return r[Mapping[str, t.Container]].ok({
+            return r[t.JsonMapping].ok({
                 "execution_count": 0,
                 "error_count": 0,
             })

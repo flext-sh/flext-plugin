@@ -14,7 +14,6 @@ import asyncio
 import tempfile
 from collections.abc import (
     Generator,
-    Mapping,
 )
 from pathlib import Path
 from typing import Protocol, cast
@@ -46,15 +45,13 @@ class PluginInterface(Protocol):
     @property
     def name(self) -> str: ...
 
-    def initialize(self) -> Mapping[str, t.Container]: ...
+    def initialize(self) -> t.JsonMapping: ...
 
-    def execute(
-        self, data: Mapping[str, t.Container] | None = None
-    ) -> Mapping[str, t.Container]: ...
+    def execute(self, data: t.JsonMapping | None = None) -> t.JsonMapping: ...
 
-    def cleanup(self) -> Mapping[str, t.Container]: ...
+    def cleanup(self) -> t.JsonMapping: ...
 
-    def health_check(self) -> Mapping[str, t.Container]: ...
+    def health_check(self) -> t.JsonMapping: ...
 
     def set_should_fail(self, should_fail: bool) -> None: ...
 
@@ -825,7 +822,7 @@ class TestServicesIntegrationReal:
     def test_services_share_container_state_real(self) -> None:
         """Test services share REAL container state."""
         container = FlextContainer()
-        test_service: Mapping[str, t.Container] = {
+        test_service = {
             "name": "test_service",
             "settings": {"enabled": True},
         }

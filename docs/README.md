@@ -141,7 +141,7 @@ FLEXT Plugin serves as the foundational plugin system for the entire FLEXT ecosy
 ```bash
 # Standard development workflow
 make setup                 # Complete development environment
-make validate              # Full validation pipeline (lint + type + security + test)
+make val              # Full validation pipeline (lint + type + security + test)
 make check                 # Quick health check (lint + type)
 
 # Testing

@@ -13,11 +13,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import math
-from collections.abc import (
-    Mapping,
-)
 
-from tests import c, m, t
+from tests import c, m
 
 
 class TestFlextPlugin:
@@ -136,7 +133,7 @@ class TestFlextPluginSettingsEntities:
 
     def test_configuration_with_complex_settings(self) -> None:
         """Test configuration with complex settings."""
-        config: Mapping[str, t.Container] = {
+        config = {
             "max_memory_mb": 800,
             "max_cpu_percent": 75,
             "timeout_seconds": 300,
@@ -189,7 +186,7 @@ class TestFlextPluginExecution:
 
     def test_execution_result_with_complex_data(self) -> None:
         """Test ExecutionResult with complex output data."""
-        complex_data: Mapping[str, t.Container] = {
+        complex_data = {
             "records": [1, 2, 3],
             "metadata": {"count": 3, "type": "test"},
         }
@@ -216,7 +213,7 @@ class TestFlextPluginRegistryEntity:
 
     def test_registry_with_plugins(self) -> None:
         """Test registry with plugins."""
-        plugins: Mapping[str, t.Container] = {
+        plugins = {
             "plugin1": {"name": "test-plugin-1"},
             "plugin2": {"name": "test-plugin-2"},
         }

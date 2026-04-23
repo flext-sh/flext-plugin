@@ -10,7 +10,6 @@ from __future__ import annotations
 import importlib.util
 from collections.abc import (
     Callable,
-    Mapping,
     MutableMapping,
     Sequence,
 )
@@ -63,9 +62,7 @@ class FlextPluginLoader:
         """
         return list(self._loaded_plugins.keys())
 
-    def fetch_plugin_info(
-        self, plugin_name: str
-    ) -> p.Result[Mapping[str, t.Container]]:
+    def fetch_plugin_info(self, plugin_name: str) -> p.Result[t.JsonMapping]:
         """Get detailed information about a loaded plugin.
 
         Args:
@@ -78,7 +75,7 @@ class FlextPluginLoader:
         try:
             if plugin_name not in self._loaded_plugins:
                 error_msg = f"Plugin not loaded: {plugin_name}"
-                return r[Mapping[str, t.Container]].fail(error_msg)
+                return r[t.JsonMapping].fail(error_msg)
             module = self._loaded_plugins[plugin_name]
             module_info = {
                 "name": getattr(module, "__name__", plugin_name),
@@ -96,7 +93,7 @@ class FlextPluginLoader:
                 "available_methods": callable_methods,
                 "all_attributes": methods,
             }
-            return r[Mapping[str, t.Container]].ok(plugin_info)
+            return r[t.JsonMapping].ok(plugin_info)
         except (
             ValueError,
             TypeError,
@@ -107,7 +104,7 @@ class FlextPluginLoader:
             ImportError,
         ) as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
-            return r[Mapping[str, t.Container]].fail(f"Plugin info error: {e!s}")
+            return r[t.JsonMapping].fail(f"Plugin info error: {e!s}")
 
     def plugin_loaded(self, plugin_name: str) -> bool:
         """Check if a plugin is currently loaded.

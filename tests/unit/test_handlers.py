@@ -9,10 +9,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
-
 import pytest
 
 from flext_plugin import FlextPluginHandlers
@@ -37,8 +33,8 @@ class TestFlextPluginHandlersHandlers:
         """Test successful handler registration."""
 
         async def sample_handler(
-            event: Mapping[str, t.Container],
-        ) -> Mapping[str, t.Container]:
+            event: t.JsonMapping,
+        ) -> t.JsonMapping:
             return {"value": event.get("key", "default")}
 
         result = handlers.register_handler("test_event", sample_handler)
@@ -54,14 +50,14 @@ class TestFlextPluginHandlersHandlers:
         """Test handler registration with priority."""
 
         async def handler1(
-            event: Mapping[str, t.Container],
-        ) -> Mapping[str, t.Container]:
+            event: t.JsonMapping,
+        ) -> t.JsonMapping:
             _ = event
             return {"handler": "handler1"}
 
         async def handler2(
-            event: Mapping[str, t.Container],
-        ) -> Mapping[str, t.Container]:
+            event: t.JsonMapping,
+        ) -> t.JsonMapping:
             _ = event
             return {"handler": "handler2"}
 
@@ -75,14 +71,14 @@ class TestFlextPluginHandlersHandlers:
         """Test registering multiple handlers for different events."""
 
         async def handler_a(
-            event: Mapping[str, t.Container],
-        ) -> Mapping[str, t.Container]:
+            event: t.JsonMapping,
+        ) -> t.JsonMapping:
             _ = event
             return {"handler": "a"}
 
         async def handler_b(
-            event: Mapping[str, t.Container],
-        ) -> Mapping[str, t.Container]:
+            event: t.JsonMapping,
+        ) -> t.JsonMapping:
             _ = event
             return {"handler": "b"}
 

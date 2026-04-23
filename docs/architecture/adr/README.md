@@ -131,7 +131,7 @@ All ADRs follow a standardized template for consistency and completeness.
 
 ## Notes
 
-[t.Container additional information or implementation details]
+[t.JsonValue additional information or implementation details]
 ```
 
 ______________________________________________________________________

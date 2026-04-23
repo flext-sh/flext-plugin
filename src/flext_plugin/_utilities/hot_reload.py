@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import (
     Callable,
-    Mapping,
     MutableSequence,
     Sequence,
 )
@@ -167,7 +166,7 @@ class FlextPluginHotReload:
         self.logger.info("Cleared %s reload history entries", count)
         return count
 
-    def force_reload_all(self) -> p.Result[Mapping[str, t.Container]]:
+    def force_reload_all(self) -> p.Result[t.JsonMapping]:
         """Force reload all plugins in watched paths.
 
         Returns:
@@ -176,10 +175,10 @@ class FlextPluginHotReload:
         """
         try:
             if not self._is_watching:
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     "Hot reload is not watching",
                 )
-            reload_results: MutableSequence[Mapping[str, t.Container]] = []
+            reload_results: MutableSequence[t.JsonMapping] = []
             for watched_path in self._watched_paths:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
@@ -198,7 +197,7 @@ class FlextPluginHotReload:
                                 "success": result.success,
                             })
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return r[Mapping[str, t.Container]].ok({
+            return r[t.JsonMapping].ok({
                 "plugin_results": reload_results,
                 "count": len(reload_results),
             })
@@ -212,9 +211,9 @@ class FlextPluginHotReload:
             ImportError,
         ) as e:
             self.logger.exception("Failed to force reload all plugins")
-            return r[Mapping[str, t.Container]].fail(f"Force reload error: {e!s}")
+            return r[t.JsonMapping].fail(f"Force reload error: {e!s}")
 
-    def get_hot_reload_status(self) -> Mapping[str, t.Container]:
+    def get_hot_reload_status(self) -> t.JsonMapping:
         """Get the current status of the hot reload service.
 
         Returns:

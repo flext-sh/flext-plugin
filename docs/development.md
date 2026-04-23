@@ -72,7 +72,7 @@ ______________________________________________________________________
 
 ```bash
 # Required before commits
-make validate              # Complete validation pipeline
+make val              # Complete validation pipeline
 make check                 # Quick lint and type check
 
 # Testing
@@ -199,7 +199,7 @@ ______________________________________________________________________
 ### 3. Quality Validation
 
 ```bash
-make validate          # All quality gates must pass
+make val          # All quality gates must pass
 make test             # 85% coverage required
 ```
 

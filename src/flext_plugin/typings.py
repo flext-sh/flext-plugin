@@ -11,7 +11,6 @@ from collections.abc import (
     Awaitable,
     Callable,
     Mapping,
-    Sequence,
 )
 
 from flext_cli import m, t
@@ -27,11 +26,11 @@ class FlextPluginTypes(t):
     - Canonical container contracts inherited from core `t.*`
     """
 
-    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[Mapping[str, t.Container]] = m.TypeAdapter(
-        Mapping[str, t.Container]
+    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[t.JsonMapping] = m.TypeAdapter(
+        t.JsonMapping
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerValueMapping] = (
-        m.TypeAdapter(t.ContainerValueMapping)
+    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.JsonMapping] = m.TypeAdapter(
+        t.JsonMapping
     )
 
     class Plugin:
@@ -41,13 +40,13 @@ class FlextPluginTypes(t):
         type StringSet = set[str]
         type StringDict = t.StrMapping
         type FloatDict = Mapping[str, float]
-        type PluginList = Sequence[t.Container]
-        type PluginDict = t.Container
-        type ConfigDict = t.Container
-        type MetadataDict = t.Container
-        type InputDict = t.Container
-        type OutputDict = t.Container
-        type PluginEntity = t.Container
+        type PluginList = t.JsonList
+        type PluginDict = t.JsonValue
+        type ConfigDict = t.JsonValue
+        type MetadataDict = t.JsonValue
+        type InputDict = t.JsonValue
+        type OutputDict = t.JsonValue
+        type PluginEntity = t.JsonValue
         DiscoveryTypeLiteral = c.Plugin.DiscoveryTypeLiteral
         DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
         LoadTypeLiteral = c.Plugin.LoadTypeLiteral
@@ -56,8 +55,8 @@ class FlextPluginTypes(t):
             """Event handler type definitions."""
 
             type EventHandler = Callable[
-                [Mapping[str, t.Container]],
-                Awaitable[Mapping[str, t.Container]],
+                [t.JsonMapping],
+                Awaitable[t.JsonMapping],
             ]
 
             class HandlerInfo:
@@ -66,8 +65,8 @@ class FlextPluginTypes(t):
                 def __init__(
                     self,
                     handler: Callable[
-                        [Mapping[str, t.Container]],
-                        Awaitable[Mapping[str, t.Container]],
+                        [t.JsonMapping],
+                        Awaitable[t.JsonMapping],
                     ],
                     priority: int = 0,
                 ) -> None:
@@ -88,44 +87,44 @@ class FlextPluginTypes(t):
 
             type SecurityLevel = str
             type Permission = str
-            type SecurityConfig = t.Container
+            type SecurityConfig = t.JsonValue
             SecurityLevelLiteral = c.Plugin.SecurityLevelLiteral
 
         class Performance:
             """Performance metrics and monitoring type aliases."""
 
-            type Metrics = t.Container
-            type PerformanceData = t.Container
-            type ResourceUsage = t.Container
+            type Metrics = t.JsonValue
+            type PerformanceData = t.JsonValue
+            type ResourceUsage = t.JsonValue
 
         class Discovery:
             """Plugin discovery type aliases."""
 
             type DiscoveryPath = str
-            type DiscoveryResult = t.Container
+            type DiscoveryResult = t.JsonValue
             type PluginLoader = t.GeneralValueType
             type EntryPoint = str
 
         class Execution:
             """Plugin execution type aliases."""
 
-            type ExecutionContext = t.Container
-            type ExecutionResult = t.Container
+            type ExecutionContext = t.JsonValue
+            type ExecutionResult = t.JsonValue
             type ExecutionError = str
-            type ResourceLimits = t.Container
+            type ResourceLimits = t.JsonValue
 
         class Registry:
             """Plugin registry type aliases."""
 
-            type RegistryConfig = t.Container
-            type RegistryEntry = t.Container
-            type RegistrySync = t.Container
+            type RegistryConfig = t.JsonValue
+            type RegistryEntry = t.JsonValue
+            type RegistrySync = t.JsonValue
 
         class HotReload:
             """Hot reload and file watching type aliases."""
 
-            type WatchConfig = t.Container
-            type ReloadEvent = t.Container
+            type WatchConfig = t.JsonValue
+            type ReloadEvent = t.JsonValue
             type FileWatcher = t.GeneralValueType
 
 
