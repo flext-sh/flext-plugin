@@ -13,13 +13,13 @@ from __future__ import annotations
 
 from importlib.metadata import PackageMetadata, metadata
 
-from flext_core import FlextVersion, t
+from flext_core import FlextVersion
 
 
 class FlextPluginVersion(FlextVersion):
     """flext-plugin version — MRO-derived from FlextVersion."""
 
-    _metadata: PackageMetadata | t.StrMapping = metadata("flext-plugin")
+    _metadata: PackageMetadata = metadata("flext-plugin")
 
 
 __version__ = FlextPluginVersion.__version__

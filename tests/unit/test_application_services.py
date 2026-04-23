@@ -385,7 +385,6 @@ class TestFlextPluginServiceReal:
         result = service.load_plugin(plugin.name)
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")
-            return
         assert isinstance(result.success, bool)
         if not result.success:
             error_msg = str(result.error).lower()
@@ -827,28 +826,24 @@ class TestServicesIntegrationReal:
             ])
         except e.BaseError as exc:
             pytest.skip(f"Infrastructure not configured: {exc}")
-            return
         try:
             service_discovery_result = discovery_service.discover_plugins([
                 str(temp_plugin_dir),
             ])
         except e.BaseError as exc:
             pytest.skip(f"Infrastructure not configured: {exc}")
-            return
         if not plugin_discovery_result.success and "not configured" in str(
             plugin_discovery_result.error,
         ):
             pytest.skip(
                 f"Infrastructure not configured: {plugin_discovery_result.error}",
             )
-            return
         if not service_discovery_result.success and "not configured" in str(
             service_discovery_result.error,
         ):
             pytest.skip(
                 f"Infrastructure not configured: {service_discovery_result.error}",
             )
-            return
         assert plugin_discovery_result.success
         assert service_discovery_result.success
         assert isinstance(plugin_discovery_result.value, list)
@@ -917,7 +912,6 @@ class TestServiceErrorHandling:
         result = service.discover_plugins([str(temp_plugin_dir)])
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")
-            return
         assert result.success
         assert isinstance(result.value, list)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
@@ -930,7 +924,6 @@ class TestServiceErrorHandling:
             result = discovery_service.discover_plugins([temp_dir])
             if result.failure and "not configured" in str(result.error):
                 pytest.skip(f"Infrastructure not configured: {result.error}")
-                return
             assert result.success
             assert isinstance(result.value, list)
             assert result.value == []
