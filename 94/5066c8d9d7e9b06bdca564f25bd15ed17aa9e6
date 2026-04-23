@@ -1,0 +1,24 @@
+tests/unit/test_application_services.py
+  02db55bf620bbdf2 810-812
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "945066c8d9d7e9b06bdca564f25bd15ed17aa9e6",
+  "prompts": {
+    "02db55bf620bbdf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dd88b7e6-5715-4a2d-af33-58b483877723",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 1,
+      "accepted_lines": 3,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/781205e4fb735127d03ab4abc87c25bfffe5e9f7a7a7c947f04acb6cb6de5287"
+    }
+  }
+}
