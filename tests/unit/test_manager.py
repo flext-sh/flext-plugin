@@ -11,17 +11,17 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import (
-    Mapping,
     MutableSequence,
     Sequence,
 )
+from pathlib import Path
 from types import ModuleType
 from typing import override
 
 import pytest
 
 from flext_plugin import FlextPluginAdapters, FlextPluginService
-from tests import m, p, r, t
+from tests import c, m, p, r, t
 
 
 class TestFlextPluginService:
@@ -52,14 +52,17 @@ class TestFlextPluginServiceStubBridges:
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[Sequence[t.JsonMapping]]:
+            ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
                 _ = paths
-                return r[Sequence[t.JsonMapping]].ok([
-                    {
-                        "name": "stub_plugin",
-                        "version": "1.0.0",
-                        "metadata": {"plugin_type": "utility"},
-                    },
+                return r[Sequence[m.Plugin.DiscoveryData]].ok([
+                    m.Plugin.DiscoveryData(
+                        name="stub_plugin",
+                        version="1.0.0",
+                        path=Path("/tmp/stub_plugin.py"),
+                        discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+                        discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+                        metadata={"plugin_type": "utility"},
+                    ),
                 ])
 
         class Security(FlextPluginAdapters.PluginSecurityAdapter):
@@ -68,7 +71,10 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
+            def validate_plugin_security(
+                self, plugin: m.Plugin.Entity
+            ) -> p.Result[bool]:
+                assert plugin.name == "stub_plugin"
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -80,12 +86,9 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.JsonValue,
+                plugin: m.Plugin.Entity,
             ) -> p.Result[bool]:
-                if isinstance(_plugin, Mapping):
-                    self.registered.append(str(_plugin.get("name", "")))
-                else:
-                    self.registered.append("")
+                self.registered.append(plugin.name)
                 return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
@@ -94,8 +97,8 @@ class TestFlextPluginServiceStubBridges:
                 self.started: MutableSequence[str] = []
 
             @override
-            def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
-                self.started.append(_plugin_name)
+            def start_monitoring(self, plugin_name: str) -> p.Result[bool]:
+                self.started.append(plugin_name)
                 return r[bool].ok(True)
 
         security = Security()
@@ -135,7 +138,10 @@ class TestFlextPluginServiceStubBridges:
                 self.calls = 0
 
             @override
-            def validate_plugin_security(self, _plugin: t.JsonValue) -> p.Result[bool]:
+            def validate_plugin_security(
+                self, plugin: m.Plugin.Entity
+            ) -> p.Result[bool]:
+                assert plugin.name == "stub_plugin"
                 self.calls += 1
                 return r[bool].ok(True)
 
@@ -147,12 +153,9 @@ class TestFlextPluginServiceStubBridges:
             @override
             def register_plugin(
                 self,
-                _plugin: m.Plugin.Plugin | t.JsonValue,
+                plugin: m.Plugin.Entity,
             ) -> p.Result[bool]:
-                if isinstance(_plugin, Mapping):
-                    self.registered.append(str(_plugin.get("name", "")))
-                else:
-                    self.registered.append("")
+                self.registered.append(plugin.name)
                 return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
@@ -161,8 +164,8 @@ class TestFlextPluginServiceStubBridges:
                 self.started: MutableSequence[str] = []
 
             @override
-            def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
-                self.started.append(_plugin_name)
+            def start_monitoring(self, plugin_name: str) -> p.Result[bool]:
+                self.started.append(plugin_name)
                 return r[bool].ok(True)
 
         security = Security()
@@ -203,13 +206,13 @@ class TestFlextPluginServiceStubBridges:
             @override
             def execute_plugin(
                 self,
-                _plugin_name: str,
+                plugin_name: str,
                 _context: t.JsonMapping,
             ) -> p.Result[t.JsonMapping]:
-                self.calls.append(_plugin_name)
+                self.calls.append(plugin_name)
                 return r[t.JsonMapping].ok({
                     "status": "executed",
-                    "plugin": _plugin_name,
+                    "plugin": plugin_name,
                 })
 
         executor = Executor()
@@ -263,8 +266,8 @@ class TestFlextPluginServiceStubBridges:
                 self.stopped: MutableSequence[str] = []
 
             @override
-            def stop_monitoring(self, _plugin_name: str) -> p.Result[bool]:
-                self.stopped.append(_plugin_name)
+            def stop_monitoring(self, plugin_name: str) -> p.Result[bool]:
+                self.stopped.append(plugin_name)
                 return r[bool].ok(True)
 
         loader = Loader()

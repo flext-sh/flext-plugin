@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import math
-from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -51,95 +49,71 @@ class TestFlextPluginModels:
 
     def test_plugin_type_enum(self) -> None:
         """Test PluginType enum values."""
-        assert c.Plugin.PluginType.TAP == "tap"
-        assert c.Plugin.PluginType.TARGET == "target"
-        assert c.Plugin.PluginType.TRANSFORM == "transform"
-        assert c.Plugin.PluginType.EXTENSION == "extension"
-        assert c.Plugin.PluginType.SERVICE == "service"
-        assert c.Plugin.PluginType.MIDDLEWARE == "middleware"
-        assert c.Plugin.PluginType.TRANSFORMER == "transformer"
-        assert c.Plugin.PluginType.API == "api"
-        assert c.Plugin.PluginType.DATABASE == "database"
-        assert c.Plugin.PluginType.NOTIFICATION == "notification"
-        assert c.Plugin.PluginType.AUTHENTICATION == "authentication"
-        assert c.Plugin.PluginType.AUTHORIZATION == "authorization"
-        assert c.Plugin.PluginType.UTILITY == "utility"
-        assert c.Plugin.PluginType.TOOL == "tool"
-        assert c.Plugin.PluginType.HANDLER == "handler"
-        assert c.Plugin.PluginType.PROCESSOR == "processor"
-        assert c.Plugin.PluginType.CORE == "core"
-        assert c.Plugin.PluginType.ADDON == "addon"
-        assert c.Plugin.PluginType.THEME == "theme"
-        assert c.Plugin.PluginType.LANGUAGE == "language"
+        assert c.Plugin.Type.TAP == "tap"
+        assert c.Plugin.Type.TARGET == "target"
+        assert c.Plugin.Type.TRANSFORM == "transform"
+        assert c.Plugin.Type.EXTENSION == "extension"
+        assert c.Plugin.Type.SERVICE == "service"
+        assert c.Plugin.Type.MIDDLEWARE == "middleware"
+        assert c.Plugin.Type.TRANSFORMER == "transformer"
+        assert c.Plugin.Type.API == "api"
+        assert c.Plugin.Type.DATABASE == "database"
+        assert c.Plugin.Type.NOTIFICATION == "notification"
+        assert c.Plugin.Type.AUTHENTICATION == "authentication"
+        assert c.Plugin.Type.AUTHORIZATION == "authorization"
+        assert c.Plugin.Type.UTILITY == "utility"
+        assert c.Plugin.Type.TOOL == "tool"
+        assert c.Plugin.Type.HANDLER == "handler"
+        assert c.Plugin.Type.PROCESSOR == "processor"
+        assert c.Plugin.Type.CORE == "core"
+        assert c.Plugin.Type.ADDON == "addon"
+        assert c.Plugin.Type.THEME == "theme"
+        assert c.Plugin.Type.LANGUAGE == "language"
 
     def test_plugin_model_creation(self) -> None:
         """Test Plugin model creation."""
-        plugin = m.Plugin.Plugin(
+        plugin = m.Plugin.Entity(
             name="test-plugin",
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type=c.Plugin.PluginType.UTILITY,
+            plugin_type=c.Plugin.Type.UTILITY,
             is_enabled=True,
         )
         assert plugin.name == "test-plugin"
         assert plugin.plugin_version == "1.0.0"
-        assert plugin.plugin_type == c.Plugin.PluginType.UTILITY
+        assert plugin.plugin_type == c.Plugin.Type.UTILITY
         assert plugin.is_enabled is True
 
     def test_plugin_model_validation(self) -> None:
         """Test Plugin model validation rules."""
-        plugin = m.Plugin.Plugin(
+        plugin = m.Plugin.Entity(
             name="valid-plugin",
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type=c.Plugin.PluginType.UTILITY,
+            plugin_type=c.Plugin.Type.UTILITY,
             is_enabled=True,
         )
         assert plugin.name == "valid-plugin"
         with pytest.raises(ValueError):
-            m.Plugin.Plugin(
+            m.Plugin.Entity(
                 name="",
                 plugin_version="1.0.0",
                 description="",
                 author="",
-                plugin_type=c.Plugin.PluginType.UTILITY,
+                plugin_type=c.Plugin.Type.UTILITY,
                 is_enabled=True,
             )
         with pytest.raises(ValueError):
-            m.Plugin.Plugin(
+            m.Plugin.Entity(
                 name="test-plugin",
                 plugin_version="invalid-version",
                 description="",
                 author="",
-                plugin_type=c.Plugin.PluginType.UTILITY,
+                plugin_type=c.Plugin.Type.UTILITY,
                 is_enabled=True,
             )
-
-    def test_execution_result_creation(self) -> None:
-        """Test ExecutionResult creation."""
-        result = m.Plugin.ExecutionResult(
-            success=True,
-            data={"output": "result"},
-            error="",
-            execution_time_ms=1500.0,
-        )
-        assert result.success is True
-        assert result.data == {"output": "result"}
-        assert not result.error
-        assert math.isclose(result.execution_time_ms, 1500.0)
-
-    def test_execution_result_failure(self) -> None:
-        """Test ExecutionResult failure case."""
-        result = m.Plugin.ExecutionResult(
-            success=False,
-            data={},
-            error="Plugin execution failed",
-            execution_time_ms=500.0,
-        )
-        assert result.success is False
-        assert result.error == "Plugin execution failed"
 
     def test_discovery_data_creation(self) -> None:
         """Test DiscoveryData creation."""
@@ -171,28 +145,6 @@ class TestFlextPluginModels:
         assert metadata.author == "Test Author"
         assert metadata.description == "Test plugin description"
 
-    def test_validation_result_creation(self) -> None:
-        """Test ValidationResult creation."""
-        result = m.Plugin.ValidationResult(
-            valid=True,
-            errors=[],
-            warnings=[],
-        )
-        assert result.valid is True
-        assert result.errors == []
-        assert result.warnings == []
-
-    def test_validation_result_with_errors(self) -> None:
-        """Test ValidationResult with errors."""
-        result = m.Plugin.ValidationResult(
-            valid=False,
-            errors=["Error 1", "Error 2"],
-            warnings=["Warning 1"],
-        )
-        assert result.valid is False
-        assert len(result.errors) == 2
-        assert len(result.warnings) == 1
-
     def test_config_creation(self) -> None:
         """Test Config model creation."""
         settings = m.Plugin.PluginConfig(
@@ -201,10 +153,3 @@ class TestFlextPluginModels:
         )
         assert settings.plugin_name == "test-plugin"
         assert settings.config == {"key": "value"}
-
-    def test_registry_creation(self) -> None:
-        """Test Registry model creation."""
-        registry = m.Plugin.Registry(plugins={"plugin1": {}})
-        assert "plugin1" in registry.plugins
-        assert isinstance(registry.last_updated, datetime)
-        assert isinstance(registry.created_at, datetime)

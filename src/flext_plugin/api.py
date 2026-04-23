@@ -36,14 +36,14 @@ class FlextPluginApi:
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
+    ) -> p.Result[Sequence[m.Plugin.Entity]]:
         """Discover plugins in the given paths."""
         result = self.platform.discover_plugins(paths)
         if result.success:
             plugins = result.value
             self.logger.info(f"Discovered {len(plugins)} plugins")
-            return r[Sequence[m.Plugin.Plugin]].ok(plugins)
-        return r[Sequence[m.Plugin.Plugin]].fail(
+            return r[Sequence[m.Plugin.Entity]].ok(plugins)
+        return r[Sequence[m.Plugin.Entity]].fail(
             result.error or "Discovery failed",
         )
 
@@ -59,34 +59,34 @@ class FlextPluginApi:
             return r[t.JsonMapping].fail(result.error or "Execution failed")
         return r[t.JsonMapping].ok({"execution_id": str(result.value)})
 
-    def fetch_plugin(self, _plugin_name: str) -> m.Plugin.Plugin | None:
+    def fetch_plugin(self, plugin_name: str) -> m.Plugin.Entity | None:
         """Fetch a plugin by name."""
-        return self.platform.fetch_plugin(_plugin_name)
+        return self.platform.fetch_plugin(plugin_name)
 
-    def fetch_plugin_status(self, _plugin_name: str) -> str | None:
+    def fetch_plugin_status(self, plugin_name: str) -> str | None:
         """Fetch the status of a plugin by name."""
-        return self.platform.fetch_plugin_status(_plugin_name)
+        return self.platform.fetch_plugin_status(plugin_name)
 
-    def resolve_plugin_active(self, _plugin_name: str) -> bool:
+    def resolve_plugin_active(self, plugin_name: str) -> bool:
         """Resolve whether a plugin is active."""
-        return self.platform.resolve_plugin_active(_plugin_name)
+        return self.platform.resolve_plugin_active(plugin_name)
 
-    def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
+    def list_plugins(self) -> Sequence[m.Plugin.Entity]:
         """List all registered plugins."""
         return self.platform.list_plugins()
 
-    def load_plugin(self, _plugin_path: str) -> p.Result[m.Plugin.Plugin]:
+    def load_plugin(self, plugin_path: str) -> p.Result[m.Plugin.Entity]:
         """Load a plugin from the given path."""
-        result = self.platform.load_plugin(_plugin_path)
+        result = self.platform.load_plugin(plugin_path)
         if result.failure:
-            return r[m.Plugin.Plugin].fail(result.error or "Load failed")
+            return r[m.Plugin.Entity].fail(result.error or "Load failed")
         plugin = result.value
         self.logger.info(f"Loaded plugin: {plugin.name}")
-        return r[m.Plugin.Plugin].ok(plugin)
+        return r[m.Plugin.Entity].ok(plugin)
 
-    def register_plugin(self, _plugin: m.Plugin.Plugin) -> p.Result[bool]:
+    def register_plugin(self, plugin: m.Plugin.Entity) -> p.Result[bool]:
         """Register a plugin in the platform."""
-        return self.platform.register_plugin(_plugin)
+        return self.platform.register_plugin(plugin)
 
     def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start hot reload monitoring for the given paths."""
@@ -96,9 +96,9 @@ class FlextPluginApi:
         """Stop hot reload monitoring."""
         return self.platform.stop_hot_reload()
 
-    def unregister_plugin(self, _plugin_name: str) -> p.Result[bool]:
+    def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unregister a plugin by name."""
-        return self.platform.unregister_plugin(_plugin_name)
+        return self.platform.unregister_plugin(plugin_name)
 
 
 plugin = FlextPluginApi

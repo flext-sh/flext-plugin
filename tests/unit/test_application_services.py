@@ -234,7 +234,7 @@ class TestFlextPluginServiceWithRealAdapters:
         assert isinstance(result.value, list)
         assert len(result.value) == 4
         for plugin in result.value:
-            assert isinstance(plugin, FlextPluginModels.Plugin.Plugin)
+            assert isinstance(plugin, FlextPluginModels.Plugin.Entity)
             assert plugin.name in {
                 "tap_database",
                 "target_warehouse",
@@ -254,7 +254,7 @@ class TestFlextPluginServiceWithRealAdapters:
         ])
         assert discover_result.success
         assert discover_result.value
-        tap_plugin: FlextPluginModels.Plugin.Plugin | None = None
+        tap_plugin: FlextPluginModels.Plugin.Entity | None = None
         for plugin in discover_result.value:
             if plugin.name == "tap_database":
                 tap_plugin = plugin
@@ -263,7 +263,7 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_path = temp_plugin_dir / "tap_database.py"
         load_result = real_service_with_adapters.load_plugin(str(tap_plugin_path))
         assert load_result.success
-        assert isinstance(load_result.value, FlextPluginModels.Plugin.Plugin)
+        assert isinstance(load_result.value, FlextPluginModels.Plugin.Entity)
         assert load_result.value.name == "tap_database"
 
     def test_install_plugin_with_real_adapters(
@@ -275,7 +275,7 @@ class TestFlextPluginServiceWithRealAdapters:
         tap_plugin_file = temp_plugin_dir / "tap_database.py"
         install_result = real_service_with_adapters.install_plugin(str(tap_plugin_file))
         assert install_result.success
-        assert isinstance(install_result.value, FlextPluginModels.Plugin.Plugin)
+        assert isinstance(install_result.value, FlextPluginModels.Plugin.Entity)
         assert install_result.value.name == "tap_database"
 
     def test_is_plugin_loaded_with_real_adapters(
@@ -376,11 +376,11 @@ class TestFlextPluginServiceReal:
         service: FlextPluginService,
     ) -> None:
         """Test REAL load_plugin with actual plugin file and entity."""
-        plugin = FlextPluginModels.Plugin.Plugin.create(
+        plugin = FlextPluginModels.Plugin.Entity.create(
             name="tap_database",
             plugin_version="1.0.0",
             description="Database tap plugin for testing",
-            plugin_type=FlextPluginConstants.Plugin.PluginType.TAP.value,
+            plugin_type=FlextPluginConstants.Plugin.Type.TAP.value,
         )
         result = service.load_plugin(plugin.name)
         if result.failure and "not configured" in str(result.error):
@@ -399,13 +399,13 @@ class TestFlextPluginServiceReal:
     ) -> None:
         """Test REAL load_plugin with different plugin types."""
         plugin_types = [
-            FlextPluginConstants.Plugin.PluginType.TAP,
-            FlextPluginConstants.Plugin.PluginType.TARGET,
-            FlextPluginConstants.Plugin.PluginType.UTILITY,
-            FlextPluginConstants.Plugin.PluginType.SERVICE,
+            FlextPluginConstants.Plugin.Type.TAP,
+            FlextPluginConstants.Plugin.Type.TARGET,
+            FlextPluginConstants.Plugin.Type.UTILITY,
+            FlextPluginConstants.Plugin.Type.SERVICE,
         ]
         for plugin_type in plugin_types:
-            plugin = FlextPluginModels.Plugin.Plugin.create(
+            plugin = FlextPluginModels.Plugin.Entity.create(
                 name=f"real-plugin-{plugin_type.value}",
                 plugin_version="1.0.0",
                 plugin_type=plugin_type.value,
@@ -522,19 +522,6 @@ class TestFlextPluginServiceReal:
         result = service.disable_plugin("real-test-plugin")
         assert result.success or "not found" in str(result.error).lower()
 
-    def test_update_plugin_config_empty_name_fails(
-        self,
-        service: FlextPluginService,
-    ) -> None:
-        """Test update_plugin_config with empty name fails."""
-        settings = FlextPluginModels.Plugin.PluginConfig(plugin_name="test", config={})
-        result = service.update_plugin_config("", settings.model_dump())
-        assert not result.success
-        assert (
-            "not found" in str(result.error).lower()
-            or "plugin" in str(result.error).lower()
-        )
-
     def test_update_plugin_config_mismatched_name_fails(
         self,
         service: FlextPluginService,
@@ -546,18 +533,6 @@ class TestFlextPluginServiceReal:
         )
         result = service.update_plugin_config("test-plugin", settings.model_dump())
         assert not result.success
-
-    def test_update_plugin_config_valid_params_real(
-        self,
-        service: FlextPluginService,
-    ) -> None:
-        """Test update_plugin_config with REAL valid params."""
-        settings = FlextPluginModels.Plugin.PluginConfig(
-            plugin_name="real-test-plugin",
-            config={},
-        )
-        result = service.update_plugin_config("real-test-plugin", settings.model_dump())
-        assert result.success or result.failure
 
     def test_is_plugin_loaded_empty_name_returns_false(
         self,

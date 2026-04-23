@@ -88,11 +88,11 @@ class FlextPluginLoader:
             callable_methods = [
                 name for name in methods if callable(getattr(module, name))
             ]
-            plugin_info = {
+            plugin_info = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
                 **module_info,
                 "available_methods": callable_methods,
                 "all_attributes": methods,
-            }
+            })
             return r[t.JsonMapping].ok(plugin_info)
         except (
             ValueError,
@@ -150,7 +150,7 @@ class FlextPluginLoader:
             ImportError,
             SyntaxError,
         ) as e:
-            self.logger.exception("Failed to load plugin from %s", plugin_path)
+            self.logger.exception(f"Failed to load plugin from {plugin_path}")
             return r[m.Plugin.LoadData].fail(f"Loading error: {e!s}")
 
     def reload_plugin(self, plugin_name: str) -> p.Result[m.Plugin.LoadData]:
@@ -303,9 +303,9 @@ class FlextPluginLoader:
                     version=getattr(
                         module,
                         "__version__",
-                        c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                        c.Plugin.DEFAULT_PLUGIN_VERSION,
                     )
-                    or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    or c.Plugin.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
                     load_type=c.Plugin.LoadTypeLiteral.FILE,
@@ -320,7 +320,7 @@ class FlextPluginLoader:
                 RuntimeError,
                 ImportError,
             ):
-                self.logger.exception("Failed to load file plugin: %s", path)
+                self.logger.exception(f"Failed to load file plugin: {path}")
                 return None
 
     class DirectoryPluginLoader:
@@ -358,9 +358,9 @@ class FlextPluginLoader:
                     version=getattr(
                         module,
                         "__version__",
-                        c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                        c.Plugin.DEFAULT_PLUGIN_VERSION,
                     )
-                    or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    or c.Plugin.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     module=module,
                     load_type=c.Plugin.LoadTypeLiteral.DIRECTORY,
@@ -376,7 +376,7 @@ class FlextPluginLoader:
                 RuntimeError,
                 ImportError,
             ):
-                self.logger.exception("Failed to load directory plugin: %s", path)
+                self.logger.exception(f"Failed to load directory plugin: {path}")
                 return None
 
         def _find_entry_file(self, path: Path) -> Path | None:

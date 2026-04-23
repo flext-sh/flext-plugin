@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import inspect
 from collections.abc import (
     MutableMapping,
     MutableSequence,
@@ -46,9 +45,9 @@ class FlextPluginHandlers:
         self.logger = u.fetch_logger(__name__)
         self._handlers: MutableMapping[
             str,
-            MutableSequence[t.Plugin.Handlers.HandlerInfo],
+            MutableSequence[t.Plugin.HandlerInfo],
         ] = {}
-        self._event_history: MutableSequence[t.MutableJsonMapping] = []
+        self._event_history: MutableSequence[t.JsonMapping] = []
 
     def clear_event_history(self) -> int:
         """Clear event history.
@@ -59,7 +58,7 @@ class FlextPluginHandlers:
         """
         count = len(self._event_history)
         self._event_history.clear()
-        self.logger.info("Cleared %s events from history", count)
+        self.logger.info(f"Cleared {count} events from history")
         return count
 
     def get_event_history(
@@ -101,14 +100,16 @@ class FlextPluginHandlers:
         Dictionary containing handler status information
 
         """
-        return {
+        return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
             "total_event_types": len(self._handlers),
             "total_handlers": sum(
                 len(handlers) for handlers in self._handlers.values()
             ),
             "event_history_size": len(self._event_history),
-            "registered_handlers": self.get_registered_handlers(),
-        }
+            "registered_handlers": t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                self.get_registered_handlers(),
+            ),
+        })
 
     def get_registered_handlers(self) -> t.IntMapping:
         """Get count of registered handlers by event type.
@@ -136,7 +137,7 @@ class FlextPluginHandlers:
         """
         plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         name_str = str(plugin_name)
-        self.logger.info("Plugin discovered: %s", name_str)
+        self.logger.info(f"Plugin discovered: {name_str}")
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_error(
@@ -156,7 +157,7 @@ class FlextPluginHandlers:
         error_message = event_data.get("error_message", "Unknown error")
         name_str = str(plugin_name)
         error_str = str(error_message)
-        self.logger.error("Plugin error: %s - %s", name_str, error_str)
+        self.logger.error(f"Plugin error: {name_str} - {error_str}")
         return {
             "success": True,
             "plugin_name": plugin_name,
@@ -183,10 +184,7 @@ class FlextPluginHandlers:
         exec_str = str(execution_id)
         success_str = str(success)
         self.logger.info(
-            "Plugin executed: %s (execution: %s, success: %s)",
-            name_str,
-            exec_str,
-            success_str,
+            f"Plugin executed: {name_str} (execution: {exec_str}, success: {success_str})"
         )
         return {
             "success": True,
@@ -210,7 +208,7 @@ class FlextPluginHandlers:
         """
         plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
         name_str = str(plugin_name)
-        self.logger.info("Plugin loaded: %s", name_str)
+        self.logger.info(f"Plugin loaded: {name_str}")
         return {"success": True, "plugin_name": plugin_name}
 
     async def handle_plugin_unloaded(
@@ -267,7 +265,7 @@ class FlextPluginHandlers:
     def register_handler(
         self,
         event_type: str,
-        handler: t.Plugin.Handlers.EventHandler,
+        handler: t.Plugin.EventHandler,
         priority: int = 0,
     ) -> p.Result[bool]:
         """Register an event handler for a specific event type.
@@ -283,13 +281,11 @@ class FlextPluginHandlers:
         """
         try:
             if event_type not in self._handlers:
-                self._handlers[event_type] = list[t.Plugin.Handlers.HandlerInfo]()
-            handler_info = t.Plugin.Handlers.HandlerInfo(
-                handler=handler, priority=priority
-            )
+                self._handlers[event_type] = list[t.Plugin.HandlerInfo]()
+            handler_info = t.Plugin.HandlerInfo(handler=handler, priority=priority)
             self._handlers[event_type].append(handler_info)
 
-            def get_priority(handler_info: t.Plugin.Handlers.HandlerInfo) -> int:
+            def get_priority(handler_info: t.Plugin.HandlerInfo) -> int:
                 return handler_info.priority
 
             self._handlers[event_type] = sorted(
@@ -297,7 +293,7 @@ class FlextPluginHandlers:
                 key=get_priority,
                 reverse=True,
             )
-            self.logger.debug("Registered handler for event type: %s", event_type)
+            self.logger.debug(f"Registered handler for event type: {event_type}")
             return r[bool].ok(True)
         except (
             ValueError,
@@ -308,7 +304,7 @@ class FlextPluginHandlers:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to register handler for %s", event_type)
+            self.logger.exception(f"Failed to register handler for {event_type}")
             return r[bool].fail(f"Handler registration error: {e!s}")
 
     async def trigger_event(
@@ -327,24 +323,31 @@ class FlextPluginHandlers:
 
         """
         try:
-            event_record: t.MutableJsonMapping = {
-                "event_type": event_type,
-                "event_data": event_data,
-                "timestamp": self._get_current_timestamp(),
-            }
-            self._event_history.append(event_record)
+            event_data_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                event_data,
+            )
+            event_record_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                {
+                    "event_type": event_type,
+                    "event_data": event_data_payload,
+                    "timestamp": self._get_current_timestamp(),
+                },
+            )
+            self._event_history.append(event_record_payload)
             if event_type not in self._handlers:
                 self.logger.debug(
-                    "No handlers registered for event type: %s",
-                    event_type,
+                    f"No handlers registered for event type: {event_type}"
                 )
                 return r[t.JsonList].ok([])
-            results: list[t.JsonValue] = []
+            results: t.MutableJsonList = []
             for handler_info in self._handlers[event_type]:
                 try:
                     handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
-                    results.append(result)
+                    result_payload = t.json_value_adapter().validate_python(
+                        result,
+                    )
+                    results.append(result_payload)
                 except (
                     ValueError,
                     TypeError,
@@ -354,8 +357,12 @@ class FlextPluginHandlers:
                     RuntimeError,
                     ImportError,
                 ) as e:
-                    self.logger.exception("Handler execution failed for %s", event_type)
-                    results.append({"error": str(e), "success": False})
+                    self.logger.exception(f"Handler execution failed for {event_type}")
+                    results.append(
+                        t.json_value_adapter().validate_python(
+                            {"error": str(e), "success": False},
+                        ),
+                    )
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
@@ -375,7 +382,7 @@ class FlextPluginHandlers:
     def unregister_handler(
         self,
         event_type: str,
-        handler: t.Plugin.Handlers.EventHandler,
+        handler: t.Plugin.EventHandler,
     ) -> p.Result[bool]:
         """Unregister an event handler.
 
@@ -398,7 +405,7 @@ class FlextPluginHandlers:
             ]
             if len(self._handlers[event_type]) == original_count:
                 return r[bool].fail(f"Handler not found for event type: {event_type}")
-            self.logger.debug("Unregistered handler for event type: %s", event_type)
+            self.logger.debug(f"Unregistered handler for event type: {event_type}")
             return r[bool].ok(True)
         except (
             ValueError,
@@ -409,12 +416,12 @@ class FlextPluginHandlers:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to unregister handler for %s", event_type)
+            self.logger.exception(f"Failed to unregister handler for {event_type}")
             return r[bool].fail(f"Handler unregistration error: {e!s}")
 
     async def _execute_handler(
         self,
-        handler: t.Plugin.Handlers.EventHandler,
+        handler: t.Plugin.EventHandler,
         event_data: t.JsonMapping,
     ) -> t.JsonMapping:
         """Execute a single handler with proper error handling.
@@ -450,18 +457,6 @@ class FlextPluginHandlers:
 
         """
         return datetime.now(UTC).isoformat()
-
-    def _is_async_function(self, func: t.JsonValue) -> bool:
-        """Check if a function is async.
-
-        Args:
-        func: Function to check
-
-        Returns:
-        True if function is async, False otherwise
-
-        """
-        return inspect.iscoroutinefunction(func)
 
 
 __all__: list[str] = ["FlextPluginHandlers"]

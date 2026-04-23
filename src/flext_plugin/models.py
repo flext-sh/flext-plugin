@@ -8,19 +8,23 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import types
-from collections.abc import (
-    Callable,
-)
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Self
+from typing import TYPE_CHECKING, Annotated, Self
 
-from flext_cli import m, u
+from flext_cli import FlextCliModels, u
 
-from flext_plugin import c, p, r, t
+from flext_plugin import c, r, t
+
+if TYPE_CHECKING:
+    from flext_plugin import (
+        FlextPluginConstants,
+        FlextPluginProtocols,
+        FlextPluginTypes,
+    )
 
 
-class FlextPluginModels(m):
+class FlextPluginModels(FlextCliModels):
     """Plugin domain models extending flext-core patterns.
 
     Provides standardized models for all plugin operations including plugin
@@ -33,10 +37,7 @@ class FlextPluginModels(m):
     class Plugin:
         """Plugin domain namespace."""
 
-        class Entity(m.Entity):
-            """Entity - real inheritance."""
-
-        class Plugin(m.Entity):
+        class Entity(FlextCliModels.Entity):
             """Plugin entity - core domain entity with identity and lifecycle.
 
             Represents a plugin with identity, lifecycle management, and mutable state.
@@ -89,12 +90,12 @@ class FlextPluginModels(m):
                 u.Field(
                     description="Plugin type classification",
                 ),
-            ] = c.Plugin.PluginType.UTILITY
+            ] = c.Plugin.Type.UTILITY
             is_enabled: Annotated[bool, u.Field(description="Plugin enabled state")] = (
                 True
             )
             metadata: Annotated[
-                t.MutableJsonMapping,
+                FlextPluginTypes.MutableJsonMapping,
                 u.Field(
                     description="Extensible plugin metadata",
                 ),
@@ -108,9 +109,9 @@ class FlextPluginModels(m):
                 plugin_version: str = "1.0.0",
                 description: str = "",
                 author: str = "",
-                plugin_type: str = c.Plugin.PluginType.UTILITY,
+                plugin_type: str = c.Plugin.Type.UTILITY,
                 is_enabled: bool = True,
-                metadata: t.JsonMapping | None = None,
+                metadata: FlextPluginTypes.JsonMapping | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -129,10 +130,10 @@ class FlextPluginModels(m):
                 New Plugin entity instance
 
                 """
-                metadata_payload: t.JsonMapping = (
-                    dict(metadata.items()) if metadata else {}
+                metadata_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    metadata or {},
                 )
-                payload: t.MutableJsonMapping = {
+                payload = {
                     "name": name,
                     "plugin_version": plugin_version,
                     "description": description,
@@ -192,7 +193,7 @@ class FlextPluginModels(m):
                     raise ValueError(error_msg)
                 return value
 
-            def disable(self) -> p.Result[bool]:
+            def disable(self) -> FlextPluginProtocols.Result[bool]:
                 """Disable the plugin.
 
                 Returns:
@@ -204,7 +205,7 @@ class FlextPluginModels(m):
                 self.is_enabled = False
                 return r[bool].ok(value=True)
 
-            def enable(self) -> p.Result[bool]:
+            def enable(self) -> FlextPluginProtocols.Result[bool]:
                 """Enable the plugin.
 
                 Returns:
@@ -272,7 +273,7 @@ class FlextPluginModels(m):
                     )
                     self.metadata["failure_count"] = failure_count + 1
 
-            def validate_business_rules(self) -> p.Result[bool]:
+            def validate_business_rules(self) -> FlextPluginProtocols.Result[bool]:
                 """Validate plugin business rules.
 
                 Business Rules:
@@ -331,41 +332,7 @@ class FlextPluginModels(m):
 
                 return r[bool].ok(value=True)
 
-        class ExecutionResult(m.Value):
-            """Plugin execution result - immutable execution outcome.
-
-            Represents the result of a plugin execution including success status,
-            output data, and execution metrics.
-
-            Attributes:
-            success: Whether execution succeeded
-            data: Execution output data
-            error: Error message if execution failed
-            execution_time_ms: Execution time in milliseconds
-
-            """
-
-            success: Annotated[bool, u.Field(description="Whether execution succeeded")]
-            data: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Execution output data",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-            error: Annotated[
-                str,
-                u.Field(
-                    description="Error message if execution failed",
-                ),
-            ] = ""
-            execution_time_ms: Annotated[
-                t.NonNegativeFloat,
-                u.Field(
-                    description="Execution time in milliseconds",
-                ),
-            ] = 0.0
-
-        class DiscoveryData(m.Value):
+        class DiscoveryData(FlextCliModels.Value):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
@@ -399,19 +366,19 @@ class FlextPluginModels(m):
             ]
             path: Annotated[Path, u.Field(description="File system path to plugin")]
             discovery_type: Annotated[
-                c.Plugin.DiscoveryTypeLiteral,
+                FlextPluginConstants.Plugin.DiscoveryTypeLiteral,
                 u.Field(
                     description="Type of discovered plugin",
                 ),
             ]
             discovery_method: Annotated[
-                c.Plugin.DiscoveryMethodLiteral,
+                FlextPluginConstants.Plugin.DiscoveryMethodLiteral,
                 u.Field(
                     description="Discovery method used",
                 ),
             ]
             metadata: Annotated[
-                t.JsonMapping,
+                FlextPluginTypes.JsonMapping,
                 u.Field(
                     description="Extensible discovery metadata",
                 ),
@@ -433,7 +400,7 @@ class FlextPluginModels(m):
                     raise ValueError(error_msg)
                 return value
 
-        class LoadData(m.Value):
+        class LoadData(FlextCliModels.Value):
             """Plugin load data - immutable load result.
 
             Represents successfully loaded plugin information including the loaded
@@ -473,7 +440,7 @@ class FlextPluginModels(m):
                 ),
             ]
             load_type: Annotated[
-                c.Plugin.LoadTypeLiteral,
+                FlextPluginConstants.Plugin.LoadTypeLiteral,
                 u.Field(
                     description="Type of loaded plugin",
                 ),
@@ -489,7 +456,7 @@ class FlextPluginModels(m):
                 ),
             ] = None
 
-        class ReloadRecord(m.Value):
+        class ReloadRecord(FlextCliModels.Value):
             """Plugin reload record - immutable reload history entry.
 
             Records information about a plugin reload event including timing,
@@ -516,13 +483,13 @@ class FlextPluginModels(m):
                 ),
             ] = None
             duration_ms: Annotated[
-                t.NonNegativeFloat,
+                FlextPluginTypes.NonNegativeFloat,
                 u.Field(
                     description="Reload duration in milliseconds",
                 ),
             ] = 0.0
 
-        class PluginMetadata(m.Value):
+        class PluginMetadata(FlextCliModels.Value):
             """Plugin metadata - immutable metadata value object.
 
             Represents complete metadata about a plugin including discovery
@@ -549,204 +516,19 @@ class FlextPluginModels(m):
             )
             entry_point: Annotated[str, u.Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                t.StrSequence,
+                FlextPluginTypes.StrSequence,
                 u.Field(
                     description="List of plugin dependencies",
                 ),
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
-                t.JsonMapping,
+                FlextPluginTypes.JsonMapping,
                 u.Field(
                     description="Additional metadata",
                 ),
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
-        class EventData(m.Value):
-            """Event data - immutable event information.
-
-            Represents structured event data with context and metadata.
-            Immutable value object.
-
-            Attributes:
-            event_type: Type of event
-            plugin_name: Associated plugin name
-            timestamp: When event occurred
-            data: Event-specific data
-
-            """
-
-            event_type: Annotated[str, u.Field(description="Type of event")]
-            plugin_name: Annotated[str, u.Field(description="Associated plugin name")]
-            timestamp: Annotated[datetime, u.Field(description="When event occurred")]
-            data: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Event-specific data",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-
-        class ValidationResult(m.Value):
-            """Validation result - immutable validation outcome.
-
-            Represents result of plugin validation including status and details.
-            Immutable value object.
-
-            Attributes:
-            valid: Whether validation passed
-            errors: List of validation errors
-            warnings: List of validation warnings
-            details: Additional validation details
-
-            """
-
-            valid: Annotated[bool, u.Field(description="Whether validation passed")]
-            errors: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of validation errors",
-                ),
-            ] = u.Field(default_factory=tuple)
-            warnings: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of validation warnings",
-                ),
-            ] = u.Field(default_factory=tuple)
-            details: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Additional validation details",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-
-        class SecurityReport(m.Value):
-            """Security report - immutable security scan result.
-
-            Represents security scanning results for plugins.
-            Immutable value object.
-
-            Attributes:
-            is_safe: Whether plugin passed security checks
-            violations: List of security violations
-            warnings: List of security warnings
-            analysis_time: When analysis was performed
-
-            """
-
-            is_safe: Annotated[
-                bool,
-                u.Field(description="Whether plugin passed security checks"),
-            ]
-            violations: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of security violations",
-                ),
-            ] = u.Field(default_factory=tuple)
-            warnings: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of security warnings",
-                ),
-            ] = u.Field(default_factory=tuple)
-            analysis_time: Annotated[
-                datetime,
-                u.Field(description="When analysis was performed"),
-            ]
-
-        class WatcherConfig(m.Value):
-            """Watcher configuration - file system monitoring settings.
-
-            Represents file watcher configuration for hot reload.
-            Immutable value object.
-
-            Attributes:
-            watch_path: Path being watched
-            watch_interval: Polling interval in seconds
-            callback: Callback function reference (Any for flexibility)
-            active: Whether watcher is active
-            last_modified: File modification tracking
-            created_at: Configuration creation time
-
-            """
-
-            watch_path: Annotated[str, u.Field(description="Path being watched")]
-            watch_interval: Annotated[
-                t.PositiveFloat,
-                u.Field(description="Polling interval in seconds"),
-            ]
-            callback: Annotated[
-                Callable[..., t.JsonValue] | None,
-                u.Field(
-                    description="Callback function reference",
-                ),
-            ] = None
-            active: Annotated[
-                bool, u.Field(description="Whether watcher is active")
-            ] = False
-            last_modified: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="File modification tracking",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-            created_at: Annotated[
-                datetime,
-                u.Field(description="Configuration creation time"),
-            ]
-
-        class SandboxConfig(m.Value):
-            """Sandbox configuration - plugin execution sandbox settings.
-
-            Represents security sandbox configuration for plugin execution.
-            Immutable value object.
-
-            Attributes:
-            plugin_name: Name of plugin to sandbox
-            max_memory_mb: Maximum memory in MB
-            max_execution_time: Maximum execution time in seconds
-            allowed_modules: Allowed import modules
-            network_access: Whether network access allowed
-            file_system_access: File system access level
-            environment_variables: Environment variable settings
-
-            """
-
-            plugin_name: Annotated[
-                str, u.Field(description="Name of plugin to sandbox")
-            ]
-            max_memory_mb: Annotated[
-                t.PositiveInt,
-                u.Field(description="Maximum memory in MB"),
-            ]
-            max_execution_time: Annotated[
-                t.PositiveInt,
-                u.Field(
-                    description="Maximum execution time in seconds",
-                ),
-            ]
-            allowed_modules: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="Allowed import modules",
-                ),
-            ]
-            network_access: Annotated[
-                bool,
-                u.Field(description="Whether network access allowed"),
-            ]
-            file_system_access: Annotated[
-                str,
-                u.Field(description="File system access level"),
-            ]
-            environment_variables: Annotated[
-                t.StrMapping,
-                u.Field(
-                    description="Environment variable settings",
-                ),
-            ]
-
-        class PluginRegistry(m.Value):
+        class PluginRegistry(FlextCliModels.Value):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
@@ -762,7 +544,7 @@ class FlextPluginModels(m):
 
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
-                t.JsonMapping,
+                FlextPluginTypes.JsonMapping,
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),
@@ -780,7 +562,7 @@ class FlextPluginModels(m):
                 ),
             ] = u.Field(default_factory=datetime.now)
 
-        class PluginConfig(m.Value):
+        class PluginConfig(FlextCliModels.Value):
             """Plugin configuration model.
 
             Represents configuration for a plugin with key-value pairs.
@@ -788,38 +570,13 @@ class FlextPluginModels(m):
 
             plugin_name: Annotated[str, u.Field(description="Plugin name")]
             config: Annotated[
-                t.JsonMapping,
+                FlextPluginTypes.JsonMapping,
                 u.Field(
                     description="Configuration settings",
                 ),
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
-        class Registry(m.Value):
-            """Plugin registry model.
 
-            Represents a registry of plugins with metadata.
-            """
-
-            plugins: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Dictionary of registered plugins",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-            last_updated: Annotated[
-                datetime,
-                u.Field(
-                    description="Last update timestamp",
-                ),
-            ] = u.Field(default_factory=datetime.now)
-            created_at: Annotated[
-                datetime,
-                u.Field(
-                    description="Registry creation timestamp",
-                ),
-            ] = u.Field(default_factory=datetime.now)
-
-
-m = FlextPluginModels
+m: type[FlextPluginModels] = FlextPluginModels
 
 __all__: list[str] = ["FlextPluginModels", "m"]

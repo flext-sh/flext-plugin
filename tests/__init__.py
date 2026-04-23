@@ -42,9 +42,7 @@ if _t.TYPE_CHECKING:
     from tests.unit.test_discovery import TestFlextPluginDiscovery
     from tests.unit.test_domain_entities import (
         TestFlextPlugin,
-        TestFlextPluginExecution,
         TestFlextPluginMetadata,
-        TestFlextPluginRegistryEntity,
         TestFlextPluginSettingsEntities,
     )
     from tests.unit.test_domain_ports import TestFlextPluginDiscoveryPorts
@@ -178,14 +176,12 @@ __all__: list[str] = [
     "TestFlextPluginDiscovery",
     "TestFlextPluginDiscoveryPorts",
     "TestFlextPluginDiscoveryReal",
-    "TestFlextPluginExecution",
     "TestFlextPluginHandlers",
     "TestFlextPluginHandlersHandlers",
     "TestFlextPluginHotReload",
     "TestFlextPluginLoader",
     "TestFlextPluginMetadata",
     "TestFlextPluginModels",
-    "TestFlextPluginRegistryEntity",
     "TestFlextPluginService",
     "TestFlextPluginServiceReal",
     "TestFlextPluginServiceStubBridges",

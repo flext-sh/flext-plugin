@@ -17,38 +17,38 @@ from tests import c, e
 
 
 class TestFlextPluginConstantsPluginType:
-    """Test c.Plugin.PluginType enum functionality."""
+    """Test c.Plugin.Type enum functionality."""
 
     def test_plugin_type_values(self) -> None:
         """Test all plugin type enum values."""
-        if c.Plugin.PluginType.TAP.value != "tap":
-            error_message = f"Expected {'tap'}, got {c.Plugin.PluginType.TAP.value}"
+        if c.Plugin.Type.TAP.value != "tap":
+            error_message = f"Expected {'tap'}, got {c.Plugin.Type.TAP.value}"
             raise AssertionError(error_message)
-        assert c.Plugin.PluginType.TARGET.value == "target"
-        if c.Plugin.PluginType.TRANSFORM.value != "transform":
+        assert c.Plugin.Type.TARGET.value == "target"
+        if c.Plugin.Type.TRANSFORM.value != "transform":
             error_message = (
-                f"Expected {'transform'}, got {c.Plugin.PluginType.TRANSFORM.value}"
+                f"Expected {'transform'}, got {c.Plugin.Type.TRANSFORM.value}"
             )
             raise AssertionError(error_message)
-        assert c.Plugin.PluginType.UTILITY.value == "utility"
+        assert c.Plugin.Type.UTILITY.value == "utility"
 
     def test_plugin_type_from_string(self) -> None:
-        """Test creating c.Plugin.PluginType from string values."""
-        if c.Plugin.PluginType("tap") != c.Plugin.PluginType.TAP:
+        """Test creating c.Plugin.Type from string values."""
+        if c.Plugin.Type("tap") != c.Plugin.Type.TAP:
+            error_message = f"Expected {c.Plugin.Type.TAP}, got {c.Plugin.Type('tap')}"
+            raise AssertionError(error_message)
+        assert c.Plugin.Type("target") == c.Plugin.Type.TARGET
+        if c.Plugin.Type("transform") != c.Plugin.Type.TRANSFORM:
             error_message = (
-                f"Expected {c.Plugin.PluginType.TAP}, got {c.Plugin.PluginType('tap')}"
+                f"Expected {c.Plugin.Type.TRANSFORM}, got {c.Plugin.Type('transform')}"
             )
             raise AssertionError(error_message)
-        assert c.Plugin.PluginType("target") == c.Plugin.PluginType.TARGET
-        if c.Plugin.PluginType("transform") != c.Plugin.PluginType.TRANSFORM:
-            error_message = f"Expected {c.Plugin.PluginType.TRANSFORM}, got {c.Plugin.PluginType('transform')}"
-            raise AssertionError(error_message)
-        assert c.Plugin.PluginType("utility") == c.Plugin.PluginType.UTILITY
+        assert c.Plugin.Type("utility") == c.Plugin.Type.UTILITY
 
     def test_plugin_type_invalid(self) -> None:
         """Test invalid plugin type raises error."""
         with pytest.raises(ValueError, match=r".*invalid_type.*"):
-            c.Plugin.PluginType("invalid_type")
+            c.Plugin.Type("invalid_type")
 
 
 class TestFlextPluginConstantsLifecycle:

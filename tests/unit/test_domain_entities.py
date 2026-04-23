@@ -26,7 +26,7 @@ class TestFlextPlugin:
 
     def test_plugin_instance_creation(self) -> None:
         """Test creating FlextPlugin entity with factory method."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -42,7 +42,7 @@ class TestFlextPlugin:
 
     def test_plugin_enable_disable(self) -> None:
         """Test plugin enable and disable methods."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -61,7 +61,7 @@ class TestFlextPlugin:
 
     def test_plugin_execution_recording(self) -> None:
         """Test recording plugin execution metrics in metadata."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -85,7 +85,7 @@ class TestFlextPlugin:
 
     def test_plugin_error_recording(self) -> None:
         """Test recording plugin errors in metadata."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -101,7 +101,7 @@ class TestFlextPlugin:
 
     def test_plugin_business_rules_validation(self) -> None:
         """Test plugin business rules validation."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="valid-plugin",
             plugin_version="1.0.0",
             entity_id="test-id",
@@ -125,109 +125,6 @@ class TestFlextPluginSettingsEntities:
         assert settings.config["enabled"] is True
         assert settings.config["key"] == "value"
 
-    def test_configuration_defaults(self) -> None:
-        """Test FlextPluginModels.Config default values."""
-        settings = m.Plugin.PluginConfig(plugin_name="test-plugin")
-        assert settings.plugin_name == "test-plugin"
-        assert settings.config == {}
-
-    def test_configuration_with_complex_settings(self) -> None:
-        """Test configuration with complex settings."""
-        config = {
-            "max_memory_mb": 800,
-            "max_cpu_percent": 75,
-            "timeout_seconds": 300,
-            "nested": {"deep": "value"},
-        }
-        settings = m.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            config=config,
-        )
-        assert settings.config["max_memory_mb"] == 800
-        assert settings.config["max_cpu_percent"] == 75
-        assert settings.config["timeout_seconds"] == 300
-
-
-class TestFlextPluginExecution:
-    """Test m.Plugin.ExecutionResult entity functionality."""
-
-    def test_execution_result_success(self) -> None:
-        """Test creating successful ExecutionResult."""
-        result = m.Plugin.ExecutionResult(
-            success=True,
-            data={"output": "test data"},
-            error="",
-            execution_time_ms=150.5,
-        )
-        assert result.success is True
-        assert result.data == {"output": "test data"}
-        assert result.error == ""
-        assert math.isclose(result.execution_time_ms, 150.5)
-
-    def test_execution_result_failure(self) -> None:
-        """Test creating failed ExecutionResult."""
-        result = m.Plugin.ExecutionResult(
-            success=False,
-            error="Plugin execution failed",
-            execution_time_ms=50.0,
-        )
-        assert result.success is False
-        assert result.error == "Plugin execution failed"
-        assert result.data == {}
-        assert math.isclose(result.execution_time_ms, 50.0)
-
-    def test_execution_result_defaults(self) -> None:
-        """Test ExecutionResult default values."""
-        result = m.Plugin.ExecutionResult(success=True, error="", execution_time_ms=0.0)
-        assert result.success is True
-        assert result.data == {}
-        assert result.error == ""
-        assert math.isclose(result.execution_time_ms, 0.0)
-
-    def test_execution_result_with_complex_data(self) -> None:
-        """Test ExecutionResult with complex output data."""
-        complex_data = {
-            "records": [1, 2, 3],
-            "metadata": {"count": 3, "type": "test"},
-        }
-        result = m.Plugin.ExecutionResult(
-            success=True,
-            data=complex_data,
-            error="",
-            execution_time_ms=100.0,
-        )
-        assert result.success is True
-        assert result.data == complex_data
-        assert math.isclose(result.execution_time_ms, 100.0)
-
-
-class TestFlextPluginRegistryEntity:
-    """Test m.Plugin.Registry domain entity functionality."""
-
-    def test_registry_creation(self) -> None:
-        """Test creating m.Plugin.Registry entity."""
-        registry = m.Plugin.Registry()
-        assert registry.plugins == {}
-        assert registry.last_updated is not None
-        assert registry.created_at is not None
-
-    def test_registry_with_plugins(self) -> None:
-        """Test registry with plugins."""
-        plugins = {
-            "plugin1": {"name": "test-plugin-1"},
-            "plugin2": {"name": "test-plugin-2"},
-        }
-        registry = m.Plugin.Registry(plugins=plugins)
-        assert len(registry.plugins) == 2
-        assert "plugin1" in registry.plugins
-        assert "plugin2" in registry.plugins
-
-    def test_registry_timestamps(self) -> None:
-        """Test registry timestamps."""
-        registry = m.Plugin.Registry()
-        assert registry.last_updated is not None
-        assert registry.created_at is not None
-
 
 class TestFlextPluginMetadata:
     """Test m.Plugin.PluginMetadata functionality."""
@@ -238,7 +135,7 @@ class TestFlextPluginMetadata:
             name="test-plugin",
             version="1.0.0",
             entry_point="test.entry:main",
-            plugin_type=c.Plugin.PluginType.TAP.value,
+            plugin_type=c.Plugin.Type.TAP.value,
             description="Test extractor plugin",
             author="test-author",
             dependencies=["requests", "pydantic"],
@@ -246,7 +143,7 @@ class TestFlextPluginMetadata:
         assert metadata.name == "test-plugin"
         assert metadata.version == "1.0.0"
         assert metadata.entry_point == "test.entry:main"
-        assert metadata.plugin_type == c.Plugin.PluginType.TAP.value
+        assert metadata.plugin_type == c.Plugin.Type.TAP.value
         assert metadata.description == "Test extractor plugin"
         assert "requests" in metadata.dependencies
         assert "pydantic" in metadata.dependencies

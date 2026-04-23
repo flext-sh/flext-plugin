@@ -51,82 +51,27 @@ class FlextPluginTypes(t):
         DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
         LoadTypeLiteral = c.Plugin.LoadTypeLiteral
 
-        class Handlers:
-            """Event handler type definitions."""
+        type EventHandler = Callable[
+            [t.JsonMapping],
+            Awaitable[t.JsonMapping],
+        ]
 
-            type EventHandler = Callable[
-                [t.JsonMapping],
-                Awaitable[t.JsonMapping],
-            ]
+        class HandlerInfo:
+            """Handler metadata container."""
 
-            class HandlerInfo:
-                """Handler metadata container."""
-
-                def __init__(
-                    self,
-                    handler: Callable[
-                        [t.JsonMapping],
-                        Awaitable[t.JsonMapping],
-                    ],
-                    priority: int = 0,
-                ) -> None:
-                    """Initialize handler info."""
-                    self.handler = handler
-                    self.priority = priority
-
-        class Lifecycle:
-            """Plugin lifecycle and status type aliases."""
-
-            type PluginStatus = str
-            type PluginType = str
-            type LifecycleState = str
-            type ExecutionStatus = str
-
-        class Security:
-            """Security-related type aliases."""
-
-            type SecurityLevel = str
-            type Permission = str
-            type SecurityConfig = t.JsonValue
-            SecurityLevelLiteral = c.Plugin.SecurityLevelLiteral
-
-        class Performance:
-            """Performance metrics and monitoring type aliases."""
-
-            type Metrics = t.JsonValue
-            type PerformanceData = t.JsonValue
-            type ResourceUsage = t.JsonValue
-
-        class Discovery:
-            """Plugin discovery type aliases."""
-
-            type DiscoveryPath = str
-            type DiscoveryResult = t.JsonValue
-            type PluginLoader = t.GeneralValueType
-            type EntryPoint = str
-
-        class Execution:
-            """Plugin execution type aliases."""
-
-            type ExecutionContext = t.JsonValue
-            type ExecutionResult = t.JsonValue
-            type ExecutionError = str
-            type ResourceLimits = t.JsonValue
-
-        class Registry:
-            """Plugin registry type aliases."""
-
-            type RegistryConfig = t.JsonValue
-            type RegistryEntry = t.JsonValue
-            type RegistrySync = t.JsonValue
-
-        class HotReload:
-            """Hot reload and file watching type aliases."""
-
-            type WatchConfig = t.JsonValue
-            type ReloadEvent = t.JsonValue
-            type FileWatcher = t.GeneralValueType
+            def __init__(
+                self,
+                handler: Callable[
+                    [t.JsonMapping],
+                    Awaitable[t.JsonMapping],
+                ],
+                priority: int = 0,
+            ) -> None:
+                """Initialize handler info."""
+                self.handler = handler
+                self.priority = priority
 
 
 t = FlextPluginTypes
+
 __all__: list[str] = ["FlextPluginTypes", "t"]

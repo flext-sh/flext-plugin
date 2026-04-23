@@ -20,38 +20,16 @@ class TestFlextPluginConstants:
         constants = c()
         assert constants is not None
 
-    def test_discovery_constants(self) -> None:
-        """Test discovery-related constants."""
-        tm.that(c.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, gt=0)
-        tm.that(c.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS, gt=0)
-        tm.that(c.Plugin.Discovery.DEFAULT_PLUGIN_PATHS, none=False)
-        tm.that(c.Plugin.Discovery.MIN_PLUGIN_NAME_LENGTH, gt=0)
-        tm.that(c.Plugin.Discovery.MAX_PLUGIN_NAME_LENGTH, gt=0)
-        tm.that(
-            c.Plugin.Discovery.VALID_PLUGIN_NAME_PATTERN,
-            empty=False,
-        )
-
     def test_types_constants(self) -> None:
         """Test plugin type constants."""
-        tm.that(c.Plugin.Types.SINGER_PLUGIN_TYPES, none=False)
+        tm.that(c.Plugin.SINGER_PLUGIN_TYPES, none=False)
         tm.that(
-            c.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES,
+            c.Plugin.ARCHITECTURE_PLUGIN_TYPES,
             none=False,
         )
-        tm.that(c.Plugin.Types.INTEGRATION_PLUGIN_TYPES, none=False)
-        tm.that(c.Plugin.Types.UTILITY_PLUGIN_TYPES, none=False)
-        tm.that(c.Plugin.Types.ALL_PLUGIN_TYPES, none=False)
-
-    def test_lifecycle_constants(self) -> None:
-        """Test lifecycle-related constants."""
-        tm.that(
-            c.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES,
-            none=False,
-        )
-        tm.that(c.Plugin.Lifecycle.MAX_PLUGIN_WORKERS, gt=0)
-        tm.that(c.Plugin.Lifecycle.MIN_PLUGIN_WORKERS, gte=0)
-        tm.that(c.Plugin.Lifecycle.DEFAULT_WORKERS, gt=0)
+        tm.that(c.Plugin.INTEGRATION_PLUGIN_TYPES, none=False)
+        tm.that(c.Plugin.UTILITY_PLUGIN_TYPES, none=False)
+        tm.that(c.Plugin.ALL_PLUGIN_TYPES, none=False)
 
     def test_hot_reload_constants(self) -> None:
         """Test hot reload constants."""
@@ -96,15 +74,6 @@ class TestFlextPluginConstants:
             empty=False,
         )
 
-    def test_plugin_security_constants(self) -> None:
-        """Test plugin security constants."""
-        tm.that(c.Plugin.PluginSecurity.SECURITY_LEVELS, none=False)
-        tm.that(
-            c.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL,
-            empty=False,
-        )
-        tm.that(c.Plugin.PluginSecurity.SECURITY_SCAN_TIMEOUT, gt=0)
-
     def test_plugin_performance_constants(self) -> None:
         """Test plugin performance constants."""
         tm.that(c.Plugin.PluginPerformance.PERCENTAGE_MAX, eq=100)
@@ -142,21 +111,18 @@ class TestFlextPluginConstants:
 
     def test_constants_immutability(self) -> None:
         """Test that constants are immutable."""
-        tm.that(c.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS, is_=int)
-        tm.that(
-            c.Plugin.Discovery.DISCOVERY_TIMEOUT_SECONDS,
-            is_=int,
-        )
+        tm.that(c.DEFAULT_TIMEOUT_SECONDS, is_=int)
+
         tm.that(c.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, is_=int)
         tm.that(c.Plugin.PluginPerformance.PERCENTAGE_MAX, is_=int)
 
     def test_plugin_type_consistency(self) -> None:
         """Test that plugin types are consistent across constants."""
-        all_types = c.Plugin.Types.ALL_PLUGIN_TYPES
-        singer_types = c.Plugin.Types.SINGER_PLUGIN_TYPES
-        arch_types = c.Plugin.Types.ARCHITECTURE_PLUGIN_TYPES
-        integration_types = c.Plugin.Types.INTEGRATION_PLUGIN_TYPES
-        utility_types = c.Plugin.Types.UTILITY_PLUGIN_TYPES
+        all_types = c.Plugin.ALL_PLUGIN_TYPES
+        singer_types = c.Plugin.SINGER_PLUGIN_TYPES
+        arch_types = c.Plugin.ARCHITECTURE_PLUGIN_TYPES
+        integration_types = c.Plugin.INTEGRATION_PLUGIN_TYPES
+        utility_types = c.Plugin.UTILITY_PLUGIN_TYPES
         tm.that(singer_types.issubset(all_types), eq=True)
         tm.that(arch_types.issubset(all_types), eq=True)
         tm.that(integration_types.issubset(all_types), eq=True)
@@ -167,32 +133,3 @@ class TestFlextPluginConstants:
         tm.that(arch_types.isdisjoint(integration_types), eq=True)
         tm.that(arch_types.isdisjoint(utility_types), eq=True)
         tm.that(integration_types.isdisjoint(utility_types), eq=True)
-
-    def test_security_levels_consistency(self) -> None:
-        """Test that security levels are consistent."""
-        security_levels = c.Plugin.PluginSecurity.SECURITY_LEVELS
-        default_level = c.Plugin.PluginSecurity.DEFAULT_SECURITY_LEVEL
-        tm.that(security_levels, has=default_level)
-        tm.that(len(security_levels), eq=4)
-        tm.that(security_levels, has="LOW")
-        tm.that(security_levels, has="MEDIUM")
-        tm.that(security_levels, has="HIGH")
-        tm.that(security_levels, has="CRITICAL")
-
-    def test_lifecycle_states_consistency(self) -> None:
-        """Test that lifecycle states are consistent."""
-        states = c.Plugin.Lifecycle.PLUGIN_LIFECYCLE_STATES
-        expected_states: frozenset[str] = frozenset({
-            "unknown",
-            "discovered",
-            "loaded",
-            "active",
-            "inactive",
-            "loading",
-            "error",
-            "disabled",
-            "healthy",
-            "unhealthy",
-        })
-        assert states == expected_states
-        tm.that(len(states), eq=10)

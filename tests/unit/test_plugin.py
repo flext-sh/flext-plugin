@@ -20,7 +20,7 @@ class TestPluginModel:
 
     def test_plugin_create(self) -> None:
         """Test plugin creation with factory method."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
         )
@@ -30,7 +30,7 @@ class TestPluginModel:
 
     def test_plugin_enable(self) -> None:
         """Test plugin enable method."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             is_enabled=False,
@@ -42,7 +42,7 @@ class TestPluginModel:
 
     def test_plugin_enable_already_enabled(self) -> None:
         """Test enabling already enabled plugin."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             is_enabled=True,
@@ -54,7 +54,7 @@ class TestPluginModel:
 
     def test_plugin_disable(self) -> None:
         """Test plugin disable method."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             is_enabled=True,
@@ -66,7 +66,7 @@ class TestPluginModel:
 
     def test_plugin_disable_already_disabled(self) -> None:
         """Test disabling already disabled plugin."""
-        plugin = m.Plugin.Plugin.create(
+        plugin = m.Plugin.Entity.create(
             name="test-plugin",
             plugin_version="1.0.0",
             is_enabled=False,

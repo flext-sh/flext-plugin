@@ -14,7 +14,6 @@ from collections.abc import (
     MutableMapping,
     Sequence,
 )
-from pathlib import Path
 from typing import override
 
 from flext_plugin import c, m, p, r, t, u
@@ -52,7 +51,7 @@ class FlextPluginImplementations:
             self,
             name: str,
             version: str,
-            entity: m.Plugin.Plugin | None = None,
+            entity: m.Plugin.Entity | None = None,
         ) -> None:
             """Initialize concrete plugin.
 
@@ -99,7 +98,7 @@ class FlextPluginImplementations:
 
         def get_config(self) -> t.JsonMapping:
             """Get current configuration."""
-            return getattr(self, "_config", {})
+            return self._config
 
         def fetch_info(self) -> t.JsonMapping:
             """Get plugin information.
@@ -186,7 +185,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             operations: t.JsonMapping | None = None,
-            entity: m.Plugin.Plugin | None = None,
+            entity: m.Plugin.Entity | None = None,
         ) -> None:
             """Initialize executable plugin.
 
@@ -248,7 +247,7 @@ class FlextPluginImplementations:
             List of operation names
 
             """
-            return list(self._operations.keys())
+            return tuple(self._operations)
 
     class ConcreteDataPlugin(ConcretePlugin):
         """Concrete implementation of data processing plugin.
@@ -263,7 +262,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             connection_config: t.JsonMapping | None = None,
-            entity: m.Plugin.Plugin | None = None,
+            entity: m.Plugin.Entity | None = None,
         ) -> None:
             """Initialize data plugin.
 
@@ -336,7 +335,7 @@ class FlextPluginImplementations:
             name: str,
             version: str,
             schema: t.JsonMapping | None = None,
-            entity: m.Plugin.Plugin | None = None,
+            entity: m.Plugin.Entity | None = None,
         ) -> None:
             """Initialize transform plugin.
 
@@ -348,7 +347,9 @@ class FlextPluginImplementations:
 
             """
             super().__init__(name, version, entity)
-            self._schema = schema or {}
+            self._schema = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                schema or {},
+            )
 
         def get_schema(self) -> p.Result[t.JsonMapping]:
             """Get transformation schema.
@@ -373,15 +374,15 @@ class FlextPluginImplementations:
             """
             try:
                 self.logger.info(f"Transforming data with plugin {self.name}")
-                if not isinstance(data, dict):
-                    return r[t.JsonValue].fail("Input data must be a dictionary")
                 validated = t.CONTAINER_MAPPING_ADAPTER.validate_python(
                     data,
                 )
-                transformed: t.MutableJsonMapping = dict(validated)
-                transformed["_transformed_by"] = self._name
-                transformed["_transform_version"] = self._version
-                return r[t.JsonValue].ok(transformed)
+                transformed = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
+                    **validated,
+                    "_transformed_by": self._name,
+                    "_transform_version": self._version,
+                })
+                return r[t.JsonValue].ok(dict(transformed))
             except (
                 ValueError,
                 TypeError,
@@ -514,7 +515,7 @@ class FlextPluginImplementations:
 
         def get_config(self) -> t.JsonMapping:
             """Get configuration for plugin."""
-            return dict(self._config)
+            return self._config
 
         def get_logger(self) -> p.Plugin.Logger:
             """Get logger instance for plugin."""
@@ -542,13 +543,13 @@ class FlextPluginImplementations:
 
         def __init__(self) -> None:
             """Initialize plugin registry."""
-            self.plugins: MutableMapping[str, m.Plugin.Plugin] = {}
+            self.plugins: MutableMapping[str, m.Plugin.Entity] = {}
             self._logger = u.fetch_logger("plugin.registry")
 
         def fetch_plugin(
             self,
             plugin_name: str,
-        ) -> m.Plugin.Plugin | None:
+        ) -> m.Plugin.Entity | None:
             """Fetch a plugin by name.
 
             Args:
@@ -560,7 +561,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
+        def list_plugins(self) -> Sequence[m.Plugin.Entity]:
             """List all registered plugin names.
 
             Returns:
@@ -569,13 +570,13 @@ class FlextPluginImplementations:
             """
             return list(self.plugins.values())
 
-        def register_plugin(self, _plugin: t.JsonValue) -> p.Result[bool]:
+        def register_plugin(self, plugin: t.JsonValue) -> p.Result[bool]:
             """Register a plugin via protocol interface."""
-            if isinstance(_plugin, m.Plugin.Plugin):
-                return self.register(_plugin).map(lambda _: True)
+            if isinstance(plugin, m.Plugin.Entity):
+                return self.register(plugin).map(lambda _: True)
             return r[bool].fail("Invalid plugin type for registration")
 
-        def register(self, plugin: m.Plugin.Plugin) -> p.Result[None]:
+        def register(self, plugin: m.Plugin.Entity) -> p.Result[None]:
             """Register a plugin.
 
             Args:
@@ -643,7 +644,7 @@ class FlextPluginImplementations:
 
             """
             try:
-                self.logger.info("Discovering plugins in %s", search_path)
+                self.logger.info(f"Discovering plugins in {search_path}")
                 discovered = [f"{search_path}/plugin1", f"{search_path}/plugin2"]
                 return r[t.StrSequence].ok(discovered)
             except (
@@ -655,12 +656,12 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception("Plugin discovery failed in %s", search_path)
+                self.logger.exception(f"Plugin discovery failed in {search_path}")
                 return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
 
         def load_plugin(
             self,
-            plugin_path: str | Path,
+            plugin_path: str,
         ) -> p.Result[FlextPluginImplementations.ConcretePlugin]:
             """Load plugin from path.
 
@@ -672,12 +673,12 @@ class FlextPluginImplementations:
 
             """
             try:
-                self.logger.info("Loading plugin from %s", plugin_path)
+                self.logger.info(f"Loading plugin from {plugin_path}")
                 concrete_plugin = FlextPluginImplementations.ConcretePlugin(
                     name=f"loaded-from-{plugin_path}",
-                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                 )
-                plugin_entity = m.Plugin.Plugin.create(
+                plugin_entity = m.Plugin.Entity.create(
                     name=concrete_plugin.name,
                     plugin_version=concrete_plugin.version,
                 )
@@ -692,7 +693,7 @@ class FlextPluginImplementations:
                 RuntimeError,
                 ImportError,
             ) as e:
-                self.logger.exception("Failed to load plugin from %s", plugin_path)
+                self.logger.exception(f"Failed to load plugin from {plugin_path}")
                 return r[FlextPluginImplementations.ConcretePlugin].fail(
                     f"Load failed: {e!s}",
                 )

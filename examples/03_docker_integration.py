@@ -31,11 +31,11 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
 
 
 def create_docker_postgres_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin,
+    FlextPluginModels.Plugin.Entity,
     t.JsonMapping,
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
-    postgres_config = {
+    postgres_config: t.JsonMapping = {
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
@@ -46,12 +46,12 @@ def create_docker_postgres_plugin() -> tuple[
         "max_connections": 20,
         "connection_pool": True,
     }
-    postgres_plugin = FlextPluginModels.Plugin.Plugin(
+    postgres_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-postgres-connector",
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.DATABASE.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
     )
@@ -59,11 +59,11 @@ def create_docker_postgres_plugin() -> tuple[
 
 
 def create_docker_redis_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin,
+    FlextPluginModels.Plugin.Entity,
     t.JsonMapping,
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
-    redis_config = {
+    redis_config: t.JsonMapping = {
         "host": "localhost",
         "port": 6379,
         "password": "flext_redis_password",
@@ -75,12 +75,12 @@ def create_docker_redis_plugin() -> tuple[
         "socket_keepalive_options": {str(socket.TCP_KEEPIDLE): 60},
         "health_check_interval": 30,
     }
-    redis_plugin = FlextPluginModels.Plugin.Plugin(
+    redis_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-redis-cache",
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.DATABASE.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
     )
@@ -88,11 +88,11 @@ def create_docker_redis_plugin() -> tuple[
 
 
 def create_docker_ldap_plugin() -> tuple[
-    FlextPluginModels.Plugin.Plugin,
+    FlextPluginModels.Plugin.Entity,
     t.JsonMapping,
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
-    ldap_config = {
+    ldap_config: t.JsonMapping = {
         "host": "localhost",
         "port": 389,
         "use_ssl": False,
@@ -104,12 +104,12 @@ def create_docker_ldap_plugin() -> tuple[
         "pool_size": 10,
         "pool_lifetime": 3600,
     }
-    ldap_plugin = FlextPluginModels.Plugin.Plugin(
+    ldap_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-ldap-directory",
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.PluginType.AUTHENTICATION.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION.value,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
     )

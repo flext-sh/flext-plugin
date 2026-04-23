@@ -112,7 +112,7 @@ class FlextPluginPlatform:
             _ = auto_discover_handlers
             return cls(dispatcher=dispatcher)
 
-        def get(self, data: str) -> p.Result[m.Plugin.Plugin]:
+        def get(self, data: str) -> p.Result[m.Plugin.Entity]:
             """Get plugin by name from class-level storage."""
             result = self.fetch_plugin(
                 self.PLUGINS,
@@ -121,10 +121,10 @@ class FlextPluginPlatform:
             )
             if result.success:
                 try:
-                    plugin = m.Plugin.Plugin.model_validate(
+                    plugin = m.Plugin.Entity.model_validate(
                         result.value,
                     )
-                    return r[m.Plugin.Plugin].ok(plugin)
+                    return r[m.Plugin.Entity].ok(plugin)
                 except (
                     ValueError,
                     TypeError,
@@ -134,12 +134,12 @@ class FlextPluginPlatform:
                     RuntimeError,
                     ImportError,
                 ):
-                    return r[m.Plugin.Plugin].fail(
+                    return r[m.Plugin.Entity].fail(
                         "Plugin is not a valid Plugin type",
                     )
             if result.failure:
-                return r[m.Plugin.Plugin].fail(result.error)
-            return r[m.Plugin.Plugin].fail("Plugin not found")
+                return r[m.Plugin.Entity].fail(result.error)
+            return r[m.Plugin.Entity].fail("Plugin not found")
 
         def list_plugins(
             self,
@@ -203,13 +203,13 @@ class FlextPluginPlatform:
             name: str,
             *,
             scope: c.RegistrationScope = c.RegistrationScope.INSTANCE,
-        ) -> p.Result[t.RuntimeData | None]:
+        ) -> p.Result[t.JsonPayload | None]:
             """Delegate plugin lookup to the canonical registry."""
-            return r[t.RuntimeData | None].from_result(
+            return r[t.JsonPayload | None].from_result(
                 self._registry.fetch_plugin(category, name, scope=scope),
             )
 
-    class Plugin(m.Plugin.Plugin):
+    class Plugin(m.Plugin.Entity):
         """Plugin entity extending the base model."""
 
         @property
@@ -223,7 +223,7 @@ class FlextPluginPlatform:
             """Check if plugin is active."""
             return self.is_enabled
 
-    class PluginPlatformService(s[None]):
+    class PluginPlatformService(s):
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = u.PrivateAttr(
@@ -252,12 +252,19 @@ class FlextPluginPlatform:
 
         @staticmethod
         def _to_general_mapping(
-            value: t.RuntimeData,
+            value: t.JsonPayload | p.Model | None,
         ) -> t.JsonMapping:
             """Convert mapping-like values to a typed dict."""
-            if not u.dict_like(value):
+            if value is None:
                 return {}
-            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
+            if isinstance(value, p.Model):
+                return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    value.model_dump(mode="json"),
+                )
+            normalized_value = u.normalize_to_metadata(value)
+            if not isinstance(normalized_value, Mapping):
+                return {}
+            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(normalized_value)
 
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
@@ -341,52 +348,29 @@ class FlextPluginPlatform:
 
             def discover_and_validate(
                 _checked: t.JsonValue,
-            ) -> p.Result[Sequence[t.JsonMapping]]:
+            ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
                 if not self.discovery:
-                    return r[Sequence[t.JsonMapping]].fail(
+                    return r[Sequence[m.Plugin.DiscoveryData]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.success:
-                    discovered_items = discovery_result.value
-                    plugin_dicts: MutableSequence[t.JsonMapping] = []
-                    for item in discovered_items:
-                        if u.dict_like(item):
-                            plugin_dicts.append(self._to_general_mapping(item))
-                            continue
-                        name = getattr(item, "name", "")
-                        version = getattr(item, "version", "1.0.0")
-                        path = getattr(item, "path", "")
-                        discovery_type = getattr(item, "discovery_type", "file")
-                        discovery_method = getattr(
-                            item,
-                            "discovery_method",
-                            "file_system",
-                        )
-                        metadata: t.JsonValue = getattr(item, "metadata", {})
-                        if u.dict_like(metadata):
-                            plugin_dicts.append({
-                                "name": str(name),
-                                "version": str(version),
-                                "path": str(path),
-                                "discovery_type": str(discovery_type),
-                                "discovery_method": str(discovery_method),
-                                "metadata": self._to_general_mapping(metadata),
-                            })
-                    return r[Sequence[t.JsonMapping]].ok(plugin_dicts)
-                return r[Sequence[t.JsonMapping]].fail(
+                    return r[Sequence[m.Plugin.DiscoveryData]].ok(
+                        discovery_result.value,
+                    )
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: Sequence[t.JsonMapping],
+                data: Sequence[m.Plugin.DiscoveryData],
             ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
             checked: p.Result[bool] = self._require_protocol(
                 self.discovery, "Discovery"
             )
-            discovered: p.Result[Sequence[t.JsonMapping]] = checked.flat_map(
+            discovered: p.Result[Sequence[m.Plugin.DiscoveryData]] = checked.flat_map(
                 discover_and_validate
             )
             plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = (
@@ -525,7 +509,7 @@ class FlextPluginPlatform:
 
         def register_plugin(
             self,
-            plugin: FlextPluginPlatform.Plugin | m.Plugin.Plugin,
+            plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
         ) -> p.Result[bool]:
             """Register plugin with validation chain."""
 
@@ -537,7 +521,7 @@ class FlextPluginPlatform:
                     error_msg = "Plugin registration failed"
                     raise ValueError(error_msg)
                 plugin_entity = FlextPluginPlatform.Plugin.model_validate(
-                    plugin.model_dump(mode="python"),
+                    plugin.model_dump(mode="json"),
                 )
                 return self._add_to_plugins(plugin_entity)
 
@@ -594,7 +578,9 @@ class FlextPluginPlatform:
             """Create execution entity."""
             execution = FlextPluginPlatform.PluginExecution.create(
                 plugin_name=plugin.name,
-                execution_config={"input_data": context},
+                execution_config=t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    {"input_data": context},
+                ),
                 execution_id=execution_id,
             )
             return r[FlextPluginPlatform.PluginExecution].ok(execution)
@@ -688,14 +674,14 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: Sequence[t.JsonMapping],
+            plugin_data: Sequence[m.Plugin.DiscoveryData],
         ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: MutableSequence[FlextPluginPlatform.Plugin] = []
             for data in plugin_data:
                 plugin = FlextPluginPlatform.Plugin.create(
-                    name=str(data["name"]),
-                    plugin_version=str(data.get("version", "1.0.0")),
+                    name=data.name,
+                    plugin_version=data.version,
                 )
                 validation_result = plugin.validate_business_rules()
                 if validation_result.success:

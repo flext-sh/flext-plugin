@@ -145,9 +145,9 @@ def real_container_with_adapters() -> p.Container:
 
 
 @pytest.fixture
-def real_plugin_entity() -> m.Plugin.Plugin:
+def real_plugin_entity() -> m.Plugin.Entity:
     """Create REAL m.Plugin for testing."""
-    return m.Plugin.Plugin(
+    return m.Plugin.Entity(
         name="real-test-plugin",
         plugin_version="1.0.0",
         description="Real plugin entity for comprehensive testing",
@@ -216,42 +216,42 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture
-def real_tap_plugin() -> m.Plugin.Plugin:
+def real_tap_plugin() -> m.Plugin.Entity:
     """Create REAL tap plugin entity."""
-    return m.Plugin.Plugin(
+    return m.Plugin.Entity(
         name="tap-database",
         plugin_version="1.0.0",
         description="Real database tap plugin",
         author="test-suite",
-        plugin_type=c.Plugin.PluginType.TAP,
+        plugin_type=c.Plugin.Type.TAP,
         is_enabled=True,
         metadata={},
     )
 
 
 @pytest.fixture
-def real_target_plugin() -> m.Plugin.Plugin:
+def real_target_plugin() -> m.Plugin.Entity:
     """Create REAL target plugin entity."""
-    return m.Plugin.Plugin(
+    return m.Plugin.Entity(
         name="target-warehouse",
         plugin_version="1.0.0",
         description="Real warehouse target plugin",
         author="test-suite",
-        plugin_type=c.Plugin.PluginType.TARGET,
+        plugin_type=c.Plugin.Type.TARGET,
         is_enabled=True,
         metadata={},
     )
 
 
 @pytest.fixture
-def real_processor_plugin() -> m.Plugin.Plugin:
+def real_processor_plugin() -> m.Plugin.Entity:
     """Create REAL processor plugin entity."""
-    return m.Plugin.Plugin(
+    return m.Plugin.Entity(
         name="processor-transform",
         plugin_version="1.0.0",
         description="Real transform processor plugin",
         author="test-suite",
-        plugin_type=c.Plugin.PluginType.PROCESSOR,
+        plugin_type=c.Plugin.Type.PROCESSOR,
         is_enabled=True,
         metadata={},
     )

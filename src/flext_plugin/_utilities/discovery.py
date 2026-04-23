@@ -63,7 +63,7 @@ class FlextPluginDiscovery:
                         ),
                     )
         except (OSError, PermissionError):
-            logger.exception("Failed to discover directory %s", path)
+            logger.exception(f"Failed to discover directory {path}")
         return discovered
 
     def discover_plugin(
@@ -106,7 +106,7 @@ class FlextPluginDiscovery:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to discover plugin at %s", plugin_path)
+            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
             return r[m.Plugin.DiscoveryData].fail(
                 f"Discovery error: {e!s}",
             )
@@ -249,14 +249,14 @@ class FlextPluginDiscovery:
             try:
                 return m.Plugin.DiscoveryData(
                     name=path.stem,
-                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
                     discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
                     metadata={},
                 )
             except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
+                self.logger.exception(f"Failed to create discovery data for {path}")
                 return None
 
     class EntryPointStrategy:
@@ -283,9 +283,9 @@ class FlextPluginDiscovery:
                             version=getattr(
                                 entry_point.dist,
                                 "version",
-                                c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                                c.Plugin.DEFAULT_PLUGIN_VERSION,
                             )
-                            or c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                            or c.Plugin.DEFAULT_PLUGIN_VERSION,
                             path=Path(getattr(entry_point.dist, "_path", "")),
                             discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
                             discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,

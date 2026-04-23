@@ -140,7 +140,7 @@ class FlextPluginHotReload:
                 error_msg = f"Path does not exist: {path}"
                 return r[bool].fail(error_msg)
             self._watched_paths.add(path_obj)
-            self.logger.info("Added watch path: %s", path)
+            self.logger.info(f"Added watch path: {path}")
             return r[bool].ok(True)
         except (
             ValueError,
@@ -151,7 +151,7 @@ class FlextPluginHotReload:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to add watch path: %s", path)
+            self.logger.exception(f"Failed to add watch path: {path}")
             return r[bool].fail(f"Add watch path error: {e!s}")
 
     def clear_reload_history(self) -> int:
@@ -183,24 +183,29 @@ class FlextPluginHotReload:
                 if watched_path.is_file() and watched_path.suffix == ".py":
                     plugin_name = watched_path.stem
                     result = self.reload_plugin(plugin_name)
-                    reload_results.append({
-                        "plugin_name": plugin_name,
-                        "success": result.success,
-                    })
+                    reload_results.append(
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
+                            "plugin_name": plugin_name,
+                            "success": result.success,
+                        })
+                    )
                 elif watched_path.is_dir():
                     for py_file in watched_path.rglob("*.py"):
                         if not py_file.name.startswith("_"):
                             plugin_name = py_file.stem
                             result = self.reload_plugin(plugin_name)
-                            reload_results.append({
-                                "plugin_name": plugin_name,
-                                "success": result.success,
-                            })
+                            reload_results.append(
+                                t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
+                                    "plugin_name": plugin_name,
+                                    "success": result.success,
+                                })
+                            )
             self.logger.info(f"Force reloaded {len(reload_results)} plugins")
-            return r[t.JsonMapping].ok({
+            reload_summary = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
                 "plugin_results": reload_results,
                 "count": len(reload_results),
             })
+            return r[t.JsonMapping].ok(reload_summary)
         except (
             ValueError,
             TypeError,
@@ -220,7 +225,7 @@ class FlextPluginHotReload:
         Dictionary containing hot reload status information
 
         """
-        return {
+        return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
             "is_watching": self._is_watching,
             "watched_paths": self.get_watched_paths(),
             "watch_interval": self.watch_interval,
@@ -230,7 +235,7 @@ class FlextPluginHotReload:
             "recent_reloads": len([rec for rec in self._reload_history if rec.success]),
             "callback_count": len(self._reload_callbacks),
             "using_watchdog": self._observer is not None,
-        }
+        })
 
     def get_reload_history(
         self,
@@ -344,7 +349,7 @@ class FlextPluginHotReload:
             path_obj = self._resolve_watch_path(path)
             if path_obj in self._watched_paths:
                 self._watched_paths.remove(path_obj)
-                self.logger.info("Removed watch path: %s", path)
+                self.logger.info(f"Removed watch path: {path}")
                 return r[bool].ok(True)
             return r[bool].fail(f"Path not being watched: {path}")
         except (
@@ -356,7 +361,7 @@ class FlextPluginHotReload:
             RuntimeError,
             ImportError,
         ) as e:
-            self.logger.exception("Failed to remove watch path: %s", path)
+            self.logger.exception(f"Failed to remove watch path: {path}")
             return r[bool].fail(f"Remove watch path error: {e!s}")
 
     def start_watching(self, paths: t.StrSequence) -> p.Result[bool]:

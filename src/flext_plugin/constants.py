@@ -20,8 +20,8 @@ class FlextPluginConstants(c):
     ```python
     from flext_plugin import FlextPluginConstants, t
 
-    timeout = FlextPluginConstants.Plugin.Discovery.DEFAULT_TIMEOUT_SECONDS
-    plugin_type = FlextPluginConstants.Plugin.PluginType.TAP
+    timeout = FlextPluginConstants.DEFAULT_TIMEOUT_SECONDS
+    plugin_type = FlextPluginConstants.Plugin.Type.TAP
     ```
     """
 
@@ -32,34 +32,15 @@ class FlextPluginConstants(c):
         organization and to enable composition with other domain constants.
         """
 
-        class Discovery:
-            """Discovery-related constants."""
-
-            DEFAULT_TIMEOUT_SECONDS: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
-            DISCOVERY_TIMEOUT_SECONDS: Final[int] = 10
-            DEFAULT_PLUGIN_PATHS: Final[t.StrSequence] = (
-                "/opt/flext/plugins",
-                "~/.flext/plugins",
-                "./plugins",
-            )
-            MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
-            MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
-            VALID_PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
-            METHOD_FILE_SYSTEM: Final = "file_system"
-            METHOD_ENTRY_POINTS: Final = "entry_points"
-            METHOD_PACKAGE_SCAN: Final[str] = "package_scan"
-            DISCOVERY_TYPE_FILE: Final = "file"
-            DISCOVERY_TYPE_DIRECTORY: Final = "directory"
-            DISCOVERY_TYPE_ENTRY_POINT: Final = "entry_point"
-            DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
+        DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
 
         @unique
-        class PluginType(StrEnum):
+        class Type(StrEnum):
             """Plugin type enumeration.
 
             DRY Pattern:
-                StrEnum is the single source of truth. Use PluginType.TAP.value
-                or PluginType.TAP directly - no base strings needed.
+                StrEnum is the single source of truth. Use Type.TAP.value
+                or Type.TAP directly - no base strings needed.
             """
 
             TAP = "tap"
@@ -83,72 +64,13 @@ class FlextPluginConstants(c):
             THEME = "theme"
             LANGUAGE = "language"
 
-        class Types:
-            """Plugin type constants."""
+        SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]]
+        ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]]
+        INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
+        UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
+        ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
 
-            SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
-            ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
-
-        class Lifecycle:
-            """Plugin lifecycle state constants."""
-
-            MAX_PLUGIN_WORKERS: Final[int] = 10
-            MIN_PLUGIN_WORKERS: Final[int] = 1
-            DEFAULT_WORKERS: Final[int] = 4
-            PLUGIN_LIFECYCLE_STATES: Final[frozenset[str]] = frozenset({
-                "unknown",
-                "discovered",
-                "loaded",
-                "active",
-                "inactive",
-                "loading",
-                "error",
-                "disabled",
-                "healthy",
-                "unhealthy",
-            })
-
-        class Entities:
-            """Entity-related constants."""
-
-            SEMANTIC_VERSION_PARTS: Final[int] = 3
-            PLUGIN_NAME_MAX_LENGTH: Final[int] = 255
-            PLUGIN_VERSION_MAX_LENGTH: Final[int] = 50
-            PLUGIN_VERSION_MIN_LENGTH: Final[int] = 1
-            PLUGIN_LIFECYCLE_STATES: ClassVar[frozenset[str]]
-
-        class PluginSecurity:
-            """Plugin security level constants."""
-
-            SECURITY_LEVELS: Final[t.StrSequence] = (
-                "LOW",
-                "MEDIUM",
-                "HIGH",
-                "CRITICAL",
-            )
-            DEFAULT_SECURITY_LEVEL: Final[str] = "MEDIUM"
-            SECURITY_LOW: Final[str] = "low"
-            SECURITY_MEDIUM: Final[str] = "medium"
-            SECURITY_HIGH: Final[str] = "high"
-            SECURITY_CRITICAL: Final[str] = "critical"
-            PERMISSION_NETWORK: Final[str] = "network"
-            PERMISSION_FILESYSTEM: Final[str] = "filesystem"
-            PERMISSION_DATABASE: Final[str] = "database"
-            PERMISSION_EXTERNAL_API: Final[str] = "external_api"
-            SECURITY_SCAN_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
-            DEFAULT_ALLOWED_IMPORTS: Final[t.StrSequence] = (
-                "flext_core",
-                "flext_plugin",
-            )
-            DEFAULT_BLOCKED_IMPORTS: Final[t.StrSequence] = (
-                "os",
-                "sys",
-                "subprocess",
-                "importlib",
-            )
+        SECURITY_MEDIUM: Final[str] = "medium"
 
         class PluginPerformance:
             """Plugin performance metric constants."""
@@ -350,35 +272,6 @@ class FlextPluginConstants(c):
                 """Check if status is operational."""
                 return self in self.get_operational_statuses()
 
-        Types.SINGER_PLUGIN_TYPES = frozenset({
-            PluginType.TAP.value,
-            PluginType.TARGET.value,
-            PluginType.TRANSFORM.value,
-        })
-        Types.ARCHITECTURE_PLUGIN_TYPES = frozenset({
-            PluginType.EXTENSION.value,
-            PluginType.SERVICE.value,
-            PluginType.MIDDLEWARE.value,
-            PluginType.TRANSFORMER.value,
-        })
-        Types.INTEGRATION_PLUGIN_TYPES = frozenset({
-            PluginType.API.value,
-            PluginType.DATABASE.value,
-            PluginType.NOTIFICATION.value,
-            PluginType.AUTHENTICATION.value,
-        })
-        Types.UTILITY_PLUGIN_TYPES = frozenset({
-            PluginType.UTILITY.value,
-            PluginType.TOOL.value,
-            PluginType.HANDLER.value,
-            PluginType.PROCESSOR.value,
-        })
-        Types.ALL_PLUGIN_TYPES = (
-            Types.SINGER_PLUGIN_TYPES
-            | Types.ARCHITECTURE_PLUGIN_TYPES
-            | Types.INTEGRATION_PLUGIN_TYPES
-            | Types.UTILITY_PLUGIN_TYPES
-        )
         "All plugin types - union of all plugin type frozensets."
         OPERATIONAL_STATUSES: ClassVar[frozenset[str]] = frozenset({
             PluginStatus.ACTIVE,
