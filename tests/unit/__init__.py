@@ -30,9 +30,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_discovery": ("TestFlextPluginDiscovery",),
         ".test_domain_entities": (
             "TestFlextPlugin",
-            "TestFlextPluginExecution",
             "TestFlextPluginMetadata",
-            "TestFlextPluginRegistryEntity",
             "TestFlextPluginSettingsEntities",
         ),
         ".test_domain_ports": ("TestFlextPluginDiscoveryPorts",),

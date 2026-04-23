@@ -105,9 +105,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_discovery": ("TestFlextPluginDiscovery",),
             ".unit.test_domain_entities": (
                 "TestFlextPlugin",
-                "TestFlextPluginExecution",
                 "TestFlextPluginMetadata",
-                "TestFlextPluginRegistryEntity",
                 "TestFlextPluginSettingsEntities",
             ),
             ".unit.test_domain_ports": ("TestFlextPluginDiscoveryPorts",),
