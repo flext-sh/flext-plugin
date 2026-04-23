@@ -70,11 +70,6 @@ class FlextPluginImplementations:
             self.config: t.MutableJsonMapping = {}
 
         @property
-        def name(self) -> str:
-            """Get plugin name."""
-            return self.name
-
-        @property
         def version(self) -> str:
             """Get plugin version."""
             return self._version
@@ -414,7 +409,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log critical message."""
             self.logger.critical(message, *args, **kwargs)
@@ -424,7 +419,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log debug message."""
             self.logger.debug(message, *args, **kwargs)
@@ -434,7 +429,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log error message."""
             self.logger.error(message, *args, **kwargs)
@@ -444,7 +439,7 @@ class FlextPluginImplementations:
             message: str,
             *,
             _exc_info: bool = True,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log exception message."""
             self.logger.error(message, exc_info=_exc_info, **kwargs)
@@ -454,7 +449,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log info message."""
             self.logger.info(message, *args, **kwargs)
@@ -475,7 +470,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log trace message."""
             self.logger.debug(message, *args, **kwargs)
@@ -485,7 +480,7 @@ class FlextPluginImplementations:
             self,
             message: str,
             *args: t.JsonValue,
-            **kwargs: t.Scalar,
+            **kwargs: t.LogValue,
         ) -> None:
             """Log warning message."""
             self.logger.warning(message, *args, **kwargs)
@@ -516,11 +511,6 @@ class FlextPluginImplementations:
             self.logger = logger
             self.config: t.MutableJsonMapping = dict(settings) if settings else {}
             self._services: t.MutableJsonMapping = dict(services) if services else {}
-
-        @property
-        def logger(self) -> p.Logger:
-            """Plugin logger."""
-            return self.logger
 
         def get_config(self) -> t.JsonMapping:
             """Get configuration for plugin."""
