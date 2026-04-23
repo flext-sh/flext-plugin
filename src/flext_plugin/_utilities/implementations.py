@@ -38,7 +38,7 @@ class FlextPluginImplementations:
         for domain logic and state management.
 
         Attributes:
-        _name: Plugin name
+        name: Plugin name
         _version: Plugin version
         _entity: Domain entity for business logic
         logger: Plugin logger
@@ -62,17 +62,17 @@ class FlextPluginImplementations:
 
             """
             super().__init__()
-            self._name = name
+            self.name = name
             self._version = version
             self._entity = entity
             self.logger = u.fetch_logger(f"plugin.{self.name}")
             self._initialized = False
-            self._config: t.MutableJsonMapping = {}
+            self.config: t.MutableJsonMapping = {}
 
         @property
         def name(self) -> str:
             """Get plugin name."""
-            return self._name
+            return self.name
 
         @property
         def version(self) -> str:
@@ -82,7 +82,7 @@ class FlextPluginImplementations:
         def configure(self, settings: t.JsonMapping) -> p.Result[None]:
             """Configure component with provided settings."""
             try:
-                self._config.update(settings)
+                self.config.update(settings)
                 return r[None].ok(None)
             except (
                 ValueError,
@@ -98,7 +98,7 @@ class FlextPluginImplementations:
 
         def get_config(self) -> t.JsonMapping:
             """Get current configuration."""
-            return self._config
+            return self.config
 
         def fetch_info(self) -> t.JsonMapping:
             """Get plugin information.
@@ -108,23 +108,29 @@ class FlextPluginImplementations:
 
             """
             return {
-                "name": self._name,
+                "name": self.name,
                 "version": self._version,
                 "initialized": self._initialized,
                 "entity_present": self._entity is not None,
             }
 
-        def initialize(self, _context: t.JsonMapping) -> p.Result[None]:
+        def initialize(self, context: t.JsonMapping) -> p.Result[None]:
             """Initialize plugin with context.
 
             Args:
-                _context: Plugin runtime context
+                context: Plugin runtime context
 
             Returns:
                 r indicating success or failure
 
             """
             try:
+                if context:
+                    configure_result = self.configure(context)
+                    if configure_result.failure:
+                        return r[None].fail(
+                            configure_result.error or "Context configuration failed"
+                        )
                 self.logger.info(f"Initializing plugin {self.name} v{self.version}")
                 if self._entity:
                     validation = self._entity.validate_business_rules()
@@ -379,7 +385,7 @@ class FlextPluginImplementations:
                 )
                 transformed = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({
                     **validated,
-                    "_transformed_by": self._name,
+                    "_transformed_by": self.name,
                     "_transform_version": self._version,
                 })
                 return r[t.JsonValue].ok(dict(transformed))
@@ -407,79 +413,82 @@ class FlextPluginImplementations:
         def critical(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log critical message."""
-            self.logger.critical(message)
+            self.logger.critical(message, *args, **kwargs)
 
         @override
         def debug(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log debug message."""
-            self.logger.debug(message)
+            self.logger.debug(message, *args, **kwargs)
 
         @override
         def error(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log error message."""
-            self.logger.error(message)
+            self.logger.error(message, *args, **kwargs)
 
         def exception(
             self,
             message: str,
             *,
             _exc_info: bool = True,
-            **_kwargs: t.Scalar,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log exception message."""
-            self.logger.error(message)
+            self.logger.error(message, exc_info=_exc_info, **kwargs)
 
         @override
         def info(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log info message."""
-            self.logger.info(message)
+            self.logger.info(message, *args, **kwargs)
 
         def log(
             self,
             level: str,
             message: str,
-            _context: t.JsonMapping | None = None,
+            context: t.JsonMapping | None = None,
         ) -> None:
             """Log a message with optional context."""
-            getattr(self.logger, level.lower(), self.logger.debug)(message)
+            formatted_message = (
+                f"{message} | context={dict(context)}" if context else message
+            )
+            getattr(self.logger, level.lower(), self.logger.debug)(formatted_message)
 
         def trace(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log trace message."""
-            self.logger.debug(message)
+            self.logger.debug(message, *args, **kwargs)
 
         @override
         def warning(
             self,
             message: str,
-            *_args: t.JsonValue,
-            **_kwargs: t.Scalar,
+            *args: t.JsonValue,
+            **kwargs: t.Scalar,
         ) -> None:
             """Log warning message."""
-            self.logger.warning(message)
+            self.logger.warning(message, *args, **kwargs)
 
     class ConcretePluginContext:
         """Concrete implementation of plugin runtime context.
@@ -504,18 +513,18 @@ class FlextPluginImplementations:
 
             """
             super().__init__()
-            self._logger = logger
-            self._config: t.MutableJsonMapping = dict(settings) if settings else {}
+            self.logger = logger
+            self.config: t.MutableJsonMapping = dict(settings) if settings else {}
             self._services: t.MutableJsonMapping = dict(services) if services else {}
 
         @property
         def logger(self) -> p.Logger:
             """Plugin logger."""
-            return self._logger
+            return self.logger
 
         def get_config(self) -> t.JsonMapping:
             """Get configuration for plugin."""
-            return self._config
+            return self.config
 
         def get_logger(self) -> p.Plugin.Logger:
             """Get logger instance for plugin."""
@@ -544,7 +553,7 @@ class FlextPluginImplementations:
         def __init__(self) -> None:
             """Initialize plugin registry."""
             self.plugins: MutableMapping[str, m.Plugin.Entity] = {}
-            self._logger = u.fetch_logger("plugin.registry")
+            self.logger = u.fetch_logger("plugin.registry")
 
         def fetch_plugin(
             self,
@@ -590,7 +599,7 @@ class FlextPluginImplementations:
             if plugin_name in self.plugins:
                 return r[None].fail(f"Plugin {plugin_name} already registered")
             self.plugins[plugin_name] = plugin
-            self._logger.info("Registered plugin %s", plugin_name)
+            self.logger.info("Registered plugin %s", plugin_name)
             return r[None].ok(None)
 
         def unregister(self, plugin_name: str) -> p.Result[None]:
@@ -606,7 +615,7 @@ class FlextPluginImplementations:
             if plugin_name not in self.plugins:
                 return r[None].fail(f"Plugin {plugin_name} not found")
             del self.plugins[plugin_name]
-            self._logger.info("Unregistered plugin %s", plugin_name)
+            self.logger.info("Unregistered plugin %s", plugin_name)
             return r[None].ok(None)
 
     class ConcretePluginLoader:

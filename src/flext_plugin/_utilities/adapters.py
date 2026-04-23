@@ -254,7 +254,7 @@ class FlextPluginAdapters:
         def execute_plugin(
             self,
             plugin_name: str,
-            _context: t.JsonMapping,
+            context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
             """Execute plugin."""
             return self._execute_safe(

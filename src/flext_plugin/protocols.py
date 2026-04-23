@@ -147,7 +147,7 @@ class FlextPluginProtocols(FlextCliProtocols):
             def execute_plugin(
                 self,
                 plugin_name: str,
-                _context: FlextPluginTypes.JsonMapping,
+                context: FlextPluginTypes.JsonMapping,
             ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
                 """Execute a plugin with the given context."""
                 ...

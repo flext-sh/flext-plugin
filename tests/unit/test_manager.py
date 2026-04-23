@@ -207,7 +207,7 @@ class TestFlextPluginServiceStubBridges:
             def execute_plugin(
                 self,
                 plugin_name: str,
-                _context: t.JsonMapping,
+                context: t.JsonMapping,
             ) -> p.Result[t.JsonMapping]:
                 self.calls.append(plugin_name)
                 return r[t.JsonMapping].ok({

@@ -316,7 +316,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     def _get_config_value(self, key: str, default=None):
         """Get configuration value with fallback."""
         # Access configuration from the settings t.JsonMapping passed during initialization
-        return getattr(self, "_config", {}).get(key, default)
+        return getattr(self, "config", {}).get(key, default)
 
     # Public utility methods
 
