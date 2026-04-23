@@ -1,0 +1,64 @@
+tests/unit/test_domain_entities.py
+  h_9db9d35f50cf33 17,136,189,216
+src/flext_plugin/api.py
+  h_9db9d35f50cf33 60
+docs/architecture/adr/adr-template.md
+  h_9db9d35f50cf33 185
+tests/unit/test_application_handlers.py
+  h_9db9d35f50cf33 48
+docs/examples/basic-plugin.md
+  h_9db9d35f50cf33 318,709
+docs/architecture/implementation.md
+  h_9db9d35f50cf33 270,281,339,360,392,407-408,443,1155,1165,1200,1214,1229,1254,1282,1287,1313,1331,1365,1396,1424
+docs/guides/development.md
+  h_9db9d35f50cf33 84,137,154,193,196,202,295,353,356,405
+src/flext_plugin/_utilities/services.py
+  h_9db9d35f50cf33 115-116,118,294,407,429,451,456,459,463,469,473,476,493,523,758,774
+docs/guides/testing.md
+  h_9db9d35f50cf33 528
+src/flext_plugin/__version__.py
+  h_9db9d35f50cf33 16,22
+src/flext_plugin/_utilities/adapters.py
+  h_9db9d35f50cf33 80,93,105,111,177,206,257,276-277,320,322,327,337,343,345,353,355,358,373,394,396,402,404
+src/flext_plugin/_utilities/implementations.py
+  h_9db9d35f50cf33 71,83,100,104,118,188,206-207,219,221,229,242,265,309,338,353,361-362,364,377,381,384,395,409,419,429,449,459,467,477,494-495,507
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 52,61-63,141,155,675,678
+tests/conftest.py
+  h_9db9d35f50cf33 54,76,182,271
+src/flext_plugin/protocols.py
+  h_9db9d35f50cf33 65,80,87,93,98,106,114,120,125,140-141,176,180,215,222,242,246,253,258,310,333,337,348,357,366,375,384
+examples/03_docker_integration.py
+  h_9db9d35f50cf33 38,66,95
+src/flext_plugin/typings.py
+  h_9db9d35f50cf33 30,33,44-49,59,69,97-98,112,120-121,127
+docs/architecture/data.md
+  h_9db9d35f50cf33 103,412,420
+tests/unit/test_application_services.py
+  h_9db9d35f50cf33 52
+docs/architecture/adr/README.md
+  h_9db9d35f50cf33 134
+tests/unit/test_manager.py
+  h_9db9d35f50cf33 55,57,71,83,124,126,138,150,190,192,207-208,210,236,239
+docs/architecture/adr/adr-001-clean-architecture.md
+  h_9db9d35f50cf33 206
+src/flext_plugin/_utilities/plugin_platform.py
+  h_9db9d35f50cf33 42,53,61,256,259,290,343-344,346,352,366,376-377,382,389-390,405,484-485,487,494,506-507,510,515,520,532,535,561,591,675,691
+src/flext_plugin/utilities.py
+  h_9db9d35f50cf33 236,440,612-613,725-726
+docs/standards/python-module-organization.md
+  h_9db9d35f50cf33 1149,1230,1232,1270,1314
+src/flext_plugin/_utilities/handlers.py
+  h_9db9d35f50cf33 51,69,97,126-127,144-145,168-169,200-201,218-219,317-318,330,341-342,362,373,418-419,454
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "58dec876c8d78f6c45a91c300504ae2b1e1114bf",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
