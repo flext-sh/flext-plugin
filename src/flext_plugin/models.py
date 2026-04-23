@@ -10,18 +10,11 @@ from __future__ import annotations
 import types
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Self
+from typing import Annotated, Self
 
 from flext_cli import FlextCliModels, u
 
-from flext_plugin import c, r, t
-
-if TYPE_CHECKING:
-    from flext_plugin import (
-        FlextPluginConstants,
-        FlextPluginProtocols,
-        FlextPluginTypes,
-    )
+from flext_plugin import c, p, r, t
 
 
 class FlextPluginModels(FlextCliModels):
@@ -95,11 +88,11 @@ class FlextPluginModels(FlextCliModels):
                 True
             )
             metadata: Annotated[
-                FlextPluginTypes.MutableJsonMapping,
+                t.JsonMapping,
                 u.Field(
                     description="Extensible plugin metadata",
                 ),
-            ] = u.Field(default_factory=dict)
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @classmethod
             def create(
@@ -111,7 +104,7 @@ class FlextPluginModels(FlextCliModels):
                 author: str = "",
                 plugin_type: str = c.Plugin.Type.UTILITY,
                 is_enabled: bool = True,
-                metadata: FlextPluginTypes.JsonMapping | None = None,
+                metadata: t.JsonMapping | None = None,
                 entity_id: str | None = None,
             ) -> Self:
                 """Factory method to create a new Plugin entity.
@@ -193,7 +186,7 @@ class FlextPluginModels(FlextCliModels):
                     raise ValueError(error_msg)
                 return value
 
-            def disable(self) -> FlextPluginProtocols.Result[bool]:
+            def disable(self) -> p.Result[bool]:
                 """Disable the plugin.
 
                 Returns:
@@ -205,7 +198,7 @@ class FlextPluginModels(FlextCliModels):
                 self.is_enabled = False
                 return r[bool].ok(value=True)
 
-            def enable(self) -> FlextPluginProtocols.Result[bool]:
+            def enable(self) -> p.Result[bool]:
                 """Enable the plugin.
 
                 Returns:
@@ -224,16 +217,19 @@ class FlextPluginModels(FlextCliModels):
                     error_message: Error message to record
 
                 """
-                if "error_count" not in self.metadata:
-                    self.metadata["error_count"] = 0
-                if "last_error" not in self.metadata:
-                    self.metadata["last_error"] = ""
-
+                metadata = dict(self.metadata)
+                if "error_count" not in metadata:
+                    metadata["error_count"] = 0
+                if "last_error" not in metadata:
+                    metadata["last_error"] = ""
                 error_count = u.to_int(
-                    self.metadata.get("error_count", 0),
+                    metadata.get("error_count", 0),
                 )
-                self.metadata["error_count"] = error_count + 1
-                self.metadata["last_error"] = error_message
+                metadata["error_count"] = error_count + 1
+                metadata["last_error"] = error_message
+                self.metadata = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    metadata,
+                )
 
             def record_execution(self, execution_time: float, *, success: bool) -> None:
                 """Record plugin execution metrics.
@@ -243,37 +239,41 @@ class FlextPluginModels(FlextCliModels):
                     success: Whether the execution was successful
 
                 """
-                # Update metadata with execution info - use proper type narrowing
-                if "execution_count" not in self.metadata:
-                    self.metadata["execution_count"] = 0
-                if "total_execution_time" not in self.metadata:
-                    self.metadata["total_execution_time"] = 0.0
-                if "success_count" not in self.metadata:
-                    self.metadata["success_count"] = 0
-                if "failure_count" not in self.metadata:
-                    self.metadata["failure_count"] = 0
+                metadata = dict(self.metadata)
+                if "execution_count" not in metadata:
+                    metadata["execution_count"] = 0
+                if "total_execution_time" not in metadata:
+                    metadata["total_execution_time"] = 0.0
+                if "success_count" not in metadata:
+                    metadata["success_count"] = 0
+                if "failure_count" not in metadata:
+                    metadata["failure_count"] = 0
 
                 exec_count = u.to_int(
-                    self.metadata.get("execution_count", 0),
+                    metadata.get("execution_count", 0),
                 )
                 total_time = u.to_float(
-                    self.metadata.get("total_execution_time", 0.0),
+                    metadata.get("total_execution_time", 0.0),
                 )
-                self.metadata["execution_count"] = exec_count + 1
-                self.metadata["total_execution_time"] = total_time + execution_time
+                metadata["execution_count"] = exec_count + 1
+                metadata["total_execution_time"] = total_time + execution_time
 
                 if success:
                     success_count = u.to_int(
-                        self.metadata.get("success_count", 0),
+                        metadata.get("success_count", 0),
                     )
-                    self.metadata["success_count"] = success_count + 1
+                    metadata["success_count"] = success_count + 1
                 else:
                     failure_count = u.to_int(
-                        self.metadata.get("failure_count", 0),
+                        metadata.get("failure_count", 0),
                     )
-                    self.metadata["failure_count"] = failure_count + 1
+                    metadata["failure_count"] = failure_count + 1
 
-            def validate_business_rules(self) -> FlextPluginProtocols.Result[bool]:
+                self.metadata = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    metadata,
+                )
+
+            def validate_business_rules(self) -> p.Result[bool]:
                 """Validate plugin business rules.
 
                 Business Rules:
@@ -366,19 +366,19 @@ class FlextPluginModels(FlextCliModels):
             ]
             path: Annotated[Path, u.Field(description="File system path to plugin")]
             discovery_type: Annotated[
-                FlextPluginConstants.Plugin.DiscoveryTypeLiteral,
+                c.Plugin.DiscoveryTypeLiteral,
                 u.Field(
                     description="Type of discovered plugin",
                 ),
             ]
             discovery_method: Annotated[
-                FlextPluginConstants.Plugin.DiscoveryMethodLiteral,
+                c.Plugin.DiscoveryMethodLiteral,
                 u.Field(
                     description="Discovery method used",
                 ),
             ]
             metadata: Annotated[
-                FlextPluginTypes.JsonMapping,
+                t.JsonMapping,
                 u.Field(
                     description="Extensible discovery metadata",
                 ),
@@ -440,7 +440,7 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ]
             load_type: Annotated[
-                FlextPluginConstants.Plugin.LoadTypeLiteral,
+                c.Plugin.LoadTypeLiteral,
                 u.Field(
                     description="Type of loaded plugin",
                 ),
@@ -483,7 +483,7 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ] = None
             duration_ms: Annotated[
-                FlextPluginTypes.NonNegativeFloat,
+                t.NonNegativeFloat,
                 u.Field(
                     description="Reload duration in milliseconds",
                 ),
@@ -516,13 +516,13 @@ class FlextPluginModels(FlextCliModels):
             )
             entry_point: Annotated[str, u.Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                FlextPluginTypes.StrSequence,
+                t.StrSequence,
                 u.Field(
                     description="List of plugin dependencies",
                 ),
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
-                FlextPluginTypes.JsonMapping,
+                t.JsonMapping,
                 u.Field(
                     description="Additional metadata",
                 ),
@@ -544,7 +544,7 @@ class FlextPluginModels(FlextCliModels):
 
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
-                FlextPluginTypes.JsonMapping,
+                t.JsonMapping,
                 u.Field(
                     description="Dictionary of registered plugins",
                 ),
@@ -570,7 +570,7 @@ class FlextPluginModels(FlextCliModels):
 
             plugin_name: Annotated[str, u.Field(description="Plugin name")]
             config: Annotated[
-                FlextPluginTypes.JsonMapping,
+                t.JsonMapping,
                 u.Field(
                     description="Configuration settings",
                 ),

@@ -12,13 +12,13 @@ from collections.abc import (
     Callable,
     Mapping,
 )
+from typing import ClassVar
 
-from flext_cli import m, t
+from flext_cli import m, t as cli_t
+from pydantic import TypeAdapter
 
-from flext_plugin import c
 
-
-class FlextPluginTypes(t):
+class FlextPluginTypes(cli_t):
     """Plugin type system with Python 3.13+ patterns.
 
     Follows FLEXT ecosystem namespace conventions:
@@ -26,45 +26,42 @@ class FlextPluginTypes(t):
     - Canonical container contracts inherited from core `t.*`
     """
 
-    CONTAINER_MAPPING_ADAPTER: m.TypeAdapter[t.JsonMapping] = m.TypeAdapter(
-        t.JsonMapping
+    CONTAINER_MAPPING_ADAPTER: ClassVar[TypeAdapter[cli_t.JsonMapping]] = m.TypeAdapter(
+        cli_t.JsonMapping
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.JsonMapping] = m.TypeAdapter(
-        t.JsonMapping
+    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[TypeAdapter[cli_t.JsonMapping]] = (
+        m.TypeAdapter(cli_t.JsonMapping)
     )
 
     class Plugin:
         """Core collection and plugin type aliases."""
 
-        type StringList = t.StrSequence
+        type StringList = cli_t.StrSequence
         type StringSet = set[str]
-        type StringDict = t.StrMapping
+        type StringDict = cli_t.StrMapping
         type FloatDict = Mapping[str, float]
-        type PluginList = t.JsonList
-        type PluginDict = t.JsonValue
-        type ConfigDict = t.JsonValue
-        type MetadataDict = t.JsonValue
-        type InputDict = t.JsonValue
-        type OutputDict = t.JsonValue
-        type PluginEntity = t.JsonValue
-        DiscoveryTypeLiteral = c.Plugin.DiscoveryTypeLiteral
-        DiscoveryMethodLiteral = c.Plugin.DiscoveryMethodLiteral
-        LoadTypeLiteral = c.Plugin.LoadTypeLiteral
+        type PluginList = cli_t.JsonList
+        type PluginDict = cli_t.JsonMapping
+        type ConfigDict = cli_t.JsonMapping
+        type MetadataDict = cli_t.JsonMapping
+        type InputDict = cli_t.JsonMapping
+        type OutputDict = cli_t.JsonMapping
+        type PluginEntity = cli_t.JsonMapping
 
         type EventHandler = Callable[
-            [t.JsonMapping],
-            Awaitable[t.JsonMapping],
+            [cli_t.JsonMapping],
+            Awaitable[cli_t.JsonMapping],
         ]
 
         class HandlerInfo:
             """Handler metadata container."""
 
+            handler: FlextPluginTypes.Plugin.EventHandler
+            priority: int
+
             def __init__(
                 self,
-                handler: Callable[
-                    [t.JsonMapping],
-                    Awaitable[t.JsonMapping],
-                ],
+                handler: FlextPluginTypes.Plugin.EventHandler,
                 priority: int = 0,
             ) -> None:
                 """Initialize handler info."""
@@ -72,6 +69,6 @@ class FlextPluginTypes(t):
                 self.priority = priority
 
 
-t = FlextPluginTypes
+t: type[FlextPluginTypes] = FlextPluginTypes
 
 __all__: list[str] = ["FlextPluginTypes", "t"]

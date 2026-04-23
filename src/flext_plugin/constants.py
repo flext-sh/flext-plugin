@@ -64,11 +64,40 @@ class FlextPluginConstants(c):
             THEME = "theme"
             LANGUAGE = "language"
 
-        SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]]
-        ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]]
-        INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]]
-        UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]]
-        ALL_PLUGIN_TYPES: ClassVar[frozenset[str]]
+        SINGER_PLUGIN_TYPES: ClassVar[frozenset[str]] = frozenset({
+            Type.TAP,
+            Type.TARGET,
+            Type.TRANSFORM,
+        })
+        ARCHITECTURE_PLUGIN_TYPES: ClassVar[frozenset[str]] = frozenset({
+            Type.CORE,
+            Type.ADDON,
+            Type.THEME,
+            Type.LANGUAGE,
+        })
+        INTEGRATION_PLUGIN_TYPES: ClassVar[frozenset[str]] = frozenset({
+            Type.SERVICE,
+            Type.MIDDLEWARE,
+            Type.API,
+            Type.DATABASE,
+            Type.NOTIFICATION,
+            Type.AUTHENTICATION,
+            Type.AUTHORIZATION,
+        })
+        UTILITY_PLUGIN_TYPES: ClassVar[frozenset[str]] = frozenset({
+            Type.EXTENSION,
+            Type.TRANSFORMER,
+            Type.UTILITY,
+            Type.TOOL,
+            Type.HANDLER,
+            Type.PROCESSOR,
+        })
+        ALL_PLUGIN_TYPES: ClassVar[frozenset[str]] = frozenset({
+            *SINGER_PLUGIN_TYPES,
+            *ARCHITECTURE_PLUGIN_TYPES,
+            *INTEGRATION_PLUGIN_TYPES,
+            *UTILITY_PLUGIN_TYPES,
+        })
 
         SECURITY_MEDIUM: Final[str] = "medium"
 
