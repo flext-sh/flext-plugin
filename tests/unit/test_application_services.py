@@ -807,7 +807,9 @@ class TestServicesIntegrationReal:
         assert result1.success
         value = result1.value
         normalized_value = (
-            value.model_dump() if isinstance(value, m.BaseModel) else value
+            value.model_dump()
+            if isinstance(value, (m.BaseModel, m.ConfigMap))
+            else value
         )
         assert isinstance(normalized_value, dict)
         assert normalized_value["name"] == "test_service"
