@@ -362,7 +362,6 @@ class TestFlextPluginServiceReal:
         result = service.discover_and_register_plugins([str(temp_plugin_dir)])
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")
-            return
         assert isinstance(result.success, bool)
         if result.success:
             assert isinstance(result.value, list)
@@ -616,10 +615,8 @@ class TestFlextPluginDiscoveryReal:
             result = discovery_service.discover_plugins([str(temp_plugin_dir)])
         except e.BaseError as exc:
             pytest.skip(f"Infrastructure not configured: {exc}")
-            return
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")
-            return
         assert result.success
         assert isinstance(result.value, list)
         plugin_files = list(temp_plugin_dir.glob("*.py"))
@@ -1003,7 +1000,6 @@ class TestBackwardsCompatibilityAliasesReal:
             result = service.discover_plugins([temp_dir])
             if result.failure and "not configured" in str(result.error):
                 pytest.skip(f"Infrastructure not configured: {result.error}")
-                return
             assert result.success
             assert isinstance(result.value, list)
 
@@ -1016,6 +1012,5 @@ class TestBackwardsCompatibilityAliasesReal:
             result = service.discover_plugins([temp_dir])
             if result.failure and "not configured" in str(result.error):
                 pytest.skip(f"Infrastructure not configured: {result.error}")
-                return
             assert result.success
             assert isinstance(result.value, list)
