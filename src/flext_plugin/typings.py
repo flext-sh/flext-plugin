@@ -14,16 +14,15 @@ from collections.abc import (
 from typing import ClassVar
 
 from flext_cli import m, t as cli_t
-from pydantic import TypeAdapter
 
 
 class FlextPluginTypes(cli_t):
     """Plugin type system extending flext_cli via MRO."""
 
-    CONTAINER_MAPPING_ADAPTER: ClassVar[TypeAdapter[cli_t.JsonMapping]] = m.TypeAdapter(
-        cli_t.JsonMapping
+    CONTAINER_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
+        m.TypeAdapter(cli_t.JsonMapping)
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[TypeAdapter[cli_t.JsonMapping]] = (
+    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
         m.TypeAdapter(cli_t.JsonMapping)
     )
 

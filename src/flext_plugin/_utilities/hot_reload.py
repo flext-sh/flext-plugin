@@ -30,7 +30,7 @@ class FlextPluginFileChangeHandler(FileSystemEventHandler):
         self,
         callback: Callable[[str], None],
         watched_paths: set[Path],
-        logger: p.Logger,
+        logger: p.Plugin.Logger,
     ) -> None:
         """Initialize file change handler.
 

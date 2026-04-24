@@ -400,8 +400,8 @@ class FlextPluginImplementations:
         """Adapter to make a FLEXT logger protocol compatible with plugin Logger."""
 
         @override
-        def __init__(self, logger: p.Logger) -> None:
-            """Initialize with a `p.Logger` instance."""
+        def __init__(self, logger: p.Plugin.Logger) -> None:
+            """Initialize with a `p.Plugin.Logger` instance."""
             self.logger = logger
 
         @override
@@ -495,7 +495,7 @@ class FlextPluginImplementations:
         @override
         def __init__(
             self,
-            logger: p.Logger,
+            logger: p.Plugin.Logger,
             settings: t.JsonMapping | None = None,
             services: t.JsonMapping | None = None,
         ) -> None:
