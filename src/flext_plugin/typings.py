@@ -1,4 +1,4 @@
-"""FLEXT Plugin Types - type system.
+"""FLEXT Plugin Types.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,7 +10,6 @@ from __future__ import annotations
 from collections.abc import (
     Awaitable,
     Callable,
-    Mapping,
 )
 from typing import ClassVar
 
@@ -19,12 +18,7 @@ from pydantic import TypeAdapter
 
 
 class FlextPluginTypes(cli_t):
-    """Plugin type system with Python 3.13+ patterns.
-
-    Follows FLEXT ecosystem namespace conventions:
-    - t.Plugin.* for plugin-specific types
-    - Canonical container contracts inherited from core `t.*`
-    """
+    """Plugin type system extending flext_cli via MRO."""
 
     CONTAINER_MAPPING_ADAPTER: ClassVar[TypeAdapter[cli_t.JsonMapping]] = m.TypeAdapter(
         cli_t.JsonMapping
@@ -34,19 +28,7 @@ class FlextPluginTypes(cli_t):
     )
 
     class Plugin:
-        """Core collection and plugin type aliases."""
-
-        type StringList = cli_t.StrSequence
-        type StringSet = set[str]
-        type StringDict = cli_t.StrMapping
-        type FloatDict = Mapping[str, float]
-        type PluginList = cli_t.JsonList
-        type PluginDict = cli_t.JsonMapping
-        type ConfigDict = cli_t.JsonMapping
-        type MetadataDict = cli_t.JsonMapping
-        type InputDict = cli_t.JsonMapping
-        type OutputDict = cli_t.JsonMapping
-        type PluginEntity = cli_t.JsonMapping
+        """Plugin domain namespace (flat members per AGENTS.md §149)."""
 
         type EventHandler = Callable[
             [cli_t.JsonMapping],
