@@ -413,55 +413,6 @@ class FlextPluginProtocols(FlextCliProtocols):
                 ...
 
         @runtime_checkable
-        class Logger(Protocol):
-            """Protocol for logging operations."""
-
-            def critical(
-                self,
-                message: str,
-                *args: FlextPluginTypes.JsonValue,
-                **kwargs: FlextPluginTypes.Scalar,
-            ) -> None:
-                """Log critical message."""
-                ...
-
-            def debug(
-                self,
-                message: str,
-                *args: FlextPluginTypes.JsonValue,
-                **kwargs: FlextPluginTypes.Scalar,
-            ) -> None:
-                """Log debug message."""
-                ...
-
-            def error(
-                self,
-                message: str,
-                *args: FlextPluginTypes.JsonValue,
-                **kwargs: FlextPluginTypes.Scalar,
-            ) -> None:
-                """Log error message."""
-                ...
-
-            def info(
-                self,
-                message: str,
-                *args: FlextPluginTypes.JsonValue,
-                **kwargs: FlextPluginTypes.Scalar,
-            ) -> None:
-                """Log info message."""
-                ...
-
-            def warning(
-                self,
-                message: str,
-                *args: FlextPluginTypes.JsonValue,
-                **kwargs: FlextPluginTypes.Scalar,
-            ) -> None:
-                """Log warning message."""
-                ...
-
-        @runtime_checkable
         class DiscoveryStrategy(Protocol):
             """Strategy protocol for plugin discovery."""
 

@@ -273,7 +273,7 @@ class FlextPluginLoader:
     class FilePluginLoader:
         """File-based plugin loader using safe spec-based module loading."""
 
-        def __init__(self, logger: p.Plugin.Logger) -> None:
+        def __init__(self, logger: p.Logger) -> None:
             """Initialize file loader with logger."""
             self.logger = logger
 
@@ -326,7 +326,7 @@ class FlextPluginLoader:
     class DirectoryPluginLoader:
         """Directory-based plugin loader with entry file discovery."""
 
-        def __init__(self, logger: p.Plugin.Logger) -> None:
+        def __init__(self, logger: p.Logger) -> None:
             """Initialize directory loader with logger."""
             self.logger = logger
 

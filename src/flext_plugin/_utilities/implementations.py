@@ -396,95 +396,6 @@ class FlextPluginImplementations:
                 self.logger.exception("Transformation failed")
                 return r[t.JsonValue].fail(f"Transform failed: {e!s}")
 
-    class LoggerAdapter(p.Plugin.Logger):
-        """Adapter to make a FLEXT logger protocol compatible with plugin Logger."""
-
-        @override
-        def __init__(self, logger: p.Plugin.Logger) -> None:
-            """Initialize with a `p.Plugin.Logger` instance."""
-            self.logger = logger
-
-        @override
-        def critical(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log critical message."""
-            self.logger.critical(message, *args, **kwargs)
-
-        @override
-        def debug(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log debug message."""
-            self.logger.debug(message, *args, **kwargs)
-
-        @override
-        def error(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log error message."""
-            self.logger.error(message, *args, **kwargs)
-
-        def exception(
-            self,
-            message: str,
-            *,
-            _exc_info: bool = True,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log exception message."""
-            self.logger.error(message, exc_info=_exc_info, **kwargs)
-
-        @override
-        def info(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log info message."""
-            self.logger.info(message, *args, **kwargs)
-
-        def log(
-            self,
-            level: str,
-            message: str,
-            context: t.JsonMapping | None = None,
-        ) -> None:
-            """Log a message with optional context."""
-            formatted_message = (
-                f"{message} | context={dict(context)}" if context else message
-            )
-            getattr(self.logger, level.lower(), self.logger.debug)(formatted_message)
-
-        def trace(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log trace message."""
-            self.logger.debug(message, *args, **kwargs)
-
-        @override
-        def warning(
-            self,
-            message: str,
-            *args: t.JsonValue,
-            **kwargs: t.LogValue,
-        ) -> None:
-            """Log warning message."""
-            self.logger.warning(message, *args, **kwargs)
-
     class ConcretePluginContext:
         """Concrete implementation of plugin runtime context.
 
@@ -495,7 +406,7 @@ class FlextPluginImplementations:
         @override
         def __init__(
             self,
-            logger: p.Plugin.Logger,
+            logger: p.Logger,
             settings: t.JsonMapping | None = None,
             services: t.JsonMapping | None = None,
         ) -> None:
@@ -516,9 +427,9 @@ class FlextPluginImplementations:
             """Get configuration for plugin."""
             return self.config
 
-        def get_logger(self) -> p.Plugin.Logger:
+        def get_logger(self) -> p.Logger:
             """Get logger instance for plugin."""
-            return FlextPluginImplementations.LoggerAdapter(self.logger)
+            return self.logger
 
         def get_service(self, service_name: str) -> p.Result[t.JsonValue]:
             """Get service by name from container.
