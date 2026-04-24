@@ -504,8 +504,8 @@ class FlextPluginService(x):
         if plugin is None:
             return None
         if plugin.is_enabled:
-            return c.Plugin.PluginStatus.ACTIVE
-        return c.Plugin.PluginStatus.INACTIVE
+            return str(c.Plugin.PluginStatus.ACTIVE)
+        return str(c.Plugin.PluginStatus.INACTIVE)
 
     def list_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
         """List all currently running executions.

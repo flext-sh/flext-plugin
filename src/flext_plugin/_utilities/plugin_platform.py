@@ -216,12 +216,12 @@ class FlextPluginPlatform:
         def status(self) -> str:
             """Get plugin status."""
             if not self.is_enabled:
-                return c.Plugin.PluginStatus.INACTIVE
-            return c.Plugin.PluginStatus.ACTIVE
+                return str(c.Plugin.PluginStatus.INACTIVE)
+            return str(c.Plugin.PluginStatus.ACTIVE)
 
         def active(self) -> bool:
             """Check if plugin is active."""
-            return self.is_enabled
+            return bool(self.is_enabled)
 
     class PluginPlatformService(s):
         """railway-oriented plugin platform with functional composition."""

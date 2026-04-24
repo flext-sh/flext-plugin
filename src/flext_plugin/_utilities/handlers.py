@@ -286,7 +286,7 @@ class FlextPluginHandlers:
             self._handlers[event_type].append(handler_info)
 
             def get_priority(handler_info: t.Plugin.HandlerInfo) -> int:
-                return handler_info.priority
+                return int(handler_info.priority)
 
             self._handlers[event_type] = sorted(
                 self._handlers[event_type],

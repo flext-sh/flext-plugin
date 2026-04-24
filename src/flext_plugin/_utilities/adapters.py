@@ -218,10 +218,12 @@ class FlextPluginAdapters:
             spec.loader.exec_module(module)
             return m.Plugin.LoadData(
                 name=path.stem,
-                version=getattr(
-                    module,
-                    "__version__",
-                    c.Plugin.DEFAULT_PLUGIN_VERSION,
+                version=str(
+                    getattr(
+                        module,
+                        "__version__",
+                        c.Plugin.DEFAULT_PLUGIN_VERSION,
+                    ),
                 ),
                 path=path,
                 module=module,
