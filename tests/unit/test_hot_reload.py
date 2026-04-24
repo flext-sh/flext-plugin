@@ -14,7 +14,7 @@ import pytest
 from flext_plugin import FlextPluginHotReload
 
 
-class TestFlextPluginHotReload:
+class TestsFlextPluginHotReload:
     """Tests for FlextPluginHotReload class."""
 
     @pytest.fixture

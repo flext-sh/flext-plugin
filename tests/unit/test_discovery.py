@@ -21,7 +21,7 @@ from flext_plugin import FlextPluginDiscovery
 from tests import c, m
 
 
-class TestFlextPluginDiscovery:
+class TestsFlextPluginDiscovery:
     """Tests for FlextPluginDiscovery class."""
 
     @pytest.fixture

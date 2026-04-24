@@ -12,7 +12,7 @@ from __future__ import annotations
 from flext_plugin import FlextPluginHotReload
 
 
-class TestHotReloadPackage:
+class TestsFlextPluginHotReloadPackage:
     """Tests for FlextPluginHotReload package functionality."""
 
     def test_hot_reload_class_exists(self) -> None:

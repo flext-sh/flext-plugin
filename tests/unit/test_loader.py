@@ -16,7 +16,7 @@ import pytest
 from flext_plugin import FlextPluginAdapters, FlextPluginLoader
 
 
-class TestFlextPluginLoader:
+class TestsFlextPluginLoader:
     """Tests for FlextPluginLoader class."""
 
     @pytest.fixture
@@ -32,10 +32,6 @@ class TestFlextPluginLoader:
         """Test that FlextPluginLoader class exists and is callable."""
         assert FlextPluginLoader is not None
         assert callable(FlextPluginLoader)
-
-
-class TestDynamicLoaderAdapter:
-    """Tests for DynamicLoaderAdapter class."""
 
     @pytest.fixture
     def plugin_file(self, tmp_path: Path) -> Path:

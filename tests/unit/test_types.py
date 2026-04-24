@@ -16,7 +16,7 @@ from flext_plugin import FlextPluginTypes
 from tests import t
 
 
-class TestFlextPluginTypes:
+class TestsFlextPluginTypes:
     """Test cases for FlextPluginTypes."""
 
     def test_types_alias_matches_facade(self) -> None:

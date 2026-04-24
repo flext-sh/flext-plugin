@@ -14,7 +14,7 @@ import pytest
 from tests import c, m
 
 
-class TestFlextPluginModels:
+class TestsFlextPluginModelsUnit:
     """Test cases for FlextPluginModels."""
 
     def test_models_initialization(self) -> None:

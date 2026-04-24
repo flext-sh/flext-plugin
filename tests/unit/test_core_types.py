@@ -16,7 +16,7 @@ import pytest
 from tests import c, e
 
 
-class TestFlextPluginConstantsPluginType:
+class TestsFlextPluginCoreTypes:
     """Test c.Plugin.Type enum functionality."""
 
     def test_plugin_type_values(self) -> None:
@@ -50,10 +50,6 @@ class TestFlextPluginConstantsPluginType:
         with pytest.raises(ValueError, match=r".*invalid_type.*"):
             c.Plugin.Type("invalid_type")
 
-
-class TestFlextPluginConstantsLifecycle:
-    """Test c.Plugin.PluginStatus enum functionality."""
-
     def test_plugin_status_values(self) -> None:
         """Test all plugin status enum values."""
         if c.Plugin.PluginStatus.UNKNOWN.value != "unknown":
@@ -81,10 +77,6 @@ class TestFlextPluginConstantsLifecycle:
         if c.Plugin.PluginStatus("error") != c.Plugin.PluginStatus.ERROR:
             msg = f"Expected {c.Plugin.PluginStatus.ERROR}, got {c.Plugin.PluginStatus('error')}"
             raise AssertionError(msg)
-
-
-class TestPluginError:
-    """Test PluginError exception functionality."""
 
     def test_plugin_error_creation(self) -> None:
         """Test creating PluginError with message."""

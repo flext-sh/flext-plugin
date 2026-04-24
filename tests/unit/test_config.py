@@ -6,7 +6,7 @@ from flext_tests import tm
 from flext_plugin import FlextPluginSettings
 
 
-class TestFlextPluginSettings:
+class TestsFlextPluginConfig:
     def test_create_config(self) -> None:
         FlextPluginSettings.reset_for_testing()
         settings = FlextPluginSettings.fetch_global(

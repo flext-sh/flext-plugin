@@ -12,7 +12,7 @@ from flext_tests import tm
 from tests import c
 
 
-class TestFlextPluginConstants:
+class TestsFlextPluginConstantsUnit:
     """Test cases for FlextPluginConstants."""
 
     def test_constants_initialization(self) -> None:

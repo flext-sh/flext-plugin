@@ -13,7 +13,7 @@ from flext_plugin import FlextPluginHandlers
 from tests import t
 
 
-class TestFlextPluginHandlers:
+class TestsFlextPluginApplicationHandlers:
     """Test suite for FlextPluginHandlers functionality."""
 
     def test_handlers_initialization(self) -> None:

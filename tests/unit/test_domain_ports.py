@@ -10,7 +10,7 @@ from __future__ import annotations
 from flext_plugin import FlextPluginDiscovery
 
 
-class TestFlextPluginDiscoveryPorts:
+class TestsFlextPluginDomainPorts:
     """Comprehensive test suite for FlextPluginDiscovery domain interface.
 
     Este teste valida apenas a interface que REALMENTE existe.

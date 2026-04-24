@@ -15,7 +15,7 @@ from flext_plugin import FlextPluginPlatform
 from tests import m
 
 
-class TestPluginModel:
+class TestsFlextPluginPlugin:
     """Tests for Plugin model class."""
 
     def test_plugin_create(self) -> None:
@@ -76,10 +76,6 @@ class TestPluginModel:
         assert result.error is not None
         assert "already disabled" in result.error
 
-
-class TestPluginPlatform:
-    """Tests for FlextPluginPlatform.Plugin class from platform.py."""
-
     def test_plugin_is_active_when_enabled(self) -> None:
         """Test is_active returns True when plugin is enabled."""
         plugin = FlextPluginPlatform.Plugin(
@@ -127,10 +123,6 @@ class TestPluginPlatform:
             is_enabled=False,
         )
         assert plugin.status == "inactive"
-
-
-class TestPluginRegistry:
-    """Tests for FlextPluginPlatform.PluginRegistry class."""
 
     @pytest.fixture(autouse=True)
     def reset_registry(self) -> None:

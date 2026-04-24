@@ -82,19 +82,16 @@ def temp_plugin_dir() -> Generator[Path]:
 
 @pytest.fixture
 def real_plugin_loader() -> FlextPluginLoader:
-    """Create REAL plugin loader for testing."""
     return FlextPluginLoader()
 
 
 @pytest.fixture
 def real_plugin_discovery() -> FlextPluginDiscovery:
-    """Create REAL plugin discovery for testing."""
     return FlextPluginDiscovery()
 
 
 @pytest.fixture
 def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
-    """Create FlextPluginService with REAL adapters instead of fallbacks."""
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
     loader_adapter = FlextPluginLoader()
@@ -111,7 +108,6 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
 
 @pytest.fixture
 def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
-    """Create FlextPluginService with REAL discovery adapters."""
     container = FlextContainer()
     discovery_adapter = FlextPluginDiscovery()
     container.bind(
@@ -121,9 +117,7 @@ def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginSe
     return FlextPluginService(container=container)
 
 
-class TestRealPluginDiscoveryAndExecution:
-    """REAL test suite for plugin discovery, loading, and execution."""
-
+class TestsFlextPluginApplicationServices:
     def test_real_plugin_discovery_with_actual_files(
         self,
         real_plugin_discovery: FlextPluginDiscovery,
@@ -219,10 +213,6 @@ class TestRealPluginDiscoveryAndExecution:
         health_result = error.health_check()
         assert health_result["status"] == "unhealthy"
 
-
-class TestFlextPluginServiceWithRealAdapters:
-    """REAL test suite for FlextPluginService using REAL adapters instead of fallbacks."""
-
     def test_discover_plugins_with_real_adapters(
         self,
         real_service_with_adapters: FlextPluginService,
@@ -291,10 +281,6 @@ class TestFlextPluginServiceWithRealAdapters:
         assert loaded_result is True
         not_loaded_result = real_service_with_adapters.plugin_loaded("non_existent")
         assert not_loaded_result is False
-
-
-class TestFlextPluginServiceReal:
-    """REAL test suite for FlextPluginService with actual plugin loading."""
 
     @pytest.fixture
     def service(self) -> FlextPluginService:
@@ -550,8 +536,6 @@ class TestFlextPluginServiceReal:
         assert isinstance(result, bool)
         assert result is False
 
-
-class TestFlextPluginDiscoveryReal:
     """REAL test suite for FlextPluginDiscovery with actual plugin files.
 
     Tests the ACTUAL API with real plugin discovery and validation.
@@ -637,10 +621,6 @@ class TestFlextPluginDiscoveryReal:
         assert validation_result.value is True
         plugin_file = temp_plugin_dir / f"{plugin_data.name}.py"
         assert plugin_file.exists()
-
-
-class TestRealPluginIntegrationWorkflow:
-    """REAL integration tests using actual plugin loading and execution."""
 
     def test_complete_service_integration_workflow(
         self,
@@ -777,10 +757,6 @@ class TestRealPluginIntegrationWorkflow:
         assert reloaded_data is not None
         assert reloaded_data.name == "processor_transform"
 
-
-class TestServicesIntegrationReal:
-    """REAL integration tests for services working with actual plugins."""
-
     def test_services_can_coexist(self) -> None:
         """Test that both services can be created and used together."""
         container = FlextContainer()
@@ -848,10 +824,6 @@ class TestServicesIntegrationReal:
         plugin_files = list(temp_plugin_dir.glob("*.py"))
         assert len(plugin_files) == 4
 
-
-class TestRealPluginErrorScenarios:
-    """Test REAL error scenarios with actual plugin files."""
-
     def test_real_plugin_execution_error_handling(
         self,
         real_plugin_loader: FlextPluginLoader,
@@ -894,10 +866,6 @@ class TestRealPluginErrorScenarios:
         nonexistent_file = temp_plugin_dir / "does_not_exist.py"
         load_result = real_plugin_loader.load_plugin(str(nonexistent_file))
         assert not load_result.success, "Expected failure for non-existent file"
-
-
-class TestServiceErrorHandling:
-    """Test service error conditions with real scenarios."""
 
     def test_service_handles_port_resolution_with_real_plugins(
         self,
@@ -986,10 +954,6 @@ class TestServiceErrorHandling:
         result2 = service.discover_plugins([invalid_path])
         assert result2.success
         assert result2.value == []
-
-
-class TestBackwardsCompatibilityAliasesReal:
-    """Test REAL backwards compatibility aliases functionality."""
 
     def test_plugin_service_alias_exists_real(self) -> None:
         """Test PluginService alias exists and works with REAL functionality."""

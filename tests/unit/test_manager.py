@@ -24,7 +24,7 @@ from flext_plugin import FlextPluginAdapters, FlextPluginService
 from tests import c, m, p, r, t
 
 
-class TestFlextPluginService:
+class TestsFlextPluginManager:
     """Tests for FlextPluginService class."""
 
     @pytest.fixture
@@ -40,10 +40,6 @@ class TestFlextPluginService:
         """Test that FlextPluginService class exists and is callable."""
         assert FlextPluginService is not None
         assert callable(FlextPluginService)
-
-
-class TestFlextPluginServiceStubBridges:
-    """Tests for FlextPluginService stub bridges."""
 
     def test_discovery_calls_security_registry_and_monitoring(self) -> None:
 

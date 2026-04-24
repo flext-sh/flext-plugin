@@ -15,7 +15,7 @@ from flext_plugin import FlextPluginHandlers
 from tests import t
 
 
-class TestFlextPluginHandlersHandlers:
+class TestsFlextPluginHandlers:
     """Tests for FlextPluginHandlers class."""
 
     @pytest.fixture

@@ -17,7 +17,7 @@ import math
 from tests import c, m
 
 
-class TestFlextPlugin:
+class TestsFlextPluginDomainEntities:
     """Test suite for FlextPlugin domain entity.
 
     Tests Plugin entity including creation, validation, business rules,
@@ -111,8 +111,6 @@ class TestFlextPlugin:
         result = plugin.validate_business_rules()
         assert result.success
 
-
-class TestFlextPluginSettingsEntities:
     """Test FlextPluginModels.Config entity functionality."""
 
     def test_configuration_creation(self) -> None:
@@ -124,10 +122,6 @@ class TestFlextPluginSettingsEntities:
         assert settings.plugin_name == "test-plugin"
         assert settings.config["enabled"] is True
         assert settings.config["key"] == "value"
-
-
-class TestFlextPluginMetadata:
-    """Test m.Plugin.PluginMetadata functionality."""
 
     def test_metadata_creation(self) -> None:
         """Test creating m.Plugin.PluginMetadata."""
