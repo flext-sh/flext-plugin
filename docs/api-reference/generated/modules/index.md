@@ -4,6 +4,7 @@
 
 These pages are generated from public modules and their docstrings.
 
+- [flext_plugin](flext_plugin.md)
 - [flext_plugin.api](api.md)
 - [flext_plugin.constants](constants.md)
 - [flext_plugin.models](models.md)

@@ -8,7 +8,7 @@
   - [**Core Layer** (`src/flext_plugin/core/`)](#core-layer-srcflextplugincore)
   - [**Domain Layer** (`src/flext_plugin/domain/`)](#domain-layer-srcflextplugindomain)
   - [**Application Layer** (`src/flext_plugin/application/`)](#application-layer-srcflextpluginapplication)
-  - [**Configuration Layer** (`src/flext_plugin/settings/`)](#configuration-layer-srcflextpluginconfig)
+  - [**Configuration Layer** (`src/flext_plugin/settings/`)](#configuration-layer-srcflextpluginsettings)
 - [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
   - [**Public API Naming (FlextPlugin prefix)**](#public-api-naming-flextplugin-prefix)
   - [**Module-Level Naming**](#module-level-naming)

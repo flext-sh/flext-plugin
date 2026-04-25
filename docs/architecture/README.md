@@ -18,7 +18,7 @@
   - [Technical Debt](#technical-debt)
 - [🚀 Architecture Evolution](#architecture-evolution)
   - [Version 0.9.0 (Current)](#version-090-current)
-  - [Version 0.12.0-dev (Next)](#version-0100-next)
+  - [Version 0.12.0-dev (Next)](#version-0120-dev-next)
   - [Version 1.0.0 (Future)](#version-100-future)
 - [🛠️ Documentation Tools and Workflow](#documentation-tools-and-workflow)
   - [Generation Tools](#generation-tools)

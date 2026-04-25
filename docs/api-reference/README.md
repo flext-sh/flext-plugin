@@ -19,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextPluginApi`, `FlextPluginConstants`, `FlextPluginModels`, `FlextPluginProtocols`, `FlextPluginSettings`, `FlextPluginTypes` (+1 more)
-- Generated module pages: `7`
+- Primary facades: `FlextPluginTypes`, `FlextPluginUtilities`, `FlextPluginApi`, `FlextPluginImplementations`, `FlextPluginHotReload`, `FlextPluginAdapters` (+10 more)
+- Generated module pages: `8`
 
 - [Back to project docs](../index.md)

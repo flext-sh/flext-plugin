@@ -33,7 +33,7 @@
   - [Compliance Metrics](#compliance-metrics)
 - [🚀 Security Architecture Evolution](#security-architecture-evolution)
   - [Current Security (v0.9.0)](#current-security-v090)
-  - [Enhanced Security (v0.12.0-dev)](#enhanced-security-v0100)
+  - [Enhanced Security (v0.12.0-dev)](#enhanced-security-v0120-dev)
   - [Enterprise Security (v1.0.0)](#enterprise-security-v100)
 - [📚 Security Architecture Documentation](#security-architecture-documentation)
   - [Security Documentation Index](#security-documentation-index)
