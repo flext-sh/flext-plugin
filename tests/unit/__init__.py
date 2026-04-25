@@ -18,7 +18,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_discovery": ("TestsFlextPluginDiscovery",),
         ".test_domain_entities": ("TestsFlextPluginDomainEntities",),
         ".test_domain_ports": ("TestsFlextPluginDomainPorts",),
-        ".test_examples": ("test_examples",),
+        ".test_examples": ("TestsFlextPluginExamples",),
         ".test_handlers": ("TestsFlextPluginHandlers",),
         ".test_hot_reload": ("TestsFlextPluginHotReload",),
         ".test_hot_reload_package": ("TestsFlextPluginHotReloadPackage",),

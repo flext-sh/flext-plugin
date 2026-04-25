@@ -30,6 +30,7 @@ if _t.TYPE_CHECKING:
     from tests.unit.test_discovery import TestsFlextPluginDiscovery
     from tests.unit.test_domain_entities import TestsFlextPluginDomainEntities
     from tests.unit.test_domain_ports import TestsFlextPluginDomainPorts
+    from tests.unit.test_examples import TestsFlextPluginExamples
     from tests.unit.test_handlers import TestsFlextPluginHandlers
     from tests.unit.test_hot_reload import TestsFlextPluginHotReload
     from tests.unit.test_hot_reload_package import TestsFlextPluginHotReloadPackage
@@ -70,6 +71,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_discovery": ("TestsFlextPluginDiscovery",),
             ".unit.test_domain_entities": ("TestsFlextPluginDomainEntities",),
             ".unit.test_domain_ports": ("TestsFlextPluginDomainPorts",),
+            ".unit.test_examples": ("TestsFlextPluginExamples",),
             ".unit.test_handlers": ("TestsFlextPluginHandlers",),
             ".unit.test_hot_reload": ("TestsFlextPluginHotReload",),
             ".unit.test_hot_reload_package": ("TestsFlextPluginHotReloadPackage",),
@@ -135,6 +137,7 @@ __all__: list[str] = [
     "TestsFlextPluginDiscovery",
     "TestsFlextPluginDomainEntities",
     "TestsFlextPluginDomainPorts",
+    "TestsFlextPluginExamples",
     "TestsFlextPluginHandlers",
     "TestsFlextPluginHotReload",
     "TestsFlextPluginHotReloadPackage",
