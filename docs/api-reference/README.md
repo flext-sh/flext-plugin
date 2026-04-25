@@ -1,9 +1,3 @@
-<!-- TOC START -->
-- [Source of Truth](#source-of-truth)
-- [Generated Pages](#generated-pages)
-- [Surface Summary](#surface-summary)
-<!-- TOC END -->
-
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 # flext-plugin API Reference
@@ -25,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextPluginTypes`, `FlextPluginService`, `FlextPluginHandlers`, `FlextPluginUtilities`, `FlextPluginImplementations`, `FlextPluginHotReload` (+10 more)
+- Primary facades: `FlextPluginPlatform`, `FlextPluginSettings`, `FlextPluginDiscovery`, `FlextPluginModels`, `FlextPluginHotReload`, `FlextPluginApi` (+10 more)
 - Generated module pages: `8`
 
 - [Back to project docs](../index.md)
