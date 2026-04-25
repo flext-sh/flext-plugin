@@ -1,3 +1,11 @@
+<!-- TOC START -->
+- [Start Here](#start-here)
+- [Public Surface Summary](#public-surface-summary)
+- [Collection Rules (regras de coletas)](#collection-rules-regras-de-coletas)
+- [Quality Gates](#quality-gates)
+- [Governance Pointer](#governance-pointer)
+<!-- TOC END -->
+
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 # flext-plugin Documentation
@@ -18,7 +26,7 @@ This project portal is generated from `pyproject.toml`, package exports, and rea
 
 ## Public Surface Summary
 
-- Primary facades: `FlextPluginTypes`, `FlextPluginUtilities`, `FlextPluginApi`, `FlextPluginImplementations`, `FlextPluginHotReload`, `FlextPluginAdapters` (+10 more)
+- Primary facades: `FlextPluginTypes`, `FlextPluginService`, `FlextPluginHandlers`, `FlextPluginUtilities`, `FlextPluginImplementations`, `FlextPluginHotReload` (+10 more)
 - Alias namespaces: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `17`
 - Exported module shortcuts: _none_
