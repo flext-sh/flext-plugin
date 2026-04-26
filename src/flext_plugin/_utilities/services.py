@@ -17,7 +17,6 @@ from collections.abc import (
 from typing import override
 
 from flext_core import FlextContainer
-
 from flext_plugin import (
     FlextPluginAdapters,
     FlextPluginPlatform,
@@ -186,13 +185,15 @@ class FlextPluginService(x):
                 metadata = self._to_general_mapping(plugin_data.metadata)
                 if not name:
                     continue
-                plugin_type_str = str(metadata.get("plugin_type", "utility"))
+                plugin_type_value = c.Plugin.Type(
+                    str(metadata.get("plugin_type", c.Plugin.Type.UTILITY.value))
+                )
                 plugin = m.Plugin.Entity.create(
                     name=name,
                     plugin_version=version,
                     description=str(metadata.get("description", "")),
                     author=str(metadata.get("author", "")),
-                    plugin_type=plugin_type_str,
+                    plugin_type=plugin_type_value,
                     metadata=metadata,
                 )
                 validation_result = plugin.validate_business_rules()

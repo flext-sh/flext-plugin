@@ -79,7 +79,7 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ] = ""
             plugin_type: Annotated[
-                str,
+                c.Plugin.Type,
                 u.Field(
                     description="Plugin type classification",
                 ),
@@ -102,7 +102,7 @@ class FlextPluginModels(FlextCliModels):
                 plugin_version: str = "1.0.0",
                 description: str = "",
                 author: str = "",
-                plugin_type: str = c.Plugin.Type.UTILITY,
+                plugin_type: c.Plugin.Type = c.Plugin.Type.UTILITY,
                 is_enabled: bool = True,
                 metadata: t.JsonMapping | None = None,
                 entity_id: str | None = None,
@@ -138,37 +138,6 @@ class FlextPluginModels(FlextCliModels):
                 if entity_id is not None:
                     payload["unique_id"] = entity_id
                 return cls.model_validate(payload)
-
-            @u.field_validator("plugin_type", mode="before")
-            @classmethod
-            def validate_plugin_type(cls, value: str) -> str:
-                """Validate plugin type is a valid PluginType enum value."""
-                valid_types = {
-                    "tap",
-                    "target",
-                    "transform",
-                    "extension",
-                    "service",
-                    "middleware",
-                    "transformer",
-                    "api",
-                    "database",
-                    "notification",
-                    "authentication",
-                    "authorization",
-                    "utility",
-                    "tool",
-                    "handler",
-                    "processor",
-                    "core",
-                    "addon",
-                    "theme",
-                    "language",
-                }
-                if value not in valid_types:
-                    error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
-                    raise ValueError(error_msg)
-                return value
 
             @u.field_validator("plugin_version", mode="before")
             @classmethod
@@ -304,32 +273,7 @@ class FlextPluginModels(FlextCliModels):
                         f"Version parts must be numeric: {self.plugin_version}",
                     )
 
-                # Validate plugin type
-                valid_types = {
-                    "tap",
-                    "target",
-                    "transform",
-                    "extension",
-                    "service",
-                    "middleware",
-                    "transformer",
-                    "api",
-                    "database",
-                    "notification",
-                    "authentication",
-                    "authorization",
-                    "utility",
-                    "tool",
-                    "handler",
-                    "processor",
-                    "core",
-                    "addon",
-                    "theme",
-                    "language",
-                }
-                if self.plugin_type not in valid_types:
-                    return r[bool].fail(f"Invalid plugin type: {self.plugin_type}")
-
+                # Plugin type validity is enforced by Pydantic via c.Plugin.Type StrEnum.
                 return r[bool].ok(value=True)
 
         class DiscoveryData(FlextCliModels.Value):

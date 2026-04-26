@@ -19,8 +19,8 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-from flext_core import FlextContainer
 
+from flext_core import FlextContainer
 from flext_plugin import (
     FlextPluginConstants,
     FlextPluginDiscovery,
@@ -365,7 +365,7 @@ class TestsFlextPluginApplicationServices:
             name="tap_database",
             plugin_version="1.0.0",
             description="Database tap plugin for testing",
-            plugin_type=FlextPluginConstants.Plugin.Type.TAP.value,
+            plugin_type=FlextPluginConstants.Plugin.Type.TAP,
         )
         result = service.load_plugin(plugin.name)
         if result.failure and "not configured" in str(result.error):
@@ -392,7 +392,7 @@ class TestsFlextPluginApplicationServices:
             plugin = FlextPluginModels.Plugin.Entity.create(
                 name=f"real-plugin-{plugin_type.value}",
                 plugin_version="1.0.0",
-                plugin_type=plugin_type.value,
+                plugin_type=plugin_type,
             )
             result = service.load_plugin(plugin.name)
             assert isinstance(result.success, bool)

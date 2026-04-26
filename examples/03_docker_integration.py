@@ -14,7 +14,6 @@ import socket
 import sys
 
 from flext_core import FlextContainer
-
 from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
 
 
