@@ -7,9 +7,9 @@
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 - Project class: `platform`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
-- Main facades: `FlextPluginPlatform`, `FlextPluginSettings`, `FlextPluginDiscovery`, `FlextPluginModels`, `FlextPluginHotReload`, `FlextPluginApi`, `FlextPluginImplementations`, `FlextPluginProtocols` (+8 more)
+- Main facades: `FlextPluginAdapters`, `FlextPluginService`, `FlextPluginLoader`, `FlextPluginHotReload`, `FlextPluginImplementations`, `FlextPluginTypes`, `FlextPluginSettings`, `FlextPluginHandlers` (+8 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextPluginPlatform`, `FlextPluginSettings`, `FlextPluginDiscovery`, `plugin`, `FlextPluginModels`, `FlextPluginHotReload`, `FlextPluginApi`, `FlextPluginImplementations`, `FlextPluginProtocols`, `FlextPluginService` (+7 more)
+- Public symbol exports: `FlextPluginAdapters`, `FlextPluginService`, `plugin`, `FlextPluginLoader`, `FlextPluginHotReload`, `FlextPluginImplementations`, `FlextPluginTypes`, `FlextPluginSettings`, `FlextPluginHandlers`, `FlextPluginProtocols` (+7 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `8`
 
