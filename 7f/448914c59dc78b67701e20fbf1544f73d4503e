@@ -1,0 +1,32 @@
+tests/conftest.py
+  afc29eb099521e6a 28
+src/flext_plugin/_utilities/services.py
+  afc29eb099521e6a 188-190,196
+pyproject.toml
+  afc29eb099521e6a 153,180,345-346,376,510
+src/flext_plugin/models.py
+  afc29eb099521e6a 82,105,276
+tests/unit/test_application_services.py
+  afc29eb099521e6a 23,368,395
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "7f448914c59dc78b67701e20fbf1544f73d4503e",
+  "prompts": {
+    "afc29eb099521e6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "491e2c5e-762d-4a28-a137-abf6db4cc57c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 17,
+      "total_deletions": 43,
+      "accepted_lines": 17,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/57db0c0315e3f3bc21b8941b615d53ea67c8ae8e382058561ee5af2a13fd4abd"
+    }
+  }
+}
