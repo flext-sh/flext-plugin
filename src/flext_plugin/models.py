@@ -95,48 +95,15 @@ class FlextPluginModels(FlextCliModels):
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @classmethod
-            def create(
-                cls,
-                *,
-                name: str,
-                plugin_version: str = "1.0.0",
-                description: str = "",
-                author: str = "",
-                plugin_type: c.Plugin.Type = c.Plugin.Type.UTILITY,
-                is_enabled: bool = True,
-                metadata: t.JsonMapping | None = None,
-                entity_id: str | None = None,
-            ) -> Self:
-                """Factory method to create a new Plugin entity.
-
-                Args:
-                name: Plugin name (required)
-                plugin_version: Plugin semantic version
-                description: Plugin description
-                author: Plugin author
-                plugin_type: Plugin type (from PluginType enum)
-                is_enabled: Whether plugin is initially enabled
-                metadata: Additional metadata
-                entity_id: Entity ID (auto-generated if None)
-
-                Returns:
-                New Plugin entity instance
-
-                """
-                metadata_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
-                    metadata or {},
-                )
-                payload = {
-                    "name": name,
-                    "plugin_version": plugin_version,
-                    "description": description,
-                    "author": author,
-                    "plugin_type": plugin_type,
-                    "is_enabled": is_enabled,
-                    "metadata": metadata_payload,
-                }
-                if entity_id is not None:
+            def create(cls, **kwargs: object) -> Self:
+                """Factory method validated by the entity contract itself."""
+                payload: dict[str, object] = dict(kwargs)
+                entity_id = payload.pop("entity_id", None)
+                if entity_id is not None and "unique_id" not in payload:
                     payload["unique_id"] = entity_id
+                payload["metadata"] = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                    payload.get("metadata") or {},
+                )
                 return cls.model_validate(payload)
 
             @u.field_validator("plugin_version", mode="before")
