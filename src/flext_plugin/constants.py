@@ -347,4 +347,4 @@ class FlextPluginConstants(c):
 
 
 c = FlextPluginConstants
-__all__: list[str] = ["FlextPluginConstants", "c"]
+__all__: tuple[str, ...] = ("FlextPluginConstants", "c")
