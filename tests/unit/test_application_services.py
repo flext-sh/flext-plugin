@@ -103,7 +103,7 @@ def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
         "plugin_loader_port",
         cast("t.RegisterableService", loader_adapter),
     )
-    return FlextPluginService(container=container)
+    return FlextPluginService()
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginSe
         "plugin_discovery_port",
         cast("t.RegisterableService", discovery_adapter),
     )
-    return FlextPluginService(container=container)
+    return FlextPluginService()
 
 
 class TestsFlextPluginApplicationServices:
@@ -296,7 +296,7 @@ class TestsFlextPluginApplicationServices:
     def test_service_initialization_with_container_real(self) -> None:
         """Test REAL service initialization with provided container."""
         container = FlextContainer()
-        service = FlextPluginService(container=container)
+        service = FlextPluginService()
         assert service is not None
         assert service.container is container
 
@@ -760,7 +760,7 @@ class TestsFlextPluginApplicationServices:
     def test_services_can_coexist(self) -> None:
         """Test that both services can be created and used together."""
         container = FlextContainer()
-        plugin_service = FlextPluginService(container=container)
+        plugin_service = FlextPluginService()
         discovery_service = FlextPluginDiscovery()
         assert plugin_service is not None
         assert discovery_service is not None
@@ -769,12 +769,13 @@ class TestsFlextPluginApplicationServices:
     def test_services_share_container_state_real(self) -> None:
         """Test services share REAL container state."""
         container = FlextContainer()
-        test_service = {
-            "name": "test_service",
-            "settings": {"enabled": True},
-        }
+        test_service = m.Plugin.Entity.create(
+            name="test_service",
+            version=1,
+            metadata={"settings": {"enabled": True}},
+        )
         container.bind("test_service", test_service)
-        plugin_service = FlextPluginService(container=container)
+        plugin_service = FlextPluginService()
         result1 = plugin_service.container.resolve("test_service")
         assert result1.success
         value = result1.value
@@ -790,8 +791,7 @@ class TestsFlextPluginApplicationServices:
 
     def test_services_with_real_plugin_directory(self, temp_plugin_dir: Path) -> None:
         """Test services with REAL plugin directory containing actual files."""
-        container = FlextContainer()
-        plugin_service = FlextPluginService(container=container)
+        plugin_service = FlextPluginService()
         discovery_service = FlextPluginDiscovery()
         try:
             plugin_discovery_result = plugin_service.discover_plugins([
@@ -872,8 +872,7 @@ class TestsFlextPluginApplicationServices:
         temp_plugin_dir: Path,
     ) -> None:
         """Test service port resolution with REAL plugin directory."""
-        container = FlextContainer()
-        service = FlextPluginService(container=container)
+        service = FlextPluginService()
         result = service.discover_plugins([str(temp_plugin_dir)])
         if result.failure and "not configured" in str(result.error):
             pytest.skip(f"Infrastructure not configured: {result.error}")

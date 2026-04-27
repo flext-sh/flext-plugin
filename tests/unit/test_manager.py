@@ -102,10 +102,10 @@ class TestsFlextPluginManager:
         monitoring = Monitoring()
         service = FlextPluginService(
             discovery=Discovery(),
-            security=security,
             registry=registry,
             monitoring=monitoring,
         )
+        service._security = security
         result = service.discover_and_register_plugins(["/tmp"])
         assert result.success
         assert len(result.unwrap()) == 1
@@ -169,10 +169,10 @@ class TestsFlextPluginManager:
         monitoring = Monitoring()
         service = FlextPluginService(
             loader=Loader(),
-            security=security,
             registry=registry,
             monitoring=monitoring,
         )
+        service._security = security
         result = service.load_plugin("/tmp/stub_plugin.py")
         assert result.success
         assert security.calls == 1
@@ -244,7 +244,10 @@ class TestsFlextPluginManager:
             @override
             def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
                 self.unloaded.append(plugin_name)
-                return super().unload_plugin(plugin_name)
+                if plugin_name not in self._loaded_plugins:
+                    return r[bool].fail(f"Plugin not loaded: {plugin_name}")
+                del self._loaded_plugins[plugin_name]
+                return r[bool].ok(True)
 
         class Registry(FlextPluginAdapters.MemoryRegistryAdapter):
             def __init__(self) -> None:

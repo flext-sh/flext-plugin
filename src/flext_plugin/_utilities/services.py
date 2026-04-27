@@ -67,22 +67,18 @@ class FlextPluginService(x):
 
     def __init__(
         self,
-        container: p.Container | None = None,
         discovery: p.Plugin.PluginDiscovery | None = None,
         loader: p.Plugin.PluginLoader | None = None,
         executor: p.Plugin.PluginExecution | None = None,
-        security: p.Plugin.PluginSecurity | None = None,
         registry: p.Plugin.PluginRegistry | None = None,
         monitoring: p.Plugin.PluginMonitoring | None = None,
     ) -> None:
         """Initialize the plugin service with protocol implementations and dependency injection.
 
         Args:
-            container: Dependency injection container (uses x for DI)
             discovery: Plugin discovery implementation
             loader: Plugin loader implementation
             executor: Plugin execution implementation
-            security: Plugin security implementation
             registry: Plugin registry implementation
             monitoring: Plugin monitoring implementation
 
@@ -92,12 +88,10 @@ class FlextPluginService(x):
             settings_overrides=None,
             initial_context=None,
         )
-        if container is not None:
-            self._container = container
         self._discovery = discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter()
         self._loader = loader or FlextPluginAdapters.DynamicLoaderAdapter()
         self._executor = executor or FlextPluginAdapters.PluginExecutorAdapter()
-        self._security = security or FlextPluginAdapters.PluginSecurityAdapter()
+        self._security = FlextPluginAdapters.PluginSecurityAdapter()
         self._registry = registry or FlextPluginAdapters.MemoryRegistryAdapter()
         self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
         self._plugins: MutableMapping[str, m.Plugin.Entity] = {}
@@ -196,40 +190,14 @@ class FlextPluginService(x):
                     plugin_type=plugin_type_value,
                     metadata=metadata,
                 )
-                validation_result = plugin.validate_business_rules()
-                if validation_result.failure:
+                finalize_result = self._finalize_plugin_registration(plugin)
+                if finalize_result.failure:
                     self.logger.warning(
-                        f"Plugin {plugin.name} validation failed: {validation_result.error}",
+                        f"Plugin {plugin.name} registration flow failed: "
+                        f"{finalize_result.error if finalize_result.error is not None else ''}",
                     )
                     continue
-                if self._security:
-                    security_result = self._security.validate_plugin_security(
-                        plugin,
-                    )
-                    if security_result.failure:
-                        self.logger.warning(
-                            "Plugin "
-                            f"{plugin.name} security validation failed: "
-                            f"{security_result.error if security_result.error is not None else ''}",
-                        )
-                        continue
-                if self._registry:
-                    register_result = self._registry.register_plugin(plugin)
-                    if register_result.failure:
-                        self.logger.warning(
-                            f"Plugin {plugin.name} registration failed: "
-                            f"{register_result.error if register_result.error is not None else ''}",
-                        )
-                        continue
-                self._plugins[plugin.name] = plugin
-                registered_plugins.append(plugin)
-                if self._monitoring:
-                    monitoring_result = self._monitoring.start_monitoring(plugin.name)
-                    if monitoring_result.failure:
-                        self.logger.warning(
-                            f"Plugin {plugin.name} monitoring startup failed: "
-                            f"{monitoring_result.error if monitoring_result.error is not None else ''}",
-                        )
+                registered_plugins.append(finalize_result.value)
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r[Sequence[m.Plugin.Entity]].ok(registered_plugins)
         except (
@@ -642,35 +610,11 @@ class FlextPluginService(x):
                     plugin_type=c.Plugin.Type.UTILITY,
                     metadata={"module": module_name, "path": module_path},
                 )
-            validation_result = plugin.validate_business_rules()
-            if validation_result.failure:
-                return r[m.Plugin.Entity].fail(
-                    f"Plugin validation failed: {validation_result.error}",
-                )
-            if self._security:
-                security_result = self._security.validate_plugin_security(
-                    plugin,
-                )
-                if security_result.failure:
-                    return r[m.Plugin.Entity].fail(
-                        f"Security validation failed: {security_result.error}",
-                    )
-            if self._registry:
-                register_result = self._registry.register_plugin(plugin)
-                if register_result.failure:
-                    return r[m.Plugin.Entity].fail(
-                        f"Registration failed: {register_result.error}",
-                    )
-            self._plugins[plugin.name] = plugin
-            if self._monitoring:
-                monitoring_result = self._monitoring.start_monitoring(plugin.name)
-                if monitoring_result.failure:
-                    self.logger.warning(
-                        f"Monitoring startup failed for plugin {plugin.name}: "
-                        f"{monitoring_result.error if monitoring_result.error is not None else ''}",
-                    )
+            register_result = self._finalize_plugin_registration(plugin)
+            if register_result.failure:
+                return register_result
             self.logger.info(f"Loaded plugin: {plugin.name}")
-            return r[m.Plugin.Entity].ok(plugin)
+            return register_result
         except (
             ValueError,
             TypeError,
@@ -682,6 +626,37 @@ class FlextPluginService(x):
         ) as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[m.Plugin.Entity].fail(f"Loading error: {e!s}")
+
+    def _finalize_plugin_registration(
+        self,
+        plugin: m.Plugin.Entity,
+    ) -> p.Result[m.Plugin.Entity]:
+        validation_result = plugin.validate_business_rules()
+        if validation_result.failure:
+            return r[m.Plugin.Entity].fail(
+                f"Plugin validation failed: {validation_result.error}",
+            )
+        if self._security:
+            security_result = self._security.validate_plugin_security(plugin)
+            if security_result.failure:
+                return r[m.Plugin.Entity].fail(
+                    f"Security validation failed: {security_result.error}",
+                )
+        if self._registry:
+            register_result = self._registry.register_plugin(plugin)
+            if register_result.failure:
+                return r[m.Plugin.Entity].fail(
+                    f"Registration failed: {register_result.error}",
+                )
+        self._plugins[plugin.name] = plugin
+        if self._monitoring:
+            monitoring_result = self._monitoring.start_monitoring(plugin.name)
+            if monitoring_result.failure:
+                self.logger.warning(
+                    f"Monitoring startup failed for plugin {plugin.name}: "
+                    f"{monitoring_result.error if monitoring_result.error is not None else ''}",
+                )
+        return r[m.Plugin.Entity].ok(plugin)
 
     def uninstall_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Uninstall a plugin by name.
