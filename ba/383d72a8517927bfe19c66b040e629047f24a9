@@ -1,0 +1,18 @@
+src/flext_plugin/_utilities/services.py
+  h_9db9d35f50cf33 193-194,196-197,200,613,615,617,630-633,638-640,646-647,659
+tests/unit/test_manager.py
+  h_9db9d35f50cf33 108,175,247-250
+tests/unit/test_application_services.py
+  h_9db9d35f50cf33 772-776
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ba383d72a8517927bfe19c66b040e629047f24a9",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
