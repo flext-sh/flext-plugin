@@ -13,6 +13,7 @@ from collections.abc import (
     Sequence,
 )
 from datetime import UTC, datetime
+from functools import partial
 
 from flext_plugin import c, p, r, t, u
 
@@ -122,23 +123,18 @@ class FlextPluginHandlers:
             event_type: len(handlers) for event_type, handlers in self._handlers.items()
         }
 
-    async def handle_plugin_discovered(
+    async def _handle_plugin_state_event(
         self,
         event_data: t.JsonMapping,
+        *,
+        action: str,
     ) -> t.JsonMapping:
-        """Handle plugin discovered event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
+        """Handle plugin lifecycle events that only differ by their action label."""
         plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
-        name_str = str(plugin_name)
-        self.logger.info(f"Plugin discovered: {name_str}")
-        return {"success": True, "plugin_name": plugin_name}
+        self.logger.info("Plugin %s: %s", action, plugin_name)
+        return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+            {"success": True, "plugin_name": plugin_name},
+        )
 
     async def handle_plugin_error(
         self,
@@ -193,42 +189,6 @@ class FlextPluginHandlers:
             "execution_success": success,
         }
 
-    async def handle_plugin_loaded(
-        self,
-        event_data: t.JsonMapping,
-    ) -> t.JsonMapping:
-        """Handle plugin loaded event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
-        name_str = str(plugin_name)
-        self.logger.info(f"Plugin loaded: {name_str}")
-        return {"success": True, "plugin_name": plugin_name}
-
-    async def handle_plugin_unloaded(
-        self,
-        event_data: t.JsonMapping,
-    ) -> t.JsonMapping:
-        """Handle plugin unloaded event.
-
-        Args:
-        event_data: Event data containing plugin information
-
-        Returns:
-        Handler result
-
-        """
-        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
-        name_str = str(plugin_name)
-        self.logger.info("Plugin unloaded: %s", name_str)
-        return {"success": True, "plugin_name": plugin_name}
-
     def register_default_handlers(self) -> p.Result[bool]:
         """Register default event handlers for common plugin operations.
 
@@ -237,13 +197,24 @@ class FlextPluginHandlers:
 
         """
         try:
-            handlers_to_register = [
-                ("plugin_discovered", self.handle_plugin_discovered),
-                ("plugin_loaded", self.handle_plugin_loaded),
+            handlers_to_register: list[tuple[str, t.Plugin.EventHandler]] = [
+                (
+                    event_type,
+                    partial(
+                        self._handle_plugin_state_event,
+                        action=event_type.removeprefix("plugin_"),
+                    ),
+                )
+                for event_type in (
+                    "plugin_discovered",
+                    "plugin_loaded",
+                    "plugin_unloaded",
+                )
+            ]
+            handlers_to_register.extend([
                 ("plugin_executed", self.handle_plugin_executed),
                 ("plugin_error", self.handle_plugin_error),
-                ("plugin_unloaded", self.handle_plugin_unloaded),
-            ]
+            ])
             for event_type, handler in handlers_to_register:
                 result = self.register_handler(event_type, handler)
                 if result.failure:
@@ -344,9 +315,7 @@ class FlextPluginHandlers:
                 try:
                     handler = handler_info.handler
                     result = await self._execute_handler(handler, event_data)
-                    result_payload = t.json_value_adapter().validate_python(
-                        result,
-                    )
+                    result_payload = u.normalize_to_json_value(result)
                     results.append(result_payload)
                 except (
                     ValueError,
@@ -359,9 +328,7 @@ class FlextPluginHandlers:
                 ) as e:
                     self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append(
-                        t.json_value_adapter().validate_python(
-                            {"error": str(e), "success": False},
-                        ),
+                        u.normalize_to_json_value({"error": str(e), "success": False}),
                     )
             self.logger.debug(
                 f"Triggered event {event_type} with {len(results)} handlers",

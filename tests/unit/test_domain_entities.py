@@ -52,7 +52,8 @@ class TestsFlextPluginDomainEntities:
         assert plugin.is_enabled is True
         result = plugin.disable()
         assert result.success
-        assert not plugin.is_enabled
+        is_enabled_after_disable = bool(plugin.is_enabled)
+        assert not is_enabled_after_disable
         result = plugin.enable()
         assert result.success
         assert plugin.is_enabled is True

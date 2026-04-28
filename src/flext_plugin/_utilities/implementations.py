@@ -30,7 +30,13 @@ class FlextPluginImplementations:
     per module while preserving existing API surface for seamless migration.
     """
 
-    class ConcretePlugin:
+    class ConcreteConfigBase:
+        config: t.MutableJsonMapping
+
+        def get_config(self) -> t.JsonMapping:
+            return self.config
+
+    class ConcretePlugin(ConcreteConfigBase):
         """Concrete implementation of the FlextPlugin interface.
 
         This class implements the abstract FlextPlugin interface from flext-core,
@@ -90,10 +96,6 @@ class FlextPluginImplementations:
             ) as e:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail(f"Configuration failed: {e!s}")
-
-        def get_config(self) -> t.JsonMapping:
-            """Get current configuration."""
-            return self.config
 
         def fetch_info(self) -> t.JsonMapping:
             """Get plugin information.
@@ -396,7 +398,7 @@ class FlextPluginImplementations:
                 self.logger.exception("Transformation failed")
                 return r[t.JsonValue].fail(f"Transform failed: {e!s}")
 
-    class ConcretePluginContext:
+    class ConcretePluginContext(ConcreteConfigBase):
         """Concrete implementation of plugin runtime context.
 
         Provides plugins with access to system services, configuration,
@@ -422,10 +424,6 @@ class FlextPluginImplementations:
             self.logger = logger
             self.config: t.MutableJsonMapping = dict(settings) if settings else {}
             self._services: t.MutableJsonMapping = dict(services) if services else {}
-
-        def get_config(self) -> t.JsonMapping:
-            """Get configuration for plugin."""
-            return self.config
 
         def get_logger(self) -> p.Logger:
             """Get logger instance for plugin."""
