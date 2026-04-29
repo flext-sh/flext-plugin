@@ -13,25 +13,27 @@ from collections.abc import (
 )
 from typing import ClassVar
 
-from flext_cli import m, t
+from flext_cli import m, t as cli_t
 
 
-class FlextPluginTypes(t):
+class FlextPluginTypes(cli_t):
     """Plugin type system extending flext_cli via MRO."""
 
-    CONTAINER_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[t.JsonMapping]] = m.TypeAdapter(
-        t.JsonMapping,
+    CONTAINER_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
+        m.TypeAdapter(
+            cli_t.JsonMapping,
+        )
     )
-    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[t.JsonMapping]] = (
-        m.TypeAdapter(t.JsonMapping)
+    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
+        m.TypeAdapter(cli_t.JsonMapping)
     )
 
     class Plugin:
         """Plugin domain namespace (flat members per AGENTS.md §149)."""
 
         type EventHandler = Callable[
-            [t.JsonMapping],
-            Awaitable[t.JsonMapping],
+            [cli_t.JsonMapping],
+            Awaitable[cli_t.JsonMapping],
         ]
 
         class HandlerInfo:
@@ -50,6 +52,6 @@ class FlextPluginTypes(t):
                 self.priority = priority
 
 
-t: type[FlextPluginTypes] = FlextPluginTypes
+t = FlextPluginTypes
 
 __all__: list[str] = ["FlextPluginTypes", "t"]

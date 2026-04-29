@@ -82,9 +82,18 @@ class TestsFlextPluginManager:
             @override
             def register_plugin(
                 self,
-                plugin: m.Plugin.Entity,
+                plugin: m.Plugin.Entity | t.JsonValue,
             ) -> p.Result[bool]:
-                self.registered.append(plugin.name)
+                if isinstance(plugin, m.Plugin.Entity):
+                    self.registered.append(plugin.name)
+                else:
+                    plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                        plugin,
+                    )
+                    plugin_name = plugin_payload.get("name")
+                    if not isinstance(plugin_name, str):
+                        return r[bool].fail("Plugin payload missing valid 'name'")
+                    self.registered.append(plugin_name)
                 return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):
@@ -149,9 +158,18 @@ class TestsFlextPluginManager:
             @override
             def register_plugin(
                 self,
-                plugin: m.Plugin.Entity,
+                plugin: m.Plugin.Entity | t.JsonValue,
             ) -> p.Result[bool]:
-                self.registered.append(plugin.name)
+                if isinstance(plugin, m.Plugin.Entity):
+                    self.registered.append(plugin.name)
+                else:
+                    plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                        plugin,
+                    )
+                    plugin_name = plugin_payload.get("name")
+                    if not isinstance(plugin_name, str):
+                        return r[bool].fail("Plugin payload missing valid 'name'")
+                    self.registered.append(plugin_name)
                 return r[bool].ok(True)
 
         class Monitoring(FlextPluginAdapters.PluginMonitoringAdapter):

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import (
     Callable,
-    Mapping,
     MutableMapping,
     MutableSequence,
     Sequence,
@@ -105,18 +104,14 @@ class FlextPluginService(x):
 
     @staticmethod
     def _to_general_mapping(
-        value: t.JsonPayload | p.Model | None,
+        value: t.JsonPayload | m.BaseModel | None,
     ) -> t.JsonMapping:
         if value is None:
             return t.CONTAINER_MAPPING_ADAPTER.validate_python({})
-        if isinstance(value, p.Model):
-            return t.CONTAINER_MAPPING_ADAPTER.validate_python(
-                value.model_dump(mode="json"),
-            )
         normalized_value = u.normalize_to_metadata(value)
-        if not isinstance(normalized_value, Mapping):
-            return t.CONTAINER_MAPPING_ADAPTER.validate_python({})
-        return t.CONTAINER_MAPPING_ADAPTER.validate_python(normalized_value)
+        return t.CONTAINER_MAPPING_ADAPTER.validate_python(
+            normalized_value,
+        )
 
     def cleanup_executions(self) -> int:
         """Clean up completed executions to free memory.

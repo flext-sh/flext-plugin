@@ -220,7 +220,7 @@ class FlextPluginPlatform:
 
         def active(self) -> bool:
             """Check if plugin is active."""
-            return bool(self.is_enabled)
+            return self.status == str(c.Plugin.PluginStatus.ACTIVE)
 
     class PluginPlatformService(s):
         """railway-oriented plugin platform with functional composition."""
@@ -251,19 +251,15 @@ class FlextPluginPlatform:
 
         @staticmethod
         def _to_general_mapping(
-            value: t.JsonPayload | p.Model | None,
+            value: t.JsonPayload | m.BaseModel | None,
         ) -> t.JsonMapping:
             """Convert mapping-like values to a typed dict."""
             if value is None:
-                return {}
-            if isinstance(value, p.Model):
-                return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
-                    value.model_dump(mode="json"),
-                )
+                return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({})
             normalized_value = u.normalize_to_metadata(value)
-            if not isinstance(normalized_value, Mapping):
-                return {}
-            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(normalized_value)
+            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                normalized_value,
+            )
 
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
