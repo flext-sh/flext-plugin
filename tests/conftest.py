@@ -19,7 +19,6 @@ import tempfile
 from collections.abc import (
     Callable,
     Generator,
-    Mapping,
 )
 from pathlib import Path
 
@@ -175,9 +174,9 @@ def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
 
 
 @pytest.fixture
-def real_plugin_configs() -> Mapping[
+def real_plugin_configs() -> t.MappingKV[
     str,
-    Mapping[str, t.JsonMapping | t.StrSequence | t.JsonValue],
+    t.MappingKV[str, t.JsonMapping | t.StrSequence | t.JsonValue],
 ]:
     """REAL plugin configurations matching plugin files."""
     return {
@@ -256,7 +255,7 @@ def real_processor_plugin() -> m.Plugin.Entity:
 
 
 @pytest.fixture
-def real_plugin_dependencies() -> Mapping[str, t.StrSequence]:
+def real_plugin_dependencies() -> t.MappingKV[str, t.StrSequence]:
     """REAL plugin dependency graph."""
     return {
         "tap_database": [],

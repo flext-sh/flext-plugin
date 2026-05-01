@@ -31,7 +31,7 @@ class FlextPluginDiscovery:
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""
         self.logger = u.fetch_logger(__name__)
-        self.strategies: Sequence[p.Plugin.DiscoveryStrategy] = [
+        self.strategies: t.SequenceOf[p.Plugin.DiscoveryStrategy] = [
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),
         ]
@@ -41,7 +41,7 @@ class FlextPluginDiscovery:
         path: Path,
         discover_file: Callable[[Path], TDiscovery | None],
         logger: p.Logger,
-    ) -> Sequence[TDiscovery]:
+    ) -> t.SequenceOf[TDiscovery]:
         """Discover Python plugins recursively in a directory."""
         discovered: MutableSequence[TDiscovery] = []
         try:
@@ -231,7 +231,7 @@ class FlextPluginDiscovery:
         def _discover_directory(
             self,
             path: Path,
-        ) -> Sequence[m.Plugin.DiscoveryData]:
+        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
             return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,

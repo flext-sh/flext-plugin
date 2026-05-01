@@ -12,20 +12,20 @@ from collections.abc import (
 )
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import FlextCliProtocols
+from flext_cli import p
 
 if TYPE_CHECKING:
-    from flext_plugin import FlextPluginModels, FlextPluginTypes
+    from flext_plugin import m, t
 
 
-class FlextPluginProtocols(FlextCliProtocols):
-    """Unified plugin protocols extending FlextCliProtocols.
+class FlextPluginProtocols(p):
+    """Unified plugin protocols extending p.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
     and adds plugin-specific protocols in the Plugin namespace.
 
     Architecture:
-    - EXTENDS: FlextCliProtocols (inherits Foundation, Domain, Application, etc.)
+    - EXTENDS: p (inherits Foundation, Domain, Application, etc.)
     - ADDS: Plugin-specific protocols in Plugin namespace
     - PROVIDES: Root-level alias `p` for convenient access
 
@@ -49,7 +49,7 @@ class FlextPluginProtocols(FlextCliProtocols):
         class PluginLoader(Protocol):
             """Protocol for plugin loading operations."""
 
-            def get_loaded_plugins(self) -> FlextPluginTypes.StrSequence:
+            def get_loaded_plugins(self) -> t.StrSequence:
                 """Get list of all currently loaded plugin names."""
                 ...
 
@@ -60,14 +60,14 @@ class FlextPluginProtocols(FlextCliProtocols):
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
+            ) -> p.Result[t.JsonMapping]:
                 """Load a plugin from the specified path."""
                 ...
 
             def unload_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Unload a previously loaded plugin."""
                 ...
 
@@ -78,23 +78,21 @@ class FlextPluginProtocols(FlextCliProtocols):
             def discover_plugin(
                 self,
                 plugin_path: str,
-            ) -> FlextCliProtocols.Result[FlextPluginModels.Plugin.DiscoveryData]:
+            ) -> p.Result[m.Plugin.DiscoveryData]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self,
-                paths: FlextPluginTypes.StrSequence,
-            ) -> FlextCliProtocols.Result[
-                Sequence[FlextPluginModels.Plugin.DiscoveryData]
-            ]:
+                paths: t.StrSequence,
+            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
                 self,
-                plugin_data: FlextPluginModels.Plugin.DiscoveryData,
-            ) -> FlextCliProtocols.Result[bool]:
+                plugin_data: m.Plugin.DiscoveryData,
+            ) -> p.Result[bool]:
                 """Validate plugin discovery data."""
                 ...
 
@@ -105,7 +103,7 @@ class FlextPluginProtocols(FlextCliProtocols):
             def fetch_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonValue | None]:
+            ) -> p.Result[t.JsonValue | None]:
                 """Fetch a registered plugin by name."""
                 ...
 
@@ -115,28 +113,28 @@ class FlextPluginProtocols(FlextCliProtocols):
 
             def list_plugins(
                 self,
-            ) -> FlextCliProtocols.Result[Sequence[FlextPluginTypes.JsonMapping]]:
+            ) -> p.Result[Sequence[t.JsonMapping]]:
                 """List all registered plugins."""
                 ...
 
             def register_plugin(
                 self,
-                plugin: FlextPluginModels.Plugin.Entity | FlextPluginTypes.JsonValue,
-            ) -> FlextCliProtocols.Result[bool]:
+                plugin: m.Plugin.Entity | t.JsonValue,
+            ) -> p.Result[bool]:
                 """Register a plugin."""
                 ...
 
             def register(
                 self,
-                plugin: FlextPluginModels.Plugin.Entity,
-            ) -> FlextCliProtocols.Result[None]:
+                plugin: m.Plugin.Entity,
+            ) -> p.Result[None]:
                 """Register a plugin with normalized API."""
                 ...
 
             def unregister_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Unregister a plugin."""
                 ...
 
@@ -147,26 +145,26 @@ class FlextPluginProtocols(FlextCliProtocols):
             def execute_plugin(
                 self,
                 plugin_name: str,
-                context: FlextPluginTypes.JsonMapping,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
+                context: t.JsonMapping,
+            ) -> p.Result[t.JsonMapping]:
                 """Execute a plugin with the given context."""
                 ...
 
             def get_execution_status(
                 self,
                 _execution_id: str,
-            ) -> FlextCliProtocols.Result[str]:
+            ) -> p.Result[str]:
                 """Get the status of an execution."""
                 ...
 
-            def list_running_executions(self) -> FlextPluginTypes.StrSequence:
+            def list_running_executions(self) -> t.StrSequence:
                 """List all currently running execution IDs."""
                 ...
 
             def stop_execution(
                 self,
                 _execution_id: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Stop a running execution."""
                 ...
 
@@ -177,29 +175,29 @@ class FlextPluginProtocols(FlextCliProtocols):
             def check_permissions(
                 self,
                 plugin_name: str,
-                permissions: FlextPluginTypes.StrSequence,
-            ) -> FlextCliProtocols.Result[bool]:
+                permissions: t.StrSequence,
+            ) -> p.Result[bool]:
                 """Check if plugin has specified permissions."""
                 ...
 
             def get_security_level(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[str]:
+            ) -> p.Result[str]:
                 """Get security level of a plugin."""
                 ...
 
             def scan_plugin_security(
                 self,
                 plugin_path: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
+            ) -> p.Result[t.JsonMapping]:
                 """Scan plugin for security vulnerabilities."""
                 ...
 
             def validate_plugin_security(
                 self,
-                plugin: FlextPluginModels.Plugin.Entity,
-            ) -> FlextCliProtocols.Result[bool]:
+                plugin: m.Plugin.Entity,
+            ) -> p.Result[bool]:
                 """Validate plugin security compliance."""
                 ...
 
@@ -207,7 +205,7 @@ class FlextPluginProtocols(FlextCliProtocols):
         class PluginHotReload(Protocol):
             """Protocol for hot reload operations."""
 
-            def get_watched_paths(self) -> FlextPluginTypes.StrSequence:
+            def get_watched_paths(self) -> t.StrSequence:
                 """Get list of currently watched paths."""
                 ...
 
@@ -218,18 +216,18 @@ class FlextPluginProtocols(FlextCliProtocols):
             def reload_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Reload a plugin."""
                 ...
 
             def start_watching(
                 self,
-                paths: FlextPluginTypes.StrSequence,
-            ) -> FlextCliProtocols.Result[bool]:
+                paths: t.StrSequence,
+            ) -> p.Result[bool]:
                 """Start watching paths for plugin changes."""
                 ...
 
-            def stop_watching(self) -> FlextCliProtocols.Result[bool]:
+            def stop_watching(self) -> p.Result[bool]:
                 """Stop watching for plugin changes."""
                 ...
 
@@ -240,14 +238,14 @@ class FlextPluginProtocols(FlextCliProtocols):
             def fetch_plugin_health(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
+            ) -> p.Result[t.JsonMapping]:
                 """Get health status of a plugin."""
                 ...
 
             def fetch_plugin_metrics(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonMapping]:
+            ) -> p.Result[t.JsonMapping]:
                 """Get metrics for a plugin."""
                 ...
 
@@ -258,14 +256,14 @@ class FlextPluginProtocols(FlextCliProtocols):
             def start_monitoring(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Start monitoring a plugin."""
                 ...
 
             def stop_monitoring(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Stop monitoring a plugin."""
                 ...
 
@@ -276,29 +274,29 @@ class FlextPluginProtocols(FlextCliProtocols):
             def fetch_default_config(
                 self,
                 plugin_type: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonValue]:
+            ) -> p.Result[t.JsonValue]:
                 """Get default configuration for a plugin type."""
                 ...
 
             def load_config(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonValue]:
+            ) -> p.Result[t.JsonValue]:
                 """Load configuration for a plugin."""
                 ...
 
             def save_config(
                 self,
                 plugin_name: str,
-                settings: FlextPluginTypes.JsonValue,
-            ) -> FlextCliProtocols.Result[bool]:
+                settings: t.JsonValue,
+            ) -> p.Result[bool]:
                 """Save configuration for a plugin."""
                 ...
 
             def validate_config(
                 self,
-                settings: FlextPluginTypes.JsonValue,
-            ) -> FlextCliProtocols.Result[bool]:
+                settings: t.JsonValue,
+            ) -> p.Result[bool]:
                 """Validate plugin configuration."""
                 ...
 
@@ -309,41 +307,41 @@ class FlextPluginProtocols(FlextCliProtocols):
             def activate_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Activate a plugin."""
                 ...
 
             def deactivate_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Deactivate a plugin."""
                 ...
 
             def destroy_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Destroy a plugin."""
                 ...
 
             def fetch_plugin_status(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[str]:
+            ) -> p.Result[str]:
                 """Fetch the status of a plugin."""
                 ...
 
             def initialize_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Initialize a plugin."""
                 ...
 
             def list_plugin_statuses(
                 self,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.StrMapping]:
+            ) -> p.Result[t.StrMapping]:
                 """Get status of all plugins."""
                 ...
 
@@ -351,30 +349,28 @@ class FlextPluginProtocols(FlextCliProtocols):
         class PluginValidation(Protocol):
             """Protocol for plugin validation operations."""
 
-            def validate_plugin_compatibility(
-                self, plugin_name: str
-            ) -> FlextCliProtocols.Result[bool]:
+            def validate_plugin_compatibility(self, plugin_name: str) -> p.Result[bool]:
                 """Validate plugin compatibility."""
                 ...
 
             def validate_plugin_dependencies(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Validate plugin dependencies."""
                 ...
 
             def validate_plugin_permissions(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Validate plugin permissions."""
                 ...
 
             def validate_plugin_structure(
                 self,
-                plugin_data: FlextPluginTypes.JsonValue,
-            ) -> FlextCliProtocols.Result[bool]:
+                plugin_data: t.JsonValue,
+            ) -> p.Result[bool]:
                 """Validate plugin structure."""
                 ...
 
@@ -385,13 +381,13 @@ class FlextPluginProtocols(FlextCliProtocols):
             def delete_plugin(
                 self,
                 plugin_name: str,
-            ) -> FlextCliProtocols.Result[bool]:
+            ) -> p.Result[bool]:
                 """Delete stored plugin."""
                 ...
 
             def list_stored_plugins(
                 self,
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.StrSequence]:
+            ) -> p.Result[t.StrSequence]:
                 """List all stored plugin names."""
                 ...
 
@@ -399,16 +395,14 @@ class FlextPluginProtocols(FlextCliProtocols):
                 """Check if plugin is stored."""
                 ...
 
-            def retrieve_plugin(
-                self, plugin_name: str
-            ) -> FlextCliProtocols.Result[FlextPluginTypes.JsonValue | None]:
+            def retrieve_plugin(self, plugin_name: str) -> p.Result[t.JsonValue | None]:
                 """Retrieve stored plugin data."""
                 ...
 
             def store_plugin(
                 self,
-                plugin_data: FlextPluginTypes.JsonValue,
-            ) -> FlextCliProtocols.Result[bool]:
+                plugin_data: t.JsonValue,
+            ) -> p.Result[bool]:
                 """Store plugin data."""
                 ...
 
@@ -418,10 +412,8 @@ class FlextPluginProtocols(FlextCliProtocols):
 
             def discover(
                 self,
-                paths: FlextPluginTypes.StrSequence,
-            ) -> FlextCliProtocols.Result[
-                Sequence[FlextPluginModels.Plugin.DiscoveryData]
-            ]:
+                paths: t.StrSequence,
+            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import (
-    Mapping,
     MutableMapping,
     MutableSequence,
     Sequence,
@@ -279,7 +278,7 @@ class FlextPluginPlatform:
             return self._discovery
 
         @property
-        def executions(self) -> Mapping[str, FlextPluginPlatform.PluginExecution]:
+        def executions(self) -> t.MappingKV[str, FlextPluginPlatform.PluginExecution]:
             """Execution storage."""
             return self._executions
 
@@ -308,7 +307,7 @@ class FlextPluginPlatform:
             return self._loader
 
         @property
-        def plugins(self) -> Mapping[str, FlextPluginPlatform.Plugin]:
+        def plugins(self) -> t.MappingKV[str, FlextPluginPlatform.Plugin]:
             """Plugin storage."""
             return self._plugins
 
@@ -358,7 +357,7 @@ class FlextPluginPlatform:
                 )
 
             def create_plugins_from_data(
-                data: Sequence[m.Plugin.DiscoveryData],
+                data: t.SequenceOf[m.Plugin.DiscoveryData],
             ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
@@ -435,7 +434,7 @@ class FlextPluginPlatform:
 
         def list_running_executions(
             self,
-        ) -> Sequence[FlextPluginPlatform.PluginExecution]:
+        ) -> t.SequenceOf[FlextPluginPlatform.PluginExecution]:
             """List all running executions."""
             return [
                 execution
@@ -448,11 +447,11 @@ class FlextPluginPlatform:
             plugin = self.fetch_plugin(name)
             return plugin.active() if plugin else False
 
-        def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+        def list_executions(self) -> t.SequenceOf[FlextPluginPlatform.PluginExecution]:
             """List all executions."""
             return list(self.executions.values())
 
-        def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
+        def list_plugins(self) -> t.SequenceOf[FlextPluginPlatform.Plugin]:
             """List all registered plugins."""
             return list(self.plugins.values())
 
@@ -629,8 +628,8 @@ class FlextPluginPlatform:
 
         def _register_all(
             self,
-            plugins: Sequence[FlextPluginPlatform.Plugin],
-        ) -> Sequence[FlextPluginPlatform.Plugin]:
+            plugins: t.SequenceOf[FlextPluginPlatform.Plugin],
+        ) -> t.SequenceOf[FlextPluginPlatform.Plugin]:
             """Register multiple plugins."""
             for plugin in plugins:
                 self._plugins[plugin.name] = plugin
@@ -669,7 +668,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: Sequence[m.Plugin.DiscoveryData],
+            plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
         ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: MutableSequence[FlextPluginPlatform.Plugin] = []

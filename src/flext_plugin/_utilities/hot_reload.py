@@ -10,7 +10,6 @@ from __future__ import annotations
 from collections.abc import (
     Callable,
     MutableSequence,
-    Sequence,
 )
 from datetime import UTC, datetime
 from pathlib import Path
@@ -240,7 +239,7 @@ class FlextPluginHotReload:
     def get_reload_history(
         self,
         limit: int = 100,
-    ) -> Sequence[m.Plugin.ReloadRecord]:
+    ) -> t.SequenceOf[m.Plugin.ReloadRecord]:
         """Get reload history.
 
         Args:

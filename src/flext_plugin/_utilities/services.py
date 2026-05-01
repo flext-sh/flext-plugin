@@ -471,7 +471,9 @@ class FlextPluginService(x):
             return str(c.Plugin.PluginStatus.ACTIVE)
         return str(c.Plugin.PluginStatus.INACTIVE)
 
-    def list_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+    def list_running_executions(
+        self,
+    ) -> t.SequenceOf[FlextPluginPlatform.PluginExecution]:
         """List all currently running executions.
 
         Returns:
@@ -535,7 +537,7 @@ class FlextPluginService(x):
         """
         return plugin_name in self._plugins
 
-    def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+    def list_executions(self) -> t.SequenceOf[FlextPluginPlatform.PluginExecution]:
         """List all executions.
 
         Returns:
@@ -544,7 +546,7 @@ class FlextPluginService(x):
         """
         return list(self._executions.values())
 
-    def list_plugins(self) -> Sequence[m.Plugin.Entity]:
+    def list_plugins(self) -> t.SequenceOf[m.Plugin.Entity]:
         """List all loaded plugins.
 
         Returns:

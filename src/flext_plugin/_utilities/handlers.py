@@ -10,7 +10,6 @@ from __future__ import annotations
 from collections.abc import (
     MutableMapping,
     MutableSequence,
-    Sequence,
 )
 from datetime import UTC, datetime
 from functools import partial
@@ -66,7 +65,7 @@ class FlextPluginHandlers:
         self,
         event_type: str | None = None,
         limit: int = 100,
-    ) -> Sequence[t.JsonMapping]:
+    ) -> t.SequenceOf[t.JsonMapping]:
         """Get event history, optionally filtered by event type.
 
         Args:

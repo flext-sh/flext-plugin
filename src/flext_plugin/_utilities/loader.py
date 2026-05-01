@@ -11,7 +11,6 @@ import importlib.util
 from collections.abc import (
     Callable,
     MutableMapping,
-    Sequence,
 )
 from datetime import UTC, datetime
 from pathlib import Path
@@ -46,7 +45,7 @@ class FlextPluginLoader:
         """Initialize the plugin loader."""
         self.logger = u.fetch_logger(__name__)
         self._loaded_plugins: MutableMapping[str, ModuleType] = {}
-        self._loader_strategies: Sequence[
+        self._loader_strategies: t.SequenceOf[
             Callable[[Path], m.Plugin.LoadData | None]
         ] = [
             self.FilePluginLoader(self.logger).load,

@@ -70,7 +70,7 @@ class FlextPluginApi:
         """Resolve whether a plugin is active."""
         return self.platform.resolve_plugin_active(plugin_name)
 
-    def list_plugins(self) -> Sequence[m.Plugin.Entity]:
+    def list_plugins(self) -> t.SequenceOf[m.Plugin.Entity]:
         """List all registered plugins."""
         return self.platform.list_plugins()
 

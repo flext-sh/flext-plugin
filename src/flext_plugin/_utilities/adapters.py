@@ -105,7 +105,7 @@ class FlextPluginAdapters:
         def _discover_all(
             self,
             paths: t.StrSequence,
-        ) -> Sequence[m.Plugin.DiscoveryData]:
+        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Internal: discover all plugins."""
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for path in paths:
@@ -125,7 +125,9 @@ class FlextPluginAdapters:
             self.logger.info(f"Discovered {len(discovered)} plugins")
             return discovered
 
-        def _discover_directory(self, path: Path) -> Sequence[m.Plugin.DiscoveryData]:
+        def _discover_directory(
+            self, path: Path
+        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Internal: discover plugins in directory."""
             return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,

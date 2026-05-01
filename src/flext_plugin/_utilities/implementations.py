@@ -12,7 +12,6 @@ from __future__ import annotations
 
 from collections.abc import (
     MutableMapping,
-    Sequence,
 )
 from typing import override
 
@@ -469,7 +468,7 @@ class FlextPluginImplementations:
             """
             return self.plugins.get(plugin_name)
 
-        def list_plugins(self) -> Sequence[m.Plugin.Entity]:
+        def list_plugins(self) -> t.SequenceOf[m.Plugin.Entity]:
             """List all registered plugin names.
 
             Returns:
