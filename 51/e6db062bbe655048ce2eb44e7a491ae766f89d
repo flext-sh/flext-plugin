@@ -1,0 +1,26 @@
+src/flext_plugin/_utilities/discovery.py
+  h_9db9d35f50cf33 34,44,234
+src/flext_plugin/protocols.py
+  h_9db9d35f50cf33 15,18,21-22,28,52,63,70,81,87-88,404
+src/flext_plugin/_utilities/services.py
+  h_9db9d35f50cf33 474
+src/flext_plugin/_utilities/adapters.py
+  h_9db9d35f50cf33 108,128
+src/flext_plugin/_utilities/plugin_platform.py
+  h_9db9d35f50cf33 632
+src/flext_plugin/api.py
+  h_9db9d35f50cf33 73
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 797
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "51e6db062bbe655048ce2eb44e7a491ae766f89d",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
