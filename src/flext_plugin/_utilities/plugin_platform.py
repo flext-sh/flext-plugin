@@ -607,7 +607,9 @@ class FlextPluginPlatform:
             """Get plugin with error handling."""
             if plugin := self.plugins.get(name):
                 return r[FlextPluginPlatform.Plugin].ok(plugin)
-            return e.fail_not_found("Plugin", name, result_type=r[FlextPluginPlatform.Plugin])
+            return e.fail_not_found(
+                "Plugin", name, result_type=r[FlextPluginPlatform.Plugin]
+            )
 
         def _prepare_execution(
             self,

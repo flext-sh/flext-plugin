@@ -391,7 +391,9 @@ class FlextPluginImplementations:
 
             """
             if service_name not in self._services:
-                return e.fail_not_found("Service", service_name, result_type=r[t.JsonValue])
+                return e.fail_not_found(
+                    "Service", service_name, result_type=r[t.JsonValue]
+                )
             return r[t.JsonValue].ok(self._services[service_name])
 
     class ConcretePluginRegistry:
