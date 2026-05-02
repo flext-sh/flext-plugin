@@ -10,7 +10,7 @@ from __future__ import annotations
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
-from flext_cli import c, t
+from flext_cli import c
 
 
 class FlextPluginConstants(c):
@@ -152,25 +152,6 @@ class FlextPluginConstants(c):
             EVENT_MODIFIED: Final[str] = "modified"
             EVENT_DELETED: Final[str] = "deleted"
             EVENT_MOVED: Final[str] = "moved"
-
-        class Monitoring:
-            """Monitoring configuration constants."""
-
-            LOG_LEVELS: Final[t.StrSequence] = (
-                "DEBUG",
-                "INFO",
-                "WARNING",
-                "ERROR",
-                "CRITICAL",
-            )
-            DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-            DEFAULT_RETENTION_DAYS: Final[int] = 30
-            MIN_RETENTION_DAYS: Final[int] = 1
-            MAX_RETENTION_DAYS: Final[int] = 365
-            DEFAULT_CPU_THRESHOLD: Final[float] = 80.0
-            DEFAULT_MEMORY_THRESHOLD: Final[float] = 85.0
-            DEFAULT_ERROR_RATE_THRESHOLD: Final[float] = 5.0
-            DEFAULT_RESPONSE_TIME_THRESHOLD: Final[float] = 5000.0
 
         class Files:
             """File extension constants."""
