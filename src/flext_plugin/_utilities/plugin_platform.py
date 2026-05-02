@@ -129,7 +129,7 @@ class FlextPluginPlatform:
                     )
             if result.failure:
                 return r[m.Plugin.Entity].fail(result.error)
-            return r[m.Plugin.Entity].fail("Plugin not found")
+            return e.fail_not_found("Plugin", "", result_type=r[m.Plugin.Entity])
 
         def list_plugins(
             self,
