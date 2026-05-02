@@ -97,15 +97,7 @@ class FlextPluginDiscovery:
             return r[m.Plugin.DiscoveryData].fail(
                 f"Plugin not found at: {plugin_path}",
             )
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception(f"Failed to discover plugin at {plugin_path}")
             return r[m.Plugin.DiscoveryData].fail(
                 f"Discovery error: {e!s}",
@@ -214,15 +206,7 @@ class FlextPluginDiscovery:
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("File system discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     f"File discovery error: {e!s}",

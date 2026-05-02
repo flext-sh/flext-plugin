@@ -93,15 +93,7 @@ class FlextPluginLoader:
                 "all_attributes": methods,
             })
             return r[t.JsonMapping].ok(plugin_info)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to get plugin info for %s", plugin_name)
             return r[t.JsonMapping].fail(f"Plugin info error: {e!s}")
 
@@ -310,15 +302,7 @@ class FlextPluginLoader:
                     load_type=c.Plugin.LoadTypeLiteral.FILE,
                     loaded_at=datetime.now(UTC),
                 )
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ):
+            except c.EXC_BROAD_IO_TYPE:
                 self.logger.exception(f"Failed to load file plugin: {path}")
                 return None
 

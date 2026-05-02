@@ -193,15 +193,7 @@ class FlextPluginService(x):
                 registered_plugins.append(finalize_result.value)
             self.logger.info(f"Registered {len(registered_plugins)} plugins")
             return r[Sequence[m.Plugin.Entity]].ok(registered_plugins)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin discovery and registration failed")
             return r[Sequence[m.Plugin.Entity]].fail(
                 f"Service error: {e!s}",

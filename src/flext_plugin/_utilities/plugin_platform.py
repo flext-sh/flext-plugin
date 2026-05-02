@@ -123,15 +123,7 @@ class FlextPluginPlatform:
                         result.value,
                     )
                     return r[m.Plugin.Entity].ok(plugin)
-                except (
-                    ValueError,
-                    TypeError,
-                    KeyError,
-                    AttributeError,
-                    OSError,
-                    RuntimeError,
-                    ImportError,
-                ):
+                except c.EXC_BROAD_IO_TYPE:
                     return r[m.Plugin.Entity].fail(
                         "Plugin is not a valid Plugin type",
                     )

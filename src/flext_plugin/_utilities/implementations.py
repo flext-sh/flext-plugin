@@ -84,15 +84,7 @@ class FlextPluginImplementations:
             try:
                 self.config.update(settings)
                 return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
                 return r[None].fail_op("Configuration", e)
 

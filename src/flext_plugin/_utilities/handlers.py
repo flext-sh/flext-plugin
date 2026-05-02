@@ -220,15 +220,7 @@ class FlextPluginHandlers:
                     return r[bool].fail(f"Failed to register {event_type} handler")
             self.logger.info("Registered default event handlers")
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to register default handlers")
             return r[bool].fail(f"Default handler registration error: {e!s}")
 
@@ -317,15 +309,7 @@ class FlextPluginHandlers:
                     result = await self._execute_handler(handler, event_data)
                     result_payload = u.normalize_to_json_value(result)
                     results.append(result_payload)
-                except (
-                    ValueError,
-                    TypeError,
-                    KeyError,
-                    AttributeError,
-                    OSError,
-                    RuntimeError,
-                    ImportError,
-                ) as e:
+                except c.EXC_BROAD_IO_TYPE as e:
                     self.logger.exception(f"Handler execution failed for {event_type}")
                     results.append(
                         u.normalize_to_json_value({"error": str(e), "success": False}),

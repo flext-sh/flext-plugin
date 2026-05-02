@@ -94,15 +94,7 @@ class FlextPluginUtilities(u):
                             if metadata_result.success:
                                 plugins.append(metadata_result.value)
                 return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 return r[Sequence[m.Plugin.PluginMetadata]].fail_op("Plugin discovery", e)
 
         @staticmethod
