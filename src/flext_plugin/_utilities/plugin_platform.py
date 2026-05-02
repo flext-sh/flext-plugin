@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from typing import override
 
-from flext_core import FlextSettings
+from flext_core import FlextSettings, e
 from flext_plugin import (
     FlextPluginSettings,
     c,
@@ -607,7 +607,7 @@ class FlextPluginPlatform:
             """Get plugin with error handling."""
             if plugin := self.plugins.get(name):
                 return r[FlextPluginPlatform.Plugin].ok(plugin)
-            return r[FlextPluginPlatform.Plugin].fail(f"Plugin '{name}' not found")
+            return e.fail_not_found("Plugin", name, result_type=r[FlextPluginPlatform.Plugin])
 
         def _prepare_execution(
             self,

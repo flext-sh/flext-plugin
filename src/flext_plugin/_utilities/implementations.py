@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from typing import override
 
-from flext_plugin import c, m, p, r, t, u
+from flext_plugin import c, e, m, p, r, t, u
 
 
 class FlextPluginImplementations:
@@ -391,7 +391,7 @@ class FlextPluginImplementations:
 
             """
             if service_name not in self._services:
-                return r[t.JsonValue].fail(f"Service not found: {service_name}")
+                return e.fail_not_found("Service", service_name, result_type=r[t.JsonValue])
             return r[t.JsonValue].ok(self._services[service_name])
 
     class ConcretePluginRegistry:
