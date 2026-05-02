@@ -364,15 +364,7 @@ class FlextPluginHandlers:
         try:
             async_result = handler(event_data)
             return await async_result
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ):
+        except c.EXC_BROAD_IO_TYPE:
             self.logger.exception("Handler execution failed")
             raise
 

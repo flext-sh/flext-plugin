@@ -665,15 +665,7 @@ class FlextPluginService(x):
             del self._plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
             return r[bool].fail_op("Unloading", e)
 

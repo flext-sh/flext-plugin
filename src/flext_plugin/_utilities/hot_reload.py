@@ -319,15 +319,7 @@ class FlextPluginHotReload:
                 self.logger.info(f"Removed watch path: {path}")
                 return r[bool].ok(True)
             return r[bool].fail(f"Path not being watched: {path}")
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception(f"Failed to remove watch path: {path}")
             return r[bool].fail(f"Remove watch path error: {e!s}")
 

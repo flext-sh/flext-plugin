@@ -262,15 +262,7 @@ class FlextPluginImplementations:
                     return r[None].fail("No connection configuration provided")
                 self._connection_valid = True
                 return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Connection test failed")
                 self._connection_valid = False
                 return r[None].fail_op("Connection", e)
