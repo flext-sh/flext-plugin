@@ -103,9 +103,7 @@ class FlextPluginUtilities(u):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[Sequence[m.Plugin.PluginMetadata]].fail(
-                    f"Plugin discovery failed: {e}",
-                )
+                return r[Sequence[m.Plugin.PluginMetadata]].fail_op("Plugin discovery", e)
 
         @staticmethod
         def extract_plugin_metadata(
@@ -154,9 +152,7 @@ class FlextPluginUtilities(u):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[m.Plugin.PluginMetadata].fail(
-                    f"Metadata extraction failed: {e}",
-                )
+                return r[m.Plugin.PluginMetadata].fail_op("Metadata extraction", e)
 
         @staticmethod
         def validate_plugin_file(plugin_path: Path) -> p.Result[None]:
@@ -201,7 +197,7 @@ class FlextPluginUtilities(u):
                 RuntimeError,
                 ImportError,
             ) as e:
-                return r[None].fail(f"Plugin file validation failed: {e}")
+                return r[None].fail_op("Plugin file validation", e)
 
         @staticmethod
         def validate_plugin_name(name: str) -> p.Result[None]:

@@ -601,9 +601,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception(f"Failed to load plugin from {plugin_path}")
-                return r[FlextPluginImplementations.ConcretePlugin].fail(
-                    f"Load failed: {e!s}",
-                )
+                return r[FlextPluginImplementations.ConcretePlugin].fail_op("Load", e)
 
 
 __all__: list[str] = ["FlextPluginImplementations"]

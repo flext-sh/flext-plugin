@@ -164,9 +164,7 @@ class FlextPluginService(x):
                 )
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.failure:
-                return r[Sequence[m.Plugin.Entity]].fail(
-                    f"Discovery failed: {discovery_result.error}",
-                )
+                return r[Sequence[m.Plugin.Entity]].fail_op("Discovery", discovery_result.error)
             registered_plugins: MutableSequence[m.Plugin.Entity] = []
             for plugin_data in discovery_result.value:
                 name = plugin_data.name
@@ -285,9 +283,7 @@ class FlextPluginService(x):
             exec_result = self._executor.execute_plugin(plugin_name, context)
             if exec_result.failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
-                return r[FlextPluginPlatform.PluginExecution].fail(
-                    f"Execution failed: {exec_result.error}",
-                )
+                return r[FlextPluginPlatform.PluginExecution].fail_op("Execution", exec_result.error)
             execution.mark_completed(success=True)
             if u.dict_like(exec_result.value):
                 execution.result = self._to_general_mapping(exec_result.value)
@@ -572,9 +568,7 @@ class FlextPluginService(x):
                 )
             load_result = self._loader.load_plugin(plugin_path)
             if load_result.failure:
-                return r[m.Plugin.Entity].fail(
-                    f"Plugin loading failed: {load_result.error}",
-                )
+                return r[m.Plugin.Entity].fail_op("Plugin loading", load_result.error)
             value = load_result.value
             if u.dict_like(value):
                 data = value
@@ -630,21 +624,15 @@ class FlextPluginService(x):
     ) -> p.Result[m.Plugin.Entity]:
         validation_result = plugin.validate_business_rules()
         if validation_result.failure:
-            return r[m.Plugin.Entity].fail(
-                f"Plugin validation failed: {validation_result.error}",
-            )
+            return r[m.Plugin.Entity].fail_op("Plugin validation", validation_result.error)
         if self._security:
             security_result = self._security.validate_plugin_security(plugin)
             if security_result.failure:
-                return r[m.Plugin.Entity].fail(
-                    f"Security validation failed: {security_result.error}",
-                )
+                return r[m.Plugin.Entity].fail_op("Security validation", security_result.error)
         if self._registry:
             register_result = self._registry.register_plugin(plugin)
             if register_result.failure:
-                return r[m.Plugin.Entity].fail(
-                    f"Registration failed: {register_result.error}",
-                )
+                return r[m.Plugin.Entity].fail_op("Registration", register_result.error)
         self._plugins[plugin.name] = plugin
         if self._monitoring:
             monitoring_result = self._monitoring.start_monitoring(plugin.name)
@@ -693,9 +681,7 @@ class FlextPluginService(x):
             if self._registry:
                 unregister_result = self._registry.unregister_plugin(plugin_name)
                 if unregister_result.failure:
-                    return r[bool].fail(
-                        f"Unregistration failed: {unregister_result.error}",
-                    )
+                    return r[bool].fail_op("Unregistration", unregister_result.error)
             if self._loader:
                 unload_result = self._loader.unload_plugin(plugin_name)
                 if unload_result.failure:
