@@ -1,0 +1,33 @@
+src/flext_plugin/_utilities/implementations.py
+  473c59be621cc5d5 394-396
+pyproject.toml
+  473c59be621cc5d5 23,33,125,173,220,234,345,416,419,430,456,525,557,582,659,675
+src/flext_plugin/_utilities/plugin_platform.py
+  473c59be621cc5d5 610-612
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ac16e5319e06cfa2dee8ff02cdc31e903214ca40",
+  "prompts": {
+    "473c59be621cc5d5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6001f8b-afdd-4757-8812-9bff0bfd46d9",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 22,
+      "total_deletions": 63,
+      "accepted_lines": 22,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/048b1f7aec58ade5ff3b6fd361a1da7ed1fc10d458da569034f47204064854c4"
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
