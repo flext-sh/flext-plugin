@@ -622,7 +622,7 @@ class FlextPluginService(x):
             ImportError,
         ) as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
-            return r[m.Plugin.Entity].fail(f"Loading error: {e!s}")
+            return r[m.Plugin.Entity].fail_op("Loading", e)
 
     def _finalize_plugin_registration(
         self,
@@ -699,7 +699,7 @@ class FlextPluginService(x):
             if self._loader:
                 unload_result = self._loader.unload_plugin(plugin_name)
                 if unload_result.failure:
-                    return r[bool].fail(f"Unloading failed: {unload_result.error}")
+                    return r[bool].fail_op("Unloading", unload_result.error)
             del self._plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return r[bool].ok(True)
@@ -713,7 +713,7 @@ class FlextPluginService(x):
             ImportError,
         ) as e:
             self.logger.exception("Failed to unload plugin '%s'", plugin_name)
-            return r[bool].fail(f"Unloading error: {e!s}")
+            return r[bool].fail_op("Unloading", e)
 
     def update_plugin_config(
         self,

@@ -94,7 +94,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception(f"Failed to configure plugin {self.name}")
-                return r[None].fail(f"Configuration failed: {e!s}")
+                return r[None].fail_op("Configuration", e)
 
         def fetch_info(self) -> t.JsonMapping:
             """Get plugin information.
@@ -146,7 +146,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception(f"Failed to initialize plugin {self.name}")
-                return r[None].fail(f"Initialization failed: {e!s}")
+                return r[None].fail_op("Initialization", e)
 
         def shutdown(self) -> p.Result[None]:
             """Shutdown plugin and release resources.
@@ -172,7 +172,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
-                return r[None].fail(f"Shutdown failed: {e!s}")
+                return r[None].fail_op("Shutdown", e)
 
     class ConcreteExecutablePlugin(ConcretePlugin):
         """Concrete implementation of executable plugin.
@@ -240,7 +240,7 @@ class FlextPluginImplementations:
                 self.logger.exception("Operation %s failed", operation)
                 if self._entity:
                     self._entity.record_error(str(e))
-                return r[t.JsonValue].fail(f"Operation failed: {e!s}")
+                return r[t.JsonValue].fail_op("Operation", e)
 
         def get_supported_operations(self) -> t.StrSequence:
             """Get list of supported operations.
@@ -305,7 +305,7 @@ class FlextPluginImplementations:
             ) as e:
                 self.logger.exception("Connection test failed")
                 self._connection_valid = False
-                return r[None].fail(f"Connection failed: {e!s}")
+                return r[None].fail_op("Connection", e)
 
         def validate_config(self, settings: t.JsonMapping) -> p.Result[None]:
             """Validate plugin configuration.
@@ -395,7 +395,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception("Transformation failed")
-                return r[t.JsonValue].fail(f"Transform failed: {e!s}")
+                return r[t.JsonValue].fail_op("Transform", e)
 
     class ConcretePluginContext(ConcreteConfigBase):
         """Concrete implementation of plugin runtime context.
@@ -564,7 +564,7 @@ class FlextPluginImplementations:
                 ImportError,
             ) as e:
                 self.logger.exception(f"Plugin discovery failed in {search_path}")
-                return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
+                return r[t.StrSequence].fail_op("Discovery", e)
 
         def load_plugin(
             self,
