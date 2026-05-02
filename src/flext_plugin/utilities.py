@@ -95,7 +95,9 @@ class FlextPluginUtilities(u):
                                 plugins.append(metadata_result.value)
                 return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
             except c.EXC_BROAD_IO_TYPE as e:
-                return r[Sequence[m.Plugin.PluginMetadata]].fail_op("Plugin discovery", e)
+                return r[Sequence[m.Plugin.PluginMetadata]].fail_op(
+                    "Plugin discovery", e
+                )
 
         @staticmethod
         def extract_plugin_metadata(

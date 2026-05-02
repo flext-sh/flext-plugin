@@ -16,7 +16,7 @@ from collections.abc import (
     Generator,
 )
 from pathlib import Path
-from typing import Protocol, cast
+from typing import Protocol
 
 import pytest
 
@@ -92,28 +92,11 @@ def real_plugin_discovery() -> FlextPluginDiscovery:
 
 @pytest.fixture
 def real_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
-    container = FlextContainer()
-    discovery_adapter = FlextPluginDiscovery()
-    loader_adapter = FlextPluginLoader()
-    container.bind(
-        "plugin_discovery_port",
-        cast("t.RegisterableService", discovery_adapter),
-    )
-    container.bind(
-        "plugin_loader_port",
-        cast("t.RegisterableService", loader_adapter),
-    )
     return FlextPluginService()
 
 
 @pytest.fixture
 def real_discovery_service_with_adapters(temp_plugin_dir: Path) -> FlextPluginService:
-    container = FlextContainer()
-    discovery_adapter = FlextPluginDiscovery()
-    container.bind(
-        "plugin_discovery_port",
-        cast("t.RegisterableService", discovery_adapter),
-    )
     return FlextPluginService()
 
 

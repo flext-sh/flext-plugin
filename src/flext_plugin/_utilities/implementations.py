@@ -204,15 +204,7 @@ class FlextPluginImplementations:
                     self._entity.record_execution(0.0, success=True)
                 result = self._operations[operation]
                 return r[t.JsonValue].ok(result)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Operation %s failed", operation)
                 if self._entity:
                     self._entity.record_error(str(e))

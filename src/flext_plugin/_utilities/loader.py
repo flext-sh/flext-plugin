@@ -233,15 +233,7 @@ class FlextPluginLoader:
                 )
             self.logger.info("Plugin dependencies validated: %s", plugin_name)
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to validate dependencies for %s", plugin_name)
             return r[bool].fail(f"Dependency validation error: {e!s}")
 

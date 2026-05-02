@@ -282,15 +282,7 @@ class FlextPluginHotReload:
             self._reload_history.append(reload_record)
             self.logger.info("Reloaded plugin: %s", plugin_name)
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
             return r[bool].fail(f"Reload error: {e!s}")
 

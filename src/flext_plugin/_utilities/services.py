@@ -164,7 +164,9 @@ class FlextPluginService(x):
                 )
             discovery_result = self._discovery.discover_plugins(paths)
             if discovery_result.failure:
-                return r[Sequence[m.Plugin.Entity]].fail_op("Discovery", discovery_result.error)
+                return r[Sequence[m.Plugin.Entity]].fail_op(
+                    "Discovery", discovery_result.error
+                )
             registered_plugins: MutableSequence[m.Plugin.Entity] = []
             for plugin_data in discovery_result.value:
                 name = plugin_data.name
@@ -275,7 +277,9 @@ class FlextPluginService(x):
             exec_result = self._executor.execute_plugin(plugin_name, context)
             if exec_result.failure:
                 execution.mark_completed(success=False, error_message=exec_result.error)
-                return r[FlextPluginPlatform.PluginExecution].fail_op("Execution", exec_result.error)
+                return r[FlextPluginPlatform.PluginExecution].fail_op(
+                    "Execution", exec_result.error
+                )
             execution.mark_completed(success=True)
             if u.dict_like(exec_result.value):
                 execution.result = self._to_general_mapping(exec_result.value)
@@ -582,15 +586,7 @@ class FlextPluginService(x):
                 return register_result
             self.logger.info(f"Loaded plugin: {plugin.name}")
             return register_result
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to load plugin from %s", plugin_path)
             return r[m.Plugin.Entity].fail_op("Loading", e)
 
@@ -600,11 +596,15 @@ class FlextPluginService(x):
     ) -> p.Result[m.Plugin.Entity]:
         validation_result = plugin.validate_business_rules()
         if validation_result.failure:
-            return r[m.Plugin.Entity].fail_op("Plugin validation", validation_result.error)
+            return r[m.Plugin.Entity].fail_op(
+                "Plugin validation", validation_result.error
+            )
         if self._security:
             security_result = self._security.validate_plugin_security(plugin)
             if security_result.failure:
-                return r[m.Plugin.Entity].fail_op("Security validation", security_result.error)
+                return r[m.Plugin.Entity].fail_op(
+                    "Security validation", security_result.error
+                )
         if self._registry:
             register_result = self._registry.register_plugin(plugin)
             if register_result.failure:
