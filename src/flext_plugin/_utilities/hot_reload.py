@@ -372,15 +372,7 @@ class FlextPluginHotReload:
                 f"Started hot reload (watchdog unavailable) for {len(watched_paths)} paths",
             )
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to start hot reload watching")
             return r[bool].fail(f"Start watching error: {e!s}")
 
@@ -404,15 +396,7 @@ class FlextPluginHotReload:
             self._watched_paths.clear()
             self.logger.info("Stopped hot reload monitoring")
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to stop hot reload watching")
             return r[bool].fail(f"Stop watching error: {e!s}")
 

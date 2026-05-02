@@ -345,15 +345,7 @@ class FlextPluginImplementations:
                     "_transform_version": self._version,
                 })
                 return r[t.JsonValue].ok(dict(transformed))
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Transformation failed")
                 return r[t.JsonValue].fail_op("Transform", e)
 
@@ -514,15 +506,7 @@ class FlextPluginImplementations:
                 self.logger.info(f"Discovering plugins in {search_path}")
                 discovered = [f"{search_path}/plugin1", f"{search_path}/plugin2"]
                 return r[t.StrSequence].ok(discovered)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception(f"Plugin discovery failed in {search_path}")
                 return r[t.StrSequence].fail_op("Discovery", e)
 
@@ -551,15 +535,7 @@ class FlextPluginImplementations:
                 )
                 _: p.Result[None] = self._registry.register(plugin_entity)
                 return r[FlextPluginImplementations.ConcretePlugin].ok(concrete_plugin)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception(f"Failed to load plugin from {plugin_path}")
                 return r[FlextPluginImplementations.ConcretePlugin].fail_op("Load", e)
 
