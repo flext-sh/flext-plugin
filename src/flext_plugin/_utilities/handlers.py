@@ -258,15 +258,7 @@ class FlextPluginHandlers:
             )
             self.logger.debug(f"Registered handler for event type: {event_type}")
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception(f"Failed to register handler for {event_type}")
             return r[bool].fail(f"Handler registration error: {e!s}")
 
@@ -318,15 +310,7 @@ class FlextPluginHandlers:
                 f"Triggered event {event_type} with {len(results)} handlers",
             )
             return r[t.JsonList].ok(results)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to trigger event %s", event_type)
             return r[t.JsonList].fail(f"Event triggering error: {e!s}")
 

@@ -128,15 +128,7 @@ class FlextPluginDiscovery:
             return r[Sequence[m.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin discovery failed")
             return r[Sequence[m.Plugin.DiscoveryData]].fail(
                 f"Discovery error: {e!s}",
@@ -160,15 +152,7 @@ class FlextPluginDiscovery:
         try:
             self.logger.debug(f"Plugin validation passed: {plugin_data.name}")
             return r[bool].ok(value=True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin validation failed")
             return r[bool].fail(f"Validation error: {e!s}")
 
@@ -287,15 +271,7 @@ class FlextPluginDiscovery:
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Entry point discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     f"Entry point discovery error: {e!s}",

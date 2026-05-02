@@ -95,9 +95,9 @@ class FlextPluginModels(FlextCliModels):
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @classmethod
-            def create(cls, **kwargs: object) -> Self:
+            def create(cls, **kwargs: p.AttributeProbe) -> Self:
                 """Factory method validated by the entity contract itself."""
-                payload: dict[str, object] = dict(kwargs)
+                payload: dict[str, p.AttributeProbe] = dict(kwargs)
                 entity_id = payload.pop("entity_id", None)
                 if entity_id is not None and "unique_id" not in payload:
                     payload["unique_id"] = entity_id

@@ -135,15 +135,7 @@ class FlextPluginUtilities(u):
                     metadata={"discovered_at": datetime.now(UTC).isoformat()},
                 )
                 return r[m.Plugin.PluginMetadata].ok(metadata)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 return r[m.Plugin.PluginMetadata].fail_op("Metadata extraction", e)
 
         @staticmethod
@@ -180,15 +172,7 @@ class FlextPluginUtilities(u):
                                 f"Plugin contains potentially dangerous code: {pattern}",
                             )
                 return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 return r[None].fail_op("Plugin file validation", e)
 
         @staticmethod

@@ -282,15 +282,7 @@ class FlextPluginService(x):
             plugin.record_execution(0.0, success=True)
             self.logger.info("Executed plugin '%s' successfully", plugin_name)
             return r[FlextPluginPlatform.PluginExecution].ok(execution)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to execute plugin '%s'", plugin_name)
             return r[FlextPluginPlatform.PluginExecution].fail(
                 f"Execution error: {e!s}",
@@ -424,15 +416,7 @@ class FlextPluginService(x):
             return r[t.JsonMapping].ok(
                 self._to_general_mapping(monitoring_result.value)
             )
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception(
                 "Failed to get %s for plugin '%s'",
                 operation_name,

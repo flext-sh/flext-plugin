@@ -178,15 +178,7 @@ class FlextPluginLoader:
                 )
             self.logger.info("Reloaded plugin: %s", plugin_name)
             return load_result
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to reload plugin %s", plugin_name)
             return r[m.Plugin.LoadData].fail(f"Reload error: {e!s}")
 
@@ -207,15 +199,7 @@ class FlextPluginLoader:
             del self._loaded_plugins[plugin_name]
             self.logger.info("Unloaded plugin: %s", plugin_name)
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to unload plugin %s", plugin_name)
             return r[bool].fail(f"Unloading error: {e!s}")
 
@@ -350,15 +334,7 @@ class FlextPluginLoader:
                     loaded_at=datetime.now(UTC),
                     entry_file=entry_file,
                 )
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ):
+            except c.EXC_BROAD_IO_TYPE:
                 self.logger.exception(f"Failed to load directory plugin: {path}")
                 return None
 

@@ -19,7 +19,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from watchdog.observers import Observer as WatchdogObserver
 from watchdog.observers.api import BaseObserver
 
-from flext_plugin import m, p, r, t, u
+from flext_plugin import c, m, p, r, t, u
 
 
 class FlextPluginFileChangeHandler(FileSystemEventHandler):
@@ -141,15 +141,7 @@ class FlextPluginHotReload:
             self._watched_paths.add(path_obj)
             self.logger.info(f"Added watch path: {path}")
             return r[bool].ok(True)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception(f"Failed to add watch path: {path}")
             return r[bool].fail(f"Add watch path error: {e!s}")
 
@@ -205,15 +197,7 @@ class FlextPluginHotReload:
                 "count": len(reload_results),
             })
             return r[t.JsonMapping].ok(reload_summary)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as e:
+        except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to force reload all plugins")
             return r[t.JsonMapping].fail(f"Force reload error: {e!s}")
 
@@ -287,15 +271,7 @@ class FlextPluginHotReload:
             for callback in self._reload_callbacks:
                 try:
                     callback(plugin_name)
-                except (
-                    ValueError,
-                    TypeError,
-                    KeyError,
-                    AttributeError,
-                    OSError,
-                    RuntimeError,
-                    ImportError,
-                ):
+                except c.EXC_BROAD_IO_TYPE:
                     self.logger.exception("Reload callback failed for %s", plugin_name)
             reload_record = m.Plugin.ReloadRecord(
                 plugin_name=plugin_name,

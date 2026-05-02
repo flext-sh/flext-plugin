@@ -128,15 +128,7 @@ class FlextPluginImplementations:
                     self.logger.info(f"Plugin entity {self.name} activated")
                 self._initialized = True
                 return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception(f"Failed to initialize plugin {self.name}")
                 return r[None].fail_op("Initialization", e)
 
@@ -154,15 +146,7 @@ class FlextPluginImplementations:
                     self.logger.info(f"Plugin entity {self.name} deactivated")
                 self._initialized = False
                 return r[None].ok(None)
-            except (
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ImportError,
-            ) as e:
+            except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception(f"Failed to shutdown plugin {self.name}")
                 return r[None].fail_op("Shutdown", e)
 
