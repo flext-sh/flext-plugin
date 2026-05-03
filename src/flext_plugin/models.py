@@ -367,39 +367,6 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ] = None
 
-        class ReloadRecord(FlextCliModels.Value):
-            """Plugin reload record - immutable reload history entry.
-
-            Records information about a plugin reload event including timing,
-            success/failure status, and optional error details. Immutable value object.
-
-            Attributes:
-            plugin_name: Name of reloaded plugin
-            plugin_path: Path to reloaded plugin
-            timestamp: When reload occurred
-            success: Whether reload succeeded
-            error: Error message if reload failed
-            duration_ms: Reload duration in milliseconds
-
-            """
-
-            plugin_name: Annotated[str, u.Field(description="Name of reloaded plugin")]
-            plugin_path: Annotated[Path, u.Field(description="Path to reloaded plugin")]
-            timestamp: Annotated[datetime, u.Field(description="When reload occurred")]
-            success: Annotated[bool, u.Field(description="Whether reload succeeded")]
-            error: Annotated[
-                str | None,
-                u.Field(
-                    description="Error message if reload failed",
-                ),
-            ] = None
-            duration_ms: Annotated[
-                t.NonNegativeFloat,
-                u.Field(
-                    description="Reload duration in milliseconds",
-                ),
-            ] = 0.0
-
         class PluginMetadata(FlextCliModels.Value):
             """Plugin metadata - immutable metadata value object.
 

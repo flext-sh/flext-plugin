@@ -26,7 +26,6 @@ if _t.TYPE_CHECKING:
     )
     from flext_plugin._utilities.adapters import FlextPluginAdapters
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
-    from flext_plugin._utilities.implementations import FlextPluginImplementations
     from flext_plugin._utilities.loader import FlextPluginLoader
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
     from flext_plugin.api import FlextPluginApi, plugin
@@ -52,7 +51,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ),
             "._utilities.adapters": ("FlextPluginAdapters",),
             "._utilities.discovery": ("FlextPluginDiscovery",),
-            "._utilities.implementations": ("FlextPluginImplementations",),
             "._utilities.loader": ("FlextPluginLoader",),
             "._utilities.plugin_platform": ("FlextPluginPlatform",),
             ".api": (
@@ -120,7 +118,6 @@ __all__: list[str] = [
     "FlextPluginApi",
     "FlextPluginConstants",
     "FlextPluginDiscovery",
-    "FlextPluginImplementations",
     "FlextPluginLoader",
     "FlextPluginModels",
     "FlextPluginPlatform",

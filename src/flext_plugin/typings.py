@@ -36,21 +36,6 @@ class FlextPluginTypes(cli_t):
             Awaitable[cli_t.JsonMapping],
         ]
 
-        class HandlerInfo:
-            """Handler metadata container."""
-
-            handler: FlextPluginTypes.Plugin.EventHandler
-            priority: int
-
-            def __init__(
-                self,
-                handler: FlextPluginTypes.Plugin.EventHandler,
-                priority: int = 0,
-            ) -> None:
-                """Initialize handler info."""
-                self.handler = handler
-                self.priority = priority
-
 
 t = FlextPluginTypes
 
