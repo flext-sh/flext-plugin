@@ -215,14 +215,6 @@ class FlextPluginConstants(c):
             FILE_SYSTEM = "file_system"
             ENTRY_POINTS = "entry_points"
 
-        @unique
-        class LoadTypeLiteral(StrEnum):
-            """Load type literal enumeration."""
-
-            FILE = "file"
-            DIRECTORY = "directory"
-            ENTRY_POINT = "entry_point"
-
 
 c = FlextPluginConstants
 __all__: tuple[str, ...] = ("FlextPluginConstants", "c")
