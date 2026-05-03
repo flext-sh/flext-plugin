@@ -113,16 +113,6 @@ class TestsFlextPluginDomainEntities:
 
     """Test FlextPluginModels.Config entity functionality."""
 
-    def test_configuration_creation(self) -> None:
-        """Test creating FlextPluginModels.Config."""
-        settings = m.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            config={"enabled": True, "key": "value"},
-        )
-        assert settings.plugin_name == "test-plugin"
-        assert settings.config["enabled"] is True
-        assert settings.config["key"] == "value"
-
     def test_metadata_creation(self) -> None:
         """Test creating m.Plugin.PluginMetadata."""
         metadata = m.Plugin.PluginMetadata(

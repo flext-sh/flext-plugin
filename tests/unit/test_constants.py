@@ -31,12 +31,6 @@ class TestsFlextPluginConstantsUnit:
         tm.that(c.Plugin.UTILITY_PLUGIN_TYPES, none=False)
         tm.that(c.Plugin.ALL_PLUGIN_TYPES, none=False)
 
-    def test_hot_reload_constants(self) -> None:
-        """Test hot reload constants."""
-        tm.that(c.Plugin.HotReload.DEFAULT_INTERVAL_SECONDS, gt=0)
-        tm.that(c.Plugin.HotReload.DEBOUNCE_MS, gte=0)
-        tm.that(c.Plugin.HotReload.MAX_RETRIES, gt=0)
-
     def test_files_constants(self) -> None:
         """Test file-related constants."""
         tm.that(c.Plugin.Files.PYTHON_EXTENSION, empty=False)

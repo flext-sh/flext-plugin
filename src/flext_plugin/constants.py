@@ -122,17 +122,6 @@ class FlextPluginConstants(c):
             TYPE_HYBRID: Final[str] = "hybrid"
             DEFAULT_SYNC_INTERVAL: Final[int] = 3600
 
-        class HotReload:
-            """Hot reload configuration constants."""
-
-            DEFAULT_INTERVAL_SECONDS: Final[int] = 2
-            DEBOUNCE_MS: Final[int] = 500
-            MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
-            EVENT_CREATED: Final[str] = "created"
-            EVENT_MODIFIED: Final[str] = "modified"
-            EVENT_DELETED: Final[str] = "deleted"
-            EVENT_MOVED: Final[str] = "moved"
-
         class Files:
             """File extension constants."""
 

@@ -15,7 +15,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_domain_ports": ("TestsFlextPluginDomainPorts",),
         ".test_examples": ("TestsFlextPluginExamples",),
         ".test_imports": ("test_imports",),
-        ".test_loader": ("TestsFlextPluginLoader",),
         ".test_models": ("TestsFlextPluginModelsUnit",),
         ".test_plugin": ("TestsFlextPluginPlugin",),
         ".test_types": ("TestsFlextPluginTypesUnit",),

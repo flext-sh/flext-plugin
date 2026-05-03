@@ -440,20 +440,6 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ] = u.Field(default_factory=datetime.now)
 
-        class PluginConfig(FlextCliModels.Value):
-            """Plugin configuration model.
-
-            Represents configuration for a plugin with key-value pairs.
-            """
-
-            plugin_name: Annotated[str, u.Field(description="Plugin name")]
-            config: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Configuration settings",
-                ),
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
-
 
 m: type[FlextPluginModels] = FlextPluginModels
 

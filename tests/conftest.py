@@ -24,9 +24,8 @@ from pathlib import Path
 
 import pytest
 
-from flext_core import FlextContainer
-from flext_plugin import FlextPluginAdapters, FlextPluginSettings
-from tests import c, m, p, t
+from flext_plugin import FlextPluginSettings
+from tests import c, m, t
 
 
 @pytest.fixture
@@ -123,25 +122,6 @@ def real_plugin_directory() -> Generator[Path]:
 
 
 @pytest.fixture
-def real_container_with_adapters() -> p.Container:
-    """Create FlextContainer with REAL adapters registered."""
-    container = FlextContainer()
-    discovery_svc: t.RegisterableService = dict(
-        vars(FlextPluginAdapters.FileSystemDiscoveryAdapter()),
-    )
-    loader_svc: t.RegisterableService = dict(
-        vars(FlextPluginAdapters.DynamicLoaderAdapter()),
-    )
-    manager_svc: t.RegisterableService = dict(
-        vars(FlextPluginAdapters.PluginExecutorAdapter()),
-    )
-    container.bind("plugin_discovery_port", discovery_svc)
-    container.bind("plugin_loader_port", loader_svc)
-    container.bind("plugin_manager_port", manager_svc)
-    return container
-
-
-@pytest.fixture
 def real_plugin_entity() -> m.Plugin.Entity:
     """Create REAL m.Plugin for testing."""
     return m.Plugin.Entity(
@@ -153,24 +133,6 @@ def real_plugin_entity() -> m.Plugin.Entity:
         is_enabled=True,
         metadata={},
     )
-
-
-@pytest.fixture
-def real_discovery_adapter() -> FlextPluginAdapters.FileSystemDiscoveryAdapter:
-    """Create REAL discovery adapter."""
-    return FlextPluginAdapters.FileSystemDiscoveryAdapter()
-
-
-@pytest.fixture
-def real_loader_adapter() -> FlextPluginAdapters.DynamicLoaderAdapter:
-    """Create REAL loader adapter."""
-    return FlextPluginAdapters.DynamicLoaderAdapter()
-
-
-@pytest.fixture
-def real_manager_adapter() -> FlextPluginAdapters.PluginExecutorAdapter:
-    """Create REAL manager adapter."""
-    return FlextPluginAdapters.PluginExecutorAdapter()
 
 
 @pytest.fixture

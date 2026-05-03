@@ -144,12 +144,3 @@ class TestsFlextPluginModelsUnit:
         assert metadata.version == "1.0.0"
         assert metadata.author == "Test Author"
         assert metadata.description == "Test plugin description"
-
-    def test_config_creation(self) -> None:
-        """Test Config model creation."""
-        settings = m.Plugin.PluginConfig(
-            plugin_name="test-plugin",
-            config={"key": "value"},
-        )
-        assert settings.plugin_name == "test-plugin"
-        assert settings.config == {"key": "value"}
