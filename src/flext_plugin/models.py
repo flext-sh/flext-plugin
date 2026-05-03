@@ -311,62 +311,6 @@ class FlextPluginModels(FlextCliModels):
                     raise ValueError(error_msg)
                 return value
 
-        class LoadData(FlextCliModels.Value):
-            """Plugin load data - immutable load result.
-
-            Represents successfully loaded plugin information including the loaded
-            module t.JsonValue and load metadata. Immutable value object.
-
-            Attributes:
-            name: Plugin unique identifier name
-            version: Plugin semantic version
-            path: File system path to plugin
-            module: The loaded Python module t.JsonValue
-            load_type: Type of loaded plugin (file, directory, entry_point)
-            loaded_at: Timestamp when plugin was loaded
-            entry_file: Entry file path for directory-based plugins
-
-            """
-
-            name: Annotated[
-                str,
-                u.Field(
-                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
-                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
-                    description="Plugin unique identifier name",
-                ),
-            ]
-            version: Annotated[
-                str,
-                u.Field(
-                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
-                    description="Plugin semantic version (X.Y.Z)",
-                ),
-            ]
-            path: Annotated[Path, u.Field(description="File system path to plugin")]
-            module: Annotated[
-                types.ModuleType,
-                u.Field(
-                    description="The loaded Python module t.JsonValue",
-                ),
-            ]
-            load_type: Annotated[
-                c.Plugin.LoadTypeLiteral,
-                u.Field(
-                    description="Type of loaded plugin",
-                ),
-            ]
-            loaded_at: Annotated[
-                datetime,
-                u.Field(description="Timestamp when plugin was loaded"),
-            ]
-            entry_file: Annotated[
-                Path | None,
-                u.Field(
-                    description="Entry file path for directory-based plugins",
-                ),
-            ] = None
-
         class PluginMetadata(FlextCliModels.Value):
             """Plugin metadata - immutable metadata value object.
 
