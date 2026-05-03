@@ -99,28 +99,11 @@ class FlextPluginConstants(c):
             *UTILITY_PLUGIN_TYPES,
         })
 
-        SECURITY_MEDIUM: Final[str] = "medium"
-
         class Execution:
             """Execution state constants."""
 
-            STATE_PENDING: Final[str] = "pending"
-            STATE_RUNNING: Final[str] = "running"
-            STATE_COMPLETED: Final[str] = "completed"
-            STATE_FAILED: Final[str] = "failed"
-            STATE_CANCELLED: Final[str] = "cancelled"
-            RESULT_EXECUTED: Final[str] = "executed"
-            LOAD_TYPE_FILE: Final = "file"
-            LOAD_TYPE_DIRECTORY: Final = "directory"
-            LOAD_TYPE_ENTRY_POINT: Final = "entry_point"
-
         class Registry:
             """Registry type constants."""
-
-            TYPE_LOCAL: Final[str] = "local"
-            TYPE_REMOTE: Final[str] = "remote"
-            TYPE_HYBRID: Final[str] = "hybrid"
-            DEFAULT_SYNC_INTERVAL: Final[int] = 3600
 
         class Files:
             """File extension constants."""
@@ -132,23 +115,16 @@ class FlextPluginConstants(c):
             DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
             DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
             DEFAULT_CONFIG_DIR: Final[str] = c.Directory.CONFIG.value
-            DEFAULT_CONFIG_FILE: Final[str] = "plugin.yaml"
-            CONFIG_SCHEMA_VERSION: Final[str] = "1.0"
 
         class PluginValidation:
             """Plugin validation pattern constants."""
 
             PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
             VERSION_PATTERN: Final[str] = "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$"
-            SECURITY_LEVEL_PATTERN: Final[str] = "^(low|medium|high|critical)$"
-            LOG_LEVEL_PATTERN: Final[str] = "^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
-            MAX_DEPENDENCIES: Final[int] = 50
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
             MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
             MAX_DESCRIPTION_LENGTH: Final[int] = 1000
             MAX_AUTHOR_LENGTH: Final[int] = 200
-            MIN_PRIORITY: Final[int] = 0
-            MAX_PRIORITY: Final[int] = 100
 
         @unique
         class PluginStatus(StrEnum):
@@ -189,16 +165,6 @@ class FlextPluginConstants(c):
                 return self in self.get_operational_statuses()
 
         "All plugin types - union of all plugin type frozensets."
-        OPERATIONAL_STATUSES: ClassVar[frozenset[str]] = frozenset({
-            PluginStatus.ACTIVE,
-            PluginStatus.HEALTHY,
-            PluginStatus.LOADED,
-        })
-        ERROR_STATUSES: ClassVar[frozenset[str]] = frozenset({
-            PluginStatus.ERROR,
-            PluginStatus.UNHEALTHY,
-            PluginStatus.DISABLED,
-        })
 
         @unique
         class DiscoveryTypeLiteral(StrEnum):
