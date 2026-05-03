@@ -88,11 +88,6 @@ class TestsFlextPluginConfig:
         with pytest.raises(ValueError):
             _ = FlextPluginSettings.model_validate(payload)
 
-    def test_created_at_timestamp(self) -> None:
-        FlextPluginSettings.reset_for_testing()
-        settings = FlextPluginSettings.fetch_global()
-        tm.that(settings.version, ne="")
-
     def test_config_model_validation(self) -> None:
         FlextPluginSettings.reset_for_testing()
         settings = FlextPluginSettings.fetch_global(

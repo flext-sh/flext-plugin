@@ -101,26 +101,6 @@ class FlextPluginConstants(c):
 
         SECURITY_MEDIUM: Final[str] = "medium"
 
-        class PluginPerformance:
-            """Plugin performance metric constants."""
-
-            PERCENTAGE_MAX: Final[int] = 100
-            PERCENTAGE_MIN: Final[int] = 0
-            EXCELLENT_SUCCESS_RATE: Final[float] = 95.0
-            GOOD_SUCCESS_RATE: Final[float] = 90.0
-            FAIR_SUCCESS_RATE: Final[float] = 80.0
-            EXCELLENT_TIME_MS: Final[int] = 1000
-            GOOD_TIME_MS: Final[int] = 2000
-            FAIR_TIME_MS: Final[int] = 5000
-            EXECUTION_TIME_SCALE_MS_TO_S: Final[int] = 1000
-            READY_TIMEOUT_SECONDS: Final[int] = 300
-            READY_MAX_MEMORY_MB: Final[int] = 1024
-            MAX_CONCURRENT_LOADS_WARNING_THRESHOLD: Final[int] = 20
-            MINIMUM_MEMORY_LIMIT_MB: Final[int] = 64
-            MAXIMUM_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600
-            DEFAULT_MAX_CPU_PERCENT: Final[int] = 50
-            DEFAULT_MAX_CONCURRENT_PLUGINS: Final[int] = 10
-
         class Execution:
             """Execution state constants."""
 
@@ -180,69 +160,6 @@ class FlextPluginConstants(c):
             MAX_AUTHOR_LENGTH: Final[int] = 200
             MIN_PRIORITY: Final[int] = 0
             MAX_PRIORITY: Final[int] = 100
-
-        class PluginMessages:
-            """Plugin error message constants."""
-
-            PLUGIN_NOT_FOUND: Final[str] = "Plugin '{plugin_name}' not found"
-            PLUGIN_ALREADY_EXISTS: Final[str] = "Plugin '{plugin_name}' already exists"
-            PLUGIN_LOAD_FAILED: Final[str] = (
-                "Failed to load plugin '{plugin_name}': {error}"
-            )
-            PLUGIN_INVALID_NAME: Final[str] = "Invalid plugin name '{plugin_name}'"
-            PLUGIN_LOADED_SUCCESS: Final[str] = (
-                "Plugin '{plugin_name}' loaded successfully"
-            )
-            PLUGIN_ACTIVATED_SUCCESS: Final[str] = (
-                "Plugin '{plugin_name}' activated successfully"
-            )
-            TOO_MANY_DEPENDENCIES: Final[str] = "Too many dependencies (max 50)"
-            INVALID_DEPENDENCY_FORMAT: Final[str] = (
-                "Invalid dependency name format: {dep}"
-            )
-            PLUGIN_CANNOT_BE_ACTIVE_WHEN_DISABLED: Final[str] = (
-                "Plugin cannot be ACTIVE when disabled"
-            )
-            PLUGIN_CANNOT_DEPEND_ON_ITSELF: Final[str] = (
-                "Plugin cannot depend on itself"
-            )
-            PRIORITY_MUST_BE_BETWEEN_0_AND_100: Final[str] = (
-                "Priority must be between 0 and 100"
-            )
-            MEMORY_LIMIT_EXCEEDS_MAXIMUM: Final[str] = (
-                "Memory limit exceeds production maximum: 1024MB"
-            )
-            MEMORY_LIMIT_TOO_LOW: Final[str] = "Memory limit too low (minimum 64MB)"
-            INVALID_SECURITY_LEVEL: Final[str] = "Invalid security level: {level}"
-            MISSING_REQUIRED_THRESHOLDS: Final[str] = (
-                "Missing required thresholds: {missing}"
-            )
-            PERCENTAGE_THRESHOLD_MUST_BE_0_100: Final[str] = (
-                "Percentage threshold {key} must be 0-100"
-            )
-            THRESHOLD_CANNOT_BE_NEGATIVE: Final[str] = (
-                "Threshold {key} cannot be negative"
-            )
-            INVALID_LOG_LEVEL: Final[str] = "Invalid log level: {level}"
-            RETENTION_DAYS_MUST_BE_BETWEEN_1_AND_365: Final[str] = (
-                "Retention days must be between 1 and 365"
-            )
-            AT_LEAST_ONE_PLUGIN_PATH_MUST_BE_SPECIFIED: Final[str] = (
-                "At least one plugin path must be specified"
-            )
-            TIMEOUT_MUST_BE_POSITIVE: Final[str] = "Timeout must be positive"
-            WATCH_INTERVAL_MUST_BE_POSITIVE: Final[str] = (
-                "Watch interval must be positive"
-            )
-            DEBOUNCE_TIME_CANNOT_BE_NEGATIVE: Final[str] = (
-                "Debounce time cannot be negative"
-            )
-            CPU_PERCENTAGE_MUST_BE_BETWEEN_0_AND_100: Final[str] = (
-                "CPU percentage must be between 0 and 100"
-            )
-            SYNC_INTERVAL_MUST_BE_POSITIVE: Final[str] = (
-                "Sync interval must be positive"
-            )
 
         @unique
         class PluginStatus(StrEnum):
@@ -316,15 +233,6 @@ class FlextPluginConstants(c):
             FILE = "file"
             DIRECTORY = "directory"
             ENTRY_POINT = "entry_point"
-
-        @unique
-        class SecurityLevelLiteral(StrEnum):
-            """Security level literal enumeration."""
-
-            LOW = "low"
-            MEDIUM = "medium"
-            HIGH = "high"
-            CRITICAL = "critical"
 
 
 c = FlextPluginConstants

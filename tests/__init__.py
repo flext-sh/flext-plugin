@@ -19,11 +19,6 @@ if _t.TYPE_CHECKING:
     from tests.models import TestsFlextPluginModels, m
     from tests.protocols import TestsFlextPluginProtocols, p
     from tests.typings import TestsFlextPluginTypes, t
-    from tests.unit.test_application_handlers import TestsFlextPluginApplicationHandlers
-    from tests.unit.test_application_services import (
-        PluginInterface,
-        TestsFlextPluginApplicationServices,
-    )
     from tests.unit.test_config import TestsFlextPluginConfig
     from tests.unit.test_constants import TestsFlextPluginConstantsUnit
     from tests.unit.test_core_types import TestsFlextPluginCoreTypes
@@ -31,11 +26,7 @@ if _t.TYPE_CHECKING:
     from tests.unit.test_domain_entities import TestsFlextPluginDomainEntities
     from tests.unit.test_domain_ports import TestsFlextPluginDomainPorts
     from tests.unit.test_examples import TestsFlextPluginExamples
-    from tests.unit.test_handlers import TestsFlextPluginHandlers
-    from tests.unit.test_hot_reload import TestsFlextPluginHotReload
-    from tests.unit.test_hot_reload_package import TestsFlextPluginHotReloadPackage
     from tests.unit.test_loader import TestsFlextPluginLoader
-    from tests.unit.test_manager import TestsFlextPluginManager
     from tests.unit.test_models import TestsFlextPluginModelsUnit
     from tests.unit.test_plugin import TestsFlextPluginPlugin
     from tests.unit.test_types import TestsFlextPluginTypesUnit
@@ -60,11 +51,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextPluginTypes",
                 "t",
             ),
-            ".unit.test_application_handlers": ("TestsFlextPluginApplicationHandlers",),
-            ".unit.test_application_services": (
-                "PluginInterface",
-                "TestsFlextPluginApplicationServices",
-            ),
             ".unit.test_config": ("TestsFlextPluginConfig",),
             ".unit.test_constants": ("TestsFlextPluginConstantsUnit",),
             ".unit.test_core_types": ("TestsFlextPluginCoreTypes",),
@@ -72,11 +58,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_domain_entities": ("TestsFlextPluginDomainEntities",),
             ".unit.test_domain_ports": ("TestsFlextPluginDomainPorts",),
             ".unit.test_examples": ("TestsFlextPluginExamples",),
-            ".unit.test_handlers": ("TestsFlextPluginHandlers",),
-            ".unit.test_hot_reload": ("TestsFlextPluginHotReload",),
-            ".unit.test_hot_reload_package": ("TestsFlextPluginHotReloadPackage",),
             ".unit.test_loader": ("TestsFlextPluginLoader",),
-            ".unit.test_manager": ("TestsFlextPluginManager",),
             ".unit.test_models": ("TestsFlextPluginModelsUnit",),
             ".unit.test_plugin": ("TestsFlextPluginPlugin",),
             ".unit.test_types": ("TestsFlextPluginTypesUnit",),
@@ -127,9 +109,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
-    "PluginInterface",
-    "TestsFlextPluginApplicationHandlers",
-    "TestsFlextPluginApplicationServices",
     "TestsFlextPluginConfig",
     "TestsFlextPluginConstants",
     "TestsFlextPluginConstantsUnit",
@@ -138,11 +117,7 @@ __all__: list[str] = [
     "TestsFlextPluginDomainEntities",
     "TestsFlextPluginDomainPorts",
     "TestsFlextPluginExamples",
-    "TestsFlextPluginHandlers",
-    "TestsFlextPluginHotReload",
-    "TestsFlextPluginHotReloadPackage",
     "TestsFlextPluginLoader",
-    "TestsFlextPluginManager",
     "TestsFlextPluginModels",
     "TestsFlextPluginModelsUnit",
     "TestsFlextPluginPlugin",
