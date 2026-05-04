@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import re
 from collections.abc import (
     MutableSequence,
     Sequence,
@@ -117,13 +116,14 @@ class FlextPluginUtilities(u):
                 description = f"Plugin from {plugin_path.name}"
                 if plugin_path.suffix == ".py":
                     content = plugin_path.read_text(encoding=c.DEFAULT_ENCODING)
-                    version_match = re.search(
-                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']",
-                        content,
+                    version_match = c.Plugin.PluginValidation.VERSION_DUNDER_RE.search(
+                        content
                     )
                     if version_match:
                         version = version_match.group(1)
-                    doc_match = re.search(r'"""([^"]+)"""', content)
+                    doc_match = c.Plugin.PluginValidation.DOCSTRING_TRIPLE_RE.search(
+                        content
+                    )
                     if doc_match:
                         description = doc_match.group(1).strip()
                 metadata = m.Plugin.PluginMetadata(
@@ -188,7 +188,7 @@ class FlextPluginUtilities(u):
             r indicating validation success or failure
 
             """
-            if not re.match(FlextPluginUtilities.Plugin.PLUGIN_NAME_PATTERN, name):
+            if not c.Plugin.PluginValidation.PLUGIN_NAME_RE.match(name):
                 return r[None].fail(
                     f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
                 )
