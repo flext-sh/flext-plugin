@@ -1,0 +1,31 @@
+src/flext_plugin/constants.py
+  26f224f147ec0d09 10,124,126-132
+src/flext_plugin/utilities.py
+  26f224f147ec0d09 119-120,124-126,191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "e81fa9846a08e9ea159632641906ce207ac54c19",
+  "prompts": {
+    "26f224f147ec0d09": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "af795733-b18d-4c66-a653-6ff9466111c6",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 15,
+      "total_deletions": 5,
+      "accepted_lines": 15,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/644bc0227f52889536ee4ae9c297cdbb38131828a98a532963b00d684db7c76c"
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
