@@ -13,7 +13,6 @@ import argparse
 import socket
 import sys
 
-from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
 
 
@@ -148,8 +147,7 @@ def main() -> None:
     postgres_plugin, _postgres_config = create_docker_postgres_plugin()
     redis_plugin, _redis_config = create_docker_redis_plugin()
     ldap_plugin, _ldap_config = create_docker_ldap_plugin()
-    container = FlextContainer()
-    FlextPluginApi(container)
+    _ = FlextPluginApi.fetch_global()
     if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
         validation_result = postgres_plugin.validate_business_rules()
         if validation_result.success:

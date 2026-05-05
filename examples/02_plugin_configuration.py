@@ -13,7 +13,6 @@ Docker Usage:
 
 from __future__ import annotations
 
-from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi, t
 
 
@@ -68,8 +67,7 @@ def create_ldap_plugin_config() -> t.JsonMapping:
 def main() -> None:
     """Demonstrate plugin configuration patterns."""
     create_database_plugin_config()
-    container = FlextContainer()
-    FlextPluginApi(container)
+    _ = FlextPluginApi.fetch_global()
     create_ldap_plugin_config()
 
 

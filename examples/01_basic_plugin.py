@@ -9,14 +9,13 @@ Usage:
 
 from __future__ import annotations
 
-from flext_core import FlextContainer
 from flext_plugin import FlextPluginApi
 
 
 def main() -> None:
     """Demonstrate basic plugin creation and usage."""
-    container = FlextContainer()
-    FlextPluginApi(container)
+    api = FlextPluginApi.fetch_global()
+    _ = api.list_plugins()
 
 
 if __name__ == "__main__":
