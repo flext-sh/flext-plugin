@@ -413,8 +413,8 @@ class FlextPluginPlatform:
             eid: str,
         ) -> FlextPluginPlatform.PluginExecution | None:
             """Fetch an execution by ID."""
-            execution: FlextPluginPlatform.PluginExecution | None = (
-                self.executions.get(eid)
+            execution: FlextPluginPlatform.PluginExecution | None = self.executions.get(
+                eid
             )
             return execution
 
