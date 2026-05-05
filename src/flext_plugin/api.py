@@ -3,7 +3,7 @@
 `FlextPluginApi` extends `s` (FlextService) so it inherits per-class
 `fetch_global()` / `reset_for_testing()` / `with_settings()` from the
 canonical service kernel. State (`logger`, `platform`) lives in
-`PrivateAttr` — no `__init__`, no `__slots__`. All public methods return
+`u.PrivateAttr` — no `__init__`, no `__slots__`. All public methods return
 `r[T]` (ENFORCE-056 — Uniform `r[T]` Return).
 
 Returns expose the most-specific concrete type produced by the platform
@@ -19,8 +19,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from pydantic import PrivateAttr
-
 from flext_core import FlextContainer, e, r, s
 from flext_plugin import FlextPluginPlatform, p, t, u
 
@@ -33,14 +31,14 @@ def _build_default_platform() -> FlextPluginPlatform.PluginPlatformService:
 class FlextPluginApi(s):
     """Railway-oriented plugin facade with composition (MRO via FlextService).
 
-    Per AGENTS.md §2.5 service facade pattern: state via PrivateAttr,
+    Per AGENTS.md §2.5 service facade pattern: state via u.PrivateAttr,
     no constructor, public surface returns `r[T]` uniformly.
     """
 
-    _logger: p.Logger = PrivateAttr(
+    _logger: p.Logger = u.PrivateAttr(
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
-    _platform: FlextPluginPlatform.PluginPlatformService = PrivateAttr(
+    _platform: FlextPluginPlatform.PluginPlatformService = u.PrivateAttr(
         default_factory=_build_default_platform,
     )
 
