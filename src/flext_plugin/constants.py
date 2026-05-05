@@ -9,9 +9,12 @@ from __future__ import annotations
 
 import re
 from enum import StrEnum, unique
-from typing import ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from flext_cli import c
+
+if TYPE_CHECKING:
+    from flext_plugin import t
 
 
 class FlextPluginConstants(c):
@@ -121,15 +124,13 @@ class FlextPluginConstants(c):
             """Plugin validation pattern constants."""
 
             PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
-            PLUGIN_NAME_RE: ClassVar[re.Pattern[str]] = re.compile(PLUGIN_NAME_PATTERN)
+            PLUGIN_NAME_RE: ClassVar[t.RegexPattern] = re.compile(PLUGIN_NAME_PATTERN)
             VERSION_PATTERN: Final[str] = "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$"
-            VERSION_RE: ClassVar[re.Pattern[str]] = re.compile(VERSION_PATTERN)
-            VERSION_DUNDER_RE: ClassVar[re.Pattern[str]] = re.compile(
+            VERSION_RE: ClassVar[t.RegexPattern] = re.compile(VERSION_PATTERN)
+            VERSION_DUNDER_RE: ClassVar[t.RegexPattern] = re.compile(
                 r"__version__\s*=\s*[\"']([^\"']+)[\"']"
             )
-            DOCSTRING_TRIPLE_RE: ClassVar[re.Pattern[str]] = re.compile(
-                r'"""([^"]+)"""'
-            )
+            DOCSTRING_TRIPLE_RE: ClassVar[t.RegexPattern] = re.compile(r'"""([^"]+)"""')
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
             MIN_PLUGIN_NAME_LENGTH: Final[int] = 3
             MAX_DESCRIPTION_LENGTH: Final[int] = 1000
