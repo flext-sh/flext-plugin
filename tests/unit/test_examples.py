@@ -53,7 +53,7 @@ class TestsFlextPluginExamples:
         """Test that 03_docker_integration.py runs successfully without errors."""
         example_path = _examples_dir() / "03_docker_integration.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path)],
+            [sys.executable, str(example_path), "run"],
             cwd=_examples_dir().parent,
         )
         assert result.success, result.error
@@ -66,7 +66,7 @@ class TestsFlextPluginExamples:
         """Test docker integration example with connection testing enabled."""
         example_path = _examples_dir() / "03_docker_integration.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), "--test-connections"],
+            [sys.executable, str(example_path), "run", "--test-connections"],
             cwd=_examples_dir().parent,
         )
         assert result.success, result.error

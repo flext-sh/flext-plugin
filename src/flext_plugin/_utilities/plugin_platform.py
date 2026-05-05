@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from typing import override
 
-from flext_core import FlextSettings, e
+from flext_core import e
 from flext_plugin import (
     FlextPluginSettings,
     c,
@@ -311,7 +311,7 @@ class FlextPluginPlatform:
             return self._registry
 
         @classmethod
-        def _get_service_config_type(cls) -> type[FlextSettings]:
+        def _get_service_config_type(cls) -> type[FlextPluginSettings]:
             """Return FlextPluginSettings as the settings type for this service."""
             return FlextPluginSettings
 
@@ -588,7 +588,6 @@ class FlextPluginPlatform:
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
                 "input_data": execution.input_data,
-                "timeout_seconds": self.settings.timeout_seconds,
             }
             result = self.executor.execute_plugin(execution.plugin_name, exec_context)
             execution.mark_completed(

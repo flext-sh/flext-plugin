@@ -9,10 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import argparse
 import socket
 import sys
+from typing import Annotated, override
 
+from flext_cli import cli, m as cli_m, u as cli_u
+
+from flext_core import p, r, s
 from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
 
 
@@ -129,42 +132,61 @@ def test_connections() -> bool:
     return all_available
 
 
-def main() -> None:
+class _DockerIntegrationCommand(s[bool]):
+    """CLI command for the FLEXT Plugin Docker integration example."""
+
+    test_connections: Annotated[
+        bool,
+        cli_u.Field(
+            default=False,
+            description=(
+                "Test connectivity to Docker services before creating plugins."
+            ),
+        ),
+    ] = False
+
+    @override
+    def execute(self) -> p.Result[bool]:
+        """Run the Docker integration smoke flow and return success/failure."""
+        if self.test_connections and not test_connections():
+            return r[bool].fail("docker services unavailable")
+        postgres_plugin, _postgres_config = create_docker_postgres_plugin()
+        redis_plugin, _redis_config = create_docker_redis_plugin()
+        ldap_plugin, _ldap_config = create_docker_ldap_plugin()
+        _ = FlextPluginApi.fetch_global()
+        for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
+            if not hasattr(plugin, "validate_business_rules"):
+                return r[bool].fail("plugin validation surface unavailable")
+            validation_result = plugin.validate_business_rules()
+            if validation_result.failure:
+                return r[bool].fail(validation_result.error or "validation failed")
+        return r[bool].ok(value=True)
+
+
+def main(args: t.StrSequence | None = None) -> int:
     """Main entry point for the Docker integration example."""
-    parser = argparse.ArgumentParser(
-        description="FLEXT Plugin Docker Integration Example",
+    app = cli.create_app_with_common_params(
+        name="flext-plugin-docker-integration",
+        help_text="FLEXT Plugin Docker Integration Example",
     )
-    _ = parser.add_argument(
-        "--test-connections",
-        action="store_true",
-        help="Test connectivity to Docker services before creating plugins",
+    cli.register_result_routes(
+        app,
+        [
+            cli_m.Cli.ResultCommandRoute(
+                name="run",
+                help_text="Create the example plugins and validate them.",
+                model_cls=_DockerIntegrationCommand,
+                handler=lambda params: params.execute(),
+            ),
+        ],
     )
-    args = parser.parse_args()
-    if args.test_connections:
-        services_available = test_connections()
-        if not services_available:
-            sys.exit(1)
-    postgres_plugin, _postgres_config = create_docker_postgres_plugin()
-    redis_plugin, _redis_config = create_docker_redis_plugin()
-    ldap_plugin, _ldap_config = create_docker_ldap_plugin()
-    _ = FlextPluginApi.fetch_global()
-    if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
-        validation_result = postgres_plugin.validate_business_rules()
-        if validation_result.success:
-            pass
-        else:
-            sys.exit(1)
-    if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
-        validation_result = redis_plugin.validate_business_rules()
-    else:
-        sys.exit(1)
-    if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
-        validation_result = ldap_plugin.validate_business_rules()
-        if validation_result.success:
-            pass
-        else:
-            sys.exit(1)
+    outcome = cli.execute_app(
+        app,
+        prog_name="flext-plugin-docker-integration",
+        args=list(args) if args is not None else sys.argv[1:],
+    )
+    return 0 if outcome.success else 1
 
 
 if __name__ == "__main__":
-    main()
+    cli.exit(main())
