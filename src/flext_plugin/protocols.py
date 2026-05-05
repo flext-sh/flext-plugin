@@ -418,6 +418,6 @@ class FlextPluginProtocols(p):
                 ...
 
 
-p: type[FlextPluginProtocols] = FlextPluginProtocols
+p = FlextPluginProtocols  # canonical local alias for the plugin protocol facade
 
 __all__: list[str] = ["FlextPluginProtocols", "p"]

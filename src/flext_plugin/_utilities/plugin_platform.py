@@ -413,11 +413,15 @@ class FlextPluginPlatform:
             eid: str,
         ) -> FlextPluginPlatform.PluginExecution | None:
             """Fetch an execution by ID."""
-            return self.executions.get(eid)
+            execution: FlextPluginPlatform.PluginExecution | None = (
+                self.executions.get(eid)
+            )
+            return execution
 
         def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
             """Fetch a plugin by name."""
-            return self.plugins.get(name)
+            plugin: FlextPluginPlatform.Plugin | None = self.plugins.get(name)
+            return plugin
 
         def fetch_plugin_status(self, name: str) -> str | None:
             """Fetch a plugin status label."""
