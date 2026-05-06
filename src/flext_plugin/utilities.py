@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import ClassVar
 
 from flext_cli import u
-
 from flext_plugin import c, m, p, r, t
 
 

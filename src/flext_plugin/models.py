@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Annotated, Self
 
 from flext_cli import FlextCliModels, u
-
 from flext_plugin import c, p, r, t
 
 

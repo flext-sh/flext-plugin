@@ -193,4 +193,4 @@ class FlextPluginConstants(c):
 
 
 c = FlextPluginConstants
-__all__: tuple[str, ...] = ("FlextPluginConstants", "c")
+__all__: t.StrSequence = ("FlextPluginConstants", "c")

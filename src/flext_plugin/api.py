@@ -23,7 +23,7 @@ from flext_core import FlextContainer
 from flext_plugin import FlextPluginPlatform, e, p, r, s, t, u
 
 
-def _build_default_platform() -> FlextPluginPlatform.PluginPlatformService:
+def _build_default_platform() -> p.Plugin.PlatformService:
     """Construct the default platform service bound to a fresh container."""
     return FlextPluginPlatform.PluginPlatformService(container=FlextContainer())
 
@@ -38,7 +38,7 @@ class FlextPluginApi(s):
     _logger: p.Logger = u.PrivateAttr(
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
-    _platform: FlextPluginPlatform.PluginPlatformService = u.PrivateAttr(
+    _platform: p.Plugin.PlatformService = u.PrivateAttr(
         default_factory=_build_default_platform,
     )
 
