@@ -23,7 +23,6 @@ from flext_plugin.__version__ import (
 
 if _t.TYPE_CHECKING:
     from flext_cli import d, e, h, r, s, x
-
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
     from flext_plugin.api import FlextPluginApi, plugin
