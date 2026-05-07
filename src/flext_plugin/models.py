@@ -100,7 +100,7 @@ class FlextPluginModels(FlextCliModels):
                 entity_id = payload.pop("entity_id", None)
                 if entity_id is not None and "unique_id" not in payload:
                     payload["unique_id"] = entity_id
-                payload["metadata"] = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                payload["metadata"] = t.json_mapping_adapter().validate_python(
                     payload.get("metadata") or {},
                 )
                 return cls.model_validate(payload)
@@ -162,7 +162,7 @@ class FlextPluginModels(FlextCliModels):
                 )
                 metadata["error_count"] = error_count + 1
                 metadata["last_error"] = error_message
-                self.metadata = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                self.metadata = t.json_mapping_adapter().validate_python(
                     metadata,
                 )
 
@@ -204,7 +204,7 @@ class FlextPluginModels(FlextCliModels):
                     )
                     metadata["failure_count"] = failure_count + 1
 
-                self.metadata = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                self.metadata = t.json_mapping_adapter().validate_python(
                     metadata,
                 )
 

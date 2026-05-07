@@ -246,9 +246,9 @@ class FlextPluginPlatform:
         ) -> t.JsonMapping:
             """Convert mapping-like values to a typed dict."""
             if value is None:
-                return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python({})
+                return t.json_mapping_adapter().validate_python({})
             normalized_value = u.normalize_to_metadata(value)
-            return t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+            return t.json_mapping_adapter().validate_python(
                 normalized_value,
             )
 
@@ -568,7 +568,7 @@ class FlextPluginPlatform:
             """Create execution entity."""
             execution = FlextPluginPlatform.PluginExecution.create(
                 plugin_name=plugin.name,
-                execution_config=t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                execution_config=t.json_mapping_adapter().validate_python(
                     {"input_data": context},
                 ),
                 execution_id=execution_id,

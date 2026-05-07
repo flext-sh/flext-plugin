@@ -11,22 +11,12 @@ from collections.abc import (
     Awaitable,
     Callable,
 )
-from typing import ClassVar
 
-from flext_cli import m, t as cli_t
+from flext_cli import t as cli_t
 
 
 class FlextPluginTypes(cli_t):
     """Plugin type system extending flext_cli via MRO."""
-
-    CONTAINER_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
-        m.TypeAdapter(
-            cli_t.JsonMapping,
-        )
-    )
-    CONTAINER_VALUE_MAPPING_ADAPTER: ClassVar[m.TypeAdapter[cli_t.JsonMapping]] = (
-        m.TypeAdapter(cli_t.JsonMapping)
-    )
 
     class Plugin:
         """Plugin domain namespace (flat members per AGENTS.md §149)."""
