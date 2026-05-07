@@ -1,0 +1,28 @@
+src/flext_plugin/_utilities/plugin_platform.py
+  s_552d8e4891a938::t_8b84170febe131 249,251,571
+src/flext_plugin/typings.py
+  s_552d8e4891a938::t_8b84170febe131 15
+src/flext_plugin/models.py
+  s_552d8e4891a938::t_8b84170febe131 103,165,207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "636e53c5fbe73a2e7c0ec475b6ea4e9ff79cd7cf",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  },
+  "sessions": {
+    "s_552d8e4891a938": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35c0040b-2ae9-466e-90aa-7721509e1e19",
+        "model": "unknown"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
