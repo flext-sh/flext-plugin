@@ -14,10 +14,12 @@ from flext_core.lazy import (
 if _t.TYPE_CHECKING:
     from flext_tests import td, tf, tk, tm, tv
 
-    from flext_plugin import d, e, h, r, s, x
+    from flext_plugin import d, e, h, r, x
+    from tests.base import TestsFlextPluginServiceBase, s
     from tests.constants import TestsFlextPluginConstants, c
     from tests.models import TestsFlextPluginModels, m
     from tests.protocols import TestsFlextPluginProtocols, p
+    from tests.settings import TestsFlextPluginSettings
     from tests.typings import TestsFlextPluginTypes, t
     from tests.unit.test_config import TestsFlextPluginConfig
     from tests.unit.test_constants import TestsFlextPluginConstantsUnit
@@ -34,6 +36,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
     build_lazy_import_map(
         {
+            ".base": (
+                "TestsFlextPluginServiceBase",
+                "s",
+            ),
             ".constants": (
                 "TestsFlextPluginConstants",
                 "c",
@@ -46,6 +52,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextPluginProtocols",
                 "p",
             ),
+            ".settings": ("TestsFlextPluginSettings",),
             ".typings": (
                 "TestsFlextPluginTypes",
                 "t",
@@ -69,7 +76,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "e",
                 "h",
                 "r",
-                "s",
                 "x",
             ),
             "flext_tests": (
@@ -119,6 +125,8 @@ __all__: list[str] = [
     "TestsFlextPluginModelsUnit",
     "TestsFlextPluginPlugin",
     "TestsFlextPluginProtocols",
+    "TestsFlextPluginServiceBase",
+    "TestsFlextPluginSettings",
     "TestsFlextPluginTypes",
     "TestsFlextPluginTypesUnit",
     "TestsFlextPluginUtilities",
