@@ -1,0 +1,33 @@
+tests/settings.py
+  h_5cf852cc46bf92 1-14
+tests/conftest.py
+  s_2914457c55fb6e::t_4a16f73e5bb754 14-15,20-24
+tests/base.py
+  h_5cf852cc46bf92 1-30
+tests/__init__.py
+  s_2914457c55fb6e::t_c360d6d2631ec6 17-18,22,39-42,55,128-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "d93f7186314c495a2eca1eeedbc6f52835d0eacd",
+  "prompts": {},
+  "humans": {
+    "h_5cf852cc46bf92": {
+      "author": "FLEXT Bot <team@flext.sh>"
+    },
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  },
+  "sessions": {
+    "s_2914457c55fb6e": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "028a9615-de04-439a-812a-011714b27791",
+        "model": "unknown"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
