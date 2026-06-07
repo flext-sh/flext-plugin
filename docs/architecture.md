@@ -184,7 +184,8 @@ def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
 
 Uses FlextContainer for service management:
 
-```python notest
+```python
+from __future__ import annotations
 def _setup_services(self) -> None:
     """Register services in DI container"""
     self.container.bind("plugin_service", FlextPluginService(container=self.container))
