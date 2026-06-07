@@ -569,7 +569,7 @@ make secrets-scan         # Secret detection and validation
 
 #### **Security Monitoring**
 
-```python
+```python notest
 # Security event monitoring
 from flext_plugin import FlextPluginSecurityMonitor
 

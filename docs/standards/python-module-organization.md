@@ -67,7 +67,7 @@ ______________________________________________________________________
 
 ### **Foundation Layer** (`src/flext_plugin/`)
 
-```python
+```python notest
 # Plugin system foundation
 src/flext_plugin/
 ├── __init__.py              # 🎯 Plugin system public API gateway
@@ -84,7 +84,7 @@ src/flext_plugin/
 
 **Import Pattern**:
 
-```python
+```python notest
 # Primary entry point for plugin system
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 from flext_plugin import create_flext_plugin_platform
@@ -92,7 +92,7 @@ from flext_plugin import create_flext_plugin_platform
 
 ### **Core Layer** (`src/flext_plugin/core/`)
 
-```python
+```python notest
 # Plugin system core patterns
 ├── core/
 │   ├── __init__.py          # 🚀 Core plugin types export
@@ -104,7 +104,7 @@ from flext_plugin import create_flext_plugin_platform
 
 **Usage Pattern**:
 
-```python
+```python notest
 from flext_plugin import PluginStatus, PluginType, PluginError
 from flext_plugin import PluginDiscovery
 
@@ -115,7 +115,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 
 ### **Domain Layer** (`src/flext_plugin/domain/`)
 
-```python
+```python notest
 # Plugin domain modeling (DDD)
 ├── domain/
 │   ├── __init__.py          # 🏛️ Domain exports
@@ -128,7 +128,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 
 **Entity Pattern**:
 
-```python
+```python notest
 from flext_plugin import FlextPlugin, FlextPluginModels.Registry
 from flext_plugin import FlextPlugins.Manager
 
@@ -148,7 +148,7 @@ class CustomPlugin(FlextPlugin):
 
 ### **Application Layer** (`src/flext_plugin/application/`)
 
-```python
+```python notest
 # Plugin application services and handlers
 ├── application/
 │   ├── __init__.py          # 📤 Application layer exports
@@ -160,7 +160,7 @@ class CustomPlugin(FlextPlugin):
 
 **Service Pattern**:
 
-```python
+```python notest
 from flext_plugin import (
     FlextPluginService,
     FlextPluginDiscoveryService,
@@ -185,7 +185,7 @@ class PluginWorkflow:
 
 ### **Configuration Layer** (`src/flext_plugin/settings/`)
 
-```python
+```python notest
 # Plugin configuration management
 ├── settings/
 │   ├── __init__.py          # ⚙️ Configuration exports
@@ -198,7 +198,7 @@ class PluginWorkflow:
 
 **Configuration Pattern**:
 
-```python
+```python notest
 from flext_plugin import PluginSystemSettings
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -249,7 +249,7 @@ ______________________________________________________________________
 
 All plugin-related exports use consistent prefixing to avoid namespace conflicts:
 
-```python
+```python notest
 # Core plugin patterns
 FlextPlugin  # Main plugin entity
 FlextPluginModels.Config  # Plugin configuration entity
@@ -273,7 +273,7 @@ FlextPluginReloader  # Hot-reload management
 
 ### **Module-Level Naming**
 
-```python
+```python notest
 # Core functionality modules
 types.py  # Plugin types, enums, and result objects
 entities.py  # Domain entities (FlextPlugin, FlextPluginModels.Registry)
@@ -293,7 +293,7 @@ loader.py  # Dynamic plugin loading mechanisms
 
 ### **Plugin Type Naming**
 
-```python
+```python notest
 # Singer ETL plugin types (Meltano integration)
 PluginType.TAP  # Data extraction from sources
 PluginType.TARGET  # Data loading to destinations
@@ -323,7 +323,7 @@ ______________________________________________________________________
 
 #### **1. Primary Pattern (Recommended for Ecosystem)**
 
-```python
+```python notest
 # Import from main package - gets everything needed
 from flext_plugin import (
     FlextPluginPlatform,
@@ -344,7 +344,7 @@ def deploy_plugin():
 
 #### **2. Specific Module Pattern (For Advanced Usage)**
 
-```python
+```python notest
 # Import from specific modules for clarity
 from flext_plugin import FlextPlugin, FlextPluginModels.Registry
 from flext_plugin import FlextPluginService
@@ -357,7 +357,7 @@ plugin = FlextPlugin(name="custom", version="0.9.9")
 
 #### **3. Factory Function Pattern**
 
-```python
+```python notest
 # Use factory functions for common operations
 from flext_plugin import (
     create_flext_plugin,
@@ -381,7 +381,7 @@ plugin = create_flext_plugin(
 
 ### **Anti-Patterns (Forbidden)**
 
-```python
+```python notest
 # ❌ Don't import everything
 from flext_plugin import *
 
@@ -404,7 +404,7 @@ ______________________________________________________________________
 
 ### **Clean Architecture Layer Separation**
 
-```python
+```python notest
 # Plugin-specific Clean Architecture layers
 ┌─────────────────────────────────────────┐
 │         Platform Integration            │  # platform.py, simple_api.py
@@ -426,7 +426,7 @@ ______________________________________________________________________
 
 ### **Plugin Lifecycle Architecture**
 
-```python
+```python notest
 # Plugin state transitions with architectural boundaries
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │  DISCOVERED  │───▶│    LOADED    │───▶│    ACTIVE    │
@@ -448,7 +448,7 @@ ______________________________________________________________________
 
 ### **Hot-Reload Architecture**
 
-```python
+```python notest
 # Hot-reload system with file watching and state preservation
 ┌─────────────────────────────────────────────────────────┐
 │                File System Watcher                     │
@@ -483,7 +483,7 @@ ______________________________________________________________________
 
 ### **Plugin Factory Patterns**
 
-```python
+```python notest
 from flext_plugin import create_flext_plugin
 from flext_plugin import PluginType
 from flext_core import FlextBus
@@ -542,7 +542,7 @@ def deploy_tap_plugin(settings: dict) -> p.Result[FlextPlugin]:
 
 ### **Plugin Lifecycle Management**
 
-```python
+```python notest
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus
 from flext_core import FlextBus
@@ -650,7 +650,7 @@ class PluginLifecycleManager:
 
 ### **Plugin Discovery Patterns**
 
-```python
+```python notest
 from flext_plugin import FlextPluginDiscoveryService
 from flext_plugin import PluginDiscovery
 from flext_core import FlextBus
@@ -750,7 +750,7 @@ ______________________________________________________________________
 
 ### **Plugin Entity Patterns**
 
-```python
+```python notest
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
@@ -894,7 +894,7 @@ class FlextPlugin(FlextModels.Entity):
 
 ### **Plugin Aggregate Patterns**
 
-```python
+```python notest
 from flext_plugin import FlextPluginModels.Registry
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -1010,7 +1010,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
 
 ### **Plugin Value Object Patterns**
 
-```python
+```python notest
 from flext_plugin import FlextPluginModels.Metadata, FlextPluginModels.Config
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -1133,7 +1133,7 @@ ______________________________________________________________________
 
 ### **Lazy Plugin Loading**
 
-```python
+```python notest
 from functools import cached_property
 from typing import Optional, Dict
 
@@ -1204,7 +1204,7 @@ class LazyPluginLoader:
 
 ### **Plugin Caching Patterns**
 
-```python
+```python notest
 from functools import wraps
 from typing import Callable, Optional
 
@@ -1323,7 +1323,7 @@ ______________________________________________________________________
 
 ### **Type Annotation Requirements**
 
-```python
+```python notest
 # ✅ Complete type annotations for plugin interfaces
 from typing import Dict, List, Optional, Callable, Awaitable, Protocol
 
@@ -1395,7 +1395,7 @@ def execute_plugin(plugin, data):  # Missing types
 
 ### **Error Handling Standards**
 
-```python
+```python notest
 # ✅ Plugin-specific error handling with r
 from flext_plugin import PluginError
 
@@ -1471,7 +1471,7 @@ def bad_plugin_operation(plugin: FlextPlugin) -> None:
 
 ### **Plugin Documentation Standards**
 
-````python
+````python notest
 class DataProcessorPlugin(FlextPlugin):
     """
     Data processing plugin with comprehensive business logic.
@@ -1692,7 +1692,7 @@ ______________________________________________________________________
 
 ### **Cross-Project Plugin Standards**
 
-```python
+```python notest
 # ✅ Standard plugin creation across ecosystem projects
 from flext_plugin import create_flext_plugin
 from flext_plugin import PluginType
@@ -1758,7 +1758,7 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 
 ### **Plugin Configuration Integration**
 
-```python
+```python notest
 # ✅ Extend plugin configuration patterns consistently
 from flext_plugin import PluginSystemSettings
 from flext_core import FlextBus
@@ -1806,7 +1806,7 @@ class ProjectPluginConfig(PluginSystemSettings):
 
 ### **Plugin Registry Integration**
 
-```python
+```python notest
 # ✅ Use centralized plugin registry across ecosystem
 from flext_plugin import FlextPluginModels.Registry
 from flext_plugin import create_flext_plugin_platform

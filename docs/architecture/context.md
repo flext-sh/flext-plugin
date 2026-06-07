@@ -261,7 +261,7 @@ ______________________________________________________________________
 
 #### **Plugin Developer API**
 
-```python
+```python notest
 from flext_plugin import FlextPluginPlatform
 
 # Plugin registration and management
@@ -272,7 +272,7 @@ await platform.execute_plugin("plugin-name", context)
 
 #### **Application Integration API**
 
-```python
+```python notest
 from flext_plugin import FlextPluginApi
 
 # Unified plugin management

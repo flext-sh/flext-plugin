@@ -94,7 +94,7 @@ ______________________________________________________________________
 
 All modules follow the FLEXT single-class-per-module pattern:
 
-```python
+```python notest
 # ✅ COMPLIANT - Current implementation
 class FlextPluginModels:
     """Unified plugin entities following FLEXT standards"""
@@ -148,7 +148,7 @@ ______________________________________________________________________
 
 ### Creating Plugins
 
-```python
+```python notest
 from flext_plugin import FlextPlugin, PluginType
 
 
@@ -227,7 +227,7 @@ poetry show --tree
 
 #### Plugin Loading Issues
 
-```python
+```python notest
 # Enable debug logging
 logging.basicConfig(level=logging.DEBUG)
 

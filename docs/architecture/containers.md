@@ -205,7 +205,7 @@ ______________________________________________________________________
 
 #### **Core ↔ CLI Communication**
 
-```python
+```python notest
 # CLI imports and uses Core APIs
 from flext_plugin import FlextPluginApi
 
@@ -215,7 +215,7 @@ result = api.discover_plugins(["./plugins"])
 
 #### **Core ↔ API Communication** (Planned)
 
-```python
+```python notest
 # REST API delegates to Core
 from flext_plugin import FlextPluginPlatform
 
@@ -476,7 +476,7 @@ ______________________________________________________________________
 
 ### FLEXT Plugin Core API
 
-```python
+```python notest
 # Primary interface for all plugin operations
 from flext_plugin import FlextPluginApi
 

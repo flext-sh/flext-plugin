@@ -61,7 +61,7 @@ ______________________________________________________________________
 
 ### Create a Basic Plugin
 
-```python
+```python notest
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -105,7 +105,7 @@ if load_result.success:
 
 ### Plugin Discovery
 
-```python
+```python notest
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()

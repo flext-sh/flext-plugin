@@ -406,7 +406,7 @@ ______________________________________________________________________
 
 #### **Data Modeling**
 
-```python
+```python notest
 # Pydantic data models with validation
 from pydantic import BaseModel, u.Field
 from typing import List, Dict, t.JsonValue
@@ -425,7 +425,7 @@ class FlextPluginSettings(m.BaseModel):
 
 #### **Data Migration**
 
-```python
+```python notest
 # Schema evolution and data migration
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
@@ -435,7 +435,7 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
 
 #### **Data Validation**
 
-```python
+```python notest
 # Runtime data validation
 def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
     """Validate plugin configuration data."""

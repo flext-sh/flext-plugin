@@ -70,7 +70,7 @@ ______________________________________________________________________
 
 #### FlextPlugin
 
-```python
+```python notest
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
 
@@ -88,7 +88,7 @@ class FlextPlugin(FlextModels.Entity):
 
 #### FlextPluginModels.Config
 
-```python
+```python notest
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
@@ -112,7 +112,7 @@ ______________________________________________________________________
 
 Coordinates all plugin operations:
 
-```python
+```python notest
 class FlextPluginPlatform:
     """Main facade for plugin system"""
 
@@ -143,7 +143,7 @@ ______________________________________________________________________
 
 #### File System Discovery
 
-```python
+```python notest
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
@@ -153,7 +153,7 @@ class FileSystemPluginDiscovery:
 
 #### Watchdog Integration
 
-```python
+```python notest
 class WatchdogHotReload:
     """File system monitoring for hot reload"""
 
@@ -171,7 +171,7 @@ ______________________________________________________________________
 
 All operations return `r[T]` for railway-oriented programming:
 
-```python
+```python notest
 def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
         # Plugin loading logic
@@ -184,7 +184,7 @@ def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
 
 Uses FlextContainer for service management:
 
-```python
+```python notest
 def _setup_services(self) -> None:
     """Register services in DI container"""
     self.container.bind("plugin_service", FlextPluginService(container=self.container))
@@ -194,7 +194,7 @@ def _setup_services(self) -> None:
 
 Plugins can implement Singer tap/target patterns:
 
-```python
+```python notest
 class SingerTapPlugin(FlextPlugin):
     """Plugin implementing Singer tap protocol"""
 

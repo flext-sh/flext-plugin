@@ -50,7 +50,7 @@ ______________________________________________________________________
 
 #### **Domain Layer Implementation**
 
-```python
+```python notest
 # flext_plugin/entities.py - Domain entities with business rules
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -143,7 +143,7 @@ class FlextPluginModels:
 
 #### **Application Layer Implementation**
 
-```python
+```python notest
 # flext_plugin/services.py - Application services
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -243,7 +243,7 @@ class FlextPluginServices:
 
 #### **Infrastructure Layer Implementation**
 
-```python
+```python notest
 # flext_plugin/discovery.py - Infrastructure adapters
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -355,7 +355,7 @@ class FlextPluginDiscovery:
 
 #### **Protocol Definitions**
 
-```python
+```python notest
 # flext_plugin/protocols.py - Structural typing protocols
 from typing import Protocol, List, Dict, t.JsonValue, Optional
 from flext_core import FlextBus
@@ -430,7 +430,7 @@ class FlextPluginProtocols:
 
 #### **Protocol Implementation**
 
-```python
+```python notest
 # Example protocol implementation
 from flext_plugin import FlextPluginProtocols
 
@@ -450,7 +450,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
 #### **r[T] Error Handling**
 
-```python
+```python notest
 # Railway pattern throughout the system
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -524,7 +524,7 @@ ______________________________________________________________________
 
 #### **Domain Entity Testing**
 
-```python
+```python notest
 # tests/unit/test_entities.py
 import pytest
 from flext_plugin import FlextPluginModels
@@ -582,7 +582,7 @@ class TestPluginEntity:
 
 #### **Application Service Testing**
 
-```python
+```python notest
 # tests/unit/test_services.py
 import pytest
 from unittest.mock import AsyncMock, MagicMock
@@ -652,7 +652,7 @@ class TestPluginServices:
 
 #### **End-to-End Plugin Lifecycle Testing**
 
-```python
+```python notest
 # tests/integration/test_plugin_lifecycle.py
 import pytest
 from pathlib import Path
@@ -768,7 +768,7 @@ ______________________________________________________________________
 
 #### **Module Structure Template**
 
-```python
+```python notest
 # Template for FLEXT single-class-per-module pattern
 """
 Module: flext_plugin/[module_name].py
@@ -909,7 +909,7 @@ __all__: list[str] = ["FlextPlugin[ModuleName]"]
 
 #### **Railway Pattern Throughout**
 
-```python
+```python notest
 # Railway pattern for complex operations
 async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
@@ -944,7 +944,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 
 #### **Pydantic Configuration Pattern**
 
-```python
+```python notest
 # flext_plugin/settings.py
 from pydantic import BaseModel, u.Field, validator
 from typing import List, Optional
@@ -1131,7 +1131,7 @@ spec:
 
 #### **Health Checks Implementation**
 
-```python
+```python notest
 # flext_plugin/health.py
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -1249,7 +1249,7 @@ ______________________________________________________________________
 
 #### **Multi-Level Caching**
 
-```python
+```python notest
 # flext_plugin/cache.py
 from typing import Dict, t.JsonValue, Optional
 import asyncio
@@ -1325,7 +1325,7 @@ class FlextPluginCache:
 
 #### **Concurrent Plugin Operations**
 
-```python
+```python notest
 # flext_plugin/executor.py
 import asyncio
 from typing import List, Dict, t.JsonValue

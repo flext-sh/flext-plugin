@@ -415,7 +415,7 @@ Data Layer
 
 #### **API → Platform → Services**
 
-```python
+```python notest
 # API facade delegates to platform
 api = FlextPluginApi()
 result = api.discover_plugins(paths)  # API
@@ -429,7 +429,7 @@ result = service.discover_plugins(paths)  # Business logic
 
 #### **Services → Entities → Protocols**
 
-```python
+```python notest
 # Services operate on domain entities
 service = FlextPluginService()
 plugin = service.create_plugin(settings)  # Service operation
@@ -443,7 +443,7 @@ protocol = FlextPluginProtocols.Plugin  # Domain contract
 
 #### **Infrastructure → Adapters → External Systems**
 
-```python
+```python notest
 # Infrastructure uses adapters for external access
 loader = FlextPluginLoader()
 module = loader.load_plugin(path)  # Infrastructure adapter

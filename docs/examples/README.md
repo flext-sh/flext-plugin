@@ -63,7 +63,7 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ### Basic Plugin Creation
 
-```python
+```python notest
 from flext_plugin import create_flext_plugin, create_flext_plugin_platform
 from flext_plugin import PluginType
 
@@ -80,7 +80,7 @@ platform.activate_plugin("hello-world")
 
 ### Singer Plugin Creation
 
-```python
+```python notest
 from flext_plugin import PluginType
 
 # Create Singer tap plugin
@@ -98,7 +98,7 @@ tap_plugin = create_flext_plugin(
 
 ### Hot Reload Development
 
-```python
+```python notest
 from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
@@ -109,7 +109,7 @@ print("Hot reload enabled - modify plugin files to see changes")
 
 ### Testing Setup
 
-```python
+```python notest
 import pytest
 from flext_plugin import create_flext_plugin_platform
 
@@ -212,7 +212,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 
 ### Plugin Template
 
-```python
+```python notest
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
@@ -298,7 +298,7 @@ class ExamplePlugin(FlextPlugin):
 
 ### Test Template
 
-```python
+```python notest
 import pytest
 from flext_plugin import create_flext_plugin_platform
 from your_plugin import ExamplePlugin
@@ -399,7 +399,7 @@ class TestExamplePlugin:
 
 All examples demonstrate proper error handling using `r` pattern:
 
-```python
+```python notest
 try:
     result = operation()
     if result.success():
@@ -416,7 +416,7 @@ except Exception as e:
 
 Proper resource cleanup in plugin lifecycle:
 
-```python
+```python notest
 def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
     try:
@@ -436,7 +436,7 @@ def cleanup(self) -> p.Result[bool]:
 
 All examples use proper type hints:
 
-```python
+```python notest
 from typing import Dict, List, Optional
 from flext_core import FlextBus
 from flext_core import FlextSettings

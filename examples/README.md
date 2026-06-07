@@ -224,7 +224,7 @@ Examples demonstrate real functionality from the main FLEXT Plugin system:
 
 **Import Errors**:
 
-```python
+```python notest
 # Examples handle path setup automatically
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 ```

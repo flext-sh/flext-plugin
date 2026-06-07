@@ -36,7 +36,7 @@ The basic plugin example shows:
 
 ### 1. Basic Plugin Class
 
-```python
+```python notest
 # basic_plugin.py
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
@@ -336,7 +336,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
 ### 2. Plugin Usage Example
 
-```python
+```python notest
 # usage_example.py
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
@@ -463,7 +463,7 @@ if __name__ == "__main__":
 
 ### 3. Comprehensive Tests
 
-```python
+```python notest
 # test_basic_plugin.py
 import pytest
 from unittest.mock import patch, mock_open

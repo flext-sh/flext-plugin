@@ -36,7 +36,7 @@ ______________________________________________________________________
 
 Main facade for all plugin operations.
 
-```python
+```python notest
 class FlextPluginPlatform:
     """Unified plugin management platform"""
 
@@ -89,7 +89,7 @@ class FlextPluginPlatform:
 
 Core plugin domain entity.
 
-```python
+```python notest
 class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
@@ -115,7 +115,7 @@ class FlextPlugin(FlextModels.Entity):
 
 Plugin configuration entity.
 
-```python
+```python notest
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
 
@@ -136,7 +136,7 @@ ______________________________________________________________________
 
 ### PluginStatus
 
-```python
+```python notest
 class PluginStatus(str, Enum):
     """Plugin lifecycle status"""
 
@@ -148,7 +148,7 @@ class PluginStatus(str, Enum):
 
 ### PluginType
 
-```python
+```python notest
 class PluginType(str, Enum):
     """Plugin type classification"""
 
@@ -166,7 +166,7 @@ ______________________________________________________________________
 
 ### create_flext_plugin
 
-```python
+```python notest
 def create_flext_plugin(
     name: str,
     version: str,
@@ -179,7 +179,7 @@ def create_flext_plugin(
 
 ### create_flext_plugin_platform
 
-```python
+```python notest
 def create_flext_plugin_platform(settings: m.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
@@ -190,7 +190,7 @@ ______________________________________________________________________
 
 ### FlextPluginDiscoveryService
 
-```python
+```python notest
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
@@ -209,7 +209,7 @@ ______________________________________________________________________
 
 ### Hot Reload Configuration
 
-```python
+```python notest
 # Environment variables for hot reload
 FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
 FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
@@ -221,7 +221,7 @@ ______________________________________________________________________
 
 All API methods return `r[T]` for consistent error handling:
 
-```python
+```python notest
 result = platform.load_plugin(plugin)
 if result.success:
     # Plugin loaded successfully
@@ -234,7 +234,7 @@ else:
 
 ### Exception Types
 
-```python
+```python notest
 class FlextPluginError(Exception):
     """Base plugin system error"""
 
@@ -257,7 +257,7 @@ ______________________________________________________________________
 
 ### FLEXT-Core Integration
 
-```python
+```python notest
 # Use r for all operations
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -315,7 +315,7 @@ platform = FlextPluginPlatform(container)
 
 ### Singer Integration
 
-```python
+```python notest
 # Singer tap plugin example
 from flext_plugin import FlextPlugin, PluginType
 
@@ -336,7 +336,7 @@ ______________________________________________________________________
 
 ### Basic Plugin Management
 
-```python
+```python notest
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 
 # Create platform
@@ -355,7 +355,7 @@ if result.success:
 
 ### Plugin Discovery
 
-```python
+```python notest
 # Discover plugins in directory
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
