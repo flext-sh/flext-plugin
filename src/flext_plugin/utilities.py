@@ -114,7 +114,12 @@ class FlextPluginUtilities(u):
                 version = c.Plugin.DEFAULT_PLUGIN_VERSION
                 description = f"Plugin from {plugin_path.name}"
                 if plugin_path.suffix == ".py":
-                    content = plugin_path.read_text(encoding=c.DEFAULT_ENCODING)
+                    read = u.Cli.files_read_text(plugin_path)
+                    if read.failure:
+                        return r[m.Plugin.PluginMetadata].fail_op(
+                            "Metadata extraction", read.error
+                        )
+                    content = read.value
                     version_match = c.Plugin.PluginValidation.VERSION_DUNDER_RE.search(
                         content
                     )
@@ -159,7 +164,10 @@ class FlextPluginUtilities(u):
                         f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
                     )
                 if plugin_path.suffix == ".py":
-                    content = plugin_path.read_text(encoding=c.DEFAULT_ENCODING)
+                    read = u.Cli.files_read_text(plugin_path)
+                    if read.failure:
+                        return r[None].fail_op("Plugin validation", read.error)
+                    content = read.value
                     dangerous_patterns = [
                         "exec(",
                         "eval(",
