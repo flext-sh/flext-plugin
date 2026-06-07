@@ -11,7 +11,6 @@ from collections.abc import (
     MutableSequence,
     Sequence,
 )
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
 
@@ -138,7 +137,7 @@ class FlextPluginUtilities(u):
                     plugin_type="extension",
                     entry_point=str(plugin_path),
                     dependencies=[],
-                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
+                    metadata={"discovered_at": u.now().isoformat()},
                 )
                 return r[m.Plugin.PluginMetadata].ok(metadata)
             except c.EXC_BROAD_IO_TYPE as e:
