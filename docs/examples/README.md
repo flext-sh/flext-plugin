@@ -1,35 +1,5 @@
 # FLEXT Plugin Examples
 
-<!-- TOC START -->
-- [Example Categories](#example-categories)
-  - [🚀 Getting Started](#getting-started)
-  - [🔌 Plugin Types](#plugin-types)
-  - [🛠️ Development Workflow](#development-workflow)
-  - [🏗️ Advanced Integration](#advanced-integration)
-- [Quick Reference](#quick-reference)
-  - [Basic Plugin Creation](#basic-plugin-creation)
-  - [Singer Plugin Creation](#singer-plugin-creation)
-  - [Hot Reload Development](#hot-reload-development)
-  - [Testing Setup](#testing-setup)
-- [Example Projects Structure](#example-projects-structure)
-- [Running Examples](#running-examples)
-  - [Prerequisites](#prerequisites)
-  - [Running Individual Examples](#running-individual-examples)
-  - [Development Mode](#development-mode)
-- [Example Templates](#example-templates)
-  - [Plugin Template](#plugin-template)
-  - [Test Template](#test-template)
-  - [Configuration Template](#configuration-template)
-- [Best Practices Demonstrated](#best-practices-demonstrated)
-  - [1. Error Handling](#1-error-handling)
-  - [2. Resource Management](#2-resource-management)
-  - [3. Type Safety](#3-type-safety)
-  - [4. Testing Coverage](#4-testing-coverage)
-- [Contributing Examples](#contributing-examples)
-  - [Adding New Examples](#adding-new-examples)
-  - [Example Quality Standards](#example-quality-standards)
-<!-- TOC END -->
-
 Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
 
 ## Example Categories
@@ -63,7 +33,7 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ### Basic Plugin Creation
 
-```python notest
+```python
 from flext_plugin import create_flext_plugin, create_flext_plugin_platform
 from flext_plugin import PluginType
 
@@ -80,7 +50,7 @@ platform.activate_plugin("hello-world")
 
 ### Singer Plugin Creation
 
-```python notest
+```python
 from flext_plugin import PluginType
 
 # Create Singer tap plugin
@@ -98,7 +68,7 @@ tap_plugin = create_flext_plugin(
 
 ### Hot Reload Development
 
-```python notest
+```python
 from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
@@ -109,7 +79,7 @@ print("Hot reload enabled - modify plugin files to see changes")
 
 ### Testing Setup
 
-```python notest
+```python
 import pytest
 from flext_plugin import create_flext_plugin_platform
 
@@ -212,7 +182,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 
 ### Plugin Template
 
-```python notest
+```python
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
@@ -298,7 +268,7 @@ class ExamplePlugin(FlextPlugin):
 
 ### Test Template
 
-```python notest
+```python
 import pytest
 from flext_plugin import create_flext_plugin_platform
 from your_plugin import ExamplePlugin
@@ -399,7 +369,7 @@ class TestExamplePlugin:
 
 All examples demonstrate proper error handling using `r` pattern:
 
-```python notest
+```python
 try:
     result = operation()
     if result.success():
@@ -416,7 +386,7 @@ except Exception as e:
 
 Proper resource cleanup in plugin lifecycle:
 
-```python notest
+```python
 def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
     try:
@@ -436,7 +406,7 @@ def cleanup(self) -> p.Result[bool]:
 
 All examples use proper type hints:
 
-```python notest
+```python
 from typing import Dict, List, Optional
 from flext_core import FlextBus
 from flext_core import FlextSettings

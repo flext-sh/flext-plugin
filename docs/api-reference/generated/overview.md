@@ -3,15 +3,15 @@
 # flext-plugin API Overview
 
 - Package: `flext_plugin`
-- Version: ``
+- Version: `0.12.0-dev`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 - Project class: `platform`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
-- Main facades: `FlextPluginAdapters`, `FlextPluginService`, `FlextPluginLoader`, `FlextPluginHotReload`, `FlextPluginImplementations`, `FlextPluginTypes`, `FlextPluginSettings`, `FlextPluginHandlers` (+8 more)
+- Main facades: _none_
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextPluginAdapters`, `FlextPluginService`, `plugin`, `FlextPluginLoader`, `FlextPluginHotReload`, `FlextPluginImplementations`, `FlextPluginTypes`, `FlextPluginSettings`, `FlextPluginHandlers`, `FlextPluginProtocols` (+7 more)
+- Public symbol exports: `plugin`, `FlextPluginPlatform`, `FlextPluginUtilities`, `FlextPluginTypes`, `FlextPluginProtocols`, `FlextPluginModels`, `FlextPluginSettings`, `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginApi`
 - Exported module shortcuts: _none_
-- Generated module pages: `8`
+- Generated module pages: `7`
 
 ## Next Pages
 

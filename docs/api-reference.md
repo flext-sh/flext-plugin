@@ -1,31 +1,5 @@
 # API Reference
 
-<!-- TOC START -->
-- [Core Classes](#core-classes)
-  - [FlextPluginPlatform](#flextpluginplatform)
-  - [FlextPlugin (Entity)](#flextplugin-entity)
-  - [FlextPluginModels.Config (Entity)](#flextpluginmodelsconfig-entity)
-- [Enumerations](#enumerations)
-  - [PluginStatus](#pluginstatus)
-  - [PluginType](#plugintype)
-- [Factory Functions](#factory-functions)
-  - [create_flext_plugin](#createflextplugin)
-  - [create_flext_plugin_platform](#createflextpluginplatform)
-- [Discovery Services](#discovery-services)
-  - [FlextPluginDiscoveryService](#flextplugindiscoveryservice)
-- [Hot Reload](#hot-reload)
-  - [Hot Reload Configuration](#hot-reload-configuration)
-- [Error Handling](#error-handling)
-  - [Exception Types](#exception-types)
-- [Integration Patterns](#integration-patterns)
-  - [FLEXT-Core Integration](#flext-core-integration)
-  - [Singer Integration](#singer-integration)
-- [Usage Examples](#usage-examples)
-  - [Basic Plugin Management](#basic-plugin-management)
-  - [Plugin Discovery](#plugin-discovery)
-- [Related Documentation](#related-documentation)
-<!-- TOC END -->
-
 **FLEXT Plugin System API Reference**
 
 ______________________________________________________________________
@@ -36,7 +10,7 @@ ______________________________________________________________________
 
 Main facade for all plugin operations.
 
-```python notest
+```python
 class FlextPluginPlatform:
     """Unified plugin management platform"""
 
@@ -89,7 +63,7 @@ class FlextPluginPlatform:
 
 Core plugin domain entity.
 
-```python notest
+```python
 class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
@@ -115,7 +89,7 @@ class FlextPlugin(FlextModels.Entity):
 
 Plugin configuration entity.
 
-```python notest
+```python
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
 
@@ -136,7 +110,7 @@ ______________________________________________________________________
 
 ### PluginStatus
 
-```python notest
+```python
 class PluginStatus(str, Enum):
     """Plugin lifecycle status"""
 
@@ -148,7 +122,7 @@ class PluginStatus(str, Enum):
 
 ### PluginType
 
-```python notest
+```python
 class PluginType(str, Enum):
     """Plugin type classification"""
 
@@ -166,7 +140,7 @@ ______________________________________________________________________
 
 ### create_flext_plugin
 
-```python notest
+```python
 def create_flext_plugin(
     name: str,
     version: str,
@@ -179,7 +153,7 @@ def create_flext_plugin(
 
 ### create_flext_plugin_platform
 
-```python notest
+```python
 def create_flext_plugin_platform(settings: m.Dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
@@ -190,7 +164,7 @@ ______________________________________________________________________
 
 ### FlextPluginDiscoveryService
 
-```python notest
+```python
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
@@ -209,7 +183,7 @@ ______________________________________________________________________
 
 ### Hot Reload Configuration
 
-```python notest
+```python
 # Environment variables for hot reload
 FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
 FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
@@ -221,7 +195,7 @@ ______________________________________________________________________
 
 All API methods return `r[T]` for consistent error handling:
 
-```python notest
+```python
 result = platform.load_plugin(plugin)
 if result.success:
     # Plugin loaded successfully
@@ -260,7 +234,7 @@ ______________________________________________________________________
 
 ### FLEXT-Core Integration
 
-```python notest
+```python
 # Use r for all operations
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -318,7 +292,7 @@ platform = FlextPluginPlatform(container)
 
 ### Singer Integration
 
-```python notest
+```python
 # Singer tap plugin example
 from flext_plugin import FlextPlugin, PluginType
 
@@ -339,7 +313,7 @@ ______________________________________________________________________
 
 ### Basic Plugin Management
 
-```python notest
+```python
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 
 # Create platform
@@ -358,7 +332,7 @@ if result.success:
 
 ### Plugin Discovery
 
-```python notest
+```python
 # Discover plugins in directory
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:

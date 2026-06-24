@@ -1,38 +1,5 @@
 # Data Architecture
 
-<!-- TOC START -->
-- [💾 Data Architecture Overview](#data-architecture-overview)
-  - [Data Architecture Principles](#data-architecture-principles)
-- [🗂️ Data Model Hierarchy](#data-model-hierarchy)
-  - [Core Data Models](#core-data-models)
-- [📊 Data Storage Architecture](#data-storage-architecture)
-  - [Storage Layers](#storage-layers)
-  - [Storage Architecture Diagram](#storage-architecture-diagram)
-- [🔄 Data Flow Patterns](#data-flow-patterns)
-  - [Plugin Lifecycle Data Flow](#plugin-lifecycle-data-flow)
-- [🔒 Data Security and Privacy](#data-security-and-privacy)
-  - [Data Classification](#data-classification)
-  - [Security Controls](#security-controls)
-- [📈 Data Governance and Lifecycle](#data-governance-and-lifecycle)
-  - [Data Lifecycle Management](#data-lifecycle-management)
-  - [Data Quality Management](#data-quality-management)
-- [🚀 Data Architecture Evolution](#data-architecture-evolution)
-  - [Current Architecture (v0.9.0)](#current-architecture-v090)
-  - [Planned Enhancements (v0.12.0-dev)](#planned-enhancements-v0120-dev)
-  - [Future Architecture (v1.0.0)](#future-architecture-v100)
-- [🛠️ Data Architecture Tools and Technologies](#data-architecture-tools-and-technologies)
-  - [Core Technologies](#core-technologies)
-  - [Development Tools](#development-tools)
-- [📊 Data Architecture Metrics](#data-architecture-metrics)
-  - [Performance Metrics](#performance-metrics)
-  - [Quality Metrics](#quality-metrics)
-- [🔍 Data Architecture Monitoring](#data-architecture-monitoring)
-  - [Data Health Monitoring](#data-health-monitoring)
-- [📚 Data Architecture Documentation](#data-architecture-documentation)
-  - [Data Dictionary](#data-dictionary)
-  - [API Data Contracts](#api-data-contracts)
-<!-- TOC END -->
-
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
 ______________________________________________________________________
@@ -406,7 +373,7 @@ ______________________________________________________________________
 
 #### **Data Modeling**
 
-```python notest
+```python
 # Pydantic data models with validation
 from pydantic import BaseModel, u.Field
 from typing import List, Dict, t.JsonValue
@@ -425,7 +392,7 @@ class FlextPluginSettings(m.BaseModel):
 
 #### **Data Migration**
 
-```python notest
+```python
 # Schema evolution and data migration
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
@@ -435,7 +402,7 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
 
 #### **Data Validation**
 
-```python notest
+```python
 # Runtime data validation
 def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
     """Validate plugin configuration data."""

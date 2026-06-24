@@ -1,32 +1,5 @@
 # Component Architecture (C4 Level 3)
 
-<!-- TOC START -->
-- [🏗️ Component Architecture Overview](#component-architecture-overview)
-  - [Architecture Layers](#architecture-layers)
-  - [Component Design Principles](#component-design-principles)
-- [📦 Component Diagram](#component-diagram)
-- [🔧 Component Descriptions](#component-descriptions)
-  - [Interface Layer Components](#interface-layer-components)
-  - [Application Layer Components](#application-layer-components)
-  - [Domain Layer Components](#domain-layer-components)
-  - [Infrastructure Layer Components](#infrastructure-layer-components)
-  - [Data Layer Components](#data-layer-components)
-- [🔗 Component Relationships and Dependencies](#component-relationships-and-dependencies)
-  - [Dependency Flow (Clean Architecture)](#dependency-flow-clean-architecture)
-  - [Key Component Interactions](#key-component-interactions)
-- [📊 Component Quality Attributes](#component-quality-attributes)
-  - [Performance Characteristics](#performance-characteristics)
-  - [Reliability Characteristics](#reliability-characteristics)
-  - [Maintainability Characteristics](#maintainability-characteristics)
-- [🧪 Component Testing Strategy](#component-testing-strategy)
-  - [Unit Testing (Domain + Application Layers)](#unit-testing-domain-application-layers)
-  - [Integration Testing (Component Interactions)](#integration-testing-component-interactions)
-  - [End-to-End Testing (Full Workflows)](#end-to-end-testing-full-workflows)
-- [🔧 Component Evolution and Maintenance](#component-evolution-and-maintenance)
-  - [Component Lifecycle](#component-lifecycle)
-  - [Component Refactoring Guidelines](#component-refactoring-guidelines)
-<!-- TOC END -->
-
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
 
 ______________________________________________________________________
@@ -415,7 +388,7 @@ Data Layer
 
 #### **API → Platform → Services**
 
-```python notest
+```python
 # API facade delegates to platform
 api = FlextPluginApi()
 result = api.discover_plugins(paths)  # API
@@ -429,7 +402,7 @@ result = service.discover_plugins(paths)  # Business logic
 
 #### **Services → Entities → Protocols**
 
-```python notest
+```python
 # Services operate on domain entities
 service = FlextPluginService()
 plugin = service.create_plugin(settings)  # Service operation
@@ -443,7 +416,7 @@ protocol = FlextPluginProtocols.Plugin  # Domain contract
 
 #### **Infrastructure → Adapters → External Systems**
 
-```python notest
+```python
 # Infrastructure uses adapters for external access
 loader = FlextPluginLoader()
 module = loader.load_plugin(path)  # Infrastructure adapter

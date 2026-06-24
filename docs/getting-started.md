@@ -1,21 +1,5 @@
 # Getting Started with FLEXT Plugin
 
-<!-- TOC START -->
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-  - [Development Installation (Recommended)](#development-installation-recommended)
-  - [Dependencies](#dependencies)
-- [First Plugin](#first-plugin)
-  - [Create a Basic Plugin](#create-a-basic-plugin)
-  - [Plugin Discovery](#plugin-discovery)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [Plugin Directory Structure](#plugin-directory-structure)
-- [Development Commands](#development-commands)
-- [Next Steps](#next-steps)
-- [Related Documentation](#related-documentation)
-<!-- TOC END -->
-
 **Version**: 0.12.0-dev
 **Last Updated**: 2026-04-14
 
@@ -61,7 +45,7 @@ ______________________________________________________________________
 
 ### Create a Basic Plugin
 
-```python notest
+```python
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -105,7 +89,7 @@ if load_result.success:
 
 ### Plugin Discovery
 
-```python notest
+```python
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()

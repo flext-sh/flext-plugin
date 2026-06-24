@@ -1,28 +1,5 @@
 # Architecture
 
-<!-- TOC START -->
-- [Clean Architecture Overview](#clean-architecture-overview)
-- [Domain Layer](#domain-layer)
-  - [Core Entities](#core-entities)
-  - [Services](#services)
-- [Application Layer](#application-layer)
-  - [FlextPluginPlatform (Facade)](#flextpluginplatform-facade)
-  - [Application Services](#application-services)
-- [Infrastructure Layer](#infrastructure-layer)
-  - [Adapters](#adapters)
-- [Integration Patterns](#integration-patterns)
-  - [FLEXT-Core Integration](#flext-core-integration)
-  - [Singer Ecosystem Integration](#singer-ecosystem-integration)
-- [Current Architecture Status ✅ COMPLIANT](#current-architecture-status-compliant)
-  - [FLEXT Single-Class-Per-Module Compliance Achieved](#flext-single-class-per-module-compliance-achieved)
-  - [Architecture Achievements](#architecture-achievements)
-- [Future Architecture Enhancements](#future-architecture-enhancements)
-  - [Version 0.10.0 Enhancements](#version-0100-enhancements)
-  - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
-  - [Integration Points](#integration-points)
-- [Related Documentation](#related-documentation)
-<!-- TOC END -->
-
 **FLEXT Plugin System Architecture**
 
 ______________________________________________________________________
@@ -70,7 +47,7 @@ ______________________________________________________________________
 
 #### FlextPlugin
 
-```python notest
+```python
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
 
@@ -88,7 +65,7 @@ class FlextPlugin(FlextModels.Entity):
 
 #### FlextPluginModels.Config
 
-```python notest
+```python
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
@@ -112,7 +89,7 @@ ______________________________________________________________________
 
 Coordinates all plugin operations:
 
-```python notest
+```python
 class FlextPluginPlatform:
     """Main facade for plugin system"""
 
@@ -143,7 +120,7 @@ ______________________________________________________________________
 
 #### File System Discovery
 
-```python notest
+```python
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
@@ -153,7 +130,7 @@ class FileSystemPluginDiscovery:
 
 #### Watchdog Integration
 
-```python notest
+```python
 class WatchdogHotReload:
     """File system monitoring for hot reload"""
 
@@ -171,7 +148,7 @@ ______________________________________________________________________
 
 All operations return `r[T]` for railway-oriented programming:
 
-```python notest
+```python
 def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
         # Plugin loading logic
@@ -197,7 +174,7 @@ def _setup_services(self) -> None:
 
 Plugins can implement Singer tap/target patterns:
 
-```python notest
+```python
 class SingerTapPlugin(FlextPlugin):
     """Plugin implementing Singer tap protocol"""
 

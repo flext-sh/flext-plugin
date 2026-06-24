@@ -1,27 +1,5 @@
 # Quick Start Guide
 
-<!-- TOC START -->
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-  - [Option 1: Install from PyPI (Recommended)](#option-1-install-from-pypi-recommended)
-  - [Option 2: Development Installation](#option-2-development-installation)
-- [Your First Plugin (5 minutes)](#your-first-plugin-5-minutes)
-  - [Step 1: Create a Simple Plugin](#step-1-create-a-simple-plugin)
-  - [Step 2: Use the Plugin Platform](#step-2-use-the-plugin-platform)
-  - [Step 3: Create a Custom Plugin Class](#step-3-create-a-custom-plugin-class)
-- [Plugin Discovery](#plugin-discovery)
-- [Testing Your Plugin](#testing-your-plugin)
-- [Development with Hot Reload](#development-with-hot-reload)
-- [Quality Gates](#quality-gates)
-- [Next Steps](#next-steps)
-  - [Immediate Next Steps](#immediate-next-steps)
-  - [Plugin Types to Explore](#plugin-types-to-explore)
-  - [Advanced Topics](#advanced-topics)
-- [Troubleshooting](#troubleshooting)
-  - [Common Issues](#common-issues)
-  - [Getting Help](#getting-help)
-<!-- TOC END -->
-
 **⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0 compliance. Current implementation is non-compliant with FLEXT standards and modern Python practices.
 
 ## Prerequisites
@@ -70,7 +48,7 @@ python -c "import flext_plugin; print(f'FLEXT Plugin v{flext_plugin.__version__}
 
 Create a file called `hello_plugin.py`:
 
-```python notest
+```python
 from flext_plugin import create_flext_plugin
 from flext_plugin import PluginType
 
@@ -105,7 +83,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-```python notest
+```python
 from flext_plugin import create_flext_plugin_platform, create_flext_plugin
 from flext_plugin import PluginType
 
@@ -171,7 +149,7 @@ Active plugins: ['hello-world']
 
 Create `custom_plugin.py`:
 
-```python notest
+```python
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
 from flext_core import FlextBus
@@ -318,7 +296,7 @@ Cleaning up greeting-generator...
 
 FLEXT Plugin can automatically discover plugins in directories:
 
-```python notest
+```python
 from flext_plugin import FlextPluginDiscoveryService
 
 
@@ -346,7 +324,7 @@ run(discover_plugins())
 
 Create `test_greeting_plugin.py`:
 
-```python notest
+```python
 import pytest
 from custom_plugin import GreetingPlugin
 from flext_plugin import create_flext_plugin_platform
@@ -430,7 +408,7 @@ python test_greeting_plugin.py
 
 For development, you can enable hot reload to automatically reload plugins when files change:
 
-```python notest
+```python
 from flext_plugin import enable_hot_reload
 from flext_plugin import create_flext_plugin_platform
 
@@ -519,7 +497,7 @@ pip install --force-reinstall flext-plugin
 
 **Plugin Not Activating**
 
-```python notest
+```python
 # Check plugin status and validation
 print(f"Plugin valid: {plugin.is_valid()}")
 print(f"Plugin status: {plugin.status}")

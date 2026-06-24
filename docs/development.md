@@ -1,35 +1,5 @@
 # Development Guide
 
-<!-- TOC START -->
-- [Development Setup](#development-setup)
-  - [Prerequisites](#prerequisites)
-  - [Setup Commands](#setup-commands)
-- [Code Standards](#code-standards)
-  - [FLEXT-Core Compliance](#flext-core-compliance)
-  - [Quality Gates](#quality-gates)
-- [Architecture Compliance](#architecture-compliance)
-  - [Current Status ✅ COMPLIANT](#current-status-compliant)
-  - [Compliance Achieved](#compliance-achieved)
-- [Testing](#testing)
-  - [Test Structure](#test-structure)
-  - [Testing Commands](#testing-commands)
-  - [Test Guidelines](#test-guidelines)
-- [Plugin Development](#plugin-development)
-  - [Creating Plugins](#creating-plugins)
-  - [Hot Reload Development](#hot-reload-development)
-- [Contributing Process](#contributing-process)
-  - [1. Issue Discussion](#1-issue-discussion)
-  - [2. Development](#2-development)
-  - [3. Quality Validation](#3-quality-validation)
-  - [4. Pull Request](#4-pull-request)
-- [Debugging](#debugging)
-  - [Common Issues](#common-issues)
-- [Release Process](#release-process)
-  - [Version Management](#version-management)
-  - [Quality Requirements](#quality-requirements)
-- [Getting Help](#getting-help)
-<!-- TOC END -->
-
 **Contributing to FLEXT Plugin**
 
 ______________________________________________________________________
@@ -94,7 +64,7 @@ ______________________________________________________________________
 
 All modules follow the FLEXT single-class-per-module pattern:
 
-```python notest
+```python
 # ✅ COMPLIANT - Current implementation
 class FlextPluginModels:
     """Unified plugin entities following FLEXT standards"""
@@ -148,7 +118,7 @@ ______________________________________________________________________
 
 ### Creating Plugins
 
-```python notest
+```python
 from flext_plugin import FlextPlugin, PluginType
 
 
@@ -227,7 +197,7 @@ poetry show --tree
 
 #### Plugin Loading Issues
 
-```python notest
+```python
 # Enable debug logging
 logging.basicConfig(level=logging.DEBUG)
 
