@@ -236,6 +236,8 @@ else:
 
 ```python
 from __future__ import annotations
+
+
 class FlextPluginError(Exception):
     """Base plugin system error"""
 

@@ -526,6 +526,7 @@ ______________________________________________________________________
 
 ```python
 from __future__ import annotations
+
 # tests/unit/test_entities.py
 import pytest
 from flext_plugin import FlextPluginModels
