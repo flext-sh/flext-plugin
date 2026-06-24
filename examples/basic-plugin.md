@@ -1,24 +1,5 @@
 # Basic Plugin Example
 
-<!-- TOC START -->
-- [Overview](#overview)
-- [Plugin Implementation](#plugin-implementation)
-  - [1. Basic Plugin Class](#1-basic-plugin-class)
-  - [2. Plugin Usage Example](#2-plugin-usage-example)
-  - [3. Comprehensive Tests](#3-comprehensive-tests)
-  - [4. Configuration File](#4-configuration-file)
-- [Running the Example](#running-the-example)
-  - [Prerequisites](#prerequisites)
-  - [Execution](#execution)
-  - [Expected Output](#expected-output)
-- [Key Learning Points](#key-learning-points)
-  - [1. Plugin Structure](#1-plugin-structure)
-  - [2. Lifecycle Management](#2-lifecycle-management)
-  - [3. Error Handling](#3-error-handling)
-  - [4. Testing Strategy](#4-testing-strategy)
-  - [5. Best Practices](#5-best-practices)
-<!-- TOC END -->
-
 This example demonstrates how to create a simple, functional plugin using the FLEXT Plugin system. The example covers plugin creation, registration, lifecycle management, and basic execution patterns.
 
 ## Overview
@@ -36,7 +17,7 @@ The basic plugin example shows:
 
 ### 1. Basic Plugin Class
 
-```python notest
+```python
 # basic_plugin.py
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
@@ -336,7 +317,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
 ### 2. Plugin Usage Example
 
-```python notest
+```python
 # usage_example.py
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
@@ -463,7 +444,7 @@ if __name__ == "__main__":
 
 ### 3. Comprehensive Tests
 
-```python notest
+```python
 # test_basic_plugin.py
 import pytest
 from unittest.mock import patch, mock_open
