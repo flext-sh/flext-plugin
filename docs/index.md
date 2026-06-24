@@ -2,7 +2,7 @@
 
 # flext-plugin Documentation
 
-- Version: `unknown`
+- Version: `0.12.0-dev`
 - Project class: `platform`
 - Package: `flext_plugin`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
