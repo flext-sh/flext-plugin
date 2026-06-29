@@ -20,7 +20,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from flext_core import FlextContainer
-from flext_plugin import FlextPluginPlatform, e, p, r, s, t, u
+from flext_plugin import e, p, r, s, t, u
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 def _build_default_platform() -> p.Plugin.PlatformService:

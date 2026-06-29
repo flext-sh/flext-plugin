@@ -15,7 +15,8 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from flext_cli import p
 
 if TYPE_CHECKING:
-    from flext_plugin import FlextPluginPlatform, m, t
+    from flext_plugin import m, t
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginProtocols(p):

@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import FlextPluginPlatform
-from tests import m
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from tests.models import m
 
 
 class TestsFlextPluginPlugin:

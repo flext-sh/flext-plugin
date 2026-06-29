@@ -3,63 +3,12 @@
 
 from __future__ import annotations
 
-import typing as _t
-
 from flext_core.lazy import (
     build_lazy_import_map,
     install_lazy_exports,
     merge_lazy_imports,
 )
 
-if _t.TYPE_CHECKING:
-    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
-
-    from flext_plugin import d as d, e as e, h as h, r as r, x as x
-    from tests.base import (
-        TestsFlextPluginServiceBase as TestsFlextPluginServiceBase,
-        s as s,
-    )
-    from tests.constants import (
-        TestsFlextPluginConstants as TestsFlextPluginConstants,
-        c as c,
-    )
-    from tests.models import TestsFlextPluginModels as TestsFlextPluginModels, m as m
-    from tests.protocols import (
-        TestsFlextPluginProtocols as TestsFlextPluginProtocols,
-        p as p,
-    )
-    from tests.settings import TestsFlextPluginSettings as TestsFlextPluginSettings
-    from tests.typings import TestsFlextPluginTypes as TestsFlextPluginTypes, t as t
-    from tests.unit.test_config import TestsFlextPluginConfig as TestsFlextPluginConfig
-    from tests.unit.test_constants import (
-        TestsFlextPluginConstantsUnit as TestsFlextPluginConstantsUnit,
-    )
-    from tests.unit.test_core_types import (
-        TestsFlextPluginCoreTypes as TestsFlextPluginCoreTypes,
-    )
-    from tests.unit.test_discovery import (
-        TestsFlextPluginDiscovery as TestsFlextPluginDiscovery,
-    )
-    from tests.unit.test_domain_entities import (
-        TestsFlextPluginDomainEntities as TestsFlextPluginDomainEntities,
-    )
-    from tests.unit.test_domain_ports import (
-        TestsFlextPluginDomainPorts as TestsFlextPluginDomainPorts,
-    )
-    from tests.unit.test_examples import (
-        TestsFlextPluginExamples as TestsFlextPluginExamples,
-    )
-    from tests.unit.test_models import (
-        TestsFlextPluginModelsUnit as TestsFlextPluginModelsUnit,
-    )
-    from tests.unit.test_plugin import TestsFlextPluginPlugin as TestsFlextPluginPlugin
-    from tests.unit.test_types import (
-        TestsFlextPluginTypesUnit as TestsFlextPluginTypesUnit,
-    )
-    from tests.utilities import (
-        TestsFlextPluginUtilities as TestsFlextPluginUtilities,
-        u as u,
-    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
     build_lazy_import_map(
@@ -68,6 +17,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextPluginServiceBase",
                 "s",
             ),
+            ".conftest": ("conftest",),
             ".constants": (
                 "TestsFlextPluginConstants",
                 "c",
@@ -85,6 +35,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextPluginTypes",
                 "t",
             ),
+            ".unit": ("unit",),
             ".unit.test_config": ("TestsFlextPluginConfig",),
             ".unit.test_constants": ("TestsFlextPluginConstantsUnit",),
             ".unit.test_core_types": ("TestsFlextPluginCoreTypes",),
@@ -99,19 +50,17 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextPluginUtilities",
                 "u",
             ),
-            "flext_plugin": (
+            "flext_tests": (
                 "d",
                 "e",
                 "h",
                 "r",
-                "x",
-            ),
-            "flext_tests": (
                 "td",
                 "tf",
                 "tk",
                 "tm",
                 "tv",
+                "x",
             ),
         },
     ),
@@ -138,40 +87,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
 )
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
-
-__all__: list[str] = [
-    "TestsFlextPluginConfig",
-    "TestsFlextPluginConstants",
-    "TestsFlextPluginConstantsUnit",
-    "TestsFlextPluginCoreTypes",
-    "TestsFlextPluginDiscovery",
-    "TestsFlextPluginDomainEntities",
-    "TestsFlextPluginDomainPorts",
-    "TestsFlextPluginExamples",
-    "TestsFlextPluginModels",
-    "TestsFlextPluginModelsUnit",
-    "TestsFlextPluginPlugin",
-    "TestsFlextPluginProtocols",
-    "TestsFlextPluginServiceBase",
-    "TestsFlextPluginSettings",
-    "TestsFlextPluginTypes",
-    "TestsFlextPluginTypesUnit",
-    "TestsFlextPluginUtilities",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "td",
-    "tf",
-    "tk",
-    "tm",
-    "tv",
-    "u",
-    "x",
-]
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    publish_all=False,
+)

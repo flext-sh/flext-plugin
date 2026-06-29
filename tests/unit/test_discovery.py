@@ -17,8 +17,9 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import FlextPluginDiscovery
-from tests import c, m
+from flext_plugin._utilities.discovery import FlextPluginDiscovery
+from tests.constants import c
+from tests.models import m
 
 
 class TestsFlextPluginDiscovery:

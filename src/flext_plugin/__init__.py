@@ -3,13 +3,9 @@
 
 from __future__ import annotations
 
-import typing as _t
+from typing import TYPE_CHECKING
 
-from flext_core.lazy import (
-    build_lazy_import_map,
-    install_lazy_exports,
-    merge_lazy_imports,
-)
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 from flext_plugin.__version__ import (
     __author__,
     __author_email__,
@@ -21,14 +17,8 @@ from flext_plugin.__version__ import (
     __version_info__,
 )
 
-if _t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from flext_cli import d as d, e as e, h as h, r as r, s as s, x as x
-    from flext_plugin._utilities.discovery import (
-        FlextPluginDiscovery as FlextPluginDiscovery,
-    )
-    from flext_plugin._utilities.plugin_platform import (
-        FlextPluginPlatform as FlextPluginPlatform,
-    )
     from flext_plugin.api import FlextPluginApi as FlextPluginApi, plugin as plugin
     from flext_plugin.constants import (
         FlextPluginConstants as FlextPluginConstants,
@@ -45,87 +35,46 @@ if _t.TYPE_CHECKING:
         FlextPluginUtilities as FlextPluginUtilities,
         u as u,
     )
-_LAZY_IMPORTS = merge_lazy_imports(
-    ("._utilities",),
-    build_lazy_import_map(
-        {
-            "._utilities.discovery": ("FlextPluginDiscovery",),
-            "._utilities.plugin_platform": ("FlextPluginPlatform",),
-            ".api": (
-                "FlextPluginApi",
-                "plugin",
-            ),
-            ".constants": (
-                "FlextPluginConstants",
-                "c",
-            ),
-            ".models": (
-                "FlextPluginModels",
-                "m",
-            ),
-            ".protocols": (
-                "FlextPluginProtocols",
-                "p",
-            ),
-            ".settings": ("FlextPluginSettings",),
-            ".typings": (
-                "FlextPluginTypes",
-                "t",
-            ),
-            ".utilities": (
-                "FlextPluginUtilities",
-                "u",
-            ),
-            "flext_cli": (
-                "d",
-                "e",
-                "h",
-                "r",
-                "s",
-                "x",
-            ),
-        },
-    ),
-    exclude_names=(
-        "cleanup_submodule_namespace",
-        "install_lazy_exports",
-        "lazy_getattr",
-        "logger",
-        "merge_lazy_imports",
-        "output",
-        "output_reporting",
-        "pytest_addoption",
-        "pytest_collect_file",
-        "pytest_collection_modifyitems",
-        "pytest_configure",
-        "pytest_runtest_setup",
-        "pytest_runtest_teardown",
-        "pytest_sessionfinish",
-        "pytest_sessionstart",
-        "pytest_terminal_summary",
-        "pytest_warning_recorded",
-    ),
-    module_name=__name__,
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".api": (
+            "FlextPluginApi",
+            "plugin",
+        ),
+        ".constants": (
+            "FlextPluginConstants",
+            "c",
+        ),
+        ".models": (
+            "FlextPluginModels",
+            "m",
+        ),
+        ".protocols": (
+            "FlextPluginProtocols",
+            "p",
+        ),
+        ".settings": ("FlextPluginSettings",),
+        ".typings": (
+            "FlextPluginTypes",
+            "t",
+        ),
+        ".utilities": (
+            "FlextPluginUtilities",
+            "u",
+        ),
+        "flext_cli": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "s",
+            "x",
+        ),
+    },
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    [
-        "__author__",
-        "__author_email__",
-        "__description__",
-        "__license__",
-        "__title__",
-        "__url__",
-        "__version__",
-        "__version_info__",
-    ],
-)
-
-__all__: list[str] = [
+__all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginConstants",
     "FlextPluginModels",
@@ -153,4 +102,12 @@ __all__: list[str] = [
     "t",
     "u",
     "x",
-]
+)
+
+
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    public_exports=__all__,
+)

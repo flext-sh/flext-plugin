@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from tests import u
+from tests.utilities import u
 
 
 def _examples_dir() -> Path:
