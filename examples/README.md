@@ -55,7 +55,7 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ### 🏗️ Advanced Integration
 
-- **FlexCore Integration** - Go service integration (_Documentation coming soon_)
+- **FLEXT Service Integration** - Python service integration (_Documentation coming soon_)
 - **Multi-Plugin Orchestration** - Coordinating multiple plugins (_Documentation coming soon_)
 - **Custom Plugin Types** - Creating custom plugin categories (_Documentation coming soon_)
 
@@ -161,7 +161,7 @@ examples/
 │   └── README.md
 │
 └── integration-examples/     # Advanced integration
-    ├── flexcore-bridge/      # Go service integration
+    ├── service-bridge/       # FLEXT service integration
     ├── multi-plugin-app/     # Multiple plugin coordination
     ├── custom-types/         # Custom plugin types
     └── README.md
