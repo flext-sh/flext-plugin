@@ -103,7 +103,8 @@ class FlextPluginModels(FlextCliModels):
                 payload["metadata"] = t.json_mapping_adapter().validate_python(
                     payload.get("metadata") or {},
                 )
-                return cls.model_validate(payload)
+                entity: Self = cls.model_validate(payload)
+                return entity
 
             @u.field_validator("plugin_version", mode="before")
             @classmethod
