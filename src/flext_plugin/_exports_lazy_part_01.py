@@ -7,8 +7,7 @@ from flext_core.lazy import build_lazy_import_map
 
 FLEXT_PLUGIN_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
     {
-        "._utilities.discovery": ("FlextPluginDiscovery",),
-        "._utilities.plugin_platform": ("FlextPluginPlatform",),
+        "._utilities": ("_utilities",),
         ".api": (
             "FlextPluginApi",
             "plugin",
