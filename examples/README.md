@@ -1,263 +1,519 @@
 # FLEXT Plugin Examples
 
 <!-- TOC START -->
-
-- [Available Examples](#available-examples)
-  - [1. Basic Plugin Example (`01_basic_plugin.py`)](#1-basic-plugin-example-01basicpluginpy)
-  - [2. Plugin Configuration Example (`02_plugin_configuration.py`)](#2-plugin-configuration-example-02pluginconfigurationpy)
-  - [3. Docker Integration Example (`03_docker_integration.py`)](#3-docker-integration-example-03dockerintegrationpy)
-- [Configuration Compatibility](#configuration-compatibility)
-  - [Docker Service Mapping](#docker-service-mapping)
-  - [Environment Variables](#environment-variables)
-- [Testing](#testing)
-- [Architecture Integration](#architecture-integration)
-  - [Clean Architecture Compliance](#clean-architecture-compliance)
-  - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
-  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
-- [Development Workflow](#development-workflow)
-  - [Creating New Examples](#creating-new-examples)
-  - [Quality Standards](#quality-standards)
-- [Integration with Main Project](#integration-with-main-project)
-- [Troubleshooting](#troubleshooting)
-  - [Common Issues](#common-issues)
-  - [Support](#support)
-
+- [Example Categories](#example-categories)
+  - [🚀 Getting Started](#getting-started)
+  - [🔌 Plugin Types](#plugin-types)
+  - [🛠️ Development Workflow](#development-workflow)
+  - [🏗️ Advanced Integration](#advanced-integration)
+- [Quick Reference](#quick-reference)
+  - [Basic Plugin Creation](#basic-plugin-creation)
+  - [Singer Plugin Creation](#singer-plugin-creation)
+  - [Hot Reload Development](#hot-reload-development)
+  - [Testing Setup](#testing-setup)
+- [Example Projects Structure](#example-projects-structure)
+- [Running Examples](#running-examples)
+  - [Prerequisites](#prerequisites)
+  - [Running Individual Examples](#running-individual-examples)
+  - [Development Mode](#development-mode)
+- [Example Templates](#example-templates)
+  - [Plugin Template](#plugin-template)
+  - [Test Template](#test-template)
+  - [Configuration Template](#configuration-template)
+- [Best Practices Demonstrated](#best-practices-demonstrated)
+  - [1. Error Handling](#1-error-handling)
+  - [2. Resource Management](#2-resource-management)
+  - [3. Type Safety](#3-type-safety)
+  - [4. Testing Coverage](#4-testing-coverage)
+- [Contributing Examples](#contributing-examples)
+  - [Adding New Examples](#adding-new-examples)
+  - [Example Quality Standards](#example-quality-standards)
 <!-- TOC END -->
 
-This directory contains comprehensive examples demonstrating the FLEXT Plugin system functionality with 100% working code and enterprise-grade patterns.
+Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
 
-## Available Examples
+## Example Categories
 
-### 1. Basic Plugin Example (`01_basic_plugin.py`)
+### 🚀 Getting Started
 
-**Purpose**: Minimal functional plugin demonstration without external dependencies.
+- **Basic Plugin** - Simple plugin implementation
+- **Plugin Configuration** - Configuration management patterns (_Documentation coming soon_)
+- **Plugin Lifecycle** - Lifecycle management examples (_Documentation coming soon_)
 
-**Features**:
+### 🔌 Plugin Types
 
-- Plugin creation with configuration
-- Domain validation
-- Status transitions (INACTIVE → ACTIVE)
-- Basic lifecycle management
+- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano (_Documentation coming soon_)
+- **Singer Target Plugin** - Data loading plugin (_Documentation coming soon_)
+- **Service Plugin** - Microservice integration (_Documentation coming soon_)
+- **Utility Plugin** - General-purpose utility plugin (_Documentation coming soon_)
 
-**Usage**:
+### 🛠️ Development Workflow
+
+- **Hot Reload Demo** - Development with live reloading (_Documentation coming soon_)
+- **Testing Plugins** - Comprehensive testing strategies (_Documentation coming soon_)
+- **Plugin Debugging** - Debugging and troubleshooting (_Documentation coming soon_)
+
+### 🏗️ Advanced Integration
+
+- **FLEXT Service Integration** - Python service integration (_Documentation coming soon_)
+- **Multi-Plugin Orchestration** - Coordinating multiple plugins (_Documentation coming soon_)
+- **Custom Plugin Types** - Creating custom plugin categories (_Documentation coming soon_)
+
+## Quick Reference
+
+### Basic Plugin Creation
+
+```python notest
+from flext_plugin import create_flext_plugin, create_flext_plugin_platform
+from flext_plugin import PluginType
+
+# Create simple plugin
+plugin = create_flext_plugin(
+    name="hello-world", version="0.12.0-dev", plugin_type=PluginType.UTILITY
+)
+
+# Create platform and register plugin
+platform = create_flext_plugin_platform()
+platform.register_plugin(plugin)
+platform.activate_plugin("hello-world")
+```
+
+### Singer Plugin Creation
+
+```python notest
+from flext_plugin import PluginType
+
+# Create Singer tap plugin
+tap_plugin = create_flext_plugin(
+    name="tap-example-api",
+    version="0.12.0-dev",
+    plugin_type=PluginType.TAP,
+    settings={
+        "description": "Extract data from Example API",
+        "schema_file": "tap_schema.json",
+        "singer_spec": "0.12.0-dev",
+    },
+)
+```
+
+### Hot Reload Development
+
+```python notest
+from flext_plugin import enable_hot_reload
+
+# Enable hot reload for development
+enable_hot_reload(watch_paths=["./plugins", "./custom-plugins"], reload_on_change=True)
+
+print("Hot reload enabled - modify plugin files to see changes")
+```
+
+### Testing Setup
+
+```python notest
+import pytest
+from flext_plugin import create_flext_plugin_platform
+
+
+@pytest.fixture
+def platform():
+    """Test platform fixture."""
+    platform = create_flext_plugin_platform(settings={"test_mode": True})
+    yield platform
+    platform.shutdown()
+
+
+def test_plugin_activation(platform):
+    """Test plugin activation."""
+    plugin = create_flext_plugin(name="test-plugin", version="0.12.0-dev")
+    platform.register_plugin(plugin)
+
+    result = platform.activate_plugin("test-plugin")
+    assert result.success()
+```
+
+## Example Projects Structure
+
+```
+examples/
+├── basic-plugin/
+│   ├── plugin.py             # Plugin class definition
+│   ├── settings.json           # Plugin configuration
+│   ├── test_plugin.py        # Unit tests
+│   └── README.md             # Documentation
+│
+├── singer-tap/               # Singer tap example
+│   ├── tap_example_api.py    # Tap implementation
+│   ├── schema.json           # Data schema
+│   ├── meltano.yml           # Meltano configuration
+│   └── README.md
+│
+├── service-plugin/           # Microservice plugin
+│   ├── service.py            # FastAPI service
+│   ├── routes.py             # API routes
+│   ├── models.py             # Data models
+│   ├── docker-compose.yml    # Container setup
+│   └── README.md
+│
+├── hot-reload-demo/          # Hot reload development
+│   ├── demo_plugin.py        # Demo plugin
+│   ├── development.py        # Development server
+│   ├── watch_config.json     # Watch configuration
+│   └── README.md
+│
+└── integration-examples/     # Advanced integration
+    ├── service-bridge/       # FLEXT service integration
+    ├── multi-plugin-app/     # Multiple plugin coordination
+    ├── custom-types/         # Custom plugin types
+    └── README.md
+```
+
+## Running Examples
+
+### Prerequisites
 
 ```bash
-python examples/01_basic_plugin.py
+# Install FLEXT Plugin system
+poetry add flext-plugin
+
+# Or clone repository for development
+git clone https://github.com/flext-sh/flext.git
+cd flext/flext-plugin
+make setup
 ```
 
-**Output**: Complete plugin creation and activation workflow with validation.
-
-### 2. Plugin Configuration Example (`02_plugin_configuration.py`)
-
-**Purpose**: Advanced plugin configuration patterns for complex enterprise scenarios.
-
-**Features**:
-
-- Database plugin configuration (PostgreSQL)
-- LDAP plugin configuration with authentication
-- Standalone configuration entities
-- Plugin metadata with licensing and compatibility
-- Configuration validation
-
-**Usage**:
+### Running Individual Examples
 
 ```bash
-python examples/02_plugin_configuration.py
+# Navigate to example directory
+cd docs/examples/basic-plugin
+
+# Install example dependencies (if any)
+poetry install
+
+# Run example
+python plugin.py
+
+# Run tests
+pytest test_plugin.py -v
 ```
 
-**Docker Integration**:
+### Development Mode
 
 ```bash
-# Optional: Start PostgreSQL for enhanced testing
-cd ..docker
-docker-compose up -d postgres
-python examples/02_plugin_configuration.py --with-db
+# Start hot reload development server
+cd docs/examples/hot-reload-demo
+python development.py
+
+# In another terminal, modify demo_plugin.py to see live changes
+echo "# Modified at $(date)" >> demo_plugin.py
 ```
 
-### 3. Docker Integration Example (`03_docker_integration.py`)
+## Example Templates
 
-**Purpose**: Real-world plugin configuration with Docker services integration.
+### Plugin Template
 
-**Features**:
+```python notest
+from flext_plugin import FlextPlugin
+from flext_plugin import PluginStatus, PluginType
+from flext_core import FlextBus
+from flext_core import FlextSettings
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import d
+from flext_core import FlextDispatcher
+from flext_core import e
+from flext_core import h
+from flext_core import x
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import p
+from flext_core import FlextRegistry
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
+from flext_core import t
+from flext_core import u
+from typing import Dict
 
-- Docker-compatible PostgreSQL plugin (matches docker-compose.yml)
-- Docker-compatible Redis cache plugin with connection pooling
-- Docker-compatible LDAP directory plugin with authentication
-- Service connectivity testing
-- Production-ready configuration patterns
-- Comprehensive monitoring and performance settings
 
-**Usage**:
+class ExamplePlugin(FlextPlugin):
+    """Template for creating custom plugins."""
 
-```bash
-# Basic usage (configuration only)
-python examples/03_docker_integration.py
+    def __init__(self, **kwargs):
+        super().__init__(
+            name="example-plugin",
+            version="0.12.0-dev",
+            settings={
+                "plugin_type": PluginType.UTILITY,
+                "description": "Example plugin template",
+                "author": "Your Name",
+            },
+            **kwargs,
+        )
 
-# With connectivity testing
-python examples/03_docker_integration.py --test-connections
+    def initialize(self) -> p.Result[bool]:
+        """Initialize plugin resources."""
+        try:
+            # Setup plugin resources
+            self._setup_resources()
+            return r[bool].ok(data=True)
+        except Exception as e:
+            return r[bool].fail(f"Initialization failed: {e}")
+
+    def execute(self, data: m.Dict) -> p.Result[m.Dict]:
+        """Execute plugin logic."""
+        try:
+            # Validate plugin is active
+            if self.status != PluginStatus.ACTIVE:
+                return r[bool].fail("Plugin not active")
+
+            # Process data
+            result = self._process_data(data)
+            return r[bool].ok(result)
+
+        except Exception as e:
+            return r[bool].fail(f"Execution failed: {e}")
+
+    def cleanup(self) -> p.Result[bool]:
+        """Cleanup plugin resources."""
+        try:
+            self._cleanup_resources()
+            return r[bool].ok(data=True)
+        except Exception as e:
+            return r[bool].fail(f"Cleanup failed: {e}")
+
+    def _setup_resources(self):
+        """Setup plugin-specific resources."""
+        pass
+
+    def _process_data(self, data: m.Dict) -> m.Dict:
+        """Core processing logic - implement in subclass."""
+        return {"processed": True, "input": data}
+
+    def _cleanup_resources(self):
+        """Cleanup plugin-specific resources."""
+        pass
 ```
 
-**Docker Setup**:
+### Test Template
 
-```bash
-# Start all required services
-cd ..docker
-docker-compose up -d postgres redis openldap
+```python notest
+import pytest
+from flext_plugin import create_flext_plugin_platform
+from your_plugin import ExamplePlugin
 
-# Verify services are running
-docker-compose ps
 
-# Test with all services available
-python examples/03_docker_integration.py --test-connections
+class TestExamplePlugin:
+    """Test suite template for plugins."""
+
+    @pytest.fixture
+    def plugin(self):
+        """Create plugin instance for testing."""
+        return ExamplePlugin()
+
+    @pytest.fixture
+    def platform(self):
+        """Create test platform."""
+        platform = create_flext_plugin_platform(settings={"test_mode": True})
+        yield platform
+        platform.shutdown()
+
+    def test_plugin_creation(self, plugin):
+        """Test plugin creation."""
+        assert plugin.name == "example-plugin"
+        assert plugin.plugin_version == "0.12.0-dev"
+        assert plugin.is_valid()
+
+    def test_plugin_initialization(self, plugin):
+        """Test plugin initialization."""
+        result = plugin.initialize()
+        assert result.success()
+
+    def test_plugin_execution(self, plugin):
+        """Test plugin execution."""
+        # Initialize first
+        plugin.initialize()
+        plugin.activate()
+
+        # Test execution
+        test_data = {"input": "test_value"}
+        result = plugin.execute(test_data)
+
+        assert result.success()
+        assert "processed" in result.value
+
+    def test_plugin_lifecycle(self, platform, plugin):
+        """Test complete plugin lifecycle."""
+        # Register plugin
+        register_result = platform.register_plugin(plugin)
+        assert register_result.success()
+
+        # Activate plugin
+        activate_result = platform.activate_plugin(plugin.name)
+        assert activate_result.success()
+
+        # Execute plugin
+        execute_result = platform.execute_plugin(plugin.name, {"test": "data"})
+        assert execute_result.success()
+
+        # Deactivate plugin
+        deactivate_result = platform.deactivate_plugin(plugin.name)
+        assert deactivate_result.success()
 ```
 
-## Configuration Compatibility
+### Configuration Template
 
-### Docker Service Mapping
-
-All examples use configurations that are compatible with the FLEXT Docker development environment at `..docker/docker-compose.yml`:
-
-| Service    | Docker Container | Host Port | Plugin Configuration                                                       |
-| ---------- | ---------------- | --------- | -------------------------------------------------------------------------- |
-| PostgreSQL | `flext-postgres` | 5432      | Database: `flext_db`, User: `flext`, Password: `flext_dev_password`        |
-| Redis      | `flext-redis`    | 6379      | Password: `flext_redis_password`, DB: 0                                    |
-| LDAP       | `flext-ldap`     | 389       | Domain: `dc=flext,dc=dev`, Admin: `flext_ldap_REDACTED_LDAP_BIND_PASSWORD` |
-
-### Environment Variables
-
-The examples support environment-based configuration for production deployments:
-
-```bash
-# Database configuration
-export FLEXT_DB_HOST=localhost
-export FLEXT_DB_PORT=5432
-export FLEXT_DB_NAME=flext_db
-export FLEXT_DB_USER=flext
-export FLEXT_DB_PASSWORD=flext_dev_password
-
-# Redis configuration
-export FLEXT_REDIS_HOST=localhost
-export FLEXT_REDIS_PORT=6379
-export FLEXT_REDIS_PASSWORD=flext_redis_password
-
-# LDAP configuration
-export FLEXT_LDAP_HOST=localhost
-export FLEXT_LDAP_PORT=389
-export FLEXT_LDAP_BASE_DN=dc=flext,dc=dev
-export FLEXT_LDAP_BIND_PASSWORD=readonly
+```json
+{
+  "plugin": {
+    "name": "example-plugin",
+    "version": "0.12.0-dev",
+    "type": "utility",
+    "description": "Example plugin for demonstration",
+    "author": "Your Name",
+    "license": "MIT"
+  },
+  "configuration": {
+    "debug": false,
+    "timeout": 30,
+    "retries": 3,
+    "batch_size": 100
+  },
+  "dependencies": {
+    "flext-core": ">=0.12.0-dev",
+    "flext-observability": ">=0.12.0-dev"
+  },
+  "metadata": {
+    "tags": ["example", "demo", "utility"],
+    "keywords": ["plugin", "flext", "example"],
+    "homepage": "https://github.com/flext-sh/flext",
+    "repository": "https://github.com/flext-sh/flext/tree/main/flext-plugin"
+  }
+}
 ```
 
-## Testing
+## Best Practices Demonstrated
 
-All examples have comprehensive test coverage in `tests/test_examples.py`:
+### 1. Error Handling
 
-```bash
-# Run all example tests
-python -m pytest tests/test_examples.py -v
+All examples demonstrate proper error handling using `r` pattern:
 
-# Run specific example tests
-python -m pytest tests/test_examples.py::test_basic_plugin_example_execution -v
-python -m pytest tests/test_examples.py::test_plugin_configuration_example_functionality -v
-python -m pytest tests/test_examples.py::test_docker_integration_example_functionality -v
+```python notest
+try:
+    result = operation()
+    if result.success():
+        return result.value
+    else:
+        logger.error(f"Operation failed: {result.error}")
+        return None
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    return r[bool].fail(f"Unexpected error: {e}")
 ```
 
-## Architecture Integration
+### 2. Resource Management
 
-### Clean Architecture Compliance
+Proper resource cleanup in plugin lifecycle:
 
-All examples follow Clean Architecture patterns:
+```python notest
+def cleanup(self) -> p.Result[bool]:
+    """Cleanup with error handling."""
+    try:
+        if hasattr(self, "_connection") and self._connection:
+            self._connection.close()
 
-- **Domain Layer**: Plugin entities with business logic
-- **Application Layer**: Service orchestration and validation
-- **Infrastructure Layer**: Docker service configurations
-- **Platform Layer**: Unified API access through `simple_api.py`
+        if hasattr(self, "_temp_files"):
+            for file_path in self._temp_files:
+                os.unlink(file_path)
 
-### Domain-Driven Design (DDD)
-
-Examples demonstrate DDD concepts:
-
-- **Entities**: `FlextPlugin`, `FlextPluginModels.Config`, `FlextPluginModels.Metadata`
-- **Value Objects**: Plugin types, status enums, configuration objects
-- **Services**: Validation and lifecycle management
-- **Repositories**: Plugin registry patterns
-
-### FLEXT Ecosystem Integration
-
-Examples integrate with the broader FLEXT platform:
-
-- **FlexCore (Go)**: Runtime container service (port 8080)
-- **FLEXT Service (Go/Python)**: Data platform service (port 8081)
-- **Singer Integration**: Plugin types for tap/target/transform patterns
-- **Meltano Orchestration**: Plugin discovery and execution patterns
-
-## Development Workflow
-
-### Creating New Examples
-
-1. **Follow Naming Convention**: `{purpose}_example.py`
-1. **Include Comprehensive Docstring**: Purpose, features, usage, prerequisites
-1. **Add Direct Execution Support**: `sys.path.insert()` for `src/` access
-1. **Create Corresponding Tests**: In `tests/test_examples.py`
-1. **Validate Docker Compatibility**: Test with Docker services when applicable
-1. **Update This README**: Add to examples list with features and usage
-
-### Quality Standards
-
-- **100% Functional**: All examples must execute without errors
-- **Enterprise-Grade**: Professional configuration patterns
-- **Docker-Ready**: Compatible with FLEXT Docker development environment
-- **Comprehensive Testing**: Script execution and functionality testing
-- **Clear Documentation**: Usage instructions and feature descriptions
-
-## Integration with Main Project
-
-Examples demonstrate real functionality from the main FLEXT Plugin system:
-
-- **Domain Entities**: Direct usage of `src/flext_plugin/domain/entities.py`
-- **Simple API**: Factory functions from `src/flext_plugin/simple_api.py`
-- **Type System**: Plugin types and status from `src/flext_plugin/core/types.py`
-- **Validation**: Domain rules and business logic validation
-
-## Troubleshooting
-
-### Common Issues
-
-**Import Errors**:
-
-```python
-# Examples handle path setup automatically
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+        return r[bool].ok(data=True)
+    except Exception as e:
+        return r[bool].fail(f"Cleanup failed: {e}")
 ```
 
-**Docker Service Unavailable**:
+### 3. Type Safety
 
-```bash
-# Check service status
-cd ..docker
-docker-compose ps
+All examples use proper type hints:
 
-# Start required services
-docker-compose up -d postgres redis openldap
+```python notest
+from typing import Dict, List, Optional
+from flext_core import FlextBus
+from flext_core import FlextSettings
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import d
+from flext_core import FlextDispatcher
+from flext_core import e
+from flext_core import h
+from flext_core import x
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import p
+from flext_core import FlextRegistry
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
+from flext_core import t
+from flext_core import u
 
-# View service logs
-docker-compose logs postgres
+
+def process_data(self, data: m.Dict) -> p.Result[m.Dict]:
+    """Type-safe data processing."""
+    pass
 ```
 
-**Configuration Mismatch**:
+### 4. Testing Coverage
 
-- Verify Docker service environment variables match example configurations
-- Check `docker-compose.yml` for correct service names and ports
-- Ensure network connectivity between host and containers
+Comprehensive test coverage for all plugin functionality:
 
-### Support
+- Unit tests for individual methods
+- Integration tests for plugin lifecycle
+- End-to-end tests for complete workflows
+- Performance tests for critical paths
 
-For issues with examples:
+## Contributing Examples
 
-1. Check test suite: `python -m pytest tests/test_examples.py -v`
-1. Verify Docker services: `docker-compose ps`
-1. Review main project documentation: `../README.md` and `../AGENTS.md`
-1. Check integration with workspace: `..README.md`
+### Adding New Examples
+
+1. **Create Example Directory**:
+
+   ```bash
+   mkdir docs/examples/your-example
+   cd docs/examples/your-example
+   ```
+
+1. **Follow Template Structure**:
+
+   - `plugin.py` - Main plugin implementation
+   - `test_plugin.py` - Comprehensive tests
+   - `settings.json` - Configuration example
+   - `README.md` - Documentation and usage
+
+1. **Update Index**:
+   Add your example to this README.md file
+
+1. **Test Example**:
+
+   ```bash
+   # Ensure example works
+   python plugin.py
+   pytest test_plugin.py -v
+
+   # Validate against quality gates
+   make lint
+   make type-check
+   ```
+
+### Example Quality Standards
+
+- **85% Test Coverage**: Comprehensive test suites
+- **Type Safety**: Full type annotation coverage
+- **Documentation**: Clear README with usage instructions
+- **Error Handling**: Proper r pattern usage
+- **Resource Management**: Clean initialization and cleanup
 
 ______________________________________________________________________
 
-**Status**: 1.0.0 Release Preparation | **Coverage**: Functional | **Docker Integration**: In Progress
+**Next Steps**: Browse individual example directories for detailed implementations and run the examples to see FLEXT Plugin system in action.

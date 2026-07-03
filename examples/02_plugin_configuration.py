@@ -13,12 +13,10 @@ Docker Usage:
 
 from __future__ import annotations
 
-from flext_core import FlextContainer
-
-from flext_plugin import FlextPluginApi
+from flext_plugin import FlextPluginApi, t
 
 
-def create_database_plugin_config() -> dict[str, object]:
+def create_database_plugin_config() -> t.JsonMapping:
     """Create configuration for a database plugin."""
     return {
         "database": {
@@ -44,7 +42,7 @@ def create_database_plugin_config() -> dict[str, object]:
     }
 
 
-def create_ldap_plugin_config() -> dict[str, object]:
+def create_ldap_plugin_config() -> t.JsonMapping:
     """Create configuration for an LDAP plugin."""
     return {
         "ldap": {
@@ -69,8 +67,7 @@ def create_ldap_plugin_config() -> dict[str, object]:
 def main() -> None:
     """Demonstrate plugin configuration patterns."""
     create_database_plugin_config()
-    container = FlextContainer()
-    FlextPluginApi(container)
+    _ = FlextPluginApi.fetch_global()
     create_ldap_plugin_config()
 
 

@@ -9,13 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import argparse
 import socket
 import sys
+from typing import Annotated, override
 
-from flext_core import FlextContainer
-
-from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels
+from flext_cli import cli, m as cli_m, u as cli_u
+from flext_core import p, r, s
+from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -26,13 +26,16 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         result = sock.connect_ex((host, port))
         sock.close()
         return result == 0
-    except Exception:
+    except OSError:
         return False
 
 
-def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
+def create_docker_postgres_plugin() -> tuple[
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
+]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
-    postgres_config = {
+    postgres_config: t.JsonMapping = {
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
@@ -43,21 +46,24 @@ def create_docker_postgres_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, di
         "max_connections": 20,
         "connection_pool": True,
     }
-    postgres_plugin = FlextPluginModels.Plugin.Plugin(
+    postgres_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-postgres-connector",
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_DATABASE,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
     )
     return (postgres_plugin, postgres_config)
 
 
-def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
+def create_docker_redis_plugin() -> tuple[
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
+]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
-    redis_config = {
+    redis_config: t.JsonMapping = {
         "host": "localhost",
         "port": 6379,
         "password": "flext_redis_password",
@@ -66,24 +72,27 @@ def create_docker_redis_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]
         "socket_timeout": 5,
         "socket_connect_timeout": 5,
         "socket_keepalive": True,
-        "socket_keepalive_options": {socket.TCP_KEEPIDLE: 60},
+        "socket_keepalive_options": {str(socket.TCP_KEEPIDLE): 60},
         "health_check_interval": 30,
     }
-    redis_plugin = FlextPluginModels.Plugin.Plugin(
+    redis_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-redis-cache",
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_DATABASE,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
     )
     return (redis_plugin, redis_config)
 
 
-def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
+def create_docker_ldap_plugin() -> tuple[
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
+]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
-    ldap_config = {
+    ldap_config: t.JsonMapping = {
         "host": "localhost",
         "port": 389,
         "use_ssl": False,
@@ -95,12 +104,12 @@ def create_docker_ldap_plugin() -> tuple[FlextPluginModels.Plugin.Plugin, dict]:
         "pool_size": 10,
         "pool_lifetime": 3600,
     }
-    ldap_plugin = FlextPluginModels.Plugin.Plugin(
+    ldap_plugin = FlextPluginModels.Plugin.Entity(
         name="docker-ldap-directory",
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author="FLEXT Team",
-        plugin_type=FlextPluginConstants.Plugin.Types.TYPE_AUTHENTICATION,
+        plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION.value,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
     )
@@ -122,45 +131,61 @@ def test_connections() -> bool:
     return all_available
 
 
-def main() -> None:
+class _DockerIntegrationCommand(s[bool]):
+    """CLI command for the FLEXT Plugin Docker integration example."""
+
+    test_connections: Annotated[
+        bool,
+        cli_u.Field(
+            default=False,
+            description=(
+                "Test connectivity to Docker services before creating plugins."
+            ),
+        ),
+    ] = False
+
+    @override
+    def execute(self) -> p.Result[bool]:
+        """Run the Docker integration smoke flow and return success/failure."""
+        if self.test_connections and not test_connections():
+            return r[bool].fail("docker services unavailable")
+        postgres_plugin, _postgres_config = create_docker_postgres_plugin()
+        redis_plugin, _redis_config = create_docker_redis_plugin()
+        ldap_plugin, _ldap_config = create_docker_ldap_plugin()
+        _ = FlextPluginApi.fetch_global()
+        for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
+            if not hasattr(plugin, "validate_business_rules"):
+                return r[bool].fail("plugin validation surface unavailable")
+            validation_result = plugin.validate_business_rules()
+            if validation_result.failure:
+                return r[bool].fail(validation_result.error or "validation failed")
+        return r[bool].ok(value=True)
+
+
+def main(args: t.StrSequence | None = None) -> int:
     """Main entry point for the Docker integration example."""
-    parser = argparse.ArgumentParser(
-        description="FLEXT Plugin Docker Integration Example"
+    app = cli.create_app_with_common_params(
+        name="flext-plugin-docker-integration",
+        help_text="FLEXT Plugin Docker Integration Example",
     )
-    _ = parser.add_argument(
-        "--test-connections",
-        action="store_true",
-        help="Test connectivity to Docker services before creating plugins",
+    cli.register_result_routes(
+        app,
+        [
+            cli_m.Cli.ResultCommandRoute(
+                name="run",
+                help_text="Create the example plugins and validate them.",
+                model_cls=_DockerIntegrationCommand,
+                handler=lambda params: params.execute(),
+            ),
+        ],
     )
-    args = parser.parse_args()
-    if args.test_connections:
-        services_available = test_connections()
-        if not services_available:
-            sys.exit(1)
-    postgres_plugin, _postgres_config = create_docker_postgres_plugin()
-    redis_plugin, _redis_config = create_docker_redis_plugin()
-    ldap_plugin, _ldap_config = create_docker_ldap_plugin()
-    container = FlextContainer()
-    FlextPluginApi(container)
-    if postgres_plugin and hasattr(postgres_plugin, "validate_business_rules"):
-        validation_result = postgres_plugin.validate_business_rules()
-        if validation_result.is_success:
-            pass
-        else:
-            sys.exit(1)
-    if redis_plugin and hasattr(redis_plugin, "validate_business_rules"):
-        validation_result = redis_plugin.validate_business_rules()
-        if validation_result.is_success:
-            pass
-    else:
-        sys.exit(1)
-    if ldap_plugin and hasattr(ldap_plugin, "validate_business_rules"):
-        validation_result = ldap_plugin.validate_business_rules()
-        if validation_result.is_success:
-            pass
-        else:
-            sys.exit(1)
+    outcome = cli.execute_app(
+        app,
+        prog_name="flext-plugin-docker-integration",
+        args=list(args) if args is not None else sys.argv[1:],
+    )
+    return 0 if outcome.success else 1
 
 
 if __name__ == "__main__":
-    main()
+    cli.exit(main())

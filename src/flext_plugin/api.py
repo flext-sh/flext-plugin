@@ -1,93 +1,140 @@
-"""FLEXT Plugin API - Railway-oriented facade.
+"""FLEXT Plugin API - Railway-oriented MRO façade.
+
+`FlextPluginApi` extends `s` (FlextService) so it inherits per-class
+`fetch_global()` / `reset_for_testing()` / `with_settings()` from the
+canonical service kernel. State (`logger`, `platform`) lives in
+`u.PrivateAttr` — no `__init__`, no `__slots__`. All public methods return
+`r[T]` (ENFORCE-056 — Uniform `r[T]` Return).
+
+Returns expose the most-specific concrete type produced by the platform
+(`FlextPluginPlatform.Plugin`, which extends `m.Plugin.Entity` per
+ENFORCE-074 chain inheritance), so callers get covariant access without
+losing typing precision.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 
-from flext_core import FlextContainer, FlextLogger, r
+from flext_core import FlextContainer
+from flext_plugin import e, p, r, s, t, u
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
-from flext_plugin import FlextPluginModels, FlextPluginPlatform, t
+
+def _build_default_platform() -> p.Plugin.PlatformService:
+    """Construct the default platform service bound to a fresh container."""
+    return FlextPluginPlatform.PluginPlatformService(container=FlextContainer())
 
 
-class FlextPluginApi:
-    """Railway-oriented plugin facade with composition."""
+class FlextPluginApi(s):
+    """Railway-oriented plugin facade with composition (MRO via FlextService).
 
-    __slots__ = ("logger", "platform")
+    Per AGENTS.md §2.5 service facade pattern: state via u.PrivateAttr,
+    no constructor, public surface returns `r[T]` uniformly.
+    """
 
-    def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize FlextPlugin with optional container.
+    _logger: p.Logger = u.PrivateAttr(
+        default_factory=lambda: u.fetch_logger("flext_plugin.api"),
+    )
+    _platform: p.Plugin.PlatformService = u.PrivateAttr(
+        default_factory=_build_default_platform,
+    )
 
-        Args:
-        container: Dependency injection container (uses default if None)
-
-        """
-        self.logger = FlextLogger(__name__)
-        self.platform = FlextPluginPlatform.PluginPlatformService(
-            container=container or FlextContainer()
-        )
-
-    def discover_plugins(self, paths: list[str]) -> r[list[FlextPluginPlatform.Plugin]]:
-        """Discover plugins in the given paths."""
-        result = self.platform.discover_plugins(paths)
-        if result.is_success:
+    def discover_plugins(
+        self,
+        paths: t.StrSequence,
+    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+        """Discover plugins in the given paths; logs the count discovered."""
+        result = self._platform.discover_plugins(paths)
+        if result.success:
             plugins = result.value
-            self.logger.info(f"Discovered {len(plugins)} plugins")
-            return r[list[FlextPluginPlatform.Plugin]].ok(plugins)
-        return r[list[FlextPluginPlatform.Plugin]].fail(
-            result.error or "Discovery failed"
-        )
+            if plugins is not None:
+                self._logger.info(f"Discovered {len(plugins)} plugins")
+        return result
 
     def execute_plugin(
         self,
         plugin_name: str,
-        context: Mapping[str, t.NormalizedValue],
+        context: t.JsonMapping,
         execution_id: str | None = None,
-    ) -> r[FlextPluginPlatform.PluginExecution]:
+    ) -> p.Result[t.JsonMapping]:
         """Execute a plugin by name with the given context."""
-        return self.platform.execute_plugin(plugin_name, context, execution_id)
+        return self._platform.execute_plugin(
+            plugin_name,
+            context,
+            execution_id,
+        ).map(lambda eid: {"execution_id": str(eid)})
 
-    def get_plugin(self, _plugin_name: str) -> FlextPluginPlatform.Plugin | None:
-        """Get a plugin by name."""
-        return self.platform.get_plugin(_plugin_name)
-
-    def get_plugin_status(self, _plugin_name: str) -> str | None:
-        """Get the status of a plugin by name."""
-        return self.platform.get_plugin_status(_plugin_name)
-
-    def is_plugin_active(self, _plugin_name: str) -> bool:
-        """Check if a plugin is active."""
-        return self.platform.is_plugin_active(_plugin_name)
-
-    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
-        """List all registered plugins."""
-        return self.platform.list_plugins()
-
-    def load_plugin(self, _plugin_path: str) -> r[FlextPluginPlatform.Plugin]:
-        """Load a plugin from the given path."""
-        result = self.platform.load_plugin(_plugin_path)
-        if result.is_failure:
-            return r[FlextPluginPlatform.Plugin].fail(result.error or "Load failed")
-        plugin = result.value
-        self.logger.info(f"Loaded plugin: {plugin.name}")
+    def fetch_plugin(
+        self,
+        plugin_name: str,
+    ) -> p.Result[FlextPluginPlatform.Plugin]:
+        """Fetch a plugin by name; fails when missing (ENFORCE-056)."""
+        plugin = self._platform.fetch_plugin(plugin_name)
+        if plugin is None:
+            return e.fail_not_found(
+                "plugin",
+                plugin_name,
+                result_type=r[FlextPluginPlatform.Plugin],
+            )
         return r[FlextPluginPlatform.Plugin].ok(plugin)
 
-    def register_plugin(self, _plugin: FlextPluginModels.Plugin.Plugin) -> r[bool]:
+    def fetch_plugin_status(self, plugin_name: str) -> p.Result[str]:
+        """Fetch the status of a plugin by name; fails when missing."""
+        status = self._platform.fetch_plugin_status(plugin_name)
+        if status is None:
+            return e.fail_not_found(
+                "plugin",
+                plugin_name,
+                result_type=r[str],
+            )
+        return r[str].ok(status)
+
+    def resolve_plugin_active(self, plugin_name: str) -> p.Result[bool]:
+        """Resolve whether a plugin is active."""
+        return r[bool].ok(self._platform.resolve_plugin_active(plugin_name))
+
+    def list_plugins(self) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+        """List all registered plugins."""
+        return r[Sequence[FlextPluginPlatform.Plugin]].ok(
+            self._platform.list_plugins(),
+        )
+
+    def load_plugin(
+        self,
+        plugin_path: str,
+    ) -> p.Result[FlextPluginPlatform.Plugin]:
+        """Load a plugin from the given path; logs the loaded plugin's name."""
+        result = self._platform.load_plugin(plugin_path)
+        if result.success:
+            plugin = result.value
+            if plugin is not None:
+                self._logger.info(f"Loaded plugin: {plugin.name}")
+        return result
+
+    def register_plugin(
+        self,
+        plugin: FlextPluginPlatform.Plugin,
+    ) -> p.Result[bool]:
         """Register a plugin in the platform."""
-        return self.platform.register_plugin(_plugin)
+        return self._platform.register_plugin(plugin)
 
-    def start_hot_reload(self, paths: list[str]) -> r[bool]:
+    def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start hot reload monitoring for the given paths."""
-        return self.platform.start_hot_reload(paths)
+        return self._platform.start_hot_reload(paths)
 
-    def stop_hot_reload(self) -> r[bool]:
+    def stop_hot_reload(self) -> p.Result[bool]:
         """Stop hot reload monitoring."""
-        return self.platform.stop_hot_reload()
+        return self._platform.stop_hot_reload()
 
-    def unregister_plugin(self, _plugin_name: str) -> r[bool]:
+    def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unregister a plugin by name."""
-        return self.platform.unregister_plugin(_plugin_name)
+        return self._platform.unregister_plugin(plugin_name)
+
+
+plugin = FlextPluginApi
+
+__all__: list[str] = ["FlextPluginApi", "plugin"]
