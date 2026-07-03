@@ -1,5 +1,6 @@
 """FLEXT Plugin Models - Plugin system data models.
 
+from flext_plugin.utilities import u
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
@@ -12,8 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from flext_cli import FlextCliModels
-from flext_core import u
+from flext_cli import FlextCliModels, u
 from flext_plugin import c, p, r, t
 
 
