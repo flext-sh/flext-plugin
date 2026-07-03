@@ -25,48 +25,60 @@ if TYPE_CHECKING:
         x as x,
     )
 
-    from tests.base import (
+    from flext_plugin.tests.base import (
         TestsFlextPluginServiceBase as TestsFlextPluginServiceBase,
         s as s,
     )
-    from tests.constants import (
+    from flext_plugin.tests.constants import (
         TestsFlextPluginConstants as TestsFlextPluginConstants,
         c as c,
     )
-    from tests.models import TestsFlextPluginModels as TestsFlextPluginModels, m as m
-    from tests.protocols import (
+    from flext_plugin.tests.models import (
+        TestsFlextPluginModels as TestsFlextPluginModels,
+        m as m,
+    )
+    from flext_plugin.tests.protocols import (
         TestsFlextPluginProtocols as TestsFlextPluginProtocols,
         p as p,
     )
-    from tests.settings import TestsFlextPluginSettings as TestsFlextPluginSettings
-    from tests.typings import TestsFlextPluginTypes as TestsFlextPluginTypes, t as t
-    from tests.unit.test_config import TestsFlextPluginConfig as TestsFlextPluginConfig
-    from tests.unit.test_constants import (
+    from flext_plugin.tests.settings import (
+        TestsFlextPluginSettings as TestsFlextPluginSettings,
+    )
+    from flext_plugin.tests.typings import (
+        TestsFlextPluginTypes as TestsFlextPluginTypes,
+        t as t,
+    )
+    from flext_plugin.tests.unit.test_config import (
+        TestsFlextPluginConfig as TestsFlextPluginConfig,
+    )
+    from flext_plugin.tests.unit.test_constants import (
         TestsFlextPluginConstantsUnit as TestsFlextPluginConstantsUnit,
     )
-    from tests.unit.test_core_types import (
+    from flext_plugin.tests.unit.test_core_types import (
         TestsFlextPluginCoreTypes as TestsFlextPluginCoreTypes,
     )
-    from tests.unit.test_discovery import (
+    from flext_plugin.tests.unit.test_discovery import (
         TestsFlextPluginDiscovery as TestsFlextPluginDiscovery,
     )
-    from tests.unit.test_domain_entities import (
+    from flext_plugin.tests.unit.test_domain_entities import (
         TestsFlextPluginDomainEntities as TestsFlextPluginDomainEntities,
     )
-    from tests.unit.test_domain_ports import (
+    from flext_plugin.tests.unit.test_domain_ports import (
         TestsFlextPluginDomainPorts as TestsFlextPluginDomainPorts,
     )
-    from tests.unit.test_examples import (
+    from flext_plugin.tests.unit.test_examples import (
         TestsFlextPluginExamples as TestsFlextPluginExamples,
     )
-    from tests.unit.test_models import (
+    from flext_plugin.tests.unit.test_models import (
         TestsFlextPluginModelsUnit as TestsFlextPluginModelsUnit,
     )
-    from tests.unit.test_plugin import TestsFlextPluginPlugin as TestsFlextPluginPlugin
-    from tests.unit.test_types import (
+    from flext_plugin.tests.unit.test_plugin import (
+        TestsFlextPluginPlugin as TestsFlextPluginPlugin,
+    )
+    from flext_plugin.tests.unit.test_types import (
         TestsFlextPluginTypesUnit as TestsFlextPluginTypesUnit,
     )
-    from tests.utilities import (
+    from flext_plugin.tests.utilities import (
         TestsFlextPluginUtilities as TestsFlextPluginUtilities,
         u as u,
     )

@@ -3,8 +3,41 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
+if TYPE_CHECKING:
+    from flext_plugin.tests.unit.test_config import (
+        TestsFlextPluginConfig as TestsFlextPluginConfig,
+    )
+    from flext_plugin.tests.unit.test_constants import (
+        TestsFlextPluginConstantsUnit as TestsFlextPluginConstantsUnit,
+    )
+    from flext_plugin.tests.unit.test_core_types import (
+        TestsFlextPluginCoreTypes as TestsFlextPluginCoreTypes,
+    )
+    from flext_plugin.tests.unit.test_discovery import (
+        TestsFlextPluginDiscovery as TestsFlextPluginDiscovery,
+    )
+    from flext_plugin.tests.unit.test_domain_entities import (
+        TestsFlextPluginDomainEntities as TestsFlextPluginDomainEntities,
+    )
+    from flext_plugin.tests.unit.test_domain_ports import (
+        TestsFlextPluginDomainPorts as TestsFlextPluginDomainPorts,
+    )
+    from flext_plugin.tests.unit.test_examples import (
+        TestsFlextPluginExamples as TestsFlextPluginExamples,
+    )
+    from flext_plugin.tests.unit.test_models import (
+        TestsFlextPluginModelsUnit as TestsFlextPluginModelsUnit,
+    )
+    from flext_plugin.tests.unit.test_plugin import (
+        TestsFlextPluginPlugin as TestsFlextPluginPlugin,
+    )
+    from flext_plugin.tests.unit.test_types import (
+        TestsFlextPluginTypesUnit as TestsFlextPluginTypesUnit,
+    )
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".test_config": ("TestsFlextPluginConfig",),
@@ -18,24 +51,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_models": ("TestsFlextPluginModelsUnit",),
         ".test_plugin": ("TestsFlextPluginPlugin",),
         ".test_types": ("TestsFlextPluginTypesUnit",),
-        "flext_tests": (
-            "c",
-            "d",
-            "e",
-            "h",
-            "m",
-            "p",
-            "r",
-            "s",
-            "t",
-            "td",
-            "tf",
-            "tk",
-            "tm",
-            "tv",
-            "u",
-            "x",
-        ),
     },
 )
 
