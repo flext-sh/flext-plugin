@@ -15,10 +15,20 @@ from pathlib import Path
 from typing import ClassVar
 
 from flext_cli import u
+from flext_core import (
+    FlextUtilitiesConversion,
+    FlextUtilitiesGuardsTypeCore,
+    FlextUtilitiesModelRuntime,
+)
 from flext_plugin import c, m, p, r, t
 
 
-class FlextPluginUtilities(u):
+class FlextPluginUtilities(
+    u,
+    FlextUtilitiesConversion,
+    FlextUtilitiesGuardsTypeCore,
+    FlextUtilitiesModelRuntime,
+):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin:
