@@ -33,6 +33,14 @@ FLEXT_PLUGIN_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
             "FlextPluginUtilities",
             "u",
         ),
+        "flext_core": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "s",
+            "x",
+        ),
     },
 )
 
