@@ -217,14 +217,11 @@ class FlextPluginPlatform:
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = u.PrivateAttr(
-            default_factory=dict[str, FlextPluginPlatform.Plugin],
+            default_factory=dict,
         )
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
             u.PrivateAttr(
-                default_factory=dict[
-                    str,
-                    FlextPluginPlatform.PluginExecution,
-                ],
+                default_factory=dict,
             )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = u.PrivateAttr(
