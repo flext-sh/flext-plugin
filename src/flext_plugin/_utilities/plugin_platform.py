@@ -15,6 +15,7 @@ from collections.abc import (
 )
 from typing import override
 
+from flext_cli import u
 from flext_core import e
 from flext_plugin import (
     FlextPluginSettings,
@@ -24,7 +25,6 @@ from flext_plugin import (
     r,
     s,
     t,
-    u,
 )
 
 

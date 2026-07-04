@@ -11,10 +11,13 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_plugin import u
 from tests.models import m
 
+FlextPluginPlatform = u.Plugin.Platform
 
+
+@pytest.mark.usefixtures("reset_registry")
 class TestsFlextPluginPlugin:
     """Tests for Plugin model class."""
 
@@ -124,7 +127,7 @@ class TestsFlextPluginPlugin:
         )
         assert plugin.status == "inactive"
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture
     def reset_registry(self) -> None:
         """Reset class-level storage before each test."""
         registry = FlextPluginPlatform.PluginRegistry.create()

@@ -97,7 +97,7 @@ class FlextPluginModels(FlextCliModels):
             @classmethod
             def create(cls, **kwargs: p.AttributeProbe) -> Self:
                 """Factory method validated by the entity contract itself."""
-                payload: dict[str, p.AttributeProbe] = dict(kwargs)
+                payload: t.MutableMappingKV[str, p.AttributeProbe] = dict(kwargs)
                 entity_id = payload.pop("entity_id", None)
                 if entity_id is not None and "unique_id" not in payload:
                     payload["unique_id"] = entity_id

@@ -14,8 +14,8 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
-from flext_core import p, r, s
-from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
+from flext_core import r, s
+from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, p, t
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:

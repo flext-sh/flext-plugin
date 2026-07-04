@@ -24,11 +24,6 @@ from flext_plugin import e, p, r, s, t, u
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
-def _build_default_platform() -> p.Plugin.PlatformService:
-    """Construct the default platform service bound to a fresh container."""
-    return FlextPluginPlatform.PluginPlatformService(container=FlextContainer())
-
-
 class FlextPluginApi(s):
     """Railway-oriented plugin facade with composition (MRO via FlextService).
 
@@ -40,8 +35,13 @@ class FlextPluginApi(s):
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
     _platform: p.Plugin.PlatformService = u.PrivateAttr(
-        default_factory=_build_default_platform,
+        default_factory=lambda: FlextPluginApi._build_default_platform(),
     )
+
+    @staticmethod
+    def _build_default_platform() -> p.Plugin.PlatformService:
+        """Construct the default platform service bound to a fresh container."""
+        return FlextPluginPlatform.PluginPlatformService(container=FlextContainer())
 
     def discover_plugins(
         self,

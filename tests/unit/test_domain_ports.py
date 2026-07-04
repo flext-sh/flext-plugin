@@ -7,7 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
+from flext_plugin import u
+
+FlextPluginDiscovery = u.Plugin.Discovery
 
 
 class TestsFlextPluginDomainPorts:
