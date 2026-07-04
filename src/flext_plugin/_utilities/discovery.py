@@ -48,7 +48,7 @@ class FlextPluginDiscovery:
         try:
             items = tuple(path.iterdir())
         except (OSError, PermissionError):
-            logger.exception(f"Failed to discover directory {path}")
+            logger.exception("Failed to discover directory %s", path)
             return discovered
         for item in items:
             if (
@@ -91,7 +91,7 @@ class FlextPluginDiscovery:
                 f"Plugin not found at: {plugin_path}",
             )
         except c.EXC_BROAD_IO_TYPE as e:
-            self.logger.exception(f"Failed to discover plugin at {plugin_path}")
+            self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return r[m.Plugin.DiscoveryData].fail(
                 f"Discovery error: {e!s}",
             )
@@ -237,7 +237,7 @@ class FlextPluginDiscovery:
                     metadata={},
                 )
             except ValueError:
-                self.logger.exception(f"Failed to create discovery data for {path}")
+                self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
         def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:

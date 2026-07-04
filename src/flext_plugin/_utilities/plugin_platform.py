@@ -217,18 +217,18 @@ class FlextPluginPlatform:
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = u.PrivateAttr(
-            default_factory=lambda: dict[str, FlextPluginPlatform.Plugin](),
+            default_factory=dict[str, FlextPluginPlatform.Plugin],
         )
         _executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = (
             u.PrivateAttr(
-                default_factory=lambda: dict[
+                default_factory=dict[
                     str,
                     FlextPluginPlatform.PluginExecution,
-                ](),
+                ],
             )
         )
         _registry: FlextPluginPlatform.PluginRegistry | None = u.PrivateAttr(
-            default_factory=lambda: None
+            default_factory=lambda: None,
         )
         _discovery: p.Plugin.PluginDiscovery | None = u.PrivateAttr(
             default_factory=lambda: None,
@@ -354,10 +354,11 @@ class FlextPluginPlatform:
                 return self._validate_and_create_plugins(data)
 
             checked: p.Result[bool] = self._require_protocol(
-                self.discovery, "Discovery"
+                self.discovery,
+                "Discovery",
             )
             discovered: p.Result[Sequence[m.Plugin.DiscoveryData]] = checked.flat_map(
-                discover_and_validate
+                discover_and_validate,
             )
             plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = (
                 discovered.flat_map(create_plugins_from_data)
@@ -398,13 +399,13 @@ class FlextPluginPlatform:
                 return self._execute_with_executor(execution)
 
             plugin_r: p.Result[FlextPluginPlatform.Plugin] = get_plugin_result(
-                plugin_name
+                plugin_name,
             )
             exec_r: p.Result[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(
-                create_execution_from_plugin
+                create_execution_from_plugin,
             )
             prepared_r: p.Result[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(
-                prepare_execution_result
+                prepare_execution_result,
             )
             return prepared_r.flat_map(execute_with_executor_result)
 
@@ -414,7 +415,7 @@ class FlextPluginPlatform:
         ) -> FlextPluginPlatform.PluginExecution | None:
             """Fetch an execution by ID."""
             execution: FlextPluginPlatform.PluginExecution | None = self.executions.get(
-                eid
+                eid,
             )
             return execution
 
@@ -493,7 +494,7 @@ class FlextPluginPlatform:
             checked_l: p.Result[bool] = self._require_protocol(self.loader, "Loader")
             loaded: p.Result[t.JsonMapping] = checked_l.flat_map(load_and_validate)
             plugin_r2: p.Result[FlextPluginPlatform.Plugin] = loaded.flat_map(
-                create_plugin_from_load_data
+                create_plugin_from_load_data,
             )
             return plugin_r2.map(self._register_single)
 
@@ -611,7 +612,9 @@ class FlextPluginPlatform:
             if plugin := self.plugins.get(name):
                 return r[FlextPluginPlatform.Plugin].ok(plugin)
             return e.fail_not_found(
-                "Plugin", name, result_type=r[FlextPluginPlatform.Plugin]
+                "Plugin",
+                name,
+                result_type=r[FlextPluginPlatform.Plugin],
             )
 
         def _prepare_execution(

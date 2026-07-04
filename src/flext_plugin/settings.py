@@ -17,7 +17,8 @@ class FlextPluginSettings(FlextSettingsBase):
     """Plugin system runtime settings."""
 
     model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
-        env_prefix="FLEXT_PLUGIN_", extra="ignore"
+        env_prefix="FLEXT_PLUGIN_",
+        extra="ignore",
     )
 
 

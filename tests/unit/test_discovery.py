@@ -10,16 +10,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import tempfile
-from collections.abc import (
-    Generator,
-)
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from flext_plugin import u
 from tests.constants import c
 from tests.models import m
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Generator,
+    )
 
 FlextPluginDiscovery = u.Plugin.Discovery
 

@@ -35,7 +35,7 @@ class FlextPluginApi(s):
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
     _platform: p.Plugin.PlatformService = u.PrivateAttr(
-        default_factory=lambda: FlextPluginApi._build_default_platform(),
+        default_factory=FlextPluginApi._build_default_platform,
     )
 
     @staticmethod

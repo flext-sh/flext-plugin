@@ -128,7 +128,7 @@ class FlextPluginConstants(c):
             VERSION_PATTERN: Final[str] = "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$"
             VERSION_RE: ClassVar[t.RegexPattern] = re.compile(VERSION_PATTERN)
             VERSION_DUNDER_RE: ClassVar[t.RegexPattern] = re.compile(
-                r"__version__\s*=\s*[\"']([^\"']+)[\"']"
+                r"__version__\s*=\s*[\"']([^\"']+)[\"']",
             )
             DOCSTRING_TRIPLE_RE: ClassVar[t.RegexPattern] = re.compile(r'"""([^"]+)"""')
             MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
