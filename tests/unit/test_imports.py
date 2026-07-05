@@ -1,32 +1,11 @@
-"""Import validation test script for flext_plugin module ecosystem.
+"""Behavioral tests for the flext_plugin public import contract.
 
-This test script provides comprehensive validation of module import capabilities
-across the FLEXT plugin system, ensuring all critical modules can be imported
-without errors and that the module ecosystem is properly structured.
-
-Import Testing Strategy:
-    - Individual Module Testing: Tests each module in isolation to identify specific issues
-    - Path Management: Proper sys.path configuration for src directory access
-    - Error Suppression: Uses contextlib.suppress for graceful failure handling
-    - Critical Module Coverage: Tests essential modules for system functionality
-
-Modules Under Test:
-    - flext_plugin.logging_fallback: Fallback logging system for error resilience
-    - flext_plugin.core.types: Core type definitions and enumerations
-    - flext_plugin.domain.entities: Domain entities for business logic
-
-Quality Validation:
-    - Import Error Detection: Identifies modules with import issues or missing dependencies
-    - Dependency Chain Validation: Ensures proper module dependency resolution
-    - Path Configuration Testing: Validates src directory access and module discovery
-    - System Integration: Tests module ecosystem coherence and integration points
-
-Enterprise Standards:
-    - Silent failure handling for robust testing in CI/CD environments
-    - Comprehensive module coverage for critical system components
-    - Path management best practices for test isolation
-    - Import validation patterns following Python testing standards
-
+The package promises a stable public surface through ``__all__``: the seven
+``FlextPlugin*`` facades, the ``plugin`` alias, the short facade aliases
+(``c``/``m``/``p``/``t``/``u`` and the re-exported ``flext_core`` kernel
+aliases), and version metadata. These tests assert that contract as observable
+behavior — every advertised name imports and resolves to a real object — rather
+than poking module internals.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -35,13 +14,103 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import contextlib
+import importlib
 
-modules_to_test = [
-    "flext_plugin.logging_fallback",
-    "flext_plugin.core.types",
-    "flext_plugin.domain.entities",
-]
-for module in modules_to_test:
-    with contextlib.suppress(Exception):
-        __import__(module)
+import pytest
+from flext_tests import tm
+
+import flext_plugin
+from flext_plugin import (
+    FlextPluginApi,
+    FlextPluginConstants,
+    FlextPluginModels,
+    FlextPluginProtocols,
+    FlextPluginSettings,
+    FlextPluginTypes,
+    FlextPluginUtilities,
+)
+
+__all__: list[str] = ["TestsFlextPluginImports"]
+
+
+class TestsFlextPluginImports:
+    """Contract for the flext_plugin package public export surface."""
+
+    def test_all_is_a_nonempty_tuple(self) -> None:
+        """The package publishes an immutable, non-empty ``__all__`` contract."""
+        tm.that(isinstance(flext_plugin.__all__, tuple), eq=True)
+        tm.that(len(flext_plugin.__all__) > 0, eq=True)
+
+    @pytest.mark.parametrize("public_name", list(flext_plugin.__all__))
+    def test_every_public_name_resolves(self, public_name: str) -> None:
+        """Every name advertised in ``__all__`` is importable and non-None."""
+        tm.that(hasattr(flext_plugin, public_name), eq=True)
+        tm.that(getattr(flext_plugin, public_name) is not None, eq=True)
+
+    @pytest.mark.parametrize(
+        ("facade_name", "expected"),
+        [
+            ("FlextPluginApi", FlextPluginApi),
+            ("FlextPluginConstants", FlextPluginConstants),
+            ("FlextPluginModels", FlextPluginModels),
+            ("FlextPluginProtocols", FlextPluginProtocols),
+            ("FlextPluginSettings", FlextPluginSettings),
+            ("FlextPluginTypes", FlextPluginTypes),
+            ("FlextPluginUtilities", FlextPluginUtilities),
+        ],
+    )
+    def test_facade_classes_are_classes_and_stable(
+        self,
+        facade_name: str,
+        expected: type,
+    ) -> None:
+        """Each ``FlextPlugin*`` facade is a class and a stable singleton."""
+        resolved = getattr(flext_plugin, facade_name)
+        tm.that(isinstance(resolved, type), eq=True)
+        tm.that(resolved is expected, eq=True)
+
+    def test_plugin_alias_is_the_api_facade(self) -> None:
+        """The ``plugin`` alias is exactly the ``FlextPluginApi`` facade."""
+        tm.that(flext_plugin.plugin is FlextPluginApi, eq=True)
+
+    @pytest.mark.parametrize(
+        "alias",
+        ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
+    )
+    def test_short_facade_aliases_are_exposed(self, alias: str) -> None:
+        """Each short facade alias is published and resolves to an object."""
+        tm.that(alias in flext_plugin.__all__, eq=True)
+        tm.that(getattr(flext_plugin, alias) is not None, eq=True)
+
+    @pytest.mark.parametrize(
+        "version_attr",
+        [
+            "__version__",
+            "__title__",
+            "__description__",
+            "__author__",
+            "__license__",
+            "__url__",
+        ],
+    )
+    def test_version_metadata_is_non_empty_string(
+        self,
+        version_attr: str,
+    ) -> None:
+        """Version metadata is exposed as non-empty strings."""
+        value = getattr(flext_plugin, version_attr)
+        tm.that(isinstance(value, str), eq=True)
+        tm.that(len(value) > 0, eq=True)
+
+    def test_version_info_is_a_tuple(self) -> None:
+        """``__version_info__`` is exposed as a tuple companion to the string."""
+        tm.that(isinstance(flext_plugin.__version_info__, tuple), eq=True)
+
+    def test_package_reimport_is_idempotent(self) -> None:
+        """Re-importing the package yields the same module object."""
+        reimported = importlib.import_module("flext_plugin")
+        tm.that(reimported is flext_plugin, eq=True)
+        tm.that(reimported.FlextPluginApi is FlextPluginApi, eq=True)
+
+
+test_imports = TestsFlextPluginImports
