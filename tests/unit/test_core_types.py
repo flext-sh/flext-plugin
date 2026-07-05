@@ -1,8 +1,9 @@
-"""Comprehensive test suite for flext_plugin.core.types module.
+"""Behavioral test suite for flext-plugin core type definitions.
 
-This test module validates all core type definitions, enumerations, and foundational
-classes that form the backbone of the FLEXT plugin system. Tests ensure type safety,
-proper enum behavior, error handling, and integration patterns across all core types.
+Validates the OBSERVABLE PUBLIC CONTRACT of the plugin constant enums and the
+exception family: enum membership, string round-trips, membership frozensets,
+status-classification behavior, and error construction. All assertions target
+public behavior only.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -16,88 +17,142 @@ from flext_tests import e
 
 from tests.constants import c
 
+_Type = c.Plugin.Type
+_Status = c.Plugin.PluginStatus
+
 
 class TestsFlextPluginCoreTypes:
-    """Test c.Plugin.Type enum functionality."""
+    """Behavioral contract of c.Plugin.Type / PluginStatus enums and errors."""
 
-    def test_plugin_type_values(self) -> None:
-        """Test all plugin type enum values."""
-        if c.Plugin.Type.TAP.value != "tap":
-            error_message = f"Expected {'tap'}, got {c.Plugin.Type.TAP.value}"
-            raise AssertionError(error_message)
-        assert c.Plugin.Type.TARGET.value == "target"
-        if c.Plugin.Type.TRANSFORM.value != "transform":
-            error_message = (
-                f"Expected {'transform'}, got {c.Plugin.Type.TRANSFORM.value}"
-            )
-            raise AssertionError(error_message)
-        assert c.Plugin.Type.UTILITY.value == "utility"
+    @pytest.mark.parametrize(
+        ("member", "value"),
+        [
+            (_Type.TAP, "tap"),
+            (_Type.TARGET, "target"),
+            (_Type.TRANSFORM, "transform"),
+            (_Type.UTILITY, "utility"),
+            (_Type.SERVICE, "service"),
+            (_Type.CORE, "core"),
+        ],
+    )
+    def test_plugin_type_member_carries_its_string_value(
+        self, member: c.Plugin.Type, value: str
+    ) -> None:
+        """Each plugin-type member exposes its canonical lowercase string."""
+        assert member.value == value
+        assert member == value  # StrEnum equality with the raw string
 
-    def test_plugin_type_from_string(self) -> None:
-        """Test creating c.Plugin.Type from string values."""
-        if c.Plugin.Type("tap") != c.Plugin.Type.TAP:
-            error_message = f"Expected {c.Plugin.Type.TAP}, got {c.Plugin.Type('tap')}"
-            raise AssertionError(error_message)
-        assert c.Plugin.Type("target") == c.Plugin.Type.TARGET
-        if c.Plugin.Type("transform") != c.Plugin.Type.TRANSFORM:
-            error_message = (
-                f"Expected {c.Plugin.Type.TRANSFORM}, got {c.Plugin.Type('transform')}"
-            )
-            raise AssertionError(error_message)
-        assert c.Plugin.Type("utility") == c.Plugin.Type.UTILITY
+    @pytest.mark.parametrize(
+        "value",
+        ["tap", "target", "transform", "utility", "service", "core"],
+    )
+    def test_plugin_type_round_trips_from_string(self, value: str) -> None:
+        """Constructing from a valid string yields the matching member back."""
+        assert c.Plugin.Type(value).value == value
 
-    def test_plugin_type_invalid(self) -> None:
-        """Test invalid plugin type raises error."""
-        with pytest.raises(ValueError, match=r".*invalid_type.*"):
+    def test_plugin_type_invalid_string_raises_value_error(self) -> None:
+        """An unknown string is rejected with ValueError naming the input."""
+        with pytest.raises(ValueError, match=r"invalid_type"):
             c.Plugin.Type("invalid_type")
 
-    def test_plugin_status_values(self) -> None:
-        """Test all plugin status enum values."""
-        if c.Plugin.PluginStatus.UNKNOWN.value != "unknown":
-            msg = f"Expected {'unknown'}, got {c.Plugin.PluginStatus.UNKNOWN.value}"
-            raise AssertionError(msg)
-        assert c.Plugin.PluginStatus.DISCOVERED.value == "discovered"
-        if c.Plugin.PluginStatus.LOADED.value != "loaded":
-            msg = f"Expected {'loaded'}, got {c.Plugin.PluginStatus.LOADED.value}"
-            raise AssertionError(msg)
-        assert c.Plugin.PluginStatus.ACTIVE.value == "active"
-        if c.Plugin.PluginStatus.ERROR.value != "error":
-            msg = f"Expected {'error'}, got {c.Plugin.PluginStatus.ERROR.value}"
-            raise AssertionError(msg)
+    def test_plugin_type_membership_frozensets_partition_all_types(self) -> None:
+        """The category frozensets are disjoint and union to ALL_PLUGIN_TYPES."""
+        p = c.Plugin
+        groups = [
+            p.SINGER_PLUGIN_TYPES,
+            p.ARCHITECTURE_PLUGIN_TYPES,
+            p.INTEGRATION_PLUGIN_TYPES,
+            p.UTILITY_PLUGIN_TYPES,
+        ]
+        union: frozenset[str] = frozenset().union(*groups)
+        assert union == p.ALL_PLUGIN_TYPES
+        total = sum(len(g) for g in groups)
+        assert total == len(union)  # disjoint: no type in two categories
 
-    def test_plugin_status_from_string(self) -> None:
-        """Test creating c.Plugin.PluginStatus from string values."""
-        if c.Plugin.PluginStatus("unknown") != c.Plugin.PluginStatus.UNKNOWN:
-            msg = f"Expected {c.Plugin.PluginStatus.UNKNOWN}, got {c.Plugin.PluginStatus('unknown')}"
-            raise AssertionError(msg)
-        assert c.Plugin.PluginStatus("discovered") == c.Plugin.PluginStatus.DISCOVERED
-        if c.Plugin.PluginStatus("loaded") != c.Plugin.PluginStatus.LOADED:
-            msg = f"Expected {c.Plugin.PluginStatus.LOADED}, got {c.Plugin.PluginStatus('loaded')}"
-            raise AssertionError(msg)
-        assert c.Plugin.PluginStatus("active") == c.Plugin.PluginStatus.ACTIVE
-        if c.Plugin.PluginStatus("error") != c.Plugin.PluginStatus.ERROR:
-            msg = f"Expected {c.Plugin.PluginStatus.ERROR}, got {c.Plugin.PluginStatus('error')}"
-            raise AssertionError(msg)
+    @pytest.mark.parametrize(
+        "member",
+        [_Type.TAP, _Type.TARGET, _Type.TRANSFORM],
+    )
+    def test_singer_types_belong_to_singer_group(
+        self, member: c.Plugin.Type
+    ) -> None:
+        """Singer plugin types are classified in the Singer frozenset."""
+        assert member in c.Plugin.SINGER_PLUGIN_TYPES
+        assert member in c.Plugin.ALL_PLUGIN_TYPES
 
-    def test_plugin_error_creation(self) -> None:
-        """Test creating PluginError with message."""
-        error = e.BaseError("Test error message")
-        assert "Test error message" in str(error)
-        assert isinstance(error, Exception)
+    @pytest.mark.parametrize(
+        ("member", "value"),
+        [
+            (_Status.UNKNOWN, "unknown"),
+            (_Status.DISCOVERED, "discovered"),
+            (_Status.LOADED, "loaded"),
+            (_Status.ACTIVE, "active"),
+            (_Status.ERROR, "error"),
+            (_Status.HEALTHY, "healthy"),
+            (_Status.UNHEALTHY, "unhealthy"),
+            (_Status.DISABLED, "disabled"),
+        ],
+    )
+    def test_plugin_status_member_carries_its_string_value(
+        self, member: c.Plugin.PluginStatus, value: str
+    ) -> None:
+        """Each status member exposes its canonical lowercase string."""
+        assert member.value == value
+        assert c.Plugin.PluginStatus(value) is member
 
-    def test_plugin_error_with_plugin_id(self) -> None:
-        """Test PluginError with plugin_id."""
-        error = e.BaseError("Test error")
-        assert "Test error" in str(error)
-        assert isinstance(error, Exception)
+    @pytest.mark.parametrize(
+        "member",
+        [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
+    )
+    def test_error_states_report_as_error_and_not_operational(
+        self, member: c.Plugin.PluginStatus
+    ) -> None:
+        """Error-class statuses classify as error and never operational."""
+        assert member.is_error_state() is True
+        assert member.is_operational() is False
+        assert member in c.Plugin.PluginStatus.get_error_statuses()
 
-    def test_plugin_error_with_error_code(self) -> None:
-        """Test PluginError with error_code."""
-        error = e.BaseError("Test error")
-        assert "Test error" in str(error)
-        assert isinstance(error, Exception)
+    @pytest.mark.parametrize(
+        "member",
+        [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
+    )
+    def test_operational_states_report_as_operational_and_not_error(
+        self, member: c.Plugin.PluginStatus
+    ) -> None:
+        """Operational statuses classify as operational and never error."""
+        assert member.is_operational() is True
+        assert member.is_error_state() is False
+        assert member in c.Plugin.PluginStatus.get_operational_statuses()
 
-    def test_plugin_error_inheritance(self) -> None:
-        """Test PluginError is proper Exception subclass."""
-        error = e.BaseError("Test")
-        assert isinstance(error, Exception)
+    def test_error_and_operational_status_sets_are_disjoint(self) -> None:
+        """No status is simultaneously an error state and operational."""
+        errors = c.Plugin.PluginStatus.get_error_statuses()
+        operational = c.Plugin.PluginStatus.get_operational_statuses()
+        assert errors.isdisjoint(operational)
+
+    def test_plugin_status_invalid_string_raises_value_error(self) -> None:
+        """An unknown status string is rejected with ValueError."""
+        with pytest.raises(ValueError, match=r"not_a_status"):
+            c.Plugin.PluginStatus("not_a_status")
+
+    @pytest.mark.parametrize(
+        ("member", "value"),
+        [
+            (c.Plugin.DiscoveryTypeLiteral.FILE, "file"),
+            (c.Plugin.DiscoveryTypeLiteral.DIRECTORY, "directory"),
+            (c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT, "entry_point"),
+        ],
+    )
+    def test_discovery_type_literal_values(
+        self, member: c.Plugin.DiscoveryTypeLiteral, value: str
+    ) -> None:
+        """Discovery-type literals expose their canonical string values."""
+        assert member.value == value
+
+    def test_base_error_preserves_message_and_is_exception(self) -> None:
+        """BaseError is raisable, carries its message, and is an Exception."""
+        message = "plugin failed to load"
+        with pytest.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
+            raise e.BaseError(message)
+        assert message in str(excinfo.value)
+        assert isinstance(excinfo.value, Exception)
