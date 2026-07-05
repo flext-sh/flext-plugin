@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def set_test_environment() -> Generator[None]:
     """Set test environment variables."""
     with u.Tests.env_vars_context({
