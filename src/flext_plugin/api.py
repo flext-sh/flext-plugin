@@ -66,7 +66,7 @@ class FlextPluginApi(s):
             plugin_name,
             context,
             execution_id,
-        ).map(lambda eid: {"execution_id": str(eid)})
+        ).map(lambda execution: {"execution_id": execution.execution_id})
 
     def fetch_plugin(
         self,

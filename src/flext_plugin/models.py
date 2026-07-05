@@ -10,13 +10,11 @@ from __future__ import annotations
 
 import types
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Self
+from pathlib import Path
+from typing import Annotated, Self
 
 from flext_cli import FlextCliModels, u
 from flext_plugin import c, p, r, t
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class FlextPluginModels(FlextCliModels):

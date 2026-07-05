@@ -12,39 +12,20 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
-import flext_plugin.models as plugin_models
 from flext_plugin import u
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from tests.constants import c
-from tests.models import m
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
 
 __all__: list[str] = ["TestsFlextPluginDiscovery"]
 
 
 class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
-
-    @pytest.fixture(autouse=True)
-    def _resolve_discovery_model_refs(self) -> None:
-        """Make the ``DiscoveryData`` model resolvable at runtime.
-
-        ``flext_plugin.models`` imports ``Path`` only under ``TYPE_CHECKING``,
-        so the ``path: Path`` field annotation is an unresolvable forward
-        reference at runtime. Discovery swallows the resulting Pydantic error
-        as an IO failure, silently returning nothing. Supplying the runtime
-        ``Path`` symbol and rebuilding lets the genuine public discovery
-        contract be observed here without editing source.
-        """
-        plugin_models.Path = Path
-        m.Plugin.DiscoveryData.model_rebuild(force=True)
 
     @pytest.fixture
     def discovery(self) -> FlextPluginDiscovery:

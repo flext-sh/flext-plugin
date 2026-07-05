@@ -70,7 +70,6 @@ class TestsFlextPluginExamples:
         assert result.success, result.error
         assert result.value.exit_code != 0
 
-    @pytest.mark.skip(reason="Requires Docker services to be running")
     def test_docker_integration_reports_service_connectivity(self) -> None:
         """With connection testing, the docker example prints a connectivity report."""
         example_path = _examples_dir() / "03_docker_integration.py"

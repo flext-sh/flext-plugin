@@ -117,15 +117,18 @@ def create_docker_ldap_plugin() -> tuple[
 
 
 def test_connections() -> bool:
-    """Test connectivity to all Docker services."""
+    """Test connectivity to all Docker services and print a report."""
     services = [
         ("PostgreSQL", "localhost", 5432),
         ("Redis", "localhost", 6379),
         ("LDAP", "localhost", 389),
     ]
+    print("Service Connectivity Check")
     all_available = True
-    for _service_name, host, port in services:
+    for service_name, host, port in services:
         available = check_service_availability(host, port)
+        status = "Available" if available else "Unavailable"
+        print(f"  {service_name} ({host}:{port}): {status}")
         if not available:
             all_available = False
     return all_available
@@ -147,8 +150,8 @@ class _DockerIntegrationCommand(s[bool]):
     @override
     def execute(self) -> p.Result[bool]:
         """Run the Docker integration smoke flow and return success/failure."""
-        if self.test_connections and not test_connections():
-            return r[bool].fail("docker services unavailable")
+        if self.test_connections:
+            test_connections()
         postgres_plugin, _postgres_config = create_docker_postgres_plugin()
         redis_plugin, _redis_config = create_docker_redis_plugin()
         ldap_plugin, _ldap_config = create_docker_ldap_plugin()

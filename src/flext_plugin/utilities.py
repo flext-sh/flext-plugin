@@ -194,6 +194,7 @@ class FlextPluginUtilities(
             return (
                 plugin_file.is_file()
                 and plugin_file.suffix in cls.PLUGIN_FILE_EXTENSIONS
+                and not plugin_file.name.startswith("_")
             )
 
         @staticmethod
