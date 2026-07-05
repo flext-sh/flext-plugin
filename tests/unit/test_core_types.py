@@ -73,9 +73,7 @@ class TestsFlextPluginCoreTypes:
         "member",
         [_Type.TAP, _Type.TARGET, _Type.TRANSFORM],
     )
-    def test_singer_types_belong_to_singer_group(
-        self, member: c.Plugin.Type
-    ) -> None:
+    def test_singer_types_belong_to_singer_group(self, member: c.Plugin.Type) -> None:
         """Singer plugin types are classified in the Singer frozenset."""
         assert member in c.Plugin.SINGER_PLUGIN_TYPES
         assert member in c.Plugin.ALL_PLUGIN_TYPES

@@ -17,8 +17,7 @@ from pathlib import Path
 import pytest
 
 from flext_plugin import p, t, u
-
-FlextPluginDiscovery = u.Plugin.Discovery
+from flext_plugin._utilities.discovery import FlextPluginDiscovery
 
 __all__: list[str] = ["TestsFlextPluginDomainPorts"]
 

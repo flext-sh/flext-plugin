@@ -34,9 +34,7 @@ class TestsFlextPluginExamples:
         ("script", "args"),
         [
             pytest.param("01_basic_plugin.py", (), id="basic-plugin"),
-            pytest.param(
-                "02_plugin_configuration.py", (), id="plugin-configuration"
-            ),
+            pytest.param("02_plugin_configuration.py", (), id="plugin-configuration"),
             pytest.param(
                 "03_docker_integration.py", ("run",), id="docker-integration-run"
             ),

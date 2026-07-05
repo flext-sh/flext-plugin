@@ -81,9 +81,7 @@ class TestsFlextPluginConstantsUnit:
         union = singer | arch | integration | utility
         assert union == c.Plugin.ALL_PLUGIN_TYPES
         # A disjoint union preserves total cardinality (no overlap, no loss).
-        assert len(union) == len(singer) + len(arch) + len(integration) + len(
-            utility
-        )
+        assert len(union) == len(singer) + len(arch) + len(integration) + len(utility)
 
     @pytest.mark.parametrize(
         ("left", "right"),

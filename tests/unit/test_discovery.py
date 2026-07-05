@@ -19,13 +19,12 @@ import pytest
 
 import flext_plugin.models as plugin_models
 from flext_plugin import u
+from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from tests.constants import c
 from tests.models import m
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-FlextPluginDiscovery = u.Plugin.Discovery
 
 __all__: list[str] = ["TestsFlextPluginDiscovery"]
 
