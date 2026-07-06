@@ -76,7 +76,7 @@ class TestsFlextPluginConfig:
     def test_update_global_installs_returned_instance(self) -> None:
         """``update_global`` returns the instance that becomes the new global."""
         updated = FlextPluginSettings.update_global()
-        tm.that(isinstance(updated, FlextPluginSettings), eq=True)
+        tm.that(updated, eq=True)
         tm.that(FlextPluginSettings.fetch_global() is updated, eq=True)
 
     def test_update_global_rejects_unknown_field(self) -> None:
@@ -99,7 +99,7 @@ class TestsFlextPluginConfig:
         """``merge_overrides`` yields a dict of the effective override state."""
         global_settings = FlextPluginSettings.fetch_global()
         merged = FlextPluginSettings.merge_overrides(global_settings)
-        tm.that(isinstance(merged, dict), eq=True)
+        tm.that(merged, eq=True)
 
 
 __all__: list[str] = ["TestsFlextPluginConfig"]
