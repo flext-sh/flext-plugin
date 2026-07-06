@@ -46,6 +46,14 @@ class TestsFlextPluginApi:
         )
         return plugin
 
+    @staticmethod
+    def _platform(api: FlextPluginApi) -> FlextPluginPlatform.PluginPlatformService:
+        platform = api._platform
+        if not isinstance(platform, FlextPluginPlatform.PluginPlatformService):
+            msg = "Unexpected plugin platform implementation"
+            raise TypeError(msg)
+        return platform
+
     @pytest.fixture
     def api(self) -> FlextPluginApi:
         """Provide a fresh API instance with reset state."""
@@ -69,7 +77,7 @@ class TestsFlextPluginApi:
         mock_discovery.discover_plugins.return_value = r[
             Sequence[m.Plugin.DiscoveryData]
         ].ok([data])
-        api._platform._discovery = mock_discovery
+        self._platform(api)._discovery = mock_discovery
 
         result = api.discover_plugins(["/tmp"])
 
@@ -82,7 +90,7 @@ class TestsFlextPluginApi:
         mock_discovery.discover_plugins.return_value = r[
             Sequence[FlextPluginPlatform.Plugin]
         ].fail("discovery failed")
-        api._platform._discovery = mock_discovery
+        self._platform(api)._discovery = mock_discovery
 
         result = api.discover_plugins(["/tmp"])
 
@@ -96,7 +104,7 @@ class TestsFlextPluginApi:
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].ok(
             {"output": "ok"},
         )
-        api._platform._executor = mock_executor
+        self._platform(api)._executor = mock_executor
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -109,7 +117,7 @@ class TestsFlextPluginApi:
         api._platform.register_plugin(plugin)
         mock_executor = MagicMock()
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].fail("boom")
-        api._platform._executor = mock_executor
+        self._platform(api)._executor = mock_executor
 
         result = api.execute_plugin("demo-plugin", {})
 
@@ -173,7 +181,7 @@ class TestsFlextPluginApi:
         mock_loader.load_plugin.return_value = r[t.JsonMapping].ok(
             {"name": "loaded", "version": "1.0.0"},
         )
-        api._platform._loader = mock_loader
+        self._platform(api)._loader = mock_loader
 
         result = api.load_plugin("/tmp/loaded.py")
 

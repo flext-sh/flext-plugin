@@ -12,32 +12,73 @@ from flext_core.lazy import (
 )
 
 if TYPE_CHECKING:
-    from flext_tests import d, e, h, r, td, tf, tk, tm, tv, x
-
-    from tests.base import TestsFlextPluginServiceBase, s
-    from tests.constants import TestsFlextPluginConstants, c
-    from tests.models import TestsFlextPluginModels, m
-    from tests.protocols import TestsFlextPluginProtocols, p
-    from tests.settings import TestsFlextPluginSettings
-    from tests.typings import TestsFlextPluginTypes, t
-    from tests.unit.test_api_direct import TestsFlextPluginApi
-    from tests.unit.test_config import TestsFlextPluginConfig
-    from tests.unit.test_constants import TestsFlextPluginConstantsUnit
-    from tests.unit.test_core_types import TestsFlextPluginCoreTypes
-    from tests.unit.test_discovery import TestsFlextPluginDiscovery
-    from tests.unit.test_domain_entities import TestsFlextPluginDomainEntities
-    from tests.unit.test_domain_ports import TestsFlextPluginDomainPorts
-    from tests.unit.test_examples import TestsFlextPluginExamples
-    from tests.unit.test_imports import TestsFlextPluginImports
-    from tests.unit.test_models import TestsFlextPluginModelsUnit
-    from tests.unit.test_platform_service import (
-        TestsFlextPluginPlatformExecution,
-        TestsFlextPluginPlatformRegistry,
-        TestsFlextPluginPlatformService,
+    from flext_tests import (
+        d as d,
+        e as e,
+        h as h,
+        r as r,
+        td as td,
+        tf as tf,
+        tk as tk,
+        tm as tm,
+        tv as tv,
+        x as x,
     )
-    from tests.unit.test_plugin import TestsFlextPluginPlugin
-    from tests.unit.test_types import TestsFlextPluginTypesUnit
-    from tests.utilities import TestsFlextPluginUtilities, u
+
+    from tests.base import (
+        TestsFlextPluginServiceBase as TestsFlextPluginServiceBase,
+        s as s,
+    )
+    from tests.constants import (
+        TestsFlextPluginConstants as TestsFlextPluginConstants,
+        c as c,
+    )
+    from tests.models import TestsFlextPluginModels as TestsFlextPluginModels, m as m
+    from tests.protocols import (
+        TestsFlextPluginProtocols as TestsFlextPluginProtocols,
+        p as p,
+    )
+    from tests.settings import TestsFlextPluginSettings as TestsFlextPluginSettings
+    from tests.typings import TestsFlextPluginTypes as TestsFlextPluginTypes, t as t
+    from tests.unit.test_api_direct import TestsFlextPluginApi as TestsFlextPluginApi
+    from tests.unit.test_config import TestsFlextPluginConfig as TestsFlextPluginConfig
+    from tests.unit.test_constants import (
+        TestsFlextPluginConstantsUnit as TestsFlextPluginConstantsUnit,
+    )
+    from tests.unit.test_core_types import (
+        TestsFlextPluginCoreTypes as TestsFlextPluginCoreTypes,
+    )
+    from tests.unit.test_discovery import (
+        TestsFlextPluginDiscovery as TestsFlextPluginDiscovery,
+    )
+    from tests.unit.test_domain_entities import (
+        TestsFlextPluginDomainEntities as TestsFlextPluginDomainEntities,
+    )
+    from tests.unit.test_domain_ports import (
+        TestsFlextPluginDomainPorts as TestsFlextPluginDomainPorts,
+    )
+    from tests.unit.test_examples import (
+        TestsFlextPluginExamples as TestsFlextPluginExamples,
+    )
+    from tests.unit.test_imports import (
+        TestsFlextPluginImports as TestsFlextPluginImports,
+    )
+    from tests.unit.test_models import (
+        TestsFlextPluginModelsUnit as TestsFlextPluginModelsUnit,
+    )
+    from tests.unit.test_platform_service import (
+        TestsFlextPluginPlatformExecution as TestsFlextPluginPlatformExecution,
+        TestsFlextPluginPlatformRegistry as TestsFlextPluginPlatformRegistry,
+        TestsFlextPluginPlatformService as TestsFlextPluginPlatformService,
+    )
+    from tests.unit.test_plugin import TestsFlextPluginPlugin as TestsFlextPluginPlugin
+    from tests.unit.test_types import (
+        TestsFlextPluginTypesUnit as TestsFlextPluginTypesUnit,
+    )
+    from tests.utilities import (
+        TestsFlextPluginUtilities as TestsFlextPluginUtilities,
+        u as u,
+    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
     build_lazy_import_map(

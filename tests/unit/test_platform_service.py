@@ -122,7 +122,7 @@ class TestsFlextPluginPlatformRegistry:
     def test_registry_get_invalid_payload_fails(self) -> None:
         """get() fails gracefully when registry payload is not a plugin."""
         registry = Platform.PluginRegistry.create()
-        registry.register("bad", {"not": "a plugin"})
+        registry.register("bad", "not a plugin")
 
         result = registry.get("bad")
 
