@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     )
     from tests.settings import TestsFlextPluginSettings as TestsFlextPluginSettings
     from tests.typings import TestsFlextPluginTypes as TestsFlextPluginTypes, t as t
+    from tests.unit.test_api_direct import TestsFlextPluginApi as TestsFlextPluginApi
     from tests.unit.test_config import TestsFlextPluginConfig as TestsFlextPluginConfig
     from tests.unit.test_constants import (
         TestsFlextPluginConstantsUnit as TestsFlextPluginConstantsUnit,
@@ -59,8 +60,16 @@ if TYPE_CHECKING:
     from tests.unit.test_examples import (
         TestsFlextPluginExamples as TestsFlextPluginExamples,
     )
+    from tests.unit.test_imports import (
+        TestsFlextPluginImports as TestsFlextPluginImports,
+    )
     from tests.unit.test_models import (
         TestsFlextPluginModelsUnit as TestsFlextPluginModelsUnit,
+    )
+    from tests.unit.test_platform_service import (
+        TestsFlextPluginPlatformExecution as TestsFlextPluginPlatformExecution,
+        TestsFlextPluginPlatformRegistry as TestsFlextPluginPlatformRegistry,
+        TestsFlextPluginPlatformService as TestsFlextPluginPlatformService,
     )
     from tests.unit.test_plugin import TestsFlextPluginPlugin as TestsFlextPluginPlugin
     from tests.unit.test_types import (
@@ -97,6 +106,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "t",
             ),
             ".unit": ("unit",),
+            ".unit.test_api_direct": ("TestsFlextPluginApi",),
             ".unit.test_config": ("TestsFlextPluginConfig",),
             ".unit.test_constants": ("TestsFlextPluginConstantsUnit",),
             ".unit.test_core_types": ("TestsFlextPluginCoreTypes",),
@@ -104,7 +114,13 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_domain_entities": ("TestsFlextPluginDomainEntities",),
             ".unit.test_domain_ports": ("TestsFlextPluginDomainPorts",),
             ".unit.test_examples": ("TestsFlextPluginExamples",),
+            ".unit.test_imports": ("TestsFlextPluginImports",),
             ".unit.test_models": ("TestsFlextPluginModelsUnit",),
+            ".unit.test_platform_service": (
+                "TestsFlextPluginPlatformExecution",
+                "TestsFlextPluginPlatformRegistry",
+                "TestsFlextPluginPlatformService",
+            ),
             ".unit.test_plugin": ("TestsFlextPluginPlugin",),
             ".unit.test_types": ("TestsFlextPluginTypesUnit",),
             ".utilities": (

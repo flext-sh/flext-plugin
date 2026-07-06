@@ -7,6 +7,7 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 _LAZY_IMPORTS = build_lazy_import_map(
     {
+        ".test_api_direct": ("TestsFlextPluginApi",),
         ".test_config": ("TestsFlextPluginConfig",),
         ".test_constants": ("TestsFlextPluginConstantsUnit",),
         ".test_core_types": ("TestsFlextPluginCoreTypes",),
@@ -14,10 +15,16 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_domain_entities": ("TestsFlextPluginDomainEntities",),
         ".test_domain_ports": ("TestsFlextPluginDomainPorts",),
         ".test_examples": ("TestsFlextPluginExamples",),
-        ".test_imports": ("test_imports",),
+        ".test_imports": ("TestsFlextPluginImports",),
         ".test_models": ("TestsFlextPluginModelsUnit",),
+        ".test_platform_service": (
+            "TestsFlextPluginPlatformExecution",
+            "TestsFlextPluginPlatformRegistry",
+            "TestsFlextPluginPlatformService",
+        ),
         ".test_plugin": ("TestsFlextPluginPlugin",),
         ".test_types": ("TestsFlextPluginTypesUnit",),
+        ".test_utilities_direct": ("TestsFlextPluginUtilities",),
         "flext_tests": (
             "c",
             "d",
