@@ -19,14 +19,7 @@ from flext_plugin.__version__ import (
 from flext_plugin._exports import FLEXT_PLUGIN_LAZY_IMPORTS
 
 if TYPE_CHECKING:
-    from flext_core._root_typing_parts.facades import (
-        d as d,
-        e as e,
-        h as h,
-        r as r,
-        s as s,
-        x as x,
-    )
+    from flext_cli import d as d, e as e, h as h, r as r, s as s, x as x
     from flext_plugin.api import FlextPluginApi as FlextPluginApi, plugin as plugin
     from flext_plugin.constants import (
         FlextPluginConstants as FlextPluginConstants,
