@@ -19,7 +19,7 @@ from flext_plugin.__version__ import (
 
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, s, x
-    from flext_plugin.api import FlextPluginApi
+    from flext_plugin.api import FlextPluginApi, plugin
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
