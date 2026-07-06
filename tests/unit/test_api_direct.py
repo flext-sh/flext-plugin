@@ -69,7 +69,7 @@ class TestsFlextPluginApi:
         mock_discovery.discover_plugins.return_value = r[
             Sequence[m.Plugin.DiscoveryData]
         ].ok([data])
-        api._platform._discovery = mock_discovery  # type: ignore[assignment]
+        api._platform._discovery = mock_discovery
 
         result = api.discover_plugins(["/tmp"])
 
@@ -82,7 +82,7 @@ class TestsFlextPluginApi:
         mock_discovery.discover_plugins.return_value = r[
             Sequence[FlextPluginPlatform.Plugin]
         ].fail("discovery failed")
-        api._platform._discovery = mock_discovery  # type: ignore[assignment]
+        api._platform._discovery = mock_discovery
 
         result = api.discover_plugins(["/tmp"])
 
@@ -96,7 +96,7 @@ class TestsFlextPluginApi:
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].ok(
             {"output": "ok"},
         )
-        api._platform._executor = mock_executor  # type: ignore[assignment]
+        api._platform._executor = mock_executor
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -109,7 +109,7 @@ class TestsFlextPluginApi:
         api._platform.register_plugin(plugin)
         mock_executor = MagicMock()
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].fail("boom")
-        api._platform._executor = mock_executor  # type: ignore[assignment]
+        api._platform._executor = mock_executor
 
         result = api.execute_plugin("demo-plugin", {})
 
@@ -173,7 +173,7 @@ class TestsFlextPluginApi:
         mock_loader.load_plugin.return_value = r[t.JsonMapping].ok(
             {"name": "loaded", "version": "1.0.0"},
         )
-        api._platform._loader = mock_loader  # type: ignore[assignment]
+        api._platform._loader = mock_loader
 
         result = api.load_plugin("/tmp/loaded.py")
 

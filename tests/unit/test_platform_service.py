@@ -122,7 +122,7 @@ class TestsFlextPluginPlatformRegistry:
     def test_registry_get_invalid_payload_fails(self) -> None:
         """get() fails gracefully when registry payload is not a plugin."""
         registry = Platform.PluginRegistry.create()
-        registry.register("bad", {"not": "a plugin"})  # type: ignore[arg-type]  # pyrefly requires ignore for invalid service arg; mypy sees no error
+        registry.register("bad", {"not": "a plugin"})
 
         result = registry.get("bad")
 
@@ -301,7 +301,7 @@ class TestsFlextPluginPlatformService:
         mock_discovery.discover_plugins.return_value = r[
             Sequence[m.Plugin.DiscoveryData]
         ].ok([data])
-        service._discovery = mock_discovery  # type: ignore[assignment]
+        service._discovery = mock_discovery
 
         result = service.discover_plugins(["/tmp"])
 
@@ -320,7 +320,7 @@ class TestsFlextPluginPlatformService:
         loaded.loaded_at = "now"
         loaded.entry_file = "entry.py"
         mock_loader.load_plugin.return_value = r[Any].ok(loaded)
-        service._loader = mock_loader  # type: ignore[assignment]
+        service._loader = mock_loader
 
         result = service.load_plugin("/tmp/loaded.py")
 
@@ -334,7 +334,7 @@ class TestsFlextPluginPlatformService:
         mock_loader.load_plugin.return_value = r[t.JsonMapping].ok(
             {"name": "dict-plugin", "version": "1.0.0"},
         )
-        service._loader = mock_loader  # type: ignore[assignment]
+        service._loader = mock_loader
 
         result = service.load_plugin("/tmp/dict.py")
 
@@ -346,7 +346,7 @@ class TestsFlextPluginPlatformService:
         service = Platform.PluginPlatformService()
         mock_loader = MagicMock()
         mock_loader.load_plugin.return_value = r[str].ok("invalid")
-        service._loader = mock_loader  # type: ignore[assignment]
+        service._loader = mock_loader
 
         result = service.load_plugin("/tmp/bad.py")
 
@@ -361,7 +361,7 @@ class TestsFlextPluginPlatformService:
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].ok(
             {"output": "ok"},
         )
-        service._executor = mock_executor  # type: ignore[assignment]
+        service._executor = mock_executor
 
         result = service.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -378,7 +378,7 @@ class TestsFlextPluginPlatformService:
         service.register_plugin(plugin)
         mock_executor = MagicMock()
         mock_executor.execute_plugin.return_value = r[t.JsonMapping].fail("exec error")
-        service._executor = mock_executor  # type: ignore[assignment]
+        service._executor = mock_executor
 
         result = service.execute_plugin("demo-plugin", {})
 
