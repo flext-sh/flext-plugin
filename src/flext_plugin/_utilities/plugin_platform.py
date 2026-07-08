@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import (
+    Mapping,
     MutableMapping,
     MutableSequence,
     Sequence,
@@ -16,10 +17,10 @@ from collections.abc import (
 from typing import override
 
 from flext_cli import u
-from flext_core import e
 from flext_plugin import (
     FlextPluginSettings,
     c,
+    e,
     m,
     p,
     r,
@@ -249,6 +250,33 @@ class FlextPluginPlatform:
                 normalized_value,
             )
 
+        @classmethod
+        def _loader_payload_mapping(
+            cls,
+            value: t.JsonMapping | p.AttributeProbe,
+        ) -> p.Result[t.JsonMapping]:
+            """Normalize supported plugin loader payload shapes."""
+            if isinstance(value, Mapping):
+                return r[t.JsonMapping].ok(
+                    t.json_mapping_adapter().validate_python(value),
+                )
+            if not getattr(value, "name", None):
+                return r[t.JsonMapping].fail("Invalid load data format")
+            plugin_dict: t.MutableMappingKV[str, t.JsonPayload | None] = {
+                "name": str(getattr(value, "name")),
+                "version": str(
+                    getattr(value, "version", c.Plugin.DEFAULT_PLUGIN_VERSION),
+                ),
+                "path": str(getattr(value, "path", "")),
+                "load_type": str(getattr(value, "load_type", "file")),
+                "loaded_at": str(getattr(value, "loaded_at", "")),
+            }
+            entry_file = getattr(value, "entry_file", None)
+            plugin_dict["entry_file"] = str(entry_file) if entry_file else None
+            return r[t.JsonMapping].ok(
+                t.json_mapping_adapter().validate_python(plugin_dict),
+            )
+
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
             super().__init__()
@@ -363,9 +391,17 @@ class FlextPluginPlatform:
             return plugins.map(self._register_all)
 
         @override
-        def execute(self) -> p.Result[None]:
+        def execute(self) -> p.Result[m.Plugin.PluginRegistry]:
             """Execute main platform initialization (s protocol)."""
-            return r[None].ok(None)
+            plugin_entries: dict[str, t.JsonMapping] = {
+                name: self._to_general_mapping(plugin)
+                for name, plugin in self.plugins.items()
+            }
+            registry = m.Plugin.PluginRegistry(
+                version=c.Plugin.DEFAULT_PLUGIN_VERSION,
+                plugins=self._to_general_mapping(plugin_entries),
+            )
+            return r[m.Plugin.PluginRegistry].ok(registry)
 
         def execute_plugin(
             self,
@@ -461,24 +497,7 @@ class FlextPluginPlatform:
                     )
                 load_result = self.loader.load_plugin(plugin_path)
                 if load_result.success:
-                    load_data = load_result.value
-                    if u.dict_like(load_data):
-                        return r[t.JsonMapping].ok(self._to_general_mapping(load_data))
-                    if getattr(load_data, "name", None):
-                        plugin_dict = {
-                            "name": str(getattr(load_data, "name", "")),
-                            "version": str(getattr(load_data, "version", "1.0.0")),
-                            "path": str(getattr(load_data, "path", "")),
-                            "load_type": str(getattr(load_data, "load_type", "file")),
-                            "loaded_at": getattr(load_data, "loaded_at", ""),
-                            "entry_file": str(getattr(load_data, "entry_file", ""))
-                            if getattr(load_data, "entry_file", None)
-                            else None,
-                        }
-                        return r[t.JsonMapping].ok(plugin_dict)
-                    return r[t.JsonMapping].fail(
-                        "Invalid load data format",
-                    )
+                    return self._loader_payload_mapping(load_result.value)
                 return r[t.JsonMapping].fail(
                     load_result.error or "Load failed",
                 )
@@ -654,7 +673,9 @@ class FlextPluginPlatform:
             """Create single validated plugin."""
             plugin = FlextPluginPlatform.Plugin.create(
                 name=str(plugin_data["name"]),
-                plugin_version=str(plugin_data.get("version", "1.0.0")),
+                plugin_version=str(
+                    plugin_data.get("version", c.Plugin.DEFAULT_PLUGIN_VERSION),
+                ),
             )
             validation_result = plugin.validate_business_rules()
             if validation_result.success:

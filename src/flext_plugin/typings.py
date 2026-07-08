@@ -12,18 +12,18 @@ from collections.abc import (
     Callable,
 )
 
-from flext_cli import t as cli_t
+from flext_cli import t
 
 
-class FlextPluginTypes(cli_t):
+class FlextPluginTypes(t):
     """Plugin type system extending flext_cli via MRO."""
 
     class Plugin:
         """Plugin domain namespace (flat members per AGENTS.md §149)."""
 
         type EventHandler = Callable[
-            [cli_t.JsonMapping],
-            Awaitable[cli_t.JsonMapping],
+            [t.JsonMapping],
+            Awaitable[t.JsonMapping],
         ]
 
 

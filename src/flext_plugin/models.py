@@ -13,11 +13,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from flext_cli import FlextCliModels, u
+from flext_cli import m, u
 from flext_plugin import c, p, r, t
 
 
-class FlextPluginModels(FlextCliModels):
+class FlextPluginModels(m):
     """Plugin domain models extending flext-core patterns.
 
     Provides standardized models for all plugin operations including plugin
@@ -30,7 +30,7 @@ class FlextPluginModels(FlextCliModels):
     class Plugin:
         """Plugin domain namespace."""
 
-        class Entity(FlextCliModels.Entity):
+        class Entity(m.Entity):
             """Plugin entity - core domain entity with identity and lifecycle.
 
             Represents a plugin with identity, lifecycle management, and mutable state.
@@ -63,7 +63,7 @@ class FlextPluginModels(FlextCliModels):
                     pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
                     description="Plugin semantic version (X.Y.Z)",
                 ),
-            ] = "1.0.0"
+            ] = c.Plugin.DEFAULT_PLUGIN_VERSION
             description: Annotated[
                 str,
                 u.Field(
@@ -244,7 +244,7 @@ class FlextPluginModels(FlextCliModels):
                 # Plugin type validity is enforced by Pydantic via c.Plugin.Type StrEnum.
                 return r[bool].ok(value=True)
 
-        class DiscoveryData(FlextCliModels.Value):
+        class DiscoveryData(m.Value):
             """Plugin discovery data - immutable discovery result.
 
             Represents discovered plugin information from various discovery methods
@@ -312,7 +312,7 @@ class FlextPluginModels(FlextCliModels):
                     raise ValueError(error_msg)
                 return value
 
-        class PluginMetadata(FlextCliModels.Value):
+        class PluginMetadata(m.Value):
             """Plugin metadata - immutable metadata value object.
 
             Represents complete metadata about a plugin including discovery
@@ -351,7 +351,7 @@ class FlextPluginModels(FlextCliModels):
                 ),
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
-        class PluginRegistry(FlextCliModels.Value):
+        class PluginRegistry(m.Value):
             """Plugin registry - central plugin registry storage.
 
             Represents plugin registry with version tracking and plugin entries.
@@ -386,6 +386,6 @@ class FlextPluginModels(FlextCliModels):
             ] = u.Field(default_factory=datetime.now)
 
 
-m: type[FlextPluginModels] = FlextPluginModels
+m = FlextPluginModels
 
 __all__: list[str] = ["FlextPluginModels", "m"]
