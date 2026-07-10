@@ -17,7 +17,6 @@ class TestsFlextPluginServiceBase(tests_s):
     @override
     def fetch_settings(cls) -> TestsFlextPluginSettings:
         """Return the typed Plugin+Tests settings singleton."""
-        return TestsFlextPluginSettings.fetch_global()
 
     @classmethod
     @override

@@ -29,7 +29,6 @@ if TYPE_CHECKING:
         FlextPluginProtocols as FlextPluginProtocols,
         p as p,
     )
-    from flext_plugin.settings import FlextPluginSettings as FlextPluginSettings
     from flext_plugin.typings import FlextPluginTypes as FlextPluginTypes, t as t
     from flext_plugin.utilities import (
         FlextPluginUtilities as FlextPluginUtilities,
@@ -37,6 +36,7 @@ if TYPE_CHECKING:
     )
 _LAZY_IMPORTS = build_lazy_import_map(
     {
+        "._settings": ("FlextPluginSettings", "settings"),
         ".api": (
             "FlextPluginApi",
             "plugin",
@@ -53,7 +53,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
             "FlextPluginProtocols",
             "p",
         ),
-        ".settings": ("FlextPluginSettings",),
         ".typings": (
             "FlextPluginTypes",
             "t",
@@ -75,11 +74,12 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 
 __all__: tuple[str, ...] = (
+    "FlextPluginSettings",
+    "settings",
     "FlextPluginApi",
     "FlextPluginConstants",
     "FlextPluginModels",
     "FlextPluginProtocols",
-    "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
     "__author__",

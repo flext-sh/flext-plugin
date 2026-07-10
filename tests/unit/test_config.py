@@ -1,7 +1,7 @@
 """Behavioral contract for :class:`FlextPluginSettings`.
 
 Exercises only the public settings contract inherited from
-``FlextSettingsBase``: singleton retrieval, snapshot cloning, global update
+``FlextSettings``: singleton retrieval, snapshot cloning, global update
 with typo-guarding, dependency-injection cloning, override merging, and the
 env-prefix isolation from the root ``FLEXT_`` namespace (rule 3). No private
 attributes, internal collaborators, or line-coverage pokes are touched.
@@ -39,15 +39,11 @@ class TestsFlextPluginConfig:
 
     def test_fetch_global_returns_stable_singleton(self) -> None:
         """``fetch_global`` returns the same instance on repeated calls."""
-        first = FlextPluginSettings.fetch_global()
-        second = FlextPluginSettings.fetch_global()
         tm.that(first is second, eq=True)
 
     def test_reset_for_testing_replaces_singleton(self) -> None:
         """``reset_for_testing`` forces a fresh singleton on next fetch."""
-        original = FlextPluginSettings.fetch_global()
         FlextPluginSettings.reset_for_testing()
-        replacement = FlextPluginSettings.fetch_global()
         tm.that(replacement is original, eq=False)
 
     def test_env_prefix_is_isolated_from_root(self) -> None:
@@ -62,14 +58,12 @@ class TestsFlextPluginConfig:
 
     def test_clone_returns_independent_snapshot(self) -> None:
         """``clone`` yields a distinct instance with equal public state."""
-        global_settings = FlextPluginSettings.fetch_global()
         snapshot = global_settings.clone()
         tm.that(snapshot is global_settings, eq=False)
         tm.that(snapshot.model_dump(), eq=global_settings.model_dump())
 
     def test_clone_does_not_replace_global_singleton(self) -> None:
         """Cloning must not mutate or swap the shared global instance."""
-        global_settings = FlextPluginSettings.fetch_global()
         global_settings.clone()
         tm.that(FlextPluginSettings.fetch_global() is global_settings, eq=True)
 
@@ -90,14 +84,12 @@ class TestsFlextPluginConfig:
 
     def test_clone_for_injection_returns_independent_clone(self) -> None:
         """``clone_for_injection`` deep-copies a provided settings instance."""
-        global_settings = FlextPluginSettings.fetch_global()
         injected = FlextPluginSettings.clone_for_injection(global_settings)
         tm.that(isinstance(injected, FlextPluginSettings), eq=True)
         tm.that(injected is global_settings, eq=False)
 
     def test_merge_overrides_returns_mapping(self) -> None:
         """``merge_overrides`` yields a dict of the effective override state."""
-        global_settings = FlextPluginSettings.fetch_global()
         merged = FlextPluginSettings.merge_overrides(global_settings)
         tm.that(merged, eq=True)
 
