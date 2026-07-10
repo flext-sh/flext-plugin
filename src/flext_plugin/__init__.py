@@ -74,12 +74,11 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 
 __all__: tuple[str, ...] = (
-    "FlextPluginSettings",
-    "settings",
     "FlextPluginApi",
     "FlextPluginConstants",
     "FlextPluginModels",
     "FlextPluginProtocols",
+    "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
     "__author__",
@@ -99,6 +98,7 @@ __all__: tuple[str, ...] = (
     "plugin",
     "r",
     "s",
+    "settings",
     "t",
     "u",
     "x",
