@@ -38,7 +38,7 @@ class TestsFlextPluginImports:
 
     def test_all_is_a_nonempty_tuple(self) -> None:
         """The package publishes an immutable, non-empty ``__all__`` contract."""
-        tm.that(flext_plugin.__all__, eq=True)
+        tm.that(flext_plugin.__all__, is_=tuple)
         tm.that(len(flext_plugin.__all__) > 0, eq=True)
 
     @pytest.mark.parametrize("public_name", list(flext_plugin.__all__))
@@ -104,7 +104,7 @@ class TestsFlextPluginImports:
 
     def test_version_info_is_a_tuple(self) -> None:
         """``__version_info__`` is exposed as a tuple companion to the string."""
-        tm.that(flext_plugin.__version_info__, eq=True)
+        tm.that(flext_plugin.__version_info__, is_=tuple)
 
     def test_package_reimport_is_idempotent(self) -> None:
         """Re-importing the package yields the same module object."""
