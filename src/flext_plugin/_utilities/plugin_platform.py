@@ -36,26 +36,32 @@ class FlextPluginPlatform:
         """Plugin lifecycle + business-rule behavior (U17: moved off the model)."""
 
         @staticmethod
-        def disable(plugin: m.Plugin.Entity) -> p.Result[bool]:
-            """Disable the plugin."""
+        def disable(plugin: m.Plugin.Entity) -> p.Result[m.Plugin.Entity]:
+            """Return a disabled copy of the plugin."""
             # NOTE (multi-agent): U17 — lifecycle behavior lives in u.Plugin.Platform.Rules,
-            # not on the declaration-layer model. Moved verbatim from m.Plugin.Entity.
+            # not on the declaration-layer model. Functional update via model_copy keeps
+            # the model pure (no external field mutation).
             if not plugin.is_enabled:
-                return r[bool].fail("Plugin is already disabled")
-            plugin.is_enabled = False
-            return r[bool].ok(value=True)
+                return r[m.Plugin.Entity].fail("Plugin is already disabled")
+            return r[m.Plugin.Entity].ok(
+                plugin.model_copy(update={"is_enabled": False}),
+            )
 
         @staticmethod
-        def enable(plugin: m.Plugin.Entity) -> p.Result[bool]:
-            """Enable the plugin."""
+        def enable(plugin: m.Plugin.Entity) -> p.Result[m.Plugin.Entity]:
+            """Return an enabled copy of the plugin."""
             if plugin.is_enabled:
-                return r[bool].fail("Plugin is already enabled")
-            plugin.is_enabled = True
-            return r[bool].ok(value=True)
+                return r[m.Plugin.Entity].fail("Plugin is already enabled")
+            return r[m.Plugin.Entity].ok(
+                plugin.model_copy(update={"is_enabled": True}),
+            )
 
         @staticmethod
-        def record_error(plugin: m.Plugin.Entity, error_message: str) -> None:
-            """Record plugin error."""
+        def record_error(
+            plugin: m.Plugin.Entity,
+            error_message: str,
+        ) -> m.Plugin.Entity:
+            """Return a copy of the plugin with the error recorded in metadata."""
             metadata = dict(plugin.metadata)
             if "error_count" not in metadata:
                 metadata["error_count"] = 0
@@ -66,8 +72,10 @@ class FlextPluginPlatform:
             )
             metadata["error_count"] = error_count + 1
             metadata["last_error"] = error_message
-            plugin.metadata = t.json_mapping_adapter().validate_python(
-                metadata,
+            return plugin.model_copy(
+                update={
+                    "metadata": t.json_mapping_adapter().validate_python(metadata),
+                },
             )
 
         @staticmethod
@@ -76,8 +84,8 @@ class FlextPluginPlatform:
             execution_time: float,
             *,
             success: bool,
-        ) -> None:
-            """Record plugin execution metrics."""
+        ) -> m.Plugin.Entity:
+            """Return a copy of the plugin with execution metrics recorded."""
             metadata = dict(plugin.metadata)
             if "execution_count" not in metadata:
                 metadata["execution_count"] = 0
@@ -108,8 +116,10 @@ class FlextPluginPlatform:
                 )
                 metadata["failure_count"] = failure_count + 1
 
-            plugin.metadata = t.json_mapping_adapter().validate_python(
-                metadata,
+            return plugin.model_copy(
+                update={
+                    "metadata": t.json_mapping_adapter().validate_python(metadata),
+                },
             )
 
         @staticmethod

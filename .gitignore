@@ -343,3 +343,4 @@ staging/
 .venv/
 __pycache__/
 base.mk
+legado/
