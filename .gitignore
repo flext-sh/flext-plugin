@@ -337,10 +337,11 @@ staging/
 
 !base.mk
 
+legado/
+
 # --- workspace-sync: required ignores (auto-managed) ---
 .direnv/
 .reports/
 .venv/
 __pycache__/
 base.mk
-legado/
