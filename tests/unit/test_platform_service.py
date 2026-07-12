@@ -12,15 +12,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
 
-from flext_plugin import c, m, r, t
+from flext_plugin import c
+from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from tests.utilities import u
 
 Platform = FlextPluginPlatform
 
@@ -287,81 +286,55 @@ class TestsFlextPluginPlatformService:
 
         assert result.failure is True
 
-    def test_service_discover_plugins_with_mock_discovery(self) -> None:
-        """discover_plugins() registers discovered plugins when discovery works."""
+    def test_service_discover_plugins_with_real_discovery(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """discover_plugins() registers plugins found by real file-system discovery."""
         service = Platform.PluginPlatformService()
-        mock_discovery = MagicMock()
-        data = m.Plugin.DiscoveryData(
-            name="found",
-            version="1.0.0",
-            path=Path("/tmp/found.py"),
-            discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
-            discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+        (tmp_path / "found.py").write_text(
+            '"""Real plugin module."""\n',
+            encoding="utf-8",
         )
-        mock_discovery.discover_plugins.return_value = r[
-            Sequence[m.Plugin.DiscoveryData]
-        ].ok([data])
-        service._discovery = mock_discovery
+        service._discovery = FlextPluginDiscovery()
 
-        result = service.discover_plugins(["/tmp"])
+        result = service.discover_plugins([str(tmp_path)])
 
         assert result.success is True
         assert service.fetch_plugin("found") is not None
 
-    def test_service_load_plugin_with_mock_loader_object(self) -> None:
-        """load_plugin() handles loader returning an object with name attr."""
+    def test_service_load_plugin_with_real_loader(self, tmp_path: Path) -> None:
+        """load_plugin() maps a real loader payload and registers the plugin."""
         service = Platform.PluginPlatformService()
-        mock_loader = MagicMock()
-        loaded = MagicMock()
-        loaded.name = "loaded"
-        loaded.version = "2.0.0"
-        loaded.path = "/tmp/loaded.py"
-        loaded.load_type = "file"
-        loaded.loaded_at = "now"
-        loaded.entry_file = "entry.py"
-        mock_loader.load_plugin.return_value = r[Any].ok(loaded)
-        service._loader = mock_loader
+        plugin_file = tmp_path / "loaded.py"
+        plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
+        loader = u.Plugin.Tests.FilePluginLoader()
+        service._loader = loader
 
-        result = service.load_plugin("/tmp/loaded.py")
+        result = service.load_plugin(str(plugin_file))
 
         assert result.success is True
         assert service.fetch_plugin("loaded") is not None
+        assert loader.plugin_loaded("loaded")
 
-    def test_service_load_plugin_with_mock_loader_dict(self) -> None:
-        """load_plugin() handles loader returning a mapping."""
+    def test_service_load_plugin_propagates_loader_failure(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """load_plugin() fails when the real loader cannot find the file."""
         service = Platform.PluginPlatformService()
-        mock_loader = MagicMock()
-        mock_loader.load_plugin.return_value = r[t.JsonMapping].ok(
-            {"name": "dict-plugin", "version": "1.0.0"},
-        )
-        service._loader = mock_loader
+        service._loader = u.Plugin.Tests.FilePluginLoader()
 
-        result = service.load_plugin("/tmp/dict.py")
-
-        assert result.success is True
-        assert service.fetch_plugin("dict-plugin") is not None
-
-    def test_service_load_plugin_invalid_data_fails(self) -> None:
-        """load_plugin() fails when loader returns invalid data format."""
-        service = Platform.PluginPlatformService()
-        mock_loader = MagicMock()
-        mock_loader.load_plugin.return_value = r[str].ok("invalid")
-        service._loader = mock_loader
-
-        result = service.load_plugin("/tmp/bad.py")
+        result = service.load_plugin(str(tmp_path / "missing.py"))
 
         assert result.failure is True
 
-    def test_service_execute_plugin_with_mock_executor_success(self) -> None:
-        """execute_plugin() succeeds when executor returns success."""
+    def test_service_execute_plugin_with_real_executor_success(self) -> None:
+        """execute_plugin() records a real completed execution with the result."""
         service = Platform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        mock_executor = MagicMock()
-        mock_executor.execute_plugin.return_value = r[t.JsonMapping].ok(
-            {"output": "ok"},
-        )
-        service._executor = mock_executor
+        service._executor = u.Plugin.Tests.EchoExecutor()
 
         result = service.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -369,34 +342,34 @@ class TestsFlextPluginPlatformService:
         execution = service.fetch_execution("e1")
         assert execution is not None
         assert execution.success is True
-        assert execution.result == {"output": "ok"}
+        assert execution.result is not None
+        assert execution.result["plugin"] == "demo-plugin"
 
-    def test_service_execute_plugin_with_mock_executor_failure(self) -> None:
-        """execute_plugin() fails when executor returns failure."""
+    def test_service_execute_plugin_with_real_executor_failure(self) -> None:
+        """execute_plugin() fails when the real executor reports a failure."""
         service = Platform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        mock_executor = MagicMock()
-        mock_executor.execute_plugin.return_value = r[t.JsonMapping].fail("exec error")
-        service._executor = mock_executor
+        service._executor = u.Plugin.Tests.FailingExecutor()
 
         result = service.execute_plugin("demo-plugin", {})
 
         assert result.failure is True
 
-    def test_service_register_plugin_validation_failure(self) -> None:
-        """register_plugin() fails when business-rule validation fails."""
-        service = Platform.PluginPlatformService()
-        plugin = self._make_plugin(name="valid-plugin")
+    def test_plugin_with_invalid_version_is_rejected_at_construction(self) -> None:
+        """Invalid semver is rejected by the real model validator at construction.
 
-        with patch.object(
-            Platform.Plugin,
-            "validate_business_rules",
-            return_value=r[bool].fail("business rule"),
-        ):
-            result = service.register_plugin(plugin)
-
-        assert result.failure is True
+        NOTE (multi-agent): no-mock rewrite — the old test patched
+        ``Plugin.validate_business_rules`` because every rule it checks (name,
+        semver, type) is already enforced by Pydantic at construction; an
+        invalid plugin can never reach ``register_plugin``. The real guarantee
+        is that construction itself rejects the invalid version.
+        """
+        with pytest.raises(c.ValidationError, match="semantic"):
+            Platform.Plugin.create(
+                name="valid-plugin",
+                plugin_version="not-semver",
+            )
 
     def test_service_hot_reload_methods(self) -> None:
         """Hot reload methods return success without side effects."""

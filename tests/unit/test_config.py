@@ -13,20 +13,22 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
+from flext_core import FlextSettings
 from flext_plugin import FlextPluginSettings
 
-# Root-level concrete fields that FlextPluginSettings must NOT inherit as its
-# own declared fields — isolation contract (rule 3). The shared operational
-# flags declared on the FlextSettings root itself (debug/trace/log_level/
-# async_logging/timezone) are inherited by design and are not listed here.
-_ROOT_FIELDS: tuple[str, ...] = (
-    "app_name",
-    "enable_caching",
-    "cache_ttl",
-    "max_workers",
-    "timeout_seconds",
-    "api_key",
-    "database_url",
+# NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
+# absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,
+# timeout_seconds, api_key, database_url) that the real FlextSettings root no
+# longer declares, so the test was vacuous. The live contract is checked against
+# the runtime SSOT instead: FlextSettings.model_fields is the single source of
+# truth for the universal operational fields (debug/trace/log_level/timezone/
+# async_logging), and FlextPluginSettings must neither add nor drop fields.
+_UNIVERSAL_FIELDS: tuple[str, ...] = (
+    "debug",
+    "trace",
+    "log_level",
+    "timezone",
+    "async_logging",
 )
 
 
@@ -55,10 +57,17 @@ class TestsFlextPluginConfig:
         prefix = FlextPluginSettings.model_config.get("env_prefix")
         tm.that(prefix, eq="FLEXT_PLUGIN_")
 
-    @pytest.mark.parametrize("root_field", _ROOT_FIELDS)
-    def test_root_concrete_fields_are_not_declared(self, root_field: str) -> None:
-        """No root concrete field leaks into the plugin field contract."""
-        tm.that(root_field in FlextPluginSettings.model_fields, eq=False)
+    def test_plugin_settings_match_root_field_contract(self) -> None:
+        """Plugin settings declare exactly the FlextSettings SSOT root fields."""
+        tm.that(
+            set(FlextPluginSettings.model_fields),
+            eq=set(FlextSettings.model_fields),
+        )
+
+    @pytest.mark.parametrize("universal_field", _UNIVERSAL_FIELDS)
+    def test_universal_fields_are_inherited(self, universal_field: str) -> None:
+        """Every universal operational flag is inherited from the SSOT root."""
+        tm.that(universal_field in FlextPluginSettings.model_fields, eq=True)
 
     def test_clone_returns_independent_snapshot(self) -> None:
         """``clone`` yields a distinct instance with equal public state."""

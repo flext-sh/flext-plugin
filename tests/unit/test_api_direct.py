@@ -12,15 +12,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 
-from flext_plugin import c, m, r, t
+from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 from flext_plugin.api import FlextPluginApi
+from tests.utilities import u
 
 
 @pytest.mark.usefixtures("reset_api")
@@ -64,33 +63,23 @@ class TestsFlextPluginApi:
     def test_discover_plugins_logs_count_and_returns_plugins(
         self,
         api: FlextPluginApi,
+        tmp_path: Path,
     ) -> None:
         """discover_plugins() logs the count and returns discovered plugins."""
-        mock_discovery = MagicMock()
-        data = m.Plugin.DiscoveryData(
-            name="found",
-            version="1.0.0",
-            path=Path("/tmp/found.py"),
-            discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
-            discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+        (tmp_path / "found.py").write_text(
+            '"""Real plugin module."""\n',
+            encoding="utf-8",
         )
-        mock_discovery.discover_plugins.return_value = r[
-            Sequence[m.Plugin.DiscoveryData]
-        ].ok([data])
-        self._platform(api)._discovery = mock_discovery
+        self._platform(api)._discovery = FlextPluginDiscovery()
 
-        result = api.discover_plugins(["/tmp"])
+        result = api.discover_plugins([str(tmp_path)])
 
         assert result.success is True
-        assert len(result.unwrap()) == 1
+        assert any(plugin.name == "found" for plugin in result.unwrap())
 
     def test_discover_plugins_failure_returned(self, api: FlextPluginApi) -> None:
         """discover_plugins() propagates failures from the platform."""
-        mock_discovery = MagicMock()
-        mock_discovery.discover_plugins.return_value = r[
-            Sequence[FlextPluginPlatform.Plugin]
-        ].fail("discovery failed")
-        self._platform(api)._discovery = mock_discovery
+        self._platform(api)._discovery = u.Plugin.Tests.FailingDiscovery()
 
         result = api.discover_plugins(["/tmp"])
 
@@ -100,11 +89,7 @@ class TestsFlextPluginApi:
         """execute_plugin() returns a mapping containing the execution_id."""
         plugin = self._make_plugin()
         api._platform.register_plugin(plugin)
-        mock_executor = MagicMock()
-        mock_executor.execute_plugin.return_value = r[t.JsonMapping].ok(
-            {"output": "ok"},
-        )
-        self._platform(api)._executor = mock_executor
+        self._platform(api)._executor = u.Plugin.Tests.EchoExecutor()
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -115,9 +100,7 @@ class TestsFlextPluginApi:
         """execute_plugin() propagates execution failures."""
         plugin = self._make_plugin()
         api._platform.register_plugin(plugin)
-        mock_executor = MagicMock()
-        mock_executor.execute_plugin.return_value = r[t.JsonMapping].fail("boom")
-        self._platform(api)._executor = mock_executor
+        self._platform(api)._executor = u.Plugin.Tests.FailingExecutor()
 
         result = api.execute_plugin("demo-plugin", {})
 
@@ -175,15 +158,17 @@ class TestsFlextPluginApi:
         assert result.success is True
         assert {plugin.name for plugin in result.unwrap()} == {"alpha", "beta"}
 
-    def test_load_plugin_logs_and_returns(self, api: FlextPluginApi) -> None:
+    def test_load_plugin_logs_and_returns(
+        self,
+        api: FlextPluginApi,
+        tmp_path: Path,
+    ) -> None:
         """load_plugin() logs the loaded name and returns the plugin."""
-        mock_loader = MagicMock()
-        mock_loader.load_plugin.return_value = r[t.JsonMapping].ok(
-            {"name": "loaded", "version": "1.0.0"},
-        )
-        self._platform(api)._loader = mock_loader
+        plugin_file = tmp_path / "loaded.py"
+        plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
+        self._platform(api)._loader = u.Plugin.Tests.FilePluginLoader()
 
-        result = api.load_plugin("/tmp/loaded.py")
+        result = api.load_plugin(str(plugin_file))
 
         assert result.success is True
         assert result.unwrap().name == "loaded"
