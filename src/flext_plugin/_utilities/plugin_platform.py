@@ -142,6 +142,7 @@ class FlextPluginPlatform:
 
             Args:
                 category: Plugin category to list
+                scope: Registration scope to list plugins from
 
             Returns:
                 Result containing list of plugin names
