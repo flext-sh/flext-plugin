@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Annotated, Self
 
 from flext_cli import m, u
-from flext_plugin import c, p, r, t
+from flext_plugin import c, p, t
 
 
 class FlextPluginModels(m):
@@ -122,127 +122,6 @@ class FlextPluginModels(m):
                     error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
                     raise ValueError(error_msg)
                 return value
-
-            def disable(self) -> p.Result[bool]:
-                """Disable the plugin.
-
-                Returns:
-                r[bool] indicating success or failure
-
-                """
-                if not self.is_enabled:
-                    return r[bool].fail("Plugin is already disabled")
-                self.is_enabled = False
-                return r[bool].ok(value=True)
-
-            def enable(self) -> p.Result[bool]:
-                """Enable the plugin.
-
-                Returns:
-                r[bool] indicating success or failure
-
-                """
-                if self.is_enabled:
-                    return r[bool].fail("Plugin is already enabled")
-                self.is_enabled = True
-                return r[bool].ok(value=True)
-
-            def record_error(self, error_message: str) -> None:
-                """Record plugin error.
-
-                Args:
-                    error_message: Error message to record
-
-                """
-                metadata = dict(self.metadata)
-                if "error_count" not in metadata:
-                    metadata["error_count"] = 0
-                if "last_error" not in metadata:
-                    metadata["last_error"] = ""
-                error_count = u.to_int(
-                    metadata.get("error_count", 0),
-                )
-                metadata["error_count"] = error_count + 1
-                metadata["last_error"] = error_message
-                self.metadata = t.json_mapping_adapter().validate_python(
-                    metadata,
-                )
-
-            def record_execution(self, execution_time: float, *, success: bool) -> None:
-                """Record plugin execution metrics.
-
-                Args:
-                    execution_time: Time taken for execution in seconds
-                    success: Whether the execution was successful
-
-                """
-                metadata = dict(self.metadata)
-                if "execution_count" not in metadata:
-                    metadata["execution_count"] = 0
-                if "total_execution_time" not in metadata:
-                    metadata["total_execution_time"] = 0.0
-                if "success_count" not in metadata:
-                    metadata["success_count"] = 0
-                if "failure_count" not in metadata:
-                    metadata["failure_count"] = 0
-
-                exec_count = u.to_int(
-                    metadata.get("execution_count", 0),
-                )
-                total_time = u.to_float(
-                    metadata.get("total_execution_time", 0.0),
-                )
-                metadata["execution_count"] = exec_count + 1
-                metadata["total_execution_time"] = total_time + execution_time
-
-                if success:
-                    success_count = u.to_int(
-                        metadata.get("success_count", 0),
-                    )
-                    metadata["success_count"] = success_count + 1
-                else:
-                    failure_count = u.to_int(
-                        metadata.get("failure_count", 0),
-                    )
-                    metadata["failure_count"] = failure_count + 1
-
-                self.metadata = t.json_mapping_adapter().validate_python(
-                    metadata,
-                )
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                """Validate plugin business rules.
-
-                Business Rules:
-                - Plugin name must not be empty
-                - Plugin version must follow semantic versioning (X.Y.Z)
-                - Plugin type must be valid
-
-                Returns:
-                r[bool] indicating validation success or failure
-
-                """
-                min_version_parts = 2
-                max_version_parts = 3
-                if not self.name or not self.name.strip():
-                    return r[bool].fail("Plugin name cannot be empty")
-
-                # Validate semantic version
-                version_parts = self.plugin_version.split(".")
-                if (
-                    len(version_parts) < min_version_parts
-                    or len(version_parts) > max_version_parts
-                ):
-                    return r[bool].fail(
-                        f"Invalid semantic version: {self.plugin_version}",
-                    )
-                if not all(part.isdigit() for part in version_parts if part):
-                    return r[bool].fail(
-                        f"Version parts must be numeric: {self.plugin_version}",
-                    )
-
-                # Plugin type validity is enforced by Pydantic via c.Plugin.Type StrEnum.
-                return r[bool].ok(value=True)
 
         class DiscoveryData(m.Value):
             """Plugin discovery data - immutable discovery result.

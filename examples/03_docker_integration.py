@@ -15,7 +15,7 @@ from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
 from flext_core import r, s
-from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, p, t
+from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, p, t, u
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -159,7 +159,7 @@ class _DockerIntegrationCommand(s[bool]):
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
             if not hasattr(plugin, "validate_business_rules"):
                 return r[bool].fail("plugin validation surface unavailable")
-            validation_result = plugin.validate_business_rules()
+            validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
             if validation_result.failure:
                 return r[bool].fail(validation_result.error or "validation failed")
         return r[bool].ok(value=True)

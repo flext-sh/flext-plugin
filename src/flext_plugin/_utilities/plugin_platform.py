@@ -32,6 +32,108 @@ from flext_plugin import (
 class FlextPluginPlatform:
     """Platform namespace for plugin platform classes."""
 
+    class Rules:
+        """Plugin lifecycle + business-rule behavior (U17: moved off the model)."""
+
+        @staticmethod
+        def disable(plugin: m.Plugin.Entity) -> p.Result[bool]:
+            """Disable the plugin."""
+            # NOTE (multi-agent): U17 — lifecycle behavior lives in u.Plugin.Platform.Rules,
+            # not on the declaration-layer model. Moved verbatim from m.Plugin.Entity.
+            if not plugin.is_enabled:
+                return r[bool].fail("Plugin is already disabled")
+            plugin.is_enabled = False
+            return r[bool].ok(value=True)
+
+        @staticmethod
+        def enable(plugin: m.Plugin.Entity) -> p.Result[bool]:
+            """Enable the plugin."""
+            if plugin.is_enabled:
+                return r[bool].fail("Plugin is already enabled")
+            plugin.is_enabled = True
+            return r[bool].ok(value=True)
+
+        @staticmethod
+        def record_error(plugin: m.Plugin.Entity, error_message: str) -> None:
+            """Record plugin error."""
+            metadata = dict(plugin.metadata)
+            if "error_count" not in metadata:
+                metadata["error_count"] = 0
+            if "last_error" not in metadata:
+                metadata["last_error"] = ""
+            error_count = u.to_int(
+                metadata.get("error_count", 0),
+            )
+            metadata["error_count"] = error_count + 1
+            metadata["last_error"] = error_message
+            plugin.metadata = t.json_mapping_adapter().validate_python(
+                metadata,
+            )
+
+        @staticmethod
+        def record_execution(
+            plugin: m.Plugin.Entity,
+            execution_time: float,
+            *,
+            success: bool,
+        ) -> None:
+            """Record plugin execution metrics."""
+            metadata = dict(plugin.metadata)
+            if "execution_count" not in metadata:
+                metadata["execution_count"] = 0
+            if "total_execution_time" not in metadata:
+                metadata["total_execution_time"] = 0.0
+            if "success_count" not in metadata:
+                metadata["success_count"] = 0
+            if "failure_count" not in metadata:
+                metadata["failure_count"] = 0
+
+            exec_count = u.to_int(
+                metadata.get("execution_count", 0),
+            )
+            total_time = u.to_float(
+                metadata.get("total_execution_time", 0.0),
+            )
+            metadata["execution_count"] = exec_count + 1
+            metadata["total_execution_time"] = total_time + execution_time
+
+            if success:
+                success_count = u.to_int(
+                    metadata.get("success_count", 0),
+                )
+                metadata["success_count"] = success_count + 1
+            else:
+                failure_count = u.to_int(
+                    metadata.get("failure_count", 0),
+                )
+                metadata["failure_count"] = failure_count + 1
+
+            plugin.metadata = t.json_mapping_adapter().validate_python(
+                metadata,
+            )
+
+        @staticmethod
+        def validate_business_rules(plugin: m.Plugin.Entity) -> p.Result[bool]:
+            """Validate plugin business rules."""
+            min_version_parts = 2
+            max_version_parts = 3
+            if not plugin.name or not plugin.name.strip():
+                return r[bool].fail("Plugin name cannot be empty")
+            version_parts = plugin.plugin_version.split(".")
+            if (
+                len(version_parts) < min_version_parts
+                or len(version_parts) > max_version_parts
+            ):
+                return r[bool].fail(
+                    f"Invalid semantic version: {plugin.plugin_version}",
+                )
+            if not all(part.isdigit() for part in version_parts if part):
+                return r[bool].fail(
+                    f"Version parts must be numeric: {plugin.plugin_version}",
+                )
+            # Plugin type validity is enforced by Pydantic via c.Plugin.Type StrEnum.
+            return r[bool].ok(value=True)
+
     class PluginExecution:
         """Plugin execution entity with lifecycle management."""
 
@@ -533,7 +635,9 @@ class FlextPluginPlatform:
                 )
                 return self._add_to_plugins(plugin_entity)
 
-            validated_biz: p.Result[bool] = plugin.validate_business_rules()
+            validated_biz: p.Result[bool] = (
+                FlextPluginPlatform.Rules.validate_business_rules(plugin)
+            )
             registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
             return registered.map(add_to_plugins_result)
 
@@ -678,7 +782,9 @@ class FlextPluginPlatform:
                     plugin_data.get("version", c.Plugin.DEFAULT_PLUGIN_VERSION),
                 ),
             )
-            validation_result = plugin.validate_business_rules()
+            validation_result = FlextPluginPlatform.Rules.validate_business_rules(
+                plugin
+            )
             if validation_result.success:
                 return r[FlextPluginPlatform.Plugin].ok(plugin)
             return r[FlextPluginPlatform.Plugin].fail(
@@ -696,7 +802,9 @@ class FlextPluginPlatform:
                     name=data.name,
                     plugin_version=data.version,
                 )
-                validation_result = plugin.validate_business_rules()
+                validation_result = FlextPluginPlatform.Rules.validate_business_rules(
+                    plugin
+                )
                 if validation_result.success:
                     plugins.append(plugin)
             return r[Sequence[FlextPluginPlatform.Plugin]].ok(plugins)

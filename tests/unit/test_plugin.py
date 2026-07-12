@@ -77,7 +77,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=False,
         )
-        result = plugin.enable()
+        result = u.Plugin.Platform.Rules.enable(plugin)
         assert result.success
         assert plugin.is_enabled is True
 
@@ -88,7 +88,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        result = plugin.enable()
+        result = u.Plugin.Platform.Rules.enable(plugin)
         assert result.failure
         assert result.error is not None
         assert "already enabled" in result.error
@@ -101,7 +101,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        result = plugin.disable()
+        result = u.Plugin.Platform.Rules.disable(plugin)
         assert result.success
         assert plugin.is_enabled is False
 
@@ -112,7 +112,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=False,
         )
-        result = plugin.disable()
+        result = u.Plugin.Platform.Rules.disable(plugin)
         assert result.failure
         assert result.error is not None
         assert "already disabled" in result.error
@@ -125,8 +125,8 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        assert plugin.disable().success
-        assert plugin.enable().success
+        assert u.Plugin.Platform.Rules.disable(plugin).success
+        assert u.Plugin.Platform.Rules.enable(plugin).success
         assert plugin.is_enabled is True
 
     # ----- Plugin entity: business rules & metadata -----------------------
@@ -134,21 +134,21 @@ class TestsFlextPluginPlugin:
     def test_validate_business_rules_accepts_valid_plugin(self) -> None:
         """A well-formed plugin passes business-rule validation."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
-        result = plugin.validate_business_rules()
+        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
         assert result.success
 
     def test_record_error_is_observable_in_public_metadata(self) -> None:
         """record_error() surfaces count and message via the metadata field."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
-        plugin.record_error("boom")
+        u.Plugin.Platform.Rules.record_error(plugin, "boom")
         assert plugin.metadata["error_count"] == 1
         assert plugin.metadata["last_error"] == "boom"
 
     def test_record_error_accumulates_count(self) -> None:
         """Repeated record_error() calls increment the observable error count."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
-        plugin.record_error("first")
-        plugin.record_error("second")
+        u.Plugin.Platform.Rules.record_error(plugin, "first")
+        u.Plugin.Platform.Rules.record_error(plugin, "second")
         assert plugin.metadata["error_count"] == 2
         assert plugin.metadata["last_error"] == "second"
 

@@ -17,6 +17,7 @@ import math
 
 import pytest
 
+from flext_plugin import u
 from tests.constants import c
 from tests.models import m
 
@@ -107,7 +108,7 @@ class TestsFlextPluginDomainEntities:
         """disable() succeeds once and flips the public enabled state."""
         plugin = self._make_plugin()
 
-        result = plugin.disable()
+        result = u.Plugin.Platform.Rules.disable(plugin)
 
         assert result.success
         assert result.unwrap() is True
@@ -116,9 +117,9 @@ class TestsFlextPluginDomainEntities:
     def test_disable_is_rejected_when_already_disabled(self) -> None:
         """A second disable() fails with an explanatory error, state unchanged."""
         plugin = self._make_plugin()
-        plugin.disable()
+        u.Plugin.Platform.Rules.disable(plugin)
 
-        result = plugin.disable()
+        result = u.Plugin.Platform.Rules.disable(plugin)
 
         assert result.failure
         assert result.error is not None
@@ -128,9 +129,9 @@ class TestsFlextPluginDomainEntities:
     def test_enable_restores_a_disabled_plugin(self) -> None:
         """enable() re-activates a disabled plugin."""
         plugin = self._make_plugin()
-        plugin.disable()
+        u.Plugin.Platform.Rules.disable(plugin)
 
-        result = plugin.enable()
+        result = u.Plugin.Platform.Rules.enable(plugin)
 
         assert result.success
         assert plugin.is_enabled is True
@@ -139,7 +140,7 @@ class TestsFlextPluginDomainEntities:
         """enable() on an already-enabled plugin fails idempotently."""
         plugin = self._make_plugin()
 
-        result = plugin.enable()
+        result = u.Plugin.Platform.Rules.enable(plugin)
 
         assert result.failure
         assert result.error is not None
@@ -150,8 +151,8 @@ class TestsFlextPluginDomainEntities:
         """Disable then enable is a no-net-change round trip on public state."""
         plugin = self._make_plugin()
 
-        assert plugin.disable().success
-        assert plugin.enable().success
+        assert u.Plugin.Platform.Rules.disable(plugin).success
+        assert u.Plugin.Platform.Rules.enable(plugin).success
         assert plugin.is_enabled is True
 
     # ------------------------------------------------------------------ #
@@ -162,7 +163,7 @@ class TestsFlextPluginDomainEntities:
         """Successive successful executions accumulate count, time, successes."""
         plugin = self._make_plugin()
 
-        plugin.record_execution(150.5, success=True)
+        u.Plugin.Platform.Rules.record_execution(plugin, 150.5, success=True)
 
         assert plugin.metadata["execution_count"] == 1
         assert plugin.metadata["success_count"] == 1
@@ -171,7 +172,7 @@ class TestsFlextPluginDomainEntities:
         assert isinstance(first_total, float)
         assert math.isclose(first_total, 150.5)
 
-        plugin.record_execution(200.0, success=True)
+        u.Plugin.Platform.Rules.record_execution(plugin, 200.0, success=True)
 
         assert plugin.metadata["execution_count"] == 2
         assert plugin.metadata["success_count"] == 2
@@ -182,9 +183,9 @@ class TestsFlextPluginDomainEntities:
     def test_record_execution_tracks_failures_separately(self) -> None:
         """A failed execution increments the failure count, not the success count."""
         plugin = self._make_plugin()
-        plugin.record_execution(150.5, success=True)
+        u.Plugin.Platform.Rules.record_execution(plugin, 150.5, success=True)
 
-        plugin.record_execution(50.0, success=False)
+        u.Plugin.Platform.Rules.record_execution(plugin, 50.0, success=False)
 
         assert plugin.metadata["execution_count"] == 2
         assert plugin.metadata["success_count"] == 1
@@ -197,12 +198,12 @@ class TestsFlextPluginDomainEntities:
         """record_error() counts errors and surfaces the most recent message."""
         plugin = self._make_plugin()
 
-        plugin.record_error("Test error message")
+        u.Plugin.Platform.Rules.record_error(plugin, "Test error message")
 
         assert plugin.metadata["error_count"] == 1
         assert plugin.metadata["last_error"] == "Test error message"
 
-        plugin.record_error("Second error")
+        u.Plugin.Platform.Rules.record_error(plugin, "Second error")
 
         assert plugin.metadata["error_count"] == 2
         assert plugin.metadata["last_error"] == "Second error"
@@ -215,7 +216,7 @@ class TestsFlextPluginDomainEntities:
         """A validly-constructed plugin passes its business-rule check."""
         plugin = self._make_plugin(name="valid-plugin", description="Valid plugin")
 
-        result = plugin.validate_business_rules()
+        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
 
         assert result.success
         assert result.unwrap() is True
