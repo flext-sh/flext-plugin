@@ -1,6 +1,6 @@
 """FLEXT Plugin Models - Plugin system data models.
 
-from flext_plugin.utilities import u
+from flext_plugin import u
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
