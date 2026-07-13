@@ -83,8 +83,6 @@ secrets.yml
 # PROJECT-SPECIFIC RULES: flext-plugin
 # ============================================================================
 
-*.py[cod]
-*.pyd
 *.so
 .installed.cfg
 MANIFEST
@@ -162,10 +160,7 @@ LINT_CORRECTIONS*.md
 *.ai.txt
 *.ai.json
 *.ai.log
-*.py[cod]
-*$py.class
 *.so
-*.pyd
 ENV/
 .Python
 coverage.xml
@@ -273,10 +268,6 @@ Desktop.ini
 # ============================================================================
 # COMMON PATTERNS: Artifacts inside allowed directories
 # ============================================================================
-**/__pycache__/
-**/*.pyc
-**/*.pyo
-**/*.pyd
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -342,7 +333,6 @@ legado/
 .direnv/
 .reports/
 .venv/
-__pycache__/
 base.mk
 !/config/
 !/config/**
@@ -356,6 +346,8 @@ base.mk
 !/examples/**
 !/scripts/
 !/scripts/**
+**/__pycache__/
+**/*.py[cod]
 **/.env
 **/*.key
 **/*.pem
