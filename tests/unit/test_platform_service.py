@@ -15,11 +15,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import c
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
-from tests.utilities import u
+from tests import u
 
 Platform = FlextPluginPlatform
 
@@ -40,11 +41,11 @@ class TestsFlextPluginPlatformExecution:
             execution_config={"input_data": {"x": 1}},
         )
 
-        assert execution.plugin_name == "demo"
+        tm.that(execution.plugin_name, eq="demo")
         assert execution.execution_id
-        assert execution.input_data == {"x": 1}
-        assert execution.is_running is False
-        assert execution.is_completed is False
+        tm.that(execution.input_data, eq={"x": 1})
+        tm.that(execution.is_running, eq=False)
+        tm.that(execution.is_completed, eq=False)
 
     def test_execution_create_honors_explicit_id(self) -> None:
         """create() uses the supplied execution_id verbatim."""
@@ -54,7 +55,7 @@ class TestsFlextPluginPlatformExecution:
             execution_id="exec-123",
         )
 
-        assert execution.execution_id == "exec-123"
+        tm.that(execution.execution_id, eq="exec-123")
 
     def test_execution_mark_started_sets_running_and_timestamp(self) -> None:
         """mark_started() transitions the execution to running."""
@@ -62,8 +63,8 @@ class TestsFlextPluginPlatformExecution:
 
         execution.mark_started()
 
-        assert execution.is_running is True
-        assert execution.started_at is not None
+        tm.that(execution.is_running, eq=True)
+        tm.that(execution.started_at, none=False)
 
     def test_execution_mark_completed_sets_success(self) -> None:
         """mark_completed(success=True) records success and timestamp."""
@@ -71,10 +72,10 @@ class TestsFlextPluginPlatformExecution:
 
         execution.mark_completed(success=True)
 
-        assert execution.is_completed is True
-        assert execution.is_running is False
-        assert execution.success is True
-        assert execution.completed_at is not None
+        tm.that(execution.is_completed, eq=True)
+        tm.that(execution.is_running, eq=False)
+        tm.that(execution.success, eq=True)
+        tm.that(execution.completed_at, none=False)
 
     def test_execution_mark_completed_sets_failure_and_message(self) -> None:
         """mark_completed(success=False) records failure and message."""
@@ -82,9 +83,9 @@ class TestsFlextPluginPlatformExecution:
 
         execution.mark_completed(success=False, error_message="boom")
 
-        assert execution.is_completed is True
-        assert execution.success is False
-        assert execution.error_message == "boom"
+        tm.that(execution.is_completed, eq=True)
+        tm.that(execution.success, eq=False)
+        tm.that(execution.error_message, eq="boom")
 
 
 @pytest.mark.usefixtures("reset_registry")
@@ -106,8 +107,8 @@ class TestsFlextPluginPlatformRegistry:
 
         result = registry.fetch_plugin("plugins", "missing")
 
-        assert result.failure is True
-        assert "not found" in (result.error or "").lower()
+        tm.that(result.failure, eq=True)
+        tm.that((result.error or "").lower(), has="not found")
 
     def test_registry_list_plugins_honors_scope(self) -> None:
         """list_plugins() succeeds with an empty class-level registry."""
@@ -115,8 +116,8 @@ class TestsFlextPluginPlatformRegistry:
 
         result = registry.list_plugins()
 
-        assert result.success is True
-        assert result.value == []
+        tm.that(result.success, eq=True)
+        tm.that(result.value, eq=[])
 
     def test_registry_get_invalid_payload_fails(self) -> None:
         """get() fails gracefully when registry payload is not a plugin."""
@@ -125,8 +126,8 @@ class TestsFlextPluginPlatformRegistry:
 
         result = registry.get("bad")
 
-        assert result.failure is True
-        assert "valid Plugin" in (result.error or "")
+        tm.that(result.failure, eq=True)
+        tm.that((result.error or ""), has="valid Plugin")
 
 
 @pytest.mark.usefixtures("reset_service")
@@ -158,7 +159,7 @@ class TestsFlextPluginPlatformService:
 
         result = service.execute()
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
 
     def test_service_register_and_fetch_plugin(self) -> None:
         """register_plugin() then fetch_plugin() round-trips the plugin."""
@@ -167,18 +168,18 @@ class TestsFlextPluginPlatformService:
 
         result = service.register_plugin(plugin)
 
-        assert result.success is True
-        assert service.fetch_plugin("demo-plugin") is not None
-        assert service.fetch_plugin_status("demo-plugin") == "active"
-        assert service.resolve_plugin_active("demo-plugin") is True
+        tm.that(result.success, eq=True)
+        tm.that(service.fetch_plugin("demo-plugin"), none=False)
+        tm.that(service.fetch_plugin_status("demo-plugin"), eq="active")
+        tm.that(service.resolve_plugin_active("demo-plugin"), eq=True)
 
     def test_service_fetch_unknown_plugin_returns_none(self) -> None:
         """fetch_plugin(), fetch_plugin_status() and resolve_plugin_active() handle unknowns."""
         service = Platform.PluginPlatformService()
 
-        assert service.fetch_plugin("missing") is None
-        assert service.fetch_plugin_status("missing") is None
-        assert service.resolve_plugin_active("missing") is False
+        tm.that(service.fetch_plugin("missing"), none=True)
+        tm.that(service.fetch_plugin_status("missing"), none=True)
+        tm.that(service.resolve_plugin_active("missing"), eq=False)
 
     def test_service_unregister_plugin_removes_it(self) -> None:
         """unregister_plugin() drops the plugin from internal storage."""
@@ -188,8 +189,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.unregister_plugin("demo-plugin")
 
-        assert result.success is True
-        assert service.fetch_plugin("demo-plugin") is None
+        tm.that(result.success, eq=True)
+        tm.that(service.fetch_plugin("demo-plugin"), none=True)
 
     def test_service_list_plugins_after_registration(self) -> None:
         """list_plugins() returns registered plugins."""
@@ -199,8 +200,8 @@ class TestsFlextPluginPlatformService:
 
         plugins = service.list_plugins()
 
-        assert len(plugins) == 2
-        assert {plugin.name for plugin in plugins} == {"alpha", "beta"}
+        tm.that(len(plugins), eq=2)
+        tm.that({plugin.name for plugin in plugins}, eq={"alpha", "beta"})
 
     def test_service_platform_status_reflects_state(self) -> None:
         """platform_status reports plugin and execution counts."""
@@ -213,10 +214,10 @@ class TestsFlextPluginPlatformService:
 
         status = service.platform_status
 
-        assert status["total_plugins"] == 2
-        assert status["active_plugins"] == 1
-        assert status["total_executions"] == 1
-        assert status["running_executions"] == 1
+        tm.that(status["total_plugins"], eq=2)
+        tm.that(status["active_plugins"], eq=1)
+        tm.that(status["total_executions"], eq=1)
+        tm.that(status["running_executions"], eq=1)
 
     def test_service_cleanup_executions_removes_completed(self) -> None:
         """cleanup_executions() removes completed executions and returns count."""
@@ -230,9 +231,9 @@ class TestsFlextPluginPlatformService:
 
         removed = service.cleanup_executions()
 
-        assert removed == 1
-        assert "done" not in service.executions
-        assert "run" in service.executions
+        tm.that(removed, eq=1)
+        tm.that(service.executions, lacks="done")
+        tm.that(service.executions, has="run")
 
     def test_service_list_executions_and_running(self) -> None:
         """list_executions() and list_running_executions() filter correctly."""
@@ -244,10 +245,10 @@ class TestsFlextPluginPlatformService:
         service._executions["r"] = running
         service._executions["c"] = completed
 
-        assert len(service.list_executions()) == 2
-        assert len(service.list_running_executions()) == 1
+        tm.that(len(service.list_executions()), eq=2)
+        tm.that(len(service.list_running_executions()), eq=1)
         assert service.fetch_execution("r") is running
-        assert service.fetch_execution("missing") is None
+        tm.that(service.fetch_execution("missing"), none=True)
 
     def test_service_discover_plugins_without_discovery_fails(self) -> None:
         """discover_plugins() fails when no discovery protocol is configured."""
@@ -255,8 +256,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.discover_plugins(["/tmp"])
 
-        assert result.failure is True
-        assert "Discovery" in (result.error or "")
+        tm.that(result.failure, eq=True)
+        tm.that((result.error or ""), has="Discovery")
 
     def test_service_load_plugin_without_loader_fails(self) -> None:
         """load_plugin() fails when no loader protocol is configured."""
@@ -264,8 +265,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.load_plugin("/tmp/demo.py")
 
-        assert result.failure is True
-        assert "Loader" in (result.error or "")
+        tm.that(result.failure, eq=True)
+        tm.that((result.error or ""), has="Loader")
 
     def test_service_execute_plugin_without_executor_fails(self) -> None:
         """execute_plugin() fails when no executor protocol is configured."""
@@ -275,8 +276,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.execute_plugin("demo-plugin", {})
 
-        assert result.failure is True
-        assert "Executor" in (result.error or "")
+        tm.that(result.failure, eq=True)
+        tm.that((result.error or ""), has="Executor")
 
     def test_service_execute_plugin_unknown_fails(self) -> None:
         """execute_plugin() fails when plugin name is unknown."""
@@ -284,7 +285,7 @@ class TestsFlextPluginPlatformService:
 
         result = service.execute_plugin("missing", {})
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_service_discover_plugins_with_real_discovery(
         self,
@@ -300,8 +301,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.discover_plugins([str(tmp_path)])
 
-        assert result.success is True
-        assert service.fetch_plugin("found") is not None
+        tm.that(result.success, eq=True)
+        tm.that(service.fetch_plugin("found"), none=False)
 
     def test_service_load_plugin_with_real_loader(self, tmp_path: Path) -> None:
         """load_plugin() maps a real loader payload and registers the plugin."""
@@ -313,8 +314,8 @@ class TestsFlextPluginPlatformService:
 
         result = service.load_plugin(str(plugin_file))
 
-        assert result.success is True
-        assert service.fetch_plugin("loaded") is not None
+        tm.that(result.success, eq=True)
+        tm.that(service.fetch_plugin("loaded"), none=False)
         assert loader.plugin_loaded("loaded")
 
     def test_service_load_plugin_propagates_loader_failure(
@@ -327,7 +328,7 @@ class TestsFlextPluginPlatformService:
 
         result = service.load_plugin(str(tmp_path / "missing.py"))
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_service_execute_plugin_with_real_executor_success(self) -> None:
         """execute_plugin() records a real completed execution with the result."""
@@ -338,12 +339,12 @@ class TestsFlextPluginPlatformService:
 
         result = service.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
         execution = service.fetch_execution("e1")
-        assert execution is not None
-        assert execution.success is True
-        assert execution.result is not None
-        assert execution.result["plugin"] == "demo-plugin"
+        tm.that(execution, none=False)
+        tm.that(execution.success, eq=True)
+        tm.that(execution.result, none=False)
+        tm.that(execution.result["plugin"], eq="demo-plugin")
 
     def test_service_execute_plugin_with_real_executor_failure(self) -> None:
         """execute_plugin() fails when the real executor reports a failure."""
@@ -354,7 +355,7 @@ class TestsFlextPluginPlatformService:
 
         result = service.execute_plugin("demo-plugin", {})
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_plugin_with_invalid_version_is_rejected_at_construction(self) -> None:
         """Invalid semver is rejected by the real model validator at construction.
@@ -375,8 +376,8 @@ class TestsFlextPluginPlatformService:
         """Hot reload methods return success without side effects."""
         service = Platform.PluginPlatformService()
 
-        assert service.start_hot_reload(["/tmp"]).success is True
-        assert service.stop_hot_reload().success is True
+        tm.that(service.start_hot_reload(["/tmp"]).success, eq=True)
+        tm.that(service.stop_hot_reload().success, eq=True)
 
     def test_service_registry_property_creates_default(self) -> None:
         """Registry property lazily creates a registry if unset."""
@@ -385,7 +386,7 @@ class TestsFlextPluginPlatformService:
 
         registry = service.registry
 
-        assert registry is not None
+        tm.that(registry, none=False)
 
 
 __all__: list[str] = [

@@ -15,6 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import p, t, u
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
@@ -73,8 +74,8 @@ class TestsFlextPluginDomainPorts:
         """An unresolvable path yields a failure result, never a raised error."""
         result = discovery.discover_plugin(missing_path)
 
-        assert result.success is False
-        assert isinstance(result.error, str)
+        tm.that(result.success, eq=False)
+        tm.that(result.error, is_=str)
         assert result.error
 
     def test_discover_plugin_failure_unwrap_raises(
@@ -84,7 +85,7 @@ class TestsFlextPluginDomainPorts:
         """Unwrapping a failed discovery raises rather than fabricating data."""
         result = discovery.discover_plugin("no/such/plugin_qwerty.py")
 
-        assert result.success is False
+        tm.that(result.success, eq=False)
         with pytest.raises(RuntimeError):
             result.unwrap()
 
@@ -99,8 +100,8 @@ class TestsFlextPluginDomainPorts:
         """No search paths still succeeds and yields an empty sequence."""
         result = discovery.discover_plugins([])
 
-        assert result.success is True
-        assert list(result.unwrap()) == []
+        tm.that(result.success, eq=True)
+        tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_directory_returns_success_sequence(
         self,
@@ -112,11 +113,11 @@ class TestsFlextPluginDomainPorts:
 
         result = discovery.discover_plugins([str(tmp_path)])
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
         discovered = list(result.unwrap())
         # Names, when present, are unique (facade dedupes by plugin name).
         names = [item.name for item in discovered]
-        assert len(names) == len(set(names))
+        tm.that(len(names), eq=len(set(names)))
 
     def test_discover_plugins_is_idempotent_for_empty_input(
         self,
@@ -127,7 +128,7 @@ class TestsFlextPluginDomainPorts:
         second = discovery.discover_plugins([])
 
         assert first.success is second.success is True
-        assert list(first.unwrap()) == list(second.unwrap())
+        tm.that(list(first.unwrap()), eq=list(second.unwrap()))
 
     # ------------------------------------------------------------------ #
     # discover_python_plugins_in_directory — recursive walk + filters
@@ -147,7 +148,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert sorted(discovered) == ["alpha", "beta"]
+        tm.that(sorted(discovered), eq=["alpha", "beta"])
 
     @pytest.mark.parametrize(
         ("filename", "expected_present"),
@@ -192,7 +193,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert list(discovered) == []
+        tm.that(list(discovered), eq=[])
 
     def test_directory_walk_returns_empty_for_missing_directory(
         self,
@@ -206,7 +207,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert list(discovered) == []
+        tm.that(list(discovered), eq=[])
 
     def test_directory_walk_drops_none_from_callback(
         self,
@@ -223,7 +224,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert list(discovered) == ["alpha"]
+        tm.that(list(discovered), eq=["alpha"])
 
     # ------------------------------------------------------------------ #
     # Strategy contract — both concrete strategies honor r[Sequence]
@@ -238,8 +239,8 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        assert result.success is True
-        assert list(result.unwrap()) == []
+        tm.that(result.success, eq=True)
+        tm.that(list(result.unwrap()), eq=[])
 
     def test_filesystem_strategy_ignores_blank_path_entries(
         self,
@@ -250,8 +251,8 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover(["   "])
 
-        assert result.success is True
-        assert list(result.unwrap()) == []
+        tm.that(result.success, eq=True)
+        tm.that(list(result.unwrap()), eq=[])
 
     def test_entry_point_strategy_returns_success_sequence(
         self,
@@ -262,8 +263,8 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        assert result.success is True
-        assert list(result.unwrap()) == list(result.unwrap())
+        tm.that(result.success, eq=True)
+        tm.that(list(result.unwrap()), eq=list(result.unwrap()))
 
     def test_entry_point_strategy_ignores_supplied_paths(
         self,
@@ -277,4 +278,4 @@ class TestsFlextPluginDomainPorts:
         empty = strategy.discover([])
 
         assert ignored.success is empty.success is True
-        assert list(ignored.unwrap()) == list(empty.unwrap())
+        tm.that(list(ignored.unwrap()), eq=list(empty.unwrap()))

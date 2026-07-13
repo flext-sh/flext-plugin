@@ -8,10 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import u
-from tests.constants import c
-from tests.models import m
+from tests import c, m
 
 
 class TestsFlextPluginModelsUnit:
@@ -40,8 +40,8 @@ class TestsFlextPluginModelsUnit:
         expected_value: str,
     ) -> None:
         """Each status renders its documented lowercase wire string."""
-        assert status.value == expected_value
-        assert str(status) == expected_value
+        tm.that(status.value, eq=expected_value)
+        tm.that(str(status), eq=expected_value)
 
     @pytest.mark.parametrize(
         "status",
@@ -56,9 +56,9 @@ class TestsFlextPluginModelsUnit:
         status: c.Plugin.PluginStatus,
     ) -> None:
         """Operational statuses are reported operational and not error states."""
-        assert status in c.Plugin.PluginStatus.get_operational_statuses()
-        assert status.is_operational() is True
-        assert status.is_error_state() is False
+        tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=status)
+        tm.that(status.is_operational(), eq=True)
+        tm.that(status.is_error_state(), eq=False)
 
     @pytest.mark.parametrize(
         "status",
@@ -73,9 +73,9 @@ class TestsFlextPluginModelsUnit:
         status: c.Plugin.PluginStatus,
     ) -> None:
         """Error statuses report as error states and never as operational."""
-        assert status in c.Plugin.PluginStatus.get_error_statuses()
-        assert status.is_error_state() is True
-        assert status.is_operational() is False
+        tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=status)
+        tm.that(status.is_error_state(), eq=True)
+        tm.that(status.is_operational(), eq=False)
 
     @pytest.mark.parametrize(
         ("plugin_type", "expected_value"),
@@ -97,7 +97,7 @@ class TestsFlextPluginModelsUnit:
         expected_value: str,
     ) -> None:
         """Plugin type members render their documented wire strings."""
-        assert plugin_type.value == expected_value
+        tm.that(plugin_type.value, eq=expected_value)
 
     # ---- Entity construction & validation -------------------------------
 
@@ -109,20 +109,20 @@ class TestsFlextPluginModelsUnit:
             plugin_type=c.Plugin.Type.UTILITY,
             is_enabled=True,
         )
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.2.3"
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.2.3")
         assert plugin.plugin_type is c.Plugin.Type.UTILITY
-        assert plugin.is_enabled is True
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_entity_applies_documented_field_defaults(self) -> None:
         """Optional fields fall back to their documented defaults."""
         plugin = m.Plugin.Entity(name="defaults-plugin")
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.description == ""
-        assert plugin.author == ""
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.description, eq="")
+        tm.that(plugin.author, eq="")
         assert plugin.plugin_type is c.Plugin.Type.UTILITY
-        assert plugin.is_enabled is True
-        assert dict(plugin.metadata) == {}
+        tm.that(plugin.is_enabled, eq=True)
+        tm.that(dict(plugin.metadata), eq={})
 
     def test_entity_rejects_empty_name(self) -> None:
         """An empty name violates the name constraint and is refused."""
@@ -142,7 +142,7 @@ class TestsFlextPluginModelsUnit:
     def test_entity_accepts_valid_semantic_versions(self, good_version: str) -> None:
         """Well-formed semantic versions are accepted verbatim."""
         plugin = m.Plugin.Entity(name="ok-plugin", plugin_version=good_version)
-        assert plugin.plugin_version == good_version
+        tm.that(plugin.plugin_version, eq=good_version)
 
     # ---- Lifecycle behavior (r[T] contract) -----------------------------
 
@@ -150,40 +150,40 @@ class TestsFlextPluginModelsUnit:
         """Disabling an enabled plugin succeeds and flips public state."""
         plugin = m.Plugin.Entity(name="lifecycle", is_enabled=True)
         result = u.Plugin.Platform.Rules.disable(plugin)
-        assert result.success
-        assert result.unwrap() is True
-        assert plugin.is_enabled is False
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
+        tm.that(plugin.is_enabled, eq=False)
 
     def test_disable_is_rejected_when_already_disabled(self) -> None:
         """Disabling an already-disabled plugin is a failure, state unchanged."""
         plugin = m.Plugin.Entity(name="lifecycle", is_enabled=False)
         result = u.Plugin.Platform.Rules.disable(plugin)
-        assert result.failure
-        assert "already disabled" in (result.error or "")
-        assert plugin.is_enabled is False
+        tm.fail(result)
+        tm.that((result.error or ""), has="already disabled")
+        tm.that(plugin.is_enabled, eq=False)
 
     def test_enable_transitions_disabled_plugin_and_reports_success(self) -> None:
         """Enabling a disabled plugin succeeds and flips public state."""
         plugin = m.Plugin.Entity(name="lifecycle", is_enabled=False)
         result = u.Plugin.Platform.Rules.enable(plugin)
-        assert result.success
-        assert result.unwrap() is True
-        assert plugin.is_enabled is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_enable_is_rejected_when_already_enabled(self) -> None:
         """Enabling an already-enabled plugin is a failure, state unchanged."""
         plugin = m.Plugin.Entity(name="lifecycle", is_enabled=True)
         result = u.Plugin.Platform.Rules.enable(plugin)
-        assert result.failure
-        assert "already enabled" in (result.error or "")
-        assert plugin.is_enabled is True
+        tm.fail(result)
+        tm.that((result.error or ""), has="already enabled")
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_disable_then_enable_round_trips_to_enabled(self) -> None:
         """A disable/enable cycle returns the plugin to enabled state."""
         plugin = m.Plugin.Entity(name="cycle", is_enabled=True)
-        assert u.Plugin.Platform.Rules.disable(plugin).success
-        assert u.Plugin.Platform.Rules.enable(plugin).success
-        assert plugin.is_enabled is True
+        tm.ok(u.Plugin.Platform.Rules.disable(plugin))
+        tm.ok(u.Plugin.Platform.Rules.enable(plugin))
+        tm.that(plugin.is_enabled, eq=True)
 
     # ---- Metrics recording (observable via metadata) --------------------
 
@@ -192,26 +192,26 @@ class TestsFlextPluginModelsUnit:
         plugin = m.Plugin.Entity(name="err-plugin")
         u.Plugin.Platform.Rules.record_error(plugin, "boom")
         u.Plugin.Platform.Rules.record_error(plugin, "kaboom")
-        assert plugin.metadata["error_count"] == 2
-        assert plugin.metadata["last_error"] == "kaboom"
+        tm.that(plugin.metadata["error_count"], eq=2)
+        tm.that(plugin.metadata["last_error"], eq="kaboom")
 
     def test_record_execution_accumulates_success_and_timing(self) -> None:
         """Successful executions increment counts and total execution time."""
         plugin = m.Plugin.Entity(name="exec-plugin")
         u.Plugin.Platform.Rules.record_execution(plugin, 1.5, success=True)
         u.Plugin.Platform.Rules.record_execution(plugin, 2.5, success=True)
-        assert plugin.metadata["execution_count"] == 2
-        assert plugin.metadata["success_count"] == 2
-        assert plugin.metadata["failure_count"] == 0
-        assert plugin.metadata["total_execution_time"] == pytest.approx(4.0)
+        tm.that(plugin.metadata["execution_count"], eq=2)
+        tm.that(plugin.metadata["success_count"], eq=2)
+        tm.that(plugin.metadata["failure_count"], eq=0)
+        tm.that(plugin.metadata["total_execution_time"], eq=pytest.approx(4.0))
 
     def test_record_execution_tracks_failures_separately(self) -> None:
         """Failed executions increment the failure counter only."""
         plugin = m.Plugin.Entity(name="exec-plugin")
         u.Plugin.Platform.Rules.record_execution(plugin, 0.5, success=False)
-        assert plugin.metadata["execution_count"] == 1
-        assert plugin.metadata["failure_count"] == 1
-        assert plugin.metadata["success_count"] == 0
+        tm.that(plugin.metadata["execution_count"], eq=1)
+        tm.that(plugin.metadata["failure_count"], eq=1)
+        tm.that(plugin.metadata["success_count"], eq=0)
 
     # ---- Business-rule validation (r[T] contract) -----------------------
 
@@ -219,8 +219,8 @@ class TestsFlextPluginModelsUnit:
         """A valid entity passes business-rule validation."""
         plugin = m.Plugin.Entity(name="valid", plugin_version="1.0.0")
         result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     # ---- create() factory -----------------------------------------------
 
@@ -231,8 +231,8 @@ class TestsFlextPluginModelsUnit:
             plugin_version="2.0.0",
             plugin_type=c.Plugin.Type.SERVICE,
         )
-        assert plugin.name == "factory-plugin"
-        assert plugin.plugin_version == "2.0.0"
+        tm.that(plugin.name, eq="factory-plugin")
+        tm.that(plugin.plugin_version, eq="2.0.0")
         assert plugin.plugin_type is c.Plugin.Type.SERVICE
 
     # NOTE: m.Plugin.DiscoveryData is intentionally NOT tested here. Its `path`
@@ -255,11 +255,11 @@ class TestsFlextPluginModelsUnit:
             description="Test plugin description",
             plugin_type="extension",
         )
-        assert metadata.name == "meta-plugin"
-        assert metadata.version == "1.0.0"
-        assert metadata.entry_point == "meta_plugin:main"
-        assert metadata.author == "Test Author"
-        assert metadata.description == "Test plugin description"
+        tm.that(metadata.name, eq="meta-plugin")
+        tm.that(metadata.version, eq="1.0.0")
+        tm.that(metadata.entry_point, eq="meta_plugin:main")
+        tm.that(metadata.author, eq="Test Author")
+        tm.that(metadata.description, eq="Test plugin description")
 
     def test_plugin_metadata_applies_documented_defaults(self) -> None:
         """Optional metadata fields fall back to documented defaults."""
@@ -268,10 +268,10 @@ class TestsFlextPluginModelsUnit:
             version="1.0.0",
             entry_point="meta_plugin:main",
         )
-        assert metadata.description == ""
-        assert metadata.author == "Unknown"
-        assert metadata.plugin_type == "extension"
-        assert tuple(metadata.dependencies) == ()
+        tm.that(metadata.description, eq="")
+        tm.that(metadata.author, eq="Unknown")
+        tm.that(metadata.plugin_type, eq="extension")
+        tm.that(tuple(metadata.dependencies), eq=())
 
 
 __all__: list[str] = ["TestsFlextPluginModelsUnit"]

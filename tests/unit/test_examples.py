@@ -17,8 +17,9 @@ import sys
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
-from tests.utilities import u
+from tests import u
 
 __all__ = ["TestsFlextPluginExamples"]
 
@@ -50,14 +51,10 @@ class TestsFlextPluginExamples:
             cwd=_examples_dir().parent,
         )
 
-        assert result.success, result.error
+        tm.ok(result)
         output = result.value
-        assert output.exit_code == 0, (
-            f"{script} failed (exit {output.exit_code}): {output.stderr}"
-        )
-        assert "Traceback (most recent call last)" not in output.stderr, (
-            f"{script} raised an uncaught exception: {output.stderr}"
-        )
+        tm.that(output.exit_code, eq=0)
+        tm.that(output.stderr, lacks="Traceback (most recent call last)")
 
     def test_unknown_example_path_fails_with_nonzero_exit(self) -> None:
         """Running a non-existent example surfaces a failure, not silent success."""
@@ -67,8 +64,8 @@ class TestsFlextPluginExamples:
             cwd=_examples_dir().parent,
         )
 
-        assert result.success, result.error
-        assert result.value.exit_code != 0
+        tm.ok(result)
+        tm.that(result.value.exit_code, ne=0)
 
     def test_docker_integration_reports_service_connectivity(self) -> None:
         """With connection testing, the docker example prints a connectivity report."""
@@ -78,9 +75,9 @@ class TestsFlextPluginExamples:
             cwd=_examples_dir().parent,
         )
 
-        assert result.success, result.error
-        assert result.value.exit_code == 0, result.value.stderr
+        tm.ok(result)
+        tm.that(result.value.exit_code, eq=0)
         output = result.value.stdout
-        assert "Service Connectivity Check" in output
+        tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output
-        assert "Skipped" not in output
+        tm.that(output, lacks="Skipped")

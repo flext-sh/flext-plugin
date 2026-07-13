@@ -16,10 +16,11 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import u
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from tests.constants import c
+from tests import c
 
 __all__: list[str] = ["TestsFlextPluginDiscovery"]
 
@@ -55,8 +56,8 @@ class TestsFlextPluginDiscovery:
         """Empty path list yields a successful, empty discovery."""
         result = discovery.discover_plugins(paths=[])
 
-        assert result.success
-        assert list(result.unwrap()) == []
+        tm.ok(result)
+        tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_nonexistent_path_succeeds_without_files(
         self,
@@ -65,9 +66,9 @@ class TestsFlextPluginDiscovery:
         """A nonexistent path contributes no filesystem plugins."""
         result = discovery.discover_plugins(paths=["/nonexistent/path"])
 
-        assert result.success
+        tm.ok(result)
         names = {data.name for data in result.unwrap()}
-        assert "path" not in names
+        tm.that(names, lacks="path")
 
     def test_discover_plugins_finds_python_files_in_directory(
         self,
@@ -77,7 +78,7 @@ class TestsFlextPluginDiscovery:
         """All public ``.py`` files under a directory are discovered."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
 
-        assert result.success
+        tm.ok(result)
         names = {data.name for data in result.unwrap()}
         assert {"alpha_plugin", "beta_plugin"} <= names
 
@@ -90,8 +91,8 @@ class TestsFlextPluginDiscovery:
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
 
         names = {data.name for data in result.unwrap()}
-        assert "_private" not in names
-        assert "readme" not in names
+        tm.that(names, lacks="_private")
+        tm.that(names, lacks="readme")
 
     def test_discover_plugins_populates_public_model_state(
         self,
@@ -107,10 +108,10 @@ class TestsFlextPluginDiscovery:
             if data.name in {"alpha_plugin", "beta_plugin"}
         }
         alpha = found["alpha_plugin"]
-        assert alpha.version == c.Plugin.DEFAULT_PLUGIN_VERSION
-        assert alpha.discovery_type == c.Plugin.DiscoveryTypeLiteral.FILE
-        assert alpha.discovery_method == c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM
-        assert alpha.path.name == "alpha_plugin.py"
+        tm.that(alpha.version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
+        tm.that(alpha.discovery_type, eq=c.Plugin.DiscoveryTypeLiteral.FILE)
+        tm.that(alpha.discovery_method, eq=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM)
+        tm.that(alpha.path.name, eq="alpha_plugin.py")
 
     def test_discover_plugins_deduplicates_repeated_paths(
         self,
@@ -127,7 +128,7 @@ class TestsFlextPluginDiscovery:
             for data in result.unwrap()
             if data.name in {"alpha_plugin", "beta_plugin"}
         ]
-        assert sorted(discovered) == ["alpha_plugin", "beta_plugin"]
+        tm.that(sorted(discovered), eq=["alpha_plugin", "beta_plugin"])
 
     # ------------------------------------------------------------------ #
     # discover_plugin                                                     #
@@ -140,8 +141,8 @@ class TestsFlextPluginDiscovery:
         """Discovering an absent plugin fails with a descriptive error."""
         result = discovery.discover_plugin(plugin_path="/nonexistent/plugin")
 
-        assert result.failure
-        assert "/nonexistent/plugin" in str(result.error)
+        tm.fail(result)
+        tm.that(str(result.error), has="/nonexistent/plugin")
 
     def test_discover_plugin_existing_file_returns_data(
         self,
@@ -153,10 +154,10 @@ class TestsFlextPluginDiscovery:
             plugin_path=str(plugin_tree / "alpha_plugin.py"),
         )
 
-        assert result.success
+        tm.ok(result)
         data = result.unwrap()
-        assert data.name == "alpha_plugin"
-        assert data.discovery_type == c.Plugin.DiscoveryTypeLiteral.FILE
+        tm.that(data.name, eq="alpha_plugin")
+        tm.that(data.discovery_type, eq=c.Plugin.DiscoveryTypeLiteral.FILE)
 
     # ------------------------------------------------------------------ #
     # validate_plugin                                                     #
@@ -174,8 +175,8 @@ class TestsFlextPluginDiscovery:
 
         result = discovery.validate_plugin(plugin_data=discovered)
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     # ------------------------------------------------------------------ #
     # discover_python_plugins_in_directory                                #
@@ -198,6 +199,6 @@ class TestsFlextPluginDiscovery:
             u.fetch_logger(__name__),
         )
 
-        assert set(results) == {"alpha_plugin", "beta_plugin"}
-        assert "_private.py" not in seen
-        assert "readme.txt" not in seen
+        tm.that(set(results), eq={"alpha_plugin", "beta_plugin"})
+        tm.that(seen, lacks="_private.py")
+        tm.that(seen, lacks="readme.txt")

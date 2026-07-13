@@ -16,10 +16,10 @@ from __future__ import annotations
 import math
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import u
-from tests.constants import c
-from tests.models import m
+from tests import c, m
 
 
 class TestsFlextPluginDomainEntities:
@@ -56,27 +56,27 @@ class TestsFlextPluginDomainEntities:
         """create() exposes the supplied identity and descriptive fields."""
         plugin = self._make_plugin()
 
-        assert plugin.unique_id == "test-id"
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.description == "Test plugin"
-        assert plugin.author == "Test Author"
+        tm.that(plugin.unique_id, eq="test-id")
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.description, eq="Test plugin")
+        tm.that(plugin.author, eq="Test Author")
 
     def test_create_defaults_plugin_to_enabled_with_empty_metadata(self) -> None:
         """A freshly created plugin is enabled and carries no metrics yet."""
         plugin = self._make_plugin()
 
-        assert plugin.is_enabled is True
-        assert dict(plugin.metadata) == {}
+        tm.that(plugin.is_enabled, eq=True)
+        tm.that(dict(plugin.metadata), eq={})
 
     def test_create_applies_declared_field_defaults(self) -> None:
         """Optional fields fall back to their declared defaults."""
         plugin = m.Plugin.Entity.create(name="minimal-plugin", entity_id="min-id")
 
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.description == ""
-        assert plugin.author == ""
-        assert plugin.plugin_type == c.Plugin.Type.UTILITY
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.description, eq="")
+        tm.that(plugin.author, eq="")
+        tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
 
     @pytest.mark.parametrize(
         "bad_name",
@@ -110,8 +110,8 @@ class TestsFlextPluginDomainEntities:
 
         result = u.Plugin.Platform.Rules.disable(plugin)
 
-        assert result.success
-        assert result.unwrap().is_enabled is False
+        tm.ok(result)
+        tm.that(result.unwrap().is_enabled, eq=False)
 
     def test_disable_is_rejected_when_already_disabled(self) -> None:
         """A second disable() fails with an explanatory error, state unchanged."""
@@ -120,10 +120,10 @@ class TestsFlextPluginDomainEntities:
 
         result = u.Plugin.Platform.Rules.disable(disabled)
 
-        assert result.failure
-        assert result.error is not None
-        assert "already disabled" in result.error
-        assert disabled.is_enabled is False
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="already disabled")
+        tm.that(disabled.is_enabled, eq=False)
 
     def test_enable_restores_a_disabled_plugin(self) -> None:
         """enable() re-activates a disabled plugin."""
@@ -132,8 +132,8 @@ class TestsFlextPluginDomainEntities:
 
         result = u.Plugin.Platform.Rules.enable(disabled)
 
-        assert result.success
-        assert result.unwrap().is_enabled is True
+        tm.ok(result)
+        tm.that(result.unwrap().is_enabled, eq=True)
 
     def test_enable_is_rejected_when_already_enabled(self) -> None:
         """enable() on an already-enabled plugin fails idempotently."""
@@ -141,10 +141,10 @@ class TestsFlextPluginDomainEntities:
 
         result = u.Plugin.Platform.Rules.enable(plugin)
 
-        assert result.failure
-        assert result.error is not None
-        assert "already enabled" in result.error
-        assert plugin.is_enabled is True
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="already enabled")
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_enable_disable_round_trip_returns_to_enabled(self) -> None:
         """Disable then enable is a no-net-change round trip on public state."""
@@ -152,7 +152,7 @@ class TestsFlextPluginDomainEntities:
 
         disabled = u.Plugin.Platform.Rules.disable(plugin).unwrap()
         enabled = u.Plugin.Platform.Rules.enable(disabled).unwrap()
-        assert enabled.is_enabled is True
+        tm.that(enabled.is_enabled, eq=True)
 
     # ------------------------------------------------------------------ #
     # Execution metric accumulation (public metadata state)
@@ -168,11 +168,11 @@ class TestsFlextPluginDomainEntities:
             success=True,
         )
 
-        assert recorded.metadata["execution_count"] == 1
-        assert recorded.metadata["success_count"] == 1
-        assert recorded.metadata["failure_count"] == 0
+        tm.that(recorded.metadata["execution_count"], eq=1)
+        tm.that(recorded.metadata["success_count"], eq=1)
+        tm.that(recorded.metadata["failure_count"], eq=0)
         first_total = recorded.metadata["total_execution_time"]
-        assert isinstance(first_total, float)
+        tm.that(first_total, is_=float)
         assert math.isclose(first_total, 150.5)
 
         recorded = u.Plugin.Platform.Rules.record_execution(
@@ -181,10 +181,10 @@ class TestsFlextPluginDomainEntities:
             success=True,
         )
 
-        assert recorded.metadata["execution_count"] == 2
-        assert recorded.metadata["success_count"] == 2
+        tm.that(recorded.metadata["execution_count"], eq=2)
+        tm.that(recorded.metadata["success_count"], eq=2)
         second_total = recorded.metadata["total_execution_time"]
-        assert isinstance(second_total, float)
+        tm.that(second_total, is_=float)
         assert math.isclose(second_total, 350.5)
 
     def test_record_execution_tracks_failures_separately(self) -> None:
@@ -202,11 +202,11 @@ class TestsFlextPluginDomainEntities:
             success=False,
         )
 
-        assert recorded.metadata["execution_count"] == 2
-        assert recorded.metadata["success_count"] == 1
-        assert recorded.metadata["failure_count"] == 1
+        tm.that(recorded.metadata["execution_count"], eq=2)
+        tm.that(recorded.metadata["success_count"], eq=1)
+        tm.that(recorded.metadata["failure_count"], eq=1)
         total = recorded.metadata["total_execution_time"]
-        assert isinstance(total, float)
+        tm.that(total, is_=float)
         assert math.isclose(total, 200.5)
 
     def test_record_error_accumulates_count_and_keeps_last_message(self) -> None:
@@ -215,13 +215,13 @@ class TestsFlextPluginDomainEntities:
 
         recorded = u.Plugin.Platform.Rules.record_error(plugin, "Test error message")
 
-        assert recorded.metadata["error_count"] == 1
-        assert recorded.metadata["last_error"] == "Test error message"
+        tm.that(recorded.metadata["error_count"], eq=1)
+        tm.that(recorded.metadata["last_error"], eq="Test error message")
 
         recorded = u.Plugin.Platform.Rules.record_error(recorded, "Second error")
 
-        assert recorded.metadata["error_count"] == 2
-        assert recorded.metadata["last_error"] == "Second error"
+        tm.that(recorded.metadata["error_count"], eq=2)
+        tm.that(recorded.metadata["last_error"], eq="Second error")
 
     # ------------------------------------------------------------------ #
     # Business-rule validation
@@ -233,8 +233,8 @@ class TestsFlextPluginDomainEntities:
 
         result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     # ------------------------------------------------------------------ #
     # PluginMetadata value object
@@ -252,13 +252,13 @@ class TestsFlextPluginDomainEntities:
             dependencies=["requests", "pydantic"],
         )
 
-        assert metadata.name == "test-plugin"
-        assert metadata.version == "1.0.0"
-        assert metadata.entry_point == "test.entry:main"
-        assert metadata.plugin_type == c.Plugin.Type.TAP.value
-        assert metadata.description == "Test extractor plugin"
-        assert "requests" in metadata.dependencies
-        assert "pydantic" in metadata.dependencies
+        tm.that(metadata.name, eq="test-plugin")
+        tm.that(metadata.version, eq="1.0.0")
+        tm.that(metadata.entry_point, eq="test.entry:main")
+        tm.that(metadata.plugin_type, eq=c.Plugin.Type.TAP.value)
+        tm.that(metadata.description, eq="Test extractor plugin")
+        tm.that(metadata.dependencies, has="requests")
+        tm.that(metadata.dependencies, has="pydantic")
 
     def test_metadata_value_object_applies_declared_defaults(self) -> None:
         """Omitted optional PluginMetadata fields take their declared defaults."""
@@ -268,11 +268,11 @@ class TestsFlextPluginDomainEntities:
             entry_point="minimal.entry:main",
         )
 
-        assert metadata.description == ""
-        assert metadata.author == "Unknown"
-        assert metadata.plugin_type == "extension"
-        assert metadata.dependencies == ()
-        assert dict(metadata.metadata) == {}
+        tm.that(metadata.description, eq="")
+        tm.that(metadata.author, eq="Unknown")
+        tm.that(metadata.plugin_type, eq="extension")
+        tm.that(metadata.dependencies, eq=())
+        tm.that(dict(metadata.metadata), eq={})
 
     def test_metadata_value_object_carries_all_optional_fields(self) -> None:
         """PluginMetadata retains explicitly supplied optional fields."""
@@ -287,10 +287,10 @@ class TestsFlextPluginDomainEntities:
             metadata={"key": "value"},
         )
 
-        assert metadata.author == "Test Author"
-        assert metadata.plugin_type == "extension"
-        assert len(metadata.dependencies) == 2
-        assert metadata.metadata["key"] == "value"
+        tm.that(metadata.author, eq="Test Author")
+        tm.that(metadata.plugin_type, eq="extension")
+        tm.that(len(metadata.dependencies), eq=2)
+        tm.that(metadata.metadata["key"], eq="value")
 
 
 __all__: list[str] = ["TestsFlextPluginDomainEntities"]

@@ -8,8 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
-from tests.constants import c
+from tests import c
 
 __all__: list[str] = ["TestsFlextPluginConstantsUnit"]
 
@@ -27,7 +28,7 @@ class TestsFlextPluginConstantsUnit:
             c.Plugin.ALL_PLUGIN_TYPES,
         )
         for category in categories:
-            assert isinstance(category, frozenset)
+            tm.that(category, is_=frozenset)
             assert len(category) > 0
 
     @pytest.mark.parametrize(
@@ -69,7 +70,7 @@ class TestsFlextPluginConstantsUnit:
         expected_values: set[str],
     ) -> None:
         """Each category contains exactly its documented plugin type values."""
-        assert {member.value for member in category} == expected_values
+        tm.that({member.value for member in category}, eq=expected_values)
 
     def test_all_types_is_disjoint_union_of_categories(self) -> None:
         """ALL_PLUGIN_TYPES equals the exact union of the four disjoint categories."""
@@ -79,9 +80,11 @@ class TestsFlextPluginConstantsUnit:
         utility = c.Plugin.UTILITY_PLUGIN_TYPES
 
         union = singer | arch | integration | utility
-        assert union == c.Plugin.ALL_PLUGIN_TYPES
+        tm.that(union, eq=c.Plugin.ALL_PLUGIN_TYPES)
         # A disjoint union preserves total cardinality (no overlap, no loss).
-        assert len(union) == len(singer) + len(arch) + len(integration) + len(utility)
+        tm.that(
+            len(union), eq=len(singer) + len(arch) + len(integration) + len(utility)
+        )
 
     @pytest.mark.parametrize(
         ("left", "right"),
@@ -122,7 +125,7 @@ class TestsFlextPluginConstantsUnit:
         expected: str,
     ) -> None:
         """File-related constants expose their exact documented string values."""
-        assert getattr(c.Plugin.Files, attribute) == expected
+        tm.that(getattr(c.Plugin.Files, attribute), eq=expected)
 
     def test_config_extensions_are_distinct(self) -> None:
         """Each configuration format maps to a unique file extension."""
@@ -131,7 +134,7 @@ class TestsFlextPluginConstantsUnit:
             c.Plugin.Files.JSON_CONFIG_EXTENSION,
             c.Plugin.Files.TOML_CONFIG_EXTENSION,
         }
-        assert len(extensions) == 3
+        tm.that(len(extensions), eq=3)
 
     def test_extensions_start_with_dot(self) -> None:
         """Every declared file extension is dot-prefixed."""

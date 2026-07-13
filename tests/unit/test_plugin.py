@@ -13,9 +13,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import u
-from tests.models import m
+from tests import m
 
 FlextPluginPlatform = u.Plugin.Platform
 
@@ -45,13 +46,13 @@ class TestsFlextPluginPlugin:
     def test_create_returns_entity_with_supplied_fields(self) -> None:
         """create() yields an entity exposing the given name and version."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.0.0")
 
     def test_create_defaults_to_enabled(self) -> None:
         """A freshly created plugin defaults to the enabled state."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
-        assert plugin.is_enabled is True
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_create_honors_explicit_disabled_state(self) -> None:
         """create() respects an explicit is_enabled=False argument."""
@@ -60,7 +61,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=False,
         )
-        assert plugin.is_enabled is False
+        tm.that(plugin.is_enabled, eq=False)
 
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
     def test_create_rejects_non_semantic_version(self, bad_version: str) -> None:
@@ -78,8 +79,8 @@ class TestsFlextPluginPlugin:
             is_enabled=False,
         )
         result = u.Plugin.Platform.Rules.enable(plugin)
-        assert result.success
-        assert plugin.is_enabled is True
+        tm.ok(result)
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_enable_already_enabled_fails_without_state_change(self) -> None:
         """enable() on an enabled plugin fails and leaves it enabled."""
@@ -89,10 +90,10 @@ class TestsFlextPluginPlugin:
             is_enabled=True,
         )
         result = u.Plugin.Platform.Rules.enable(plugin)
-        assert result.failure
-        assert result.error is not None
-        assert "already enabled" in result.error
-        assert plugin.is_enabled is True
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="already enabled")
+        tm.that(plugin.is_enabled, eq=True)
 
     def test_disable_enabled_plugin_succeeds_and_flips_state(self) -> None:
         """disable() on an enabled plugin succeeds and turns it disabled."""
@@ -102,8 +103,8 @@ class TestsFlextPluginPlugin:
             is_enabled=True,
         )
         result = u.Plugin.Platform.Rules.disable(plugin)
-        assert result.success
-        assert plugin.is_enabled is False
+        tm.ok(result)
+        tm.that(plugin.is_enabled, eq=False)
 
     def test_disable_already_disabled_fails_without_state_change(self) -> None:
         """disable() on a disabled plugin fails and leaves it disabled."""
@@ -113,10 +114,10 @@ class TestsFlextPluginPlugin:
             is_enabled=False,
         )
         result = u.Plugin.Platform.Rules.disable(plugin)
-        assert result.failure
-        assert result.error is not None
-        assert "already disabled" in result.error
-        assert plugin.is_enabled is False
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="already disabled")
+        tm.that(plugin.is_enabled, eq=False)
 
     def test_disable_then_enable_round_trips_to_enabled(self) -> None:
         """A disable followed by enable returns the plugin to enabled."""
@@ -125,9 +126,9 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             is_enabled=True,
         )
-        assert u.Plugin.Platform.Rules.disable(plugin).success
-        assert u.Plugin.Platform.Rules.enable(plugin).success
-        assert plugin.is_enabled is True
+        tm.ok(u.Plugin.Platform.Rules.disable(plugin))
+        tm.ok(u.Plugin.Platform.Rules.enable(plugin))
+        tm.that(plugin.is_enabled, eq=True)
 
     # ----- Plugin entity: business rules & metadata -----------------------
 
@@ -135,22 +136,22 @@ class TestsFlextPluginPlugin:
         """A well-formed plugin passes business-rule validation."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
         result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
-        assert result.success
+        tm.ok(result)
 
     def test_record_error_is_observable_in_public_metadata(self) -> None:
         """record_error() surfaces count and message via the metadata field."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
         u.Plugin.Platform.Rules.record_error(plugin, "boom")
-        assert plugin.metadata["error_count"] == 1
-        assert plugin.metadata["last_error"] == "boom"
+        tm.that(plugin.metadata["error_count"], eq=1)
+        tm.that(plugin.metadata["last_error"], eq="boom")
 
     def test_record_error_accumulates_count(self) -> None:
         """Repeated record_error() calls increment the observable error count."""
         plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
         u.Plugin.Platform.Rules.record_error(plugin, "first")
         u.Plugin.Platform.Rules.record_error(plugin, "second")
-        assert plugin.metadata["error_count"] == 2
-        assert plugin.metadata["last_error"] == "second"
+        tm.that(plugin.metadata["error_count"], eq=2)
+        tm.that(plugin.metadata["last_error"], eq="second")
 
     # ----- Plugin platform entity: status / active projection -------------
 
@@ -170,7 +171,7 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """Status and active() derive directly from the enabled state."""
         plugin = self._make_plugin(is_enabled=is_enabled)
-        assert plugin.status == expected_status
+        tm.that(plugin.status, eq=expected_status)
         assert plugin.active() is expected_active
 
     # ----- Registry fixtures ----------------------------------------------
@@ -202,7 +203,7 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """A cleared registry reports an empty plugin listing."""
         plugins_result = registry.list_plugins()
-        assert plugins_result.success
+        tm.ok(plugins_result)
         assert not plugins_result.value
 
     def test_register_then_get_returns_same_plugin(
@@ -212,12 +213,12 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """A registered plugin is retrievable by name via get()."""
         register_result = registry.register(plugin.name, plugin)
-        assert register_result.success
-        assert register_result.value is True
+        tm.ok(register_result)
+        tm.that(register_result.value, eq=True)
 
         get_result = registry.get(plugin.name)
-        assert get_result.success
-        assert get_result.value.name == plugin.name
+        tm.ok(get_result)
+        tm.that(get_result.value.name, eq=plugin.name)
 
     def test_registered_plugin_appears_in_listing(
         self,
@@ -227,8 +228,8 @@ class TestsFlextPluginPlugin:
         """A registered plugin's name is present in list_plugins()."""
         registry.register(plugin.name, plugin)
         plugins_result = registry.list_plugins()
-        assert plugins_result.success
-        assert plugin.name in plugins_result.value
+        tm.ok(plugins_result)
+        tm.that(plugins_result.value, has=plugin.name)
 
     def test_get_unknown_plugin_fails(
         self,
@@ -236,7 +237,7 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """get() for an unregistered name returns a failure result."""
         result = registry.get("nonexistent-plugin")
-        assert result.failure
+        tm.fail(result)
 
     def test_unregister_removes_plugin_from_listing(
         self,
@@ -245,12 +246,12 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """unregister() drops a registered plugin from the listing."""
         registry.register(plugin.name, plugin)
-        assert plugin.name in registry.list_plugins().value
+        tm.that(registry.list_plugins().value, has=plugin.name)
 
         result = registry.unregister(plugin.name)
-        assert result.success
-        assert result.value is True
-        assert plugin.name not in registry.list_plugins().value
+        tm.ok(result)
+        tm.that(result.value, eq=True)
+        tm.that(registry.list_plugins().value, lacks=plugin.name)
 
     def test_unregister_unknown_plugin_fails(
         self,
@@ -258,7 +259,7 @@ class TestsFlextPluginPlugin:
     ) -> None:
         """unregister() for a name never registered returns a failure."""
         result = registry.unregister("nonexistent-plugin")
-        assert result.failure
+        tm.fail(result)
 
     def test_register_multiple_plugins_all_listed(
         self,
@@ -267,14 +268,14 @@ class TestsFlextPluginPlugin:
         """Every registered plugin is reflected in the listing."""
         plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]
         for candidate in plugins:
-            assert registry.register(candidate.name, candidate).success
+            tm.ok(registry.register(candidate.name, candidate))
 
         plugins_result = registry.list_plugins()
-        assert plugins_result.success
+        tm.ok(plugins_result)
         listed = plugins_result.value
-        assert len(listed) == 3
+        tm.that(len(listed), eq=3)
         for candidate in plugins:
-            assert candidate.name in listed
+            tm.that(listed, has=candidate.name)
 
 
 __all__: list[str] = ["TestsFlextPluginPlugin"]

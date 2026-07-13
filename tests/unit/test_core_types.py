@@ -13,9 +13,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import e
+from flext_tests import e, tm
 
-from tests.constants import c
+from tests import c
 
 _Type = c.Plugin.Type
 _Status = c.Plugin.PluginStatus
@@ -39,8 +39,8 @@ class TestsFlextPluginCoreTypes:
         self, member: c.Plugin.Type, value: str
     ) -> None:
         """Each plugin-type member exposes its canonical lowercase string."""
-        assert member.value == value
-        assert member == value  # StrEnum equality with the raw string
+        tm.that(member.value, eq=value)
+        tm.that(member, eq=value)  # StrEnum equality with the raw string
 
     @pytest.mark.parametrize(
         "value",
@@ -48,7 +48,7 @@ class TestsFlextPluginCoreTypes:
     )
     def test_plugin_type_round_trips_from_string(self, value: str) -> None:
         """Constructing from a valid string yields the matching member back."""
-        assert c.Plugin.Type(value).value == value
+        tm.that(c.Plugin.Type(value).value, eq=value)
 
     def test_plugin_type_invalid_string_raises_value_error(self) -> None:
         """An unknown string is rejected with ValueError naming the input."""
@@ -65,9 +65,9 @@ class TestsFlextPluginCoreTypes:
             p.UTILITY_PLUGIN_TYPES,
         ]
         union: frozenset[str] = frozenset().union(*groups)
-        assert union == p.ALL_PLUGIN_TYPES
+        tm.that(union, eq=p.ALL_PLUGIN_TYPES)
         total = sum(len(g) for g in groups)
-        assert total == len(union)  # disjoint: no type in two categories
+        tm.that(total, eq=len(union))  # disjoint: no type in two categories
 
     @pytest.mark.parametrize(
         "member",
@@ -75,8 +75,8 @@ class TestsFlextPluginCoreTypes:
     )
     def test_singer_types_belong_to_singer_group(self, member: c.Plugin.Type) -> None:
         """Singer plugin types are classified in the Singer frozenset."""
-        assert member in c.Plugin.SINGER_PLUGIN_TYPES
-        assert member in c.Plugin.ALL_PLUGIN_TYPES
+        tm.that(c.Plugin.SINGER_PLUGIN_TYPES, has=member)
+        tm.that(c.Plugin.ALL_PLUGIN_TYPES, has=member)
 
     @pytest.mark.parametrize(
         ("member", "value"),
@@ -95,7 +95,7 @@ class TestsFlextPluginCoreTypes:
         self, member: c.Plugin.PluginStatus, value: str
     ) -> None:
         """Each status member exposes its canonical lowercase string."""
-        assert member.value == value
+        tm.that(member.value, eq=value)
         assert c.Plugin.PluginStatus(value) is member
 
     @pytest.mark.parametrize(
@@ -106,9 +106,9 @@ class TestsFlextPluginCoreTypes:
         self, member: c.Plugin.PluginStatus
     ) -> None:
         """Error-class statuses classify as error and never operational."""
-        assert member.is_error_state() is True
-        assert member.is_operational() is False
-        assert member in c.Plugin.PluginStatus.get_error_statuses()
+        tm.that(member.is_error_state(), eq=True)
+        tm.that(member.is_operational(), eq=False)
+        tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @pytest.mark.parametrize(
         "member",
@@ -118,9 +118,9 @@ class TestsFlextPluginCoreTypes:
         self, member: c.Plugin.PluginStatus
     ) -> None:
         """Operational statuses classify as operational and never error."""
-        assert member.is_operational() is True
-        assert member.is_error_state() is False
-        assert member in c.Plugin.PluginStatus.get_operational_statuses()
+        tm.that(member.is_operational(), eq=True)
+        tm.that(member.is_error_state(), eq=False)
+        tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=member)
 
     def test_error_and_operational_status_sets_are_disjoint(self) -> None:
         """No status is simultaneously an error state and operational."""
@@ -145,12 +145,12 @@ class TestsFlextPluginCoreTypes:
         self, member: c.Plugin.DiscoveryTypeLiteral, value: str
     ) -> None:
         """Discovery-type literals expose their canonical string values."""
-        assert member.value == value
+        tm.that(member.value, eq=value)
 
     def test_base_error_preserves_message_and_is_exception(self) -> None:
         """BaseError is raisable, carries its message, and is an Exception."""
         message = "plugin failed to load"
         with pytest.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
             raise e.BaseError(message)
-        assert message in str(excinfo.value)
-        assert isinstance(excinfo.value, Exception)
+        tm.that(str(excinfo.value), has=message)
+        tm.that(excinfo.value, is_=Exception)

@@ -15,11 +15,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 from flext_plugin.api import FlextPluginApi
-from tests.utilities import u
+from tests import u
 
 
 @pytest.mark.usefixtures("reset_api")
@@ -74,7 +75,7 @@ class TestsFlextPluginApi:
 
         result = api.discover_plugins([str(tmp_path)])
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
         assert any(plugin.name == "found" for plugin in result.unwrap())
 
     def test_discover_plugins_failure_returned(self, api: FlextPluginApi) -> None:
@@ -83,7 +84,7 @@ class TestsFlextPluginApi:
 
         result = api.discover_plugins(["/tmp"])
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_execute_plugin_returns_execution_id(self, api: FlextPluginApi) -> None:
         """execute_plugin() returns a mapping containing the execution_id."""
@@ -93,8 +94,8 @@ class TestsFlextPluginApi:
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
-        assert result.success is True
-        assert result.unwrap()["execution_id"] == "e1"
+        tm.that(result.success, eq=True)
+        tm.that(result.unwrap()["execution_id"], eq="e1")
 
     def test_execute_plugin_failure_returned(self, api: FlextPluginApi) -> None:
         """execute_plugin() propagates execution failures."""
@@ -104,7 +105,7 @@ class TestsFlextPluginApi:
 
         result = api.execute_plugin("demo-plugin", {})
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_fetch_plugin_existing(self, api: FlextPluginApi) -> None:
         """fetch_plugin() returns the plugin when present."""
@@ -113,14 +114,14 @@ class TestsFlextPluginApi:
 
         result = api.fetch_plugin("demo-plugin")
 
-        assert result.success is True
-        assert result.unwrap().name == "demo-plugin"
+        tm.that(result.success, eq=True)
+        tm.that(result.unwrap().name, eq="demo-plugin")
 
     def test_fetch_plugin_missing_fails(self, api: FlextPluginApi) -> None:
         """fetch_plugin() fails when the plugin is absent."""
         result = api.fetch_plugin("missing")
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_fetch_plugin_status_existing(self, api: FlextPluginApi) -> None:
         """fetch_plugin_status() returns the status label when present."""
@@ -129,14 +130,14 @@ class TestsFlextPluginApi:
 
         result = api.fetch_plugin_status("demo-plugin")
 
-        assert result.success is True
-        assert result.unwrap() == "active"
+        tm.that(result.success, eq=True)
+        tm.that(result.unwrap(), eq="active")
 
     def test_fetch_plugin_status_missing_fails(self, api: FlextPluginApi) -> None:
         """fetch_plugin_status() fails when the plugin is absent."""
         result = api.fetch_plugin_status("missing")
 
-        assert result.failure is True
+        tm.that(result.failure, eq=True)
 
     def test_resolve_plugin_active(self, api: FlextPluginApi) -> None:
         """resolve_plugin_active() reflects the plugin enabled state."""
@@ -145,8 +146,8 @@ class TestsFlextPluginApi:
 
         result = api.resolve_plugin_active("demo-plugin")
 
-        assert result.success is True
-        assert result.unwrap() is True
+        tm.that(result.success, eq=True)
+        tm.that(result.unwrap(), eq=True)
 
     def test_list_plugins(self, api: FlextPluginApi) -> None:
         """list_plugins() returns all registered plugins."""
@@ -155,8 +156,8 @@ class TestsFlextPluginApi:
 
         result = api.list_plugins()
 
-        assert result.success is True
-        assert {plugin.name for plugin in result.unwrap()} == {"alpha", "beta"}
+        tm.that(result.success, eq=True)
+        tm.that({plugin.name for plugin in result.unwrap()}, eq={"alpha", "beta"})
 
     def test_load_plugin_logs_and_returns(
         self,
@@ -170,8 +171,8 @@ class TestsFlextPluginApi:
 
         result = api.load_plugin(str(plugin_file))
 
-        assert result.success is True
-        assert result.unwrap().name == "loaded"
+        tm.that(result.success, eq=True)
+        tm.that(result.unwrap().name, eq="loaded")
 
     def test_register_plugin(self, api: FlextPluginApi) -> None:
         """register_plugin() registers the plugin in the platform."""
@@ -179,20 +180,20 @@ class TestsFlextPluginApi:
 
         result = api.register_plugin(plugin)
 
-        assert result.success is True
-        assert api._platform.fetch_plugin("demo-plugin") is not None
+        tm.that(result.success, eq=True)
+        tm.that(api._platform.fetch_plugin("demo-plugin"), none=False)
 
     def test_start_hot_reload(self, api: FlextPluginApi) -> None:
         """start_hot_reload() succeeds."""
         result = api.start_hot_reload(["/tmp"])
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
 
     def test_stop_hot_reload(self, api: FlextPluginApi) -> None:
         """stop_hot_reload() succeeds."""
         result = api.stop_hot_reload()
 
-        assert result.success is True
+        tm.that(result.success, eq=True)
 
     def test_unregister_plugin(self, api: FlextPluginApi) -> None:
         """unregister_plugin() removes the plugin."""
@@ -201,14 +202,14 @@ class TestsFlextPluginApi:
 
         result = api.unregister_plugin("demo-plugin")
 
-        assert result.success is True
-        assert api.fetch_plugin("demo-plugin").failure is True
+        tm.that(result.success, eq=True)
+        tm.that(api.fetch_plugin("demo-plugin").failure, eq=True)
 
     def test_default_platform_is_created_lazily(self) -> None:
         """A fresh API instance builds a default platform automatically."""
         api = FlextPluginApi()
 
-        assert api._platform is not None
+        tm.that(api._platform, none=False)
 
 
 __all__: list[str] = ["TestsFlextPluginApi"]
