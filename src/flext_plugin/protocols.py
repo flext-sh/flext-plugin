@@ -7,17 +7,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from collections.abc import (
+    Sequence,
+)
+from typing import Protocol, runtime_checkable
 
 from flext_cli import p
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        Sequence,
-    )
-
-    from flext_plugin import m, t
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_plugin import m, t
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginProtocols(p):
