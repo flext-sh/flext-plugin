@@ -231,7 +231,7 @@ class FlextPluginPlatform:
 
         @property
         def status(self) -> str:
-            """Get plugin status."""
+            """The plugin status."""
             if not self.is_enabled:
                 return str(c.Plugin.PluginStatus.INACTIVE)
             return str(c.Plugin.PluginStatus.ACTIVE)
@@ -332,7 +332,7 @@ class FlextPluginPlatform:
 
         @property
         def platform_status(self) -> t.JsonMapping:
-            """Return platform status information."""
+            """The platform status information."""
             return {
                 "total_plugins": len(self.plugins),
                 "active_plugins": sum(
