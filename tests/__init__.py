@@ -19,12 +19,12 @@ if TYPE_CHECKING:
     from tests.models import TestsFlextPluginModels as TestsFlextPluginModels, m as m
     from tests.protocols import (
         TestsFlextPluginProtocols as TestsFlextPluginProtocols,
-        p as p,
+        p,
     )
     from tests.typings import TestsFlextPluginTypes as TestsFlextPluginTypes, t as t
     from tests.utilities import (
         TestsFlextPluginUtilities as TestsFlextPluginUtilities,
-        u as u,
+        u,
     )
 
 _LAZY_IMPORTS = build_lazy_import_map(

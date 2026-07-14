@@ -20,9 +20,7 @@ from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
-class FlextPluginUtilities(
-    u,
-):
+class FlextPluginUtilities(u):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin:
