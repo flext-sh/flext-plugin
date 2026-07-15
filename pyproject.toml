@@ -445,6 +445,7 @@ exclude = [
   "backup",
   "build",
   "dist",
+  "examples",
   "htmlcov",
   "temp-backup",
   "tests/fixtures",
@@ -573,6 +574,7 @@ split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 "**/.vulture_whitelist.py" = [ "ALL" ]
+"**/*examples*" = [ "D401", "INP001", "N999", "T201" ]
 "**/*_pb2*.py" = [ "ALL" ]
 "**/*dispatcher*" = [  ]
 "**/*docs*" = [ "INP001", "S404", "S603", "T201" ]

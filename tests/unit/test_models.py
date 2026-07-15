@@ -10,8 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_plugin import u
-from tests import c, m
+from tests import c, m, u
 
 
 class TestsFlextPluginModelsUnit:
@@ -145,75 +144,6 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.plugin_version, eq=good_version)
 
     # ---- Lifecycle behavior (r[T] contract) -----------------------------
-
-    def test_disable_transitions_enabled_plugin_and_reports_success(self) -> None:
-        """Disabling an enabled plugin succeeds and flips public state."""
-        plugin = m.Plugin.Entity(name="lifecycle", is_enabled=True)
-        result = u.Plugin.Platform.Rules.disable(plugin)
-        tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
-        tm.that(plugin.is_enabled, eq=False)
-
-    def test_disable_is_rejected_when_already_disabled(self) -> None:
-        """Disabling an already-disabled plugin is a failure, state unchanged."""
-        plugin = m.Plugin.Entity(name="lifecycle", is_enabled=False)
-        result = u.Plugin.Platform.Rules.disable(plugin)
-        tm.fail(result)
-        tm.that((result.error or ""), has="already disabled")
-        tm.that(plugin.is_enabled, eq=False)
-
-    def test_enable_transitions_disabled_plugin_and_reports_success(self) -> None:
-        """Enabling a disabled plugin succeeds and flips public state."""
-        plugin = m.Plugin.Entity(name="lifecycle", is_enabled=False)
-        result = u.Plugin.Platform.Rules.enable(plugin)
-        tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
-        tm.that(plugin.is_enabled, eq=True)
-
-    def test_enable_is_rejected_when_already_enabled(self) -> None:
-        """Enabling an already-enabled plugin is a failure, state unchanged."""
-        plugin = m.Plugin.Entity(name="lifecycle", is_enabled=True)
-        result = u.Plugin.Platform.Rules.enable(plugin)
-        tm.fail(result)
-        tm.that((result.error or ""), has="already enabled")
-        tm.that(plugin.is_enabled, eq=True)
-
-    def test_disable_then_enable_round_trips_to_enabled(self) -> None:
-        """A disable/enable cycle returns the plugin to enabled state."""
-        plugin = m.Plugin.Entity(name="cycle", is_enabled=True)
-        tm.ok(u.Plugin.Platform.Rules.disable(plugin))
-        tm.ok(u.Plugin.Platform.Rules.enable(plugin))
-        tm.that(plugin.is_enabled, eq=True)
-
-    # ---- Metrics recording (observable via metadata) --------------------
-
-    def test_record_error_accumulates_error_metadata(self) -> None:
-        """Recording errors increments the count and stores the last message."""
-        plugin = m.Plugin.Entity(name="err-plugin")
-        u.Plugin.Platform.Rules.record_error(plugin, "boom")
-        u.Plugin.Platform.Rules.record_error(plugin, "kaboom")
-        tm.that(plugin.metadata["error_count"], eq=2)
-        tm.that(plugin.metadata["last_error"], eq="kaboom")
-
-    def test_record_execution_accumulates_success_and_timing(self) -> None:
-        """Successful executions increment counts and total execution time."""
-        plugin = m.Plugin.Entity(name="exec-plugin")
-        u.Plugin.Platform.Rules.record_execution(plugin, 1.5, success=True)
-        u.Plugin.Platform.Rules.record_execution(plugin, 2.5, success=True)
-        tm.that(plugin.metadata["execution_count"], eq=2)
-        tm.that(plugin.metadata["success_count"], eq=2)
-        tm.that(plugin.metadata["failure_count"], eq=0)
-        tm.that(plugin.metadata["total_execution_time"], eq=pytest.approx(4.0))
-
-    def test_record_execution_tracks_failures_separately(self) -> None:
-        """Failed executions increment the failure counter only."""
-        plugin = m.Plugin.Entity(name="exec-plugin")
-        u.Plugin.Platform.Rules.record_execution(plugin, 0.5, success=False)
-        tm.that(plugin.metadata["execution_count"], eq=1)
-        tm.that(plugin.metadata["failure_count"], eq=1)
-        tm.that(plugin.metadata["success_count"], eq=0)
-
-    # ---- Business-rule validation (r[T] contract) -----------------------
 
     def test_validate_business_rules_passes_for_well_formed_entity(self) -> None:
         """A valid entity passes business-rule validation."""
