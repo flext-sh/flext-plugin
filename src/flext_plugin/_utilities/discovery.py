@@ -72,7 +72,7 @@ class FlextPluginDiscovery:
     def discover_plugin(
         self,
         plugin_path: str,
-    ) -> p.Result[m.Plugin.DiscoveryData]:
+    ) -> p.Result[p.Plugin.DiscoveryData]:
         """Discover single plugin at path.
 
         Args:
@@ -86,20 +86,20 @@ class FlextPluginDiscovery:
             path_obj = Path(plugin_path).expanduser().resolve()
             discovered = self._discover_existing_or_entry_point(plugin_path, path_obj)
             if discovered is not None:
-                return r[m.Plugin.DiscoveryData].ok(value=discovered)
-            return r[m.Plugin.DiscoveryData].fail(
+                return r[p.Plugin.DiscoveryData].ok(value=discovered)
+            return r[p.Plugin.DiscoveryData].fail(
                 f"Plugin not found at: {plugin_path}",
             )
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
-            return r[m.Plugin.DiscoveryData].fail(
+            return r[p.Plugin.DiscoveryData].fail(
                 f"Discovery error: {e!s}",
             )
 
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+    ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
         Args:
@@ -112,12 +112,12 @@ class FlextPluginDiscovery:
         try:
             discovered = self._discover_unique_plugins(paths)
             self.logger.info(f"Discovered {len(discovered)} unique plugins")
-            return r[Sequence[m.Plugin.DiscoveryData]].ok(
+            return r[Sequence[p.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin discovery failed")
-            return r[Sequence[m.Plugin.DiscoveryData]].fail(
+            return r[Sequence[p.Plugin.DiscoveryData]].fail(
                 f"Discovery error: {e!s}",
             )
 
@@ -147,7 +147,7 @@ class FlextPluginDiscovery:
         self,
         plugin_path: str,
         path_obj: Path,
-    ) -> m.Plugin.DiscoveryData | None:
+    ) -> p.Plugin.DiscoveryData | None:
         """Discover one plugin from filesystem first, then entry points."""
         if path_obj.exists():
             file_discovered = self._first_discovery(
@@ -176,7 +176,7 @@ class FlextPluginDiscovery:
     def _first_discovery(
         strategy: p.Plugin.DiscoveryStrategy,
         plugin_path: str,
-    ) -> m.Plugin.DiscoveryData | None:
+    ) -> p.Plugin.DiscoveryData | None:
         """Return the first discovery hit for one strategy."""
         result = strategy.discover([plugin_path])
         if result.success and result.value:
@@ -193,26 +193,26 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths."""
             try:
                 discovered = self._discover_paths(paths)
                 self.logger.info(
                     f"File system discovery found {len(discovered)} plugins",
                 )
-                return r[Sequence[m.Plugin.DiscoveryData]].ok(
+                return r[Sequence[p.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("File system discovery failed")
-                return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                return r[Sequence[p.Plugin.DiscoveryData]].fail(
                     f"File discovery error: {e!s}",
                 )
 
         def _discover_directory(
             self,
             path: Path,
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        ) -> t.SequenceOf[p.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory."""
             return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,
@@ -223,7 +223,7 @@ class FlextPluginDiscovery:
         def _discover_file(
             self,
             path: Path,
-        ) -> m.Plugin.DiscoveryData | None:
+        ) -> p.Plugin.DiscoveryData | None:
             """Discover single Python file as plugin."""
             if path.suffix != ".py":
                 return None
@@ -240,7 +240,7 @@ class FlextPluginDiscovery:
                 self.logger.exception("Failed to create discovery data for %s", path)
                 return None
 
-        def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        def _discover_path(self, path_str: str) -> t.SequenceOf[p.Plugin.DiscoveryData]:
             """Discover plugins from one path string."""
             if not path_str.strip():
                 self.logger.debug("Skipping blank plugin discovery path")
@@ -259,9 +259,9 @@ class FlextPluginDiscovery:
         def _discover_paths(
             self,
             paths: t.StrSequence,
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        ) -> t.SequenceOf[p.Plugin.DiscoveryData]:
             """Discover plugins from all path strings."""
-            discovered: MutableSequence[m.Plugin.DiscoveryData] = []
+            discovered: MutableSequence[p.Plugin.DiscoveryData] = []
             for path_str in paths:
                 discovered.extend(self._discover_path(path_str))
             return discovered
@@ -276,7 +276,7 @@ class FlextPluginDiscovery:
         def discover(
             self,
             paths: t.StrSequence,
-        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored)."""
             _ = paths
             try:
@@ -284,19 +284,19 @@ class FlextPluginDiscovery:
                 self.logger.info(
                     f"Entry point discovery found {len(discovered)} plugins",
                 )
-                return r[Sequence[m.Plugin.DiscoveryData]].ok(
+                return r[Sequence[p.Plugin.DiscoveryData]].ok(
                     value=discovered,
                 )
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Entry point discovery failed")
-                return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                return r[Sequence[p.Plugin.DiscoveryData]].fail(
                     f"Entry point discovery error: {e!s}",
                 )
 
         def _discover_entry_point(
             self,
             entry_point: importlib.metadata.EntryPoint,
-        ) -> m.Plugin.DiscoveryData | None:
+        ) -> p.Plugin.DiscoveryData | None:
             """Build discovery data for one entry point."""
             try:
                 return m.Plugin.DiscoveryData(
@@ -318,9 +318,9 @@ class FlextPluginDiscovery:
                 self.logger.debug(f"Invalid entry point: {entry_point.name}")
                 return None
 
-        def _discover_entry_points(self) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        def _discover_entry_points(self) -> t.SequenceOf[p.Plugin.DiscoveryData]:
             """Discover plugins from the installed entry point registry."""
-            discovered: MutableSequence[m.Plugin.DiscoveryData] = []
+            discovered: MutableSequence[p.Plugin.DiscoveryData] = []
             for entry_point in importlib.metadata.entry_points().select(
                 group="flext.plugins",
             ):

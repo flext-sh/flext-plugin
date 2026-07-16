@@ -142,14 +142,14 @@ class FlextPluginProtocols(p):
             def discover_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[m.Plugin.DiscoveryData]:
+            ) -> p.Result[p.Plugin.DiscoveryData]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            ) -> p.Result[t.SequenceOf[p.Plugin.DiscoveryData]]:
                 """Discover plugins at the given paths."""
                 ...
 
@@ -477,7 +477,7 @@ class FlextPluginProtocols(p):
             def discover(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            ) -> p.Result[t.SequenceOf[p.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...
 

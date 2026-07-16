@@ -143,18 +143,18 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                 def discover_plugin(
                     self,
                     plugin_path: str,
-                ) -> p.Result[m.Plugin.DiscoveryData]:
+                ) -> p.Result[p.Plugin.DiscoveryData]:
                     """Report a real discovery failure for one plugin."""
                     _ = plugin_path
-                    return r[m.Plugin.DiscoveryData].fail("discovery failed")
+                    return r[p.Plugin.DiscoveryData].fail("discovery failed")
 
                 def discover_plugins(
                     self,
                     paths: t.StrSequence,
-                ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+                ) -> p.Result[t.SequenceOf[p.Plugin.DiscoveryData]]:
                     """Report a real discovery failure for the given paths."""
                     _ = paths
-                    return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail(
+                    return r[t.SequenceOf[p.Plugin.DiscoveryData]].fail(
                         "discovery failed",
                     )
 

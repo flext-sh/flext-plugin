@@ -136,7 +136,7 @@ class FlextPluginPlatform:
             _ = auto_discover_handlers
             return cls(dispatcher=dispatcher)
 
-        def get(self, data: str) -> p.Result[m.Plugin.Entity]:
+        def get(self, data: str) -> p.Result[p.Plugin.Entity]:
             """Get plugin by name from class-level storage."""
             result = self.fetch_plugin(
                 self.PLUGINS,
@@ -148,14 +148,14 @@ class FlextPluginPlatform:
                     plugin = m.Plugin.Entity.model_validate(
                         result.value,
                     )
-                    return r[m.Plugin.Entity].ok(plugin)
+                    return r[p.Plugin.Entity].ok(plugin)
                 except c.EXC_BROAD_IO_TYPE:
-                    return r[m.Plugin.Entity].fail(
+                    return r[p.Plugin.Entity].fail(
                         "Plugin is not a valid Plugin type",
                     )
             if result.failure:
-                return r[m.Plugin.Entity].fail(result.error)
-            return e.fail_not_found("Plugin", "", result_type=r[m.Plugin.Entity])
+                return r[p.Plugin.Entity].fail(result.error)
+            return e.fail_not_found("Plugin", "", result_type=r[p.Plugin.Entity])
 
         def list_plugins(
             self,
@@ -385,22 +385,22 @@ class FlextPluginPlatform:
 
             def discover_and_validate(
                 _checked: t.JsonValue,
-            ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+            ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
                 if not self.discovery:
-                    return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                    return r[Sequence[p.Plugin.DiscoveryData]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.success:
-                    return r[Sequence[m.Plugin.DiscoveryData]].ok(
+                    return r[Sequence[p.Plugin.DiscoveryData]].ok(
                         discovery_result.value,
                     )
-                return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                return r[Sequence[p.Plugin.DiscoveryData]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: t.SequenceOf[m.Plugin.DiscoveryData],
+                data: t.SequenceOf[p.Plugin.DiscoveryData],
             ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
@@ -408,7 +408,7 @@ class FlextPluginPlatform:
                 self.discovery,
                 "Discovery",
             )
-            discovered: p.Result[Sequence[m.Plugin.DiscoveryData]] = checked.flat_map(
+            discovered: p.Result[Sequence[p.Plugin.DiscoveryData]] = checked.flat_map(
                 discover_and_validate,
             )
             plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = (
@@ -417,7 +417,7 @@ class FlextPluginPlatform:
             return plugins.map(self._register_all)
 
         @override
-        def execute(self) -> p.Result[m.Plugin.PluginRegistry]:
+        def execute(self) -> p.Result[p.Plugin.PluginRegistry]:
             """Execute main platform initialization (s protocol)."""
             plugin_entries: dict[str, t.JsonMapping] = {
                 name: self._to_general_mapping(plugin)
@@ -427,7 +427,7 @@ class FlextPluginPlatform:
                 version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                 plugins=self._to_general_mapping(plugin_entries),
             )
-            return r[m.Plugin.PluginRegistry].ok(registry)
+            return r[p.Plugin.PluginRegistry].ok(registry)
 
         def execute_plugin(
             self,
@@ -716,7 +716,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
+            plugin_data: t.SequenceOf[p.Plugin.DiscoveryData],
         ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
             """Create validated plugins from data."""
             plugins: MutableSequence[FlextPluginPlatform.Plugin] = []

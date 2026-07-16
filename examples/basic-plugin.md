@@ -56,7 +56,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, settings: Optional[m.Dict] = None, **kwargs):
+    def __init__(self, settings: Optional[p.Dict] = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -119,7 +119,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def execute(self, data: m.Dict) -> p.Result[m.Dict]:
+    def execute(self, data: m.Dict) -> p.Result[p.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -127,7 +127,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            r[m.Dict]: Processing results or error
+            r[p.Dict]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -233,7 +233,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: m.Dict) -> m.Dict:
+    def _process_data(self, data: m.Dict) -> p.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -301,7 +301,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Public utility methods
 
-    def get_statistics(self) -> m.Dict:
+    def get_statistics(self) -> p.Dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 

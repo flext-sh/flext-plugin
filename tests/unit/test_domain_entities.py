@@ -35,7 +35,7 @@ class TestsFlextPluginDomainEntities:
         entity_id: str = "test-id",
         description: str = "Test plugin",
         author: str = "Test Author",
-    ) -> m.Plugin.Entity:
+    ) -> p.Plugin.Entity:
         """Construct a Plugin entity through the public factory."""
         return m.Plugin.Entity.create(
             name=name,
