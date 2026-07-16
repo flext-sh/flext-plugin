@@ -14,7 +14,6 @@ from typing import Protocol, runtime_checkable
 
 from flext_cli import p
 from flext_plugin import m, t
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginProtocols(p):
@@ -51,7 +50,7 @@ class FlextPluginProtocols(p):
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+            ) -> p.Result[Sequence[p.Plugin.Plugin]]:
                 """Discover plugins from the provided paths."""
                 ...
 
@@ -60,14 +59,14 @@ class FlextPluginProtocols(p):
                 plugin_name: str,
                 context: t.JsonMapping,
                 execution_id: str | None = None,
-            ) -> p.Result[FlextPluginPlatform.PluginExecution]:
+            ) -> p.Result[p.Plugin.PluginExecution]:
                 """Execute a plugin with the provided context."""
                 ...
 
             def fetch_plugin(
                 self,
                 name: str,
-            ) -> FlextPluginPlatform.Plugin | None:
+            ) -> p.Plugin.Plugin | None:
                 """Fetch a plugin by name."""
                 ...
 
@@ -79,20 +78,20 @@ class FlextPluginProtocols(p):
                 """Resolve whether the named plugin is active."""
                 ...
 
-            def list_plugins(self) -> t.SequenceOf[FlextPluginPlatform.Plugin]:
+            def list_plugins(self) -> t.SequenceOf[p.Plugin.Plugin]:
                 """List registered plugins."""
                 ...
 
             def load_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[FlextPluginPlatform.Plugin]:
+            ) -> p.Result[p.Plugin.Plugin]:
                 """Load a plugin from disk."""
                 ...
 
             def register_plugin(
                 self,
-                plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
+                plugin: p.Plugin.Plugin | m.Plugin.Entity,
             ) -> p.Result[bool]:
                 """Register a plugin instance."""
                 ...
@@ -155,7 +154,7 @@ class FlextPluginProtocols(p):
 
             def validate_plugin(
                 self,
-                plugin_data: m.Plugin.DiscoveryData,
+                plugin_data: p.Plugin.DiscoveryData,
             ) -> p.Result[bool]:
                 """Validate plugin discovery data."""
                 ...
@@ -183,14 +182,14 @@ class FlextPluginProtocols(p):
 
             def register_plugin(
                 self,
-                plugin: m.Plugin.Entity | t.JsonValue,
+                plugin: p.Plugin.Entity | t.JsonValue,
             ) -> p.Result[bool]:
                 """Register a plugin."""
                 ...
 
             def register(
                 self,
-                plugin: m.Plugin.Entity,
+                plugin: p.Plugin.Entity,
             ) -> p.Result[None]:
                 """Register a plugin with normalized API."""
                 ...
@@ -260,7 +259,7 @@ class FlextPluginProtocols(p):
 
             def validate_plugin_security(
                 self,
-                plugin: m.Plugin.Entity,
+                plugin: p.Plugin.Entity,
             ) -> p.Result[bool]:
                 """Validate plugin security compliance."""
                 ...

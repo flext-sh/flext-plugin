@@ -38,7 +38,7 @@ from flext_core import FlextRegistry
 from flext_core import r, p
 from flext_core import u
 from flext_core import s
-from flext_core import t
+from flext_core import p, t
 from flext_core import u
 from typing import Dict, Optional
 
@@ -119,7 +119,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def execute(self, data: m.Dict) -> p.Result[p.Dict]:
+    def execute(self, data: p.Dict) -> p.Result[p.Dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -219,7 +219,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: m.Dict) -> p.Result[bool]:
+    def _validate_input_data(self, data: p.Dict) -> p.Result[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -233,7 +233,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: m.Dict) -> p.Dict:
+    def _process_data(self, data: p.Dict) -> p.Dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 

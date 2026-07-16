@@ -46,7 +46,7 @@ class FlextPluginApi(s):
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+    ) -> p.Result[Sequence[p.Plugin.Plugin]]:
         """Discover plugins in the given paths; logs the count discovered."""
         result = self._platform.discover_plugins(paths)
         if result.success:
@@ -71,16 +71,16 @@ class FlextPluginApi(s):
     def fetch_plugin(
         self,
         plugin_name: str,
-    ) -> p.Result[FlextPluginPlatform.Plugin]:
+    ) -> p.Result[p.Plugin.Plugin]:
         """Fetch a plugin by name; fails when missing (ENFORCE-056)."""
         plugin = self._platform.fetch_plugin(plugin_name)
         if plugin is None:
             return e.fail_not_found(
                 "plugin",
                 plugin_name,
-                result_type=r[FlextPluginPlatform.Plugin],
+                result_type=r[p.Plugin.Plugin],
             )
-        return r[FlextPluginPlatform.Plugin].ok(plugin)
+        return r[p.Plugin.Plugin].ok(plugin)
 
     def fetch_plugin_status(self, plugin_name: str) -> p.Result[str]:
         """Fetch the status of a plugin by name; fails when missing."""
@@ -97,16 +97,16 @@ class FlextPluginApi(s):
         """Resolve whether a plugin is active."""
         return r[bool].ok(self._platform.resolve_plugin_active(plugin_name))
 
-    def list_plugins(self) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+    def list_plugins(self) -> p.Result[Sequence[p.Plugin.Plugin]]:
         """List all registered plugins."""
-        return r[Sequence[FlextPluginPlatform.Plugin]].ok(
+        return r[Sequence[p.Plugin.Plugin]].ok(
             self._platform.list_plugins(),
         )
 
     def load_plugin(
         self,
         plugin_path: str,
-    ) -> p.Result[FlextPluginPlatform.Plugin]:
+    ) -> p.Result[p.Plugin.Plugin]:
         """Load a plugin from the given path; logs the loaded plugin's name."""
         result = self._platform.load_plugin(plugin_path)
         if result.success:
@@ -117,7 +117,7 @@ class FlextPluginApi(s):
 
     def register_plugin(
         self,
-        plugin: FlextPluginPlatform.Plugin,
+        plugin: p.Plugin.Plugin,
     ) -> p.Result[bool]:
         """Register a plugin in the platform."""
         return self._platform.register_plugin(plugin)

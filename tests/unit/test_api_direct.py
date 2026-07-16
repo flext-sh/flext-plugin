@@ -37,9 +37,9 @@ class TestsFlextPluginApi:
         *,
         name: str = "demo-plugin",
         is_enabled: bool = True,
-    ) -> FlextPluginPlatform.Plugin:
+    ) -> p.Plugin.Plugin:
         """Build a platform plugin entity."""
-        plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin.create(
+        plugin: p.Plugin.Plugin = FlextPluginPlatform.Plugin.create(
             name=name,
             plugin_version="1.0.0",
             is_enabled=is_enabled,
@@ -47,7 +47,7 @@ class TestsFlextPluginApi:
         return plugin
 
     @staticmethod
-    def _platform(api: FlextPluginApi) -> FlextPluginPlatform.PluginPlatformService:
+    def _platform(api: FlextPluginApi) -> p.Plugin.PluginPlatformService:
         platform = api._platform
         if not isinstance(platform, FlextPluginPlatform.PluginPlatformService):
             msg = "Unexpected plugin platform implementation"

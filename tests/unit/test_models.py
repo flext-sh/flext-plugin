@@ -165,7 +165,7 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.plugin_version, eq="2.0.0")
         assert plugin.plugin_type is c.Plugin.Type.SERVICE
 
-    # NOTE: m.Plugin.DiscoveryData is intentionally NOT tested here. Its `path`
+    # NOTE: p.Plugin.DiscoveryData is intentionally NOT tested here. Its `path`
     # field annotation resolves to `Path`, which src/flext_plugin/models.py
     # imports only under `TYPE_CHECKING`, so the model is never fully defined at
     # runtime and every construction raises PydanticUserError

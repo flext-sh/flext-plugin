@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Self
 
-from flext_cli import m, u
+from flext_cli import m, p, u
 from flext_plugin import c, p, t
 
 

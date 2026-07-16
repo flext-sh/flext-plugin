@@ -123,7 +123,7 @@ class FlextPluginDiscovery:
 
     def validate_plugin(
         self,
-        plugin_data: m.Plugin.DiscoveryData,
+        plugin_data: p.Plugin.DiscoveryData,
     ) -> p.Result[bool]:
         """Validate discovered plugin data.
 
