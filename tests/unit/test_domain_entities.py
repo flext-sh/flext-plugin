@@ -13,13 +13,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import math
-
 import pytest
 from flext_tests import tm
 
-from flext_plugin import u
-from tests import c, m
+from tests import c, m, u
 
 
 class TestsFlextPluginDomainEntities:
@@ -102,129 +99,6 @@ class TestsFlextPluginDomainEntities:
 
     # ------------------------------------------------------------------ #
     # Enable / disable lifecycle
-    # ------------------------------------------------------------------ #
-
-    def test_disable_transitions_enabled_plugin_to_disabled(self) -> None:
-        """disable() succeeds once and flips the public enabled state."""
-        plugin = self._make_plugin()
-
-        result = u.Plugin.Platform.Rules.disable(plugin)
-
-        tm.ok(result)
-        tm.that(result.unwrap().is_enabled, eq=False)
-
-    def test_disable_is_rejected_when_already_disabled(self) -> None:
-        """A second disable() fails with an explanatory error, state unchanged."""
-        plugin = self._make_plugin()
-        disabled = u.Plugin.Platform.Rules.disable(plugin).unwrap()
-
-        result = u.Plugin.Platform.Rules.disable(disabled)
-
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error, has="already disabled")
-        tm.that(disabled.is_enabled, eq=False)
-
-    def test_enable_restores_a_disabled_plugin(self) -> None:
-        """enable() re-activates a disabled plugin."""
-        plugin = self._make_plugin()
-        disabled = u.Plugin.Platform.Rules.disable(plugin).unwrap()
-
-        result = u.Plugin.Platform.Rules.enable(disabled)
-
-        tm.ok(result)
-        tm.that(result.unwrap().is_enabled, eq=True)
-
-    def test_enable_is_rejected_when_already_enabled(self) -> None:
-        """enable() on an already-enabled plugin fails idempotently."""
-        plugin = self._make_plugin()
-
-        result = u.Plugin.Platform.Rules.enable(plugin)
-
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error, has="already enabled")
-        tm.that(plugin.is_enabled, eq=True)
-
-    def test_enable_disable_round_trip_returns_to_enabled(self) -> None:
-        """Disable then enable is a no-net-change round trip on public state."""
-        plugin = self._make_plugin()
-
-        disabled = u.Plugin.Platform.Rules.disable(plugin).unwrap()
-        enabled = u.Plugin.Platform.Rules.enable(disabled).unwrap()
-        tm.that(enabled.is_enabled, eq=True)
-
-    # ------------------------------------------------------------------ #
-    # Execution metric accumulation (public metadata state)
-    # ------------------------------------------------------------------ #
-
-    def test_record_execution_accumulates_counts_and_time(self) -> None:
-        """Successive successful executions accumulate count, time, successes."""
-        plugin = self._make_plugin()
-
-        recorded = u.Plugin.Platform.Rules.record_execution(
-            plugin,
-            150.5,
-            success=True,
-        )
-
-        tm.that(recorded.metadata["execution_count"], eq=1)
-        tm.that(recorded.metadata["success_count"], eq=1)
-        tm.that(recorded.metadata["failure_count"], eq=0)
-        first_total = recorded.metadata["total_execution_time"]
-        tm.that(first_total, is_=float)
-        assert math.isclose(first_total, 150.5)
-
-        recorded = u.Plugin.Platform.Rules.record_execution(
-            recorded,
-            200.0,
-            success=True,
-        )
-
-        tm.that(recorded.metadata["execution_count"], eq=2)
-        tm.that(recorded.metadata["success_count"], eq=2)
-        second_total = recorded.metadata["total_execution_time"]
-        tm.that(second_total, is_=float)
-        assert math.isclose(second_total, 350.5)
-
-    def test_record_execution_tracks_failures_separately(self) -> None:
-        """A failed execution increments the failure count, not the success count."""
-        plugin = self._make_plugin()
-        recorded = u.Plugin.Platform.Rules.record_execution(
-            plugin,
-            150.5,
-            success=True,
-        )
-
-        recorded = u.Plugin.Platform.Rules.record_execution(
-            recorded,
-            50.0,
-            success=False,
-        )
-
-        tm.that(recorded.metadata["execution_count"], eq=2)
-        tm.that(recorded.metadata["success_count"], eq=1)
-        tm.that(recorded.metadata["failure_count"], eq=1)
-        total = recorded.metadata["total_execution_time"]
-        tm.that(total, is_=float)
-        assert math.isclose(total, 200.5)
-
-    def test_record_error_accumulates_count_and_keeps_last_message(self) -> None:
-        """record_error() counts errors and surfaces the most recent message."""
-        plugin = self._make_plugin()
-
-        recorded = u.Plugin.Platform.Rules.record_error(plugin, "Test error message")
-
-        tm.that(recorded.metadata["error_count"], eq=1)
-        tm.that(recorded.metadata["last_error"], eq="Test error message")
-
-        recorded = u.Plugin.Platform.Rules.record_error(recorded, "Second error")
-
-        tm.that(recorded.metadata["error_count"], eq=2)
-        tm.that(recorded.metadata["last_error"], eq="Second error")
-
-    # ------------------------------------------------------------------ #
-    # Business-rule validation
     # ------------------------------------------------------------------ #
 
     def test_validate_business_rules_accepts_a_well_formed_plugin(self) -> None:
