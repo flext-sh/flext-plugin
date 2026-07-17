@@ -20,6 +20,7 @@ from flext_plugin.__version__ import (
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, s, x
 
+    from ._config import FlextPluginConfig, config
     from ._settings import FlextPluginSettings, settings
     from .api import FlextPluginApi, plugin
     from .constants import FlextPluginConstants, FlextPluginConstants as c
@@ -53,6 +54,10 @@ if TYPE_CHECKING:
 
 
 _LAZY_MODULES: dict[str, tuple[str, ...]] = {
+    "._config": (
+        "FlextPluginConfig",
+        "config",
+    ),
     "._settings": (
         "FlextPluginSettings",
         "settings",
@@ -103,6 +108,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 _DIRECT_IMPORTS: tuple[str, ...] = (
     "FlextPluginApi",
+    "FlextPluginConfig",
     "FlextPluginConstants",
     "FlextPluginModels",
     "FlextPluginProtocols",
@@ -136,6 +142,7 @@ _DIRECT_IMPORTS: tuple[str, ...] = (
 
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
+    "FlextPluginConfig",
     "FlextPluginConstants",
     "FlextPluginModels",
     "FlextPluginProtocols",
@@ -151,6 +158,7 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
+    "config",
     "d",
     "e",
     "h",
