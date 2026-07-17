@@ -69,7 +69,7 @@ from flext_plugin import PluginType
 
 # Create simple plugin
 plugin = create_flext_plugin(
-    name="hello-world", version="0.12.0-dev", plugin_type=PluginType.UTILITY
+    name="hello-world", version="0.20.0-dev", plugin_type=PluginType.UTILITY
 )
 
 # Create platform and register plugin
@@ -86,12 +86,12 @@ from flext_plugin import PluginType
 # Create Singer tap plugin
 tap_plugin = create_flext_plugin(
     name="tap-example-api",
-    version="0.12.0-dev",
+    version="0.20.0-dev",
     plugin_type=PluginType.TAP,
     settings={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
-        "singer_spec": "0.12.0-dev",
+        "singer_spec": "0.20.0-dev",
     },
 )
 ```
@@ -124,7 +124,7 @@ def platform():
 
 def test_plugin_activation(platform):
     """Test plugin activation."""
-    plugin = create_flext_plugin(name="test-plugin", version="0.12.0-dev")
+    plugin = create_flext_plugin(name="test-plugin", version="0.20.0-dev")
     platform.register_plugin(plugin)
 
     result = platform.activate_plugin("test-plugin")
@@ -243,7 +243,7 @@ class ExamplePlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="example-plugin",
-            version="0.12.0-dev",
+            version="0.20.0-dev",
             settings={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Example plugin template",
@@ -322,7 +322,7 @@ class TestExamplePlugin:
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "example-plugin"
-        assert plugin.plugin_version == "0.12.0-dev"
+        assert plugin.plugin_version == "0.20.0-dev"
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
@@ -368,7 +368,7 @@ class TestExamplePlugin:
 {
   "plugin": {
     "name": "example-plugin",
-    "version": "0.12.0-dev",
+    "version": "0.20.0-dev",
     "type": "utility",
     "description": "Example plugin for demonstration",
     "author": "Your Name",
@@ -381,8 +381,8 @@ class TestExamplePlugin:
     "batch_size": 100
   },
   "dependencies": {
-    "flext-core": ">=0.12.0-dev",
-    "flext-observability": ">=0.12.0-dev"
+    "flext-core": ">=0.20.0-dev",
+    "flext-observability": ">=0.20.0-dev"
   },
   "metadata": {
     "tags": ["example", "demo", "utility"],
