@@ -61,7 +61,7 @@ class TestsFlextPluginConfig:
         """Plugin settings declare exactly the FlextSettings SSOT root fields."""
         tm.that(
             set(FlextPluginSettings.model_fields),
-            eq=set(FlextSettings.model_fields),
+            eq=frozenset(FlextSettings.model_fields),
         )
 
     @pytest.mark.parametrize("universal_field", _UNIVERSAL_FIELDS)

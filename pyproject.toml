@@ -217,22 +217,23 @@ project-excludes = [
   "**/typings/**",
   "**/vendor/**",
   "**/venv/**",
-  ".flext-deps/**",
   ".venv/**",
   "typings/**",
   "vendor/**",
 ]
 # mro-f1fe (agent: kimi-sweep): examples moved to gitignored legado/ — out of active lint/typecheck surface
-project-includes = [ "src/**/*.py*", "tests/**/*.py*" ]
+project-includes = [
+  "examples/**/*.py*",
+  "src/**/*.py*",
+  "tests/**/*.py*",
+]
 python-interpreter-path = "../.venv/bin/python"
 python-version = "3.13"
 search-path = [
   ".",
   "../flext-cli/src",
-  "../flext-core/scripts",
   "../flext-core/src",
   "../flext-infra/src",
-  "../flext-infra/tmp_flow_test",
   "../flext-tests/src",
   "src",
 ]
@@ -574,10 +575,10 @@ split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 "**/.vulture_whitelist.py" = [ "ALL" ]
-"**/*examples*" = [ "D401", "INP001", "N999", "T201" ]
 "**/*_pb2*.py" = [ "ALL" ]
 "**/*dispatcher*" = [  ]
 "**/*docs*" = [ "INP001", "S404", "S603", "T201" ]
+"**/*examples*" = [ "D401", "INP001", "N999", "T201" ]
 "**/*exceptions*" = [ "A001", "S105", "SLF001" ]
 "**/*handlers*" = [  ]
 "**/*instrumentation*" = [ "C901", "FBT001", "SLF001" ]

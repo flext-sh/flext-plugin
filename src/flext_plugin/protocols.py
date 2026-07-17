@@ -13,7 +13,7 @@ from collections.abc import (
 from typing import Protocol, runtime_checkable
 
 from flext_cli import p
-from flext_plugin import m, p, t
+from flext_plugin import p, t
 
 
 class FlextPluginProtocols(p):
@@ -91,7 +91,7 @@ class FlextPluginProtocols(p):
 
             def register_plugin(
                 self,
-                plugin: p.Plugin.Plugin | m.Plugin.Entity,
+                plugin: p.Plugin.Plugin | p.Plugin.Entity,
             ) -> p.Result[bool]:
                 """Register a plugin instance."""
                 ...

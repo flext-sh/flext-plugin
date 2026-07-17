@@ -181,7 +181,7 @@ class FlextPluginPlatform:
             self,
             name: str,
             service: t.RegistrablePlugin,
-            metadata: p.ConfigMap | m.Metadata | None = None,
+            metadata: p.ConfigMap | p.Metadata | None = None,
         ) -> p.Result[bool]:
             """Register plugin using class-level storage.
 
@@ -266,7 +266,7 @@ class FlextPluginPlatform:
 
         @staticmethod
         def _to_general_mapping(
-            value: t.JsonPayload | m.BaseModel | None,
+            value: t.JsonPayload | p.BaseModel | None,
         ) -> t.JsonMapping:
             """Convert mapping-like values to a typed dict."""
             if value is None:
@@ -542,7 +542,7 @@ class FlextPluginPlatform:
 
         def register_plugin(
             self,
-            plugin: p.Plugin.Plugin | m.Plugin.Entity,
+            plugin: p.Plugin.Plugin | p.Plugin.Entity,
         ) -> p.Result[bool]:
             """Register plugin with validation chain."""
 

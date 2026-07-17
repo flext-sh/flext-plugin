@@ -199,6 +199,6 @@ class TestsFlextPluginDiscovery:
             u.fetch_logger(__name__),
         )
 
-        tm.that(set(results), eq={"alpha_plugin", "beta_plugin"})
+        tm.that(set(results), eq=frozenset({"alpha_plugin", "beta_plugin"}))
         tm.that(seen, lacks="_private.py")
         tm.that(seen, lacks="readme.txt")

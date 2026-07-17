@@ -70,7 +70,7 @@ class TestsFlextPluginConstantsUnit:
         expected_values: set[str],
     ) -> None:
         """Each category contains exactly its documented plugin type values."""
-        tm.that({member.value for member in category}, eq=expected_values)
+        tm.that({member.value for member in category}, eq=frozenset(expected_values))
 
     def test_all_types_is_disjoint_union_of_categories(self) -> None:
         """ALL_PLUGIN_TYPES equals the exact union of the four disjoint categories."""
