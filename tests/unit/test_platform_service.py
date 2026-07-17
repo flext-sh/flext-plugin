@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from flext_tests import tm
@@ -21,6 +21,9 @@ from flext_plugin import c
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 from tests import u
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 Platform = FlextPluginPlatform
 

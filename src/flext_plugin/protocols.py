@@ -7,13 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Sequence,
-)
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import p
-from flext_plugin import p, t
+from flext_plugin import p
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Sequence,
+    )
+
+    from flext_plugin import m, t
 
 
 class FlextPluginProtocols(p):
@@ -42,6 +46,31 @@ class FlextPluginProtocols(p):
     @runtime_checkable
     class Plugin(Protocol):
         """Plugin domain-specific protocols."""
+
+        @runtime_checkable
+        class Entity(Protocol):
+            """Runtime-checkable protocol for plugin entity data."""
+
+            name: str
+            plugin_version: str
+            description: str
+            author: str
+            plugin_type: str
+            is_enabled: bool
+            metadata: t.JsonMapping
+
+        @runtime_checkable
+        class Plugin(Entity, Protocol):
+            """Runtime-checkable protocol for platform plugin instances."""
+
+            @property
+            def status(self) -> str:
+                """Current plugin status label."""
+                ...
+
+            def active(self) -> bool:
+                """Whether the plugin is active."""
+                ...
 
         @runtime_checkable
         class PlatformService(Protocol):
@@ -141,20 +170,20 @@ class FlextPluginProtocols(p):
             def discover_plugin(
                 self,
                 plugin_path: str,
-            ) -> p.Result[p.Plugin.DiscoveryData]:
+            ) -> p.Result[m.Plugin.DiscoveryData]:
                 """Discover a single plugin at the specified path."""
                 ...
 
             def discover_plugins(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[t.SequenceOf[p.Plugin.DiscoveryData]]:
+            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
                 """Discover plugins at the given paths."""
                 ...
 
             def validate_plugin(
                 self,
-                plugin_data: p.Plugin.DiscoveryData,
+                plugin_data: m.Plugin.DiscoveryData,
             ) -> p.Result[bool]:
                 """Validate plugin discovery data."""
                 ...
@@ -182,14 +211,14 @@ class FlextPluginProtocols(p):
 
             def register_plugin(
                 self,
-                plugin: p.Plugin.Entity | t.JsonValue,
+                plugin: m.Plugin.Entity | t.JsonValue,
             ) -> p.Result[bool]:
                 """Register a plugin."""
                 ...
 
             def register(
                 self,
-                plugin: p.Plugin.Entity,
+                plugin: m.Plugin.Entity,
             ) -> p.Result[None]:
                 """Register a plugin with normalized API."""
                 ...
@@ -259,7 +288,7 @@ class FlextPluginProtocols(p):
 
             def validate_plugin_security(
                 self,
-                plugin: p.Plugin.Entity,
+                plugin: m.Plugin.Entity,
             ) -> p.Result[bool]:
                 """Validate plugin security compliance."""
                 ...
@@ -476,7 +505,7 @@ class FlextPluginProtocols(p):
             def discover(
                 self,
                 paths: t.StrSequence,
-            ) -> p.Result[t.SequenceOf[p.Plugin.DiscoveryData]]:
+            ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
                 """Discover plugins using this strategy."""
                 ...
 

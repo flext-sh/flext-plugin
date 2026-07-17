@@ -385,22 +385,22 @@ class FlextPluginPlatform:
 
             def discover_and_validate(
                 _checked: t.JsonValue,
-            ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
+            ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
                 if not self.discovery:
-                    return r[Sequence[p.Plugin.DiscoveryData]].fail(
+                    return r[Sequence[m.Plugin.DiscoveryData]].fail(
                         "Discovery protocol not configured",
                     )
                 discovery_result = self.discovery.discover_plugins(paths)
                 if discovery_result.success:
-                    return r[Sequence[p.Plugin.DiscoveryData]].ok(
+                    return r[Sequence[m.Plugin.DiscoveryData]].ok(
                         discovery_result.value,
                     )
-                return r[Sequence[p.Plugin.DiscoveryData]].fail(
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
                     discovery_result.error or "Discovery failed",
                 )
 
             def create_plugins_from_data(
-                data: t.SequenceOf[p.Plugin.DiscoveryData],
+                data: t.SequenceOf[m.Plugin.DiscoveryData],
             ) -> p.Result[Sequence[p.Plugin.Plugin]]:
                 return self._validate_and_create_plugins(data)
 
@@ -408,7 +408,7 @@ class FlextPluginPlatform:
                 self.discovery,
                 "Discovery",
             )
-            discovered: p.Result[Sequence[p.Plugin.DiscoveryData]] = checked.flat_map(
+            discovered: p.Result[Sequence[m.Plugin.DiscoveryData]] = checked.flat_map(
                 discover_and_validate,
             )
             plugins: p.Result[Sequence[p.Plugin.Plugin]] = discovered.flat_map(
@@ -417,7 +417,7 @@ class FlextPluginPlatform:
             return plugins.map(self._register_all)
 
         @override
-        def execute(self) -> p.Result[p.Plugin.PluginRegistry]:
+        def execute(self) -> p.Result[m.Plugin.PluginRegistry]:
             """Execute main platform initialization (s protocol)."""
             plugin_entries: dict[str, t.JsonMapping] = {
                 name: self._to_general_mapping(plugin)
@@ -427,7 +427,7 @@ class FlextPluginPlatform:
                 version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                 plugins=self._to_general_mapping(plugin_entries),
             )
-            return r[p.Plugin.PluginRegistry].ok(registry)
+            return r[m.Plugin.PluginRegistry].ok(registry)
 
         def execute_plugin(
             self,
@@ -542,7 +542,7 @@ class FlextPluginPlatform:
 
         def register_plugin(
             self,
-            plugin: p.Plugin.Plugin | p.Plugin.Entity,
+            plugin: m.Plugin.Entity,
         ) -> p.Result[bool]:
             """Register plugin with validation chain."""
 
@@ -716,7 +716,7 @@ class FlextPluginPlatform:
 
         def _validate_and_create_plugins(
             self,
-            plugin_data: t.SequenceOf[p.Plugin.DiscoveryData],
+            plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
         ) -> p.Result[Sequence[p.Plugin.Plugin]]:
             """Create validated plugins from data."""
             plugins: MutableSequence[p.Plugin.Plugin] = []
