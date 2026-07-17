@@ -201,7 +201,7 @@ class TestsFlextPluginPlatformService:
         plugins = service.list_plugins()
 
         tm.that(len(plugins), eq=2)
-        tm.that({plugin.name for plugin in plugins}, eq={"alpha", "beta"})
+        tm.that({plugin.name for plugin in plugins}, eq=frozenset({"alpha", "beta"}))
 
     def test_service_platform_status_reflects_state(self) -> None:
         """platform_status reports plugin and execution counts."""
@@ -341,10 +341,11 @@ class TestsFlextPluginPlatformService:
 
         tm.that(result.success, eq=True)
         execution = service.fetch_execution("e1")
-        tm.that(execution, none=False)
+        assert execution is not None
         tm.that(execution.success, eq=True)
-        tm.that(execution.result, none=False)
-        tm.that(execution.result["plugin"], eq="demo-plugin")
+        execution_result = execution.result
+        assert isinstance(execution_result, dict)
+        tm.that(execution_result["plugin"], eq="demo-plugin")
 
     def test_service_execute_plugin_with_real_executor_failure(self) -> None:
         """execute_plugin() fails when the real executor reports a failure."""

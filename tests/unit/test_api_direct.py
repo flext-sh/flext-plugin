@@ -157,7 +157,7 @@ class TestsFlextPluginApi:
         result = api.list_plugins()
 
         tm.that(result.success, eq=True)
-        tm.that({plugin.name for plugin in result.unwrap()}, eq={"alpha", "beta"})
+        tm.that({plugin.name for plugin in result.unwrap()}, eq=frozenset({"alpha", "beta"}))
 
     def test_load_plugin_logs_and_returns(
         self,
