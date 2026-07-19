@@ -240,7 +240,7 @@ class FlextPluginPlatform:
             """Check if plugin is active."""
             return self.status == str(c.Plugin.PluginStatus.ACTIVE)
 
-    class PluginPlatformService(s):
+    class PluginPlatformService(s[m.Plugin.PluginRegistry]):
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, p.Plugin.Plugin] = u.PrivateAttr(
