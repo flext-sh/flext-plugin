@@ -11,9 +11,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from flext_plugin import FlextPluginUtilities, m, p, r, t
 from flext_tests import FlextTestsUtilities
-
-from flext_plugin import FlextPluginUtilities, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):

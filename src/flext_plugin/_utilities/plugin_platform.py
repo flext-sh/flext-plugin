@@ -8,25 +8,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import (
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import override
 
 from flext_cli import u
-from flext_plugin import (
-    FlextPluginSettings,
-    c,
-    e,
-    m,
-    p,
-    r,
-    s,
-    t,
-)
+from flext_plugin import FlextPluginSettings, c, e, m, p, r, s, t
 
 
 class FlextPluginPlatform:

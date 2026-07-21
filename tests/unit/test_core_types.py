@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import e, tm
 
+from flext_tests import e, tm
 from tests import c
 
 _Type = c.Plugin.Type

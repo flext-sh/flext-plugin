@@ -9,13 +9,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import p
 from flext_plugin import p
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Sequence,
-    )
+    from collections.abc import Sequence
 
     from flext_plugin import m, t
 

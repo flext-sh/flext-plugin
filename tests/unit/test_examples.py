@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import u
 
 __all__ = ["TestsFlextPluginExamples"]

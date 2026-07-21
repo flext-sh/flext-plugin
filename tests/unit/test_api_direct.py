@@ -15,12 +15,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 from flext_plugin.api import FlextPluginApi
-from tests import u
+from flext_tests import tm
+from tests import p, u
 
 if TYPE_CHECKING:
     from pathlib import Path

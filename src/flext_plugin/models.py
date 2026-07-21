@@ -12,7 +12,7 @@ import types
 from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Self
 
-from flext_cli import m, p, u
+from flext_cli import m, u
 from flext_plugin import c, p, t
 
 if TYPE_CHECKING:
