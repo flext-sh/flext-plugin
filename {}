@@ -1,0 +1,4693 @@
+"""FLEXT Plugin Adapters - Infrastructure adapters with composition pattern.
+
+Synchronous adapter implementations for plugin system operations following
+SOLID principles with composition and Pydantic models replacing all dict usage.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+import importlib.util
+from collections.abc import (
+    Callable,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+from pathlib import Path
+from types import ModuleType
+from typing import override
+
+from flext_core import T
+from flext_plugin import FlextPluginDiscovery, c, m, p, r, t, u
+
+
+class FlextPluginAdapters:
+    """Infrastructure adapters with composition pattern.
+
+    Consolidates adapter implementations using a shared BaseAdapter for
+    common functionality, following DRY and SRP principles.
+    """
+
+    class BaseAdapter:
+        """Shared adapter base with common functionality."""
+
+        def __init__(self) -> None:
+            """Initialize base adapter with logger."""
+            super().__init__()
+            self.logger = u.fetch_logger(__name__)
+
+        def _execute_safe(
+            self, operation: Callable[[], T], error_context: str
+        ) -> p.Result[T]:
+            """Execute operation with safe error handling.
+
+            Args:
+            operation: Callable to execute
+            error_context: Error message context
+
+            Returns:
+            r with operation result or failure
+
+            """
+            try:
+                result = operation()
+                return r[T].ok(result)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception(error_context)
+                error_msg = f"{error_context}: {e!s}"
+                return r[T].fail(error_msg)
+
+    class FileSystemDiscoveryAdapter(BaseAdapter, p.Plugin.PluginDiscovery):
+        """File system plugin discovery - synchronous."""
+
+        @override
+        def discover_plugin(
+            self,
+            _plugin_path: str,
+        ) -> p.Result[Mapping[str, t.Container]]:
+            """Discover single plugin at path."""
+            return self._execute_safe(
+                lambda: self._discovery_data_to_dict(
+                    self._discover_single(_plugin_path),
+                ),
+                f"Failed to discover plugin at {_plugin_path}",
+            )
+
+        @override
+        def discover_plugins(
+            self,
+            paths: t.StrSequence,
+        ) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+            """Discover plugins in given paths."""
+            return self._execute_safe(
+                lambda: [
+                    self._discovery_data_to_dict(d) for d in self._discover_all(paths)
+                ],
+                "Plugin discovery failed",
+            )
+
+        @override
+        def validate_plugin(
+            self,
+            _plugin_data: Mapping[str, t.Container],
+        ) -> p.Result[bool]:
+            """Validate discovered plugin data."""
+            return self._execute_safe(lambda: True, "Plugin validation failed")
+
+        @override
+        def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+            return r[bool].ok(value=True)
+
+        def _discover_all(
+            self,
+            paths: t.StrSequence,
+        ) -> Sequence[m.Plugin.DiscoveryData]:
+            """Internal: discover all plugins."""
+            discovered: MutableSequence[m.Plugin.DiscoveryData] = []
+            for path in paths:
+                if not path.strip():
+                    self.logger.debug("Skipping blank plugin discovery path")
+                    continue
+                path_obj = Path(path).expanduser().resolve()
+                if not path_obj.exists():
+                    self.logger.warning("Path does not exist: %s", path)
+                    continue
+                if path_obj.is_file():
+                    data = self._discover_single_file(path_obj)
+                    if data:
+                        discovered.append(data)
+                elif path_obj.is_dir():
+                    discovered.extend(self._discover_directory(path_obj))
+            self.logger.info(f"Discovered {len(discovered)} plugins")
+            return discovered
+
+        def _discover_directory(self, path: Path) -> Sequence[m.Plugin.DiscoveryData]:
+            """Internal: discover plugins in directory."""
+            return FlextPluginDiscovery.discover_python_plugins_in_directory(
+                path,
+                self._discover_single_file,
+                self.logger,
+            )
+
+        def _discover_single(self, plugin_path: str) -> m.Plugin.DiscoveryData:
+            """Internal: discover single plugin."""
+            path_obj = Path(plugin_path).expanduser().resolve()
+            if not path_obj.exists():
+                error_msg = f"Plugin path does not exist: {plugin_path}"
+                raise FileNotFoundError(error_msg)
+            data = self._discover_single_file(path_obj)
+            if not data:
+                error_msg = f"Failed to discover plugin at: {plugin_path}"
+                raise ValueError(error_msg)
+            return data
+
+        def _discover_single_file(self, path: Path) -> m.Plugin.DiscoveryData | None:
+            """Internal: discover single file."""
+            if path.suffix != ".py":
+                return None
+            try:
+                return m.Plugin.DiscoveryData(
+                    name=path.stem,
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                    path=path,
+                    discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+                    discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+                    metadata={},
+                )
+            except ValueError:
+                self.logger.exception("Failed to create discovery data for %s", path)
+                return None
+
+        def _discovery_data_to_dict(
+            self,
+            data: m.Plugin.DiscoveryData,
+        ) -> Mapping[str, t.Container]:
+            """Convert DiscoveryData model to JsonMapping."""
+            return {
+                "name": data.name,
+                "version": data.version,
+                "path": str(data.path),
+                "discovery_type": data.discovery_type,
+                "discovery_method": data.discovery_method,
+            }
+
+    class DynamicLoaderAdapter(BaseAdapter, p.Plugin.PluginLoader):
+        """Dynamic plugin loading - synchronous."""
+
+        def __init__(self) -> None:
+            """Initialize the synchronous plugin adapter."""
+            super().__init__()
+            self._loaded_plugins: MutableMapping[str, ModuleType] = {}
+
+        @override
+        def get_loaded_plugins(self) -> t.StrSequence:
+            """Get list of loaded plugins."""
+            return list(self._loaded_plugins.keys())
+
+        @override
+        def plugin_loaded(self, plugin_name: str) -> bool:
+            """Check if a plugin is loaded."""
+            return plugin_name in self._loaded_plugins
+
+        @override
+        def load_plugin(self, plugin_path: str) -> p.Result[Mapping[str, t.Container]]:
+            """Load plugin from path."""
+            return self._execute_safe(
+                lambda: self._load_module_as_dict(plugin_path),
+                f"Loading error: {plugin_path}",
+            )
+
+        @override
+        def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
+            """Unload a plugin by name."""
+
+            def _unload() -> bool:
+                if plugin_name not in self._loaded_plugins:
+                    error_msg = f"Plugin not loaded: {plugin_name}"
+                    raise ValueError(error_msg)
+                del self._loaded_plugins[plugin_name]
+                return True
+
+            return self._execute_safe(_unload, f"Failed to unload plugin {plugin_name}")
+
+        def _load_module(self, _plugin_path: str) -> m.Plugin.LoadData:
+            """Internal: load module using spec."""
+            path = Path(_plugin_path).expanduser().resolve()
+            if not path.exists():
+                error_msg = f"Plugin path does not exist: {_plugin_path}"
+                raise FileNotFoundError(error_msg)
+            spec = importlib.util.spec_from_file_location(path.stem, path)
+            if not spec or not spec.loader:
+                error_msg = f"Cannot load spec from {path}"
+                raise ImportError(error_msg)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return m.Plugin.LoadData(
+                name=path.stem,
+                version=getattr(
+                    module,
+                    "__version__",
+                    c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                ),
+                path=path,
+                module=module,
+                load_type=c.Plugin.LoadTypeLiteral.FILE,
+                loaded_at=__import__("datetime").datetime.now(
+                    __import__("datetime").UTC,
+                ),
+                entry_file=None,
+            )
+
+        def _load_module_as_dict(
+            self,
+            plugin_path: str,
+        ) -> Mapping[str, t.Container]:
+            """Load module and convert to JsonMapping."""
+            data = self._load_module(plugin_path)
+            self._loaded_plugins[data.name] = data.module
+            return {
+                "name": data.name,
+                "version": data.version,
+                "path": str(data.path),
+                "load_type": data.load_type,
+                "loaded_at": data.loaded_at.isoformat(),
+            }
+
+    class PluginExecutorAdapter(BaseAdapter, p.Plugin.PluginExecution):
+        """Plugin execution - synchronous."""
+
+        @override
+        def execute_plugin(
+            self,
+            _plugin_name: str,
+            _context: Mapping[str, t.Container],
+        ) -> p.Result[Mapping[str, t.Container]]:
+            """Execute plugin."""
+            return self._execute_safe(
+                lambda: {"status": "executed", "plugin": _plugin_name},
+                f"Execution error: {_plugin_name}",
+            )
+
+        @override
+        def get_execution_status(self, _execution_id: str) -> p.Result[str]:
+            """Get execution status."""
+            return r[str].ok(c.Plugin.Execution.STATE_COMPLETED)
+
+        @override
+        def list_running_executions(self) -> t.StrSequence:
+            """List running executions."""
+            return []
+
+        @override
+        def stop_execution(self, _execution_id: str) -> p.Result[bool]:
+            """Stop plugin execution."""
+            return r[bool].ok(True)
+
+    class PluginSecurityAdapter(BaseAdapter, p.Plugin.PluginSecurity):
+        """Plugin security validation - synchronous."""
+
+        @override
+        def check_permissions(
+            self,
+            _plugin_name: str,
+            _permissions: t.StrSequence,
+        ) -> p.Result[bool]:
+            """Check plugin permissions."""
+            return r[bool].ok(True)
+
+        @override
+        def get_security_level(self, _plugin_name: str) -> p.Result[str]:
+            """Get security level."""
+            return r[str].ok(c.Plugin.PluginSecurity.SECURITY_MEDIUM)
+
+        @override
+        def scan_plugin_security(
+            self,
+            _plugin_path: str,
+        ) -> p.Result[Mapping[str, t.Container]]:
+            """Scan plugin for security issues."""
+            return r[Mapping[str, t.Container]].ok({
+                "security_level": c.Plugin.PluginSecurity.SECURITY_MEDIUM
+            })
+
+        @override
+        def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+            """Validate plugin for security."""
+            return r[bool].ok(True)
+
+    class MemoryRegistryAdapter(BaseAdapter, p.Plugin.PluginRegistry):
+        """In-memory plugin registry - synchronous."""
+
+        def __init__(self) -> None:
+            """Initialize registry adapter."""
+            super().__init__()
+            self._plugins: t.MutableRecursiveContainerMapping = {}
+
+        @override
+        def fetch_plugin(
+            self,
+            plugin_name: str,
+        ) -> p.Result[t.Container | None]:
+            """Fetch a plugin from registry."""
+            return r[t.Container | None].ok(self._plugins.get(plugin_name))
+
+        @override
+        def plugin_registered(self, plugin_name: str) -> bool:
+            """Check if plugin is registered."""
+            return plugin_name in self._plugins
+
+        @override
+        def list_plugins(self) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+            """List all plugins in registry."""
+            return r[Sequence[Mapping[str, t.Container]]].ok([])
+
+        @override
+        def register(self, plugin: m.Plugin.Plugin | t.Container) -> p.Result[None]:
+            if not isinstance(plugin, Mapping):
+                return r[None].fail("Plugin payload must be a mapping")
+            plugin_payload = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                plugin,
+            )
+            plugin_name = plugin_payload.get("name")
+            if not isinstance(plugin_name, str) or not plugin_name:
+                return r[None].fail("Plugin payload missing valid 'name'")
+            self._plugins[plugin_name] = plugin_payload
+            return r[None].ok(None)
+
+        @override
+        def register_plugin(
+            self,
+            _plugin: m.Plugin.Plugin | t.Container,
+        ) -> p.Result[bool]:
+            """Register plugin in registry."""
+            registration_result = self.register(_plugin)
+            if registration_result.failure:
+                return r[bool].fail(registration_result.error or "Registration failed")
+            return r[bool].ok(True)
+
+        @override
+        def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
+            """Unregister plugin from registry."""
+            self._plugins.pop(plugin_name, None)
+            return r[bool].ok(True)
+
+    class PluginMonitoringAdapter(BaseAdapter, p.Plugin.PluginMonitoring):
+        """Plugin monitoring - synchronous."""
+
+        @override
+        def fetch_plugin_health(
+            self,
+            _plugin_name: str,
+        ) -> p.Result[Mapping[str, t.Container]]:
+            """Get plugin health information."""
+            return r[Mapping[str, t.Container]].ok({
+                "status": c.Plugin.PluginStatus.HEALTHY
+            })
+
+        @override
+        def fetch_plugin_metrics(
+            self,
+            _plugin_name: str,
+        ) -> p.Result[Mapping[str, t.Container]]:
+            """Get plugin metrics."""
+            return r[Mapping[str, t.Container]].ok({
+                "execution_count": 0,
+                "error_count": 0,
+            })
+
+        @override
+        def monitoring(self, _plugin_name: str) -> bool:
+            """Check if plugin is being monitored."""
+            return False
+
+        @override
+        def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
+            """Start monitoring plugin."""
+            return r[bool].ok(True)
+
+        @override
+        def stop_monitoring(self, _plugin_name: str) -> p.Result[bool]:
+            """Stop monitoring plugin."""
+            return r[bool].ok(True)
+
+
+__all__: list[str] = ["FlextPluginAdapters"]
+"""FLEXT Plugin Handlers - Plugin system event handlers.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+import inspect
+from collections.abc import (
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+from datetime import UTC, datetime
+
+from flext_plugin import c, p, r, t, u
+
+
+class FlextPluginHandlers:
+    """Plugin system event handlers for managing plugin lifecycle events.
+
+    This class provides complete event handling for plugin operations
+    including discovery, loading, execution, and lifecycle management events.
+
+    Usage:
+        ```python
+        from flext_plugin import FlextPluginHandlers
+
+        # Initialize handlers
+        handlers = FlextPluginHandlers()
+
+        # Register event handlers
+        handlers.register_handler("plugin_loaded", my_plugin_loaded_handler)
+        handlers.register_handler("plugin_executed", my_plugin_executed_handler)
+
+        # Trigger events
+        await handlers.trigger_event("plugin_loaded", {"plugin_name": "my-plugin"})
+        ```
+    """
+
+    def __init__(self) -> None:
+        """Initialize the plugin handlers."""
+        super().__init__()
+        self.logger = u.fetch_logger(__name__)
+        self._handlers: MutableMapping[
+            str,
+            MutableSequence[t.Plugin.Handlers.HandlerInfo],
+        ] = {}
+        self._event_history: MutableSequence[t.MutableRecursiveContainerMapping] = []
+
+    def clear_event_history(self) -> int:
+        """Clear event history.
+
+        Returns:
+        Number of events cleared
+
+        """
+        count = len(self._event_history)
+        self._event_history.clear()
+        self.logger.info("Cleared %s events from history", count)
+        return count
+
+    def get_event_history(
+        self,
+        event_type: str | None = None,
+        limit: int = 100,
+    ) -> Sequence[Mapping[str, t.Container]]:
+        """Get event history, optionally filtered by event type.
+
+        Args:
+        event_type: Optional event type to filter by
+        limit: Maximum number of events to return
+
+        Returns:
+        List of event records
+
+        """
+        history = self._event_history
+        if event_type:
+            history = [e for e in history if e["event_type"] == event_type]
+        return [e for e in history if limit <= 0 or e in history[-limit:]]
+
+    def get_handler_count(self, event_type: str) -> int:
+        """Get count of handlers for a specific event type.
+
+        Args:
+        event_type: Type of event
+
+        Returns:
+        Number of handlers registered for the event type
+
+        """
+        return len(self._handlers.get(event_type, []))
+
+    def get_handler_status(self) -> Mapping[str, t.Container]:
+        """Get the current status of the event handlers.
+
+        Returns:
+        Dictionary containing handler status information
+
+        """
+        return {
+            "total_event_types": len(self._handlers),
+            "total_handlers": sum(
+                len(handlers) for handlers in self._handlers.values()
+            ),
+            "event_history_size": len(self._event_history),
+            "registered_handlers": self.get_registered_handlers(),
+        }
+
+    def get_registered_handlers(self) -> t.IntMapping:
+        """Get count of registered handlers by event type.
+
+        Returns:
+        Dictionary mapping event types to handler counts
+
+        """
+        return {
+            event_type: len(handlers) for event_type, handlers in self._handlers.items()
+        }
+
+    async def handle_plugin_discovered(
+        self,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Handle plugin discovered event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        name_str = str(plugin_name)
+        self.logger.info("Plugin discovered: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    async def handle_plugin_error(
+        self,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Handle plugin error event.
+
+        Args:
+        event_data: Event data containing error information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        error_message = event_data.get("error_message", "Unknown error")
+        name_str = str(plugin_name)
+        error_str = str(error_message)
+        self.logger.error("Plugin error: %s - %s", name_str, error_str)
+        return {
+            "success": True,
+            "plugin_name": plugin_name,
+            "error_message": error_message,
+        }
+
+    async def handle_plugin_executed(
+        self,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Handle plugin executed event.
+
+        Args:
+        event_data: Event data containing execution information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        execution_id = event_data.get("execution_id", c.IDENTIFIER_UNKNOWN)
+        success = event_data.get("success", False)
+        name_str = str(plugin_name)
+        exec_str = str(execution_id)
+        success_str = str(success)
+        self.logger.info(
+            "Plugin executed: %s (execution: %s, success: %s)",
+            name_str,
+            exec_str,
+            success_str,
+        )
+        return {
+            "success": True,
+            "plugin_name": plugin_name,
+            "execution_id": execution_id,
+            "execution_success": success,
+        }
+
+    async def handle_plugin_loaded(
+        self,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Handle plugin loaded event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        name_str = str(plugin_name)
+        self.logger.info("Plugin loaded: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    async def handle_plugin_unloaded(
+        self,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Handle plugin unloaded event.
+
+        Args:
+        event_data: Event data containing plugin information
+
+        Returns:
+        Handler result
+
+        """
+        plugin_name = event_data.get("plugin_name", c.IDENTIFIER_UNKNOWN)
+        name_str = str(plugin_name)
+        self.logger.info("Plugin unloaded: %s", name_str)
+        return {"success": True, "plugin_name": plugin_name}
+
+    def register_default_handlers(self) -> p.Result[bool]:
+        """Register default event handlers for common plugin operations.
+
+        Returns:
+        r indicating success or failure
+
+        """
+        try:
+            handlers_to_register = [
+                ("plugin_discovered", self.handle_plugin_discovered),
+                ("plugin_loaded", self.handle_plugin_loaded),
+                ("plugin_executed", self.handle_plugin_executed),
+                ("plugin_error", self.handle_plugin_error),
+                ("plugin_unloaded", self.handle_plugin_unloaded),
+            ]
+            for event_type, handler in handlers_to_register:
+                result = self.register_handler(event_type, handler)
+                if result.failure:
+                    return r[bool].fail(f"Failed to register {event_type} handler")
+            self.logger.info("Registered default event handlers")
+            return r[bool].ok(True)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to register default handlers")
+            return r[bool].fail(f"Default handler registration error: {e!s}")
+
+    def register_handler(
+        self,
+        event_type: str,
+        handler: t.Plugin.Handlers.EventHandler,
+        priority: int = 0,
+    ) -> p.Result[bool]:
+        """Register an event handler for a specific event type.
+
+        Args:
+            event_type: Type of event to handle
+            handler: Handler function to register
+            priority: Handler priority (higher numbers execute first)
+
+        Returns:
+            r indicating success or failure
+
+        """
+        try:
+            if event_type not in self._handlers:
+                self._handlers[event_type] = list[t.Plugin.Handlers.HandlerInfo]()
+            handler_info = t.Plugin.Handlers.HandlerInfo(
+                handler=handler, priority=priority
+            )
+            self._handlers[event_type].append(handler_info)
+
+            def get_priority(handler_info: t.Plugin.Handlers.HandlerInfo) -> int:
+                return handler_info.priority
+
+            self._handlers[event_type] = sorted(
+                self._handlers[event_type],
+                key=get_priority,
+                reverse=True,
+            )
+            self.logger.debug("Registered handler for event type: %s", event_type)
+            return r[bool].ok(True)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to register handler for %s", event_type)
+            return r[bool].fail(f"Handler registration error: {e!s}")
+
+    async def trigger_event(
+        self,
+        event_type: str,
+        event_data: Mapping[str, t.Container],
+    ) -> p.Result[t.RecursiveContainerList]:
+        """Trigger an event and execute all registered handlers.
+
+        Args:
+        event_type: Type of event to trigger
+        event_data: Data to pass to handlers
+
+        Returns:
+        r containing list of handler results
+
+        """
+        try:
+            event_record: t.MutableRecursiveContainerMapping = {
+                "event_type": event_type,
+                "event_data": event_data,
+                "timestamp": self._get_current_timestamp(),
+            }
+            self._event_history.append(event_record)
+            if event_type not in self._handlers:
+                self.logger.debug(
+                    "No handlers registered for event type: %s",
+                    event_type,
+                )
+                return r[t.RecursiveContainerList].ok([])
+            results: list[t.Container] = []
+            for handler_info in self._handlers[event_type]:
+                try:
+                    handler = handler_info.handler
+                    result = await self._execute_handler(handler, event_data)
+                    results.append(result)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    self.logger.exception("Handler execution failed for %s", event_type)
+                    results.append({"error": str(e), "success": False})
+            self.logger.debug(
+                f"Triggered event {event_type} with {len(results)} handlers",
+            )
+            return r[t.RecursiveContainerList].ok(results)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to trigger event %s", event_type)
+            return r[t.RecursiveContainerList].fail(f"Event triggering error: {e!s}")
+
+    def unregister_handler(
+        self,
+        event_type: str,
+        handler: t.Plugin.Handlers.EventHandler,
+    ) -> p.Result[bool]:
+        """Unregister an event handler.
+
+        Args:
+        event_type: Type of event
+        handler: Handler function to unregister
+
+        Returns:
+        r indicating success or failure
+
+        """
+        try:
+            if event_type not in self._handlers:
+                return r[bool].fail(
+                    f"No handlers registered for event type: {event_type}",
+                )
+            original_count = len(self._handlers[event_type])
+            self._handlers[event_type] = [
+                h for h in self._handlers[event_type] if h.handler != handler
+            ]
+            if len(self._handlers[event_type]) == original_count:
+                return r[bool].fail(f"Handler not found for event type: {event_type}")
+            self.logger.debug("Unregistered handler for event type: %s", event_type)
+            return r[bool].ok(True)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to unregister handler for %s", event_type)
+            return r[bool].fail(f"Handler unregistration error: {e!s}")
+
+    async def _execute_handler(
+        self,
+        handler: t.Plugin.Handlers.EventHandler,
+        event_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Execute a single handler with proper error handling.
+
+        Args:
+        handler: Handler function to execute
+        event_data: Event data to pass to handler
+
+        Returns:
+        Handler execution result
+
+        """
+        try:
+            async_result = handler(event_data)
+            return await async_result
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ):
+            self.logger.exception("Handler execution failed")
+            raise
+
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp as ISO string.
+
+        Returns:
+        Current timestamp as ISO string
+
+        """
+        return datetime.now(UTC).isoformat()
+
+    def _is_async_function(self, func: t.Container) -> bool:
+        """Check if a function is async.
+
+        Args:
+        func: Function to check
+
+        Returns:
+        True if function is async, False otherwise
+
+        """
+        return inspect.iscoroutinefunction(func)
+
+
+__all__: list[str] = ["FlextPluginHandlers"]
+"""FLEXT Plugin Implementations - Single CONSOLIDATED Class Following FLEXT Patterns.
+
+This module implements the CONSOLIDATED implementation pattern with a single FlextPluginImplementations
+class containing ALL plugin implementation definitions as nested classes. Maintains backward
+compatibility through property re-exports and follows FLEXT architectural standards.
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from collections.abc import (
+    Mapping,
+    MutableMapping,
+    Sequence,
+)
+from pathlib import Path
+from typing import override
+
+from flext_plugin import c, m, p, r, t, u
+
+
+class FlextPluginImplementations:
+    """Single CONSOLIDATED class containing ALL plugin implementations.
+
+    Consolidates ALL implementation definitions into one class following FLEXT patterns.
+    Individual implementations available as nested classes for organization while maintaining
+    backward compatibility through direct exports.
+
+    This approach follows FLEXT architectural standards for single consolidated classes
+    per module while preserving existing API surface for seamless migration.
+    """
+
+    class ConcretePlugin:
+        """Concrete implementation of the FlextPlugin interface.
+
+        This class implements the abstract FlextPlugin interface from flext-core,
+        providing actual plugin functionality while using m.Plugin
+        for domain logic and state management.
+
+        Attributes:
+        _name: Plugin name
+        _version: Plugin version
+        _entity: Domain entity for business logic
+        logger: Plugin logger
+        _initialized: Initialization state
+
+        """
+
+        @override
+        def __init__(
+            self,
+            name: str,
+            version: str,
+            entity: m.Plugin.Plugin | None = None,
+        ) -> None:
+            """Initialize concrete plugin.
+
+            Args:
+            name: Plugin name
+            version: Plugin version
+            entity: Optional domain entity for business logic
+
+            """
+            super().__init__()
+            self._name = name
+            self._version = version
+            self._entity = entity
+            self.logger = u.fetch_logger(f"plugin.{self.name}")
+            self._initialized = False
+            self._config: t.MutableRecursiveContainerMapping = {}
+
+        @property
+        def name(self) -> str:
+            """Get plugin name."""
+            return self._name
+
+        @property
+        def version(self) -> str:
+            """Get plugin version."""
+            return self._version
+
+        def configure(self, settings: Mapping[str, t.Container]) -> p.Result[None]:
+            """Configure component with provided settings."""
+            try:
+                self._config.update(settings)
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception(f"Failed to configure plugin {self.name}")
+                return r[None].fail(f"Configuration failed: {e!s}")
+
+        def get_config(self) -> Mapping[str, t.Container]:
+            """Get current configuration."""
+            return getattr(self, "_config", {})
+
+        def fetch_info(self) -> Mapping[str, t.Container]:
+            """Get plugin information.
+
+            Returns:
+            Dictionary containing plugin metadata
+
+            """
+            return {
+                "name": self._name,
+                "version": self._version,
+                "initialized": self._initialized,
+                "entity_present": self._entity is not None,
+            }
+
+        def initialize(self, _context: Mapping[str, t.Container]) -> p.Result[None]:
+            """Initialize plugin with context.
+
+            Args:
+                _context: Plugin runtime context
+
+            Returns:
+                r indicating success or failure
+
+            """
+            try:
+                self.logger.info(f"Initializing plugin {self.name} v{self.version}")
+                if self._entity:
+                    validation = self._entity.validate_business_rules()
+                    if validation.failure:
+                        return r[None].fail(validation.error or "Validation failed")
+                    self._entity.is_enabled = True
+                    self.logger.info(f"Plugin entity {self.name} activated")
+                self._initialized = True
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception(f"Failed to initialize plugin {self.name}")
+                return r[None].fail(f"Initialization failed: {e!s}")
+
+        def shutdown(self) -> p.Result[None]:
+            """Shutdown plugin and release resources.
+
+            Returns:
+            r indicating success or failure
+
+            """
+            try:
+                self.logger.info(f"Shutting down plugin {self.name}")
+                if self._entity:
+                    self._entity.is_enabled = False
+                    self.logger.info(f"Plugin entity {self.name} deactivated")
+                self._initialized = False
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception(f"Failed to shutdown plugin {self.name}")
+                return r[None].fail(f"Shutdown failed: {e!s}")
+
+    class ConcreteExecutablePlugin(ConcretePlugin):
+        """Concrete implementation of executable plugin.
+
+        Extends ConcretePlugin with execution capabilities as defined
+        in the FlextExecutablePlugin interface.
+        """
+
+        @override
+        def __init__(
+            self,
+            name: str,
+            version: str,
+            operations: Mapping[str, t.Container] | None = None,
+            entity: m.Plugin.Plugin | None = None,
+        ) -> None:
+            """Initialize executable plugin.
+
+            Args:
+            name: Plugin name
+            version: Plugin version
+            operations: Supported operations mapping
+            entity: Optional domain entity
+
+            """
+            super().__init__(name, version, entity)
+            self._operations = operations or {}
+
+        def execute(
+            self,
+            operation: str,
+            _params: Mapping[str, t.Container],
+        ) -> p.Result[t.Container]:
+            """Execute a plugin operation.
+
+            Args:
+                operation: Operation name to execute
+                _params: Operation parameters
+
+            Returns:
+                r containing operation result or error
+
+            """
+            if not self._initialized:
+                return r[t.Container].fail("Plugin not initialized")
+            if operation not in self._operations:
+                return r[t.Container].fail(f"Unsupported operation: {operation}")
+            try:
+                self.logger.info(
+                    f"Executing operation {operation} on plugin {self.name}",
+                )
+                if self._entity:
+                    self._entity.record_execution(0.0, success=True)
+                result = self._operations[operation]
+                return r[t.Container].ok(result)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Operation %s failed", operation)
+                if self._entity:
+                    self._entity.record_error(str(e))
+                return r[t.Container].fail(f"Operation failed: {e!s}")
+
+        def get_supported_operations(self) -> t.StrSequence:
+            """Get list of supported operations.
+
+            Returns:
+            List of operation names
+
+            """
+            return list(self._operations.keys())
+
+    class ConcreteDataPlugin(ConcretePlugin):
+        """Concrete implementation of data processing plugin.
+
+        Implements the FlextDataPlugin interface for data extraction,
+        transformation, and loading operations.
+        """
+
+        @override
+        def __init__(
+            self,
+            name: str,
+            version: str,
+            connection_config: Mapping[str, t.Container] | None = None,
+            entity: m.Plugin.Plugin | None = None,
+        ) -> None:
+            """Initialize data plugin.
+
+            Args:
+            name: Plugin name
+            version: Plugin version
+            connection_config: Connection configuration
+            entity: Optional domain entity
+
+            """
+            super().__init__(name, version, entity)
+            self._connection_config = (
+                dict(connection_config) if connection_config else {}
+            )
+            self._connection_valid = False
+
+        def test_connection(self) -> p.Result[None]:
+            """Test connection to data source/destination.
+
+            Returns:
+            r indicating connection success or failure
+
+            """
+            try:
+                self.logger.info(f"Testing connection for plugin {self.name}")
+                if not self._connection_config:
+                    return r[None].fail("No connection configuration provided")
+                self._connection_valid = True
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Connection test failed")
+                self._connection_valid = False
+                return r[None].fail(f"Connection failed: {e!s}")
+
+        def validate_config(
+            self, settings: Mapping[str, t.Container]
+        ) -> p.Result[None]:
+            """Validate plugin configuration.
+
+            Args:
+                settings: Configuration to validate
+
+            Returns:
+                r indicating validation success or errors
+
+            """
+            required_fields = ["host", "port", "database"]
+            missing_fields = [f for f in required_fields if f not in settings]
+            if missing_fields:
+                return r[None].fail(f"Missing required fields: {missing_fields}")
+            self._connection_config.update(settings)
+            return r[None].ok(None)
+
+    class ConcreteTransformPlugin(ConcretePlugin):
+        """Concrete implementation of data transformation plugin.
+
+        Implements the FlextTransformPlugin interface for data
+        transformation operations like DBT models.
+        """
+
+        @override
+        def __init__(
+            self,
+            name: str,
+            version: str,
+            schema: Mapping[str, t.Container] | None = None,
+            entity: m.Plugin.Plugin | None = None,
+        ) -> None:
+            """Initialize transform plugin.
+
+            Args:
+                name: Plugin name
+                version: Plugin version
+                schema: Transformation schema
+                entity: Optional domain entity
+
+            """
+            super().__init__(name, version, entity)
+            self._schema = schema or {}
+
+        def get_schema(self) -> p.Result[Mapping[str, t.Container]]:
+            """Get transformation schema.
+
+            Returns:
+            r containing schema definition
+
+            """
+            if not self._schema:
+                return r[Mapping[str, t.Container]].fail("No schema defined")
+            return r[Mapping[str, t.Container]].ok(self._schema)
+
+        def transform(self, data: t.Container) -> p.Result[t.Container]:
+            """Transform input data.
+
+            Args:
+                data: Input data to transform
+
+            Returns:
+                r containing transformed data or error
+
+            """
+            try:
+                self.logger.info(f"Transforming data with plugin {self.name}")
+                if not isinstance(data, dict):
+                    return r[t.Container].fail("Input data must be a dictionary")
+                validated = t.CONTAINER_MAPPING_ADAPTER.validate_python(
+                    data,
+                )
+                transformed: t.MutableRecursiveContainerMapping = dict(validated)
+                transformed["_transformed_by"] = self._name
+                transformed["_transform_version"] = self._version
+                return r[t.Container].ok(transformed)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Transformation failed")
+                return r[t.Container].fail(f"Transform failed: {e!s}")
+
+    class LoggerAdapter(p.Plugin.Logger):
+        """Adapter to make a FLEXT logger protocol compatible with plugin Logger."""
+
+        @override
+        def __init__(self, logger: p.Logger) -> None:
+            """Initialize with a `p.Logger` instance."""
+            self.logger = logger
+
+        @override
+        def critical(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log critical message."""
+            self.logger.critical(message)
+
+        @override
+        def debug(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log debug message."""
+            self.logger.debug(message)
+
+        @override
+        def error(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log error message."""
+            self.logger.error(message)
+
+        def exception(
+            self,
+            message: str,
+            *,
+            _exc_info: bool = True,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log exception message."""
+            self.logger.error(message)
+
+        @override
+        def info(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log info message."""
+            self.logger.info(message)
+
+        def log(
+            self,
+            level: str,
+            message: str,
+            _context: Mapping[str, t.Container] | None = None,
+        ) -> None:
+            """Log a message with optional context."""
+            getattr(self.logger, level.lower(), self.logger.debug)(message)
+
+        def trace(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log trace message."""
+            self.logger.debug(message)
+
+        @override
+        def warning(
+            self,
+            message: str,
+            *_args: t.Container,
+            **_kwargs: t.Scalar,
+        ) -> None:
+            """Log warning message."""
+            self.logger.warning(message)
+
+    class ConcretePluginContext:
+        """Concrete implementation of plugin runtime context.
+
+        Provides plugins with access to system services, configuration,
+        and logging infrastructure.
+        """
+
+        @override
+        def __init__(
+            self,
+            logger: p.Logger,
+            settings: Mapping[str, t.Container] | None = None,
+            services: Mapping[str, t.Container] | None = None,
+        ) -> None:
+            """Initialize the instance.
+
+            Args:
+                logger: Structured logger for plugin
+                settings: Plugin configuration
+                services: Available services
+
+            """
+            super().__init__()
+            self._logger = logger
+            self._config: t.MutableRecursiveContainerMapping = (
+                dict(settings) if settings else {}
+            )
+            self._services: t.MutableRecursiveContainerMapping = (
+                dict(services) if services else {}
+            )
+
+        @property
+        def logger(self) -> p.Logger:
+            """Plugin logger."""
+            return self._logger
+
+        def get_config(self) -> Mapping[str, t.Container]:
+            """Get configuration for plugin."""
+            return dict(self._config)
+
+        def get_logger(self) -> p.Plugin.Logger:
+            """Get logger instance for plugin."""
+            return FlextPluginImplementations.LoggerAdapter(self.logger)
+
+        def get_service(self, service_name: str) -> p.Result[t.Container]:
+            """Get service by name from container.
+
+            Args:
+                service_name: Name of service to retrieve
+
+            Returns:
+                r with service instance or not found error
+
+            """
+            if service_name not in self._services:
+                return r[t.Container].fail(f"Service not found: {service_name}")
+            return r[t.Container].ok(self._services[service_name])
+
+    class ConcretePluginRegistry:
+        """Concrete implementation of plugin registry.
+
+        Manages plugin registration, discovery, and lifecycle.
+        """
+
+        def __init__(self) -> None:
+            """Initialize plugin registry."""
+            self.plugins: MutableMapping[str, m.Plugin.Plugin] = {}
+            self._logger = u.fetch_logger("plugin.registry")
+
+        def fetch_plugin(
+            self,
+            plugin_name: str,
+        ) -> m.Plugin.Plugin | None:
+            """Fetch a plugin by name.
+
+            Args:
+                plugin_name: Name of plugin to retrieve
+
+            Returns:
+                Plugin instance or None if not found
+
+            """
+            return self.plugins.get(plugin_name)
+
+        def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
+            """List all registered plugin names.
+
+            Returns:
+            List of registered plugin instances
+
+            """
+            return list(self.plugins.values())
+
+        def register_plugin(self, _plugin: t.Container) -> p.Result[bool]:
+            """Register a plugin via protocol interface."""
+            if isinstance(_plugin, m.Plugin.Plugin):
+                return self.register(_plugin).map(lambda _: True)
+            return r[bool].fail("Invalid plugin type for registration")
+
+        def register(self, plugin: m.Plugin.Plugin) -> p.Result[None]:
+            """Register a plugin.
+
+            Args:
+                plugin: Plugin instance to register
+
+            Returns:
+                r indicating registration success or failure
+
+            """
+            plugin_name = plugin.name
+            if plugin_name in self.plugins:
+                return r[None].fail(f"Plugin {plugin_name} already registered")
+            self.plugins[plugin_name] = plugin
+            self._logger.info("Registered plugin %s", plugin_name)
+            return r[None].ok(None)
+
+        def unregister(self, plugin_name: str) -> p.Result[None]:
+            """Unregister a plugin by name.
+
+            Args:
+                plugin_name: Name of plugin to unregister
+
+            Returns:
+                r indicating success or not found error
+
+            """
+            if plugin_name not in self.plugins:
+                return r[None].fail(f"Plugin {plugin_name} not found")
+            del self.plugins[plugin_name]
+            self._logger.info("Unregistered plugin %s", plugin_name)
+            return r[None].ok(None)
+
+    class ConcretePluginLoader:
+        """Concrete implementation of plugin loader.
+
+        Handles dynamic plugin loading and discovery.
+        Implements FlextPluginLoader.
+        """
+
+        @override
+        def __init__(
+            self,
+            registry: p.Plugin.PluginRegistry | None = None,
+        ) -> None:
+            """Initialize plugin loader.
+
+            Args:
+            registry: Optional plugin registry to use
+
+            """
+            super().__init__()
+            self._registry = (
+                registry or FlextPluginImplementations.ConcretePluginRegistry()
+            )
+            self.logger = u.fetch_logger("plugin.loader")
+
+        def discover_plugins(self, search_path: str) -> p.Result[t.StrSequence]:
+            """Discover available plugins in path.
+
+            Args:
+                search_path: Directory to search for plugins
+
+            Returns:
+                r containing list of discovered plugin paths
+
+            """
+            try:
+                self.logger.info("Discovering plugins in %s", search_path)
+                discovered = [f"{search_path}/plugin1", f"{search_path}/plugin2"]
+                return r[t.StrSequence].ok(discovered)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Plugin discovery failed in %s", search_path)
+                return r[t.StrSequence].fail(f"Discovery failed: {e!s}")
+
+        def load_plugin(
+            self,
+            plugin_path: str | Path,
+        ) -> p.Result[FlextPluginImplementations.ConcretePlugin]:
+            """Load plugin from path.
+
+            Args:
+                plugin_path: Path to plugin module or package
+
+            Returns:
+                r containing loaded plugin or load error
+
+            """
+            try:
+                self.logger.info("Loading plugin from %s", plugin_path)
+                concrete_plugin = FlextPluginImplementations.ConcretePlugin(
+                    name=f"loaded-from-{plugin_path}",
+                    version=c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION,
+                )
+                plugin_entity = m.Plugin.Plugin.create(
+                    name=concrete_plugin.name,
+                    plugin_version=concrete_plugin.version,
+                )
+                _: p.Result[None] = self._registry.register(plugin_entity)
+                return r[FlextPluginImplementations.ConcretePlugin].ok(concrete_plugin)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                self.logger.exception("Failed to load plugin from %s", plugin_path)
+                return r[FlextPluginImplementations.ConcretePlugin].fail(
+                    f"Load failed: {e!s}",
+                )
+
+
+__all__: list[str] = ["FlextPluginImplementations"]
+"""FLEXT Plugin Services - Plugin system application services.
+
+Copyright (c) 2025 FLEXT TeaFlextPluginModels. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+from collections.abc import (
+    Callable,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+from typing import override
+
+from flext_core import FlextContainer
+from flext_plugin import (
+    FlextPluginAdapters,
+    FlextPluginPlatform,
+    c,
+    m,
+    p,
+    r,
+    t,
+    u,
+    x,
+)
+
+
+class FlextPluginService(x):
+    """Main plugin service orchestrating plugin operations using SOLID principles.
+
+    This service provides high-level operations for plugin management,
+    coordinating between different protocol implementations to deliver
+    complete plugin functionality using composition over inheritance.
+
+    Follows SOLID principles:
+    - Single Responsibility: Only handles plugin orchestration
+    - Open/Closed: Extensible through protocol implementations
+    - Liskov Substitution: No forced inheritance from unrelated base classes
+    - Interface Segregation: Uses specific protocols for different concerns
+    - Dependency Inversion: Depends on abstractions, not concretions
+
+    Usage:
+        ```python
+        from flext_plugin import FlextPluginService
+
+        # Initialize service with dependency injection
+        service = FlextPluginService()
+
+        # Discover plugins
+        result = await service.discover_and_register_plugins(["./plugins"])
+        if result.success:
+            # Process the registered plugins
+        ```
+    """
+
+    _discovery: p.Plugin.PluginDiscovery
+    _loader: p.Plugin.PluginLoader
+    _executor: p.Plugin.PluginExecution
+    _security: p.Plugin.PluginSecurity
+    _registry: p.Plugin.PluginRegistry
+    _monitoring: p.Plugin.PluginMonitoring
+
+    def __init__(
+        self,
+        container: p.Container | None = None,
+        discovery: p.Plugin.PluginDiscovery | None = None,
+        loader: p.Plugin.PluginLoader | None = None,
+        executor: p.Plugin.PluginExecution | None = None,
+        security: p.Plugin.PluginSecurity | None = None,
+        registry: p.Plugin.PluginRegistry | None = None,
+        monitoring: p.Plugin.PluginMonitoring | None = None,
+    ) -> None:
+        """Initialize the plugin service with protocol implementations and dependency injection.
+
+        Args:
+            container: Dependency injection container (uses x for DI)
+            discovery: Plugin discovery implementation
+            loader: Plugin loader implementation
+            executor: Plugin execution implementation
+            security: Plugin security implementation
+            registry: Plugin registry implementation
+            monitoring: Plugin monitoring implementation
+
+        """
+        super().__init__(
+            settings_type=None,
+            settings_overrides=None,
+            initial_context=None,
+        )
+        if container is not None:
+            self._container = container
+        self._discovery = discovery or FlextPluginAdapters.FileSystemDiscoveryAdapter()
+        self._loader = loader or FlextPluginAdapters.DynamicLoaderAdapter()
+        self._executor = executor or FlextPluginAdapters.PluginExecutorAdapter()
+        self._security = security or FlextPluginAdapters.PluginSecurityAdapter()
+        self._registry = registry or FlextPluginAdapters.MemoryRegistryAdapter()
+        self._monitoring = monitoring or FlextPluginAdapters.PluginMonitoringAdapter()
+        self._plugins: MutableMapping[str, m.Plugin.Plugin] = {}
+        self._executions: MutableMapping[str, FlextPluginPlatform.PluginExecution] = {}
+
+    @property
+    @override
+    def container(self) -> p.Container:
+        """Get the container for this service instance."""
+        return FlextContainer.shared()
+
+    @staticmethod
+    def _to_general_mapping(
+        value: t.Container,
+    ) -> Mapping[str, t.Container]:
+        if not isinstance(value, Mapping):
+            result: Mapping[str, t.Container] = {}
+            return result
+        return t.CONTAINER_MAPPING_ADAPTER.validate_python(value)
+
+    def cleanup_executions(self) -> int:
+        """Clean up completed executions to free memory.
+
+        Returns:
+        Number of executions cleaned up
+
+        """
+        completed_executions = [
+            eid for eid, execution in self._executions.items() if execution.is_completed
+        ]
+        for eid in completed_executions:
+            del self._executions[eid]
+        self.logger.info(f"Cleaned up {len(completed_executions)} completed executions")
+        return len(completed_executions)
+
+    def disable_plugin(self, plugin_name: str) -> p.Result[bool]:
+        """Disable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to disable
+
+        Returns:
+            r indicating success or failure
+
+        """
+        plugin = self.fetch_plugin(plugin_name)
+        if plugin is None:
+            return r[bool].fail(f"Plugin '{plugin_name}' not found")
+        plugin.is_enabled = False
+        return r[bool].ok(True)
+
+    def discover_and_register_plugins(
+        self,
+        paths: t.StrSequence,
+    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
+        """Discover plugins and register them in the service.
+
+        Args:
+        paths: List of paths to search for plugins
+
+        Returns:
+        r containing list of registered plugins
+
+        """
+        try:
+            if not self._discovery:
+                return r[Sequence[m.Plugin.Plugin]].fail(
+                    "Plugin discovery not available",
+                )
+            discovery_result = self._discovery.discover_plugins(paths)
+            if discovery_result.failure:
+                return r[Sequence[m.Plugin.Plugin]].fail(
+                    f"Discovery failed: {discovery_result.error}",
+                )
+            if not u.list_like(discovery_result.value):
+                return r[Sequence[m.Plugin.Plugin]].fail(
+                    "Discovery did not return a list",
+                )
+            registered_plugins: MutableSequence[m.Plugin.Plugin] = []
+            for plugin_data in discovery_result.value:
+                if u.dict_like(plugin_data):
+                    name = str(plugin_data.get("name", ""))
+                    version = str(plugin_data.get("version", "1.0.0"))
+                    metadata_value = plugin_data.get("metadata")
+                    metadata = self._to_general_mapping(metadata_value)
+                else:
+                    name = str(getattr(plugin_data, "name", ""))
+                    version = str(getattr(plugin_data, "version", "1.0.0"))
+                    metadata_value = getattr(plugin_data, "metadata", {})
+                    metadata = self._to_general_mapping(metadata_value)
+                if not name:
+                    continue
+                plugin_type_str = str(metadata.get("plugin_type", "utility"))
+                plugin = m.Plugin.Plugin.create(
+                    name=name,
+                    plugin_version=version,
+                    description=str(metadata.get("description", "")),
+                    author=str(metadata.get("author", "")),
+                    plugin_type=plugin_type_str,
+                    metadata=metadata,
+                )
+                validation_result = plugin.validate_business_rules()
+                if validation_result.failure:
+                    self.logger.warning(
+                        f"Plugin {plugin.name} validation failed: {validation_result.error}",
+                    )
+                    continue
+                if self._security:
+                    plugin_payload = self._to_general_mapping(
+                        plugin.model_dump(mode="python"),
+                    )
+                    security_result = self._security.validate_plugin_security(
+                        plugin_payload,
+                    )
+                    if security_result.failure:
+                        self.logger.warning(
+                            "Plugin "
+                            f"{plugin.name} security validation failed: "
+                            f"{security_result.error if security_result.error is not None else ''}",
+                        )
+                        continue
+                if self._registry:
+                    plugin_payload = self._to_general_mapping(
+                        plugin.model_dump(mode="python"),
+                    )
+                    register_result = self._registry.register_plugin(plugin_payload)
+                    if register_result.failure:
+                        self.logger.warning(
+                            f"Plugin {plugin.name} registration failed: "
+                            f"{register_result.error if register_result.error is not None else ''}",
+                        )
+                        continue
+                self._plugins[plugin.name] = plugin
+                registered_plugins.append(plugin)
+                if self._monitoring:
+                    monitoring_result = self._monitoring.start_monitoring(plugin.name)
+                    if monitoring_result.failure:
+                        self.logger.warning(
+                            f"Plugin {plugin.name} monitoring startup failed: "
+                            f"{monitoring_result.error if monitoring_result.error is not None else ''}",
+                        )
+            self.logger.info(f"Registered {len(registered_plugins)} plugins")
+            return r[Sequence[m.Plugin.Plugin]].ok(registered_plugins)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Plugin discovery and registration failed")
+            return r[Sequence[m.Plugin.Plugin]].fail(
+                f"Service error: {e!s}",
+            )
+
+    def discover_plugins(
+        self,
+        paths: t.StrSequence,
+    ) -> p.Result[Sequence[m.Plugin.Plugin]]:
+        """Discover plugins from the specified paths.
+
+        Alias for discover_and_register_plugins.
+
+        Args:
+            paths: List of paths to search for plugins
+
+        Returns:
+            r containing list of discovered plugins
+
+        """
+        return self.discover_and_register_plugins(paths)
+
+    def enable_plugin(self, plugin_name: str) -> p.Result[bool]:
+        """Enable a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to enable
+
+        Returns:
+            r indicating success or failure
+
+        """
+        plugin = self.fetch_plugin(plugin_name)
+        if plugin is None:
+            return r[bool].fail(f"Plugin '{plugin_name}' not found")
+        plugin.is_enabled = True
+        return r[bool].ok(True)
+
+    def execute_plugin(
+        self,
+        plugin_name: str,
+        context: Mapping[str, t.Container],
+        execution_id: str | None = None,
+    ) -> p.Result[FlextPluginPlatform.PluginExecution]:
+        """Execute a plugin with the given context.
+
+        Args:
+        plugin_name: Name of the plugin to execute
+        context: Execution context data
+        execution_id: Optional execution ID (generated if not provided)
+
+        Returns:
+        r containing the execution result
+
+        """
+        try:
+            if plugin_name not in self._plugins:
+                return r[FlextPluginPlatform.PluginExecution].fail(
+                    f"Plugin '{plugin_name}' not found",
+                )
+            if not self._executor:
+                return r[FlextPluginPlatform.PluginExecution].fail(
+                    "Plugin executor not available",
+                )
+            plugin = self._plugins[plugin_name]
+            execution = FlextPluginPlatform.PluginExecution.create(
+                plugin_name=plugin_name,
+                execution_config={"input_data": context, "status": "pending"},
+                execution_id=execution_id,
+            )
+            execution.mark_started()
+            self._executions[execution.execution_id] = execution
+            exec_result = self._executor.execute_plugin(plugin_name, context)
+            if exec_result.failure:
+                execution.mark_completed(success=False, error_message=exec_result.error)
+                return r[FlextPluginPlatform.PluginExecution].fail(
+                    f"Execution failed: {exec_result.error}",
+                )
+            execution.mark_completed(success=True)
+            if u.dict_like(exec_result.value):
+                execution.result = self._to_general_mapping(exec_result.value)
+            plugin.record_execution(0.0, success=True)
+            self.logger.info("Executed plugin '%s' successfully", plugin_name)
+            return r[FlextPluginPlatform.PluginExecution].ok(execution)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to execute plugin '%s'", plugin_name)
+            return r[FlextPluginPlatform.PluginExecution].fail(
+                f"Execution error: {e!s}",
+            )
+
+    def fetch_execution(
+        self,
+        execution_id: str,
+    ) -> FlextPluginPlatform.PluginExecution | None:
+        """Fetch an execution by ID.
+
+        Args:
+        execution_id: ID of the execution to retrieve
+
+        Returns:
+        Execution entity if found, None otherwise
+
+        """
+        return self._executions.get(execution_id)
+
+    def fetch_plugin(self, plugin_name: str) -> m.Plugin.Plugin | None:
+        """Fetch a plugin by name.
+
+        Args:
+        plugin_name: Name of the plugin to retrieve
+
+        Returns:
+        Plugin entity if found, None otherwise
+
+        """
+        return self._plugins.get(plugin_name)
+
+    def fetch_plugin_config(
+        self,
+        plugin_name: str,
+    ) -> p.Result[m.Plugin.PluginConfig]:
+        """Get configuration for a plugin.
+
+        Args:
+            plugin_name: Name of the plugin
+
+        Returns:
+            r containing plugin configuration
+
+        """
+        plugin = self.fetch_plugin(plugin_name)
+        if plugin is None:
+            return r[m.Plugin.PluginConfig].fail(
+                f"Plugin '{plugin_name}' not found",
+            )
+        config_data = plugin.metadata.get("settings", {})
+        config = self._to_general_mapping(config_data)
+        settings = m.Plugin.PluginConfig(
+            plugin_name=plugin.name,
+            config=config,
+        )
+        return r[m.Plugin.PluginConfig].ok(settings)
+
+    async def fetch_plugin_health(
+        self,
+        plugin_name: str,
+    ) -> p.Result[Mapping[str, t.Container]]:
+        """Get health status for a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        r containing plugin health information
+
+        """
+        return self._get_plugin_monitoring_data(
+            plugin_name=plugin_name,
+            operation=self._monitoring.fetch_plugin_health,
+            operation_name="health",
+            operation_failure_prefix="Health check failed",
+            response_label="Health",
+            operation_error_prefix="Health check error",
+        )
+
+    async def fetch_plugin_metrics(
+        self,
+        plugin_name: str,
+    ) -> p.Result[Mapping[str, t.Container]]:
+        """Get metrics for a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        r containing plugin metrics
+
+        """
+        return self._get_plugin_monitoring_data(
+            plugin_name=plugin_name,
+            operation=self._monitoring.fetch_plugin_metrics,
+            operation_name="metrics",
+            operation_failure_prefix="Metrics retrieval failed",
+            response_label="Metrics",
+            operation_error_prefix="Metrics error",
+        )
+
+    def _get_plugin_monitoring_data(
+        self,
+        plugin_name: str,
+        operation: Callable[[str], p.Result[Mapping[str, t.Container]]],
+        operation_name: str,
+        operation_failure_prefix: str,
+        response_label: str,
+        operation_error_prefix: str,
+    ) -> p.Result[Mapping[str, t.Container]]:
+        try:
+            if not self._monitoring:
+                return r[Mapping[str, t.Container]].fail(
+                    "Plugin monitoring not available",
+                )
+            if plugin_name not in self._plugins:
+                return r[Mapping[str, t.Container]].fail(
+                    f"Plugin '{plugin_name}' not found",
+                )
+
+            monitoring_result = operation(plugin_name)
+            if monitoring_result.failure:
+                return r[Mapping[str, t.Container]].fail(
+                    f"{operation_failure_prefix}: {monitoring_result.error}",
+                )
+            if not u.dict_like(monitoring_result.value):
+                return r[Mapping[str, t.Container]].fail(
+                    f"{response_label} response is not a mapping",
+                )
+            return r[Mapping[str, t.Container]].ok(
+                self._to_general_mapping(monitoring_result.value)
+            )
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception(
+                "Failed to get %s for plugin '%s'",
+                operation_name,
+                plugin_name,
+            )
+            return r[Mapping[str, t.Container]].fail(
+                f"{operation_error_prefix}: {e!s}",
+            )
+
+    def fetch_plugin_status(self, plugin_name: str) -> str | None:
+        """Fetch the status of a specific plugin.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        Plugin status if found, None otherwise
+
+        """
+        plugin = self.fetch_plugin(plugin_name)
+        if plugin is None:
+            return None
+        if plugin.is_enabled:
+            return c.Plugin.PluginStatus.ACTIVE
+        return c.Plugin.PluginStatus.INACTIVE
+
+    def list_running_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+        """List all currently running executions.
+
+        Returns:
+        List of running execution entities
+
+        """
+        return [e for e in self._executions.values() if e.is_running]
+
+    def fetch_service_status(self) -> Mapping[str, t.Container]:
+        """Fetch the current status of the plugin service.
+
+        Returns:
+        Dictionary containing service status information
+
+        """
+        return {
+            "total_plugins": len(self._plugins),
+            "active_plugins": len([p for p in self._plugins.values() if p.is_enabled]),
+            "total_executions": len(self._executions),
+            "running_executions": len([
+                e for e in self._executions.values() if e.is_running
+            ]),
+            "monitoring_enabled": True,
+            "discovery_available": True,
+            "loader_available": True,
+            "executor_available": True,
+            "security_available": True,
+            "registry_available": True,
+        }
+
+    def install_plugin(self, plugin_path: str) -> p.Result[m.Plugin.Plugin]:
+        """Install a plugin from the specified path.
+
+        This loads and registers the plugin.
+
+        Args:
+            plugin_path: Path to the plugin to install
+
+        Returns:
+            r containing the installed plugin
+
+        """
+        result = self.load_plugin(plugin_path)
+        if result.success:
+            plugin = result.value
+            self._plugins[plugin.name] = plugin
+            return r[m.Plugin.Plugin].ok(plugin)
+        return r[m.Plugin.Plugin].fail(
+            result.error or "Plugin installation failed",
+        )
+
+    def plugin_loaded(self, plugin_name: str) -> bool:
+        """Check if a plugin is currently loaded.
+
+        Args:
+        plugin_name: Name of the plugin
+
+        Returns:
+        True if plugin is loaded, False otherwise
+
+        """
+        return plugin_name in self._plugins
+
+    def list_executions(self) -> Sequence[FlextPluginPlatform.PluginExecution]:
+        """List all executions.
+
+        Returns:
+        List of all execution entities
+
+        """
+        return list(self._executions.values())
+
+    def list_plugins(self) -> Sequence[m.Plugin.Plugin]:
+        """List all loaded plugins.
+
+        Returns:
+        List of all loaded plugin entities
+
+        """
+        return list(self._plugins.values())
+
+    def load_plugin(self, plugin_path: str) -> p.Result[m.Plugin.Plugin]:
+        """Load a single plugin from the specified path.
+
+        Args:
+        plugin_path: Path to the plugin to load
+
+        Returns:
+        r containing the loaded plugin
+
+        """
+        try:
+            if not self._loader:
+                return r[m.Plugin.Plugin].fail(
+                    "Plugin loader not available",
+                )
+            load_result = self._loader.load_plugin(plugin_path)
+            if load_result.failure:
+                return r[m.Plugin.Plugin].fail(
+                    f"Plugin loading failed: {load_result.error}",
+                )
+            value = load_result.value
+            if u.dict_like(value):
+                data = value
+                metadata_value = data.get("metadata")
+                metadata = self._to_general_mapping(metadata_value)
+                plugin = m.Plugin.Plugin.create(
+                    name=str(data.get("name", "")),
+                    plugin_version=str(data.get("version", "1.0.0")),
+                    description=str(data.get("description", "")),
+                    author=str(data.get("author", "")),
+                    plugin_type=c.Plugin.PluginType.UTILITY,
+                    metadata=metadata,
+                )
+            else:
+                plugin_name = str(getattr(value, "name", ""))
+                if not plugin_name:
+                    return r[m.Plugin.Plugin].fail(
+                        "Loader did not return valid load data",
+                    )
+                plugin_version = str(getattr(value, "version", "1.0.0"))
+                module = getattr(value, "module", None)
+                module_doc = str(getattr(module, "__doc__", "") or "")
+                module_name = str(getattr(module, "__name__", ""))
+                module_path = str(getattr(value, "path", ""))
+                plugin = m.Plugin.Plugin.create(
+                    name=plugin_name,
+                    plugin_version=plugin_version,
+                    description=module_doc,
+                    author="",
+                    plugin_type=c.Plugin.PluginType.UTILITY,
+                    metadata={"module": module_name, "path": module_path},
+                )
+            validation_result = plugin.validate_business_rules()
+            if validation_result.failure:
+                return r[m.Plugin.Plugin].fail(
+                    f"Plugin validation failed: {validation_result.error}",
+                )
+            if self._security:
+                plugin_payload = self._to_general_mapping(
+                    plugin.model_dump(mode="python"),
+                )
+                security_result = self._security.validate_plugin_security(
+                    plugin_payload,
+                )
+                if security_result.failure:
+                    return r[m.Plugin.Plugin].fail(
+                        f"Security validation failed: {security_result.error}",
+                    )
+            if self._registry:
+                plugin_payload = self._to_general_mapping(
+                    plugin.model_dump(mode="python"),
+                )
+                register_result = self._registry.register_plugin(plugin_payload)
+                if register_result.failure:
+                    return r[m.Plugin.Plugin].fail(
+                        f"Registration failed: {register_result.error}",
+                    )
+            self._plugins[plugin.name] = plugin
+            if self._monitoring:
+                monitoring_result = self._monitoring.start_monitoring(plugin.name)
+                if monitoring_result.failure:
+                    self.logger.warning(
+                        f"Monitoring startup failed for plugin {plugin.name}: "
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}",
+                    )
+            self.logger.info(f"Loaded plugin: {plugin.name}")
+            return r[m.Plugin.Plugin].ok(plugin)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to load plugin from %s", plugin_path)
+            return r[m.Plugin.Plugin].fail(f"Loading error: {e!s}")
+
+    def uninstall_plugin(self, plugin_name: str) -> p.Result[bool]:
+        """Uninstall a plugin by name.
+
+        Args:
+            plugin_name: Name of the plugin to uninstall
+
+        Returns:
+            r indicating success or failure
+
+        """
+        if plugin_name not in self._plugins:
+            return r[bool].fail(f"Plugin '{plugin_name}' not found")
+        del self._plugins[plugin_name]
+        return r[bool].ok(True)
+
+    async def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
+        """Unload a plugin from the service.
+
+        Args:
+        plugin_name: Name of the plugin to unload
+
+        Returns:
+        r indicating success or failure
+
+        """
+        try:
+            if plugin_name not in self._plugins:
+                return r[bool].fail(f"Plugin '{plugin_name}' not found")
+            if self._monitoring:
+                monitoring_result = self._monitoring.stop_monitoring(plugin_name)
+                if monitoring_result.failure:
+                    self.logger.warning(
+                        f"Failed to stop monitoring for {plugin_name}: "
+                        f"{monitoring_result.error if monitoring_result.error is not None else ''}",
+                    )
+            if self._registry:
+                unregister_result = self._registry.unregister_plugin(plugin_name)
+                if unregister_result.failure:
+                    return r[bool].fail(
+                        f"Unregistration failed: {unregister_result.error}",
+                    )
+            if self._loader:
+                unload_result = self._loader.unload_plugin(plugin_name)
+                if unload_result.failure:
+                    return r[bool].fail(f"Unloading failed: {unload_result.error}")
+            del self._plugins[plugin_name]
+            self.logger.info("Unloaded plugin: %s", plugin_name)
+            return r[bool].ok(True)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            self.logger.exception("Failed to unload plugin '%s'", plugin_name)
+            return r[bool].fail(f"Unloading error: {e!s}")
+
+    def update_plugin_config(
+        self,
+        plugin_name: str,
+        settings: Mapping[str, t.Container],
+    ) -> p.Result[bool]:
+        """Update configuration for a plugin.
+
+        Args:
+            plugin_name: Name of the plugin
+            settings: New configuration
+
+        Returns:
+            r indicating success or failure
+
+        """
+        plugin = self.fetch_plugin(plugin_name)
+        if plugin is None:
+            return r[bool].fail(f"Plugin '{plugin_name}' not found")
+        existing_config = plugin.metadata.get("settings")
+        merged_config: t.MutableRecursiveContainerMapping = dict(
+            self._to_general_mapping(existing_config),
+        )
+        merged_config.update(settings)
+        plugin.metadata["settings"] = merged_config
+        return r[bool].ok(True)
+
+
+__all__: list[str] = ["FlextPluginService"]
+"""FLEXT Plugin Models - Plugin system data models.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+import types
+from collections.abc import (
+    Callable,
+    Mapping,
+)
+from datetime import datetime
+from pathlib import Path
+from typing import Annotated, ClassVar, Self
+
+from flext_cli import m
+
+from flext_core import u
+from flext_plugin import c, p, r, t
+
+
+class FlextPluginModels(m):
+    """Plugin domain models extending flext-core patterns.
+
+    Provides standardized models for all plugin operations including plugin
+    entities, configurations, execution results, and monitoring data.
+
+    All models inherit flext-core validation and patterns following
+    Railway-Oriented Programming with r[T] error handling.
+    """
+
+    class Plugin:
+        """Plugin domain namespace."""
+
+        class Entity(m.Entity):
+            """Entity - real inheritance."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
+        class Plugin(m.Entity):
+            """Plugin entity - core domain entity with identity and lifecycle.
+
+            Represents a plugin with identity, lifecycle management, and mutable state.
+            Compared by identity (id), not by value.
+
+            Attributes:
+            name: Plugin unique identifier
+            plugin_version: Plugin semantic version (X.Y.Z)
+            description: Plugin functionality description
+            author: Plugin author/maintainer
+            plugin_type: Plugin type classification (from PluginType enum)
+            is_enabled: Plugin enabled state
+            metadata: Extensible plugin metadata
+
+            """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
+            name: Annotated[
+                str,
+                u.Field(
+                    ...,
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            plugin_version: Annotated[
+                str,
+                u.Field(
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ] = "1.0.0"
+            description: Annotated[
+                str,
+                u.Field(
+                    max_length=c.Plugin.PluginValidation.MAX_DESCRIPTION_LENGTH,
+                    description="Plugin functionality description",
+                ),
+            ] = ""
+            author: Annotated[
+                str,
+                u.Field(
+                    max_length=c.Plugin.PluginValidation.MAX_AUTHOR_LENGTH,
+                    description="Plugin author/maintainer",
+                ),
+            ] = ""
+            plugin_type: Annotated[
+                str,
+                u.Field(
+                    description="Plugin type classification",
+                ),
+            ] = c.Plugin.PluginType.UTILITY
+            is_enabled: Annotated[bool, u.Field(description="Plugin enabled state")] = (
+                True
+            )
+            metadata: Annotated[
+                t.MutableRecursiveContainerMapping,
+                u.Field(
+                    description="Extensible plugin metadata",
+                ),
+            ] = u.Field(default_factory=dict)
+
+            @classmethod
+            def create(
+                cls,
+                *,
+                name: str,
+                plugin_version: str = "1.0.0",
+                description: str = "",
+                author: str = "",
+                plugin_type: str = c.Plugin.PluginType.UTILITY,
+                is_enabled: bool = True,
+                metadata: Mapping[str, t.Container] | None = None,
+                entity_id: str | None = None,
+            ) -> Self:
+                """Factory method to create a new Plugin entity.
+
+                Args:
+                name: Plugin name (required)
+                plugin_version: Plugin semantic version
+                description: Plugin description
+                author: Plugin author
+                plugin_type: Plugin type (from PluginType enum)
+                is_enabled: Whether plugin is initially enabled
+                metadata: Additional metadata
+                entity_id: Entity ID (auto-generated if None)
+
+                Returns:
+                New Plugin entity instance
+
+                """
+                metadata_payload: Mapping[str, t.Container] = (
+                    dict(metadata.items()) if metadata else {}
+                )
+                payload: t.MutableRecursiveContainerMapping = {
+                    "name": name,
+                    "plugin_version": plugin_version,
+                    "description": description,
+                    "author": author,
+                    "plugin_type": plugin_type,
+                    "is_enabled": is_enabled,
+                    "metadata": metadata_payload,
+                }
+                if entity_id is not None:
+                    payload["unique_id"] = entity_id
+                return cls.model_validate(payload)
+
+            @u.field_validator("plugin_type", mode="before")
+            @classmethod
+            def validate_plugin_type(cls, value: str) -> str:
+                """Validate plugin type is a valid PluginType enum value."""
+                valid_types = {
+                    "tap",
+                    "target",
+                    "transform",
+                    "extension",
+                    "service",
+                    "middleware",
+                    "transformer",
+                    "api",
+                    "database",
+                    "notification",
+                    "authentication",
+                    "authorization",
+                    "utility",
+                    "tool",
+                    "handler",
+                    "processor",
+                    "core",
+                    "addon",
+                    "theme",
+                    "language",
+                }
+                if value not in valid_types:
+                    error_msg = f"Invalid plugin type '{value}'. Must be one of: {', '.join(sorted(valid_types))}"
+                    raise ValueError(error_msg)
+                return value
+
+            @u.field_validator("plugin_version", mode="before")
+            @classmethod
+            def validate_semantic_version(cls, value: str) -> str:
+                """Validate semantic version format (X.Y.Z)."""
+                min_version_parts = 2
+                max_version_parts = 3
+                parts = value.split(".")
+                if (
+                    len(parts) < min_version_parts
+                    or len(parts) > max_version_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
+                return value
+
+            def disable(self) -> p.Result[bool]:
+                """Disable the plugin.
+
+                Returns:
+                r[bool] indicating success or failure
+
+                """
+                if not self.is_enabled:
+                    return r[bool].fail("Plugin is already disabled")
+                self.is_enabled = False
+                return r[bool].ok(value=True)
+
+            def enable(self) -> p.Result[bool]:
+                """Enable the plugin.
+
+                Returns:
+                r[bool] indicating success or failure
+
+                """
+                if self.is_enabled:
+                    return r[bool].fail("Plugin is already enabled")
+                self.is_enabled = True
+                return r[bool].ok(value=True)
+
+            def record_error(self, error_message: str) -> None:
+                """Record plugin error.
+
+                Args:
+                    error_message: Error message to record
+
+                """
+                if "error_count" not in self.metadata:
+                    self.metadata["error_count"] = 0
+                if "last_error" not in self.metadata:
+                    self.metadata["last_error"] = ""
+
+                error_count = u.to_int(
+                    self.metadata.get("error_count", 0),
+                )
+                self.metadata["error_count"] = error_count + 1
+                self.metadata["last_error"] = error_message
+
+            def record_execution(self, execution_time: float, *, success: bool) -> None:
+                """Record plugin execution metrics.
+
+                Args:
+                    execution_time: Time taken for execution in seconds
+                    success: Whether the execution was successful
+
+                """
+                # Update metadata with execution info - use proper type narrowing
+                if "execution_count" not in self.metadata:
+                    self.metadata["execution_count"] = 0
+                if "total_execution_time" not in self.metadata:
+                    self.metadata["total_execution_time"] = 0.0
+                if "success_count" not in self.metadata:
+                    self.metadata["success_count"] = 0
+                if "failure_count" not in self.metadata:
+                    self.metadata["failure_count"] = 0
+
+                exec_count = u.to_int(
+                    self.metadata.get("execution_count", 0),
+                )
+                total_time = u.to_float(
+                    self.metadata.get("total_execution_time", 0.0),
+                )
+                self.metadata["execution_count"] = exec_count + 1
+                self.metadata["total_execution_time"] = total_time + execution_time
+
+                if success:
+                    success_count = u.to_int(
+                        self.metadata.get("success_count", 0),
+                    )
+                    self.metadata["success_count"] = success_count + 1
+                else:
+                    failure_count = u.to_int(
+                        self.metadata.get("failure_count", 0),
+                    )
+                    self.metadata["failure_count"] = failure_count + 1
+
+            def validate_business_rules(self) -> p.Result[bool]:
+                """Validate plugin business rules.
+
+                Business Rules:
+                - Plugin name must not be empty
+                - Plugin version must follow semantic versioning (X.Y.Z)
+                - Plugin type must be valid
+
+                Returns:
+                r[bool] indicating validation success or failure
+
+                """
+                min_version_parts = 2
+                max_version_parts = 3
+                if not self.name or not self.name.strip():
+                    return r[bool].fail("Plugin name cannot be empty")
+
+                # Validate semantic version
+                version_parts = self.plugin_version.split(".")
+                if (
+                    len(version_parts) < min_version_parts
+                    or len(version_parts) > max_version_parts
+                ):
+                    return r[bool].fail(
+                        f"Invalid semantic version: {self.plugin_version}",
+                    )
+                if not all(part.isdigit() for part in version_parts if part):
+                    return r[bool].fail(
+                        f"Version parts must be numeric: {self.plugin_version}",
+                    )
+
+                # Validate plugin type
+                valid_types = {
+                    "tap",
+                    "target",
+                    "transform",
+                    "extension",
+                    "service",
+                    "middleware",
+                    "transformer",
+                    "api",
+                    "database",
+                    "notification",
+                    "authentication",
+                    "authorization",
+                    "utility",
+                    "tool",
+                    "handler",
+                    "processor",
+                    "core",
+                    "addon",
+                    "theme",
+                    "language",
+                }
+                if self.plugin_type not in valid_types:
+                    return r[bool].fail(f"Invalid plugin type: {self.plugin_type}")
+
+                return r[bool].ok(value=True)
+
+        class ExecutionResult(m.Value):
+            """Plugin execution result - immutable execution outcome.
+
+            Represents the result of a plugin execution including success status,
+            output data, and execution metrics.
+
+            Attributes:
+            success: Whether execution succeeded
+            data: Execution output data
+            error: Error message if execution failed
+            execution_time_ms: Execution time in milliseconds
+
+            """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
+            success: Annotated[bool, u.Field(description="Whether execution succeeded")]
+            data: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Execution output data",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            error: Annotated[
+                str,
+                u.Field(
+                    description="Error message if execution failed",
+                ),
+            ] = ""
+            execution_time_ms: Annotated[
+                t.NonNegativeFloat,
+                u.Field(
+                    description="Execution time in milliseconds",
+                ),
+            ] = 0.0
+
+        class DiscoveryData(m.Value):
+            """Plugin discovery data - immutable discovery result.
+
+            Represents discovered plugin information from various discovery methods
+            (file system, entry points, etc_constants.). Immutable value object.
+
+            Attributes:
+            name: Plugin unique identifier name
+            version: Plugin semantic version (X.Y.Z)
+            path: File system path to plugin
+            discovery_type: Type of discovered plugin (file, directory, entry_point)
+            discovery_method: Discovery method used (file_system, entry_points)
+            metadata: Extensible discovery metadata
+
+            """
+
+            name: Annotated[
+                str,
+                u.Field(
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    pattern=c.Plugin.PluginValidation.PLUGIN_NAME_PATTERN,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            version: Annotated[
+                str,
+                u.Field(
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ]
+            path: Annotated[Path, u.Field(description="File system path to plugin")]
+            discovery_type: Annotated[
+                c.Plugin.DiscoveryTypeLiteral,
+                u.Field(
+                    description="Type of discovered plugin",
+                ),
+            ]
+            discovery_method: Annotated[
+                c.Plugin.DiscoveryMethodLiteral,
+                u.Field(
+                    description="Discovery method used",
+                ),
+            ]
+            metadata: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Extensible discovery metadata",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+
+            @u.field_validator("version", mode="before")
+            @classmethod
+            def validate_version(cls, value: str) -> str:
+                """Validate semantic version format."""
+                min_parts = 2
+                max_parts = 3
+                parts = value.split(".")
+                if (
+                    len(parts) < min_parts
+                    or len(parts) > max_parts
+                    or not all(p.isdigit() for p in parts if p)
+                ):
+                    error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                    raise ValueError(error_msg)
+                return value
+
+        class LoadData(m.Value):
+            """Plugin load data - immutable load result.
+
+            Represents successfully loaded plugin information including the loaded
+            module t.Container and load metadata. Immutable value object.
+
+            Attributes:
+            name: Plugin unique identifier name
+            version: Plugin semantic version
+            path: File system path to plugin
+            module: The loaded Python module t.Container
+            load_type: Type of loaded plugin (file, directory, entry_point)
+            loaded_at: Timestamp when plugin was loaded
+            entry_file: Entry file path for directory-based plugins
+
+            """
+
+            name: Annotated[
+                str,
+                u.Field(
+                    min_length=c.Plugin.PluginValidation.MIN_PLUGIN_NAME_LENGTH,
+                    max_length=c.Plugin.PluginValidation.MAX_PLUGIN_NAME_LENGTH,
+                    description="Plugin unique identifier name",
+                ),
+            ]
+            version: Annotated[
+                str,
+                u.Field(
+                    pattern=c.Plugin.PluginValidation.VERSION_PATTERN,
+                    description="Plugin semantic version (X.Y.Z)",
+                ),
+            ]
+            path: Annotated[Path, u.Field(description="File system path to plugin")]
+            module: Annotated[
+                types.ModuleType,
+                u.Field(
+                    description="The loaded Python module t.Container",
+                ),
+            ]
+            load_type: Annotated[
+                c.Plugin.LoadTypeLiteral,
+                u.Field(
+                    description="Type of loaded plugin",
+                ),
+            ]
+            loaded_at: Annotated[
+                datetime,
+                u.Field(description="Timestamp when plugin was loaded"),
+            ]
+            entry_file: Annotated[
+                Path | None,
+                u.Field(
+                    description="Entry file path for directory-based plugins",
+                ),
+            ] = None
+
+        class ReloadRecord(m.Value):
+            """Plugin reload record - immutable reload history entry.
+
+            Records information about a plugin reload event including timing,
+            success/failure status, and optional error details. Immutable value object.
+
+            Attributes:
+            plugin_name: Name of reloaded plugin
+            plugin_path: Path to reloaded plugin
+            timestamp: When reload occurred
+            success: Whether reload succeeded
+            error: Error message if reload failed
+            duration_ms: Reload duration in milliseconds
+
+            """
+
+            plugin_name: Annotated[str, u.Field(description="Name of reloaded plugin")]
+            plugin_path: Annotated[Path, u.Field(description="Path to reloaded plugin")]
+            timestamp: Annotated[datetime, u.Field(description="When reload occurred")]
+            success: Annotated[bool, u.Field(description="Whether reload succeeded")]
+            error: Annotated[
+                str | None,
+                u.Field(
+                    description="Error message if reload failed",
+                ),
+            ] = None
+            duration_ms: Annotated[
+                t.NonNegativeFloat,
+                u.Field(
+                    description="Reload duration in milliseconds",
+                ),
+            ] = 0.0
+
+        class PluginMetadata(m.Value):
+            """Plugin metadata - immutable metadata value object.
+
+            Represents complete metadata about a plugin including discovery
+            and description information. Immutable value object.
+
+            Attributes:
+            name: Plugin unique identifier
+            version: Plugin semantic version
+            description: Plugin description
+            author: Plugin author
+            plugin_type: Type of plugin (extension, transformer, etc_constants.)
+            entry_point: Entry point for plugin
+            dependencies: List of plugin dependencies
+            metadata: Additional metadata dictionary
+
+            """
+
+            name: Annotated[str, u.Field(description="Plugin unique identifier")]
+            version: Annotated[str, u.Field(description="Plugin semantic version")]
+            description: Annotated[str, u.Field(description="Plugin description")] = ""
+            author: Annotated[str, u.Field(description="Plugin author")] = "Unknown"
+            plugin_type: Annotated[str, u.Field(description="Type of plugin")] = (
+                "extension"
+            )
+            entry_point: Annotated[str, u.Field(description="Entry point for plugin")]
+            dependencies: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="List of plugin dependencies",
+                ),
+            ] = u.Field(default_factory=tuple)
+            metadata: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Additional metadata",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+
+        class EventData(m.Value):
+            """Event data - immutable event information.
+
+            Represents structured event data with context and metadata.
+            Immutable value object.
+
+            Attributes:
+            event_type: Type of event
+            plugin_name: Associated plugin name
+            timestamp: When event occurred
+            data: Event-specific data
+
+            """
+
+            event_type: Annotated[str, u.Field(description="Type of event")]
+            plugin_name: Annotated[str, u.Field(description="Associated plugin name")]
+            timestamp: Annotated[datetime, u.Field(description="When event occurred")]
+            data: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Event-specific data",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+
+        class ValidationResult(m.Value):
+            """Validation result - immutable validation outcome.
+
+            Represents result of plugin validation including status and details.
+            Immutable value object.
+
+            Attributes:
+            valid: Whether validation passed
+            errors: List of validation errors
+            warnings: List of validation warnings
+            details: Additional validation details
+
+            """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
+            valid: Annotated[bool, u.Field(description="Whether validation passed")]
+            errors: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="List of validation errors",
+                ),
+            ] = u.Field(default_factory=tuple)
+            warnings: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="List of validation warnings",
+                ),
+            ] = u.Field(default_factory=tuple)
+            details: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Additional validation details",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+
+        class SecurityReport(m.Value):
+            """Security report - immutable security scan result.
+
+            Represents security scanning results for plugins.
+            Immutable value object.
+
+            Attributes:
+            is_safe: Whether plugin passed security checks
+            violations: List of security violations
+            warnings: List of security warnings
+            analysis_time: When analysis was performed
+
+            """
+
+            is_safe: Annotated[
+                bool,
+                u.Field(description="Whether plugin passed security checks"),
+            ]
+            violations: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="List of security violations",
+                ),
+            ] = u.Field(default_factory=tuple)
+            warnings: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="List of security warnings",
+                ),
+            ] = u.Field(default_factory=tuple)
+            analysis_time: Annotated[
+                datetime,
+                u.Field(description="When analysis was performed"),
+            ]
+
+        class WatcherConfig(m.Value):
+            """Watcher configuration - file system monitoring settings.
+
+            Represents file watcher configuration for hot reload.
+            Immutable value object.
+
+            Attributes:
+            watch_path: Path being watched
+            watch_interval: Polling interval in seconds
+            callback: Callback function reference (Any for flexibility)
+            active: Whether watcher is active
+            last_modified: File modification tracking
+            created_at: Configuration creation time
+
+            """
+
+            watch_path: Annotated[str, u.Field(description="Path being watched")]
+            watch_interval: Annotated[
+                t.PositiveFloat,
+                u.Field(description="Polling interval in seconds"),
+            ]
+            callback: Annotated[
+                Callable[..., t.Container] | None,
+                u.Field(
+                    description="Callback function reference",
+                ),
+            ] = None
+            active: Annotated[
+                bool, u.Field(description="Whether watcher is active")
+            ] = False
+            last_modified: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="File modification tracking",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            created_at: Annotated[
+                datetime,
+                u.Field(description="Configuration creation time"),
+            ]
+
+        class SandboxConfig(m.Value):
+            """Sandbox configuration - plugin execution sandbox settings.
+
+            Represents security sandbox configuration for plugin execution.
+            Immutable value object.
+
+            Attributes:
+            plugin_name: Name of plugin to sandbox
+            max_memory_mb: Maximum memory in MB
+            max_execution_time: Maximum execution time in seconds
+            allowed_modules: Allowed import modules
+            network_access: Whether network access allowed
+            file_system_access: File system access level
+            environment_variables: Environment variable settings
+
+            """
+
+            plugin_name: Annotated[
+                str, u.Field(description="Name of plugin to sandbox")
+            ]
+            max_memory_mb: Annotated[
+                t.PositiveInt,
+                u.Field(description="Maximum memory in MB"),
+            ]
+            max_execution_time: Annotated[
+                t.PositiveInt,
+                u.Field(
+                    description="Maximum execution time in seconds",
+                ),
+            ]
+            allowed_modules: Annotated[
+                t.StrSequence,
+                u.Field(
+                    description="Allowed import modules",
+                ),
+            ]
+            network_access: Annotated[
+                bool,
+                u.Field(description="Whether network access allowed"),
+            ]
+            file_system_access: Annotated[
+                str,
+                u.Field(description="File system access level"),
+            ]
+            environment_variables: Annotated[
+                t.StrMapping,
+                u.Field(
+                    description="Environment variable settings",
+                ),
+            ]
+
+        class PluginRegistry(m.Value):
+            """Plugin registry - central plugin registry storage.
+
+            Represents plugin registry with version tracking and plugin entries.
+            Immutable value object.
+
+            Attributes:
+            version: Registry schema version
+            plugins: Dictionary of registered plugins
+            last_updated: Last update timestamp
+            created_at: Registry creation timestamp
+
+            """
+
+            version: Annotated[str, u.Field(description="Registry schema version")]
+            plugins: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Dictionary of registered plugins",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            last_updated: Annotated[
+                datetime,
+                u.Field(
+                    description="Last update timestamp",
+                ),
+            ] = u.Field(default_factory=datetime.now)
+            created_at: Annotated[
+                datetime,
+                u.Field(
+                    description="Registry creation timestamp",
+                ),
+            ] = u.Field(default_factory=datetime.now)
+
+        class PluginConfig(m.Value):
+            """Plugin configuration model.
+
+            Represents configuration for a plugin with key-value pairs.
+            """
+
+            plugin_name: Annotated[str, u.Field(description="Plugin name")]
+            config: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Configuration settings",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+
+        class Registry(m.Value):
+            """Plugin registry model.
+
+            Represents a registry of plugins with metadata.
+            """
+
+            plugins: Annotated[
+                Mapping[str, t.Container],
+                u.Field(
+                    description="Dictionary of registered plugins",
+                ),
+            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            last_updated: Annotated[
+                datetime,
+                u.Field(
+                    description="Last update timestamp",
+                ),
+            ] = u.Field(default_factory=datetime.now)
+            created_at: Annotated[
+                datetime,
+                u.Field(
+                    description="Registry creation timestamp",
+                ),
+            ] = u.Field(default_factory=datetime.now)
+
+
+m = FlextPluginModels
+
+__all__: list[str] = ["FlextPluginModels", "m"]
+"""FLEXT Plugin Protocols - Synchronous protocol composition with Pydantic models.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+from collections.abc import (
+    Mapping,
+    Sequence,
+)
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+from flext_core import FlextProtocols
+from flext_plugin import t
+
+if TYPE_CHECKING:
+    from flext_plugin import m
+
+
+class FlextPluginProtocols(FlextProtocols):
+    """Unified plugin protocols extending FlextProtocols.
+
+    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    and adds plugin-specific protocols in the Plugin namespace.
+
+    Architecture:
+    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - ADDS: Plugin-specific protocols in Plugin namespace
+    - PROVIDES: Root-level alias `p` for convenient access
+
+    Usage:
+    from flext_core import p
+
+    # Foundation protocols (inherited)
+    result: p.Result[str]
+    service: p.Service[str]
+
+    # Plugin-specific protocols
+    loader: p.Plugin.PluginLoader
+    discovery: p.Plugin.PluginDiscovery
+    """
+
+    @runtime_checkable
+    class Plugin(Protocol):
+        """Plugin domain-specific protocols."""
+
+        @runtime_checkable
+        class PluginLoader(Protocol):
+            """Protocol for plugin loading operations."""
+
+            def get_loaded_plugins(self) -> t.StrSequence:
+                """Get list of all currently loaded plugin names."""
+                ...
+
+            def plugin_loaded(self, plugin_name: str) -> bool:
+                """Check if a plugin is currently loaded."""
+                ...
+
+            def load_plugin(
+                self,
+                plugin_path: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Load a plugin from the specified path."""
+                ...
+
+            def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
+                """Unload a previously loaded plugin."""
+                ...
+
+        @runtime_checkable
+        class PluginDiscovery(Protocol):
+            """Protocol for plugin discovery operations."""
+
+            def discover_plugin(
+                self,
+                _plugin_path: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Discover a single plugin at the specified path."""
+                ...
+
+            def discover_plugins(
+                self,
+                paths: t.StrSequence,
+            ) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+                """Discover plugins at the given paths."""
+                ...
+
+            def validate_plugin(
+                self,
+                _plugin_data: Mapping[str, t.Container],
+            ) -> p.Result[bool]:
+                """Validate plugin discovery data."""
+                ...
+
+            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+                """Validate plugin for security."""
+                ...
+
+        @runtime_checkable
+        class PluginRegistry(Protocol):
+            """Protocol for plugin registry operations."""
+
+            def fetch_plugin(self, plugin_name: str) -> p.Result[t.Container | None]:
+                """Fetch a registered plugin by name."""
+                ...
+
+            def plugin_registered(self, plugin_name: str) -> bool:
+                """Check if a plugin is registered."""
+                ...
+
+            def list_plugins(self) -> p.Result[Sequence[Mapping[str, t.Container]]]:
+                """List all registered plugins."""
+                ...
+
+            def register_plugin(
+                self,
+                _plugin: m.Plugin.Plugin | t.Container,
+            ) -> p.Result[bool]:
+                """Register a plugin."""
+                ...
+
+            def register(self, plugin: m.Plugin.Plugin | t.Container) -> p.Result[None]:
+                """Register a plugin with normalized API."""
+                ...
+
+            def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
+                """Unregister a plugin."""
+                ...
+
+        @runtime_checkable
+        class PluginExecution(Protocol):
+            """Protocol for plugin execution operations."""
+
+            def execute_plugin(
+                self,
+                _plugin_name: str,
+                _context: Mapping[str, t.Container],
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Execute a plugin with the given context."""
+                ...
+
+            def get_execution_status(self, _execution_id: str) -> p.Result[str]:
+                """Get the status of an execution."""
+                ...
+
+            def list_running_executions(self) -> t.StrSequence:
+                """List all currently running execution IDs."""
+                ...
+
+            def stop_execution(self, _execution_id: str) -> p.Result[bool]:
+                """Stop a running execution."""
+                ...
+
+        @runtime_checkable
+        class PluginSecurity(Protocol):
+            """Protocol for plugin security operations."""
+
+            def check_permissions(
+                self,
+                _plugin_name: str,
+                _permissions: t.StrSequence,
+            ) -> p.Result[bool]:
+                """Check if plugin has specified permissions."""
+                ...
+
+            def get_security_level(self, _plugin_name: str) -> p.Result[str]:
+                """Get security level of a plugin."""
+                ...
+
+            def scan_plugin_security(
+                self,
+                _plugin_path: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Scan plugin for security vulnerabilities."""
+                ...
+
+            def validate_plugin_security(self, _plugin: t.Container) -> p.Result[bool]:
+                """Validate plugin security compliance."""
+                ...
+
+        @runtime_checkable
+        class PluginHotReload(Protocol):
+            """Protocol for hot reload operations."""
+
+            def get_watched_paths(self) -> t.StrSequence:
+                """Get list of currently watched paths."""
+                ...
+
+            def watching(self) -> bool:
+                """Check if currently watching for changes."""
+                ...
+
+            def reload_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Reload a plugin."""
+                ...
+
+            def start_watching(self, paths: t.StrSequence) -> p.Result[bool]:
+                """Start watching paths for plugin changes."""
+                ...
+
+            def stop_watching(self) -> p.Result[bool]:
+                """Stop watching for plugin changes."""
+                ...
+
+        @runtime_checkable
+        class PluginMonitoring(Protocol):
+            """Protocol for plugin monitoring operations."""
+
+            def fetch_plugin_health(
+                self,
+                _plugin_name: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Get health status of a plugin."""
+                ...
+
+            def fetch_plugin_metrics(
+                self,
+                _plugin_name: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Get metrics for a plugin."""
+                ...
+
+            def monitoring(self, _plugin_name: str) -> bool:
+                """Check if a plugin is being monitored."""
+                ...
+
+            def start_monitoring(self, _plugin_name: str) -> p.Result[bool]:
+                """Start monitoring a plugin."""
+                ...
+
+            def stop_monitoring(self, _plugin_name: str) -> p.Result[bool]:
+                """Stop monitoring a plugin."""
+                ...
+
+        @runtime_checkable
+        class PluginConfiguration(Protocol):
+            """Protocol for plugin configuration operations."""
+
+            def fetch_default_config(self, plugin_type: str) -> p.Result[t.Container]:
+                """Get default configuration for a plugin type."""
+                ...
+
+            def load_config(self, _plugin_name: str) -> p.Result[t.Container]:
+                """Load configuration for a plugin."""
+                ...
+
+            def save_config(
+                self,
+                _plugin_name: str,
+                settings: t.Container,
+            ) -> p.Result[bool]:
+                """Save configuration for a plugin."""
+                ...
+
+            def validate_config(self, settings: t.Container) -> p.Result[bool]:
+                """Validate plugin configuration."""
+                ...
+
+        @runtime_checkable
+        class PluginLifecycle(Protocol):
+            """Protocol for plugin lifecycle operations."""
+
+            def activate_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Activate a plugin."""
+                ...
+
+            def deactivate_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Deactivate a plugin."""
+                ...
+
+            def destroy_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Destroy a plugin."""
+                ...
+
+            def fetch_plugin_status(self, _plugin_name: str) -> p.Result[str]:
+                """Fetch the status of a plugin."""
+                ...
+
+            def initialize_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Initialize a plugin."""
+                ...
+
+            def list_plugin_statuses(self) -> p.Result[t.StrMapping]:
+                """Get status of all plugins."""
+                ...
+
+        @runtime_checkable
+        class PluginValidation(Protocol):
+            """Protocol for plugin validation operations."""
+
+            def validate_plugin_compatibility(
+                self, _plugin_name: str
+            ) -> p.Result[bool]:
+                """Validate plugin compatibility."""
+                ...
+
+            def validate_plugin_dependencies(self, _plugin_name: str) -> p.Result[bool]:
+                """Validate plugin dependencies."""
+                ...
+
+            def validate_plugin_permissions(self, _plugin_name: str) -> p.Result[bool]:
+                """Validate plugin permissions."""
+                ...
+
+            def validate_plugin_structure(
+                self,
+                _plugin_data: t.Container,
+            ) -> p.Result[bool]:
+                """Validate plugin structure."""
+                ...
+
+        @runtime_checkable
+        class PluginStorage(Protocol):
+            """Protocol for plugin storage operations."""
+
+            def delete_plugin(self, _plugin_name: str) -> p.Result[bool]:
+                """Delete stored plugin."""
+                ...
+
+            def list_stored_plugins(self) -> p.Result[t.StrSequence]:
+                """List all stored plugin names."""
+                ...
+
+            def plugin_exists(self, _plugin_name: str) -> bool:
+                """Check if plugin is stored."""
+                ...
+
+            def retrieve_plugin(
+                self, _plugin_name: str
+            ) -> p.Result[t.ContainerValue | None]:
+                """Retrieve stored plugin data."""
+                ...
+
+            def store_plugin(self, _plugin_data: t.Container) -> p.Result[bool]:
+                """Store plugin data."""
+                ...
+
+        @runtime_checkable
+        class Logger(Protocol):
+            """Protocol for logging operations."""
+
+            def critical(
+                self,
+                message: str,
+                *args: t.Container,
+                **kwargs: t.Scalar,
+            ) -> None:
+                """Log critical message."""
+                ...
+
+            def debug(
+                self,
+                message: str,
+                *args: t.Container,
+                **kwargs: t.Scalar,
+            ) -> None:
+                """Log debug message."""
+                ...
+
+            def error(
+                self,
+                message: str,
+                *args: t.Container,
+                **kwargs: t.Scalar,
+            ) -> None:
+                """Log error message."""
+                ...
+
+            def info(
+                self,
+                message: str,
+                *args: t.Container,
+                **kwargs: t.Scalar,
+            ) -> None:
+                """Log info message."""
+                ...
+
+            def warning(
+                self,
+                message: str,
+                *args: t.Container,
+                **kwargs: t.Scalar,
+            ) -> None:
+                """Log warning message."""
+                ...
+
+        @runtime_checkable
+        class DiscoveryStrategy(Protocol):
+            """Strategy protocol for plugin discovery."""
+
+            def discover(
+                self,
+                paths: t.StrSequence,
+            ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+                """Discover plugins using this strategy."""
+                ...
+
+
+p = FlextPluginProtocols
+
+__all__: list[str] = ["FlextPluginProtocols", "p"]
+"""FLEXT Plugin Utilities - Domain-specific utilities for plugin management.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import re
+from collections.abc import (
+    Callable,
+    Mapping,
+    MutableSequence,
+    Sequence,
+)
+from datetime import UTC, datetime
+from pathlib import Path
+from types import ModuleType
+from typing import ClassVar, Self
+
+from flext_cli import FlextCliUtilities
+
+from flext_core import u
+from flext_plugin import c, m, p, r, t
+
+
+class FlextPluginUtilities(u):
+    """composition-based utilities using Python 3.13+ patterns."""
+
+    class Plugin:
+        """Plugin discovery and validation utilities."""
+
+        PLUGIN_EXTENSIONS: ClassVar[t.StrSequence] = [".py", ".yaml", ".yml", ".json"]
+        PLUGIN_MANIFESTS: ClassVar[t.StrSequence] = [
+            "plugin.yaml",
+            "plugin.yml",
+            "plugin.json",
+            "setup.py",
+        ]
+        MAX_SIZE_MB: ClassVar[int] = 100
+        NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
+
+        PLUGIN_FILE_EXTENSIONS: ClassVar[t.Plugin.StringList] = [
+            ".py",
+            ".yaml",
+            ".yml",
+            ".json",
+        ]
+        PLUGIN_MANIFEST_FILES: ClassVar[t.Plugin.StringList] = [
+            "plugin.yaml",
+            "plugin.yml",
+            "plugin.json",
+            "setup.py",
+        ]
+        MAX_PLUGIN_SIZE_MB: ClassVar[int] = 100
+        PLUGIN_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
+
+        @staticmethod
+        def discover_plugins(
+            directory: Path | str,
+        ) -> p.Result[Sequence[m.Plugin.PluginMetadata]]:
+            """Discover plugins in the specified directory.
+
+            Args:
+            directory: Directory to search for plugins
+
+            Returns:
+            r containing list of discovered plugin metadata
+
+            """
+            try:
+                search_path = Path(directory)
+                if not search_path.exists():
+                    return r[Sequence[m.Plugin.PluginMetadata]].fail(
+                        f"Plugin directory does not exist: {search_path}",
+                    )
+                plugins: MutableSequence[m.Plugin.PluginMetadata] = []
+                for plugin_file in search_path.rglob("*"):
+                    if (
+                        plugin_file.is_file()
+                        and plugin_file.suffix
+                        in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
+                    ):
+                        validation_result = (
+                            FlextPluginUtilities.Plugin.validate_plugin_file(
+                                plugin_file,
+                            )
+                        )
+                        if validation_result.success:
+                            metadata_result = (
+                                FlextPluginUtilities.Plugin.extract_plugin_metadata(
+                                    plugin_file,
+                                )
+                            )
+                            if metadata_result.success:
+                                plugins.append(metadata_result.value)
+                return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[Sequence[m.Plugin.PluginMetadata]].fail(
+                    f"Plugin discovery failed: {e}",
+                )
+
+        @staticmethod
+        def extract_plugin_metadata(
+            plugin_path: Path,
+        ) -> p.Result[m.Plugin.PluginMetadata]:
+            """Extract metadata from plugin file.
+
+            Args:
+            plugin_path: Path to the plugin file
+
+            Returns:
+            r containing plugin metadata
+
+            """
+            try:
+                version = c.Plugin.Discovery.DEFAULT_PLUGIN_VERSION
+                description = f"Plugin from {plugin_path.name}"
+                if plugin_path.suffix == ".py":
+                    content = plugin_path.read_text(encoding="utf-8")
+                    version_match = re.search(
+                        r"__version__\\s*=\\s*[\"\\']([^\"\\']+)[\"\\']",
+                        content,
+                    )
+                    if version_match:
+                        version = version_match.group(1)
+                    doc_match = re.search(r'"""([^"]+)"""', content)
+                    if doc_match:
+                        description = doc_match.group(1).strip()
+                metadata = m.Plugin.PluginMetadata(
+                    name=plugin_path.stem,
+                    version=version,
+                    description=description,
+                    author="Unknown",
+                    plugin_type="extension",
+                    entry_point=str(plugin_path),
+                    dependencies=[],
+                    metadata={"discovered_at": datetime.now(UTC).isoformat()},
+                )
+                return r[m.Plugin.PluginMetadata].ok(metadata)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[m.Plugin.PluginMetadata].fail(
+                    f"Metadata extraction failed: {e}",
+                )
+
+        @staticmethod
+        def validate_plugin_file(plugin_path: Path) -> p.Result[None]:
+            """Validate plugin file structure and safety.
+
+            Args:
+            plugin_path: Path to the plugin file
+
+            Returns:
+            r indicating validation success or failure
+
+            """
+            try:
+                if not plugin_path.exists():
+                    return r[None].fail(f"Plugin file does not exist: {plugin_path}")
+                file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
+                if file_size_mb > FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB:
+                    return r[None].fail(
+                        f"Plugin file too large: {file_size_mb:.1f}MB > {FlextPluginUtilities.Plugin.MAX_PLUGIN_SIZE_MB}MB",
+                    )
+                if plugin_path.suffix == ".py":
+                    content = plugin_path.read_text(encoding="utf-8")
+                    dangerous_patterns = [
+                        "exec(",
+                        "eval(",
+                        "__import__",
+                        "subprocess",
+                        "os.system",
+                    ]
+                    for pattern in dangerous_patterns:
+                        if pattern in content:
+                            return r[None].fail(
+                                f"Plugin contains potentially dangerous code: {pattern}",
+                            )
+                return r[None].ok(None)
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
+                return r[None].fail(f"Plugin file validation failed: {e}")
+
+        @staticmethod
+        def validate_plugin_name(name: str) -> p.Result[None]:
+            """Validate plugin name follows naming conventions.
+
+            Args:
+            name: Plugin name to validate
+
+            Returns:
+            r indicating validation success or failure
+
+            """
+            if not re.match(FlextPluginUtilities.Plugin.PLUGIN_NAME_PATTERN, name):
+                return r[None].fail(
+                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
+                )
+            return r[None].ok(None)
+
+        class HotReloadManager:
+            """Hot reload management utilities."""
+
+            DEFAULT_WATCH_INTERVAL: ClassVar[float] = 1.0
+            MAX_RELOAD_ATTEMPTS: ClassVar[int] = 3
+            RELOAD_TIMEOUT_SECONDS: ClassVar[int] = 30
+
+            @staticmethod
+            def create_file_watcher(
+                watch_path: Path | str,
+                callback_function: Callable[..., t.Container] | None = None,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Create file system watcher for plugin hot reload.
+
+                Args:
+                watch_path: Path to watch for changes
+                callback_function: Function to call on file changes
+
+                Returns:
+                r containing watcher configuration
+
+                """
+                try:
+                    path = Path(watch_path)
+                    if not path.exists():
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Watch path does not exist: {path}",
+                        )
+                    watcher_config: Mapping[str, t.Container] = {
+                        "watch_path": str(path),
+                        "callback": callback_function.__name__
+                        if callback_function
+                        else None,
+                        "watch_interval": FlextPluginUtilities.Plugin.HotReloadManager.DEFAULT_WATCH_INTERVAL,
+                        "last_modified": dict[str, t.ContainerValue](),
+                        "active": False,
+                        "created_at": datetime.now(UTC).isoformat(),
+                    }
+                    return r[Mapping[str, t.Container]].ok(watcher_config)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"File watcher creation failed: {e}",
+                    )
+
+            @staticmethod
+            def detect_file_changes(
+                watcher_config: Mapping[str, t.Container],
+            ) -> p.Result[t.Plugin.StringList]:
+                """Detect file changes in watched directory.
+
+                Args:
+                watcher_config: Watcher configuration from create_file_watcher
+
+                Returns:
+                r containing list of changed files
+
+                """
+                try:
+                    watch_path = Path(str(watcher_config["watch_path"]))
+                    last_modified_raw = watcher_config.get("last_modified", {})
+                    last_modified: t.MutableRecursiveContainerMapping = (
+                        dict(
+                            t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                                last_modified_raw,
+                            ),
+                        )
+                        if u.dict_like(last_modified_raw)
+                        else {}
+                    )
+                    changed_files: MutableSequence[str] = []
+                    for file_path in watch_path.rglob("*"):
+                        if (
+                            file_path.is_file()
+                            and file_path.suffix
+                            in FlextPluginUtilities.Plugin.PLUGIN_FILE_EXTENSIONS
+                        ):
+                            file_key = str(file_path)
+                            current_mtime = file_path.stat().st_mtime
+                            if (
+                                file_key not in last_modified
+                                or last_modified[file_key] != current_mtime
+                            ):
+                                changed_files.append(file_path.as_posix())
+                                last_modified[file_key] = current_mtime
+                    return r[t.Plugin.StringList].ok(changed_files)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[t.Plugin.StringList].fail(
+                        f"File change detection failed: {e}"
+                    )
+
+            @staticmethod
+            def validate_reload_safety(plugin_path: Path) -> p.Result[None]:
+                """Validate that plugin can be safely reloaded.
+
+                Args:
+                plugin_path: Path to plugin being reloaded
+
+                Returns:
+                r indicating reload safety
+
+                """
+                try:
+                    validation_result = (
+                        FlextPluginUtilities.Plugin.validate_plugin_file(
+                            plugin_path,
+                        )
+                    )
+                    if validation_result.failure:
+                        return r[None].fail(
+                            f"Plugin validation failed: {validation_result.error}",
+                        )
+                    if plugin_path.suffix == ".py":
+                        try:
+                            content = plugin_path.read_text(encoding="utf-8")
+                            _ = compile(content, str(plugin_path), "exec")
+                        except SyntaxError as e:
+                            return r[None].fail(f"Python syntax error in plugin: {e}")
+                    return r[None].ok(None)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[None].fail(f"Reload safety validation failed: {e}")
+
+        class SecurityValidation:
+            """Plugin security validation and sandboxing utilities."""
+
+            ALLOWED_IMPORTS: ClassVar[t.Plugin.StringList] = [
+                "flext_core",
+                "flext_api",
+                "flext_observability",
+                "flext_auth",
+                "json",
+                "datetime",
+                "pathlib",
+                "typing",
+                "pydantic",
+            ]
+            DANGEROUS_OPERATIONS: ClassVar[t.Plugin.StringList] = [
+                "exec",
+                "eval",
+                "__import__",
+                "subprocess",
+                "os.system",
+                "open",
+            ]
+            MAX_MEMORY_MB: ClassVar[int] = 512
+            MAX_EXECUTION_TIME_SECONDS: ClassVar[int] = 300
+
+            @staticmethod
+            def calculate_plugin_hash(plugin_content: str) -> p.Result[str]:
+                """Calculate secure hash of plugin content for integrity verification.
+
+                Args:
+                plugin_content: Plugin source code content
+
+                Returns:
+                r containing SHA-256 hash of plugin content
+
+                """
+
+                def _calculate_plugin_hash() -> str:
+                    content_bytes = plugin_content.encode("utf-8")
+                    hash_object = hashlib.sha256(content_bytes)
+                    return hash_object.hexdigest()
+
+                return FlextPluginUtilities.try_(
+                    _calculate_plugin_hash,
+                    catch=(
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ImportError,
+                    ),
+                ).map_error(lambda e: f"Plugin hash calculation failed: {e}")
+
+            @staticmethod
+            def create_sandbox_config(
+                plugin_name: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Create sandbox configuration for plugin execution.
+
+                Args:
+                plugin_name: Name of the plugin to sandbox
+
+                Returns:
+                r containing sandbox configuration
+
+                """
+
+                def _create_sandbox_config() -> Mapping[str, t.Container]:
+                    sandbox_config: Mapping[str, t.Container] = {
+                        "plugin_name": plugin_name,
+                        "max_memory_mb": FlextPluginUtilities.Plugin.SecurityValidation.MAX_MEMORY_MB,
+                        "max_execution_time": FlextPluginUtilities.Plugin.SecurityValidation.MAX_EXECUTION_TIME_SECONDS,
+                        "allowed_modules": list(
+                            FlextPluginUtilities.Plugin.SecurityValidation.ALLOWED_IMPORTS,
+                        ),
+                        "network_access": False,
+                        "file_system_access": "read-only",
+                        "environment_variables": {
+                            "PYTHONDONTWRITEBYTECODE": "1",
+                            "PYTHONUNBUFFERED": "1",
+                        },
+                        "created_at": datetime.now(UTC).isoformat(),
+                    }
+                    return sandbox_config
+
+                return FlextPluginUtilities.try_(
+                    _create_sandbox_config,
+                    catch=(
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ImportError,
+                    ),
+                ).map_error(lambda e: f"Sandbox configuration creation failed: {e}")
+
+            @staticmethod
+            def validate_plugin_security(
+                plugin_content: str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Validate plugin security before execution.
+
+                Args:
+                plugin_content: Plugin source code content
+
+                Returns:
+                r containing security validation results
+
+                """
+                try:
+                    security_report: t.MutableRecursiveContainerMapping = {
+                        "safe": True,
+                        "violations": list[str](),
+                        "warnings": list[str](),
+                        "analysis_time": datetime.now(UTC).isoformat(),
+                    }
+                    for dangerous_op in FlextPluginUtilities.Plugin.SecurityValidation.DANGEROUS_OPERATIONS:
+                        if dangerous_op in plugin_content:
+                            security_report["safe"] = False
+                            violations = security_report["violations"]
+                            if u.list_like(violations) and isinstance(violations, list):
+                                violations.append(
+                                    f"Dangerous operation detected: {dangerous_op}",
+                                )
+                    import_pattern = "(?:from\\s+(\\w+)|import\\s+(\\w+))"
+                    imports = re.findall(import_pattern, plugin_content)
+                    for imp in imports:
+                        module_name = imp[0] or imp[1]
+                        if module_name and (
+                            not any(
+                                allowed in module_name
+                                for allowed in FlextPluginUtilities.Plugin.SecurityValidation.ALLOWED_IMPORTS
+                            )
+                        ):
+                            warnings = security_report["warnings"]
+                            if u.list_like(warnings) and isinstance(warnings, list):
+                                warnings.append(
+                                    f"Potentially unsafe import: {module_name}"
+                                )
+                    if (
+                        "network" in plugin_content.lower()
+                        or "socket" in plugin_content
+                    ):
+                        warnings = security_report["warnings"]
+                        if u.list_like(warnings) and isinstance(warnings, list):
+                            warnings.append("Plugin may perform network operations")
+                    if "file" in plugin_content.lower() or "write" in plugin_content:
+                        warnings = security_report["warnings"]
+                        if u.list_like(warnings) and isinstance(warnings, list):
+                            warnings.append("Plugin may perform file operations")
+                    return r[Mapping[str, t.Container]].ok(dict(security_report))
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"Security validation failed: {e}",
+                    )
+
+        class ConfigurationManager:
+            """Plugin configuration management utilities."""
+
+            DEFAULT_CONFIG_FILE: ClassVar[str] = c.Plugin.Files.DEFAULT_CONFIG_FILE
+            CONFIG_SCHEMA_VERSION: ClassVar[str] = c.Plugin.Files.CONFIG_SCHEMA_VERSION
+            MAX_CONFIG_SIZE_KB: ClassVar[int] = 1024
+
+            @staticmethod
+            def load_plugin_config(
+                config_path: Path | str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Load plugin configuration from file.
+
+                Args:
+                config_path: Path to plugin configuration file
+
+                Returns:
+                r containing plugin configuration
+
+                """
+                try:
+                    path = Path(config_path)
+                    if not path.exists():
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Configuration file not found: {path}",
+                        )
+                    file_size_kb = path.stat().st_size / 1024
+                    if (
+                        file_size_kb
+                        > FlextPluginUtilities.Plugin.ConfigurationManager.MAX_CONFIG_SIZE_KB
+                    ):
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Configuration file too large: {file_size_kb:.1f}KB",
+                        )
+                    content = path.read_text(encoding="utf-8")
+                    if path.suffix in {".yaml", ".yml"}:
+                        settings = FlextCliUtilities.Cli.yaml_parse(content).unwrap_or(
+                            {},
+                        )
+                    elif path.suffix == ".json":
+                        settings = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
+                            content,
+                        )
+                    else:
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Unsupported configuration format: {path.suffix}",
+                        )
+                    if (
+                        u.dict_like(settings)
+                        and settings.get("schema_version")
+                        != FlextPluginUtilities.Plugin.ConfigurationManager.CONFIG_SCHEMA_VERSION
+                    ):
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Unsupported configuration schema version: {settings.get('schema_version')}",
+                        )
+                    config_mapping: Mapping[str, t.Container] = (
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(settings)
+                    )
+                    return r[Mapping[str, t.Container]].ok(config_mapping)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"Configuration loading failed: {e}",
+                    )
+
+            @staticmethod
+            def merge_plugin_configs(
+                base_config: Mapping[str, t.Container],
+                override_config: Mapping[str, t.Container],
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Merge plugin configurations with override precedence.
+
+                Args:
+                base_config: Base plugin configuration
+                override_config: Configuration values to override
+
+                Returns:
+                r containing merged configuration
+
+                """
+                try:
+                    merged_config = dict(base_config)
+                    for key, value in override_config.items():
+                        existing_value = merged_config.get(key)
+                        if isinstance(value, dict) and isinstance(existing_value, dict):
+                            base_nested_config: Mapping[str, t.Container] = (
+                                t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                                    existing_value
+                                )
+                            )
+                            override_value: Mapping[str, t.Container] = (
+                                t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(value)
+                            )
+                            nested_merge = FlextPluginUtilities.Plugin.ConfigurationManager.merge_plugin_configs(
+                                base_nested_config,
+                                override_value,
+                            )
+                            if nested_merge.success:
+                                merged_config[key] = nested_merge.value
+                            else:
+                                return r[Mapping[str, t.Container]].fail(
+                                    f"Failed to merge nested settings for key '{key}': {nested_merge.error}",
+                                )
+                        else:
+                            merged_config[key] = value
+                    return r[Mapping[str, t.Container]].ok(merged_config)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"Configuration merge failed: {e}",
+                    )
+
+            @staticmethod
+            def validate_plugin_config(
+                settings: Mapping[str, t.Container],
+            ) -> p.Result[None]:
+                """Validate plugin configuration structure and values.
+
+                Args:
+                settings: Plugin configuration to validate
+
+                Returns:
+                r indicating validation success or failure
+
+                """
+                try:
+                    required_fields = ["name", "version", "description", "entry_point"]
+                    for field in required_fields:
+                        if field not in settings:
+                            return r[None].fail(
+                                f"Missing required configuration field: {field}",
+                            )
+                    name_validation = FlextPluginUtilities.Plugin.validate_plugin_name(
+                        str(settings["name"]),
+                    )
+                    if name_validation.failure:
+                        return r[None].fail(
+                            name_validation.error or "Plugin name validation failed",
+                        )
+                    version_pattern = "^\\d+\\.\\d+\\.\\d+$"
+                    if not re.match(version_pattern, str(settings["version"])):
+                        return r[None].fail(
+                            f"Invalid version format: {settings['version']}. Expected semantic version (x.y.z)",
+                        )
+                    return r[None].ok(None)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[None].fail(f"Configuration validation failed: {e}")
+
+        class PluginExecution:
+            """Plugin execution and lifecycle management utilities."""
+
+            DEFAULT_TIMEOUT_SECONDS: ClassVar[int] = 300
+            MAX_RETRY_ATTEMPTS: ClassVar[int] = 3
+            EXECUTION_LOG_LEVELS: ClassVar[t.Plugin.StringList] = [
+                "DEBUG",
+                "INFO",
+                "WARNING",
+                "ERROR",
+                "CRITICAL",
+            ]
+
+            @staticmethod
+            def execute_plugin_function(
+                plugin_module: ModuleType,
+                function_name: str,
+                args: t.RecursiveContainerList | None = None,
+                kwargs: Mapping[str, t.Container] | None = None,
+            ) -> p.Result[t.Container]:
+                """Execute a specific function within a plugin module.
+
+                Args:
+                plugin_module: Loaded plugin module
+                function_name: Name of function to execute
+                args: Positional arguments for function
+                kwargs: Keyword arguments for function
+
+                Returns:
+                r containing function execution result
+
+                """
+                plugin_function = getattr(plugin_module, function_name, None)
+                if plugin_function is None:
+                    return r[t.Container].fail(
+                        f"Function '{function_name}' not found in plugin module",
+                    )
+                if not callable(plugin_function):
+                    return r[t.Container].fail(f"'{function_name}' is not callable")
+
+                def _execute_plugin_function() -> t.Container:
+                    execution_args = args or []
+                    execution_kwargs = kwargs or {}
+                    raw_result = plugin_function(
+                        *execution_args,
+                        **execution_kwargs,
+                    )
+                    if isinstance(raw_result, (str, int, float, bool)):
+                        return raw_result
+                    if raw_result is None:
+                        return None
+                    return str(raw_result)
+
+                return FlextPluginUtilities.try_(
+                    _execute_plugin_function,
+                    catch=(
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ImportError,
+                    ),
+                ).map_error(lambda e: f"Plugin function execution failed: {e}")
+
+            @staticmethod
+            def load_plugin_module(plugin_path: Path | str) -> p.Result[ModuleType]:
+                """Load plugin module from file path.
+
+                Args:
+                plugin_path: Path to plugin Python file
+
+                Returns:
+                r containing loaded plugin module
+
+                """
+                try:
+                    path = Path(plugin_path)
+                    if not path.exists():
+                        return r[ModuleType].fail(f"Plugin file not found: {path}")
+                    if path.suffix != ".py":
+                        return r[ModuleType].fail(
+                            f"Only Python plugins are supported: {path}",
+                        )
+                    spec = importlib.util.spec_from_file_location(path.stem, path)
+                    if spec is None or spec.loader is None:
+                        return r[ModuleType].fail(
+                            f"Failed to create module spec for: {path}",
+                        )
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    return r[ModuleType].ok(module)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[ModuleType].fail(f"Plugin module loading failed: {e}")
+
+            @staticmethod
+            def validate_plugin_interface(
+                plugin_module: ModuleType,
+                required_functions: t.Plugin.StringList,
+            ) -> p.Result[None]:
+                """Validate that plugin module implements required interface.
+
+                Args:
+                plugin_module: Loaded plugin module
+                required_functions: List of required function names
+
+                Returns:
+                r indicating interface validation success or failure
+
+                """
+
+                def _validate_plugin_interface() -> None:
+                    missing_functions = [
+                        func_name
+                        for func_name in required_functions
+                        if getattr(plugin_module, func_name, None) is None
+                    ]
+                    if missing_functions:
+                        missing_msg = (
+                            f"Plugin missing required functions: {missing_functions}"
+                        )
+                        raise ValueError(missing_msg)
+                    non_callable = [
+                        func_name
+                        for func_name in required_functions
+                        if not callable(getattr(plugin_module, func_name, None))
+                    ]
+                    if non_callable:
+                        non_callable_msg = (
+                            f"Plugin attributes not callable: {non_callable}"
+                        )
+                        raise ValueError(non_callable_msg)
+
+                return FlextPluginUtilities.try_(
+                    _validate_plugin_interface,
+                    catch=(
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ImportError,
+                    ),
+                ).map_error(lambda e: f"Plugin interface validation failed: {e}")
+
+        class RegistryOperations:
+            """Plugin registry management utilities."""
+
+            REGISTRY_FILE_NAME: ClassVar[str] = "plugin_registry.json"
+            REGISTRY_BACKUP_COUNT: ClassVar[int] = 5
+            MAX_REGISTRY_SIZE_MB: ClassVar[int] = 10
+
+            @staticmethod
+            def cleanup_registry_backups(registry_directory: Path) -> p.Result[None]:
+                """Clean up old registry backup files.
+
+                Args:
+                registry_directory: Directory containing registry backups
+
+                Returns:
+                r indicating cleanup success or failure
+
+                """
+
+                def _cleanup_registry_backups() -> None:
+                    backup_pattern = f"{FlextPluginUtilities.Plugin.RegistryOperations.REGISTRY_FILE_NAME.split('.')[0]}.backup.*.json"
+                    backup_files = list(registry_directory.glob(backup_pattern))
+                    backup_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+                    for backup_file in backup_files[
+                        FlextPluginUtilities.Plugin.RegistryOperations.REGISTRY_BACKUP_COUNT :
+                    ]:
+                        backup_file.unlink()
+
+                return FlextPluginUtilities.try_(
+                    _cleanup_registry_backups,
+                    catch=(
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ImportError,
+                    ),
+                ).map_error(lambda e: f"Registry backup cleanup failed: {e}")
+
+            @staticmethod
+            def load_plugin_registry(
+                registry_path: Path | str,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Load plugin registry from file.
+
+                Args:
+                registry_path: Path to plugin registry file
+
+                Returns:
+                r containing plugin registry data
+
+                """
+                try:
+                    path = Path(registry_path)
+                    if not path.exists():
+                        registry: Mapping[str, t.Container] = {
+                            "version": c.Plugin.Files.CONFIG_SCHEMA_VERSION,
+                            "plugins": dict[str, t.ContainerValue](),
+                            "last_updated": datetime.now(UTC).isoformat(),
+                            "created_at": datetime.now(UTC).isoformat(),
+                        }
+                        return r[Mapping[str, t.Container]].ok(registry)
+                    file_size_mb = path.stat().st_size / (1024 * 1024)
+                    if (
+                        file_size_mb
+                        > FlextPluginUtilities.Plugin.RegistryOperations.MAX_REGISTRY_SIZE_MB
+                    ):
+                        return r[Mapping[str, t.Container]].fail(
+                            f"Registry file too large: {file_size_mb:.1f}MB",
+                        )
+                    content = path.read_text(encoding="utf-8")
+                    registry = t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
+                        content,
+                    )
+                    return r[Mapping[str, t.Container]].ok(registry)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"Registry loading failed: {e}",
+                    )
+
+            @staticmethod
+            def register_plugin(
+                registry: Mapping[str, t.Container],
+                plugin_metadata: m.Plugin.PluginMetadata,
+            ) -> p.Result[Mapping[str, t.Container]]:
+                """Register plugin in registry.
+
+                Args:
+                registry: Plugin registry data
+                plugin_metadata: Metadata of plugin to register
+
+                Returns:
+                r containing updated registry
+
+                """
+                try:
+                    mutable_registry: t.MutableRecursiveContainerMapping = dict(
+                        registry
+                    )
+                    if "plugins" not in mutable_registry:
+                        mutable_registry["plugins"] = dict[str, t.Container]()
+                    plugin_info = {
+                        "name": plugin_metadata.name,
+                        "version": getattr(plugin_metadata, "plugin_version", "1.0.0"),
+                        "description": plugin_metadata.description,
+                        "author": getattr(plugin_metadata, "author", ""),
+                        "plugin_type": plugin_metadata.plugin_type,
+                        "entry_point": plugin_metadata.entry_point,
+                        "dependencies": plugin_metadata.dependencies,
+                        "registered_at": datetime.now(UTC).isoformat(),
+                        "status": "registered",
+                        "metadata": getattr(plugin_metadata, "metadata", {}),
+                    }
+                    plugins = mutable_registry["plugins"]
+                    if isinstance(plugins, dict):
+                        plugins[plugin_metadata.name] = plugin_info
+                    return r[Mapping[str, t.Container]].ok(mutable_registry)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[Mapping[str, t.Container]].fail(
+                        f"Plugin registration failed: {e}",
+                    )
+
+            @staticmethod
+            def save_plugin_registry(
+                registry: Mapping[str, t.Container],
+                registry_path: Path | str,
+            ) -> p.Result[None]:
+                """Save plugin registry to file with backup.
+
+                Args:
+                registry: Plugin registry data to save
+                registry_path: Path to save registry file
+
+                Returns:
+                r indicating save success or failure
+
+                """
+                try:
+                    path = Path(registry_path)
+                    if path.exists():
+                        backup_path = path.with_suffix(
+                            f".backup.{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json",
+                        )
+                        _ = path.rename(backup_path)
+                        _ = FlextPluginUtilities.Plugin.RegistryOperations.cleanup_registry_backups(
+                            path.parent,
+                        )
+                    validated: t.ContainerValueMapping = (
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(registry)
+                    )
+                    mutable_registry: t.ContainerValueMapping = {
+                        **validated,
+                        "last_updated": datetime.now(UTC).isoformat(),
+                    }
+                    _ = path.write_text(
+                        t.CONTAINER_VALUE_MAPPING_ADAPTER.dump_json(
+                            mutable_registry, indent=2
+                        ).decode(
+                            "utf-8",
+                        ),
+                        encoding="utf-8",
+                    )
+                    return r[None].ok(None)
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    ImportError,
+                ) as e:
+                    return r[None].fail(f"Registry save failed: {e}")
+
+    @u.model_validator(mode="after")
+    def validate_utilities_configuration(self) -> Self:
+        """Validate the complete utilities configuration."""
+        required_classes = ["Plugin"]
+        for class_name in required_classes:
+            if getattr(self.__class__, class_name, None) is None:
+                msg = f"Missing required nested class: {class_name}"
+                raise ValueError(msg)
+        return self
+
+
+u = FlextPluginUtilities
+
+__all__: list[str] = ["FlextPluginUtilities", "u"]

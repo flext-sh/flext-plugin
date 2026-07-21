@@ -1,0 +1,276 @@
+# Architecture
+
+<!-- TOC START -->
+- [Clean Architecture Overview](#clean-architecture-overview)
+- [Domain Layer](#domain-layer)
+  - [Core Entities](#core-entities)
+  - [Services](#services)
+- [Application Layer](#application-layer)
+  - [FlextPluginPlatform (Facade)](#flextpluginplatform-facade)
+  - [Application Services](#application-services)
+- [Infrastructure Layer](#infrastructure-layer)
+  - [Adapters](#adapters)
+- [Integration Patterns](#integration-patterns)
+  - [FLEXT-Core Integration](#flext-core-integration)
+  - [Singer Ecosystem Integration](#singer-ecosystem-integration)
+- [Current Architecture Status ✅ COMPLIANT](#current-architecture-status-compliant)
+  - [FLEXT Single-Class-Per-Module Compliance Achieved](#flext-single-class-per-module-compliance-achieved)
+  - [Architecture Achievements](#architecture-achievements)
+- [Future Architecture Enhancements](#future-architecture-enhancements)
+  - [Version 0.10.0 Enhancements](#version-0100-enhancements)
+  - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
+  - [Integration Points](#integration-points)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
+**FLEXT Plugin System Architecture**
+
+______________________________________________________________________
+
+## Clean Architecture Overview
+
+flext-plugin follows Clean Architecture principles with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    INTERFACE LAYER                              │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │   CLI Interface │  │   API Interface │  │  Simple API     │  │
+│  │                 │  │                 │  │                 │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+├─────────────────────────────────────────────────────────────────┤
+│                 APPLICATION LAYER                               │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │             FlextPluginPlatform (Facade)                    │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │   Plugin        │  │   Discovery     │  │   Hot Reload    │  │
+│  │   Services      │  │   Services      │  │   Services      │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+├─────────────────────────────────────────────────────────────────┤
+│                   DOMAIN LAYER                                  │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │  FlextPlugin    │  │ FlextPluginModels.Config│  │PluginRegistry   │  │
+│  │   (Entity)      │  │    (Entity)     │  │   (Entity)      │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+├─────────────────────────────────────────────────────────────────┤
+│                INFRASTRUCTURE LAYER                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │  File System    │  │    Watchdog     │  │   Containers    │  │
+│  │   Discovery     │  │   Hot Reload    │  │      (DI)       │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+______________________________________________________________________
+
+## Domain Layer
+
+### Core Entities
+
+#### FlextPlugin
+
+```python notest
+class FlextPlugin(FlextModels.Entity):
+    """Core plugin entity with business rules"""
+
+    name: str
+    plugin_version: str
+    status: PluginStatus
+    settings: m.Dict
+
+    def activate(self) -> bool:
+        """Business rule: Plugin must be loaded before activation"""
+
+    def validate_business_rules(self) -> p.Result[bool]:
+        """Domain validation logic"""
+```
+
+#### FlextPluginModels.Config
+
+```python notest
+class FlextPluginModels.Config(FlextModels.Entity):
+    """Plugin configuration with validation"""
+    name: str
+    version: str
+    dependencies: t.StringList
+    metadata: FlextPluginModels.Metadata
+
+    class Config:
+        frozen = True  # Immutable value object
+```
+
+### Services
+
+Plugin-specific business logic that doesn't belong to a single entity.
+
+______________________________________________________________________
+
+## Application Layer
+
+### FlextPluginPlatform (Facade)
+
+Coordinates all plugin operations:
+
+```python notest
+class FlextPluginPlatform:
+    """Main facade for plugin system"""
+
+    def __init__(self, container: FlextContainer | None = None):
+        self.container = container or FlextContainer()
+        self._setup_services()
+
+    def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
+        """Coordinate plugin loading across services"""
+
+    def discover_plugins(
+        self, path: str
+    ) -> p.Result[Sequence[FlextPluginModels.Entity]]:
+        """Coordinate plugin discovery"""
+```
+
+### Application Services
+
+- **FlextPluginService**: Core plugin operations
+- **FlextPluginDiscoveryService**: Plugin discovery and validation
+- **Hot Reload Services**: File watching and reload logic
+
+______________________________________________________________________
+
+## Infrastructure Layer
+
+### Adapters
+
+#### File System Discovery
+
+```python notest
+class FileSystemPluginDiscovery:
+    """Discovers plugins from file system"""
+
+    def scan_directory(self, path: str) -> p.Result[Sequence[PluginInfo]]:
+        """Scan directory for plugin files"""
+```
+
+#### Watchdog Integration
+
+```python notest
+class WatchdogHotReload:
+    """File system monitoring for hot reload"""
+
+    def watch_directory(self, path: str, callback: Callable):
+        """Monitor directory for changes"""
+```
+
+______________________________________________________________________
+
+## Integration Patterns
+
+### FLEXT-Core Integration
+
+#### r Pattern
+
+All operations return `r[T]` for railway-oriented programming:
+
+```python notest
+def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
+    try:
+        # Plugin loading logic
+        return r[bool].ok(True)
+    except Exception as e:
+        return r[bool].fail(f"Loading failed: {e}")
+```
+
+#### Dependency Injection
+
+Uses FlextContainer for service management:
+
+```python
+from __future__ import annotations
+
+
+def _setup_services(self) -> None:
+    """Register services in DI container"""
+    self.container.bind("plugin_service", FlextPluginService(container=self.container))
+```
+
+### Singer Ecosystem Integration
+
+Plugins can implement Singer tap/target patterns:
+
+```python notest
+class SingerTapPlugin(FlextPlugin):
+    """Plugin implementing Singer tap protocol"""
+
+    def create_tap(self) -> SingerTap:
+        """Create Singer tap instance"""
+```
+
+______________________________________________________________________
+
+## Current Architecture Status ✅ COMPLIANT
+
+### FLEXT Single-Class-Per-Module Compliance Achieved
+
+All modules follow the FLEXT single-class-per-module standard with nested helper classes:
+
+- ✅ `entities.py`: Unified `FlextPluginModels` class (domain entities)
+- ✅ `implementations.py`: Unified `FlextPluginImplementations` class (concrete implementations)
+- ✅ `hot_reload.py`: Unified `FlextPluginHotReload` class (file monitoring)
+- ✅ All 20 modules: Single main class following FLEXT ecosystem patterns
+
+### Architecture Achievements
+
+- ✅ **Clean Architecture**: Proper domain/application/infrastructure layer separation
+- ✅ **Domain-Driven Design**: Entities with business rules and validation
+- ✅ **FLEXT Compliance**: Single-class-per-module standard achieved across all modules
+- ✅ **Type Safety**: Complete MyPy compliance with Python 3.13+ features
+- ✅ **Railway Pattern**: p.Result[T] throughout for composable error handling
+
+______________________________________________________________________
+
+## Future Architecture Enhancements
+
+### Version 0.10.0 Enhancements
+
+1. **Entry Points Discovery**: Python 3.13 `importlib.metadata` for pip-installable plugins
+1. **CLI Integration**: Complete command-line interface with flext-cli integration
+1. **Performance Optimization**: Enhanced plugin loading and execution efficiency
+1. **Security Framework**: Plugin sandboxing and validation mechanisms
+
+### Version 1.0.0 Enterprise Features
+
+1. **Multi-Format Discovery**: Entry points + file-based + setuptools integration
+1. **Advanced Security**: Process/container isolation for high-security environments
+1. **Plugin Marketplace**: Registry integration for plugin distribution and discovery
+1. **Enterprise Monitoring**: Comprehensive plugin metrics and health checks
+
+### Integration Points
+
+- **flext-cli**: Command-line plugin management
+- **flext-web**: Web interface for plugin REDACTED_LDAP_BIND_PASSWORDistration
+- **flext-api**: REST API for plugin operations
+- **Singer Projects**: Plugin framework for data pipeline components
+
+______________________________________________________________________
+
+This architecture enables the plugin system to serve as reliable infrastructure for the entire FLEXT ecosystem while maintaining clean separation of concerns and integration with FLEXT-core patterns.
+
+## Related Documentation
+
+**Within Project**:
+
+- Getting Started - Installation and basic usage
+- API Reference - Complete API documentation
+- Examples - Working code examples
+- Development - Contributing guidelines
+
+**Across Projects**:
+
+- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
+- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
+
+**External Resources**:
+
+- [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
+- [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
