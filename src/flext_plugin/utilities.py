@@ -7,10 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    MutableSequence,
-    Sequence,
-)
+from collections.abc import MutableSequence, Sequence
 from pathlib import Path
 from typing import ClassVar
 
@@ -64,8 +61,7 @@ class FlextPluginUtilities(u):
 
         @classmethod
         def discover_plugins(
-            cls,
-            directory: Path | str,
+            cls, directory: Path | str
         ) -> p.Result[Sequence[m.Plugin.PluginMetadata]]:
             """Discover plugins in the specified directory.
 
@@ -80,20 +76,18 @@ class FlextPluginUtilities(u):
                 search_path = Path(directory)
                 if not search_path.exists():
                     return r[Sequence[m.Plugin.PluginMetadata]].fail(
-                        f"Plugin directory does not exist: {search_path}",
+                        f"Plugin directory does not exist: {search_path}"
                     )
                 plugins = cls._discover_metadata(search_path)
                 return r[Sequence[m.Plugin.PluginMetadata]].ok(plugins)
             except c.EXC_BROAD_IO_TYPE as e:
                 return r[Sequence[m.Plugin.PluginMetadata]].fail_op(
-                    "Plugin discovery",
-                    e,
+                    "Plugin discovery", e
                 )
 
         @classmethod
         def extract_plugin_metadata(
-            cls,
-            plugin_path: Path,
+            cls, plugin_path: Path
         ) -> p.Result[m.Plugin.PluginMetadata]:
             """Extract metadata from plugin file.
 
@@ -141,7 +135,7 @@ class FlextPluginUtilities(u):
             """
             if not c.Plugin.PluginValidation.PLUGIN_NAME_RE.match(name):
                 return r[None].fail(
-                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
+                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores."
                 )
             return r[None].ok(None)
 
@@ -162,8 +156,7 @@ class FlextPluginUtilities(u):
 
         @classmethod
         def _discover_metadata(
-            cls,
-            search_path: Path,
+            cls, search_path: Path
         ) -> Sequence[m.Plugin.PluginMetadata]:
             """Discover plugin metadata under one search path."""
             plugins: MutableSequence[m.Plugin.PluginMetadata] = []
@@ -215,7 +208,7 @@ class FlextPluginUtilities(u):
             file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
             if file_size_mb > cls.MAX_PLUGIN_SIZE_MB:
                 return r[None].fail(
-                    f"Plugin file too large: {file_size_mb:.1f}MB > {cls.MAX_PLUGIN_SIZE_MB}MB",
+                    f"Plugin file too large: {file_size_mb:.1f}MB > {cls.MAX_PLUGIN_SIZE_MB}MB"
                 )
             return r[None].ok(None)
 
@@ -229,7 +222,7 @@ class FlextPluginUtilities(u):
             for pattern in cls.DANGEROUS_PLUGIN_PATTERNS:
                 if pattern in content:
                     return r[None].fail(
-                        f"Plugin contains potentially dangerous code: {pattern}",
+                        f"Plugin contains potentially dangerous code: {pattern}"
                     )
             return r[None].ok(None)
 

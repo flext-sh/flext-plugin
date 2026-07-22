@@ -161,10 +161,7 @@ class CustomPlugin(FlextPlugin):
 **Service Pattern**:
 
 ```python notest
-from flext_plugin import (
-    FlextPluginService,
-    FlextPluginDiscoveryService,
-)
+from flext_plugin import FlextPluginService, FlextPluginDiscoveryService
 from flext_plugin import FlextPluginHandler
 
 

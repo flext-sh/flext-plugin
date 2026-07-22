@@ -15,11 +15,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import c
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_tests import tm
 from tests import u
 
 Platform = FlextPluginPlatform
@@ -37,8 +37,7 @@ class TestsFlextPluginPlatformExecution:
     def test_execution_create_generates_uuid_when_id_omitted(self) -> None:
         """create() assigns a UUID execution_id when none is supplied."""
         execution = Platform.PluginExecution.create(
-            plugin_name="demo",
-            execution_config={"input_data": {"x": 1}},
+            plugin_name="demo", execution_config={"input_data": {"x": 1}}
         )
 
         tm.that(execution.plugin_name, eq="demo")
@@ -50,9 +49,7 @@ class TestsFlextPluginPlatformExecution:
     def test_execution_create_honors_explicit_id(self) -> None:
         """create() uses the supplied execution_id verbatim."""
         execution = Platform.PluginExecution.create(
-            plugin_name="demo",
-            execution_config={},
-            execution_id="exec-123",
+            plugin_name="demo", execution_config={}, execution_id="exec-123"
         )
 
         tm.that(execution.execution_id, eq="exec-123")
@@ -141,15 +138,11 @@ class TestsFlextPluginPlatformService:
 
     @staticmethod
     def _make_plugin(
-        *,
-        name: str = "demo-plugin",
-        is_enabled: bool = True,
+        *, name: str = "demo-plugin", is_enabled: bool = True
     ) -> Platform.Plugin:
         """Build a platform plugin entity."""
         plugin: Platform.Plugin = Platform.Plugin.create(
-            name=name,
-            plugin_version="1.0.0",
-            is_enabled=is_enabled,
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled
         )
         return plugin
 
@@ -287,15 +280,11 @@ class TestsFlextPluginPlatformService:
 
         tm.that(result.failure, eq=True)
 
-    def test_service_discover_plugins_with_real_discovery(
-        self,
-        tmp_path: Path,
-    ) -> None:
+    def test_service_discover_plugins_with_real_discovery(self, tmp_path: Path) -> None:
         """discover_plugins() registers plugins found by real file-system discovery."""
         service = Platform.PluginPlatformService()
         (tmp_path / "found.py").write_text(
-            '"""Real plugin module."""\n',
-            encoding="utf-8",
+            '"""Real plugin module."""\n', encoding="utf-8"
         )
         service._discovery = FlextPluginDiscovery()
 
@@ -319,8 +308,7 @@ class TestsFlextPluginPlatformService:
         assert loader.plugin_loaded("loaded")
 
     def test_service_load_plugin_propagates_loader_failure(
-        self,
-        tmp_path: Path,
+        self, tmp_path: Path
     ) -> None:
         """load_plugin() fails when the real loader cannot find the file."""
         service = Platform.PluginPlatformService()
@@ -368,10 +356,7 @@ class TestsFlextPluginPlatformService:
         is that construction itself rejects the invalid version.
         """
         with pytest.raises(c.ValidationError, match="semantic"):
-            Platform.Plugin.create(
-                name="valid-plugin",
-                plugin_version="not-semver",
-            )
+            Platform.Plugin.create(name="valid-plugin", plugin_version="not-semver")
 
     def test_service_hot_reload_methods(self) -> None:
         """Hot reload methods return success without side effects."""

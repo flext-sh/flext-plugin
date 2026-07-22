@@ -11,9 +11,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flext_tests import FlextTestsUtilities
-
 from flext_plugin import FlextPluginUtilities, m, p, r, t
+from flext_tests import FlextTestsUtilities
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
@@ -56,7 +55,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     path = Path(plugin_path)
                     if not path.is_file():
                         return r[t.JsonMapping].fail(
-                            f"Plugin file not found: {plugin_path}",
+                            f"Plugin file not found: {plugin_path}"
                         )
                     self._loaded.append(path.stem)
                     return r[t.JsonMapping].ok({
@@ -85,9 +84,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     self._executed: list[str] = []
 
                 def execute_plugin(
-                    self,
-                    plugin_name: str,
-                    context: t.JsonMapping,
+                    self, plugin_name: str, context: t.JsonMapping
                 ) -> p.Result[t.JsonMapping]:
                     """Record the execution and echo the context as result."""
                     self._executed.append(plugin_name)
@@ -116,9 +113,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                 """Real executor whose executions always fail deterministically."""
 
                 def execute_plugin(
-                    self,
-                    plugin_name: str,
-                    context: t.JsonMapping,
+                    self, plugin_name: str, context: t.JsonMapping
                 ) -> p.Result[t.JsonMapping]:
                     """Report a real execution failure."""
                     _ = plugin_name
@@ -141,26 +136,23 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                 """Real discovery whose operations always fail deterministically."""
 
                 def discover_plugin(
-                    self,
-                    plugin_path: str,
+                    self, plugin_path: str
                 ) -> p.Result[m.Plugin.DiscoveryData]:
                     """Report a real discovery failure for one plugin."""
                     _ = plugin_path
                     return r[m.Plugin.DiscoveryData].fail("discovery failed")
 
                 def discover_plugins(
-                    self,
-                    paths: t.StrSequence,
+                    self, paths: t.StrSequence
                 ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
                     """Report a real discovery failure for the given paths."""
                     _ = paths
                     return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail(
-                        "discovery failed",
+                        "discovery failed"
                     )
 
                 def validate_plugin(
-                    self,
-                    plugin_data: m.Plugin.DiscoveryData,
+                    self, plugin_data: m.Plugin.DiscoveryData
                 ) -> p.Result[bool]:
                     """Report a real validation failure."""
                     _ = plugin_data

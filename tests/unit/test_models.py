@@ -8,8 +8,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import c, m, u
 
 
@@ -34,9 +34,7 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_status_serialises_to_wire_value(
-        self,
-        status: c.Plugin.PluginStatus,
-        expected_value: str,
+        self, status: c.Plugin.PluginStatus, expected_value: str
     ) -> None:
         """Each status renders its documented lowercase wire string."""
         tm.that(status.value, eq=expected_value)
@@ -51,8 +49,7 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_operational_statuses_classify_as_operational(
-        self,
-        status: c.Plugin.PluginStatus,
+        self, status: c.Plugin.PluginStatus
     ) -> None:
         """Operational statuses are reported operational and not error states."""
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=status)
@@ -68,8 +65,7 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_error_statuses_classify_as_error_state(
-        self,
-        status: c.Plugin.PluginStatus,
+        self, status: c.Plugin.PluginStatus
     ) -> None:
         """Error statuses report as error states and never as operational."""
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=status)
@@ -91,9 +87,7 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_type_serialises_to_wire_value(
-        self,
-        plugin_type: c.Plugin.Type,
-        expected_value: str,
+        self, plugin_type: c.Plugin.Type, expected_value: str
     ) -> None:
         """Plugin type members render their documented wire strings."""
         tm.that(plugin_type.value, eq=expected_value)
@@ -129,8 +123,7 @@ class TestsFlextPluginModelsUnit:
             m.Plugin.Entity(name="", plugin_version="1.0.0")
 
     @pytest.mark.parametrize(
-        "bad_version",
-        ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
+        "bad_version", ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"]
     )
     def test_entity_rejects_non_semantic_version(self, bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
@@ -194,9 +187,7 @@ class TestsFlextPluginModelsUnit:
     def test_plugin_metadata_applies_documented_defaults(self) -> None:
         """Optional metadata fields fall back to documented defaults."""
         metadata = m.Plugin.PluginMetadata(
-            name="meta-plugin",
-            version="1.0.0",
-            entry_point="meta_plugin:main",
+            name="meta-plugin", version="1.0.0", entry_point="meta_plugin:main"
         )
         tm.that(metadata.description, eq="")
         tm.that(metadata.author, eq="Unknown")

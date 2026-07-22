@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import m, u
 
 
@@ -24,9 +24,7 @@ class TestsFlextPluginPlugin:
 
     @staticmethod
     def _make_plugin(
-        *,
-        name: str = "test-plugin",
-        is_enabled: bool = True,
+        *, name: str = "test-plugin", is_enabled: bool = True
     ) -> u.Plugin.Platform.Plugin:
         """Build a Plugin platform entity for registry-facing tests."""
         return u.Plugin.Platform.Plugin(
@@ -54,9 +52,7 @@ class TestsFlextPluginPlugin:
     def test_create_honors_explicit_disabled_state(self) -> None:
         """create() respects an explicit is_enabled=False argument."""
         plugin = m.Plugin.Entity.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
         )
         tm.that(plugin.is_enabled, eq=False)
 
@@ -76,17 +72,10 @@ class TestsFlextPluginPlugin:
 
     @pytest.mark.parametrize(
         ("is_enabled", "expected_status", "expected_active"),
-        [
-            (True, "active", True),
-            (False, "inactive", False),
-        ],
+        [(True, "active", True), (False, "inactive", False)],
     )
     def test_status_and_active_reflect_enabled_state(
-        self,
-        *,
-        is_enabled: bool,
-        expected_status: str,
-        expected_active: bool,
+        self, *, is_enabled: bool, expected_status: str, expected_active: bool
     ) -> None:
         """Status and active() derive directly from the enabled state."""
         plugin = self._make_plugin(is_enabled=is_enabled)
@@ -117,8 +106,7 @@ class TestsFlextPluginPlugin:
     # ----- Registry: lifecycle contract -----------------------------------
 
     def test_new_registry_lists_no_plugins(
-        self,
-        registry: u.Plugin.Platform.PluginRegistry,
+        self, registry: u.Plugin.Platform.PluginRegistry
     ) -> None:
         """A cleared registry reports an empty plugin listing."""
         plugins_result = registry.list_plugins()
@@ -151,8 +139,7 @@ class TestsFlextPluginPlugin:
         tm.that(plugins_result.value, has=plugin.name)
 
     def test_get_unknown_plugin_fails(
-        self,
-        registry: u.Plugin.Platform.PluginRegistry,
+        self, registry: u.Plugin.Platform.PluginRegistry
     ) -> None:
         """get() for an unregistered name returns a failure result."""
         result = registry.get("nonexistent-plugin")
@@ -173,16 +160,14 @@ class TestsFlextPluginPlugin:
         tm.that(registry.list_plugins().value, lacks=plugin.name)
 
     def test_unregister_unknown_plugin_fails(
-        self,
-        registry: u.Plugin.Platform.PluginRegistry,
+        self, registry: u.Plugin.Platform.PluginRegistry
     ) -> None:
         """unregister() for a name never registered returns a failure."""
         result = registry.unregister("nonexistent-plugin")
         tm.fail(result)
 
     def test_register_multiple_plugins_all_listed(
-        self,
-        registry: u.Plugin.Platform.PluginRegistry,
+        self, registry: u.Plugin.Platform.PluginRegistry
     ) -> None:
         """Every registered plugin is reflected in the listing."""
         plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]

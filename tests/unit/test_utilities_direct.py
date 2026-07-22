@@ -13,9 +13,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import u
+from flext_tests import tm
 
 
 class TestsFlextPluginUtilities:
@@ -31,8 +31,7 @@ class TestsFlextPluginUtilities:
     def test_discover_plugins_finds_python_files(self, tmp_path: Path) -> None:
         """discover_plugins() returns metadata for valid Python plugin files."""
         (tmp_path / "alpha_plugin.py").write_text(
-            '"""Alpha plugin."""\n__version__ = "2.0.0"\n',
-            encoding="utf-8",
+            '"""Alpha plugin."""\n__version__ = "2.0.0"\n', encoding="utf-8"
         )
 
         result = u.Plugin.discover_plugins(tmp_path)
@@ -68,8 +67,7 @@ class TestsFlextPluginUtilities:
         """extract_plugin_metadata() reads version and docstring from a .py file."""
         plugin_path = tmp_path / "demo.py"
         plugin_path.write_text(
-            '"""Demo plugin description."""\n__version__ = "1.2.3"\n',
-            encoding="utf-8",
+            '"""Demo plugin description."""\n__version__ = "1.2.3"\n', encoding="utf-8"
         )
 
         result = u.Plugin.extract_plugin_metadata(plugin_path)
@@ -140,15 +138,7 @@ class TestsFlextPluginUtilities:
 
         tm.that(result.success, eq=True)
 
-    @pytest.mark.parametrize(
-        "bad_name",
-        [
-            "123-invalid",
-            "",
-            "no spaces",
-            "invalid!",
-        ],
-    )
+    @pytest.mark.parametrize("bad_name", ["123-invalid", "", "no spaces", "invalid!"])
     def test_validate_plugin_name_rejects_invalid_names(self, bad_name: str) -> None:
         """validate_plugin_name() fails for names violating the pattern."""
         result = u.Plugin.validate_plugin_name(bad_name)
@@ -156,8 +146,7 @@ class TestsFlextPluginUtilities:
         tm.that(result.failure, eq=True)
 
     def test_validate_plugin_file_fails_for_oversized_file(
-        self,
-        tmp_path: Path,
+        self, tmp_path: Path
     ) -> None:
         """validate_plugin_file() fails when the file exceeds the size limit."""
         plugin_path = tmp_path / "huge.py"

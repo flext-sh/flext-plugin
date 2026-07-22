@@ -80,12 +80,7 @@ class FlextPluginModels:
     class Plugin(FlextModels.Entity):
         """Plugin domain entity with business rules."""
 
-        def __init__(
-            self,
-            name: str,
-            plugin_version: str,
-            settings: m.Dict,
-        ) -> None:
+        def __init__(self, name: str, plugin_version: str, settings: m.Dict) -> None:
             super().__init__()
             self.name = name
             self.plugin_version = plugin_version
@@ -116,10 +111,7 @@ class FlextPluginModels:
         """Plugin execution entity."""
 
         def __init__(
-            self,
-            plugin_name: str,
-            context: m.Dict,
-            execution_id: Optional[str] = None,
+            self, plugin_name: str, context: m.Dict, execution_id: Optional[str] = None
         ) -> None:
             super().__init__()
             self.plugin_name = plugin_name

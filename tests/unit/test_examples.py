@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import u
 
 __all__ = ["TestsFlextPluginExamples"]
@@ -47,8 +47,7 @@ class TestsFlextPluginExamples:
         """Each example exits 0 and emits no traceback to stderr."""
         example_path = _examples_dir() / script
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), *args],
-            cwd=_examples_dir().parent,
+            [sys.executable, str(example_path), *args], cwd=_examples_dir().parent
         )
 
         tm.ok(result)
@@ -60,8 +59,7 @@ class TestsFlextPluginExamples:
         """Running a non-existent example surfaces a failure, not silent success."""
         missing_path = _examples_dir() / "does_not_exist.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(missing_path)],
-            cwd=_examples_dir().parent,
+            [sys.executable, str(missing_path)], cwd=_examples_dir().parent
         )
 
         tm.ok(result)

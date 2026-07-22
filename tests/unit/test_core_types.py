@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import e, tm
 
+from flext_tests import e, tm
 from tests import c
 
 _Type = c.Plugin.Type
@@ -43,8 +43,7 @@ class TestsFlextPluginCoreTypes:
         tm.that(member, eq=value)  # StrEnum equality with the raw string
 
     @pytest.mark.parametrize(
-        "value",
-        ["tap", "target", "transform", "utility", "service", "core"],
+        "value", ["tap", "target", "transform", "utility", "service", "core"]
     )
     def test_plugin_type_round_trips_from_string(self, value: str) -> None:
         """Constructing from a valid string yields the matching member back."""
@@ -69,10 +68,7 @@ class TestsFlextPluginCoreTypes:
         total = sum(len(g) for g in groups)
         tm.that(total, eq=len(union))  # disjoint: no type in two categories
 
-    @pytest.mark.parametrize(
-        "member",
-        [_Type.TAP, _Type.TARGET, _Type.TRANSFORM],
-    )
+    @pytest.mark.parametrize("member", [_Type.TAP, _Type.TARGET, _Type.TRANSFORM])
     def test_singer_types_belong_to_singer_group(self, member: c.Plugin.Type) -> None:
         """Singer plugin types are classified in the Singer frozenset."""
         tm.that(c.Plugin.SINGER_PLUGIN_TYPES, has=member)
@@ -99,8 +95,7 @@ class TestsFlextPluginCoreTypes:
         assert c.Plugin.PluginStatus(value) is member
 
     @pytest.mark.parametrize(
-        "member",
-        [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
+        "member", [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED]
     )
     def test_error_states_report_as_error_and_not_operational(
         self, member: c.Plugin.PluginStatus
@@ -111,8 +106,7 @@ class TestsFlextPluginCoreTypes:
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @pytest.mark.parametrize(
-        "member",
-        [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
+        "member", [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED]
     )
     def test_operational_states_report_as_operational_and_not_error(
         self, member: c.Plugin.PluginStatus

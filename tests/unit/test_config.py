@@ -11,10 +11,10 @@ collaborators, or line-coverage pokes are touched.
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginSettings
+from flext_tests import tm
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,

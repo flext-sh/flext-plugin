@@ -79,19 +79,13 @@ class FlextPluginModels(m):
                 ),
             ] = ""
             plugin_type: Annotated[
-                c.Plugin.Type,
-                u.Field(
-                    description="Plugin type classification",
-                ),
+                c.Plugin.Type, u.Field(description="Plugin type classification")
             ] = c.Plugin.Type.UTILITY
             is_enabled: Annotated[bool, u.Field(description="Plugin enabled state")] = (
                 True
             )
             metadata: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Extensible plugin metadata",
-                ),
+                t.JsonMapping, u.Field(description="Extensible plugin metadata")
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @classmethod
@@ -102,7 +96,7 @@ class FlextPluginModels(m):
                 if entity_id is not None and "unique_id" not in payload:
                     payload["unique_id"] = entity_id
                 payload["metadata"] = t.json_mapping_adapter().validate_python(
-                    payload.get("metadata") or {},
+                    payload.get("metadata") or {}
                 )
                 entity: Self = cls.model_validate(payload)
                 return entity
@@ -158,21 +152,14 @@ class FlextPluginModels(m):
             path: Annotated[Path, u.Field(description="File system path to plugin")]
             discovery_type: Annotated[
                 c.Plugin.DiscoveryTypeLiteral,
-                u.Field(
-                    description="Type of discovered plugin",
-                ),
+                u.Field(description="Type of discovered plugin"),
             ]
             discovery_method: Annotated[
                 c.Plugin.DiscoveryMethodLiteral,
-                u.Field(
-                    description="Discovery method used",
-                ),
+                u.Field(description="Discovery method used"),
             ]
             metadata: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Extensible discovery metadata",
-                ),
+                t.JsonMapping, u.Field(description="Extensible discovery metadata")
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
             @u.field_validator("version", mode="before")
@@ -218,16 +205,10 @@ class FlextPluginModels(m):
             )
             entry_point: Annotated[str, u.Field(description="Entry point for plugin")]
             dependencies: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of plugin dependencies",
-                ),
+                t.StrSequence, u.Field(description="List of plugin dependencies")
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Additional metadata",
-                ),
+                t.JsonMapping, u.Field(description="Additional metadata")
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
 
         class PluginRegistry(m.Value):
@@ -246,22 +227,13 @@ class FlextPluginModels(m):
 
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
-                t.JsonMapping,
-                u.Field(
-                    description="Dictionary of registered plugins",
-                ),
+                t.JsonMapping, u.Field(description="Dictionary of registered plugins")
             ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
             last_updated: Annotated[
-                datetime,
-                u.Field(
-                    description="Last update timestamp",
-                ),
+                datetime, u.Field(description="Last update timestamp")
             ] = u.Field(default_factory=datetime.now)
             created_at: Annotated[
-                datetime,
-                u.Field(
-                    description="Registry creation timestamp",
-                ),
+                datetime, u.Field(description="Registry creation timestamp")
             ] = u.Field(default_factory=datetime.now)
 
 
