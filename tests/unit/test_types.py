@@ -35,10 +35,7 @@ class TestsFlextPluginTypesUnit:
         """The tests type facade composes FlextPluginTypes through its MRO."""
         tm.that(FlextPluginTypes in t.__mro__, eq=True)
 
-    @pytest.mark.parametrize(
-        "inherited_alias",
-        ["JsonMapping"],
-    )
+    @pytest.mark.parametrize("inherited_alias", ["JsonMapping"])
     def test_inherits_cli_type_aliases(self, inherited_alias: str) -> None:
         """flext_cli type aliases remain reachable through the facade."""
         tm.that(hasattr(FlextPluginTypes, inherited_alias), eq=True)
@@ -57,9 +54,7 @@ class TestsFlextPluginTypesUnit:
         event_handler = FlextPluginTypes.Plugin.EventHandler
         tm.that(event_handler.__name__, eq="EventHandler")
 
-    def test_event_handler_resolves_to_async_json_mapping_signature(
-        self,
-    ) -> None:
+    def test_event_handler_resolves_to_async_json_mapping_signature(self) -> None:
         """EventHandler is a JsonMapping -> Awaitable[JsonMapping] callable."""
         resolved = repr(FlextPluginTypes.Plugin.EventHandler.__value__)
         tm.that("Callable" in resolved, eq=True)

@@ -38,10 +38,7 @@ class FlextPluginConfigModels:
 
         model_config = ConfigDict(frozen=True, extra="forbid")
 
-        max_length: int = Field(
-            ge=1,
-            description="Maximum plugin description length.",
-        )
+        max_length: int = Field(ge=1, description="Maximum plugin description length.")
 
     class AuthorValidation(BaseModel):
         """Plugin author validation thresholds."""
@@ -56,7 +53,7 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         pattern: str = Field(
-            description="Regex extracting the first triple-quoted docstring.",
+            description="Regex extracting the first triple-quoted docstring."
         )
 
     class Validation(BaseModel):
@@ -65,16 +62,16 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         name: FlextPluginConfigModels.NameValidation = Field(
-            description="Plugin name validation thresholds.",
+            description="Plugin name validation thresholds."
         )
         description: FlextPluginConfigModels.DescriptionValidation = Field(
-            description="Plugin description validation thresholds.",
+            description="Plugin description validation thresholds."
         )
         author: FlextPluginConfigModels.AuthorValidation = Field(
-            description="Plugin author validation thresholds.",
+            description="Plugin author validation thresholds."
         )
         docstring: FlextPluginConfigModels.DocstringValidation = Field(
-            description="Plugin docstring extraction rules.",
+            description="Plugin docstring extraction rules."
         )
 
     class Files(BaseModel):
@@ -95,13 +92,13 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         version: FlextPluginConfigModels.Version = Field(
-            description="Plugin version defaults and validation.",
+            description="Plugin version defaults and validation."
         )
         validation: FlextPluginConfigModels.Validation = Field(
-            description="Plugin validation rule namespace.",
+            description="Plugin validation rule namespace."
         )
         files: FlextPluginConfigModels.Files = Field(
-            description="Plugin file and directory defaults.",
+            description="Plugin file and directory defaults."
         )
 
     class Root(BaseModel):
@@ -110,7 +107,7 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="ignore")
 
         Plugin: FlextPluginConfigModels.Plugin = Field(
-            description="Plugin business-rule config namespace.",
+            description="Plugin business-rule config namespace."
         )
 
 

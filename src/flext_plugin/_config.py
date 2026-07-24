@@ -23,16 +23,12 @@ from flext_plugin._models.config import FlextPluginConfigModels
 class FlextPluginConfig(FlextCliConfig):
     """Plugin config auto-loaded from ``config/*.yaml`` and validated via models."""
 
-    CONFIG_DIR: ClassVar[str] = str(
-        Path(__file__).resolve().parents[2] / "config",
-    )
+    CONFIG_DIR: ClassVar[str] = str(Path(__file__).resolve().parents[2] / "config")
 
     @cached_property
     def Plugin(self) -> FlextPluginConfigModels.Plugin:
         """Validated ``Plugin`` business-rule config namespace."""
-        root = FlextPluginConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
-        )
+        root = FlextPluginConfigModels.Root.model_validate(dict(self.model_extra or {}))
         return root.Plugin
 
 

@@ -70,9 +70,7 @@ class TestsFlextPluginDomainPorts:
         ],
     )
     def test_discover_plugin_fails_when_nothing_resolves(
-        self,
-        discovery: FlextPluginDiscovery,
-        missing_path: str,
+        self, discovery: FlextPluginDiscovery, missing_path: str
     ) -> None:
         """An unresolvable path yields a failure result, never a raised error."""
         result = discovery.discover_plugin(missing_path)
@@ -82,8 +80,7 @@ class TestsFlextPluginDomainPorts:
         assert result.error
 
     def test_discover_plugin_failure_unwrap_raises(
-        self,
-        discovery: FlextPluginDiscovery,
+        self, discovery: FlextPluginDiscovery
     ) -> None:
         """Unwrapping a failed discovery raises rather than fabricating data."""
         result = discovery.discover_plugin("no/such/plugin_qwerty.py")
@@ -97,8 +94,7 @@ class TestsFlextPluginDomainPorts:
     # ------------------------------------------------------------------ #
 
     def test_discover_plugins_empty_input_succeeds_with_empty_sequence(
-        self,
-        discovery: FlextPluginDiscovery,
+        self, discovery: FlextPluginDiscovery
     ) -> None:
         """No search paths still succeeds and yields an empty sequence."""
         result = discovery.discover_plugins([])
@@ -107,9 +103,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_directory_returns_success_sequence(
-        self,
-        discovery: FlextPluginDiscovery,
-        tmp_path: Path,
+        self, discovery: FlextPluginDiscovery, tmp_path: Path
     ) -> None:
         """A real directory yields a success whose value is a sequence."""
         self._make_tree(tmp_path)
@@ -123,8 +117,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(len(names), eq=len(set(names)))
 
     def test_discover_plugins_is_idempotent_for_empty_input(
-        self,
-        discovery: FlextPluginDiscovery,
+        self, discovery: FlextPluginDiscovery
     ) -> None:
         """Repeated empty discovery produces the same observable outcome."""
         first = discovery.discover_plugins([])
@@ -138,17 +131,13 @@ class TestsFlextPluginDomainPorts:
     # ------------------------------------------------------------------ #
 
     def test_directory_walk_collects_non_underscore_python_files_recursively(
-        self,
-        logger: p.Logger,
-        tmp_path: Path,
+        self, logger: p.Logger, tmp_path: Path
     ) -> None:
         """Walk recurses into plain packages and returns each discovered file."""
         self._make_tree(tmp_path)
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path,
-            lambda item: item.stem,
-            logger,
+            tmp_path, lambda item: item.stem, logger
         )
 
         tm.that(sorted(discovered), eq=["alpha", "beta"])
@@ -163,27 +152,19 @@ class TestsFlextPluginDomainPorts:
         ],
     )
     def test_directory_walk_filters_files_by_name_and_suffix(
-        self,
-        logger: p.Logger,
-        tmp_path: Path,
-        filename: str,
-        expected_present: bool,
+        self, logger: p.Logger, tmp_path: Path, filename: str, expected_present: bool
     ) -> None:
         """Only public ``*.py`` files reach the discover callback."""
         (tmp_path / filename).write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path,
-            lambda item: item.name,
-            logger,
+            tmp_path, lambda item: item.name, logger
         )
 
         assert (filename in discovered) is expected_present
 
     def test_directory_walk_skips_dunder_directories(
-        self,
-        logger: p.Logger,
-        tmp_path: Path,
+        self, logger: p.Logger, tmp_path: Path
     ) -> None:
         """Files inside ``__dunder__`` directories are not descended into."""
         dunder = tmp_path / "__cache__"
@@ -191,40 +172,30 @@ class TestsFlextPluginDomainPorts:
         (dunder / "hidden.py").write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path,
-            lambda item: item.stem,
-            logger,
+            tmp_path, lambda item: item.stem, logger
         )
 
         tm.that(list(discovered), eq=[])
 
     def test_directory_walk_returns_empty_for_missing_directory(
-        self,
-        logger: p.Logger,
-        tmp_path: Path,
+        self, logger: p.Logger, tmp_path: Path
     ) -> None:
         """An unreadable/missing directory yields an empty result, not a raise."""
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path / "does-not-exist",
-            lambda item: item.stem,
-            logger,
+            tmp_path / "does-not-exist", lambda item: item.stem, logger
         )
 
         tm.that(list(discovered), eq=[])
 
     def test_directory_walk_drops_none_from_callback(
-        self,
-        logger: p.Logger,
-        tmp_path: Path,
+        self, logger: p.Logger, tmp_path: Path
     ) -> None:
         """A callback returning ``None`` contributes nothing to the result."""
         (tmp_path / "alpha.py").write_text("x = 1", encoding="utf-8")
         (tmp_path / "beta.py").write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path,
-            lambda item: item.stem if item.stem == "alpha" else None,
-            logger,
+            tmp_path, lambda item: item.stem if item.stem == "alpha" else None, logger
         )
 
         tm.that(list(discovered), eq=["alpha"])
@@ -234,8 +205,7 @@ class TestsFlextPluginDomainPorts:
     # ------------------------------------------------------------------ #
 
     def test_filesystem_strategy_empty_paths_succeeds_empty(
-        self,
-        logger: p.Logger,
+        self, logger: p.Logger
     ) -> None:
         """File-system strategy with no paths succeeds with an empty sequence."""
         strategy = FlextPluginDiscovery.FileSystemStrategy(logger)
@@ -246,8 +216,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(list(result.unwrap()), eq=[])
 
     def test_filesystem_strategy_ignores_blank_path_entries(
-        self,
-        logger: p.Logger,
+        self, logger: p.Logger
     ) -> None:
         """Blank path strings are skipped rather than treated as the cwd."""
         strategy = FlextPluginDiscovery.FileSystemStrategy(logger)
@@ -258,8 +227,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(list(result.unwrap()), eq=[])
 
     def test_entry_point_strategy_returns_success_sequence(
-        self,
-        logger: p.Logger,
+        self, logger: p.Logger
     ) -> None:
         """Entry-point strategy always succeeds with a sequence value."""
         strategy = FlextPluginDiscovery.EntryPointStrategy(logger)
@@ -270,8 +238,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(list(result.unwrap()), eq=list(result.unwrap()))
 
     def test_entry_point_strategy_ignores_supplied_paths(
-        self,
-        logger: p.Logger,
+        self, logger: p.Logger
     ) -> None:
         """Entry-point discovery ignores paths: same output regardless of input."""
         strategy = FlextPluginDiscovery.EntryPointStrategy(logger)

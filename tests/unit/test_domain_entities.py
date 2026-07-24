@@ -75,26 +75,18 @@ class TestsFlextPluginDomainEntities:
         tm.that(plugin.author, eq="")
         tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
 
-    @pytest.mark.parametrize(
-        "bad_name",
-        ["ab", "-bad", "1bad", ""],
-    )
+    @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
     def test_create_rejects_names_violating_contract(self, bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
         with pytest.raises(ValueError, match=r".+"):
             m.Plugin.Entity.create(name=bad_name, entity_id="id")
 
-    @pytest.mark.parametrize(
-        "bad_version",
-        ["1", "1.2.3.4", "x.y.z", "abc"],
-    )
+    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
     def test_create_rejects_non_semantic_versions(self, bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity.create(
-                name="valid-plugin",
-                plugin_version=bad_version,
-                entity_id="id",
+                name="valid-plugin", plugin_version=bad_version, entity_id="id"
             )
 
     # ------------------------------------------------------------------ #
@@ -137,9 +129,7 @@ class TestsFlextPluginDomainEntities:
     def test_metadata_value_object_applies_declared_defaults(self) -> None:
         """Omitted optional PluginMetadata fields take their declared defaults."""
         metadata = m.Plugin.PluginMetadata(
-            name="minimal-plugin",
-            version="1.0.0",
-            entry_point="minimal.entry:main",
+            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
         )
 
         tm.that(metadata.description, eq="")

@@ -53,21 +53,12 @@ class TestsFlextPluginConstantsUnit:
             ),
             (
                 c.Plugin.UTILITY_PLUGIN_TYPES,
-                {
-                    "extension",
-                    "handler",
-                    "processor",
-                    "tool",
-                    "transformer",
-                    "utility",
-                },
+                {"extension", "handler", "processor", "tool", "transformer", "utility"},
             ),
         ],
     )
     def test_category_exact_membership(
-        self,
-        category: frozenset[c.Plugin.Type],
-        expected_values: set[str],
+        self, category: frozenset[c.Plugin.Type], expected_values: set[str]
     ) -> None:
         """Each category contains exactly its documented plugin type values."""
         tm.that({member.value for member in category}, eq=frozenset(expected_values))
@@ -98,9 +89,7 @@ class TestsFlextPluginConstantsUnit:
         ],
     )
     def test_categories_are_pairwise_disjoint(
-        self,
-        left: frozenset[c.Plugin.Type],
-        right: frozenset[c.Plugin.Type],
+        self, left: frozenset[c.Plugin.Type], right: frozenset[c.Plugin.Type]
     ) -> None:
         """No plugin type belongs to more than one category."""
         assert left.isdisjoint(right)
@@ -119,11 +108,7 @@ class TestsFlextPluginConstantsUnit:
             ("DEFAULT_CONFIG_DIR", "settings"),
         ],
     )
-    def test_file_constants_exact_values(
-        self,
-        attribute: str,
-        expected: str,
-    ) -> None:
+    def test_file_constants_exact_values(self, attribute: str, expected: str) -> None:
         """File-related constants expose their exact documented string values."""
         tm.that(getattr(c.Plugin.Files, attribute), eq=expected)
 

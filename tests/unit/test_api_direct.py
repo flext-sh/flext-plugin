@@ -37,15 +37,11 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def _make_plugin(
-        *,
-        name: str = "demo-plugin",
-        is_enabled: bool = True,
+        *, name: str = "demo-plugin", is_enabled: bool = True
     ) -> p.Plugin.Plugin:
         """Build a platform plugin entity."""
         plugin: p.Plugin.Plugin = FlextPluginPlatform.Plugin.create(
-            name=name,
-            plugin_version="1.0.0",
-            is_enabled=is_enabled,
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled
         )
         return plugin
 
@@ -65,14 +61,11 @@ class TestsFlextPluginApi:
         return instance
 
     def test_discover_plugins_logs_count_and_returns_plugins(
-        self,
-        api: FlextPluginApi,
-        tmp_path: Path,
+        self, api: FlextPluginApi, tmp_path: Path
     ) -> None:
         """discover_plugins() logs the count and returns discovered plugins."""
         (tmp_path / "found.py").write_text(
-            '"""Real plugin module."""\n',
-            encoding="utf-8",
+            '"""Real plugin module."""\n', encoding="utf-8"
         )
         self._platform(api)._discovery = FlextPluginDiscovery()
 
@@ -165,9 +158,7 @@ class TestsFlextPluginApi:
         )
 
     def test_load_plugin_logs_and_returns(
-        self,
-        api: FlextPluginApi,
-        tmp_path: Path,
+        self, api: FlextPluginApi, tmp_path: Path
     ) -> None:
         """load_plugin() logs the loaded name and returns the plugin."""
         plugin_file = tmp_path / "loaded.py"

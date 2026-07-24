@@ -60,9 +60,7 @@ class TestsFlextPluginImports:
         ],
     )
     def test_facade_classes_are_classes_and_stable(
-        self,
-        facade_name: str,
-        expected: type,
+        self, facade_name: str, expected: type
     ) -> None:
         """Each ``FlextPlugin*`` facade is a class and a stable singleton."""
         resolved = getattr(flext_plugin, facade_name)
@@ -74,8 +72,7 @@ class TestsFlextPluginImports:
         tm.that(flext_plugin.plugin is FlextPluginApi, eq=True)
 
     @pytest.mark.parametrize(
-        "alias",
-        ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
+        "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"]
     )
     def test_short_facade_aliases_are_exposed(self, alias: str) -> None:
         """Each short facade alias is published and resolves to an object."""
@@ -93,10 +90,7 @@ class TestsFlextPluginImports:
             "__url__",
         ],
     )
-    def test_version_metadata_is_non_empty_string(
-        self,
-        version_attr: str,
-    ) -> None:
+    def test_version_metadata_is_non_empty_string(self, version_attr: str) -> None:
         """Version metadata is exposed as non-empty strings."""
         value = getattr(flext_plugin, version_attr)
         tm.that(isinstance(value, str), eq=True)
