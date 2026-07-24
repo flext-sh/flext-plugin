@@ -94,8 +94,11 @@ ______________________________________________________________________
 
 All modules follow the FLEXT single-class-per-module pattern:
 
-```python notest
+```python
 # ✅ COMPLIANT - Current implementation
+from __future__ import annotations
+
+
 class FlextPluginModels:
     """Unified plugin entities following FLEXT standards"""
 
@@ -148,7 +151,9 @@ ______________________________________________________________________
 
 ### Creating Plugins
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import FlextPlugin, PluginType
 
 
@@ -161,13 +166,13 @@ class MyPlugin(FlextPlugin):
             **kwargs,
         )
 
-    def execute(self, data: dict) -> p.Result[m.Dict]:
+    def execute(self, data: dict) -> p.Result[dict]:
         """Plugin business logic"""
         try:
             # Process data
-            return r[m.Dict].ok(processed_data)
+            return r[dict].ok(processed_data)
         except Exception as e:
-            return r[m.Dict].fail(str(e))
+            return r[dict].fail(str(e))
 ```
 
 ### Hot Reload Development
@@ -227,14 +232,16 @@ poetry show --tree
 
 #### Plugin Loading Issues
 
-```python notest
+```python
 # Enable debug logging
+from __future__ import annotations
+
 logging.basicConfig(level=logging.DEBUG)
 
 # Use platform validation
 result = platform.validate_plugin(plugin)
 if result.failure:
-    u.Cli.print(f"Validation error: {result.error}")
+    print(f"Validation error: {result.error}")
 ```
 
 #### Hot Reload Problems

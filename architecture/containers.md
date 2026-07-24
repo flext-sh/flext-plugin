@@ -207,6 +207,8 @@ ______________________________________________________________________
 
 ```python
 # CLI imports and uses Core APIs
+from __future__ import annotations
+
 from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
@@ -217,6 +219,8 @@ result = api.discover_plugins(["./plugins"])
 
 ```python
 # REST API delegates to Core
+from __future__ import annotations
+
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()
@@ -476,8 +480,10 @@ ______________________________________________________________________
 
 ### FLEXT Plugin Core API
 
-```python notest
+```python
 # Primary interface for all plugin operations
+from __future__ import annotations
+
 from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()

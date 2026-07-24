@@ -36,7 +36,10 @@ ______________________________________________________________________
 
 Main facade for all plugin operations.
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextPluginPlatform:
     """Unified plugin management platform"""
 
@@ -89,7 +92,10 @@ class FlextPluginPlatform:
 
 Core plugin domain entity.
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextPlugin(FlextModels.Entity):
     """Plugin entity with business rules"""
 
@@ -97,7 +103,7 @@ class FlextPlugin(FlextModels.Entity):
     name: str  # Plugin identifier
     plugin_version: str  # Plugin version
     status: PluginStatus  # Current lifecycle status
-    settings: m.Dict  # Plugin configuration
+    settings: dict  # Plugin configuration
     metadata: FlextPluginModels.Metadata  # Plugin metadata
 
     # Business Methods
@@ -115,7 +121,9 @@ class FlextPlugin(FlextModels.Entity):
 
 Plugin configuration entity.
 
-```python notest
+```python
+from __future__ import annotations
+
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
 
@@ -136,7 +144,10 @@ ______________________________________________________________________
 
 ### PluginStatus
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class PluginStatus(str, Enum):
     """Plugin lifecycle status"""
 
@@ -148,7 +159,10 @@ class PluginStatus(str, Enum):
 
 ### PluginType
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class PluginType(str, Enum):
     """Plugin type classification"""
 
@@ -166,11 +180,14 @@ ______________________________________________________________________
 
 ### create_flext_plugin
 
-```python notest
+```python
+from __future__ import annotations
+
+
 def create_flext_plugin(
     name: str,
     version: str,
-    settings: m.Dict | None = None,
+    settings: dict | None = None,
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs,
 ) -> FlextPluginModels.Entity:
@@ -179,8 +196,11 @@ def create_flext_plugin(
 
 ### create_flext_plugin_platform
 
-```python notest
-def create_flext_plugin_platform(settings: m.Dict | None = None) -> FlextPluginPlatform:
+```python
+from __future__ import annotations
+
+
+def create_flext_plugin_platform(settings: dict | None = None) -> FlextPluginPlatform:
     """Create configured plugin platform"""
 ```
 
@@ -190,7 +210,10 @@ ______________________________________________________________________
 
 ### FlextPluginDiscoveryService
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextPluginDiscoveryService:
     """Plugin discovery and validation service"""
 
@@ -209,8 +232,10 @@ ______________________________________________________________________
 
 ### Hot Reload Configuration
 
-```python notest
+```python
 # Environment variables for hot reload
+from __future__ import annotations
+
 FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
 FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
 ```
@@ -221,7 +246,9 @@ ______________________________________________________________________
 
 All API methods return `r[T]` for consistent error handling:
 
-```python notest
+```python
+from __future__ import annotations
+
 result = platform.load_plugin(plugin)
 if result.success:
     # Plugin loaded successfully
@@ -229,7 +256,7 @@ if result.success:
 else:
     # Handle error
     error_message = result.error
-    u.Cli.print(f"Failed to load plugin: {error_message}")
+    print(f"Failed to load plugin: {error_message}")
 ```
 
 ### Exception Types
@@ -260,8 +287,10 @@ ______________________________________________________________________
 
 ### FLEXT-Core Integration
 
-```python notest
+```python
 # Use r for all operations
+from __future__ import annotations
+
 from flext_cli import u
 from flext_core import FlextSettings
 
@@ -284,8 +313,10 @@ platform = FlextPluginPlatform(container)
 
 ### Singer Integration
 
-```python notest
+```python
 # Singer tap plugin example
+from __future__ import annotations
+
 from flext_plugin import FlextPlugin, PluginType
 
 
@@ -305,7 +336,9 @@ ______________________________________________________________________
 
 ### Basic Plugin Management
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 
 # Create platform
@@ -319,24 +352,26 @@ if result.success:
     # Enable plugin
     enable_result = platform.enable_plugin("my-plugin")
     if enable_result.success:
-        u.Cli.print("Plugin ready for use")
+        print("Plugin ready for use")
 ```
 
 ### Plugin Discovery
 
-```python notest
+```python
 # Discover plugins in directory
+from __future__ import annotations
+
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
     for plugin in discovery_result.value:
-        u.Cli.print(f"Found: {plugin.name} v{plugin.plugin_version}")
+        print(f"Found: {plugin.name} v{plugin.plugin_version}")
 
         # Validate each plugin
         validation = platform.validate_plugin(plugin)
         if validation.success:
-            u.Cli.print(f"  ✓ Valid plugin")
+            print(f"  ✓ Valid plugin")
         else:
-            u.Cli.print(f"  ✗ Invalid: {validation.error}")
+            print(f"  ✗ Invalid: {validation.error}")
 ```
 
 ______________________________________________________________________

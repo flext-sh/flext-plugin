@@ -569,8 +569,10 @@ make secrets-scan         # Secret detection and validation
 
 #### **Security Monitoring**
 
-```python notest
+```python
 # Security event monitoring
+from __future__ import annotations
+
 from flext_plugin import FlextPluginSecurityMonitor
 
 monitor = FlextPluginSecurityMonitor()

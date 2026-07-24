@@ -415,8 +415,10 @@ Data Layer
 
 #### **API → Platform → Services**
 
-```python notest
+```python
 # API facade delegates to platform
+from __future__ import annotations
+
 api = FlextPluginApi()
 result = api.discover_plugins(paths)  # API
     ↓
@@ -429,8 +431,10 @@ result = service.discover_plugins(paths)  # Business logic
 
 #### **Services → Entities → Protocols**
 
-```python notest
+```python
 # Services operate on domain entities
+from __future__ import annotations
+
 service = FlextPluginService()
 plugin = service.create_plugin(settings)  # Service operation
     ↓
@@ -443,8 +447,10 @@ protocol = FlextPluginProtocols.Plugin  # Domain contract
 
 #### **Infrastructure → Adapters → External Systems**
 
-```python notest
+```python
 # Infrastructure uses adapters for external access
+from __future__ import annotations
+
 loader = FlextPluginLoader()
 module = loader.load_plugin(path)  # Infrastructure adapter
     ↓

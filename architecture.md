@@ -70,14 +70,17 @@ ______________________________________________________________________
 
 #### FlextPlugin
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
 
     name: str
     plugin_version: str
     status: PluginStatus
-    settings: m.Dict
+    settings: dict
 
     def activate(self) -> bool:
         """Business rule: Plugin must be loaded before activation"""
@@ -88,7 +91,9 @@ class FlextPlugin(FlextModels.Entity):
 
 #### FlextPluginModels.Config
 
-```python notest
+```python
+from __future__ import annotations
+
 class FlextPluginModels.Config(FlextModels.Entity):
     """Plugin configuration with validation"""
     name: str
@@ -112,7 +117,10 @@ ______________________________________________________________________
 
 Coordinates all plugin operations:
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextPluginPlatform:
     """Main facade for plugin system"""
 
@@ -143,7 +151,10 @@ ______________________________________________________________________
 
 #### File System Discovery
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
@@ -153,7 +164,12 @@ class FileSystemPluginDiscovery:
 
 #### Watchdog Integration
 
-```python notest
+```python
+from __future__ import annotations
+
+from collections.abc import Callable
+
+
 class WatchdogHotReload:
     """File system monitoring for hot reload"""
 
@@ -171,7 +187,10 @@ ______________________________________________________________________
 
 All operations return `r[T]` for railway-oriented programming:
 
-```python notest
+```python
+from __future__ import annotations
+
+
 def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
         # Plugin loading logic
@@ -197,7 +216,10 @@ def _setup_services(self) -> None:
 
 Plugins can implement Singer tap/target patterns:
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class SingerTapPlugin(FlextPlugin):
     """Plugin implementing Singer tap protocol"""
 

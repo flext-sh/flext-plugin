@@ -406,10 +406,11 @@ ______________________________________________________________________
 
 #### **Data Modeling**
 
-```python notest
+```python
 # Pydantic data models with validation
+from __future__ import annotations
+
 from pydantic import BaseModel, u.Field
-from typing import List, Dict, t.JsonValue
 
 
 
@@ -417,7 +418,7 @@ class FlextPluginSettings(m.BaseModel):
     name: str = u.Field(min_length=1, max_length=100)
     version: str = u.Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = u.Field(default_factory=list)
-    settings: Dict[str, t.JsonValue] = u.Field(default_factory=dict)
+    settings: dict[str, t.JsonValue] = u.Field(default_factory=dict)
 
     class Config:
         frozen = True  # Immutable data model
@@ -425,8 +426,11 @@ class FlextPluginSettings(m.BaseModel):
 
 #### **Data Migration**
 
-```python notest
+```python
 # Schema evolution and data migration
+from __future__ import annotations
+
+
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
@@ -435,8 +439,11 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
 
 #### **Data Validation**
 
-```python notest
+```python
 # Runtime data validation
+from __future__ import annotations
+
+
 def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
     """Validate plugin configuration data."""
     try:

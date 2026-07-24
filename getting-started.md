@@ -61,7 +61,9 @@ ______________________________________________________________________
 
 ### Create a Basic Plugin
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 from flext_cli import u
 from flext_core import FlextSettings
@@ -79,16 +81,18 @@ plugin = create_flext_plugin(
 # Load and activate plugin
 load_result = platform.load_plugin(plugin)
 if load_result.success:
-    u.Cli.print(f"Plugin {plugin.name} loaded successfully")
+    print(f"Plugin {plugin.name} loaded successfully")
 
     activate_result = platform.enable_plugin("hello-world")
     if activate_result.success:
-        u.Cli.print("Plugin activated")
+        print("Plugin activated")
 ```
 
 ### Plugin Discovery
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()
@@ -97,9 +101,9 @@ platform = FlextPluginPlatform()
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
     plugins = discovery_result.value
-    u.Cli.print(f"Found {len(plugins)} plugins")
+    print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
-        u.Cli.print(f"- {plugin.name} v{plugin.plugin_version}")
+        print(f"- {plugin.name} v{plugin.plugin_version}")
 ```
 
 ______________________________________________________________________

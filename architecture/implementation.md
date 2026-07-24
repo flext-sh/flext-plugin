@@ -50,11 +50,12 @@ ______________________________________________________________________
 
 #### **Domain Layer Implementation**
 
-```python notest
+```python
 # flext_plugin/entities.py - Domain entities with business rules
+from __future__ import annotations
+
 from flext_cli import u
 from flext_core import FlextSettings
-from typing import List, Optional
 
 
 class FlextPluginModels:
@@ -63,7 +64,7 @@ class FlextPluginModels:
     class Plugin(FlextModels.Entity):
         """Plugin domain entity with business rules."""
 
-        def __init__(self, name: str, plugin_version: str, settings: m.Dict) -> None:
+        def __init__(self, name: str, plugin_version: str, settings: dict) -> None:
             super().__init__()
             self.name = name
             self.plugin_version = plugin_version
@@ -94,15 +95,15 @@ class FlextPluginModels:
         """Plugin execution entity."""
 
         def __init__(
-            self, plugin_name: str, context: m.Dict, execution_id: Optional[str] = None
+            self, plugin_name: str, context: dict, execution_id: (str | None) = None
         ) -> None:
             super().__init__()
             self.plugin_name = plugin_name
             self.context = context
             self.execution_id = execution_id or self._generate_id()
             self._status = ExecutionStatus.PENDING
-            self._start_time: Optional[datetime] = None
-            self._end_time: Optional[datetime] = None
+            self._start_time: datetime | None = None
+            self._end_time: datetime | None = None
 
         def mark_started(self) -> None:
             """Mark execution as started."""
@@ -118,12 +119,14 @@ class FlextPluginModels:
 
 #### **Application Layer Implementation**
 
-```python notest
+```python
 # flext_plugin/services.py - Application services
+from __future__ import annotations
+
+import typing
 from flext_cli import u
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
-from typing import List, Protocol
 
 
 class FlextPluginServices:
@@ -134,7 +137,7 @@ class FlextPluginServices:
 
     async def discover_plugins(
         self, paths: t.StringList, discovery_service: PluginDiscovery
-    ) -> p.Result[List[FlextPluginModels.Plugin]]:
+    ) -> p.Result[list[FlextPluginModels.Plugin]]:
         """Application service orchestrating plugin discovery."""
 
         try:
@@ -170,10 +173,7 @@ class FlextPluginServices:
             return r.fail(f"Plugin discovery failed: {e!s}")
 
     async def execute_plugin(
-        self,
-        plugin: FlextPluginModels.Plugin,
-        context: m.Dict,
-        executor: PluginExecution,
+        self, plugin: FlextPluginModels.Plugin, context: dict, executor: PluginExecution
     ) -> p.Result[FlextPluginModels.Execution]:
         """Application service orchestrating plugin execution."""
 
@@ -201,15 +201,15 @@ class FlextPluginServices:
 
 #### **Infrastructure Layer Implementation**
 
-```python notest
+```python
 # flext_plugin/discovery.py - Infrastructure adapters
+from __future__ import annotations
+
 from flext_cli import u
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginProtocols
 import os
 from pathlib import Path
-from typing import List, Dict, t.JsonValue
-
 
 
 class FlextPluginDiscovery:
@@ -219,7 +219,9 @@ class FlextPluginDiscovery:
         self.container = container
         self.logger = container.resolve("logger").unwrap()
 
-    async def discover_plugins(self, paths: t.StringList) -> p.Result[List[Dict[str, t.JsonValue]]]:
+    async def discover_plugins(
+        self, paths: t.StringList
+    ) -> p.Result[list[dict[str, t.JsonValue]]]:
         """Discover plugins from file system."""
 
         try:
@@ -254,7 +256,7 @@ class FlextPluginDiscovery:
             self.logger.exception("Plugin discovery failed")
             return r.fail(f"Discovery error: {e!s}")
 
-    def _scan_plugin_files(self, path: Path) -> List[Path]:
+    def _scan_plugin_files(self, path: Path) -> list[Path]:
         """Scan directory for plugin files."""
         plugin_files = []
 
@@ -277,7 +279,7 @@ class FlextPluginDiscovery:
         # Additional validation logic...
         return True
 
-    def _parse_plugin_file(self, file_path: Path) -> Optional[Dict[str, t.JsonValue]]:
+    def _parse_plugin_file(self, file_path: Path) -> dict[str, t.JsonValue] | None:
         """Parse plugin configuration from file."""
         try:
             if file_path.suffix.lower() == ".py":
@@ -296,52 +298,57 @@ class FlextPluginDiscovery:
 
 #### **Protocol Definitions**
 
-```python notest
+```python
 # flext_plugin/protocols.py - Structural typing protocols
-from typing import Protocol, List, Dict, t.JsonValue, Optional
+from __future__ import annotations
+
+import typing
 from flext_cli import u
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
 
 
-
 class FlextPluginProtocols:
-    """Protocol definitions for plugin system interfaces."""
+    """typing.Protocol definitions for plugin system interfaces."""
 
-    class PluginDiscovery(Protocol):
-        """Protocol for plugin discovery mechanisms."""
+    class PluginDiscovery(typing.Protocol):
+        """typing.Protocol for plugin discovery mechanisms."""
 
         async def discover_plugins(
             self, paths: t.StringList
-        ) -> p.Result[List[Dict[str, t.JsonValue]]]:
+        ) -> p.Result[list[dict[str, t.JsonValue]]]:
             """Discover plugins from specified paths."""
             ...
 
-    class PluginLoader(Protocol):
-        """Protocol for plugin loading mechanisms."""
+    class PluginLoader(typing.Protocol):
+        """typing.Protocol for plugin loading mechanisms."""
 
-        async def load_plugin(self, plugin_path: str) -> p.Result[FlextPluginModels.Plugin]:
+        async def load_plugin(
+            self, plugin_path: str
+        ) -> p.Result[FlextPluginModels.Plugin]:
             """Load plugin from specified path."""
             ...
 
-    class PluginExecution(Protocol):
-        """Protocol for plugin execution mechanisms."""
+    class PluginExecution(typing.Protocol):
+        """typing.Protocol for plugin execution mechanisms."""
 
         async def execute_plugin(
-            self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.JsonValue]
+            self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
         ) -> p.Result[t.JsonValue]:
             """Execute plugin with given context."""
             ...
 
-    class PluginSecurity(Protocol):
-        """Protocol for plugin security validation."""
+    class PluginSecurity(typing.Protocol):
+        """typing.Protocol for plugin security validation."""
 
-        async def validate_plugin(self, plugin: FlextPluginModels.Plugin) -> p.Result[bool]:
+        async def validate_plugin(
+            self, plugin: FlextPluginModels.Plugin
+        ) -> p.Result[bool]:
             """Validate plugin security."""
             ...
 
-    class PluginHotReload(Protocol):
-        """Protocol for plugin hot reload functionality."""
+    class PluginHotReload(typing.Protocol):
+        """typing.Protocol for plugin hot reload functionality."""
 
         async def start_watching(self, paths: t.StringList) -> p.Result[bool]:
             """Start watching paths for plugin changes."""
@@ -354,8 +361,10 @@ class FlextPluginProtocols:
 
 #### **Protocol Implementation**
 
-```python notest
+```python
 # Example protocol implementation
+from __future__ import annotations
+
 from flext_plugin import FlextPluginProtocols
 
 
@@ -364,7 +373,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
     async def discover_plugins(
         self, paths: t.StringList
-    ) -> p.Result[List[Dict[str, t.JsonValue]]]:
+    ) -> p.Result[list[dict[str, t.JsonValue]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
         return r.ok([])
@@ -374,16 +383,17 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
 #### **r[T] Error Handling**
 
-```python notest
+```python
 # Railway pattern throughout the system
+from __future__ import annotations
+
 from flext_cli import u
 from flext_core import FlextSettings
-from typing import List
 
 
 async def process_plugins_workflow(
     self, plugin_names: t.StringList
-) -> p.Result[t.List]:
+) -> p.Result[t.list]:
     """Complete plugin processing workflow using railway pattern."""
 
     # Chain operations with automatic error propagation
@@ -411,7 +421,7 @@ def _validate_plugin_names(self, names: t.StringList) -> p.Result[t.StringList]:
 
 async def _load_plugins(
     self, names: t.StringList
-) -> p.Result[List[FlextPluginModels.Plugin]]:
+) -> p.Result[list[FlextPluginModels.Plugin]]:
     """Load plugins by name."""
     plugins = []
     for name in names:
@@ -491,8 +501,10 @@ class TestPluginEntity:
 
 #### **Application Service Testing**
 
-```python notest
+```python
 # tests/unit/test_services.py
+from __future__ import annotations
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from flext_plugin import FlextPluginServices
@@ -561,8 +573,10 @@ class TestPluginServices:
 
 #### **End-to-End Plugin Lifecycle Testing**
 
-```python notest
+```python
 # tests/integration/test_plugin_lifecycle.py
+from __future__ import annotations
+
 import pytest
 from pathlib import Path
 import tempfile
@@ -660,7 +674,7 @@ ______________________________________________________________________
 
 #### **Module Structure Template**
 
-```python notest
+```python
 # Template for FLEXT single-class-per-module pattern
 """
 Module: flext_plugin/[module_name].py
@@ -673,6 +687,7 @@ License: MIT
 
 from __future__ import annotations
 
+import typing
 from collections.abc import Mapping, Sequence
 from flext_core import FlextBus
 
@@ -696,7 +711,6 @@ from flext_core import t
 from flext_core import u
 
 # Standard imports
-from typing import TYPE_CHECKING
 
 # FLEXT ecosystem imports
 from flext_cli import u
@@ -707,7 +721,7 @@ from flext_plugin import FlextPluginConstants
 from flext_plugin import FlextPluginTypes
 
 # Type checking imports
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     from flext_plugin import FlextPluginModels
 
 
@@ -784,8 +798,11 @@ __all__: list[str] = ["FlextPlugin[ModuleName]"]
 
 #### **Railway Pattern Throughout**
 
-```python notest
+```python
 # Railway pattern for complex operations
+from __future__ import annotations
+
+
 async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
 ) -> p.Result[FlextPluginTypes.ComplexOutput]:
@@ -819,10 +836,11 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 
 #### **Pydantic Configuration Pattern**
 
-```python notest
+```python
 # flext_plugin/settings.py
+from __future__ import annotations
+
 from pydantic import BaseModel, u.Field, validator
-from typing import List, Optional
 from flext_plugin import FlextPluginConstants
 
 
@@ -1006,12 +1024,12 @@ spec:
 
 #### **Health Checks Implementation**
 
-```python notest
+```python
 # flext_plugin/health.py
+from __future__ import annotations
+
 from flext_cli import u
 from flext_core import FlextSettings
-from typing import Dict, t.JsonValue
-
 
 
 class FlextPluginHealth:
@@ -1020,7 +1038,7 @@ class FlextPluginHealth:
     def __init__(self, platform: FlextPluginPlatform):
         self.platform = platform
 
-    async def check_overall_health(self) -> p.Result[Dict[str, t.JsonValue]]:
+    async def check_overall_health(self) -> p.Result[dict[str, t.JsonValue]]:
         """Comprehensive health check."""
         try:
             health_status = {
@@ -1055,7 +1073,7 @@ class FlextPluginHealth:
         except Exception as e:
             return r.fail(f"Health check failed: {e!s}")
 
-    async def _check_platform_health(self) -> Dict[str, t.JsonValue]:
+    async def _check_platform_health(self) -> dict[str, t.JsonValue]:
         """Check platform operational health."""
         try:
             # Test basic platform operations
@@ -1069,7 +1087,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_plugin_health(self) -> Dict[str, t.JsonValue]:
+    async def _check_plugin_health(self) -> dict[str, t.JsonValue]:
         """Check plugin system health."""
         try:
             plugins = self.platform.list_plugins()
@@ -1084,7 +1102,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_registry_health(self) -> Dict[str, t.JsonValue]:
+    async def _check_registry_health(self) -> dict[str, t.JsonValue]:
         """Check plugin registry health."""
         try:
             # Test registry operations
@@ -1107,9 +1125,10 @@ ______________________________________________________________________
 
 #### **Multi-Level Caching**
 
-```python notest
+```python
 # flext_plugin/cache.py
-from typing import Dict, t.JsonValue, Optional
+from __future__ import annotations
+
 import asyncio
 from datetime import datetime, timedelta
 from flext_cli import u
@@ -1120,12 +1139,12 @@ class FlextPluginCache:
     """Multi-level caching for plugin system performance."""
 
     def __init__(self, max_memory_items: int = 1000, ttl_seconds: int = 3600):
-        self.memory_cache: Dict[str, Dict[str, t.JsonValue]] = {}
+        self.memory_cache: dict[str, dict[str, t.JsonValue]] = {}
         self.max_memory_items = max_memory_items
         self.ttl_seconds = ttl_seconds
         self._lock = asyncio.Lock()
 
-    async def get(self, key: str) -> Optional[t.JsonValue]:
+    async def get(self, key: str) -> t.JsonValue | None:
         """Get item from cache with TTL check."""
         async with self._lock:
             if key in self.memory_cache:
@@ -1151,7 +1170,7 @@ class FlextPluginCache:
                 "ttl": timedelta(seconds=self.ttl_seconds),
             }
 
-    def _is_expired(self, entry: Dict[str, t.JsonValue]) -> bool:
+    def _is_expired(self, entry: dict[str, t.JsonValue]) -> bool:
         """Check if cache entry is expired."""
         return datetime.now(UTC) > entry["timestamp"] + entry["ttl"]
 
@@ -1166,15 +1185,15 @@ class FlextPluginCache:
 
 #### **Concurrent Plugin Operations**
 
-```python notest
+```python
 # flext_plugin/executor.py
+from __future__ import annotations
+
 import asyncio
-from typing import List, Dict, t.JsonValue
 from concurrent.futures import ThreadPoolExecutor
 from flext_cli import u
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
-
 
 
 class FlextPluginExecutor:
@@ -1186,8 +1205,8 @@ class FlextPluginExecutor:
         self.executor = ThreadPoolExecutor(max_workers=thread_pool_size)
 
     async def execute_plugins_concurrent(
-        self, plugins: List[FlextPluginModels.Plugin], context: Dict[str, t.JsonValue]
-    ) -> p.Result[List[FlextPluginModels.Execution]]:
+        self, plugins: list[FlextPluginModels.Plugin], context: dict[str, t.JsonValue]
+    ) -> p.Result[list[FlextPluginModels.Execution]]:
         """Execute multiple plugins concurrently with resource limits."""
 
         async def execute_single_plugin(plugin: FlextPluginModels.Plugin):
@@ -1217,7 +1236,7 @@ class FlextPluginExecutor:
         return r.ok(executions)
 
     async def _execute_plugin_safe(
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.JsonValue]
+        self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
     ) -> p.Result[FlextPluginModels.Execution]:
         """Execute single plugin with error isolation."""
         try:
@@ -1245,7 +1264,7 @@ class FlextPluginExecutor:
             return r.ok(execution)  # Return failed execution, not error
 
     def _execute_plugin_sync(
-        self, plugin: FlextPluginModels.Plugin, context: Dict[str, t.JsonValue]
+        self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
     ):
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic
