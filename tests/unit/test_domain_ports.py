@@ -16,8 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import p, t, u
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
+from flext_plugin import FlextPluginDiscovery, p, t, u
 from flext_tests import tm
 
 __all__: list[str] = ["TestsFlextPluginDomainPorts"]
@@ -62,7 +61,7 @@ class TestsFlextPluginDomainPorts:
         "missing_path",
         [
             "definitely/not/here/nope_plugin.py",
-            "/tmp/flext-plugin-absent-xyz.py",
+            "/nonexistent/flext-plugin-absent-xyz.py",
             "unresolved-entry-point-name",
         ],
     )
@@ -149,7 +148,7 @@ class TestsFlextPluginDomainPorts:
         ],
     )
     def test_directory_walk_filters_files_by_name_and_suffix(
-        self, logger: p.Logger, tmp_path: Path, filename: str, expected_present: bool
+        self, logger: p.Logger, tmp_path: Path, filename: str, *, expected_present: bool
     ) -> None:
         """Only public ``*.py`` files reach the discover callback."""
         (tmp_path / filename).write_text("x = 1", encoding="utf-8")

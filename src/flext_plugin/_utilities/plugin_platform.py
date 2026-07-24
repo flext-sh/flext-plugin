@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
-from typing import override
+from typing import Self, override
 
 from flext_cli import u
 from flext_plugin import FlextPluginSettings, c, e, m, p, r, s, t
@@ -281,6 +281,31 @@ class FlextPluginPlatform:
             self._discovery = None
             self._loader = None
             self._executor = None
+
+        def with_discovery(self, discovery: p.Plugin.PluginDiscovery | None) -> Self:
+            """Replace the discovery protocol."""
+            self._discovery = discovery
+            return self
+
+        def with_loader(self, loader: p.Plugin.PluginLoader | None) -> Self:
+            """Replace the loader protocol."""
+            self._loader = loader
+            return self
+
+        def with_executor(self, executor: p.Plugin.PluginExecution | None) -> Self:
+            """Replace the executor protocol."""
+            self._executor = executor
+            return self
+
+        def inject_execution(
+            self, eid: str, execution: FlextPluginPlatform.PluginExecution
+        ) -> None:
+            """Track the given execution under the supplied id."""
+            self._executions[eid] = execution
+
+        def reset_registry(self) -> None:
+            """Reset the registry to lazy-initialize on next access."""
+            self._registry = None
 
         @property
         def discovery(self) -> p.Plugin.PluginDiscovery | None:

@@ -16,8 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_plugin import FlextPluginDiscovery, FlextPluginPlatform
 from flext_plugin.api import FlextPluginApi
 from flext_tests import tm
 from tests import u
@@ -42,19 +41,11 @@ class TestsFlextPluginApi:
         )
         return plugin
 
-    @staticmethod
-    def _platform(api: FlextPluginApi) -> FlextPluginPlatform.PluginPlatformService:
-        platform = api._platform
-        if not isinstance(platform, FlextPluginPlatform.PluginPlatformService):
-            msg = "Unexpected plugin platform implementation"
-            raise TypeError(msg)
-        return platform
-
     @pytest.fixture
     def api(self) -> FlextPluginApi:
         """Provide a fresh API instance with reset state."""
         instance = FlextPluginApi()
-        instance._platform = FlextPluginPlatform.PluginPlatformService()
+        instance.with_platform(FlextPluginPlatform.PluginPlatformService())
         return instance
 
     def test_discover_plugins_logs_count_and_returns_plugins(
@@ -64,26 +55,28 @@ class TestsFlextPluginApi:
         (tmp_path / "found.py").write_text(
             '"""Real plugin module."""\n', encoding="utf-8"
         )
-        self._platform(api)._discovery = FlextPluginDiscovery()
+        api.platform.with_discovery(FlextPluginDiscovery())
 
         result = api.discover_plugins([str(tmp_path)])
 
         tm.that(result.success, eq=True)
         assert any(plugin.name == "found" for plugin in result.unwrap())
 
-    def test_discover_plugins_failure_returned(self, api: FlextPluginApi) -> None:
+    def test_discover_plugins_failure_returned(
+        self, api: FlextPluginApi, tmp_path: Path
+    ) -> None:
         """discover_plugins() propagates failures from the platform."""
-        self._platform(api)._discovery = u.Plugin.Tests.FailingDiscovery()
+        api.platform.with_discovery(u.Plugin.Tests.FailingDiscovery())
 
-        result = api.discover_plugins(["/tmp"])
+        result = api.discover_plugins([str(tmp_path / "nonexistent")])
 
         tm.that(result.failure, eq=True)
 
     def test_execute_plugin_returns_execution_id(self, api: FlextPluginApi) -> None:
         """execute_plugin() returns a mapping containing the execution_id."""
         plugin = self._make_plugin()
-        api._platform.register_plugin(plugin)
-        self._platform(api)._executor = u.Plugin.Tests.EchoExecutor()
+        api.register_plugin(plugin)
+        api.platform.with_executor(u.Plugin.Tests.EchoExecutor())
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -93,8 +86,8 @@ class TestsFlextPluginApi:
     def test_execute_plugin_failure_returned(self, api: FlextPluginApi) -> None:
         """execute_plugin() propagates execution failures."""
         plugin = self._make_plugin()
-        api._platform.register_plugin(plugin)
-        self._platform(api)._executor = u.Plugin.Tests.FailingExecutor()
+        api.register_plugin(plugin)
+        api.platform.with_executor(u.Plugin.Tests.FailingExecutor())
 
         result = api.execute_plugin("demo-plugin", {})
 
@@ -103,7 +96,7 @@ class TestsFlextPluginApi:
     def test_fetch_plugin_existing(self, api: FlextPluginApi) -> None:
         """fetch_plugin() returns the plugin when present."""
         plugin = self._make_plugin()
-        api._platform.register_plugin(plugin)
+        api.register_plugin(plugin)
 
         result = api.fetch_plugin("demo-plugin")
 
@@ -119,7 +112,7 @@ class TestsFlextPluginApi:
     def test_fetch_plugin_status_existing(self, api: FlextPluginApi) -> None:
         """fetch_plugin_status() returns the status label when present."""
         plugin = self._make_plugin()
-        api._platform.register_plugin(plugin)
+        api.register_plugin(plugin)
 
         result = api.fetch_plugin_status("demo-plugin")
 
@@ -135,7 +128,7 @@ class TestsFlextPluginApi:
     def test_resolve_plugin_active(self, api: FlextPluginApi) -> None:
         """resolve_plugin_active() reflects the plugin enabled state."""
         plugin = self._make_plugin()
-        api._platform.register_plugin(plugin)
+        api.register_plugin(plugin)
 
         result = api.resolve_plugin_active("demo-plugin")
 
@@ -144,8 +137,8 @@ class TestsFlextPluginApi:
 
     def test_list_plugins(self, api: FlextPluginApi) -> None:
         """list_plugins() returns all registered plugins."""
-        api._platform.register_plugin(self._make_plugin(name="alpha"))
-        api._platform.register_plugin(self._make_plugin(name="beta"))
+        api.register_plugin(self._make_plugin(name="alpha"))
+        api.register_plugin(self._make_plugin(name="beta"))
 
         result = api.list_plugins()
 
@@ -160,7 +153,7 @@ class TestsFlextPluginApi:
         """load_plugin() logs the loaded name and returns the plugin."""
         plugin_file = tmp_path / "loaded.py"
         plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
-        self._platform(api)._loader = u.Plugin.Tests.FilePluginLoader()
+        api.platform.with_loader(u.Plugin.Tests.FilePluginLoader())
 
         result = api.load_plugin(str(plugin_file))
 
@@ -174,11 +167,11 @@ class TestsFlextPluginApi:
         result = api.register_plugin(plugin)
 
         tm.that(result.success, eq=True)
-        tm.that(api._platform.fetch_plugin("demo-plugin"), none=False)
+        tm.that(api.platform.fetch_plugin("demo-plugin"), none=False)
 
-    def test_start_hot_reload(self, api: FlextPluginApi) -> None:
+    def test_start_hot_reload(self, api: FlextPluginApi, tmp_path: Path) -> None:
         """start_hot_reload() succeeds."""
-        result = api.start_hot_reload(["/tmp"])
+        result = api.start_hot_reload([str(tmp_path)])
 
         tm.that(result.success, eq=True)
 
@@ -202,7 +195,7 @@ class TestsFlextPluginApi:
         """A fresh API instance builds a default platform automatically."""
         api = FlextPluginApi()
 
-        tm.that(api._platform, none=False)
+        tm.that(api.platform, none=False)
 
 
 __all__: list[str] = ["TestsFlextPluginApi"]

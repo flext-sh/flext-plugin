@@ -18,6 +18,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Self
 
 from flext_core import FlextContainer
 from flext_plugin import e, p, r, s, t, u
@@ -42,6 +43,16 @@ class FlextPluginApi(s):
     _platform: p.Plugin.PlatformService = u.PrivateAttr(
         default_factory=_build_default_platform
     )
+
+    @property
+    def platform(self) -> p.Plugin.PlatformService:
+        """The plugin platform service."""
+        return self._platform
+
+    def with_platform(self, platform: p.Plugin.PlatformService) -> Self:
+        """Replace the plugin platform service."""
+        self._platform = platform
+        return self
 
     def discover_plugins(
         self, paths: t.StrSequence

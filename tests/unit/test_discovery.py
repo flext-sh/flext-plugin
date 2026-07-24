@@ -17,8 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import u
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
+from flext_plugin import FlextPluginDiscovery, u
 from flext_tests import tm
 from tests import c
 

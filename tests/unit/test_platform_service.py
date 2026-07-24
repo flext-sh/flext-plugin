@@ -16,9 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import c
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_plugin import FlextPluginDiscovery, FlextPluginPlatform, c
 from flext_tests import tm
 from tests import u
 
@@ -203,7 +201,7 @@ class TestsFlextPluginPlatformService:
         service.register_plugin(self._make_plugin(name="inactive", is_enabled=False))
         execution = Platform.PluginExecution.create("active", {})
         execution.mark_started()
-        service._executions["e1"] = execution
+        service.inject_execution("e1", execution)
 
         status = service.platform_status
 
@@ -219,8 +217,8 @@ class TestsFlextPluginPlatformService:
         completed.mark_completed(success=True)
         running = Platform.PluginExecution.create("demo", {})
         running.mark_started()
-        service._executions["done"] = completed
-        service._executions["run"] = running
+        service.inject_execution("done", completed)
+        service.inject_execution("run", running)
 
         removed = service.cleanup_executions()
 
@@ -235,28 +233,30 @@ class TestsFlextPluginPlatformService:
         running.mark_started()
         completed = Platform.PluginExecution.create("demo", {})
         completed.mark_completed(success=True)
-        service._executions["r"] = running
-        service._executions["c"] = completed
+        service.inject_execution("r", running)
+        service.inject_execution("c", completed)
 
         tm.that(len(service.list_executions()), eq=2)
         tm.that(len(service.list_running_executions()), eq=1)
         assert service.fetch_execution("r") is running
         tm.that(service.fetch_execution("missing"), none=True)
 
-    def test_service_discover_plugins_without_discovery_fails(self) -> None:
+    def test_service_discover_plugins_without_discovery_fails(
+        self, tmp_path: Path
+    ) -> None:
         """discover_plugins() fails when no discovery protocol is configured."""
         service = Platform.PluginPlatformService()
 
-        result = service.discover_plugins(["/tmp"])
+        result = service.discover_plugins([str(tmp_path / "nonexistent")])
 
         tm.that(result.failure, eq=True)
         tm.that((result.error or ""), has="Discovery")
 
-    def test_service_load_plugin_without_loader_fails(self) -> None:
+    def test_service_load_plugin_without_loader_fails(self, tmp_path: Path) -> None:
         """load_plugin() fails when no loader protocol is configured."""
         service = Platform.PluginPlatformService()
 
-        result = service.load_plugin("/tmp/demo.py")
+        result = service.load_plugin(str(tmp_path / "demo.py"))
 
         tm.that(result.failure, eq=True)
         tm.that((result.error or ""), has="Loader")
@@ -286,7 +286,7 @@ class TestsFlextPluginPlatformService:
         (tmp_path / "found.py").write_text(
             '"""Real plugin module."""\n', encoding="utf-8"
         )
-        service._discovery = FlextPluginDiscovery()
+        service.with_discovery(FlextPluginDiscovery())
 
         result = service.discover_plugins([str(tmp_path)])
 
@@ -299,7 +299,7 @@ class TestsFlextPluginPlatformService:
         plugin_file = tmp_path / "loaded.py"
         plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
         loader = u.Plugin.Tests.FilePluginLoader()
-        service._loader = loader
+        service.with_loader(loader)
 
         result = service.load_plugin(str(plugin_file))
 
@@ -312,7 +312,7 @@ class TestsFlextPluginPlatformService:
     ) -> None:
         """load_plugin() fails when the real loader cannot find the file."""
         service = Platform.PluginPlatformService()
-        service._loader = u.Plugin.Tests.FilePluginLoader()
+        service.with_loader(u.Plugin.Tests.FilePluginLoader())
 
         result = service.load_plugin(str(tmp_path / "missing.py"))
 
@@ -323,7 +323,7 @@ class TestsFlextPluginPlatformService:
         service = Platform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        service._executor = u.Plugin.Tests.EchoExecutor()
+        service.with_executor(u.Plugin.Tests.EchoExecutor())
 
         result = service.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -340,7 +340,7 @@ class TestsFlextPluginPlatformService:
         service = Platform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        service._executor = u.Plugin.Tests.FailingExecutor()
+        service.with_executor(u.Plugin.Tests.FailingExecutor())
 
         result = service.execute_plugin("demo-plugin", {})
 
@@ -358,17 +358,17 @@ class TestsFlextPluginPlatformService:
         with pytest.raises(c.ValidationError, match="semantic"):
             Platform.Plugin.create(name="valid-plugin", plugin_version="not-semver")
 
-    def test_service_hot_reload_methods(self) -> None:
+    def test_service_hot_reload_methods(self, tmp_path: Path) -> None:
         """Hot reload methods return success without side effects."""
         service = Platform.PluginPlatformService()
 
-        tm.that(service.start_hot_reload(["/tmp"]).success, eq=True)
+        tm.that(service.start_hot_reload([str(tmp_path)]).success, eq=True)
         tm.that(service.stop_hot_reload().success, eq=True)
 
     def test_service_registry_property_creates_default(self) -> None:
         """Registry property lazily creates a registry if unset."""
         service = Platform.PluginPlatformService()
-        service._registry = None
+        service.reset_registry()
 
         registry = service.registry
 

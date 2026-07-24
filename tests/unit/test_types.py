@@ -64,7 +64,7 @@ class TestsFlextPluginTypesUnit:
     def test_event_handler_is_usable_as_annotation(self) -> None:
         """The alias is a valid, concrete annotation for handler callables."""
 
-        async def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
+        def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
             return payload
 
         annotated: FlextPluginTypes.Plugin.EventHandler = handler
