@@ -1517,7 +1517,7 @@ class DataProcessorPlugin(FlextPlugin):
         >>> plugin.initialize()
         >>> result = plugin.execute({"data": [...]})
         >>> if result.success:
-        ...     print(f"Processed {len(result.value)} records")
+        ...     u.Cli.print(f"Processed {len(result.value)} records")
 
     Singer Integration:
         When used as a Singer transform, the plugin automatically adapts
@@ -1635,8 +1635,8 @@ class DataProcessorPlugin(FlextPlugin):
             >>> result = plugin.execute(input_data)
             >>> if result.success:
             ...     stats = result.value["statistics"]
-            ...     print(f"Processed {stats['records_processed']} records")
-            ...     print(f"Processing time: {stats['processing_time']}s")
+            ...     u.Cli.print(f"Processed {stats['records_processed']} records")
+            ...     u.Cli.print(f"Processing time: {stats['processing_time']}s")
         """
         # Implementation follows...
 ````

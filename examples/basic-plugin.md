@@ -378,22 +378,22 @@ def main():
 
             # Extract result data
             result_data = execution_result.value
-            print("\n--- Execution Results ---")
-            print(f"Success: {result_data.get('success')}")
-            print(
+            u.Cli.print("\n--- Execution Results ---")
+            u.Cli.print(f"Success: {result_data.get('success')}")
+            u.Cli.print(
                 f"Processing time: {result_data.get('metadata', {}).get('processing_time', 0):.3f}s"
             )
-            print("\nProcessed Data:")
+            u.Cli.print("\nProcessed Data:")
 
             processed_data = result_data.get("processed_data", {})
             for key, value in processed_data.items():
-                print(f"  {key}: {value}")
+                u.Cli.print(f"  {key}: {value}")
 
             # Show statistics
-            print("\n--- Plugin Statistics ---")
+            u.Cli.print("\n--- Plugin Statistics ---")
             stats = plugin.get_statistics()
             for key, value in stats.items():
-                print(f"  {key}: {value}")
+                u.Cli.print(f"  {key}: {value}")
 
         else:
             logger.error(f"Plugin execution failed: {execution_result.error}")
@@ -416,10 +416,10 @@ def main():
                 logger.error(f"Execution {i + 1}: Failed - {result.error}")
 
         # Show final statistics
-        print("\n--- Final Statistics ---")
+        u.Cli.print("\n--- Final Statistics ---")
         final_stats = plugin.get_statistics()
         for key, value in final_stats.items():
-            print(f"  {key}: {value}")
+            u.Cli.print(f"  {key}: {value}")
 
         # Deactivate plugin
         logger.info("\nDeactivating plugin...")

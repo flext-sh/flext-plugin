@@ -61,7 +61,7 @@ cd flext/flext-plugin
 make setup
 
 # Verify installation
-python -c "import flext_plugin; print(f'FLEXT Plugin v{flext_plugin.__version__}')"
+python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__version__}')"
 ```
 
 ## Your First Plugin (5 minutes)
@@ -82,9 +82,9 @@ hello_plugin = create_flext_plugin(
     settings={"description": "My first FLEXT plugin", "author": "Your Name"},
 )
 
-print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
-print(f"Status: {hello_plugin.status}")
-print(f"Valid: {hello_plugin.is_valid()}")
+u.Cli.print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
+u.Cli.print(f"Status: {hello_plugin.status}")
+u.Cli.print(f"Valid: {hello_plugin.is_valid()}")
 ```
 
 Run it:
@@ -121,26 +121,26 @@ def main():
 
     try:
         # Register plugin
-        print("Registering plugin...")
+        u.Cli.print("Registering plugin...")
         result = platform.register_plugin(plugin)
         if result.success():
-            print("✅ Plugin registered successfully")
+            u.Cli.print("✅ Plugin registered successfully")
         else:
-            print(f"❌ Registration failed: {result.error}")
+            u.Cli.print(f"❌ Registration failed: {result.error}")
             return
 
         # Activate plugin
-        print("Activating plugin...")
+        u.Cli.print("Activating plugin...")
         result = platform.activate_plugin("hello-world")
         if result.success():
-            print("✅ Plugin activated successfully")
+            u.Cli.print("✅ Plugin activated successfully")
         else:
-            print(f"❌ Activation failed: {result.error}")
+            u.Cli.print(f"❌ Activation failed: {result.error}")
             return
 
         # List active plugins
         active_plugins = platform.list_active_plugins()
-        print(f"Active plugins: {[p.name for p in active_plugins.data]}")
+        u.Cli.print(f"Active plugins: {[p.name for p in active_plugins.data]}")
 
     finally:
         # Cleanup
@@ -212,7 +212,7 @@ class GreetingPlugin(FlextPlugin):
 
     def initialize(self) -> p.Result[bool]:
         """Initialize plugin resources."""
-        print(f"Initializing {self.name}...")
+        u.Cli.print(f"Initializing {self.name}...")
         # Setup any resources here
         return r[bool].ok(data=True)
 
@@ -253,7 +253,7 @@ class GreetingPlugin(FlextPlugin):
 
     def cleanup(self) -> p.Result[bool]:
         """Cleanup plugin resources."""
-        print(f"Cleaning up {self.name}...")
+        u.Cli.print(f"Cleaning up {self.name}...")
         return r[bool].ok(data=True)
 
 # Usage example
@@ -278,14 +278,14 @@ from flext_plugin import create_flext_plugin_platform
             {"name": "João", "language": "portuguese"},
         ]
 
-        print("\n--- Testing Greeting Plugin ---")
+        u.Cli.print("\n--- Testing Greeting Plugin ---")
         for test_data in test_cases:
             result = platform.execute_plugin(plugin.name, test_data)
             if result.success():
                 data = result.value
-                print(f"✅ {data['greeting']} (Language: {data['language']})")
+                u.Cli.print(f"✅ {data['greeting']} (Language: {data['language']})")
             else:
-                print(f"❌ Failed: {result.error}")
+                u.Cli.print(f"❌ Failed: {result.error}")
 
     finally:
         platform.shutdown()
@@ -331,11 +331,11 @@ def discover_plugins():
 
     if result.success():
         plugins = result.value
-        print(f"Found {len(plugins)} plugins:")
+        u.Cli.print(f"Found {len(plugins)} plugins:")
         for plugin in plugins:
-            print(f"  - {plugin.name} v{plugin.plugin_version} ({plugin.status})")
+            u.Cli.print(f"  - {plugin.name} v{plugin.plugin_version} ({plugin.status})")
     else:
-        print(f"Discovery failed: {result.error}")
+        u.Cli.print(f"Discovery failed: {result.error}")
 
 
 # Run discovery
@@ -449,16 +449,16 @@ def development_server():
         settings={"hot_reload": True, "debug": True}
     )
 
-    print("🔥 Hot reload enabled!")
-    print("Modify plugin files to see live updates...")
-    print("Press Ctrl+C to stop")
+    u.Cli.print("🔥 Hot reload enabled!")
+    u.Cli.print("Modify plugin files to see live updates...")
+    u.Cli.print("Press Ctrl+C to stop")
 
     try:
         # Keep server running
         while True:
             sleep(1)
     except KeyboardInterrupt:
-        print("\nShutting down development server...")
+        u.Cli.print("\nShutting down development server...")
         platform.shutdown()
 
 
@@ -521,8 +521,8 @@ pip install --force-reinstall flext-plugin
 
 ```python notest
 # Check plugin status and validation
-print(f"Plugin valid: {plugin.is_valid()}")
-print(f"Plugin status: {plugin.status}")
+u.Cli.print(f"Plugin valid: {plugin.is_valid()}")
+u.Cli.print(f"Plugin status: {plugin.status}")
 
 # Ensure plugin is initialized before activation
 plugin.initialize()

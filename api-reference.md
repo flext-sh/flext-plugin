@@ -229,7 +229,7 @@ if result.success:
 else:
     # Handle error
     error_message = result.error
-    print(f"Failed to load plugin: {error_message}")
+    u.Cli.print(f"Failed to load plugin: {error_message}")
 ```
 
 ### Exception Types
@@ -353,7 +353,7 @@ if result.success:
     # Enable plugin
     enable_result = platform.enable_plugin("my-plugin")
     if enable_result.success:
-        print("Plugin ready for use")
+        u.Cli.print("Plugin ready for use")
 ```
 
 ### Plugin Discovery
@@ -363,14 +363,14 @@ if result.success:
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
     for plugin in discovery_result.value:
-        print(f"Found: {plugin.name} v{plugin.plugin_version}")
+        u.Cli.print(f"Found: {plugin.name} v{plugin.plugin_version}")
 
         # Validate each plugin
         validation = platform.validate_plugin(plugin)
         if validation.success:
-            print(f"  ✓ Valid plugin")
+            u.Cli.print(f"  ✓ Valid plugin")
         else:
-            print(f"  ✗ Invalid: {validation.error}")
+            u.Cli.print(f"  ✗ Invalid: {validation.error}")
 ```
 
 ______________________________________________________________________

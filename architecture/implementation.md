@@ -1044,7 +1044,7 @@ USER flext
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "from flext_plugin import FlextPluginApi; print('OK')" || exit 1
+    CMD python -c "from flext_plugin import FlextPluginApi; u.Cli.print('OK')" || exit 1
 
 # Default command
 CMD ["python", "-m", "flext_plugin.cli", "--help"]

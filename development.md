@@ -54,7 +54,7 @@ make setup                 # Complete setup
 make info                  # Project information
 
 # Verification
-python -c "import flext_plugin; print('Setup successful')"
+python -c "import flext_plugin; u.Cli.print('Setup successful')"
 ```
 
 ______________________________________________________________________
@@ -234,7 +234,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Use platform validation
 result = platform.validate_plugin(plugin)
 if result.failure:
-    print(f"Validation error: {result.error}")
+    u.Cli.print(f"Validation error: {result.error}")
 ```
 
 #### Hot Reload Problems

@@ -42,7 +42,7 @@ cd flext/flext-plugin
 make setup
 
 # Verify installation
-python -c "import flext_plugin; print(f'Version: {flext_plugin.__version__}')"
+python -c "import flext_plugin; u.Cli.print(f'Version: {flext_plugin.__version__}')"
 ```
 
 ### Dependencies
@@ -96,11 +96,11 @@ plugin = create_flext_plugin(
 # Load and activate plugin
 load_result = platform.load_plugin(plugin)
 if load_result.success:
-    print(f"Plugin {plugin.name} loaded successfully")
+    u.Cli.print(f"Plugin {plugin.name} loaded successfully")
 
     activate_result = platform.enable_plugin("hello-world")
     if activate_result.success:
-        print("Plugin activated")
+        u.Cli.print("Plugin activated")
 ```
 
 ### Plugin Discovery
@@ -114,9 +114,9 @@ platform = FlextPluginPlatform()
 discovery_result = platform.scan_directory("./plugins")
 if discovery_result.success:
     plugins = discovery_result.value
-    print(f"Found {len(plugins)} plugins")
+    u.Cli.print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
-        print(f"- {plugin.name} v{plugin.plugin_version}")
+        u.Cli.print(f"- {plugin.name} v{plugin.plugin_version}")
 ```
 
 ______________________________________________________________________
