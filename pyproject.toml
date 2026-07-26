@@ -752,6 +752,9 @@ workspace = true
 [tool.uv.sources.flext-core]
 workspace = true
 
+[tool.uv.sources.flext-tests]
+workspace = true
+
 # [MANAGED] yamlfix
 [tool.yamlfix]
 explicit_start = false
