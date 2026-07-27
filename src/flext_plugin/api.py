@@ -18,6 +18,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Self
 
 from flext_core import FlextContainer
 from flext_plugin import e, p, r, s, t, u
@@ -37,15 +38,24 @@ class FlextPluginApi(s):
     """
 
     _logger: p.Logger = u.PrivateAttr(
-        default_factory=lambda: u.fetch_logger("flext_plugin.api"),
+        default_factory=lambda: u.fetch_logger("flext_plugin.api")
     )
     _platform: p.Plugin.PlatformService = u.PrivateAttr(
-        default_factory=_build_default_platform,
+        default_factory=_build_default_platform
     )
 
+    @property
+    def platform(self) -> p.Plugin.PlatformService:
+        """The plugin platform service."""
+        return self._platform
+
+    def with_platform(self, platform: p.Plugin.PlatformService) -> Self:
+        """Replace the plugin platform service."""
+        self._platform = platform
+        return self
+
     def discover_plugins(
-        self,
-        paths: t.StrSequence,
+        self, paths: t.StrSequence
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths; logs the count discovered."""
         result = self._platform.discover_plugins(paths)
@@ -56,29 +66,19 @@ class FlextPluginApi(s):
         return result
 
     def execute_plugin(
-        self,
-        plugin_name: str,
-        context: t.JsonMapping,
-        execution_id: str | None = None,
+        self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None
     ) -> p.Result[t.JsonMapping]:
         """Execute a plugin by name with the given context."""
-        return self._platform.execute_plugin(
-            plugin_name,
-            context,
-            execution_id,
-        ).map(lambda eid: {"execution_id": str(eid)})
+        return self._platform.execute_plugin(plugin_name, context, execution_id).map(
+            lambda execution: {"execution_id": execution.execution_id}
+        )
 
-    def fetch_plugin(
-        self,
-        plugin_name: str,
-    ) -> p.Result[FlextPluginPlatform.Plugin]:
+    def fetch_plugin(self, plugin_name: str) -> p.Result[FlextPluginPlatform.Plugin]:
         """Fetch a plugin by name; fails when missing (ENFORCE-056)."""
         plugin = self._platform.fetch_plugin(plugin_name)
         if plugin is None:
             return e.fail_not_found(
-                "plugin",
-                plugin_name,
-                result_type=r[FlextPluginPlatform.Plugin],
+                "plugin", plugin_name, result_type=r[FlextPluginPlatform.Plugin]
             )
         return r[FlextPluginPlatform.Plugin].ok(plugin)
 
@@ -86,11 +86,7 @@ class FlextPluginApi(s):
         """Fetch the status of a plugin by name; fails when missing."""
         status = self._platform.fetch_plugin_status(plugin_name)
         if status is None:
-            return e.fail_not_found(
-                "plugin",
-                plugin_name,
-                result_type=r[str],
-            )
+            return e.fail_not_found("plugin", plugin_name, result_type=r[str])
         return r[str].ok(status)
 
     def resolve_plugin_active(self, plugin_name: str) -> p.Result[bool]:
@@ -99,14 +95,9 @@ class FlextPluginApi(s):
 
     def list_plugins(self) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """List all registered plugins."""
-        return r[Sequence[FlextPluginPlatform.Plugin]].ok(
-            self._platform.list_plugins(),
-        )
+        return r[Sequence[FlextPluginPlatform.Plugin]].ok(self._platform.list_plugins())
 
-    def load_plugin(
-        self,
-        plugin_path: str,
-    ) -> p.Result[FlextPluginPlatform.Plugin]:
+    def load_plugin(self, plugin_path: str) -> p.Result[FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path; logs the loaded plugin's name."""
         result = self._platform.load_plugin(plugin_path)
         if result.success:
@@ -115,10 +106,7 @@ class FlextPluginApi(s):
                 self._logger.info(f"Loaded plugin: {plugin.name}")
         return result
 
-    def register_plugin(
-        self,
-        plugin: FlextPluginPlatform.Plugin,
-    ) -> p.Result[bool]:
+    def register_plugin(self, plugin: FlextPluginPlatform.Plugin) -> p.Result[bool]:
         """Register a plugin in the platform."""
         return self._platform.register_plugin(plugin)
 

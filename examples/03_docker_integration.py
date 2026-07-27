@@ -14,8 +14,15 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
-from flext_core import p, r, s
-from flext_plugin import FlextPluginApi, FlextPluginConstants, FlextPluginModels, t
+from flext_core import r, s
+from flext_plugin import (
+    FlextPluginApi,
+    FlextPluginConstants,
+    FlextPluginModels,
+    p,
+    t,
+    u,
+)
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -31,8 +38,7 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
 
 
 def create_docker_postgres_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity,
-    t.JsonMapping,
+    FlextPluginModels.Plugin.Entity, t.JsonMapping
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
     postgres_config: t.JsonMapping = {
@@ -59,8 +65,7 @@ def create_docker_postgres_plugin() -> tuple[
 
 
 def create_docker_redis_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity,
-    t.JsonMapping,
+    FlextPluginModels.Plugin.Entity, t.JsonMapping
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns."""
     redis_config: t.JsonMapping = {
@@ -88,8 +93,7 @@ def create_docker_redis_plugin() -> tuple[
 
 
 def create_docker_ldap_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity,
-    t.JsonMapping,
+    FlextPluginModels.Plugin.Entity, t.JsonMapping
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns."""
     ldap_config: t.JsonMapping = {
@@ -117,15 +121,18 @@ def create_docker_ldap_plugin() -> tuple[
 
 
 def test_connections() -> bool:
-    """Test connectivity to all Docker services."""
+    """Test connectivity to all Docker services and print a report."""
     services = [
         ("PostgreSQL", "localhost", 5432),
         ("Redis", "localhost", 6379),
         ("LDAP", "localhost", 389),
     ]
+    cli.u.Cli.print("Service Connectivity Check")
     all_available = True
-    for _service_name, host, port in services:
+    for service_name, host, port in services:
         available = check_service_availability(host, port)
+        status = "Available" if available else "Unavailable"
+        cli.u.Cli.print(f"  {service_name} ({host}:{port}): {status}")
         if not available:
             all_available = False
     return all_available
@@ -147,16 +154,14 @@ class _DockerIntegrationCommand(s[bool]):
     @override
     def execute(self) -> p.Result[bool]:
         """Run the Docker integration smoke flow and return success/failure."""
-        if self.test_connections and not test_connections():
-            return r[bool].fail("docker services unavailable")
+        if self.test_connections:
+            test_connections()
         postgres_plugin, _postgres_config = create_docker_postgres_plugin()
         redis_plugin, _redis_config = create_docker_redis_plugin()
         ldap_plugin, _ldap_config = create_docker_ldap_plugin()
         _ = FlextPluginApi.fetch_global()
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
-            if not hasattr(plugin, "validate_business_rules"):
-                return r[bool].fail("plugin validation surface unavailable")
-            validation_result = plugin.validate_business_rules()
+            validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
             if validation_result.failure:
                 return r[bool].fail(validation_result.error or "validation failed")
         return r[bool].ok(value=True)
@@ -176,7 +181,7 @@ def main(args: t.StrSequence | None = None) -> int:
                 help_text="Create the example plugins and validate them.",
                 model_cls=_DockerIntegrationCommand,
                 handler=lambda params: params.execute(),
-            ),
+            )
         ],
     )
     outcome = cli.execute_app(

@@ -1,0 +1,80 @@
+@startuml Data Flow Diagram
+title Data Flow - FLEXT Plugin System
+
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipant underline
+
+actor "Plugin Developer" as Developer
+participant "CLI/API" as Interface
+participant "FlextPluginApi" as API
+participant "FlextPluginPlatform" as Platform
+participant "Discovery Service" as Discovery
+participant "Plugin Registry" as Registry
+participant "Security Validator" as Security
+participant "Plugin Loader" as Loader
+participant "Plugin Cache" as Cache
+participant "Plugin Instance" as Plugin
+participant "Monitoring" as Monitoring
+database "File System" as Filesystem
+
+== Plugin Development ==
+Developer -> Interface: Create plugin code
+Interface -> Filesystem: Save plugin files
+
+== Plugin Discovery ==
+API -> Platform: discover_plugins(paths)
+Platform -> Discovery: discover_plugins(paths)
+Discovery -> Filesystem: scan directories
+Filesystem --> Discovery: plugin files list
+Discovery -> Registry: validate and store metadata
+Registry --> Discovery: plugin metadata stored
+
+== Plugin Loading ==
+API -> Platform: load_plugin(name)
+Platform -> Loader: load_plugin(name)
+Loader -> Registry: get plugin metadata
+Registry --> Loader: plugin configuration
+Loader -> Security: validate plugin security
+Security --> Loader: security approval
+Loader -> Filesystem: load plugin code
+Filesystem --> Loader: plugin source code
+Loader -> Cache: cache compiled plugin
+Cache --> Loader: cached plugin stored
+Loader --> Platform: plugin instance
+Platform --> API: loaded plugin
+
+== Plugin Execution ==
+API -> Platform: execute_plugin(name, context)
+Platform -> Plugin: execute(context)
+Plugin -> Monitoring: record execution start
+Plugin -> Filesystem: read/write data (if needed)
+Filesystem --> Plugin: data access
+Plugin -> Monitoring: record execution metrics
+Plugin --> Platform: execution result
+Platform -> Registry: update execution history
+Registry --> Platform: history updated
+Platform --> API: execution result
+
+== Hot Reload ==
+Platform -> Discovery: watch directories
+Discovery -> Filesystem: file system monitoring
+Filesystem --> Discovery: file change detected
+Discovery -> Loader: reload plugin
+Loader -> Cache: invalidate cache
+Cache --> Loader: cache cleared
+Loader -> Platform: plugin reloaded
+Platform -> Monitoring: reload event
+
+== Monitoring and Metrics ==
+Plugin -> Monitoring: execution metrics
+Platform -> Monitoring: system metrics
+Security -> Monitoring: security events
+Monitoring -> API: expose metrics endpoint
+
+== Error Handling ==
+Plugin -> Platform: execution error
+Platform -> Monitoring: error logged
+Platform -> API: error result
+API -> Interface: error response
+
+@enduml
