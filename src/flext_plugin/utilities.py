@@ -104,7 +104,7 @@ class FlextPluginUtilities(u):
                 return r[m.Plugin.PluginMetadata].fail_op("Metadata extraction", e)
 
         @classmethod
-        def validate_plugin_file(cls, plugin_path: Path) -> p.Result[None]:
+        def validate_plugin_file(cls, plugin_path: Path) -> p.Result[bool]:
             """Validate plugin file structure and safety.
 
             Args:
@@ -120,10 +120,10 @@ class FlextPluginUtilities(u):
                     return precheck
                 return cls._validate_python_plugin_file(plugin_path)
             except c.EXC_BROAD_IO_TYPE as e:
-                return r[None].fail_op("Plugin file validation", e)
+                return r[bool].fail_op("Plugin file validation", e)
 
         @staticmethod
-        def validate_plugin_name(name: str) -> p.Result[None]:
+        def validate_plugin_name(name: str) -> p.Result[bool]:
             """Validate plugin name follows naming conventions.
 
             Args:
@@ -134,10 +134,10 @@ class FlextPluginUtilities(u):
 
             """
             if not c.Plugin.PluginValidation.PLUGIN_NAME_RE.match(name):
-                return r[None].fail(
+                return r[bool].fail(
                     f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores."
                 )
-            return r[None].ok(None)
+            return r[bool].ok(True)
 
         @classmethod
         def _build_metadata(cls, plugin_path: Path) -> m.Plugin.PluginMetadata:
@@ -201,30 +201,30 @@ class FlextPluginUtilities(u):
             return version, description
 
         @classmethod
-        def _validate_plugin_path(cls, plugin_path: Path) -> p.Result[None]:
+        def _validate_plugin_path(cls, plugin_path: Path) -> p.Result[bool]:
             """Validate file existence and size constraints."""
             if not plugin_path.exists():
-                return r[None].fail(f"Plugin file does not exist: {plugin_path}")
+                return r[bool].fail(f"Plugin file does not exist: {plugin_path}")
             file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
             if file_size_mb > cls.MAX_PLUGIN_SIZE_MB:
-                return r[None].fail(
+                return r[bool].fail(
                     f"Plugin file too large: {file_size_mb:.1f}MB > {cls.MAX_PLUGIN_SIZE_MB}MB"
                 )
-            return r[None].ok(None)
+            return r[bool].ok(True)
 
         @classmethod
-        def _validate_python_plugin_file(cls, plugin_path: Path) -> p.Result[None]:
+        def _validate_python_plugin_file(cls, plugin_path: Path) -> p.Result[bool]:
             """Validate Python plugin source for disallowed execution patterns."""
             read = u.Cli.files_read_text(plugin_path)
             if read.failure:
-                return r[None].fail_op("Plugin validation", read.error)
+                return r[bool].fail_op("Plugin validation", read.error)
             content = read.value
             for pattern in cls.DANGEROUS_PLUGIN_PATTERNS:
                 if pattern in content:
-                    return r[None].fail(
+                    return r[bool].fail(
                         f"Plugin contains potentially dangerous code: {pattern}"
                     )
-            return r[None].ok(None)
+            return r[bool].ok(True)
 
 
 u = FlextPluginUtilities
@@ -232,4 +232,9 @@ u = FlextPluginUtilities
 FlextPluginUtilities.Plugin.Discovery = FlextPluginDiscovery
 FlextPluginUtilities.Plugin.Platform = FlextPluginPlatform
 
-__all__: list[str] = ["FlextPluginUtilities", "u"]
+__all__: list[str] = [
+    "FlextPluginDiscovery",
+    "FlextPluginPlatform",
+    "FlextPluginUtilities",
+    "u",
+]

@@ -127,12 +127,12 @@ def test_connections() -> bool:
         ("Redis", "localhost", 6379),
         ("LDAP", "localhost", 389),
     ]
-    cli.u.Cli.print("Service Connectivity Check")
+    cli.print("Service Connectivity Check")
     all_available = True
     for service_name, host, port in services:
         available = check_service_availability(host, port)
         status = "Available" if available else "Unavailable"
-        cli.u.Cli.print(f"  {service_name} ({host}:{port}): {status}")
+        cli.print(f"  {service_name} ({host}:{port}): {status}")
         if not available:
             all_available = False
     return all_available

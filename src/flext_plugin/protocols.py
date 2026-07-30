@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, Self, runtime_checkable
 
 from flext_cli import p
 
@@ -66,6 +66,24 @@ class FlextPluginProtocols(p):
 
             def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
                 """Fetch a plugin by name."""
+                ...
+
+            def with_discovery(
+                self, discovery: FlextPluginProtocols.Plugin.PluginDiscovery | None
+            ) -> Self:
+                """Inject or replace the discovery protocol."""
+                ...
+
+            def with_executor(
+                self, executor: FlextPluginProtocols.Plugin.PluginExecution | None
+            ) -> Self:
+                """Inject or replace the execution protocol."""
+                ...
+
+            def with_loader(
+                self, loader: FlextPluginProtocols.Plugin.PluginLoader | None
+            ) -> Self:
+                """Inject or replace the loader protocol."""
                 ...
 
             def fetch_plugin_status(self, name: str) -> str | None:

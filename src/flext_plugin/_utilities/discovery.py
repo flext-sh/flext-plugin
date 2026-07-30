@@ -153,7 +153,8 @@ class FlextPluginDiscovery:
         """Return the first discovery hit for one strategy."""
         result = strategy.discover([plugin_path])
         if result.success and result.value:
-            return result.value[0]
+            data: m.Plugin.DiscoveryData = result.value[0]
+            return data
         return None
 
     class FileSystemStrategy:

@@ -24,27 +24,43 @@ if TYPE_CHECKING:
     from flext_cli import s as s
     from flext_cli import x as x
 
-    from ._config import FlextPluginConfig as FlextPluginConfig
-    from ._config import config as config
-    from ._settings import FlextPluginSettings as FlextPluginSettings
-    from ._settings import settings as settings
-    from .api import FlextPluginApi as FlextPluginApi
-    from .api import plugin as plugin
-    from .constants import FlextPluginConstants as FlextPluginConstants
+    from ._config import FlextPluginConfig, FlextPluginConfig as config
+    from ._settings import FlextPluginSettings, FlextPluginSettings as settings
+    from ._utilities.discovery import FlextPluginDiscovery
+    from ._utilities.plugin_platform import FlextPluginPlatform
+    from .api import FlextPluginApi, FlextPluginApi as plugin
+    from .constants import FlextPluginConstants, FlextPluginConstants as c
+    from .models import FlextPluginModels, FlextPluginModels as m
+    from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
+    from .typings import FlextPluginTypes, FlextPluginTypes as t
+    from .utilities import FlextPluginUtilities, FlextPluginUtilities as u
 
-    c: type[FlextPluginConstants]
-    from .models import FlextPluginModels as FlextPluginModels
-
-    m: type[FlextPluginModels]
-    from .protocols import FlextPluginProtocols as FlextPluginProtocols
-
-    p: type[FlextPluginProtocols]
-    from .typings import FlextPluginTypes as FlextPluginTypes
-
-    t: type[FlextPluginTypes]
-    from .utilities import FlextPluginUtilities as FlextPluginUtilities
-
-    u: type[FlextPluginUtilities]
+    _ = (
+        c,
+        FlextPluginConstants,
+        config,
+        FlextPluginConfig,
+        settings,
+        FlextPluginSettings,
+        FlextPluginApi,
+        plugin,
+        m,
+        FlextPluginModels,
+        p,
+        FlextPluginProtocols,
+        t,
+        FlextPluginTypes,
+        u,
+        FlextPluginUtilities,
+        FlextPluginDiscovery,
+        FlextPluginPlatform,
+        d,
+        e,
+        h,
+        r,
+        s,
+        x,
+    )
 
 _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     "._config": ("FlextPluginConfig", "config"),
@@ -54,6 +70,8 @@ _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     ".models": ("FlextPluginModels", "m"),
     ".protocols": ("FlextPluginProtocols", "p"),
     ".typings": ("FlextPluginTypes", "t"),
+    "._utilities.discovery": ("FlextPluginDiscovery",),
+    "._utilities.plugin_platform": ("FlextPluginPlatform",),
     ".utilities": ("FlextPluginUtilities", "u"),
     "flext_cli": ("d", "e", "h", "r", "s", "x"),
 }
@@ -70,7 +88,9 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginConfig",
     "FlextPluginConstants",
+    "FlextPluginDiscovery",
     "FlextPluginModels",
+    "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginSettings",
     "FlextPluginTypes",

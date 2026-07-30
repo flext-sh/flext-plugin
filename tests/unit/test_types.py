@@ -10,6 +10,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from flext_cli import t as cli_t
@@ -64,7 +66,8 @@ class TestsFlextPluginTypesUnit:
     def test_event_handler_is_usable_as_annotation(self) -> None:
         """The alias is a valid, concrete annotation for handler callables."""
 
-        def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
+        async def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
+            await asyncio.sleep(0)
             return payload
 
         annotated: FlextPluginTypes.Plugin.EventHandler = handler
