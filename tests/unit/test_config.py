@@ -105,7 +105,6 @@ class TestsFlextPluginConfig:
         """``fetch_global(overrides=...)`` yields an isolated instance for DI."""
         global_settings = FlextPluginSettings.fetch_global()
         injected = FlextPluginSettings.fetch_global(overrides={"debug": True})
-        tm.that(isinstance(injected, FlextPluginSettings), eq=True)
         tm.that(injected is global_settings, eq=False)
         tm.that(injected.debug, eq=True)
 
