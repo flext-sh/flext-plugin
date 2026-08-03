@@ -19,28 +19,12 @@ The basic plugin example shows:
 
 ```python
 # basic_plugin.py
+from __future__ import annotations
+
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
-from typing import Dict, Optional
 
 import json
 from datetime import datetime
@@ -56,7 +40,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
     and returning processed results with metadata.
     """
 
-    def __init__(self, settings: Optional[m.Dict] = None, **kwargs):
+    def __init__(self, settings: (dict | None) = None, **kwargs):
         """Initialize basic plugin with configuration."""
 
         # Default configuration
@@ -99,7 +83,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate configuration
             validation_result = self._validate_configuration()
-            if validation_result.failure():
+            if validation_result.failure:
                 return validation_result
 
             # Setup logging if enabled
@@ -112,14 +96,14 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
             logger.error(error_msg)
             return r[bool].fail(error_msg)
 
-    def execute(self, data: m.Dict) -> p.Result[m.Dict]:
+    def execute(self, data: dict) -> p.Result[dict]:
         """
         Execute plugin processing logic on input data.
 
@@ -127,7 +111,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             data: Input data dictionary to process
 
         Returns:
-            r[m.Dict]: Processing results or error
+            r[dict]: Processing results or error
         """
         try:
             # Validate plugin state
@@ -139,7 +123,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
             # Validate input data
             validation_result = self._validate_input_data(data)
-            if validation_result.failure():
+            if validation_result.failure:
                 return validation_result
 
             # Record execution start
@@ -194,7 +178,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
@@ -214,12 +198,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if not isinstance(timeout, int) or timeout <= 0:
                 return r[bool].fail("timeout_seconds must be a positive integer")
 
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
 
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
 
-    def _validate_input_data(self, data: m.Dict) -> p.Result[bool]:
+    def _validate_input_data(self, data: dict) -> p.Result[bool]:
         """Validate input data format."""
         try:
             if not isinstance(data, dict):
@@ -228,12 +212,12 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if "payload" not in data:
                 return r[bool].fail("Input data must contain 'payload' key")
 
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
 
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")
 
-    def _process_data(self, data: m.Dict) -> m.Dict:
+    def _process_data(self, data: dict) -> dict:
         """Core data processing logic."""
         payload = data.get("payload", {})
 
@@ -301,7 +285,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
     # Public utility methods
 
-    def get_statistics(self) -> m.Dict:
+    def get_statistics(self) -> dict:
         """Get current processing statistics."""
         return self._processing_stats.copy()
 
@@ -319,6 +303,8 @@ class BasicDataProcessorPlugin(FlextPlugin):
 
 ```python
 # usage_example.py
+from __future__ import annotations
+
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 
@@ -344,7 +330,7 @@ def main():
         # Register plugin
         logger.info("Registering plugin...")
         register_result = platform.register_plugin(plugin)
-        if register_result.failure():
+        if register_result.failure:
             logger.error(f"Registration failed: {register_result.error}")
             return
 
@@ -353,7 +339,7 @@ def main():
         # Activate plugin
         logger.info("Activating plugin...")
         activate_result = platform.activate_plugin(plugin.name)
-        if activate_result.failure():
+        if activate_result.failure:
             logger.error(f"Activation failed: {activate_result.error}")
             return
 
@@ -373,7 +359,7 @@ def main():
         logger.info("Executing plugin with sample data...")
         execution_result = platform.execute_plugin(plugin.name, sample_data)
 
-        if execution_result.success():
+        if execution_result.success:
             logger.info("Plugin execution successful!")
 
             # Extract result data
@@ -410,7 +396,7 @@ def main():
             }
 
             result = platform.execute_plugin(plugin.name, test_data)
-            if result.success():
+            if result.success:
                 logger.info(f"Execution {i + 1}: Success")
             else:
                 logger.error(f"Execution {i + 1}: Failed - {result.error}")
@@ -424,7 +410,7 @@ def main():
         # Deactivate plugin
         logger.info("\nDeactivating plugin...")
         deactivate_result = platform.deactivate_plugin(plugin.name)
-        if deactivate_result.success():
+        if deactivate_result.success:
             logger.info("Plugin deactivated successfully")
         else:
             logger.error(f"Deactivation failed: {deactivate_result.error}")
@@ -446,6 +432,8 @@ if __name__ == "__main__":
 
 ```python
 # test_basic_plugin.py
+from __future__ import annotations
+
 import pytest
 from unittest.mock import patch, mock_open
 from basic_plugin import BasicDataProcessorPlugin
@@ -492,7 +480,7 @@ class TestBasicDataProcessorPlugin:
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success()
+        assert result.success
         assert plugin._is_initialized
 
     def test_initialization_failure(self):
@@ -505,7 +493,7 @@ class TestBasicDataProcessorPlugin:
         )
 
         result = invalid_plugin.initialize()
-        assert result.failure()
+        assert result.failure
         assert "batch_size must be a positive integer" in result.error
 
     # Execution Tests
@@ -529,7 +517,7 @@ class TestBasicDataProcessorPlugin:
         # Execute plugin
         result = plugin.execute(test_data)
 
-        assert result.success()
+        assert result.success
         assert "processed_data" in result.value
         assert "metadata" in result.value
 
@@ -547,7 +535,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure()
+        assert result.failure
         assert "Plugin not initialized" in result.error
 
     def test_execution_when_inactive(self, plugin):
@@ -558,7 +546,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure()
+        assert result.failure
         assert "Plugin not active" in result.error
 
     def test_execution_invalid_input(self, plugin):
@@ -570,7 +558,7 @@ class TestBasicDataProcessorPlugin:
         invalid_data = {"invalid": "data"}
         result = plugin.execute(invalid_data)
 
-        assert result.failure()
+        assert result.failure
         assert "Input data must contain 'payload' key" in result.error
 
     # Statistics Tests
@@ -588,7 +576,7 @@ class TestBasicDataProcessorPlugin:
         # Execute plugin successfully
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
-        assert result.success()
+        assert result.success
 
         # Check updated statistics
         updated_stats = plugin.get_statistics()
@@ -619,7 +607,7 @@ class TestBasicDataProcessorPlugin:
         plugin.initialize()
 
         result = plugin.cleanup()
-        assert result.success()
+        assert result.success
         assert not plugin._is_initialized
 
         # Verify statistics were saved
@@ -633,17 +621,17 @@ class TestBasicDataProcessorPlugin:
 
         # Register plugin
         register_result = platform.register_plugin(plugin)
-        assert register_result.success()
+        assert register_result.success
 
         # Activate plugin
         activate_result = platform.activate_plugin(plugin.name)
-        assert activate_result.success()
+        assert activate_result.success
 
         # Execute plugin
         test_data = {"payload": {"message": "hello world", "count": 5}}
 
         execute_result = platform.execute_plugin(plugin.name, test_data)
-        assert execute_result.success()
+        assert execute_result.success
 
         # Verify execution result
         result_data = execute_result.value
@@ -658,7 +646,7 @@ class TestBasicDataProcessorPlugin:
 
         # Deactivate plugin
         deactivate_result = platform.deactivate_plugin(plugin.name)
-        assert deactivate_result.success()
+        assert deactivate_result.success
 
     def test_multiple_executions(self, platform):
         """Test multiple plugin executions."""
@@ -672,7 +660,7 @@ class TestBasicDataProcessorPlugin:
             test_data = {"payload": {"id": i, "value": f"test_{i}"}}
 
             result = platform.execute_plugin(plugin.name, test_data)
-            assert result.success()
+            assert result.success
 
         # Check final statistics
         stats = plugin.get_statistics()
@@ -692,7 +680,7 @@ class TestBasicDataProcessorPlugin:
         ):
             result = plugin.execute({"payload": {"test": "data"}})
 
-            assert result.failure()
+            assert result.failure
             assert "Processing error" in result.error
 
             # Check error statistics
@@ -730,7 +718,7 @@ class TestPluginPerformance:
         result = initialized_plugin.execute(test_data)
         execution_time = time.time() - start_time
 
-        assert result.success()
+        assert result.success
         assert execution_time < 1.0  # Should complete in under 1 second
 
         # Verify processing time is recorded

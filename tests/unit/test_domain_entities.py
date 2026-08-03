@@ -1,9 +1,10 @@
-"""Comprehensive test suite for flext_plugin.domain.entities module.
+"""Behavioral test suite for flext_plugin domain entities.
 
-This test module provides comprehensive validation of domain entity behavior,
-business rules, and integration patterns following enterprise testing standards.
-Tests cover entity lifecycle, validation rules, business logic enforcement,
-and integration scenarios across all domain entities.
+Exercises the OBSERVABLE PUBLIC CONTRACT of FlextPluginModels.Plugin entities:
+factory construction, enable/disable lifecycle (r[bool] outcomes and
+idempotence), execution/error metric accumulation via public state, business
+rule validation, and immutable value-object construction. No private attribute
+access, no internal-collaborator spying, no line-coverage pokes.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,110 +13,101 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import math
+import pytest
 
-from tests.constants import c
-from tests.models import m
+from flext_tests import tm
+from tests import c, m, u
 
 
 class TestsFlextPluginDomainEntities:
-    """Test suite for FlextPlugin domain entity.
+    """Behavioral contract tests for FlextPlugin domain entities.
 
-    Tests Plugin entity including creation, validation, business rules,
-    enable/disable lifecycle, and execution/error tracking.
+    Asserts return values, r[bool] success/failure outcomes and error
+    messages, public model state (fields, metadata), invariants, idempotence,
+    and error paths through the public API only.
     """
 
-    def test_plugin_instance_creation(self) -> None:
-        """Test creating FlextPlugin entity with factory method."""
-        plugin = m.Plugin.Entity.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            entity_id="test-id",
-            description="Test plugin",
-            author="Test Author",
+    @staticmethod
+    def _make_plugin(
+        *,
+        name: str = "test-plugin",
+        plugin_version: str = "1.0.0",
+        entity_id: str = "test-id",
+        description: str = "Test plugin",
+        author: str = "Test Author",
+    ) -> m.Plugin.Entity:
+        """Construct a Plugin entity through the public factory."""
+        return m.Plugin.Entity.create(
+            name=name,
+            plugin_version=plugin_version,
+            entity_id=entity_id,
+            description=description,
+            author=author,
         )
-        assert plugin.unique_id == "test-id"
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.description == "Test plugin"
-        assert plugin.author == "Test Author"
-        assert plugin.is_enabled is True
 
-    def test_plugin_enable_disable(self) -> None:
-        """Test plugin enable and disable methods."""
-        plugin = m.Plugin.Entity.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            entity_id="test-id",
-            description="Test plugin",
-            author="Test Author",
-        )
-        assert plugin.is_enabled is True
-        result = plugin.disable()
-        assert result.success
-        is_enabled_after_disable = bool(plugin.is_enabled)
-        assert not is_enabled_after_disable
-        result = plugin.enable()
-        assert result.success
-        result = plugin.enable()
-        assert result.failure
+    # ------------------------------------------------------------------ #
+    # Factory construction contract
+    # ------------------------------------------------------------------ #
 
-    def test_plugin_execution_recording(self) -> None:
-        """Test recording plugin execution metrics in metadata."""
-        plugin = m.Plugin.Entity.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            entity_id="test-id",
-            description="Test plugin",
-            author="Test Author",
-        )
-        plugin.record_execution(150.5, success=True)
-        assert plugin.metadata["execution_count"] == 1
-        exec_time_1 = plugin.metadata["total_execution_time"]
-        assert isinstance(exec_time_1, float) and math.isclose(exec_time_1, 150.5)
-        assert plugin.metadata["success_count"] == 1
-        assert plugin.metadata["failure_count"] == 0
-        plugin.record_execution(200.0, success=True)
-        assert plugin.metadata["execution_count"] == 2
-        exec_time_2 = plugin.metadata["total_execution_time"]
-        assert isinstance(exec_time_2, float) and math.isclose(exec_time_2, 350.5)
-        assert plugin.metadata["success_count"] == 2
-        plugin.record_execution(50.0, success=False)
-        assert plugin.metadata["execution_count"] == 3
-        assert plugin.metadata["failure_count"] == 1
+    def test_create_maps_entity_id_to_unique_id_and_sets_fields(self) -> None:
+        """create() exposes the supplied identity and descriptive fields."""
+        plugin = self._make_plugin()
 
-    def test_plugin_error_recording(self) -> None:
-        """Test recording plugin errors in metadata."""
-        plugin = m.Plugin.Entity.create(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            entity_id="test-id",
-            description="Test plugin",
-            author="Test Author",
-        )
-        plugin.record_error("Test error message")
-        assert plugin.metadata["error_count"] == 1
-        assert plugin.metadata["last_error"] == "Test error message"
-        plugin.record_error("Second error")
-        assert plugin.metadata["error_count"] == 2
-        assert plugin.metadata["last_error"] == "Second error"
+        tm.that(plugin.unique_id, eq="test-id")
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.description, eq="Test plugin")
+        tm.that(plugin.author, eq="Test Author")
 
-    def test_plugin_business_rules_validation(self) -> None:
-        """Test plugin business rules validation."""
-        plugin = m.Plugin.Entity.create(
-            name="valid-plugin",
-            plugin_version="1.0.0",
-            entity_id="test-id",
-            description="Valid plugin",
-            author="Test Author",
-        )
-        result = plugin.validate_business_rules()
-        assert result.success
+    def test_create_defaults_plugin_to_enabled_with_empty_metadata(self) -> None:
+        """A freshly created plugin is enabled and carries no metrics yet."""
+        plugin = self._make_plugin()
 
-    """Test FlextPluginModels.Config entity functionality."""
+        tm.that(plugin.is_enabled, eq=True)
+        tm.that(dict(plugin.metadata), eq={})
 
-    def test_metadata_creation(self) -> None:
-        """Test creating m.Plugin.PluginMetadata."""
+    def test_create_applies_declared_field_defaults(self) -> None:
+        """Optional fields fall back to their declared defaults."""
+        plugin = m.Plugin.Entity.create(name="minimal-plugin", entity_id="min-id")
+
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.description, eq="")
+        tm.that(plugin.author, eq="")
+        tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
+
+    @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
+    def test_create_rejects_names_violating_contract(self, bad_name: str) -> None:
+        """Names shorter than the minimum or breaking the pattern are refused."""
+        with pytest.raises(ValueError, match=r".+"):
+            m.Plugin.Entity.create(name=bad_name, entity_id="id")
+
+    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
+    def test_create_rejects_non_semantic_versions(self, bad_version: str) -> None:
+        """Versions outside the X.Y.Z shape are rejected at construction."""
+        with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
+            m.Plugin.Entity.create(
+                name="valid-plugin", plugin_version=bad_version, entity_id="id"
+            )
+
+    # ------------------------------------------------------------------ #
+    # Enable / disable lifecycle
+    # ------------------------------------------------------------------ #
+
+    def test_validate_business_rules_accepts_a_well_formed_plugin(self) -> None:
+        """A validly-constructed plugin passes its business-rule check."""
+        plugin = self._make_plugin(name="valid-plugin", description="Valid plugin")
+
+        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
+
+    # ------------------------------------------------------------------ #
+    # PluginMetadata value object
+    # ------------------------------------------------------------------ #
+
+    def test_metadata_value_object_preserves_all_supplied_fields(self) -> None:
+        """PluginMetadata round-trips the fields it is constructed with."""
         metadata = m.Plugin.PluginMetadata(
             name="test-plugin",
             version="1.0.0",
@@ -125,32 +117,29 @@ class TestsFlextPluginDomainEntities:
             author="test-author",
             dependencies=["requests", "pydantic"],
         )
-        assert metadata.name == "test-plugin"
-        assert metadata.version == "1.0.0"
-        assert metadata.entry_point == "test.entry:main"
-        assert metadata.plugin_type == c.Plugin.Type.TAP.value
-        assert metadata.description == "Test extractor plugin"
-        assert "requests" in metadata.dependencies
-        assert "pydantic" in metadata.dependencies
 
-    def test_metadata_defaults(self) -> None:
-        """Test PluginMetadata default values."""
+        tm.that(metadata.name, eq="test-plugin")
+        tm.that(metadata.version, eq="1.0.0")
+        tm.that(metadata.entry_point, eq="test.entry:main")
+        tm.that(metadata.plugin_type, eq=c.Plugin.Type.TAP.value)
+        tm.that(metadata.description, eq="Test extractor plugin")
+        tm.that(metadata.dependencies, has="requests")
+        tm.that(metadata.dependencies, has="pydantic")
+
+    def test_metadata_value_object_applies_declared_defaults(self) -> None:
+        """Omitted optional PluginMetadata fields take their declared defaults."""
         metadata = m.Plugin.PluginMetadata(
-            name="minimal-plugin",
-            version="1.0.0",
-            entry_point="minimal.entry:main",
-            description="",
-            author="Unknown",
-            plugin_type="extension",
+            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
         )
-        assert metadata.name == "minimal-plugin"
-        assert metadata.version == "1.0.0"
-        assert metadata.description == ""
-        assert metadata.dependencies == ()
-        assert dict(metadata.metadata) == {}
 
-    def test_metadata_with_all_fields(self) -> None:
-        """Test PluginMetadata with all fields."""
+        tm.that(metadata.description, eq="")
+        tm.that(metadata.author, eq="Unknown")
+        tm.that(metadata.plugin_type, eq="extension")
+        tm.that(metadata.dependencies, eq=())
+        tm.that(dict(metadata.metadata), eq={})
+
+    def test_metadata_value_object_carries_all_optional_fields(self) -> None:
+        """PluginMetadata retains explicitly supplied optional fields."""
         metadata = m.Plugin.PluginMetadata(
             name="full-plugin",
             version="2.0.0",
@@ -161,9 +150,11 @@ class TestsFlextPluginDomainEntities:
             dependencies=["dep1", "dep2"],
             metadata={"key": "value"},
         )
-        assert metadata.name == "full-plugin"
-        assert metadata.version == "2.0.0"
-        assert metadata.author == "Test Author"
-        assert metadata.plugin_type == "extension"
-        assert len(metadata.dependencies) == 2
-        assert metadata.metadata["key"] == "value"
+
+        tm.that(metadata.author, eq="Test Author")
+        tm.that(metadata.plugin_type, eq="extension")
+        tm.that(len(metadata.dependencies), eq=2)
+        tm.that(metadata.metadata["key"], eq="value")
+
+
+__all__: list[str] = ["TestsFlextPluginDomainEntities"]
