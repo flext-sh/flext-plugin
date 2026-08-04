@@ -212,9 +212,7 @@ from __future__ import annotations
 from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
-result = api.discover_plugins(["./plugins"])
-```
-
+result = api.discover_plugins(["./plugins"])```
 #### **Core ↔ API Communication** (Planned)
 
 ```python
@@ -224,9 +222,7 @@ from __future__ import annotations
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()
-# HTTP request → Core API call → Response
-```
-
+# HTTP request → Core API call → Response```
 ### External Communication
 
 #### **FLEXT Ecosystem Integration**
@@ -488,9 +484,7 @@ from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
 plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)
-```
-
+result = await api.execute_plugin("plugin-name", context)```
 ### FLEXT Plugin CLI Interface
 
 ```bash

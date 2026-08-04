@@ -426,9 +426,7 @@ platform = FlextPluginPlatform()      # Platform facade
 result = platform.discover_plugins(paths)  # Protocol-based
     ↓
 service = FlextPluginDiscoveryService()  # Application service
-result = service.discover_plugins(paths)  # Business logic
-```
-
+result = service.discover_plugins(paths)  # Business logic```
 #### **Services → Entities → Protocols**
 
 ```python
@@ -442,9 +440,7 @@ entity = FlextPluginModels.Plugin()   # Domain entity
 entity.validate_business_rules()        # Business rules
     ↓
 protocol = FlextPluginProtocols.Plugin  # Domain contract
-# Structural typing ensures compatibility
-```
-
+# Structural typing ensures compatibility```
 #### **Infrastructure → Adapters → External Systems**
 
 ```python
@@ -455,9 +451,7 @@ loader = FlextPluginLoader()
 module = loader.load_plugin(path)  # Infrastructure adapter
     ↓
 adapter = FilesystemAdapter()
-content = adapter.read_file(path)  # External system access
-```
-
+content = adapter.read_file(path)  # External system access```
 ______________________________________________________________________
 
 ## 📊 Component Quality Attributes

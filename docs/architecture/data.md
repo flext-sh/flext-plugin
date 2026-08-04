@@ -421,9 +421,7 @@ class FlextPluginSettings(m.BaseModel):
     settings: dict[str, t.JsonValue] = u.Field(default_factory=dict)
 
     class Config:
-        frozen = True  # Immutable data model
-```
-
+        frozen = True  # Immutable data model```
 #### **Data Migration**
 
 ```python
@@ -434,9 +432,7 @@ from __future__ import annotations
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
-    pass
-```
-
+    pass```
 #### **Data Validation**
 
 ```python
@@ -450,9 +446,7 @@ def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
         settings = FlextPluginSettings(**config_data)
         return r.ok(settings)
     except c.ValidationError as e:
-        return r.fail(f"Configuration validation failed: {e}")
-```
-
+        return r.fail(f"Configuration validation failed: {e}")```
 ______________________________________________________________________
 
 ## 📊 Data Architecture Metrics

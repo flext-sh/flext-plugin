@@ -1,19 +1,27 @@
-<!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
-
 # flext-plugin API Overview
 
+<!-- TOC START -->
+- [Next Pages](#next-pages)
+<!-- TOC END -->
+
+<!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
+
 - Package: `flext_plugin`
-- Version: `0.12.0`
+- Version: `0.12.0rc0`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 - Doc summary: Flext Plugin package.
-- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience :: Developers`, `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic :: Software Development :: Libraries :: Python Modules` (+1 more)
+- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience ::
+  Developers`, `Operating System :: OS Independent`, `Programming Language ::
+  Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic ::
+  Software Development :: Libraries :: Python Modules` (+1 more)
 - Project class: `platform`
-- Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
-- Main facades: `FlextPluginApi`, `FlextPluginConstants`, `FlextPluginModels`, `FlextPluginProtocols`, `FlextPluginSettings`, `FlextPluginTypes`, `FlextPluginUtilities`
-- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextPluginApi`, `FlextPluginConstants`, `FlextPluginModels`, `FlextPluginProtocols`, `FlextPluginSettings`, `FlextPluginTypes`, `FlextPluginUtilities`, `plugin`, `settings`
+- Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`,
+  `typed`
+- Main facades: _none_
+- Alias exports: _none_
+- Public symbol exports: _none_
 - Exported module shortcuts: _none_
-- Generated module pages: `6`
+- Generated module pages: `0`
 
 ## Next Pages
 

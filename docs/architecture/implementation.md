@@ -54,9 +54,6 @@ ______________________________________________________________________
 # flext_plugin/entities.py - Domain entities with business rules
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 class FlextPluginModels:
     """Domain entities following FLEXT single-class-per-module pattern."""
@@ -114,18 +111,13 @@ class FlextPluginModels:
             """Mark execution as completed."""
             self._end_time = datetime.now(UTC)
             self._status = ExecutionStatus.COMPLETED
-            self.result = result
-```
-
+            self.result = result```
 #### **Application Layer Implementation**
 
 ```python
 # flext_plugin/services.py - Application services
 from __future__ import annotations
 
-import typing
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
 
 
@@ -139,7 +131,6 @@ class FlextPluginServices:
         self, paths: t.StringList, discovery_service: PluginDiscovery
     ) -> p.Result[list[FlextPluginModels.Plugin]]:
         """Application service orchestrating plugin discovery."""
-
         try:
             # Use domain service (infrastructure adapter)
             discovery_result = await discovery_service.discover_plugins(paths)
@@ -176,7 +167,6 @@ class FlextPluginServices:
         self, plugin: FlextPluginModels.Plugin, context: dict, executor: PluginExecution
     ) -> p.Result[FlextPluginModels.Execution]:
         """Application service orchestrating plugin execution."""
-
         try:
             # Create execution entity
             execution = FlextPluginModels.Execution.create(
@@ -196,19 +186,13 @@ class FlextPluginServices:
             return r.ok(execution)
 
         except Exception as e:
-            return r.fail(f"Plugin execution failed: {e!s}")
-```
-
+            return r.fail(f"Plugin execution failed: {e!s}")```
 #### **Infrastructure Layer Implementation**
 
 ```python
 # flext_plugin/discovery.py - Infrastructure adapters
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-from flext_plugin import FlextPluginProtocols
-import os
 from pathlib import Path
 
 
@@ -223,7 +207,6 @@ class FlextPluginDiscovery:
         self, paths: t.StringList
     ) -> p.Result[list[dict[str, t.JsonValue]]]:
         """Discover plugins from file system."""
-
         try:
             discovered_plugins = []
 
@@ -284,16 +267,14 @@ class FlextPluginDiscovery:
         try:
             if file_path.suffix.lower() == ".py":
                 return self._parse_python_plugin(file_path)
-            elif file_path.suffix.lower() in [".json"]:
+            if file_path.suffix.lower() in [".json"]:
                 return self._parse_json_plugin(file_path)
-            elif file_path.suffix.lower() in [".yaml", ".yml"]:
+            if file_path.suffix.lower() in [".yaml", ".yml"]:
                 return self._parse_yaml_plugin(file_path)
         except Exception as e:
             self.logger.error(f"Failed to parse {file_path}: {e}")
 
-        return None
-```
-
+        return None```
 ### Protocol-Based Architecture Implementation
 
 #### **Protocol Definitions**
@@ -303,8 +284,6 @@ class FlextPluginDiscovery:
 from __future__ import annotations
 
 import typing
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
 
 
@@ -356,9 +335,7 @@ class FlextPluginProtocols:
 
         async def stop_watching(self) -> p.Result[bool]:
             """Stop watching for plugin changes."""
-            ...
-```
-
+            ...```
 #### **Protocol Implementation**
 
 ```python
@@ -376,9 +353,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
     ) -> p.Result[list[dict[str, t.JsonValue]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
-        return r.ok([])
-```
-
+        return r.ok([])```
 ### Railway Pattern Implementation
 
 #### **r[T] Error Handling**
@@ -387,15 +362,11 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 # Railway pattern throughout the system
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 async def process_plugins_workflow(
     self, plugin_names: t.StringList
 ) -> p.Result[t.list]:
     """Complete plugin processing workflow using railway pattern."""
-
     # Chain operations with automatic error propagation
     return (
         self
@@ -430,9 +401,7 @@ async def _load_plugins(
             return plugin_result  # Early return on failure
         plugins.append(plugin_result.unwrap())
 
-    return r.ok(plugins)
-```
-
+    return r.ok(plugins)```
 ______________________________________________________________________
 
 ## 🧪 Testing Implementation Patterns
@@ -445,7 +414,6 @@ ______________________________________________________________________
 from __future__ import annotations
 
 # tests/unit/test_entities.py
-import pytest
 from flext_plugin import FlextPluginModels
 
 
@@ -496,9 +464,7 @@ class TestPluginEntity:
 
         activation_result = plugin.activate()
         assert activation_result.success
-        assert plugin.status == PluginStatus.ACTIVE
-```
-
+        assert plugin.status == PluginStatus.ACTIVE```
 #### **Application Service Testing**
 
 ```python
@@ -566,9 +532,7 @@ class TestPluginServices:
         # Should succeed but with empty list (invalid plugin filtered out)
         assert result.success
         plugins = result.unwrap()
-        assert len(plugins) == 0
-```
-
+        assert len(plugins) == 0```
 ### Integration Testing Patterns
 
 #### **End-to-End Plugin Lifecycle Testing**
@@ -578,11 +542,7 @@ class TestPluginServices:
 from __future__ import annotations
 
 import pytest
-from pathlib import Path
-import tempfile
 from flext_plugin import FlextPluginPlatform
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class TestPluginLifecycle:
@@ -663,9 +623,7 @@ def create_plugin():
 
         # 6. Unregister plugin
         unregister_result = await platform.unregister_plugin("test-plugin")
-        assert unregister_result.success
-```
-
+        assert unregister_result.success```
 ______________________________________________________________________
 
 ## 🔧 Development Workflow Implementation
@@ -676,8 +634,7 @@ ______________________________________________________________________
 
 ```python
 # Template for FLEXT single-class-per-module pattern
-"""
-Module: flext_plugin/[module_name].py
+"""Module: flext_plugin/[module_name].py
 
 Description: [Brief module description]
 
@@ -688,36 +645,16 @@ License: MIT
 from __future__ import annotations
 
 import typing
-from collections.abc import Mapping, Sequence
-from flext_core import FlextBus
 
-from flext_core import FlextSettings
-from flext_core import FlextConstants
 from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
 from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
+from flext_core import r
 
 # Standard imports
 
 # FLEXT ecosystem imports
-from flext_cli import u
-from flext_core import FlextSettings
 
 # Local imports (after FLEXT imports)
-from flext_plugin import FlextPluginConstants
 from flext_plugin import FlextPluginTypes
 
 # Type checking imports
@@ -791,9 +728,7 @@ DEFAULT_TIMEOUT: int = 30
 MAX_RETRIES: int = 3
 
 # Export main class
-__all__: list[str] = ["FlextPlugin[ModuleName]"]
-```
-
+__all__: list[str] = ["FlextPlugin[ModuleName]"]```
 ### Error Handling Patterns
 
 #### **Railway Pattern Throughout**
@@ -807,7 +742,6 @@ async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
 ) -> p.Result[FlextPluginTypes.ComplexOutput]:
     """Complex operation using railway pattern."""
-
     return (
         self
         ._validate_input(input_data)
@@ -826,12 +760,9 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
     # Add context-specific error handling
     if "validation" in error.lower():
         return f"Input validation failed: {error}"
-    elif "processing" in error.lower():
+    if "processing" in error.lower():
         return f"Data processing failed: {error}"
-    else:
-        return f"Operation failed: {error}"
-```
-
+    return f"Operation failed: {error}"```
 ### Configuration Management
 
 #### **Pydantic Configuration Pattern**
@@ -900,9 +831,7 @@ class FlextPluginSettings:
 
     def is_monitoring_enabled(self) -> bool:
         """Check if monitoring features are enabled."""
-        return self.enable_metrics or self.enable_tracing
-```
-
+        return self.enable_metrics or self.enable_tracing```
 ______________________________________________________________________
 
 ## 🚀 Deployment and Operations
@@ -1028,9 +957,6 @@ spec:
 # flext_plugin/health.py
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 class FlextPluginHealth:
     """Health check implementation for FLEXT Plugin system."""
@@ -1114,9 +1040,7 @@ class FlextPluginHealth:
 
             return {"status": "healthy", "details": registry_status}
         except Exception as e:
-            return {"status": "unhealthy", "error": str(e)}
-```
-
+            return {"status": "unhealthy", "error": str(e)}```
 ______________________________________________________________________
 
 ## 📊 Performance Optimization Implementation
@@ -1131,8 +1055,6 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class FlextPluginCache:
@@ -1151,9 +1073,8 @@ class FlextPluginCache:
                 entry = self.memory_cache[key]
                 if not self._is_expired(entry):
                     return entry["value"]
-                else:
-                    # Remove expired entry
-                    del self.memory_cache[key]
+                # Remove expired entry
+                del self.memory_cache[key]
 
         return None
 
@@ -1178,9 +1099,7 @@ class FlextPluginCache:
         """Evict least recently used items."""
         # Simple FIFO eviction for demonstration
         oldest_key = next(iter(self.memory_cache))
-        del self.memory_cache[oldest_key]
-```
-
+        del self.memory_cache[oldest_key]```
 ### Asynchronous Processing
 
 #### **Concurrent Plugin Operations**
@@ -1191,8 +1110,6 @@ from __future__ import annotations
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_plugin import FlextPluginModels
 
 
@@ -1269,9 +1186,7 @@ class FlextPluginExecutor:
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic
         # This would integrate with the plugin loading system
-        return {"status": "completed", "result": "mock result"}
-```
-
+        return {"status": "completed", "result": "mock result"}```
 ______________________________________________________________________
 
 ## 🎯 Implementation Best Practices

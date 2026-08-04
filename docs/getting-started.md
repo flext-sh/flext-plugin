@@ -65,8 +65,6 @@ ______________________________________________________________________
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
-from flext_cli import u
-from flext_core import FlextSettings
 
 # Create plugin platform
 platform = FlextPluginPlatform()
@@ -85,9 +83,7 @@ if load_result.success:
 
     activate_result = platform.enable_plugin("hello-world")
     if activate_result.success:
-        print("Plugin activated")
-```
-
+        print("Plugin activated")```
 ### Plugin Discovery
 
 ```python
@@ -103,9 +99,7 @@ if discovery_result.success:
     plugins = discovery_result.value
     print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
-        print(f"- {plugin.name} v{plugin.plugin_version}")
-```
-
+        print(f"- {plugin.name} v{plugin.plugin_version}")```
 ______________________________________________________________________
 
 ## Configuration
@@ -177,9 +171,9 @@ For advanced usage and integration patterns, see the complete documentation in t
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
+- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
 
 **External Resources**:
 

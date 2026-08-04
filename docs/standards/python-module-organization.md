@@ -79,21 +79,14 @@ src/flext_plugin/
 ├── hot_reload.py            # 🎯 Hot-reload system integration
 ├── loader.py                # 🎯 Dynamic plugin loading
 ├── discovery.py             # 🎯 High-level plugin discovery
-└── py.typed                 # 🎯 Type checking marker
-```
-
+└── py.typed                 # 🎯 Type checking marker```
 **Responsibility**: Establish the plugin system's public interface and high-level orchestration.
 
 **Import Pattern**:
 
 ```python
 # Primary entry point for plugin system
-from __future__ import annotations
-
-from flext_plugin import FlextPluginPlatform, create_flext_plugin
-from flext_plugin import create_flext_plugin_platform
-```
-
+from __future__ import annotations```
 ### **Core Layer** (`src/flext_plugin/core/`)
 
 ```python
@@ -103,9 +96,7 @@ from __future__ import annotations
 ├── core/
 │   ├── __init__.py          # 🚀 Core plugin types export
 │   ├── types.py             # 🚀 Plugin types, enums, results
-│   └── discovery.py         # 🚀 Core discovery algorithms
-```
-
+│   └── discovery.py         # 🚀 Core discovery algorithms```
 **Responsibility**: Define fundamental plugin types, status enums, and core discovery logic.
 
 **Usage Pattern**:
@@ -113,14 +104,11 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
-from flext_plugin import PluginStatus, PluginType, PluginError
-from flext_plugin import PluginDiscovery
+from flext_plugin import PluginStatus, PluginType
 
 # Plugin type definitions
 plugin_type = PluginType.TAP  # Singer data extraction
-status = PluginStatus.ACTIVE  # Plugin lifecycle state
-```
-
+status = PluginStatus.ACTIVE  # Plugin lifecycle state```
 ### **Domain Layer** (`src/flext_plugin/domain/`)
 
 ```python
@@ -131,9 +119,7 @@ from __future__ import annotations
 │   ├── __init__.py          # 🏛️ Domain exports
 │   ├── entities.py          # 🏛️ Plugin entities (FlextPlugin, FlextPluginModels.Registry)
 │   ├── ports.py             # 🏛️ Domain interfaces and contracts
-│   └── value_objects.py     # 🏛️ Plugin metadata and configuration
-```
-
+│   └── value_objects.py     # 🏛️ Plugin metadata and configuration```
 **Responsibility**: Rich domain modeling following Domain-Driven Design principles.
 
 **Entity Pattern**:
@@ -155,9 +141,7 @@ class CustomPlugin(FlextPlugin):
         # Business logic and domain events
         self.status = PluginStatus.ACTIVE
         self.add_domain_event("PluginActivated", {"plugin_id": self.id})
-        return r[bool].ok(True)
-```
-
+        return r[bool].ok(True)```
 ### **Application Layer** (`src/flext_plugin/application/`)
 
 ```python
@@ -167,9 +151,7 @@ from __future__ import annotations
 ├── application/
 │   ├── __init__.py          # 📤 Application layer exports
 │   ├── services.py          # 📤 Plugin management services
-│   └── handlers.py          # 📤 CQRS command/query handlers
-```
-
+│   └── handlers.py          # 📤 CQRS command/query handlers```
 **Responsibility**: Orchestrate plugin business logic and coordinate between layers.
 
 **Service Pattern**:
@@ -177,8 +159,7 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPluginService, FlextPluginDiscoveryService
-from flext_plugin import FlextPluginHandler
+from flext_plugin import FlextPluginService
 
 
 class PluginWorkflow:
@@ -193,9 +174,7 @@ class PluginWorkflow:
             .flat_map(lambda settings: self.service.create_plugin(settings))
             .flat_map(lambda plugin: self.service.register_plugin(plugin))
             .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
-        )
-```
-
+        )```
 ### **Configuration Layer** (`src/flext_plugin/settings/`)
 
 ```python
@@ -206,9 +185,7 @@ from __future__ import annotations
 │   ├── __init__.py          # ⚙️ Configuration exports
 │   ├── settings.py          # ⚙️ Plugin-specific settings
 │   ├── validation.py        # ⚙️ Configuration validation
-│   └── environment.py       # ⚙️ Environment-specific settings
-```
-
+│   └── environment.py       # ⚙️ Environment-specific settings```
 **Responsibility**: Handle plugin system configuration, validation, and environment management.
 
 **Configuration Pattern**:
@@ -217,7 +194,6 @@ from __future__ import annotations
 from __future__ import annotations
 
 from flext_plugin import PluginSystemSettings
-from flext_cli import u
 from flext_core import FlextSettings
 
 
@@ -238,9 +214,7 @@ class PluginSystemSettings(FlextSettings):
 # Environment variables:
 # FLEXT_PLUGIN_DISCOVERY_PATHS=/opt/plugins:/usr/local/plugins
 # FLEXT_PLUGIN_HOT_RELOAD_ENABLED=true
-# FLEXT_PLUGIN_WATCH_INTERVAL=1
-```
-
+# FLEXT_PLUGIN_WATCH_INTERVAL=1```
 ______________________________________________________________________
 
 ## 🎯 **Semantic Naming Conventions**
@@ -268,9 +242,7 @@ FlextPlugins.Manager  # Plugin management interface
 # Plugin lifecycle patterns
 FlextPluginLoader  # Dynamic plugin loading
 FlextPluginWatcher  # File system watching
-FlextPluginReloader  # Hot-reload management
-```
-
+FlextPluginReloader  # Hot-reload management```
 **Rationale**: Clear namespace separation prevents conflicts across FLEXT's 32 projects.
 
 ### **Module-Level Naming**
@@ -290,9 +262,7 @@ platform.py  # Main platform orchestration
 simple_api.py  # Factory functions and utilities
 hot_reload.py  # Hot-reload system integration
 discovery.py  # High-level plugin discovery
-loader.py  # Dynamic plugin loading mechanisms
-```
-
+loader.py  # Dynamic plugin loading mechanisms```
 **Pattern**: One primary concern per module with cohesive functionality.
 
 ### **Plugin Type Naming**
@@ -318,9 +288,7 @@ PluginType.AUTHENTICATION  # Auth providers and strategies
 # Utility plugin types
 PluginType.UTILITY  # General-purpose utilities
 PluginType.TOOL  # Development and REDACTED_LDAP_BIND_PASSWORD tools
-PluginType.PROCESSOR  # Data processing components
-```
-
+PluginType.PROCESSOR  # Data processing components```
 ______________________________________________________________________
 
 ## 📦 **Import Patterns & Best Practices**
@@ -334,11 +302,10 @@ ______________________________________________________________________
 from __future__ import annotations
 
 from flext_plugin import (
-    FlextPluginPlatform,
     create_flext_plugin,
     create_flext_plugin_platform,
 )
-from flext_plugin import PluginStatus, PluginType
+from flext_plugin import PluginType
 
 
 # Use patterns directly
@@ -347,9 +314,7 @@ def deploy_plugin():
     plugin = create_flext_plugin(
         name="data-processor", version="0.9.9", plugin_type=PluginType.PROCESSOR
     )
-    return platform.register_plugin(plugin)
-```
-
+    return platform.register_plugin(plugin)```
 #### **2. Specific Module Pattern (For Advanced Usage)**
 
 ```python
@@ -362,9 +327,7 @@ from flext_plugin import PluginStatus, PluginType
 
 # More explicit but verbose
 service = FlextPluginService(registry)
-plugin = FlextPlugin(name="custom", version="0.9.9")
-```
-
+plugin = FlextPlugin(name="custom", version="0.9.9")```
 #### **3. Factory Function Pattern**
 
 ```python
@@ -373,9 +336,6 @@ from __future__ import annotations
 
 from flext_plugin import (
     create_flext_plugin,
-    create_flext_plugin_config,
-    create_flext_plugin_metadata,
-    create_flext_plugin_registry,
 )
 
 # Simplified plugin creation
@@ -388,9 +348,7 @@ plugin = create_flext_plugin(
         "author": "FLEXT Team",
         "endpoints": ["/api/v1/*", "/api/v2/*"],
     },
-)
-```
-
+)```
 ### **Anti-Patterns (Forbidden)**
 
 ```python
@@ -400,18 +358,12 @@ from __future__ import annotations
 from flext_plugin import *
 
 # ❌ Don't import internal modules
-from flext_plugin import _PrivateClass
 
 # ❌ Don't use deep imports for public APIs
-from flext_plugin import FlextPlugin, _private_method
 
 # ❌ Don't alias core plugin types
-from flext_plugin import FlextPlugin as Plugin  # Confusing across ecosystem
 
-# ❌ Don't bypass the main API
-from flext_plugin import _InternalPlatformManager
-```
-
+# ❌ Don't bypass the main API```
 ______________________________________________________________________
 
 ## 🏛️ **Architectural Patterns**
@@ -437,9 +389,7 @@ from __future__ import annotations
 ├─────────────────────────────────────────┤
 │        Foundation Layer                 │  # flext-core integration
 │   (r, FlextContainer)         │  # base patterns
-└─────────────────────────────────────────┘
-```
-
+└─────────────────────────────────────────┘```
 ### **Plugin Lifecycle Architecture**
 
 ```python
@@ -461,9 +411,7 @@ from __future__ import annotations
 ┌──────────────┐            │                    │
 │   DISABLED   │◀───────────┴────────────────────┘
 │  (Manager)   │
-└──────────────┘
-```
-
+└──────────────┘```
 ### **Hot-Reload Architecture**
 
 ```python
@@ -494,9 +442,7 @@ from __future__ import annotations
 │  │ State Save  │  │   Reload    │  │State Restore│    │
 │  │ & Cleanup   │  │   Plugin    │  │ & Activate  │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘    │
-└─────────────────────────────────────────────────────────┘
-```
-
+└─────────────────────────────────────────────────────────┘```
 ______________________________________________________________________
 
 ## 🔄 **Plugin-Oriented Programming Patterns**
@@ -508,8 +454,6 @@ from __future__ import annotations
 
 from flext_plugin import create_flext_plugin
 from flext_plugin import PluginType
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 # Factory pattern for plugin creation
@@ -542,9 +486,7 @@ def deploy_tap_plugin(settings: dict) -> p.Result[FlextPlugin]:
         )
         .flat_map(lambda plugin: register_plugin(plugin))
         .flat_map(lambda plugin: activate_plugin(plugin.id))
-    )
-```
-
+    )```
 ### **Plugin Lifecycle Management**
 
 ```python
@@ -552,8 +494,6 @@ from __future__ import annotations
 
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class PluginLifecycleManager:
@@ -635,9 +575,7 @@ class PluginLifecycleManager:
             return r[bool].ok(new_plugin)
 
         except Exception as e:
-            return r[bool].fail(f"Hot reload failed: {e}")
-```
-
+            return r[bool].fail(f"Hot reload failed: {e}")```
 ### **Plugin Discovery Patterns**
 
 ```python
@@ -645,8 +583,6 @@ from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService
 from flext_plugin import PluginDiscovery
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class AdvancedPluginDiscovery:
@@ -716,9 +652,7 @@ class AdvancedPluginDiscovery:
             return r[bool].ok(validated_plugins)
 
         except Exception as e:
-            return r[bool].fail(f"Singer plugin discovery failed: {e}")
-```
-
+            return r[bool].fail(f"Singer plugin discovery failed: {e}")```
 ______________________________________________________________________
 
 ## 🎯 **Domain-Driven Design Patterns**
@@ -730,14 +664,11 @@ from __future__ import annotations
 
 from flext_plugin import FlextPlugin
 from flext_plugin import PluginStatus, PluginType
-from flext_cli import u
-from flext_core import FlextSettings
 from datetime import datetime
 
 
 class FlextPlugin(FlextModels.Entity):
-    """
-    Rich plugin entity with comprehensive business logic.
+    """Rich plugin entity with comprehensive business logic.
 
     Represents a plugin in the FLEXT ecosystem with full lifecycle management,
     dependency tracking, and event sourcing capabilities.
@@ -848,9 +779,7 @@ class FlextPlugin(FlextModels.Entity):
     def _validate_dependencies(self) -> bool:
         """Validate plugin dependencies are satisfied."""
         # Implementation for dependency validation
-        return True
-```
-
+        return True```
 ### **Plugin Aggregate Patterns**
 
 ```python
@@ -948,9 +877,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
             "health_score": health_score,
             "last_discovery": self.last_discovery.isoformat() if self.last_discovery else None,
             "registry_version": self.registry_version
-        }
-```
-
+        }```
 ### **Plugin Value Object Patterns**
 
 ```python
@@ -1051,9 +978,7 @@ class FlextPluginModels.Config(FlextModels.Value):
         if self.environment == "production":
             return base_required + ["log_level", "metrics_enabled"]
         else:
-            return base_required
-```
-
+            return base_required```
 ______________________________________________________________________
 
 ## 🚀 **Performance & Optimization Patterns**
@@ -1127,18 +1052,14 @@ class LazyPluginLoader:
             instance = plugin_class(*args, **kwargs)
             return r[bool].ok(instance)
         except Exception as e:
-            return r[bool].fail(f"Failed to instantiate plugin: {e}")
-```
-
+            return r[bool].fail(f"Failed to instantiate plugin: {e}")```
 ### **Plugin Caching Patterns**
 
 ```python
 from __future__ import annotations
 
-from collections.abc import Callable
 from functools import wraps
 
-import hashlib
 import json
 
 
@@ -1244,9 +1165,7 @@ plugin_cache = PluginCache()
 def execute_plugin_cached(plugin_id: str, settings: dict) -> p.Result[t.JsonValue]:
     """Execute plugin with caching."""
     # Actual plugin execution logic
-    pass
-```
-
+    pass```
 ______________________________________________________________________
 
 ## 📏 **Code Quality Standards**
@@ -1258,9 +1177,6 @@ ______________________________________________________________________
 from __future__ import annotations
 
 import typing
-from collections.abc import Awaitable, Callable
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class PluginInterface(typing.Protocol):
@@ -1305,9 +1221,7 @@ def process_plugin_data(
 
 # ❌ Avoid untyped plugin interfaces
 def execute_plugin(plugin, data):  # Missing types
-    return plugin.execute(data)
-```
-
+    return plugin.execute(data)```
 ### **Error Handling Standards**
 
 ```python
@@ -1383,9 +1297,7 @@ class PluginExecutionError(PluginError):
 # ❌ Avoid raising exceptions in plugin business logic
 def bad_plugin_operation(plugin: FlextPlugin) -> None:
     if not plugin.is_valid():
-        raise ValueError("Invalid plugin")  # Breaks railway pattern
-```
-
+        raise ValueError("Invalid plugin")  # Breaks railway pattern```
 ### **Plugin Documentation Standards**
 
 ````python
@@ -1618,8 +1530,6 @@ from __future__ import annotations
 
 from flext_plugin import create_flext_plugin
 from flext_plugin import PluginType
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 # Oracle WMS plugin (flext-oracle-wms project)
@@ -1658,9 +1568,7 @@ def create_oracle_tap_plugin(tap_config: dict) -> p.Result[FlextPlugin]:
 
 # ❌ Don't create custom plugin systems per project
 class OracleCustomPlugin:  # Creates ecosystem fragmentation
-    pass
-```
-
+    pass```
 ### **Plugin Configuration Integration**
 
 ```python
@@ -1668,7 +1576,6 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 from __future__ import annotations
 
 from flext_plugin import PluginSystemSettings
-from flext_cli import u
 from flext_core import FlextSettings
 
 
@@ -1691,9 +1598,7 @@ class ProjectPluginConfig(PluginSystemSettings):
     ldap: LdapPluginSettings = field(default_factory=LdapPluginSettings)
 
     # Inherit base plugin settings
-    # discovery_paths, hot_reload_enabled, etc.
-```
-
+    # discovery_paths, hot_reload_enabled, etc.```
 ### **Plugin Registry Integration**
 
 ```python
@@ -1730,9 +1635,7 @@ class EcosystemPluginManager:
                     if register_result.success:
                         registered_plugins.append(plugin.name)
 
-        return r[bool].ok(registered_plugins)
-```
-
+        return r[bool].ok(registered_plugins)```
 ______________________________________________________________________
 
 **Last Updated**: August 3, 2025

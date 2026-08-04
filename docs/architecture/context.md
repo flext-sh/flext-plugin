@@ -269,9 +269,7 @@ from flext_plugin import FlextPluginPlatform
 # Plugin registration and management
 platform = FlextPluginPlatform()
 await platform.register_plugin(plugin_config)
-await platform.execute_plugin("plugin-name", context)
-```
-
+await platform.execute_plugin("plugin-name", context)```
 #### **Application Integration API**
 
 ```python
@@ -282,9 +280,7 @@ from flext_plugin import FlextPluginApi
 # Unified plugin management
 api = FlextPluginApi()
 plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)
-```
-
+result = await api.execute_plugin("plugin-name", context)```
 ### External System Contracts
 
 #### **FLEXT Core Integration Contract**

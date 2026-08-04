@@ -1,8 +1,12 @@
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
-# flext_plugin.typings
+# flext_plugin.settings
 
-::: flext_plugin.typings
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
+::: flext_plugin.settings
     options:
       show_root_heading: true
       show_root_full_path: false
