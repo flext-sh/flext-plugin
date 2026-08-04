@@ -17,11 +17,16 @@
 - Project class: `platform`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`,
   `typed`
-- Main facades: _none_
-- Alias exports: _none_
-- Public symbol exports: _none_
+- Main facades: `FlextPluginApi`, `FlextPluginConfig`, `FlextPluginConstants`,
+  `FlextPluginDiscovery`, `FlextPluginModels`, `FlextPluginPlatform`,
+  `FlextPluginProtocols`, `FlextPluginSettings` (+2 more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextPluginApi`, `FlextPluginConfig`,
+  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
+  `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginSettings`,
+  `FlextPluginTypes`, `FlextPluginUtilities` (+3 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `0`
+- Generated module pages: `6`
 
 ## Next Pages
 
