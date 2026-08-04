@@ -27,7 +27,7 @@ class TestsFlextPluginTypesUnit:
 
     def test_facade_composes_cli_types_via_mro(self) -> None:
         """FlextPluginTypes extends the flext_cli type facade via MRO."""
-        tm.that(issubclass(FlextPluginTypes, cli_t), eq=True)
+        tm.that(cli_t in FlextPluginTypes.__mro__, eq=True)
 
     def test_module_alias_is_the_facade(self) -> None:
         """The module-level ``t`` alias exposes the facade itself."""
