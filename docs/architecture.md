@@ -86,9 +86,7 @@ class FlextPlugin(FlextModels.Entity):
         """Business rule: Plugin must be loaded before activation"""
 
     def validate_business_rules(self) -> p.Result[bool]:
-        """Domain validation logic"""
-```
-
+        """Domain validation logic"""```
 #### FlextPluginModels.Config
 
 ```python
@@ -102,9 +100,7 @@ class FlextPluginModels.Config(FlextModels.Entity):
     metadata: FlextPluginModels.Metadata
 
     class Config:
-        frozen = True  # Immutable value object
-```
-
+        frozen = True  # Immutable value object```
 ### Services
 
 Plugin-specific business logic that doesn't belong to a single entity.
@@ -134,9 +130,7 @@ class FlextPluginPlatform:
     def discover_plugins(
         self, path: str
     ) -> p.Result[Sequence[FlextPluginModels.Entity]]:
-        """Coordinate plugin discovery"""
-```
-
+        """Coordinate plugin discovery"""```
 ### Application Services
 
 - **FlextPluginService**: Core plugin operations
@@ -159,9 +153,7 @@ class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
 
     def scan_directory(self, path: str) -> p.Result[Sequence[PluginInfo]]:
-        """Scan directory for plugin files"""
-```
-
+        """Scan directory for plugin files"""```
 #### Watchdog Integration
 
 ```python
@@ -174,9 +166,7 @@ class WatchdogHotReload:
     """File system monitoring for hot reload"""
 
     def watch_directory(self, path: str, callback: Callable):
-        """Monitor directory for changes"""
-```
-
+        """Monitor directory for changes"""```
 ______________________________________________________________________
 
 ## Integration Patterns
@@ -196,9 +186,7 @@ def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
         # Plugin loading logic
         return r[bool].ok(True)
     except Exception as e:
-        return r[bool].fail(f"Loading failed: {e}")
-```
-
+        return r[bool].fail(f"Loading failed: {e}")```
 #### Dependency Injection
 
 Uses FlextContainer for service management:
@@ -209,9 +197,7 @@ from __future__ import annotations
 
 def _setup_services(self) -> None:
     """Register services in DI container"""
-    self.container.bind("plugin_service", FlextPluginService(container=self.container))
-```
-
+    self.container.bind("plugin_service", FlextPluginService(container=self.container))```
 ### Singer Ecosystem Integration
 
 Plugins can implement Singer tap/target patterns:
@@ -224,9 +210,7 @@ class SingerTapPlugin(FlextPlugin):
     """Plugin implementing Singer tap protocol"""
 
     def create_tap(self) -> SingerTap:
-        """Create Singer tap instance"""
-```
-
+        """Create Singer tap instance"""```
 ______________________________________________________________________
 
 ## Current Architecture Status ✅ COMPLIANT
@@ -288,9 +272,9 @@ This architecture enables the plugin system to serve as reliable infrastructure 
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-meltano Pipelines](https://github.com/organization/flext/tree/main/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
+- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
 
 **External Resources**:
 

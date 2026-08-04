@@ -86,9 +86,7 @@ hello_plugin = create_flext_plugin(
 
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
 print(f"Status: {hello_plugin.status}")
-print(f"Valid: {hello_plugin.is_valid()}")
-```
-
+print(f"Valid: {hello_plugin.is_valid()}")```
 Run it:
 
 ```bash
@@ -152,9 +150,7 @@ def main():
 
 
 # Run the example
-run(main())
-```
-
+run(main())```
 Run it:
 
 ```bash
@@ -279,9 +275,7 @@ from flext_plugin import create_flext_plugin_platform
         platform.shutdown()
 
 if __name__ == "__main__":
-    run(demo_custom_plugin())
-```
-
+    run(demo_custom_plugin())```
 Run it:
 
 ```bash
@@ -329,9 +323,7 @@ def discover_plugins():
 
 
 # Run discovery
-run(discover_plugins())
-```
-
+run(discover_plugins())```
 ## Testing Your Plugin
 
 Create `test_greeting_plugin.py`:
@@ -405,9 +397,7 @@ class TestGreetingPlugin:
 
 # Run tests
 if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
-```
-
+    pytest.main([__file__, "-v"])```
 Run tests:
 
 ```bash
@@ -431,7 +421,6 @@ from flext_plugin import create_flext_plugin_platform
 
 def development_server():
     """Development server with hot reload."""
-
     # Enable hot reload
     enable_hot_reload(
         watch_paths=["./"],  # Watch current directory
@@ -457,9 +446,7 @@ def development_server():
 
 
 # Run development server
-run(development_server())
-```
-
+run(development_server())```
 ## Quality Gates
 
 FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
@@ -522,9 +509,7 @@ print(f"Plugin status: {plugin.status}")
 
 # Ensure plugin is initialized before activation
 plugin.initialize()
-plugin.activate()
-```
-
+plugin.activate()```
 **Hot Reload Not Working**
 
 ```bash

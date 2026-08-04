@@ -2,6 +2,10 @@
 
 # flext_plugin.constants
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_plugin.constants
     options:
       show_root_heading: true

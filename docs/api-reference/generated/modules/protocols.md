@@ -2,6 +2,10 @@
 
 # flext_plugin.protocols
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_plugin.protocols
     options:
       show_root_heading: true

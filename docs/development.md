@@ -109,9 +109,7 @@ class FlextPluginModels:
         """Plugin configuration with validation"""
 
     class _ValidationHelper:
-        """Nested helper class for domain logic"""
-```
-
+        """Nested helper class for domain logic"""```
 ______________________________________________________________________
 
 ## Testing
@@ -172,9 +170,7 @@ class MyPlugin(FlextPlugin):
             # Process data
             return r[dict].ok(processed_data)
         except Exception as e:
-            return r[dict].fail(str(e))
-```
-
+            return r[dict].fail(str(e))```
 ### Hot Reload Development
 
 ```bash
@@ -241,9 +237,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Use platform validation
 result = platform.validate_plugin(plugin)
 if result.failure:
-    print(f"Validation error: {result.error}")
-```
-
+    print(f"Validation error: {result.error}")```
 #### Hot Reload Problems
 
 ```bash

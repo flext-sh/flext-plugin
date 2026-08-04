@@ -577,9 +577,7 @@ from flext_plugin import FlextPluginSecurityMonitor
 
 monitor = FlextPluginSecurityMonitor()
 monitor.watch_security_events()
-monitor.alert_on_anomalies()
-```
-
+monitor.alert_on_anomalies()```
 ______________________________________________________________________
 
 ## 📊 Security Metrics and KPIs
