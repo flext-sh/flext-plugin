@@ -186,7 +186,7 @@ class FlextPluginProtocols(p):
                 """Register a plugin."""
                 ...
 
-            def register(self, plugin: m.Plugin.Entity) -> p.Result[None]:
+            def register(self, plugin: m.Plugin.Entity) -> p.Result[bool]:
                 """Register a plugin with normalized API."""
                 ...
 
