@@ -35,6 +35,8 @@ src/flext_plugin/
 
 - Plugin lifecycle is **explicit** — discover → load → register → execute → unregister; hot reload is managed through the facade.
 - Registration/discovery is protocol-driven (`p.*`); depend on abstractions, not concrete plugin classes.
+- Config/settings canonical pattern: ADR-012.
+- Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Commands
 
