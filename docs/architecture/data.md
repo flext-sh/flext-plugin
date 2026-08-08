@@ -550,9 +550,7 @@ interface PluginRegistrationResponse {
   plugin_id: string;
   status: "registered" | "updated" | "rejected";
   validation_errors?: string[];
-}
-```
-
+}```
 #### **Plugin Execution API**
 
 ```typescript
@@ -569,9 +567,7 @@ interface PluginExecutionResponse {
   result?: any;
   error?: string;
   execution_time: number;
-}
-```
-
+}```
 ______________________________________________________________________
 
 **Data Architecture** - Comprehensive data models, storage patterns, security controls, and governance for the FLEXT Plugin system.
