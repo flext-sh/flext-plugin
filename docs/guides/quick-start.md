@@ -90,12 +90,8 @@ print(f"Valid: {hello_plugin.is_valid()}")```
 Run it:
 
 ```bash
-python hello_plugin.py
-```
-
-Expected output:
-
-```
+python hello_plugin.py```
+Expected output:```
 Created plugin: hello-world v1.0.0
 Status: PluginStatus.INACTIVE
 Valid: True
@@ -154,12 +150,8 @@ run(main())```
 Run it:
 
 ```bash
-python platform_example.py
-```
-
-Expected output:
-
-```
+python platform_example.py```
+Expected output:```
 Registering plugin...
 ✅ Plugin registered successfully
 Activating plugin...
@@ -279,12 +271,8 @@ if __name__ == "__main__":
 Run it:
 
 ```bash
-python custom_plugin.py
-```
-
-Expected output:
-
-```
+python custom_plugin.py```
+Expected output:```
 Initializing greeting-generator...
 
 --- Testing Greeting Plugin ---
@@ -405,9 +393,7 @@ Run tests:
 pip install pytest
 
 # Run tests
-python test_greeting_plugin.py
-```
-
+python test_greeting_plugin.py```
 ## Development with Hot Reload
 
 For development, you can enable hot reload to automatically reload plugins when files change:
@@ -459,9 +445,7 @@ poetry add --group dev ruff mypy pytest pytest-cov bandit
 ruff check .          # Linting
 mypy .
 pytest               # Testing
-bandit -r .          # Security scanning
-```
-
+bandit -r .          # Security scanning```
 ## Next Steps
 
 Now that you have a basic understanding of FLEXT Plugin, explore these topics:
@@ -495,9 +479,7 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 pip list | grep flext-plugin
 
 # Reinstall if necessary
-pip install --force-reinstall flext-plugin
-```
-
+pip install --force-reinstall flext-plugin```
 **Plugin Not Activating**
 
 ```python
@@ -517,9 +499,7 @@ plugin.activate()```
 pip install watchdog
 
 # Check file permissions in watch directory
-ls -la ./
-```
-
+ls -la ./```
 ### Getting Help
 
 - **Documentation**: Browse the complete documentation
