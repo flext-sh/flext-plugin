@@ -287,18 +287,14 @@ FROM python:3.13-slim
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 # flext-plugin installed as dependency
-RUN pip install flext-plugin
-```
-
+RUN pip install flext-plugin```
 #### **CLI Deployment** (Optional)
 
 ```dockerfile
 # FLEXT Plugin CLI container
 FROM python:3.13-slim
 RUN pip install flext-plugin[cli]
-ENTRYPOINT ["flext-plugin"]
-```
-
+ENTRYPOINT ["flext-plugin"]```
 #### **API Deployment** (Planned)
 
 ```dockerfile
@@ -491,18 +487,14 @@ result = await api.execute_plugin("plugin-name", context)```
 # Command-line interface (when enabled)
 flext-plugin discover ./plugins
 flext-plugin execute plugin-name --context=context.json
-flext-plugin list --format=json
-```
-
+flext-plugin list --format=json```
 ### FLEXT Plugin API Interface (Planned)
 
 ```bash
 # REST API endpoints (planned)
 GET /api/v1/plugins
 POST /api/v1/plugins/{name}/execute
-GET /api/v1/plugins/{name}/status
-```
-
+GET /api/v1/plugins/{name}/status```
 ______________________________________________________________________
 
 **Container Architecture** - Technology stack, deployment patterns, and container interactions for FLEXT Plugin system.

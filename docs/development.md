@@ -11,7 +11,7 @@
   - [Current Status ✅ COMPLIANT](#current-status-compliant)
   - [Compliance Achieved](#compliance-achieved)
 - [Testing](#testing)
-  - [Test Structure](#test-structure)
+  - [Test Structure```](#test-structure)
   - [Testing Commands](#testing-commands)
   - [Test Guidelines](#test-guidelines)
 - [Plugin Development](#plugin-development)
@@ -114,9 +114,7 @@ ______________________________________________________________________
 
 ## Testing
 
-### Test Structure
-
-```
+### Test Structure```
 tests/
 ├── unit/                    # Unit tests for individual components (12 files)
 ├── integration/            # Integration tests (4 files)
@@ -125,9 +123,7 @@ tests/
 ├── conftest.py             # Test configuration and fixtures
 └── test_*.py              # Various component tests (6 files)
 
-Total: 24 test files targeting 90% coverage
-```
-
+Total: 24 test files targeting 90% coverage```
 ### Testing Commands
 
 ```bash
@@ -179,9 +175,7 @@ make plugin-watch
 
 # Environment variables
 export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2
-```
-
+export FLEXT_PLUGIN_WATCH_INTERVAL=2```
 ______________________________________________________________________
 
 ## Contributing Process
@@ -201,9 +195,7 @@ ______________________________________________________________________
 
 ```bash
 make val          # All quality gates must pass
-make test             # 85% coverage required
-```
-
+make test             # 85% coverage required```
 ### 4. Pull Request
 
 - Clear description of changes
@@ -245,9 +237,7 @@ if result.failure:
 make plugin-validate
 
 # Verify file permissions
-ls -la plugins/
-```
-
+ls -la plugins/```
 ______________________________________________________________________
 
 ## Release Process
