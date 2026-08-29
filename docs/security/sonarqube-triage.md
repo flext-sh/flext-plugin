@@ -45,7 +45,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        63      )
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 2 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8264`
 **Local**: `.github/workflows/docs.yml:18` · **Effort**: 5min
@@ -64,7 +64,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        22  concurrency:
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 3 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:19` · **Effort**: 5min
@@ -83,7 +83,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        23    group: pages
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 4 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:20` · **Effort**: 5min
@@ -102,7 +102,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24    cancel-in-progress: false
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 5 · 🟡 MAJOR · VULNERABILITY · `python:S2068`
 **Local**: `examples/02_plugin_configuration.py:53` · **Effort**: 30min
@@ -121,7 +121,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        57          "search": {
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 6 · 🟡 MAJOR · VULNERABILITY · `text:S8565`
 **Local**: `pyproject.toml:-` · **Effort**: 5min
@@ -129,7 +129,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 > Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
 
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 7 · ⚪ MINOR · CODE_SMELL · `python:S7504`
 **Local**: `conftest.py:20` · **Effort**: 5min
@@ -148,7 +148,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24                  sys.modules.pop(module_name, None)
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 8 · ⚪ MINOR · CODE_SMELL · `python:S5713`
 **Local**: `src/flext_plugin/_utilities/discovery.py:43` · **Effort**: 1min
@@ -167,7 +167,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        47              if (
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 9 · ⚪ MINOR · CODE_SMELL · `python:S7498`
 **Local**: `src/flext_plugin/_utilities/plugin_platform.py:278` · **Effort**: 5min
@@ -186,7 +186,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       282              self._loader = None
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 10 · ⚪ MINOR · CODE_SMELL · `python:S7498`
 **Local**: `src/flext_plugin/_utilities/plugin_platform.py:279` · **Effort**: 5min
@@ -205,7 +205,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       283              self._executor = None
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 11 · ⚪ MINOR · CODE_SMELL · `python:S116`
 **Local**: `src/flext_plugin/utilities.py:59` · **Effort**: 2min
@@ -224,7 +224,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        63          def discover_plugins(
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 12 · ⚪ MINOR · CODE_SMELL · `python:S116`
 **Local**: `src/flext_plugin/utilities.py:60` · **Effort**: 2min
@@ -243,5 +243,4 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        64              cls, directory: Path | str
 ```
 
-**Decisão**: 
-
+**Decisão**: pendente
