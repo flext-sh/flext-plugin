@@ -10,7 +10,7 @@
   - [Plugin Discovery](#plugin-discovery)
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
-  - [Plugin Directory Structure](#plugin-directory-structure)
+  - [Plugin Directory Structure```](#plugin-directory-structure)
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
@@ -112,12 +112,8 @@ export FLEXT_PLUGIN_DISCOVERY_PATHS="plugins:~/.flext/plugins:/opt/flext/plugins
 
 # Hot reload settings
 export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2
-```
-
-### Plugin Directory Structure
-
-```
+export FLEXT_PLUGIN_WATCH_INTERVAL=2```
+### Plugin Directory Structure```
 plugins/
 ├── my_plugin/
 │   ├── __init__.py

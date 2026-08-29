@@ -875,9 +875,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "from flext_plugin import FlextPluginApi; u.Cli.print('OK')" || exit 1
 
 # Default command
-CMD ["python", "-m", "flext_plugin.cli", "--help"]
-```
-
+CMD ["python", "-m", "flext_plugin.cli", "--help"]```
 #### **Kubernetes Deployment**
 
 ```yaml
@@ -946,9 +944,7 @@ spec:
     - name: api
       port: 8000
       targetPort: 8000
-  type: ClusterIP
-```
-
+  type: ClusterIP```
 ### Monitoring and Observability
 
 #### **Health Checks Implementation**
