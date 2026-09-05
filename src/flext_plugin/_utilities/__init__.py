@@ -1,31 +1,28 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Plugin. Utilities package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from types import MappingProxyType
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .discovery import FlextPluginDiscovery as FlextPluginDiscovery
-    from .plugin_platform import FlextPluginPlatform as FlextPluginPlatform
+    from .discovery import FlextPluginDiscovery
+    from .plugin_platform import FlextPluginPlatform
+__all__: tuple[str, ...] = ("FlextPluginDiscovery", "FlextPluginPlatform")
 
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    ".discovery": ("FlextPluginDiscovery",),
-    ".plugin_platform": ("FlextPluginPlatform",),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".discovery": ("FlextPluginDiscovery",),
+            ".plugin_platform": ("FlextPluginPlatform",),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
 )
-
-_PUBLIC_EXPORTS: tuple[str, ...] = ("FlextPluginDiscovery", "FlextPluginPlatform")
-
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

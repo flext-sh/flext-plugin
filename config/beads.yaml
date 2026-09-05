@@ -1,4 +1,4 @@
 version: 1
-workspace: flext-plugin
-database: flext-plugin
-issue_prefix: flext-plugin
+workspace: flext
+database: flext
+issue_prefix: flext
