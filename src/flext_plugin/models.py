@@ -86,7 +86,10 @@ class FlextPluginModels(m):
             )
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Extensible plugin metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(
+                # Why: pyrefly implicit-any-empty-container needs the {} literal typed.
+                default_factory=lambda: types.MappingProxyType[str, t.JsonValue]({})
+            )
 
             @classmethod
             def create(cls, **kwargs: p.AttributeProbe) -> Self:
@@ -160,7 +163,10 @@ class FlextPluginModels(m):
             ]
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Extensible discovery metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(
+                # Why: pyrefly implicit-any-empty-container needs the {} literal typed.
+                default_factory=lambda: types.MappingProxyType[str, t.JsonValue]({})
+            )
 
             @u.field_validator("version", mode="before")
             @classmethod
@@ -209,7 +215,10 @@ class FlextPluginModels(m):
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Additional metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(
+                # Why: pyrefly implicit-any-empty-container needs the {} literal typed.
+                default_factory=lambda: types.MappingProxyType[str, t.JsonValue]({})
+            )
 
         class PluginRegistry(m.Value):
             """Plugin registry - central plugin registry storage.
@@ -228,7 +237,10 @@ class FlextPluginModels(m):
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
                 t.JsonMapping, u.Field(description="Dictionary of registered plugins")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(
+                # Why: pyrefly implicit-any-empty-container needs the {} literal typed.
+                default_factory=lambda: types.MappingProxyType[str, t.JsonValue]({})
+            )
             last_updated: Annotated[
                 datetime, u.Field(description="Last update timestamp")
             ] = u.Field(default_factory=datetime.now)

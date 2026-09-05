@@ -167,6 +167,14 @@ class _DockerIntegrationCommand(s[bool]):
         return r[bool].ok(value=True)
 
 
+def _run_docker_integration_command(
+    params: _DockerIntegrationCommand,
+) -> p.Result[bool]:
+    """Execute the parsed command (named def, not a lambda: pyrefly needs a
+    concrete parameter type — ResultRouteHandler is Callable[..., ...])."""
+    return params.execute()
+
+
 def main(args: t.StrSequence | None = None) -> int:
     """Main entry point for the Docker integration example."""
     app = cli.create_app_with_common_params(
@@ -180,7 +188,7 @@ def main(args: t.StrSequence | None = None) -> int:
                 name="run",
                 help_text="Create the example plugins and validate them.",
                 model_cls=_DockerIntegrationCommand,
-                handler=lambda params: params.execute(),
+                handler=_run_docker_integration_command,
             )
         ],
     )
