@@ -163,7 +163,7 @@ class _DockerIntegrationCommand(s[bool]):
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
             validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
             if validation_result.failure:
-                return r[bool].fail(validation_result.error or "validation failed")
+                return r[bool].from_failure(validation_result)
         return r[bool].ok(value=True)
 
 
@@ -197,7 +197,7 @@ def main(args: t.StrSequence | None = None) -> int:
         prog_name="flext-plugin-docker-integration",
         args=list(args) if args is not None else sys.argv[1:],
     )
-    return 0 if outcome.success else 1
+    return cli.finalize_result(outcome)
 
 
 if __name__ == "__main__":
