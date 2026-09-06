@@ -27,7 +27,7 @@ This section is generated from public exports and real docstrings.
 
 - Primary facades: `FlextPluginApi`, `FlextPluginConfig`,
   `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginPlatform` (+4 more)
+  `FlextPluginProtocols` (+3 more)
 - Generated module pages: `6`
 
 Back to [project docs](../index.md).

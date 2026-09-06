@@ -16,6 +16,10 @@ from typing import Annotated, Self
 from flext_cli import m, u
 from flext_plugin import c, p, t
 
+# Why: typed module constant gives pyrefly a concrete container type for the
+# empty-mapping defaults below (bare `types.MappingProxyType({})` infers `Any`).
+_EMPTY_JSON_MAPPING: t.JsonMapping = types.MappingProxyType({})
+
 
 class FlextPluginModels(m):
     """Plugin domain models extending flext-core patterns.
@@ -86,7 +90,7 @@ class FlextPluginModels(m):
             )
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Extensible plugin metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
             @classmethod
             def create(cls, **kwargs: p.AttributeProbe) -> Self:
@@ -160,7 +164,7 @@ class FlextPluginModels(m):
             ]
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Extensible discovery metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
             @u.field_validator("version", mode="before")
             @classmethod
@@ -209,7 +213,7 @@ class FlextPluginModels(m):
             ] = u.Field(default_factory=tuple)
             metadata: Annotated[
                 t.JsonMapping, u.Field(description="Additional metadata")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
         class PluginRegistry(m.Value):
             """Plugin registry - central plugin registry storage.
@@ -228,7 +232,7 @@ class FlextPluginModels(m):
             version: Annotated[str, u.Field(description="Registry schema version")]
             plugins: Annotated[
                 t.JsonMapping, u.Field(description="Dictionary of registered plugins")
-            ] = u.Field(default_factory=lambda: types.MappingProxyType({}))
+            ] = u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
             last_updated: Annotated[
                 datetime, u.Field(description="Last update timestamp")
             ] = u.Field(default_factory=datetime.now)
