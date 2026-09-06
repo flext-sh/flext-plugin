@@ -170,8 +170,10 @@ class _DockerIntegrationCommand(s[bool]):
 def _run_docker_integration_command(
     params: _DockerIntegrationCommand,
 ) -> p.Result[bool]:
-    """Execute the parsed command (named def, not a lambda: pyrefly needs a
-    concrete parameter type — ResultRouteHandler is Callable[..., ...])."""
+    """Invoke the command's own `execute` — typed to satisfy the erased
+    ``p.Cli.ResultRouteHandler`` callable (params: ``...``, so pyrefly cannot
+    infer a bare `lambda params: ...`'s parameter type from context).
+    """
     return params.execute()
 
 

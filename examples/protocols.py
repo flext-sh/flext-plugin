@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from flext_plugin import (
-    FlextPluginProtocols,
-)  # Why: FlextPluginProtocols is owned by flext_plugin, not flext_core (pyrefly missing-module-attribute)
+# Why: FlextPluginProtocols is owned by flext_plugin, not flext_core (pyrefly missing-module-attribute).
+from flext_plugin import FlextPluginProtocols
 
 
 class ExamplesFlextPluginProtocols(FlextPluginProtocols):
