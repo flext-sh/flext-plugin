@@ -78,7 +78,9 @@ class FlextPluginDiscovery:
             return r[m.Plugin.DiscoveryData].fail(f"Plugin not found at: {plugin_path}")
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
-            return r[m.Plugin.DiscoveryData].fail(f"Discovery error: {e!s}", exception=e)
+            return r[m.Plugin.DiscoveryData].fail(
+                f"Discovery error: {e!s}", exception=e
+            )
 
     def discover_plugins(
         self, paths: t.StrSequence
@@ -100,7 +102,9 @@ class FlextPluginDiscovery:
             )
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin discovery failed")
-            return r[Sequence[m.Plugin.DiscoveryData]].fail(f"Discovery error: {e!s}", exception=e)
+            return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                f"Discovery error: {e!s}", exception=e
+            )
 
     def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> p.Result[bool]:
         """Validate discovered plugin data.
@@ -176,7 +180,9 @@ class FlextPluginDiscovery:
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("File system discovery failed")
-                return r[Sequence[m.Plugin.DiscoveryData]].fail(f"File discovery error: {e!s}", exception=e)
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                    f"File discovery error: {e!s}", exception=e
+                )
 
         def _discover_directory(
             self, path: Path
@@ -248,7 +254,9 @@ class FlextPluginDiscovery:
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Entry point discovery failed")
-                return r[Sequence[m.Plugin.DiscoveryData]].fail(f"Entry point discovery error: {e!s}", exception=e)
+                return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                    f"Entry point discovery error: {e!s}", exception=e
+                )
 
         def _discover_entry_point(
             self, entry_point: importlib.metadata.EntryPoint

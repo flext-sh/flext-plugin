@@ -74,7 +74,7 @@ class TestsFlextPluginExamples:
         )
 
         tm.ok(result)
-        tm.that(result.value.exit_code, eq=0)
+        tm.that(u.Cli.process_succeeded(result.value.outcome), eq=True)
         output = result.value.stdout
         tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output
