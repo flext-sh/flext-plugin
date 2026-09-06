@@ -167,6 +167,16 @@ class _DockerIntegrationCommand(s[bool]):
         return r[bool].ok(value=True)
 
 
+def _run_docker_integration_command(
+    params: _DockerIntegrationCommand,
+) -> p.Result[bool]:
+    """Invoke the command's own `execute` — typed to satisfy the erased
+    ``p.Cli.ResultRouteHandler`` callable (params: ``...``, so pyrefly cannot
+    infer a bare `lambda params: ...`'s parameter type from context).
+    """
+    return params.execute()
+
+
 def main(args: t.StrSequence | None = None) -> int:
     """Main entry point for the Docker integration example."""
     app = cli.create_app_with_common_params(
@@ -180,7 +190,7 @@ def main(args: t.StrSequence | None = None) -> int:
                 name="run",
                 help_text="Create the example plugins and validate them.",
                 model_cls=_DockerIntegrationCommand,
-                handler=lambda params: params.execute(),
+                handler=_run_docker_integration_command,
             )
         ],
     )
