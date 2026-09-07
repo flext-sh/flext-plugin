@@ -31,10 +31,11 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
         result = sock.connect_ex((host, port))
-        sock.close()
-        return result == 0
     except OSError:
         return False
+    else:
+        sock.close()
+        return result == 0
 
 
 def create_docker_postgres_plugin() -> tuple[
@@ -170,9 +171,11 @@ class _DockerIntegrationCommand(s[bool]):
 def _run_docker_integration_command(
     params: _DockerIntegrationCommand,
 ) -> p.Result[bool]:
-    """Invoke the command's own `execute` — typed to satisfy the erased
-    ``p.Cli.ResultRouteHandler`` callable (params: ``...``, so pyrefly cannot
-    infer a bare `lambda params: ...`'s parameter type from context).
+    """Invoke the command's own ``execute``.
+
+    Typed to satisfy the erased ``p.Cli.ResultRouteHandler`` callable
+    (``params: ...``, so pyrefly cannot infer a bare lambda's parameter type
+    from context).
     """
     return params.execute()
 
