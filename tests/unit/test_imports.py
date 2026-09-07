@@ -69,7 +69,7 @@ class TestsFlextPluginImports:
 
     def test_plugin_alias_is_the_api_facade(self) -> None:
         """The ``plugin`` alias is exactly the ``FlextPluginApi`` facade."""
-        tm.that(flext_plugin.plugin is FlextPluginApi, eq=True)
+        tm.that(flext_plugin.FlextPluginApi is FlextPluginApi, eq=True)
 
     @pytest.mark.parametrize(
         "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"]

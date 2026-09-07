@@ -31,10 +31,11 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
         result = sock.connect_ex((host, port))
-        sock.close()
-        return result == 0
     except OSError:
         return False
+    else:
+        sock.close()
+        return result == 0
 
 
 def create_docker_postgres_plugin() -> tuple[
@@ -163,16 +164,18 @@ class _DockerIntegrationCommand(s[bool]):
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
             validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
             if validation_result.failure:
-                return r[bool].fail(validation_result.error or "validation failed")
+                return r[bool].from_failure(validation_result)
         return r[bool].ok(value=True)
 
 
 def _run_docker_integration_command(
     params: _DockerIntegrationCommand,
 ) -> p.Result[bool]:
-    """Invoke the command's own `execute` — typed to satisfy the erased
-    ``p.Cli.ResultRouteHandler`` callable (params: ``...``, so pyrefly cannot
-    infer a bare `lambda params: ...`'s parameter type from context).
+    """Invoke the command's own ``execute``.
+
+    Typed to satisfy the erased ``p.Cli.ResultRouteHandler`` callable
+    (``params: ...``, so pyrefly cannot infer a bare lambda's parameter type
+    from context).
     """
     return params.execute()
 
@@ -199,7 +202,7 @@ def main(args: t.StrSequence | None = None) -> int:
         prog_name="flext-plugin-docker-integration",
         args=list(args) if args is not None else sys.argv[1:],
     )
-    return 0 if outcome.success else 1
+    return cli.finalize_result(outcome)
 
 
 if __name__ == "__main__":
