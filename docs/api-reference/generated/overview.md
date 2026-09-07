@@ -24,7 +24,7 @@
 - Public symbol exports: `FlextPluginApi`, `FlextPluginConfig`,
   `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
   `FlextPluginProtocols`, `FlextPluginSettings`, `FlextPluginTypes`,
-  `FlextPluginUtilities`, `config` (+1 more)
+  `FlextPluginUtilities`, `config` (+2 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `6`
 

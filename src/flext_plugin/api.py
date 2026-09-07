@@ -123,4 +123,6 @@ class FlextPluginApi(s):
         return self._platform.unregister_plugin(plugin_name)
 
 
-__all__: list[str] = ["FlextPluginApi"]
+plugin = FlextPluginApi
+
+__all__: list[str] = ["FlextPluginApi", "plugin"]
