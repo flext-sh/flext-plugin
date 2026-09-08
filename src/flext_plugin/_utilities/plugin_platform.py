@@ -390,11 +390,6 @@ class FlextPluginPlatform:
                     discovery_result.error or "Discovery failed"
                 )
 
-            def create_plugins_from_data(
-                data: t.SequenceOf[m.Plugin.DiscoveryData],
-            ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
-                return self._validate_and_create_plugins(data)
-
             checked: p.Result[bool] = self._require_protocol(
                 self.discovery, "Discovery"
             )
@@ -402,7 +397,7 @@ class FlextPluginPlatform:
                 discover_and_validate
             )
             plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = (
-                discovered.flat_map(create_plugins_from_data)
+                discovered.flat_map(self._validate_and_create_plugins)
             )
             return plugins.map(self._register_all)
 
@@ -426,37 +421,16 @@ class FlextPluginPlatform:
             execution_id: str | None = None,
         ) -> p.Result[FlextPluginPlatform.PluginExecution]:
             """Execute plugin with async composition."""
-
-            def get_plugin_result(
-                plugin_name_param: str,
-            ) -> p.Result[FlextPluginPlatform.Plugin]:
-                return self._get_plugin(plugin_name_param)
-
-            def create_execution_from_plugin(
-                plugin: FlextPluginPlatform.Plugin,
-            ) -> p.Result[FlextPluginPlatform.PluginExecution]:
-                return self._create_execution(plugin, context, execution_id)
-
-            def prepare_execution_result(
-                execution: FlextPluginPlatform.PluginExecution,
-            ) -> p.Result[FlextPluginPlatform.PluginExecution]:
-                return self._prepare_execution(execution)
-
-            def execute_with_executor_result(
-                execution: FlextPluginPlatform.PluginExecution,
-            ) -> p.Result[FlextPluginPlatform.PluginExecution]:
-                return self._execute_with_executor(execution)
-
-            plugin_r: p.Result[FlextPluginPlatform.Plugin] = get_plugin_result(
+            plugin_r: p.Result[FlextPluginPlatform.Plugin] = self._get_plugin(
                 plugin_name
             )
             exec_r: p.Result[FlextPluginPlatform.PluginExecution] = plugin_r.flat_map(
-                create_execution_from_plugin
+                lambda plugin: self._create_execution(plugin, context, execution_id)
             )
             prepared_r: p.Result[FlextPluginPlatform.PluginExecution] = exec_r.flat_map(
-                prepare_execution_result
+                self._prepare_execution
             )
-            return prepared_r.flat_map(execute_with_executor_result)
+            return prepared_r.flat_map(self._execute_with_executor)
 
         def fetch_execution(
             self, eid: str
@@ -511,15 +485,10 @@ class FlextPluginPlatform:
                     return self._loader_payload_mapping(load_result.value)
                 return r[t.JsonMapping].fail(load_result.error or "Load failed")
 
-            def create_plugin_from_load_data(
-                data: t.JsonMapping,
-            ) -> p.Result[FlextPluginPlatform.Plugin]:
-                return self._validate_and_create_plugin(data)
-
             checked_l: p.Result[bool] = self._require_protocol(self.loader, "Loader")
             loaded: p.Result[t.JsonMapping] = checked_l.flat_map(load_and_validate)
             plugin_r2: p.Result[FlextPluginPlatform.Plugin] = loaded.flat_map(
-                create_plugin_from_load_data
+                self._validate_and_create_plugin
             )
             return plugin_r2.map(self._register_single)
 

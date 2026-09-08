@@ -20,9 +20,6 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from enum import StrEnum, unique
-    from typing import TYPE_CHECKING, ClassVar, Final
-
     from flext_cli import d, e, h, r, s, x
 
     from ._config import FlextPluginConfig, config
@@ -38,9 +35,6 @@ if TYPE_CHECKING:
         FlextPluginUtilities as u,
     )
 __all__: tuple[str, ...] = (
-    "TYPE_CHECKING",
-    "ClassVar",
-    "Final",
     "FlextPluginApi",
     "FlextPluginConfig",
     "FlextPluginConstants",
@@ -50,7 +44,6 @@ __all__: tuple[str, ...] = (
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
-    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -72,7 +65,6 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
-    "unique",
     "x",
 )
 
@@ -87,9 +79,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextPluginProtocols", "p"),
             ".typings": ("FlextPluginTypes", "t"),
             ".utilities": ("FlextPluginDiscovery", "FlextPluginUtilities", "u"),
-            "enum": ("StrEnum", "unique"),
             "flext_cli": ("d", "e", "h", "r", "s", "x"),
-            "typing": ("ClassVar", "Final", "TYPE_CHECKING"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

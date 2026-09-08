@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
     from . import unit as unit
     from .base import TestsFlextPluginServiceBase, TestsFlextPluginServiceBase as s
-    from .conftest import set_test_environment
     from .constants import TestsFlextPluginConstants, TestsFlextPluginConstants as c
     from .models import TestsFlextPluginModels, TestsFlextPluginModels as m
     from .protocols import TestsFlextPluginProtocols, TestsFlextPluginProtocols as p
@@ -39,7 +38,6 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
-    "set_test_environment",
     "t",
     "td",
     "tf",
@@ -55,7 +53,6 @@ _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
             ".base": ("TestsFlextPluginServiceBase", "s"),
-            ".conftest": ("set_test_environment",),
             ".constants": ("TestsFlextPluginConstants", "c"),
             ".models": ("TestsFlextPluginModels", "m"),
             ".protocols": ("TestsFlextPluginProtocols", "p"),

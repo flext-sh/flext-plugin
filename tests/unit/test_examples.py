@@ -52,7 +52,7 @@ class TestsFlextPluginExamples:
 
         tm.ok(result)
         output = result.value
-        tm.that(output.outcome.raw_return_code, eq=0)
+        tm.that(u.Cli.process_succeeded(output.outcome), eq=True)
         tm.that(output.stderr, lacks="Traceback (most recent call last)")
 
     def test_unknown_example_path_fails_with_nonzero_exit(self) -> None:

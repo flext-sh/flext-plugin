@@ -15,7 +15,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from flext_plugin import m, t
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+
+    from ._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginProtocols(p):

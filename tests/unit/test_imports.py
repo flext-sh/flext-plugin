@@ -105,6 +105,3 @@ class TestsFlextPluginImports:
         reimported = importlib.import_module("flext_plugin")
         tm.that(reimported is flext_plugin, eq=True)
         tm.that(reimported.FlextPluginApi is FlextPluginApi, eq=True)
-
-
-test_imports = TestsFlextPluginImports
