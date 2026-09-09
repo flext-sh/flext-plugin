@@ -14,6 +14,7 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
+
 from flext_core import r, s
 from flext_plugin import (
     FlextPluginApi,

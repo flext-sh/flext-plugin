@@ -15,10 +15,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import FlextPluginDiscovery, c
 from flext_plugin.utilities import FlextPluginPlatform
-from flext_tests import tm
 from tests import u
 
 

@@ -12,6 +12,7 @@ from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from typing import Self, override
 
 from flext_cli import u
+
 from flext_plugin import FlextPluginSettings, c, e, m, p, r, s, t
 
 

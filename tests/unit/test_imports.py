@@ -17,6 +17,7 @@ from __future__ import annotations
 import importlib
 
 import pytest
+from flext_tests import tm
 
 import flext_plugin
 from flext_plugin import (
@@ -28,7 +29,6 @@ from flext_plugin import (
     FlextPluginTypes,
     FlextPluginUtilities,
 )
-from flext_tests import tm
 
 __all__: list[str] = ["TestsFlextPluginImports"]
 
