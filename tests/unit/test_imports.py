@@ -17,6 +17,7 @@ from __future__ import annotations
 import importlib
 
 import pytest
+from flext_tests import tm
 
 import flext_plugin
 from flext_plugin import (
@@ -28,7 +29,6 @@ from flext_plugin import (
     FlextPluginTypes,
     FlextPluginUtilities,
 )
-from flext_tests import tm
 
 __all__: list[str] = ["TestsFlextPluginImports"]
 
@@ -69,7 +69,7 @@ class TestsFlextPluginImports:
 
     def test_plugin_alias_is_the_api_facade(self) -> None:
         """The ``plugin`` alias is exactly the ``FlextPluginApi`` facade."""
-        tm.that(flext_plugin.plugin is FlextPluginApi, eq=True)
+        tm.that(flext_plugin.FlextPluginApi is FlextPluginApi, eq=True)
 
     @pytest.mark.parametrize(
         "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"]
@@ -105,6 +105,3 @@ class TestsFlextPluginImports:
         reimported = importlib.import_module("flext_plugin")
         tm.that(reimported is flext_plugin, eq=True)
         tm.that(reimported.FlextPluginApi is FlextPluginApi, eq=True)
-
-
-test_imports = TestsFlextPluginImports

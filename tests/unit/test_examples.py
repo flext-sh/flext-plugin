@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from flext_tests import tm
+
 from tests import u
 
 __all__ = ["TestsFlextPluginExamples"]
@@ -52,7 +52,7 @@ class TestsFlextPluginExamples:
 
         tm.ok(result)
         output = result.value
-        tm.that(output.exit_code, eq=0)
+        tm.that(u.Cli.process_succeeded(output.outcome), eq=True)
         tm.that(output.stderr, lacks="Traceback (most recent call last)")
 
     def test_unknown_example_path_fails_with_nonzero_exit(self) -> None:
@@ -63,7 +63,7 @@ class TestsFlextPluginExamples:
         )
 
         tm.ok(result)
-        tm.that(result.value.exit_code, ne=0)
+        tm.that(result.value.outcome.raw_return_code, ne=0)
 
     def test_docker_integration_reports_service_connectivity(self) -> None:
         """With connection testing, the docker example prints a connectivity report."""
@@ -74,7 +74,7 @@ class TestsFlextPluginExamples:
         )
 
         tm.ok(result)
-        tm.that(result.value.exit_code, eq=0)
+        tm.that(u.Cli.process_succeeded(result.value.outcome), eq=True)
         output = result.value.stdout
         tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output

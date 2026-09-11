@@ -12,9 +12,11 @@ from pathlib import Path
 from typing import ClassVar
 
 from flext_cli import u
+
 from flext_plugin import c, m, p, r, t
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+
+from ._utilities.discovery import FlextPluginDiscovery
+from ._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginUtilities(u):

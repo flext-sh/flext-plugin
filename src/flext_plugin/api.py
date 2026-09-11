@@ -22,7 +22,8 @@ from typing import Self
 
 from flext_core import FlextContainer
 from flext_plugin import e, p, r, s, t, u
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+
+from ._utilities.plugin_platform import FlextPluginPlatform
 
 
 def _build_default_platform() -> p.Plugin.PlatformService:
@@ -123,6 +124,6 @@ class FlextPluginApi(s):
         return self._platform.unregister_plugin(plugin_name)
 
 
-plugin = FlextPluginApi
+plugin: FlextPluginApi = FlextPluginApi.fetch_global()
 
 __all__: list[str] = ["FlextPluginApi", "plugin"]

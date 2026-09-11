@@ -14,6 +14,7 @@ from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 
 from flext_cli import u
+
 from flext_plugin import c, m, p, r, t
 
 
@@ -78,7 +79,9 @@ class FlextPluginDiscovery:
             return r[m.Plugin.DiscoveryData].fail(f"Plugin not found at: {plugin_path}")
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
-            return r[m.Plugin.DiscoveryData].fail(f"Discovery error: {e!s}")
+            return r[m.Plugin.DiscoveryData].fail(
+                f"Discovery error: {e!s}", exception=e
+            )
 
     def discover_plugins(
         self, paths: t.StrSequence
@@ -100,7 +103,9 @@ class FlextPluginDiscovery:
             )
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin discovery failed")
-            return r[Sequence[m.Plugin.DiscoveryData]].fail(f"Discovery error: {e!s}")
+            return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                f"Discovery error: {e!s}", exception=e
+            )
 
     def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> p.Result[bool]:
         """Validate discovered plugin data.
@@ -119,7 +124,7 @@ class FlextPluginDiscovery:
             return r[bool].ok(value=True)
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin validation failed")
-            return r[bool].fail(f"Validation error: {e!s}")
+            return r[bool].fail(f"Validation error: {e!s}", exception=e)
 
     def _discover_existing_or_entry_point(
         self, plugin_path: str, path_obj: Path
@@ -177,7 +182,7 @@ class FlextPluginDiscovery:
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("File system discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"File discovery error: {e!s}"
+                    f"File discovery error: {e!s}", exception=e
                 )
 
         def _discover_directory(
@@ -251,7 +256,7 @@ class FlextPluginDiscovery:
             except c.EXC_BROAD_IO_TYPE as e:
                 self.logger.exception("Entry point discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"Entry point discovery error: {e!s}"
+                    f"Entry point discovery error: {e!s}", exception=e
                 )
 
         def _discover_entry_point(

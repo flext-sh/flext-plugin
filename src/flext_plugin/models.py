@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Annotated, Self
 
 from flext_cli import m, u
+
 from flext_plugin import c, p, t
 
 # Why: typed module constant gives pyrefly a concrete container type for the

@@ -16,9 +16,9 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
+from flext_tests import tm
 
 from flext_plugin import FlextPluginDiscovery, u
-from flext_tests import tm
 from tests import c
 
 __all__: list[str] = ["TestsFlextPluginDiscovery"]
