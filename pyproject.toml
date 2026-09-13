@@ -212,7 +212,7 @@ project-excludes = [
   "typings/**",
   "vendor/**",
 ]
-project-includes = ["src/**/*.py*", "tests/**/*.py*"]
+project-includes = ["examples/**/*.py*", "src/**/*.py*", "tests/**/*.py*"]
 python-version = "3.13"
 search-path = ["src", "."]
 use-ignore-files = false
@@ -566,7 +566,7 @@ constraint-dependencies = ["structlog<26"]
 environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
 
 [tool.flext.docs]
-project_class = "platform"
+package_name = "flext_plugin"
 
 
 [tool.flext.project.budget.boundary]

@@ -14,17 +14,17 @@
   Developers`, `Operating System :: OS Independent`, `Programming Language ::
   Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic ::
   Software Development :: Libraries :: Python Modules` (+1 more)
-- Project class: `platform`
+- Project class: `domain`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`,
   `typed`
 - Main facades: `FlextPluginApi`, `FlextPluginConfig`, `FlextPluginConstants`,
-  `FlextPluginDiscovery`, `FlextPluginModels`, `FlextPluginProtocols`,
-  `FlextPluginSettings`, `FlextPluginTypes` (+1 more)
+  `FlextPluginModels`, `FlextPluginProtocols`, `FlextPluginSettings`,
+  `FlextPluginTypes`, `FlextPluginUtilities`
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextPluginApi`, `FlextPluginConfig`,
-  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginProtocols`, `FlextPluginSettings`, `FlextPluginTypes`,
-  `FlextPluginUtilities`, `config` (+2 more)
+  `FlextPluginConstants`, `FlextPluginModels`, `FlextPluginProtocols`,
+  `FlextPluginSettings`, `FlextPluginTypes`, `FlextPluginUtilities`, `config`,
+  `plugin` (+1 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `6`
 
