@@ -29,18 +29,22 @@ class TestsFlextPluginApi:
 
     @pytest.fixture
     def reset_api(self) -> None:
-        """Reset the API singleton state before each test."""
-        FlextPluginApi.fetch_global().reset_for_testing()
+        """Reset the API singleton state before each test (direct facade entry point)."""
+        api_ref = FlextPluginApi.fetch_global()
+        api_ref.reset_for_testing()
+        del api_ref
 
     @staticmethod
     def _make_plugin(
         *, name: str = "demo-plugin", is_enabled: bool = True
     ) -> FlextPluginPlatform.Plugin:
         """Build a platform plugin entity."""
-        plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin.create(
-            name=name, plugin_version="1.0.0", is_enabled=is_enabled
-        )
-        return plugin
+        spec: dict[str, object] = {
+            "name": name,
+            "plugin_version": "1.0.0",
+            "is_enabled": is_enabled,
+        }
+        return FlextPluginPlatform.Plugin.create(**spec)
 
     @pytest.fixture
     def api(self) -> FlextPluginApi:
