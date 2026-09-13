@@ -27,16 +27,14 @@ from flext_plugin import (
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
-    """Check if a network service is available."""
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    """Check if a network service is available.
+
+    connect_ex() reports connection failure via its return code, not an
+    exception, so no except-and-mask branch is needed here.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(timeout)
-        result = sock.connect_ex((host, port))
-    except OSError:
-        return False
-    else:
-        sock.close()
-        return result == 0
+        return sock.connect_ex((host, port)) == 0
 
 
 def create_docker_postgres_plugin() -> tuple[

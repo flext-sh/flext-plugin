@@ -18,7 +18,8 @@ from pathlib import Path
 import pytest
 from flext_tests import tm
 
-from flext_plugin import FlextPluginDiscovery, u
+from flext_plugin import u
+from flext_plugin.utilities import FlextPluginDiscovery
 from tests import c
 
 __all__: list[str] = ["TestsFlextPluginDiscovery"]

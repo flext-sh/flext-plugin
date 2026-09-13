@@ -194,21 +194,21 @@ class FlextPluginDiscovery:
             )
 
         def _discover_file(self, path: Path) -> m.Plugin.DiscoveryData | None:
-            """Discover single Python file as plugin."""
+            """Discover single Python file as plugin.
+
+            # Why: DiscoveryData construction failure is a real defect, not a
+            # skip condition; it propagates instead of being masked as None.
+            """
             if path.suffix != ".py":
                 return None
-            try:
-                return m.Plugin.DiscoveryData(
-                    name=path.stem,
-                    version=c.Plugin.DEFAULT_PLUGIN_VERSION,
-                    path=path,
-                    discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
-                    discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
-                    metadata={},
-                )
-            except ValueError:
-                self.logger.exception("Failed to create discovery data for %s", path)
-                return None
+            return m.Plugin.DiscoveryData(
+                name=path.stem,
+                version=c.Plugin.DEFAULT_PLUGIN_VERSION,
+                path=path,
+                discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
+                discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
+                metadata={},
+            )
 
         def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from one path string."""
@@ -262,24 +262,23 @@ class FlextPluginDiscovery:
         def _discover_entry_point(
             self, entry_point: importlib.metadata.EntryPoint
         ) -> m.Plugin.DiscoveryData | None:
-            """Build discovery data for one entry point."""
-            try:
-                return m.Plugin.DiscoveryData(
-                    name=entry_point.name,
-                    version=getattr(
-                        entry_point.dist, "version", c.Plugin.DEFAULT_PLUGIN_VERSION
-                    )
-                    or c.Plugin.DEFAULT_PLUGIN_VERSION,
-                    path=Path(getattr(entry_point.dist, "_path", "")),
-                    discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
-                    discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,
-                    metadata={
-                        "entry_point": f"{entry_point.module}:{entry_point.attr}"
-                    },
+            """Build discovery data for one entry point.
+
+            # Why: an invalid entry point is a real defect, not a skip
+            # condition; construction failure propagates instead of being
+            # masked as None.
+            """
+            return m.Plugin.DiscoveryData(
+                name=entry_point.name,
+                version=getattr(
+                    entry_point.dist, "version", c.Plugin.DEFAULT_PLUGIN_VERSION
                 )
-            except ValueError:
-                self.logger.debug(f"Invalid entry point: {entry_point.name}")
-                return None
+                or c.Plugin.DEFAULT_PLUGIN_VERSION,
+                path=Path(getattr(entry_point.dist, "_path", "")),
+                discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
+                discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,
+                metadata={"entry_point": f"{entry_point.module}:{entry_point.attr}"},
+            )
 
         def _discover_entry_points(self) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from the installed entry point registry."""
