@@ -29,16 +29,11 @@ if TYPE_CHECKING:
     from .models import FlextPluginModels, FlextPluginModels as m
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
-    from .utilities import (
-        FlextPluginDiscovery,
-        FlextPluginUtilities,
-        FlextPluginUtilities as u,
-    )
+    from .utilities import FlextPluginUtilities, FlextPluginUtilities as u
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginConfig",
     "FlextPluginConstants",
-    "FlextPluginDiscovery",
     "FlextPluginModels",
     "FlextPluginProtocols",
     "FlextPluginSettings",
@@ -78,7 +73,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".models": ("FlextPluginModels", "m"),
             ".protocols": ("FlextPluginProtocols", "p"),
             ".typings": ("FlextPluginTypes", "t"),
-            ".utilities": ("FlextPluginDiscovery", "FlextPluginUtilities", "u"),
+            ".utilities": ("FlextPluginUtilities", "u"),
             "flext_cli": ("d", "e", "h", "r", "s", "x"),
         }),
         alias_groups=MappingProxyType({}),

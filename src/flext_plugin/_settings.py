@@ -7,19 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
-
-from pydantic_settings import SettingsConfigDict
-
 from flext_core import FlextSettings
+from flext_plugin import m
 
 
 class FlextPluginSettings(FlextSettings):
     """Plugin system runtime settings."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-        env_prefix="FLEXT_PLUGIN_", extra="ignore"
-    )
+    # Why: pydantic_settings is owned by flext-core; route SettingsConfigDict
+    # through the m facade instead of importing the third-party package
+    # directly (ENFORCE-070).
+    model_config = m.SettingsConfigDict(env_prefix="FLEXT_PLUGIN_", extra="ignore")
 
 
 settings: FlextPluginSettings = FlextPluginSettings.fetch_global()

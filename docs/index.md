@@ -11,7 +11,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 - Version: `0.12.0`
-- Project class: `platform`
+- Project class: `domain`
 - Package: `flext_plugin`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 
