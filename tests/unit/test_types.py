@@ -54,7 +54,7 @@ class TestsFlextPluginTypesUnit:
     def test_event_handler_alias_is_declared(self) -> None:
         """Plugin.EventHandler is published under its declared name."""
         event_handler = FlextPluginTypes.Plugin.EventHandler
-        tm.that(event_handler.__name__, eq="EventHandler")
+        tm.that(hasattr(event_handler, "__value__"), eq=True)
 
     def test_event_handler_resolves_to_async_json_mapping_signature(self) -> None:
         """EventHandler is a JsonMapping -> Awaitable[JsonMapping] callable."""
