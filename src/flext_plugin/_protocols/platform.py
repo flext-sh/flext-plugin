@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, Self, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -30,22 +30,6 @@ class FlextPluginProtocolsPlatformService(Protocol):
 
     def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
         """Fetch a plugin by name."""
-        ...
-
-    def with_discovery(
-        self, discovery: FlextPluginProtocolsPluginDiscovery | None
-    ) -> Self:
-        """Inject or replace the discovery protocol."""
-        ...
-
-    def with_executor(
-        self, executor: FlextPluginProtocolsPluginExecution | None
-    ) -> Self:
-        """Inject or replace the execution protocol."""
-        ...
-
-    def with_loader(self, loader: FlextPluginProtocolsPluginLoader | None) -> Self:
-        """Inject or replace the loader protocol."""
         ...
 
     def fetch_plugin_status(self, name: str) -> str | None:

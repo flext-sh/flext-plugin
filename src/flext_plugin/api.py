@@ -50,11 +50,6 @@ class FlextPluginApi(s):
         """The plugin platform service."""
         return self._platform
 
-    def with_platform(self, platform: p.Plugin.PlatformService) -> Self:
-        """Replace the plugin platform service."""
-        self._platform = platform
-        return self
-
     def discover_plugins(
         self, paths: t.StrSequence
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
