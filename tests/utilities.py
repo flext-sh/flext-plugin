@@ -28,7 +28,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
             Real protocol-conforming collaborators injected into the platform
             service seams (``_discovery`` / ``_loader`` / ``_executor``) so tests
             exercise the real delegation and payload-mapping code paths — no
-            unittest.mock anywhere (workspace no-mock rule).
+            patching or test doubles anywhere (workspace no-mock rule).
             """
 
             class FilePluginLoader:
