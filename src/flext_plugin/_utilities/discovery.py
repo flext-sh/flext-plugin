@@ -1,11 +1,4 @@
-"""FLEXT Plugin Discovery - Strategy-based plugin discovery with Pydantic models.
-
-Complete plugin discovery using strategy pattern for different discovery
-methods (file system, entry points). All operations return Pydantic models.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Plugin discovery utility for flext-plugin."""
 
 from __future__ import annotations
 
@@ -15,7 +8,8 @@ from pathlib import Path
 
 from flext_cli import u
 
-from flext_plugin import c, m, p, r, t
+if False:  # TYPE_CHECKING
+    from flext_plugin import c, m, p, r, t
 
 
 class FlextPluginDiscovery:

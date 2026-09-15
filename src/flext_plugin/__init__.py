@@ -20,22 +20,27 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, s, x
+    from flext_cli import c as cli_c, d, e, h, r, x
 
+    from . import services
     from ._config import FlextPluginConfig, config
     from ._settings import FlextPluginSettings, settings
     from .api import FlextPluginApi, plugin
-    from .constants import FlextPluginConstants, FlextPluginConstants as c
+    from .base import FlextPluginServiceBase, FlextPluginServiceBase as s
+    from .cli import FlextPluginCli
+    from .constants import FlextPluginConstantsFacade, c
     from .models import FlextPluginModels, FlextPluginModels as m
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
     from .utilities import FlextPluginUtilities, FlextPluginUtilities as u
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
+    "FlextPluginCli",
     "FlextPluginConfig",
-    "FlextPluginConstants",
+    "FlextPluginConstantsFacade",
     "FlextPluginModels",
     "FlextPluginProtocols",
+    "FlextPluginServiceBase",
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
@@ -48,6 +53,7 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
+    "cli_c",
     "config",
     "d",
     "e",
@@ -57,6 +63,7 @@ __all__: tuple[str, ...] = (
     "plugin",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "u",
@@ -69,14 +76,17 @@ _LAZY_IMPORTS = MappingProxyType(
             "._config": ("FlextPluginConfig", "config"),
             "._settings": ("FlextPluginSettings", "settings"),
             ".api": ("FlextPluginApi", "plugin"),
-            ".constants": ("FlextPluginConstants", "c"),
+            ".base": ("FlextPluginServiceBase", "s"),
+            ".cli": ("FlextPluginCli",),
+            ".constants": ("FlextPluginConstantsFacade", "c"),
             ".models": ("FlextPluginModels", "m"),
             ".protocols": ("FlextPluginProtocols", "p"),
+            ".services": ("services",),
             ".typings": ("FlextPluginTypes", "t"),
             ".utilities": ("FlextPluginUtilities", "u"),
-            "flext_cli": ("d", "e", "h", "r", "s", "x"),
+            "flext_cli": ("d", "e", "h", "r", "x"),
         }),
-        alias_groups=MappingProxyType({}),
+        alias_groups=MappingProxyType({"flext_cli": (("cli_c", "c"),)}),
         sort_keys=False,
     )
 )

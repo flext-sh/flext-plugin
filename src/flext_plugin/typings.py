@@ -1,24 +1,25 @@
-"""FLEXT Plugin Types.
+"""FLEXT Plugin Types - public facade re-exporting from _typings.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+from flext_cli import t as cli_t
 
-from flext_cli import t
+from ._typings import FlextPluginTypingsBase
 
 
-class FlextPluginTypes(t):
-    """Plugin type system extending flext_cli via MRO."""
+class FlextPluginTypes(cli_t, FlextPluginTypingsBase):
+    """Plugin type system extending flext_cli via MRO with internal typings."""
 
     class Plugin:
-        """Plugin domain namespace (flat members per AGENTS.md §149)."""
+        """Plugin domain namespace (flat members per AGENTS.md)."""
 
-        type EventHandler = Callable[[t.JsonMapping], Awaitable[t.JsonMapping]]
+        from collections.abc import Awaitable, Callable
+
+        type EventHandler = Callable[[cli_t.JsonMapping], Awaitable[cli_t.JsonMapping]]
 
 
 t = FlextPluginTypes
