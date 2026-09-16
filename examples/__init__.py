@@ -9,26 +9,22 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_plugin import (
-        FlextPluginConstants,
-        FlextPluginConstants as c,
-        d,
-        e,
-        h,
-        m,
-        p,
-        r,
-        s,
-        t,
-        u,
-        x,
-    )
+    from flext_plugin import FlextPluginConstants, d, e, h, r, s, x
 
-    from .constants import ExamplesFlextPluginConstants
-    from .models import ExamplesFlextPluginModels
-    from .protocols import ExamplesFlextPluginProtocols
-    from .typings import ExamplesFlextPluginTypes
-    from .utilities import ExamplesFlextPluginUtilities
+    from .constants import (
+        ExamplesFlextPluginConstants,
+        ExamplesFlextPluginConstants as c,
+    )
+    from .models import ExamplesFlextPluginModels, ExamplesFlextPluginModels as m
+    from .protocols import (
+        ExamplesFlextPluginProtocols,
+        ExamplesFlextPluginProtocols as p,
+    )
+    from .typings import ExamplesFlextPluginTypes, ExamplesFlextPluginTypes as t
+    from .utilities import (
+        ExamplesFlextPluginUtilities,
+        ExamplesFlextPluginUtilities as u,
+    )
 __all__: tuple[str, ...] = (
     "ExamplesFlextPluginConstants",
     "ExamplesFlextPluginModels",
@@ -52,25 +48,12 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".constants": ("ExamplesFlextPluginConstants",),
-            ".models": ("ExamplesFlextPluginModels",),
-            ".protocols": ("ExamplesFlextPluginProtocols",),
-            ".typings": ("ExamplesFlextPluginTypes",),
-            ".utilities": ("ExamplesFlextPluginUtilities",),
-            "flext_plugin": (
-                "FlextPluginConstants",
-                "c",
-                "d",
-                "e",
-                "h",
-                "m",
-                "p",
-                "r",
-                "s",
-                "t",
-                "u",
-                "x",
-            ),
+            ".constants": ("ExamplesFlextPluginConstants", "c"),
+            ".models": ("ExamplesFlextPluginModels", "m"),
+            ".protocols": ("ExamplesFlextPluginProtocols", "p"),
+            ".typings": ("ExamplesFlextPluginTypes", "t"),
+            ".utilities": ("ExamplesFlextPluginUtilities", "u"),
+            "flext_plugin": ("FlextPluginConstants", "d", "e", "h", "r", "s", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

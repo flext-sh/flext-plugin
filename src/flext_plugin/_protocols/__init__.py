@@ -1,48 +1,33 @@
-"""Protocols implementation for flext-plugin."""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Flext Plugin. Protocols package."""
 
 from __future__ import annotations
 
-from .base import FlextPluginProtocolsBase
-from .platform import FlextPluginProtocolsPlatformService
-from .plugin import (
-    FlextPluginProtocolsDiscoveryStrategy,
-    FlextPluginProtocolsPluginConfiguration,
-    FlextPluginProtocolsPluginDiscovery,
-    FlextPluginProtocolsPluginExecution,
-    FlextPluginProtocolsPluginHotReload,
-    FlextPluginProtocolsPluginLifecycle,
-    FlextPluginProtocolsPluginLoader,
-    FlextPluginProtocolsPluginMonitoring,
-    FlextPluginProtocolsPluginRegistry,
-    FlextPluginProtocolsPluginSecurity,
-    FlextPluginProtocolsPluginStorage,
-    FlextPluginProtocolsPluginValidation,
-)
+from types import MappingProxyType
+from typing import TYPE_CHECKING
 
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-class FlextPluginProtocolsInternal(
-    FlextPluginProtocolsBase,
-    FlextPluginProtocolsPluginDiscovery,
-    FlextPluginProtocolsPluginLoader,
-    FlextPluginProtocolsPluginRegistry,
-    FlextPluginProtocolsPluginExecution,
-    FlextPluginProtocolsPluginSecurity,
-    FlextPluginProtocolsPluginHotReload,
-    FlextPluginProtocolsPluginMonitoring,
-    FlextPluginProtocolsPluginConfiguration,
-    FlextPluginProtocolsPluginLifecycle,
-    FlextPluginProtocolsPluginValidation,
-    FlextPluginProtocolsPluginStorage,
-    FlextPluginProtocolsDiscoveryStrategy,
-    FlextPluginProtocolsPlatformService,
-):
-    """Internal protocols composition for flext-plugin."""
-
-
-__all__: list[str] = [
+if TYPE_CHECKING:
+    from .base import FlextPluginProtocolsBase
+    from .platform import FlextPluginProtocolsPlatformService
+    from .plugin import (
+        FlextPluginProtocolsDiscoveryStrategy,
+        FlextPluginProtocolsPluginConfiguration,
+        FlextPluginProtocolsPluginDiscovery,
+        FlextPluginProtocolsPluginExecution,
+        FlextPluginProtocolsPluginHotReload,
+        FlextPluginProtocolsPluginLifecycle,
+        FlextPluginProtocolsPluginLoader,
+        FlextPluginProtocolsPluginMonitoring,
+        FlextPluginProtocolsPluginRegistry,
+        FlextPluginProtocolsPluginSecurity,
+        FlextPluginProtocolsPluginStorage,
+        FlextPluginProtocolsPluginValidation,
+    )
+__all__: tuple[str, ...] = (
     "FlextPluginProtocolsBase",
     "FlextPluginProtocolsDiscoveryStrategy",
-    "FlextPluginProtocolsInternal",
     "FlextPluginProtocolsPlatformService",
     "FlextPluginProtocolsPluginConfiguration",
     "FlextPluginProtocolsPluginDiscovery",
@@ -55,4 +40,31 @@ __all__: list[str] = [
     "FlextPluginProtocolsPluginSecurity",
     "FlextPluginProtocolsPluginStorage",
     "FlextPluginProtocolsPluginValidation",
-]
+)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".base": ("FlextPluginProtocolsBase",),
+            ".platform": ("FlextPluginProtocolsPlatformService",),
+            ".plugin": (
+                "FlextPluginProtocolsDiscoveryStrategy",
+                "FlextPluginProtocolsPluginConfiguration",
+                "FlextPluginProtocolsPluginDiscovery",
+                "FlextPluginProtocolsPluginExecution",
+                "FlextPluginProtocolsPluginHotReload",
+                "FlextPluginProtocolsPluginLifecycle",
+                "FlextPluginProtocolsPluginLoader",
+                "FlextPluginProtocolsPluginMonitoring",
+                "FlextPluginProtocolsPluginRegistry",
+                "FlextPluginProtocolsPluginSecurity",
+                "FlextPluginProtocolsPluginStorage",
+                "FlextPluginProtocolsPluginValidation",
+            ),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
