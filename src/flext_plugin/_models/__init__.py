@@ -1,39 +1,43 @@
-"""Models implementation for flext-plugin."""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Flext Plugin. Models package."""
 
 from __future__ import annotations
 
-from .base import FlextPluginModelsBase
-from .plugin import (
-    FlextPluginModelsPluginDiscoveryData,
-    FlextPluginModelsPluginEntity,
-    FlextPluginModelsPluginMetadata,
-    FlextPluginModelsPluginRegistry,
-)
+from types import MappingProxyType
+from typing import TYPE_CHECKING
 
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-class FlextPluginModelsInternal(
-    FlextPluginModelsBase,
-    FlextPluginModelsPluginEntity,
-    FlextPluginModelsPluginDiscoveryData,
-    FlextPluginModelsPluginMetadata,
-    FlextPluginModelsPluginRegistry,
-):
-    """Internal models composition for flext-plugin."""
-
-    class Plugin:
-        """Plugin domain namespace."""
-
-        Entity = FlextPluginModelsPluginEntity
-        DiscoveryData = FlextPluginModelsPluginDiscoveryData
-        PluginMetadata = FlextPluginModelsPluginMetadata
-        PluginRegistry = FlextPluginModelsPluginRegistry
-
-
-__all__: list[str] = [
+if TYPE_CHECKING:
+    from .base import FlextPluginModelsBase
+    from .plugin import (
+        FlextPluginModelsPluginDiscoveryData,
+        FlextPluginModelsPluginEntity,
+        FlextPluginModelsPluginMetadata,
+        FlextPluginModelsPluginRegistry,
+    )
+__all__: tuple[str, ...] = (
     "FlextPluginModelsBase",
-    "FlextPluginModelsInternal",
     "FlextPluginModelsPluginDiscoveryData",
     "FlextPluginModelsPluginEntity",
     "FlextPluginModelsPluginMetadata",
     "FlextPluginModelsPluginRegistry",
-]
+)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".base": ("FlextPluginModelsBase",),
+            ".plugin": (
+                "FlextPluginModelsPluginDiscoveryData",
+                "FlextPluginModelsPluginEntity",
+                "FlextPluginModelsPluginMetadata",
+                "FlextPluginModelsPluginRegistry",
+            ),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

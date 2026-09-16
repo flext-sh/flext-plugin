@@ -1,7 +1,23 @@
-"""Typings implementation for flext-plugin."""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Flext Plugin. Typings package."""
 
 from __future__ import annotations
 
-from .base import FlextPluginTypingsBase
+from types import MappingProxyType
+from typing import TYPE_CHECKING
 
-__all__: list[str] = ["FlextPluginTypingsBase"]
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+
+if TYPE_CHECKING:
+    from .base import FlextPluginTypingsBase
+__all__: tuple[str, ...] = ("FlextPluginTypingsBase",)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({".base": ("FlextPluginTypingsBase",)}),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
