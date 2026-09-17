@@ -285,7 +285,7 @@ class TestsFlextPluginPlatformService:
         (tmp_path / "found.py").write_text(
             '"""Real plugin module."""\n', encoding="utf-8"
         )
-        service._discovery = FlextPluginDiscovery()
+        service.discovery = FlextPluginDiscovery()
 
         result = service.discover_plugins([str(tmp_path)])
 
@@ -298,7 +298,7 @@ class TestsFlextPluginPlatformService:
         plugin_file = tmp_path / "loaded.py"
         plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
         loader = u.Plugin.Tests.FilePluginLoader()
-        service._loader = loader
+        service.loader = loader
 
         result = service.load_plugin(str(plugin_file))
 
@@ -311,7 +311,7 @@ class TestsFlextPluginPlatformService:
     ) -> None:
         """load_plugin() fails when the real loader cannot find the file."""
         service = FlextPluginPlatform.PluginPlatformService()
-        service._loader = u.Plugin.Tests.FilePluginLoader()
+        service.loader = u.Plugin.Tests.FilePluginLoader()
 
         result = service.load_plugin(str(tmp_path / "missing.py"))
 
@@ -322,7 +322,7 @@ class TestsFlextPluginPlatformService:
         service = FlextPluginPlatform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        service._executor = u.Plugin.Tests.EchoExecutor()
+        service.executor = u.Plugin.Tests.EchoExecutor()
 
         result = service.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -339,7 +339,7 @@ class TestsFlextPluginPlatformService:
         service = FlextPluginPlatform.PluginPlatformService()
         plugin = self._make_plugin()
         service.register_plugin(plugin)
-        service._executor = u.Plugin.Tests.FailingExecutor()
+        service.executor = u.Plugin.Tests.FailingExecutor()
 
         result = service.execute_plugin("demo-plugin", {})
 

@@ -49,6 +49,11 @@ class FlextPluginApi(s):
         """The plugin platform service."""
         return self._platform
 
+    @platform.setter
+    def platform(self, value: p.Plugin.PlatformService) -> None:
+        """Inject the plugin platform service (test hook)."""
+        self._platform = value
+
     def discover_plugins(
         self, paths: t.StrSequence
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
