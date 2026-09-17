@@ -72,7 +72,7 @@ ______________________________________________________________________
 
 ```bash
 # Required before commits
-make val              # Complete validation pipeline
+make check              # Complete validation pipeline
 make check                 # Quick lint and type check
 
 # Testing
@@ -194,7 +194,7 @@ ______________________________________________________________________
 ### 3. Quality Validation
 
 ```bash
-make val          # All quality gates must pass
+make check          # All quality gates must pass
 make test             # 85% coverage required```
 ### 4. Pull Request
 
@@ -215,7 +215,7 @@ ______________________________________________________________________
 export PYTHONPATH="src:$PYTHONPATH"
 
 # Check dependencies
-poetry show --tree
+make status --tree
 ```
 
 #### Plugin Loading Issues

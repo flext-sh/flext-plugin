@@ -181,7 +181,7 @@ examples/
 
 ```bash
 # Install FLEXT Plugin system
-poetry add flext-plugin
+make deps flext-plugin
 
 # Or clone repository for development
 git clone https://github.com/flext-sh/flext.git

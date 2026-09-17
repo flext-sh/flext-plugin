@@ -855,7 +855,7 @@ ENV PYTHONPATH=/app/src
 WORKDIR /app
 
 # Install Python dependencies
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
 RUN make setup
 
 # Copy source code

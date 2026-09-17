@@ -131,7 +131,7 @@ ______________________________________________________________________
 ```bash
 # Setup and validation
 make setup                 # Complete development setup
-make val              # Full validation pipeline
+make check              # Full validation pipeline
 make check                 # Quick lint and type check
 
 # Testing

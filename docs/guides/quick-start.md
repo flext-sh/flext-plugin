@@ -47,7 +47,7 @@
 pip install flext-plugin
 
 # Or with Poetry
-poetry add flext-plugin
+make deps flext-plugin
 ```
 
 ### Option 2: Development Installation
@@ -439,7 +439,7 @@ FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
 
 ```bash
 # Install development dependencies
-poetry add --group dev ruff mypy pytest pytest-cov bandit
+make deps --group dev ruff mypy pytest pytest-cov bandit
 
 # Run quality checks
 ruff check .          # Linting

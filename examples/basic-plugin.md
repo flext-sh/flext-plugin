@@ -777,7 +777,7 @@ if __name__ == "__main__":
 
 ```bash
 # Install FLEXT Plugin
-poetry add flext-plugin
+make deps flext-plugin
 
 # Or for development
 git clone https://github.com/flext-sh/flext.git
