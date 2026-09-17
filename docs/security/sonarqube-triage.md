@@ -1,5 +1,23 @@
 # Triagem SonarCloud — flext-sh/flext-plugin
 
+<!-- TOC START -->
+- [Resumo](#resumo)
+- [Como usar](#como-usar)
+- [Issues](#issues)
+  - [1 · 🟠 CRITICAL · CODE_SMELL · python:S1192](#1-critical-code_smell-pythons1192)
+  - [2 · 🟡 MAJOR · VULNERABILITY · githubactions:S8264](#2-major-vulnerability-githubactionss8264)
+  - [3 · 🟡 MAJOR · VULNERABILITY · githubactions:S8233](#3-major-vulnerability-githubactionss8233)
+  - [4 · 🟡 MAJOR · VULNERABILITY · githubactions:S8233](#4-major-vulnerability-githubactionss8233)
+  - [5 · 🟡 MAJOR · VULNERABILITY · python:S2068](#5-major-vulnerability-pythons2068)
+  - [6 · 🟡 MAJOR · VULNERABILITY · text:S8565](#6-major-vulnerability-texts8565)
+  - [7 · ⚪ MINOR · CODE_SMELL · python:S7504](#7-minor-code_smell-pythons7504)
+  - [8 · ⚪ MINOR · CODE_SMELL · python:S5713](#8-minor-code_smell-pythons5713)
+  - [9 · ⚪ MINOR · CODE_SMELL · python:S7498](#9-minor-code_smell-pythons7498)
+  - [10 · ⚪ MINOR · CODE_SMELL · python:S7498](#10-minor-code_smell-pythons7498)
+  - [11 · ⚪ MINOR · CODE_SMELL · python:S116](#11-minor-code_smell-pythons116)
+  - [12 · ⚪ MINOR · CODE_SMELL · python:S116](#12-minor-code_smell-pythons116)
+<!-- TOC END -->
+
 Gerado do dump da plataforma SonarCloud (2026-08-06).
 
 Bead: `mro-2wjm.15`
@@ -33,7 +51,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Define a constant instead of duplicating this literal "FLEXT Team" 3 times.
 
-```python
+```text
        55      postgres_plugin = FlextPluginModels.Plugin.Entity(
        56          name="docker-postgres-connector",
        57          plugin_version="1.0.0",
@@ -109,7 +127,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > "password" detected here, review this potentially hard-coded credential.
 
-```python
+```text
        49              "server": "localhost",
        50              "port": 389,
        51              "base_dn": "dc=flext,dc=dev",
@@ -135,7 +153,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Remove this unnecessary `list()` call on an already iterable object.
 
-```python
+```text
        16      if (
        17          existing_package is None
        18          or Path(getattr(existing_package, "__file__", "")).resolve() != init_file
@@ -154,7 +172,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Remove this redundant Exception class; it derives from another which is already caught.
 
-```python
+```text
        39          """Discover Python plugins recursively in a directory."""
        40          discovered: MutableSequence[TDiscovery] = []
        41          try:
@@ -173,7 +191,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Replace this constructor call with a literal.
 
-```python
+```text
       274              """Initialize plugin platforFlextPluginModels."""
       275              super().__init__()
       276              if container is not None:
@@ -192,7 +210,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Replace this constructor call with a literal.
 
-```python
+```text
       275              super().__init__()
       276              if container is not None:
       277                  self._container = container
@@ -211,7 +229,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Rename this field "Discovery" to match the regular expression ^[_a-z][_a-z0-9]*$.
 
-```python
+```text
        55              "__import__",
        56              "subprocess",
        57              "os.system",
@@ -230,7 +248,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 > Rename this field "Platform" to match the regular expression ^[_a-z][_a-z0-9]*$.
 
-```python
+```text
        56              "subprocess",
        57              "os.system",
        58          ]

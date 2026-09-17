@@ -180,8 +180,8 @@ examples/
 ### Prerequisites
 
 ```bash
-# Install FLEXT Plugin system
-make deps flext-plugin
+# Provision the workspace
+make setup
 
 # Or clone repository for development
 git clone https://github.com/flext-sh/flext.git

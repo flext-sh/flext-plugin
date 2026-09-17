@@ -511,7 +511,7 @@ ______________________________________________________________________
 # Quality validation pipeline
 make quality-check         # Overall quality assessment
 make performance-test      # Performance benchmarking
-make security-scan         # Security vulnerability scanning
+make check                 # Security and static gates
 make reliability-test      # Reliability and fault injection testing
 make usability-test        # User experience validation
 ```

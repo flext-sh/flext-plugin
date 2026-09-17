@@ -854,12 +854,9 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/src
 WORKDIR /app
 
-# Install Python dependencies
-COPY pyproject.toml uv.lock ./
+# Copy the project-owned Make/config sources, then provision through Make
+COPY . .
 RUN make setup
-
-# Copy source code
-COPY src/ ./src/
 
 # Create plugin directories
 RUN mkdir -p /app/plugins /app/logs /app/cache

@@ -561,7 +561,7 @@ ______________________________________________________________________
 
 ```bash
 # Security testing pipeline
-make security-scan        # Automated vulnerability scanning
+make check                # Security and static gates
 make dependency-audit     # Dependency security analysis
 make container-scan       # Container image security
 make secrets-scan         # Secret detection and validation
@@ -640,10 +640,7 @@ ______________________________________________________________________
 
 | Document | Purpose | Audience | Update Frequency |
 | \----------------- | ------------------------------ | ------------- | ---------------- | --------------------------- |
-| Threat Model | Current threat analysis | Security team | Quarterly | _Documentation coming soon_ |
-| Security Controls | Control implementation details | Developers | Monthly | _Documentation coming soon_ |
-| Incident Response | Response procedures | Operations | As needed | _Documentation coming soon_ |
-| Compliance Matrix | Regulatory compliance mapping | Compliance | Annually | _Documentation coming soon_ |
+| Security Architecture | Current controls and threat boundaries | Developers | On architectural change | This document |
 
 ### Security Training and Awareness
 

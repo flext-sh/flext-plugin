@@ -46,8 +46,8 @@
 # Install FLEXT Plugin
 pip install flext-plugin
 
-# Or with Poetry
-make deps flext-plugin
+# Provision through the workspace owner
+make setup
 ```
 
 ### Option 2: Development Installation
@@ -150,7 +150,8 @@ run(main())```
 Run it:
 
 ```bash
-python platform_example.py```
+make test
+```
 Expected output:```
 Registering plugin...
 ✅ Plugin registered successfully
@@ -438,8 +439,8 @@ run(development_server())```
 FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
 
 ```bash
-# Install development dependencies
-make deps --group dev ruff mypy pytest pytest-cov bandit
+# Provision declared development dependencies
+make setup
 
 # Run quality checks
 ruff check .          # Linting
@@ -452,21 +453,10 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 ### Immediate Next Steps
 
-1. **Plugin Development Guide** - Learn advanced plugin patterns (_Documentation coming soon_)
-1. **Testing Guide** - Comprehensive testing strategies (_Documentation coming soon_)
-1. **Examples** - More detailed examples
-
-### Plugin Types to Explore
-
-1. **Singer Integration** - Create data extraction/loading plugins (_Documentation coming soon_)
-1. **Service Plugins** - Build microservice integrations (_Documentation coming soon_)
-1. **Custom Plugin Types** - Define your own plugin categories (_Documentation coming soon_)
-
-### Advanced Topics
-
-1. **Architecture Guide** - Understand the system design
-1. **Performance Optimization** - Scale your plugins (_Documentation coming soon_)
-1. **FLEXT Ecosystem Integration** - Integrate with other FLEXT services (_Documentation coming soon_)
+1. Read the [development guide](../development.md).
+1. Review the [architecture](../architecture/README.md).
+1. Explore the repository `examples/` directory.
+1. Use the [generated API reference](../api-reference/README.md).
 
 ## Troubleshooting
 

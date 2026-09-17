@@ -119,5 +119,6 @@ class FlextPluginApi(s):
 
 
 plugin: FlextPluginApi = FlextPluginApi.fetch_global()
+"""Process-wide plugin facade singleton."""
 
 __all__: list[str] = ["FlextPluginApi", "plugin"]

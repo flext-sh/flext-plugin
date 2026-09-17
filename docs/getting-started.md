@@ -7,10 +7,6 @@
   - [Dependencies](#dependencies)
 - [First Plugin](#first-plugin)
   - [Create a Basic Plugin](#create-a-basic-plugin)
-  - [Plugin Discovery](#plugin-discovery)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [Plugin Directory Structure```](#plugin-directory-structure)
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
@@ -139,7 +135,7 @@ make test                  # Run all tests
 make coverage-html         # Generate coverage report
 
 # Plugin development
-make plugin-validate       # Validate plugin system
+make check                 # Validate plugin system and static contracts
 make plugin-watch          # Enable hot reload for development
 ```
 
