@@ -1,6 +1,7 @@
 # System Context (C4 Level 1)
 
 <!-- TOC START -->
+
 - [🎯 System Context Overview](#system-context-overview)
   - [System Mission](#system-mission)
 - [📊 System Context Diagram](#system-context-diagram)
@@ -28,11 +29,11 @@
   - [Version 0.9.0 (Current)](#version-090-current)
   - [Version 0.10.0 (Next)](#version-0100-next)
   - [Version 1.0.0 (Future)](#version-100-future)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **C4 Model Level 1**: System Context | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 🎯 System Context Overview
 
@@ -42,7 +43,7 @@ FLEXT Plugin is a **production-ready enterprise plugin management system** that 
 
 > **Enable dynamic extensibility** for FLEXT ecosystem projects while maintaining **enterprise-grade quality**, **security**, and **architectural integrity**.
 
-______________________________________________________________________
+---
 
 ## 📊 System Context Diagram
 
@@ -98,7 +99,7 @@ Rel(flext_plugin, github, "Hosts repositories on", "CI/CD pipelines")
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 👥 User Personas and Stakeholders
 
@@ -139,7 +140,7 @@ ______________________________________________________________________
 - **Goals**: Security compliance, vendor support, enterprise integration
 - **Success Metrics**: Security audits passed, compliance certifications, support SLAs
 
-______________________________________________________________________
+---
 
 ## 🔗 External Systems and Integrations
 
@@ -194,7 +195,7 @@ ______________________________________________________________________
 | **PyPI**   | Plugin distribution | pip installable packages  |
 | **GitHub** | Repository hosting  | CI/CD, release management |
 
-______________________________________________________________________
+---
 
 ## 🌐 System Boundaries and Responsibilities
 
@@ -253,7 +254,7 @@ ______________________________________________________________________
 - **Business Logic**: Domain-specific plugin behavior validation
 - **Integration Testing**: End-to-end plugin functionality testing
 
-______________________________________________________________________
+---
 
 ## 📋 System Interfaces and Contracts
 
@@ -261,7 +262,7 @@ ______________________________________________________________________
 
 #### **Plugin Developer API**
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
@@ -414,3 +415,4 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 **System Context Documentation** - FLEXT Plugin positioned within the broader FLEXT ecosystem and enterprise landscape.
+````

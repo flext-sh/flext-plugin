@@ -1,6 +1,7 @@
 # ADR-001: Adopt Clean Architecture Pattern
 
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)

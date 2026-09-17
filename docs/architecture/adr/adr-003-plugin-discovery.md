@@ -1,6 +1,7 @@
 # ADR-003: Plugin Discovery Mechanism
 
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)

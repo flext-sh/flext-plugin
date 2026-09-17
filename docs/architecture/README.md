@@ -1,6 +1,7 @@
 # FLEXT Plugin System Architecture Documentation
 
 <!-- TOC START -->
+
 - [📋 Documentation Structure](#documentation-structure)
   - [🎯 Documentation Levels](#documentation-levels)
 - [🗂️ Architecture Documentation Index](#architecture-documentation-index)
@@ -30,11 +31,11 @@
   - [Documentation Standards](#documentation-standards)
   - [Tools and Templates](#tools-and-templates)
   - [Review Process](#review-process)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 📋 Documentation Structure
 
@@ -52,14 +53,14 @@ This architecture documentation follows a comprehensive framework combining **C4
 | **6. Requirements** | Arc42     | System requirements and constraints   | Architects, developers                  |
 | **7. Risks**        | Arc42     | Technical risks and mitigation        | Architects, product owners              |
 
-______________________________________________________________________
+---
 
 ## 🗂️ Architecture Documentation Index
 
 ### Core Architecture Documentation
 
-| Document                   | Framework  | Status     | Description                           |
-| -------------------------- | ---------- | ---------- | ------------------------------------- |
+| Document                   | Framework  | Status      | Description                           |
+| -------------------------- | ---------- | ----------- | ------------------------------------- |
 | **System Context**         | C4 Level 1 | ✅ Complete | System in FLEXT ecosystem             |
 | **Container Architecture** | C4 Level 2 | ✅ Complete | Technology stack and deployment       |
 | **Component Architecture** | C4 Level 3 | ✅ Complete | Module structure and relationships    |
@@ -70,16 +71,16 @@ ______________________________________________________________________
 
 ### Decision Documentation
 
-| Document         | Framework | Status     | Description                    |
-| ---------------- | --------- | ---------- | ------------------------------ |
+| Document         | Framework | Status      | Description                    |
+| ---------------- | --------- | ----------- | ------------------------------ |
 | **ADR Index**    | ADR       | ✅ Complete | All architectural decisions    |
 | **ADR Template** | ADR       | ✅ Complete | ADR creation template          |
 | **Decision Log** | ADR       | ✅ Complete | Chronological decision history |
 
 ### Implementation Documentation
 
-| Document                 | Framework | Status     | Description                        |
-| ------------------------ | --------- | ---------- | ---------------------------------- |
+| Document                 | Framework | Status      | Description                        |
+| ------------------------ | --------- | ----------- | ---------------------------------- |
 | **Implementation Guide** | Custom    | ✅ Complete | Development patterns and practices |
 | **API Reference**        | Custom    | ✅ Complete | Public API documentation           |
 | **Migration Guide**      | Custom    | ✅ Complete | Version migration strategies       |
@@ -95,7 +96,7 @@ ______________________________________________________________________
 | **Security Architecture**   | PlantUML | PlantUML | Security boundaries   |
 | **Deployment Architecture** | PlantUML | PlantUML | Infrastructure view   |
 
-______________________________________________________________________
+---
 
 ## 🏗️ Architecture Frameworks Used
 
@@ -152,7 +153,7 @@ Consequences: [Impact and implications]
 Alternatives: [Other options considered]
 ```
 
-______________________________________________________________________
+---
 
 ## 📊 Architecture Metrics
 
@@ -179,7 +180,7 @@ ______________________________________________________________________
 - **Entry Points**: File-based discovery only (entry points planned)
 - **Documentation**: Synchronized but could be more comprehensive
 
-______________________________________________________________________
+---
 
 ## 🚀 Architecture Evolution
 
@@ -205,7 +206,7 @@ ______________________________________________________________________
 - 📋 Multi-format discovery (entry points + file-based)
 - 📋 Enterprise hardening (production-grade security)
 
-______________________________________________________________________
+---
 
 ## 🛠️ Documentation Tools and Workflow
 
@@ -236,7 +237,7 @@ make architecture-audit
 - ✅ ADRs complete for all major decisions
 - ✅ Cross-references maintained between documents
 
-______________________________________________________________________
+---
 
 ## 📖 Reading Guide
 
@@ -265,7 +266,7 @@ ______________________________________________________________________
 1. Component Architecture → Quality Attributes
 1. Security Architecture → Data Architecture
 
-______________________________________________________________________
+---
 
 ## 🤝 Contributing to Architecture Documentation
 
@@ -291,6 +292,6 @@ ______________________________________________________________________
 1. Cross-references validated
 1. Documentation reviewed by architects
 
-______________________________________________________________________
+---
 
 **FLEXT Plugin Architecture Documentation** - Comprehensive system documentation using modern frameworks and best practices for enterprise-grade plugin management.

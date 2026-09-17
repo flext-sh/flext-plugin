@@ -9,17 +9,17 @@ Bead: `mro-2wjm.15`
 **12 issues** — BLOCKER 0, CRITICAL 1, MAJOR 5, MINOR 6
 Tipos: VULNERABILITY 5, BUG 0, CODE_SMELL 7 · **Debt total: 76min**
 
-| regra | issues |
-|---|---|
-| `githubactions:S8233` | 2 |
-| `python:S7498` | 2 |
-| `python:S116` | 2 |
-| `python:S1192` | 1 |
-| `githubactions:S8264` | 1 |
-| `python:S2068` | 1 |
-| `text:S8565` | 1 |
-| `python:S7504` | 1 |
-| `python:S5713` | 1 |
+| regra                 | issues |
+| --------------------- | ------ |
+| `githubactions:S8233` | 2      |
+| `python:S7498`        | 2      |
+| `python:S116`         | 2      |
+| `python:S1192`        | 1      |
+| `githubactions:S8264` | 1      |
+| `python:S2068`        | 1      |
+| `text:S8565`          | 1      |
+| `python:S7504`        | 1      |
+| `python:S5713`        | 1      |
 
 ## Como usar
 
@@ -29,6 +29,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 ## Issues
 
 ### 1 · 🟠 CRITICAL · CODE_SMELL · `python:S1192`
+
 **Local**: `examples/03_docker_integration.py:59` · **Effort**: 6min
 
 > Define a constant instead of duplicating this literal "FLEXT Team" 3 times.
@@ -48,6 +49,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 2 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8264`
+
 **Local**: `.github/workflows/docs.yml:18` · **Effort**: 5min
 
 > Move this read permission from workflow level to job level.
@@ -55,30 +57,31 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 ```yaml
        14        - ".github/workflows/docs.yml"
        15    workflow_dispatch:
-       16  
+       16
        17  permissions:
 >>>    18    contents: read
        19    pages: write
        20    id-token: write
-       21  
+       21
        22  concurrency:
 ```
 
 **Decisão**: pendente
 
 ### 3 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
+
 **Local**: `.github/workflows/docs.yml:19` · **Effort**: 5min
 
 > Move this write permission from workflow level to job level.
 
 ```yaml
        15    workflow_dispatch:
-       16  
+       16
        17  permissions:
        18    contents: read
 >>>    19    pages: write
        20    id-token: write
-       21  
+       21
        22  concurrency:
        23    group: pages
 ```
@@ -86,17 +89,18 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 4 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
+
 **Local**: `.github/workflows/docs.yml:20` · **Effort**: 5min
 
 > Move this write permission from workflow level to job level.
 
 ```yaml
-       16  
+       16
        17  permissions:
        18    contents: read
        19    pages: write
 >>>    20    id-token: write
-       21  
+       21
        22  concurrency:
        23    group: pages
        24    cancel-in-progress: false
@@ -105,6 +109,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 5 · 🟡 MAJOR · VULNERABILITY · `python:S2068`
+
 **Local**: `examples/02_plugin_configuration.py:53` · **Effort**: 30min
 
 > "password" detected here, review this potentially hard-coded credential.
@@ -124,6 +129,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 6 · 🟡 MAJOR · VULNERABILITY · `text:S8565`
+
 **Local**: `pyproject.toml:-` · **Effort**: 5min
 
 > Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
@@ -131,6 +137,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 7 · ⚪ MINOR · CODE_SMELL · `python:S7504`
+
 **Local**: `conftest.py:20` · **Effort**: 5min
 
 > Remove this unnecessary `list()` call on an already iterable object.
@@ -150,6 +157,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 8 · ⚪ MINOR · CODE_SMELL · `python:S5713`
+
 **Local**: `src/flext_plugin/_utilities/discovery.py:43` · **Effort**: 1min
 
 > Remove this redundant Exception class; it derives from another which is already caught.
@@ -169,6 +177,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 9 · ⚪ MINOR · CODE_SMELL · `python:S7498`
+
 **Local**: `src/flext_plugin/_utilities/plugin_platform.py:278` · **Effort**: 5min
 
 > Replace this constructor call with a literal.
@@ -188,6 +197,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 10 · ⚪ MINOR · CODE_SMELL · `python:S7498`
+
 **Local**: `src/flext_plugin/_utilities/plugin_platform.py:279` · **Effort**: 5min
 
 > Replace this constructor call with a literal.
@@ -207,9 +217,10 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 11 · ⚪ MINOR · CODE_SMELL · `python:S116`
+
 **Local**: `src/flext_plugin/utilities.py:59` · **Effort**: 2min
 
-> Rename this field "Discovery" to match the regular expression ^[_a-z][_a-z0-9]*$.
+> Rename this field "Discovery" to match the regular expression ^[\_a-z][_a-z0-9]\*$.
 
 ```python
        55              "__import__",
@@ -218,7 +229,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        58          ]
 >>>    59          Discovery: ClassVar[type[FlextPluginDiscovery]]
        60          Platform: ClassVar[type[FlextPluginPlatform]]
-       61  
+       61
        62          @classmethod
        63          def discover_plugins(
 ```
@@ -226,9 +237,10 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 **Decisão**: pendente
 
 ### 12 · ⚪ MINOR · CODE_SMELL · `python:S116`
+
 **Local**: `src/flext_plugin/utilities.py:60` · **Effort**: 2min
 
-> Rename this field "Platform" to match the regular expression ^[_a-z][_a-z0-9]*$.
+> Rename this field "Platform" to match the regular expression ^[\_a-z][_a-z0-9]\*$.
 
 ```python
        56              "subprocess",
@@ -236,7 +248,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        58          ]
        59          Discovery: ClassVar[type[FlextPluginDiscovery]]
 >>>    60          Platform: ClassVar[type[FlextPluginPlatform]]
-       61  
+       61
        62          @classmethod
        63          def discover_plugins(
        64              cls, directory: Path | str

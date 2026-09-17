@@ -1,6 +1,7 @@
 # Component Architecture (C4 Level 3)
 
 <!-- TOC START -->
+
 - [🏗️ Component Architecture Overview](#component-architecture-overview)
   - [Architecture Layers](#architecture-layers)
   - [Component Design Principles](#component-design-principles)
@@ -25,11 +26,11 @@
 - [🔧 Component Evolution and Maintenance](#component-evolution-and-maintenance)
   - [Component Lifecycle](#component-lifecycle)
   - [Component Refactoring Guidelines](#component-refactoring-guidelines)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 🏗️ Component Architecture Overview
 
@@ -54,7 +55,7 @@ Infrastructure Layer (Adapters) → External system integrations
 - **Interface Segregation**: Small, focused interfaces for better testability
 - **Railway Pattern**: p.Result[T] for composable error handling throughout
 
-______________________________________________________________________
+---
 
 ## 📦 Component Diagram
 
@@ -129,7 +130,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 🔧 Component Descriptions
 
@@ -393,7 +394,7 @@ ______________________________________________________________________
   - `FlextPluginExecutionError`: Execution failures
 - **Dependencies**: Domain types, standard exception hierarchy
 
-______________________________________________________________________
+---
 
 ## 🔗 Component Relationships and Dependencies
 
@@ -415,7 +416,7 @@ Data Layer
 
 #### **API → Platform → Services**
 
-```python
+````python
 # API facade delegates to platform
 from __future__ import annotations
 
@@ -585,3 +586,4 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 **Component Architecture** - Detailed component structure, responsibilities, and interactions within the Clean Architecture framework.
+````
