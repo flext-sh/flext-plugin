@@ -14,10 +14,11 @@ if False:  # TYPE_CHECKING
 
 
 _EMPTY_JSON_MAPPING: types.MappingProxyType = types.MappingProxyType({})
-
-
-class FlextPluginModelsPluginEntity(cli_m.Entity):
-    """Plugin entity - core domain entity with identity and lifecycle.
+class FlextPluginModelsPlugin:
+    """Canonical namespace owner."""
+    
+    class FlextPluginModelsPluginEntity(cli_m.Entity):
+        """Plugin entity - core domain entity with identity and lifecycle.
 
     Represents a plugin with identity, lifecycle management, and mutable state.
     Compared by identity (id), not by value.
@@ -33,57 +34,56 @@ class FlextPluginModelsPluginEntity(cli_m.Entity):
 
     """
 
-    name: Annotated[
-        str,
-        cli_u.Field(
-            ...,
-            min_length=3,
-            max_length=100,
-            pattern="^[a-zA-Z][a-zA-Z0-9_-]*$",
-            description="Plugin unique identifier name",
-        ),
-    ]
-    plugin_version: Annotated[
-        str,
-        cli_u.Field(
-            pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
-            description="Plugin semantic version (X.Y.Z)",
-        ),
-    ] = "1.0.0"
-    description: Annotated[
-        str,
-        cli_u.Field(max_length=1000, description="Plugin functionality description"),
-    ] = ""
-    author: Annotated[
-        str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
-    ] = ""
-    plugin_type: Annotated[
-        str, cli_u.Field(description="Plugin type classification")
-    ] = "utility"
-    is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = True
-    metadata: Annotated[
-        types.MappingProxyType, cli_u.Field(description="Extensible plugin metadata")
-    ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        name: Annotated[
+            str,
+            cli_u.Field(
+                ...,
+                min_length=3,
+                max_length=100,
+                pattern="^[a-zA-Z][a-zA-Z0-9_-]*$",
+                description="Plugin unique identifier name",
+            ),
+        ]
+        plugin_version: Annotated[
+            str,
+            cli_u.Field(
+                pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
+                description="Plugin semantic version (X.Y.Z)",
+            ),
+        ] = "1.0.0"
+        description: Annotated[
+            str,
+            cli_u.Field(max_length=1000, description="Plugin functionality description"),
+        ] = ""
+        author: Annotated[
+            str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
+        ] = ""
+        plugin_type: Annotated[
+            str, cli_u.Field(description="Plugin type classification")
+        ] = "utility"
+        is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = True
+        metadata: Annotated[
+            types.MappingProxyType, cli_u.Field(description="Extensible plugin metadata")
+        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
-    @cli_u.field_validator("plugin_version", mode="before")
-    @classmethod
-    def validate_semantic_version(cls, value: str) -> str:
-        """Validate semantic version format (X.Y.Z)."""
-        min_version_parts = 2
-        max_version_parts = 3
-        parts = value.split(".")
-        if (
-            len(parts) < min_version_parts
-            or len(parts) > max_version_parts
-            or not all(p.isdigit() for p in parts if p)
-        ):
-            error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
-            raise ValueError(error_msg)
-        return value
-
-
-class FlextPluginModelsPluginDiscoveryData(cli_m.Value):
-    """Plugin discovery data - immutable discovery result.
+        @cli_u.field_validator("plugin_version", mode="before")
+        @classmethod
+        def validate_semantic_version(cls, value: str) -> str:
+            """Validate semantic version format (X.Y.Z)."""
+            min_version_parts = 2
+            max_version_parts = 3
+            parts = value.split(".")
+            if (
+                len(parts) < min_version_parts
+                or len(parts) > max_version_parts
+                or not all(p.isdigit() for p in parts if p)
+            ):
+                error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                raise ValueError(error_msg)
+            return value
+    
+    class FlextPluginModelsPluginDiscoveryData(cli_m.Value):
+        """Plugin discovery data - immutable discovery result.
 
     Represents discovered plugin information from various discovery methods
     (file system, entry points). Immutable value object.
@@ -98,48 +98,47 @@ class FlextPluginModelsPluginDiscoveryData(cli_m.Value):
 
     """
 
-    name: Annotated[
-        str,
-        cli_u.Field(
-            min_length=3,
-            max_length=100,
-            pattern="^[a-zA-Z][a-zA-Z0-9_-]*$",
-            description="Plugin unique identifier name",
-        ),
-    ]
-    version: Annotated[
-        str,
-        cli_u.Field(
-            pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
-            description="Plugin semantic version (X.Y.Z)",
-        ),
-    ]
-    path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
-    discovery_type: Annotated[str, cli_u.Field(description="Type of discovered plugin")]
-    discovery_method: Annotated[str, cli_u.Field(description="Discovery method used")]
-    metadata: Annotated[
-        types.MappingProxyType, cli_u.Field(description="Extensible discovery metadata")
-    ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        name: Annotated[
+            str,
+            cli_u.Field(
+                min_length=3,
+                max_length=100,
+                pattern="^[a-zA-Z][a-zA-Z0-9_-]*$",
+                description="Plugin unique identifier name",
+            ),
+        ]
+        version: Annotated[
+            str,
+            cli_u.Field(
+                pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
+                description="Plugin semantic version (X.Y.Z)",
+            ),
+        ]
+        path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
+        discovery_type: Annotated[str, cli_u.Field(description="Type of discovered plugin")]
+        discovery_method: Annotated[str, cli_u.Field(description="Discovery method used")]
+        metadata: Annotated[
+            types.MappingProxyType, cli_u.Field(description="Extensible discovery metadata")
+        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
-    @cli_u.field_validator("version", mode="before")
-    @classmethod
-    def validate_version(cls, value: str) -> str:
-        """Validate semantic version format."""
-        min_parts = 2
-        max_parts = 3
-        parts = value.split(".")
-        if (
-            len(parts) < min_parts
-            or len(parts) > max_parts
-            or not all(p.isdigit() for p in parts if p)
-        ):
-            error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
-            raise ValueError(error_msg)
-        return value
-
-
-class FlextPluginModelsPluginMetadata(cli_m.Value):
-    """Plugin metadata - immutable metadata value object.
+        @cli_u.field_validator("version", mode="before")
+        @classmethod
+        def validate_version(cls, value: str) -> str:
+            """Validate semantic version format."""
+            min_parts = 2
+            max_parts = 3
+            parts = value.split(".")
+            if (
+                len(parts) < min_parts
+                or len(parts) > max_parts
+                or not all(p.isdigit() for p in parts if p)
+            ):
+                error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
+                raise ValueError(error_msg)
+            return value
+    
+    class FlextPluginModelsPluginMetadata(cli_m.Value):
+        """Plugin metadata - immutable metadata value object.
 
     Represents complete metadata about a plugin including discovery
     and description information. Immutable value object.
@@ -156,22 +155,21 @@ class FlextPluginModelsPluginMetadata(cli_m.Value):
 
     """
 
-    name: Annotated[str, cli_u.Field(description="Plugin unique identifier")]
-    version: Annotated[str, cli_u.Field(description="Plugin semantic version")]
-    description: Annotated[str, cli_u.Field(description="Plugin description")] = ""
-    author: Annotated[str, cli_u.Field(description="Plugin author")] = "Unknown"
-    plugin_type: Annotated[str, cli_u.Field(description="Type of plugin")] = "extension"
-    entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
-    dependencies: Annotated[
-        tuple[str, ...], cli_u.Field(description="List of plugin dependencies")
-    ] = cli_u.Field(default_factory=tuple)
-    metadata: Annotated[
-        types.MappingProxyType, cli_u.Field(description="Additional metadata")
-    ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
-
-
-class FlextPluginModelsPluginRegistry(cli_m.Value):
-    """Plugin registry - central plugin registry storage.
+        name: Annotated[str, cli_u.Field(description="Plugin unique identifier")]
+        version: Annotated[str, cli_u.Field(description="Plugin semantic version")]
+        description: Annotated[str, cli_u.Field(description="Plugin description")] = ""
+        author: Annotated[str, cli_u.Field(description="Plugin author")] = "Unknown"
+        plugin_type: Annotated[str, cli_u.Field(description="Type of plugin")] = "extension"
+        entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
+        dependencies: Annotated[
+            tuple[str, ...], cli_u.Field(description="List of plugin dependencies")
+        ] = cli_u.Field(default_factory=tuple)
+        metadata: Annotated[
+            types.MappingProxyType, cli_u.Field(description="Additional metadata")
+        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+    
+    class FlextPluginModelsPluginRegistry(cli_m.Value):
+        """Plugin registry - central plugin registry storage.
 
     Represents plugin registry with version tracking and plugin entries.
     Immutable value object.
@@ -184,22 +182,15 @@ class FlextPluginModelsPluginRegistry(cli_m.Value):
 
     """
 
-    version: Annotated[str, cli_u.Field(description="Registry schema version")]
-    plugins: Annotated[
-        types.MappingProxyType,
-        cli_u.Field(description="Dictionary of registered plugins"),
-    ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
-    last_updated: Annotated[
-        datetime, cli_u.Field(description="Last update timestamp")
-    ] = cli_u.Field(default_factory=datetime.now)
-    created_at: Annotated[
-        datetime, cli_u.Field(description="Registry creation timestamp")
-    ] = cli_u.Field(default_factory=datetime.now)
-
-
-__all__: list[str] = [
-    "FlextPluginModelsPluginDiscoveryData",
-    "FlextPluginModelsPluginEntity",
-    "FlextPluginModelsPluginMetadata",
-    "FlextPluginModelsPluginRegistry",
-]
+        version: Annotated[str, cli_u.Field(description="Registry schema version")]
+        plugins: Annotated[
+            types.MappingProxyType,
+            cli_u.Field(description="Dictionary of registered plugins"),
+        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        last_updated: Annotated[
+            datetime, cli_u.Field(description="Last update timestamp")
+        ] = cli_u.Field(default_factory=datetime.now)
+        created_at: Annotated[
+            datetime, cli_u.Field(description="Registry creation timestamp")
+        ] = cli_u.Field(default_factory=datetime.now)
+__all__: list[str] = ["FlextPluginModelsPlugin"]

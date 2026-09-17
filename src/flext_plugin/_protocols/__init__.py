@@ -11,35 +11,11 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 if TYPE_CHECKING:
     from .base import FlextPluginProtocolsBase
     from .platform import FlextPluginProtocolsPlatformService
-    from .plugin import (
-        FlextPluginProtocolsDiscoveryStrategy,
-        FlextPluginProtocolsPluginConfiguration,
-        FlextPluginProtocolsPluginDiscovery,
-        FlextPluginProtocolsPluginExecution,
-        FlextPluginProtocolsPluginHotReload,
-        FlextPluginProtocolsPluginLifecycle,
-        FlextPluginProtocolsPluginLoader,
-        FlextPluginProtocolsPluginMonitoring,
-        FlextPluginProtocolsPluginRegistry,
-        FlextPluginProtocolsPluginSecurity,
-        FlextPluginProtocolsPluginStorage,
-        FlextPluginProtocolsPluginValidation,
-    )
+    from .plugin import FlextPluginProtocolsPlugin
 __all__: tuple[str, ...] = (
     "FlextPluginProtocolsBase",
-    "FlextPluginProtocolsDiscoveryStrategy",
     "FlextPluginProtocolsPlatformService",
-    "FlextPluginProtocolsPluginConfiguration",
-    "FlextPluginProtocolsPluginDiscovery",
-    "FlextPluginProtocolsPluginExecution",
-    "FlextPluginProtocolsPluginHotReload",
-    "FlextPluginProtocolsPluginLifecycle",
-    "FlextPluginProtocolsPluginLoader",
-    "FlextPluginProtocolsPluginMonitoring",
-    "FlextPluginProtocolsPluginRegistry",
-    "FlextPluginProtocolsPluginSecurity",
-    "FlextPluginProtocolsPluginStorage",
-    "FlextPluginProtocolsPluginValidation",
+    "FlextPluginProtocolsPlugin",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
@@ -47,20 +23,7 @@ _LAZY_IMPORTS = MappingProxyType(
         MappingProxyType({
             ".base": ("FlextPluginProtocolsBase",),
             ".platform": ("FlextPluginProtocolsPlatformService",),
-            ".plugin": (
-                "FlextPluginProtocolsDiscoveryStrategy",
-                "FlextPluginProtocolsPluginConfiguration",
-                "FlextPluginProtocolsPluginDiscovery",
-                "FlextPluginProtocolsPluginExecution",
-                "FlextPluginProtocolsPluginHotReload",
-                "FlextPluginProtocolsPluginLifecycle",
-                "FlextPluginProtocolsPluginLoader",
-                "FlextPluginProtocolsPluginMonitoring",
-                "FlextPluginProtocolsPluginRegistry",
-                "FlextPluginProtocolsPluginSecurity",
-                "FlextPluginProtocolsPluginStorage",
-                "FlextPluginProtocolsPluginValidation",
-            ),
+            ".plugin": ("FlextPluginProtocolsPlugin",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
