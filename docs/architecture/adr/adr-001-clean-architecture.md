@@ -38,6 +38,7 @@
   - [Architectural Principles Established](#architectural-principles-established)
   - [Implementation Considerations](#implementation-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status

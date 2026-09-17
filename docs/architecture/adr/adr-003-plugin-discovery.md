@@ -39,6 +39,7 @@
   - [Plugin Metadata Standard](#plugin-metadata-standard)
   - [Performance Considerations](#performance-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status

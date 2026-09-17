@@ -25,6 +25,7 @@
   - [Basic Plugin Management](#basic-plugin-management)
   - [Plugin Discovery](#plugin-discovery)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **FLEXT Plugin System API Reference**

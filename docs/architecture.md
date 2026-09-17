@@ -22,6 +22,7 @@
   - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
   - [Integration Points](#integration-points)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **FLEXT Plugin System Architecture**
