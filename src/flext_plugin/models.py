@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from flext_cli import m as cli_m
 
-from ._models import FlextPluginModelsInternal
+from ._models.plugin import FlextPluginModelsPlugin
 
 
-class FlextPluginModels(cli_m, FlextPluginModelsInternal):
-    """Plugin domain models extending flext-core patterns via MRO.
+class FlextPluginModels(cli_m):
+    """Plugin domain models extending flext-cli patterns via MRO.
 
     Provides standardized models for all plugin operations including plugin
     entities, configurations, execution results, and monitoring data.
@@ -21,7 +21,7 @@ class FlextPluginModels(cli_m, FlextPluginModelsInternal):
     Railway-Oriented Programming with r[T] error handling.
     """
 
-    class Plugin(FlextPluginModelsInternal.Plugin):
+    class Plugin(FlextPluginModelsPlugin):
         """Plugin domain namespace."""
 
 

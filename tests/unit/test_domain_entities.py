@@ -108,7 +108,7 @@ class TestsFlextPluginDomainEntities:
 
     def test_metadata_value_object_preserves_all_supplied_fields(self) -> None:
         """PluginMetadata round-trips the fields it is constructed with."""
-        metadata = m.Plugin.PluginMetadata(
+        metadata = m.Plugin.Metadata(
             name="test-plugin",
             version="1.0.0",
             entry_point="test.entry:main",
@@ -128,7 +128,7 @@ class TestsFlextPluginDomainEntities:
 
     def test_metadata_value_object_applies_declared_defaults(self) -> None:
         """Omitted optional PluginMetadata fields take their declared defaults."""
-        metadata = m.Plugin.PluginMetadata(
+        metadata = m.Plugin.Metadata(
             name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
         )
 
@@ -140,7 +140,7 @@ class TestsFlextPluginDomainEntities:
 
     def test_metadata_value_object_carries_all_optional_fields(self) -> None:
         """PluginMetadata retains explicitly supplied optional fields."""
-        metadata = m.Plugin.PluginMetadata(
+        metadata = m.Plugin.Metadata(
             name="full-plugin",
             version="2.0.0",
             entry_point="full.entry:main",
