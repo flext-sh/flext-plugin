@@ -23,7 +23,7 @@ class FlextPluginImplementations:
     """Consolidated plugin implementations as nested classes."""
 
     class PluginDiscovery:
-        """Real file-backed discovery implementing p.Plugin.PluginDiscovery.
+        """Real file-backed discovery implementing p.Plugin.Discovery.
 
         Discovers plugins from real files on disk and returns their
         metadata as DiscoveryData — the payload shape the platform maps
@@ -79,7 +79,7 @@ class FlextPluginImplementations:
             return r[bool].ok(value=True)
 
     class FilePluginLoader:
-        """Real file-backed loader implementing p.Plugin.PluginLoader.
+        """Real file-backed loader implementing p.Plugin.Loader.
 
         Loads a plugin from a real .py file on disk and returns its
         metadata as a mapping — the payload shape the platform maps and
@@ -119,7 +119,7 @@ class FlextPluginImplementations:
             return r[bool].ok(value=True)
 
     class EchoExecutor:
-        """Real executor implementing p.Plugin.PluginExecution.
+        """Real executor implementing p.Plugin.Execution.
 
         Echoes the execution context back as the result so tests can
         assert the real execution-record bookkeeping of the platform.

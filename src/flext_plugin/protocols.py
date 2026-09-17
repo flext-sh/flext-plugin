@@ -8,10 +8,11 @@ from __future__ import annotations
 
 from flext_cli import p as cli_p
 
-from ._protocols import FlextPluginProtocolsInternal
+from ._protocols.platform import FlextPluginProtocolsPlatformService
+from ._protocols.plugin import FlextPluginProtocolsPlugin
 
 
-class FlextPluginProtocols(cli_p, FlextPluginProtocolsInternal):
+class FlextPluginProtocols(cli_p):
     """Unified plugin protocols extending flext_cli via MRO with internal protocols.
 
     Extends cli_p to inherit all foundation protocols (Result, Service, etc.)
@@ -19,26 +20,18 @@ class FlextPluginProtocols(cli_p, FlextPluginProtocolsInternal):
 
     Architecture:
     - EXTENDS: cli_p (inherits Foundation, Domain, Application, etc.)
-    - ADDS: Plugin-specific protocols via FlextPluginProtocolsInternal
+    - ADDS: Plugin-specific protocols via FlextPluginProtocolsPlugin
     - PROVIDES: Root-level alias `p` for convenient access
     """
 
-    class Plugin:
-        """Plugin domain-specific protocols (re-exported for ergonomic access)."""
+    class Plugin(FlextPluginProtocolsPlugin):
+        """Plugin domain-specific protocols.
 
-        PluginDiscovery = FlextPluginProtocolsInternal.PluginDiscovery
-        PluginLoader = FlextPluginProtocolsInternal.PluginLoader
-        PluginRegistry = FlextPluginProtocolsInternal.PluginRegistry
-        PluginExecution = FlextPluginProtocolsInternal.PluginExecution
-        PluginSecurity = FlextPluginProtocolsInternal.PluginSecurity
-        PluginHotReload = FlextPluginProtocolsInternal.PluginHotReload
-        PluginMonitoring = FlextPluginProtocolsInternal.PluginMonitoring
-        PluginConfiguration = FlextPluginProtocolsInternal.PluginConfiguration
-        PluginLifecycle = FlextPluginProtocolsInternal.PluginLifecycle
-        PluginValidation = FlextPluginProtocolsInternal.PluginValidation
-        PluginStorage = FlextPluginProtocolsInternal.PluginStorage
-        DiscoveryStrategy = FlextPluginProtocolsInternal.DiscoveryStrategy
-        PlatformService = FlextPluginProtocolsInternal.PlatformService
+        PlatformService is re-exported here from its separate owner module
+        so consumers access it as ``p.Plugin.PlatformService``.
+        """
+
+        PlatformService = FlextPluginProtocolsPlatformService
 
 
 p = FlextPluginProtocols

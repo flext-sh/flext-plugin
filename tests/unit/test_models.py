@@ -170,7 +170,7 @@ class TestsFlextPluginModelsUnit:
 
     def test_plugin_metadata_exposes_public_state(self) -> None:
         """Plugin metadata reflects supplied values through public fields."""
-        metadata = m.Plugin.PluginMetadata(
+        metadata = m.Plugin.Metadata(
             name="meta-plugin",
             version="1.0.0",
             entry_point="meta_plugin:main",
@@ -186,7 +186,7 @@ class TestsFlextPluginModelsUnit:
 
     def test_plugin_metadata_applies_documented_defaults(self) -> None:
         """Optional metadata fields fall back to documented defaults."""
-        metadata = m.Plugin.PluginMetadata(
+        metadata = m.Plugin.Metadata(
             name="meta-plugin", version="1.0.0", entry_point="meta_plugin:main"
         )
         tm.that(metadata.description, eq="")

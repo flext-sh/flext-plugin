@@ -32,7 +32,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
             """
 
             class FilePluginLoader:
-                """Real file-backed loader implementing ``p.Plugin.PluginLoader``.
+                """Real file-backed loader implementing ``p.Plugin.Loader``.
 
                 Loads a plugin from a real ``.py`` file on disk and returns its
                 metadata as a mapping — the payload shape the platform maps and
@@ -74,7 +74,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     return r[bool].ok(value=True)
 
             class EchoExecutor:
-                """Real executor implementing ``p.Plugin.PluginExecution``.
+                """Real executor implementing ``p.Plugin.Execution``.
 
                 Echoes the execution context back as the result so tests can
                 assert the real execution-record bookkeeping of the platform.

@@ -1,4 +1,8 @@
-"""Plugin domain models for flext-plugin."""
+"""Plugin domain models for flext-plugin.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -9,30 +13,34 @@ from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-if False:  # TYPE_CHECKING
-    pass
-
-
 _EMPTY_JSON_MAPPING: types.MappingProxyType = types.MappingProxyType({})
+
+
 class FlextPluginModelsPlugin:
-    """Canonical namespace owner."""
-    
-    class FlextPluginModelsPluginEntity(cli_m.Entity):
+    """Canonical namespace owner.
+
+    Plugin domain models namespace.
+
+    All plugin-specific Pydantic models are organized here for better
+    namespace organization and to enable composition with other domain models.
+    """
+
+    class Entity(cli_m.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
 
-    Represents a plugin with identity, lifecycle management, and mutable state.
-    Compared by identity (id), not by value.
+        Represents a plugin with identity, lifecycle management, and mutable state.
+        Compared by identity (id), not by value.
 
-    Attributes:
-    name: Plugin unique identifier
-    plugin_version: Plugin semantic version (X.Y.Z)
-    description: Plugin functionality description
-    author: Plugin author/maintainer
-    plugin_type: Plugin type classification (from PluginType enum)
-    is_enabled: Plugin enabled state
-    metadata: Extensible plugin metadata
+        Attributes:
+        name: Plugin unique identifier
+        plugin_version: Plugin semantic version (X.Y.Z)
+        description: Plugin functionality description
+        author: Plugin author/maintainer
+        plugin_type: Plugin type classification (from PluginType enum)
+        is_enabled: Plugin enabled state
+        metadata: Extensible plugin metadata
 
-    """
+        """
 
         name: Annotated[
             str,
@@ -52,8 +60,7 @@ class FlextPluginModelsPlugin:
             ),
         ] = "1.0.0"
         description: Annotated[
-            str,
-            cli_u.Field(max_length=1000, description="Plugin functionality description"),
+            str, cli_u.Field(max_length=1000, description="Plugin functionality description")
         ] = ""
         author: Annotated[
             str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
@@ -81,22 +88,22 @@ class FlextPluginModelsPlugin:
                 error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
                 raise ValueError(error_msg)
             return value
-    
-    class FlextPluginModelsPluginDiscoveryData(cli_m.Value):
+
+    class DiscoveryData(cli_m.Value):
         """Plugin discovery data - immutable discovery result.
 
-    Represents discovered plugin information from various discovery methods
-    (file system, entry points). Immutable value object.
+        Represents discovered plugin information from various discovery methods
+        (file system, entry points). Immutable value object.
 
-    Attributes:
-    name: Plugin unique identifier name
-    version: Plugin semantic version (X.Y.Z)
-    path: File system path to plugin
-    discovery_type: Type of discovered plugin (file, directory, entry_point)
-    discovery_method: Discovery method used (file_system, entry_points)
-    metadata: Extensible discovery metadata
+        Attributes:
+        name: Plugin unique identifier name
+        version: Plugin semantic version (X.Y.Z)
+        path: File system path to plugin
+        discovery_type: Type of discovered plugin (file, directory, entry_point)
+        discovery_method: Discovery method used (file_system, entry_points)
+        metadata: Extensible discovery metadata
 
-    """
+        """
 
         name: Annotated[
             str,
@@ -136,24 +143,24 @@ class FlextPluginModelsPlugin:
                 error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
                 raise ValueError(error_msg)
             return value
-    
-    class FlextPluginModelsPluginMetadata(cli_m.Value):
+
+    class Metadata(cli_m.Value):
         """Plugin metadata - immutable metadata value object.
 
-    Represents complete metadata about a plugin including discovery
-    and description information. Immutable value object.
+        Represents complete metadata about a plugin including discovery
+        and description information. Immutable value object.
 
-    Attributes:
-    name: Plugin unique identifier
-    version: Plugin semantic version
-    description: Plugin description
-    author: Plugin author
-    plugin_type: Type of plugin (extension, transformer, etc.)
-    entry_point: Entry point for plugin
-    dependencies: List of plugin dependencies
-    metadata: Additional metadata dictionary
+        Attributes:
+        name: Plugin unique identifier
+        version: Plugin semantic version
+        description: Plugin description
+        author: Plugin author
+        plugin_type: Type of plugin (extension, transformer, etc.)
+        entry_point: Entry point for plugin
+        dependencies: List of plugin dependencies
+        metadata: Additional metadata dictionary
 
-    """
+        """
 
         name: Annotated[str, cli_u.Field(description="Plugin unique identifier")]
         version: Annotated[str, cli_u.Field(description="Plugin semantic version")]
@@ -167,20 +174,20 @@ class FlextPluginModelsPlugin:
         metadata: Annotated[
             types.MappingProxyType, cli_u.Field(description="Additional metadata")
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
-    
-    class FlextPluginModelsPluginRegistry(cli_m.Value):
+
+    class Registry(cli_m.Value):
         """Plugin registry - central plugin registry storage.
 
-    Represents plugin registry with version tracking and plugin entries.
-    Immutable value object.
+        Represents plugin registry with version tracking and plugin entries.
+        Immutable value object.
 
-    Attributes:
-    version: Registry schema version
-    plugins: Dictionary of registered plugins
-    last_updated: Last update timestamp
-    created_at: Registry creation timestamp
+        Attributes:
+        version: Registry schema version
+        plugins: Dictionary of registered plugins
+        last_updated: Last update timestamp
+        created_at: Registry creation timestamp
 
-    """
+        """
 
         version: Annotated[str, cli_u.Field(description="Registry schema version")]
         plugins: Annotated[
@@ -193,4 +200,6 @@ class FlextPluginModelsPlugin:
         created_at: Annotated[
             datetime, cli_u.Field(description="Registry creation timestamp")
         ] = cli_u.Field(default_factory=datetime.now)
+
+
 __all__: list[str] = ["FlextPluginModelsPlugin"]

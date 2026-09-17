@@ -6,11 +6,13 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from flext_plugin import m, t
+
+
 class FlextPluginProtocolsPlugin:
-    """Canonical namespace owner."""
-    
+    """Plugin domain-specific protocols namespace."""
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginDiscovery(Protocol):
+    class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
         def discover_plugin(self, plugin_path: str) -> m.Plugin.DiscoveryData:
@@ -26,9 +28,9 @@ class FlextPluginProtocolsPlugin:
         def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> bool:
             """Validate plugin discovery data."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginLoader(Protocol):
+    class Loader(Protocol):
         """Protocol for plugin loading operations."""
 
         def get_loaded_plugins(self) -> t.StrSequence:
@@ -46,9 +48,9 @@ class FlextPluginProtocolsPlugin:
         def unload_plugin(self, plugin_name: str) -> bool:
             """Unload a previously loaded plugin."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginRegistry(Protocol):
+    class Registry(Protocol):
         """Protocol for plugin registry operations."""
 
         def fetch_plugin(self, plugin_name: str) -> t.JsonValue | None:
@@ -74,9 +76,9 @@ class FlextPluginProtocolsPlugin:
         def unregister_plugin(self, plugin_name: str) -> bool:
             """Unregister a plugin."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginExecution(Protocol):
+    class Execution(Protocol):
         """Protocol for plugin execution operations."""
 
         def execute_plugin(self, plugin_name: str, context: t.JsonMapping) -> t.JsonMapping:
@@ -94,9 +96,9 @@ class FlextPluginProtocolsPlugin:
         def stop_execution(self, execution_id: str) -> bool:
             """Stop a running execution."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginSecurity(Protocol):
+    class Security(Protocol):
         """Protocol for plugin security operations."""
 
         def check_permissions(self, plugin_name: str, permissions: t.StrSequence) -> bool:
@@ -114,9 +116,9 @@ class FlextPluginProtocolsPlugin:
         def validate_plugin_security(self, plugin: m.Plugin.Entity) -> bool:
             """Validate plugin security compliance."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginHotReload(Protocol):
+    class HotReload(Protocol):
         """Protocol for hot reload operations."""
 
         def get_watched_paths(self) -> t.StrSequence:
@@ -138,9 +140,9 @@ class FlextPluginProtocolsPlugin:
         def stop_watching(self) -> bool:
             """Stop watching for plugin changes."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginMonitoring(Protocol):
+    class Monitoring(Protocol):
         """Protocol for plugin monitoring operations."""
 
         def fetch_plugin_health(self, plugin_name: str) -> t.JsonMapping:
@@ -162,9 +164,9 @@ class FlextPluginProtocolsPlugin:
         def stop_monitoring(self, plugin_name: str) -> bool:
             """Stop monitoring a plugin."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginConfiguration(Protocol):
+    class Configuration(Protocol):
         """Protocol for plugin configuration operations."""
 
         def fetch_default_config(self, plugin_type: str) -> t.JsonValue:
@@ -182,9 +184,9 @@ class FlextPluginProtocolsPlugin:
         def validate_config(self, settings: t.JsonValue) -> bool:
             """Validate plugin configuration."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginLifecycle(Protocol):
+    class Lifecycle(Protocol):
         """Protocol for plugin lifecycle operations."""
 
         def activate_plugin(self, plugin_name: str) -> bool:
@@ -210,9 +212,9 @@ class FlextPluginProtocolsPlugin:
         def list_plugin_statuses(self) -> t.StrMapping:
             """Get status of all plugins."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginValidation(Protocol):
+    class Validation(Protocol):
         """Protocol for plugin validation operations."""
 
         def validate_plugin_compatibility(self, plugin_name: str) -> bool:
@@ -230,9 +232,9 @@ class FlextPluginProtocolsPlugin:
         def validate_plugin_structure(self, plugin_data: t.JsonValue) -> bool:
             """Validate plugin structure."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsPluginStorage(Protocol):
+    class Storage(Protocol):
         """Protocol for plugin storage operations."""
 
         def delete_plugin(self, plugin_name: str) -> bool:
@@ -254,12 +256,14 @@ class FlextPluginProtocolsPlugin:
         def store_plugin(self, plugin_data: t.JsonValue) -> bool:
             """Store plugin data."""
             ...
-    
+
     @runtime_checkable
-    class FlextPluginProtocolsDiscoveryStrategy(Protocol):
+    class DiscoveryStrategy(Protocol):
         """Strategy protocol for plugin discovery."""
 
         def discover(self, paths: t.StrSequence) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins using this strategy."""
             ...
+
+
 __all__: list[str] = ["FlextPluginProtocolsPlugin"]

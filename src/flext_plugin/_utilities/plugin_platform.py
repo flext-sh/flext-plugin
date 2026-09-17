@@ -213,7 +213,7 @@ class FlextPluginPlatform:
             """Check if plugin is active."""
             return self.status == str(c.Plugin.PluginStatus.ACTIVE)
 
-    class PluginPlatformService(s[m.Plugin.PluginRegistry]):
+    class PluginPlatformService(s[m.Plugin.Registry]):
         """railway-oriented plugin platform with functional composition."""
 
         _plugins: MutableMapping[str, FlextPluginPlatform.Plugin] = u.PrivateAttr(
@@ -225,13 +225,13 @@ class FlextPluginPlatform:
         _registry: FlextPluginPlatform.PluginRegistry | None = u.PrivateAttr(
             default_factory=lambda: None
         )
-        _discovery: p.Plugin.PluginDiscovery | None = u.PrivateAttr(
+        _discovery: p.Plugin.Discovery | None = u.PrivateAttr(
             default_factory=lambda: None
         )
-        _loader: p.Plugin.PluginLoader | None = u.PrivateAttr(
+        _loader: p.Plugin.Loader | None = u.PrivateAttr(
             default_factory=lambda: None
         )
-        _executor: p.Plugin.PluginExecution | None = u.PrivateAttr(
+        _executor: p.Plugin.Execution | None = u.PrivateAttr(
             default_factory=lambda: None
         )
 
@@ -294,7 +294,7 @@ class FlextPluginPlatform:
             self._registry = None
 
         @property
-        def discovery(self) -> p.Plugin.PluginDiscovery | None:
+        def discovery(self) -> p.Plugin.Discovery | None:
             """Discovery protocol."""
             return self._discovery
 
@@ -304,7 +304,7 @@ class FlextPluginPlatform:
             return self._executions
 
         @property
-        def executor(self) -> p.Plugin.PluginExecution | None:
+        def executor(self) -> p.Plugin.Execution | None:
             """Executor protocol."""
             return self._executor
 
@@ -323,7 +323,7 @@ class FlextPluginPlatform:
             }
 
         @property
-        def loader(self) -> p.Plugin.PluginLoader | None:
+        def loader(self) -> p.Plugin.Loader | None:
             """Loader protocol."""
             return self._loader
 
@@ -388,17 +388,17 @@ class FlextPluginPlatform:
             return plugins.map(self._register_all)
 
         @override
-        def execute(self) -> p.Result[m.Plugin.PluginRegistry]:
+        def execute(self) -> p.Result[m.Plugin.Registry]:
             """Execute main platform initialization (s protocol)."""
             plugin_entries: dict[str, t.JsonMapping] = {
                 name: self._to_general_mapping(plugin)
                 for name, plugin in self.plugins.items()
             }
-            registry = m.Plugin.PluginRegistry(
+            registry = m.Plugin.Registry(
                 version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                 plugins=self._to_general_mapping(plugin_entries),
             )
-            return r[m.Plugin.PluginRegistry].ok(registry)
+            return r[m.Plugin.Registry].ok(registry)
 
         def execute_plugin(
             self,
@@ -528,9 +528,9 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: p.Plugin.PluginDiscovery
-            | p.Plugin.PluginLoader
-            | p.Plugin.PluginExecution
+            protocol: p.Plugin.Discovery
+            | p.Plugin.Loader
+            | p.Plugin.Execution
             | None,
             name: str,
         ) -> p.Result[bool]:
