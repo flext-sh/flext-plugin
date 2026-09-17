@@ -1,6 +1,7 @@
 # Architecture Decision Records (ADRs)
 
 <!-- TOC START -->
+
 - [📋 ADR Overview](#adr-overview)
   - [ADR Purpose](#adr-purpose)
 - [📊 ADR Index](#adr-index)
@@ -38,11 +39,11 @@
   - [ADR Creation Guidelines](#adr-creation-guidelines)
   - [ADR Review Process](#adr-review-process)
   - [ADR Maintenance](#adr-maintenance)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Framework**: ADR | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 📋 ADR Overview
 
@@ -55,14 +56,14 @@ Architecture Decision Records (ADRs) document the **architectural decisions** ma
 - **Share Knowledge**: Enable team members to understand historical decisions
 - **Guide Evolution**: Inform future architectural changes and refactoring
 
-______________________________________________________________________
+---
 
 ## 📊 ADR Index
 
 ### Core Architecture Decisions
 
-| ADR     | Title                            | Status     | Date       | Category     |
-| ------- | -------------------------------- | ---------- | ---------- | ------------ |
+| ADR     | Title                            | Status      | Date       | Category     |
+| ------- | -------------------------------- | ----------- | ---------- | ------------ |
 | ADR-001 | Adopt Clean Architecture Pattern | ✅ Accepted | 2025-01-15 | Architecture |
 | ADR-002 | Implement Domain-Driven Design   | ✅ Accepted | 2025-01-20 | Architecture |
 | ADR-003 | Plugin Discovery Mechanism       | ✅ Accepted | 2025-02-01 | Discovery    |
@@ -71,8 +72,8 @@ ______________________________________________________________________
 
 ### Implementation Decisions
 
-| ADR     | Title                           | Status     | Date       | Category       |
-| ------- | ------------------------------- | ---------- | ---------- | -------------- |
+| ADR     | Title                           | Status      | Date       | Category       |
+| ------- | ------------------------------- | ----------- | ---------- | -------------- |
 | ADR-006 | Single Class Per Module Pattern | ✅ Accepted | 2025-03-15 | Implementation |
 | ADR-007 | Railway-Oriented Error Handling | ✅ Accepted | 2025-04-01 | Implementation |
 | ADR-008 | Hot Reload Implementation       | ✅ Accepted | 2025-04-15 | Implementation |
@@ -81,13 +82,13 @@ ______________________________________________________________________
 
 ### Future Decisions (Proposed)
 
-| ADR     | Title                           | Status     | Date       | Category    |
-| ------- | ------------------------------- | ---------- | ---------- | ----------- |
+| ADR     | Title                           | Status      | Date       | Category    |
+| ------- | ------------------------------- | ----------- | ---------- | ----------- |
 | ADR-011 | Entry Points Discovery          | 🔄 Proposed | 2025-11-01 | Discovery   |
 | ADR-012 | Plugin Marketplace Architecture | 📋 Draft    | 2025-12-01 | Integration |
 | ADR-013 | Enterprise Security Framework   | 📋 Draft    | 2026-01-01 | Security    |
 
-______________________________________________________________________
+---
 
 ## 📝 ADR Template
 
@@ -127,7 +128,7 @@ All ADRs follow a standardized template for consistency and completeness.
 [t.JsonValue additional information or implementation details]
 ```
 
-______________________________________________________________________
+---
 
 ## 🔄 ADR Workflow
 
@@ -158,7 +159,7 @@ Rejected   Deprecated → Superseded
 - **Deprecated**: Decision no longer recommended but may still be in use
 - **Superseded**: Decision replaced by a newer ADR
 
-______________________________________________________________________
+---
 
 ## 🏷️ ADR Categories
 
@@ -198,7 +199,7 @@ ______________________________________________________________________
 - Test organization and coverage goals
 - Quality assurance approaches
 
-______________________________________________________________________
+---
 
 ## 📚 ADR Best Practices
 
@@ -255,7 +256,7 @@ ______________________________________________________________________
 - Document any deviations from decisions
 - Record lessons learned during implementation
 
-______________________________________________________________________
+---
 
 ## 🛠️ ADR Tools and Automation
 
@@ -298,7 +299,7 @@ make adr-summary
 make adr-export
 ```
 
-______________________________________________________________________
+---
 
 ## 📊 ADR Metrics and Analytics
 
@@ -316,7 +317,7 @@ ______________________________________________________________________
 - **Implementation Alignment**: Percentage of implementations matching ADR decisions
 - **Knowledge Sharing**: Usage of ADRs in new decision-making
 
-______________________________________________________________________
+---
 
 ## 🔗 Related Documentation
 
@@ -339,7 +340,7 @@ ______________________________________________________________________
 - **Quality Attributes** - Performance, scalability, reliability
 - [Security Architecture](../security.md)
 
-______________________________________________________________________
+---
 
 ## 🤝 Contributing to ADRs
 
@@ -365,6 +366,6 @@ ______________________________________________________________________
 1. **Implementation Tracking**: Link ADRs to implementation work and outcomes
 1. **Lessons Learned**: Document what worked and what didn't during implementation
 
-______________________________________________________________________
+---
 
 **Architecture Decision Records** - Comprehensive documentation of architectural decisions, rationale, and consequences for FLEXT Plugin system.

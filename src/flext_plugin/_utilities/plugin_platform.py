@@ -228,9 +228,7 @@ class FlextPluginPlatform:
         _discovery: p.Plugin.Discovery | None = u.PrivateAttr(
             default_factory=lambda: None
         )
-        _loader: p.Plugin.Loader | None = u.PrivateAttr(
-            default_factory=lambda: None
-        )
+        _loader: p.Plugin.Loader | None = u.PrivateAttr(default_factory=lambda: None)
         _executor: p.Plugin.Execution | None = u.PrivateAttr(
             default_factory=lambda: None
         )
@@ -298,6 +296,11 @@ class FlextPluginPlatform:
             """Discovery protocol."""
             return self._discovery
 
+        @discovery.setter
+        def discovery(self, value: p.Plugin.Discovery | None) -> None:
+            """Inject discovery protocol (test hook)."""
+            self._discovery = value
+
         @property
         def executions(self) -> t.MappingKV[str, FlextPluginPlatform.PluginExecution]:
             """Execution storage."""
@@ -307,6 +310,11 @@ class FlextPluginPlatform:
         def executor(self) -> p.Plugin.Execution | None:
             """Executor protocol."""
             return self._executor
+
+        @executor.setter
+        def executor(self, value: p.Plugin.Execution | None) -> None:
+            """Inject executor protocol (test hook)."""
+            self._executor = value
 
         @property
         def platform_status(self) -> t.JsonMapping:
@@ -326,6 +334,11 @@ class FlextPluginPlatform:
         def loader(self) -> p.Plugin.Loader | None:
             """Loader protocol."""
             return self._loader
+
+        @loader.setter
+        def loader(self, value: p.Plugin.Loader | None) -> None:
+            """Inject loader protocol (test hook)."""
+            self._loader = value
 
         @property
         def plugins(self) -> t.MappingKV[str, FlextPluginPlatform.Plugin]:
@@ -528,10 +541,7 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: p.Plugin.Discovery
-            | p.Plugin.Loader
-            | p.Plugin.Execution
-            | None,
+            protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
             name: str,
         ) -> p.Result[bool]:
             """Protocol validation helper."""

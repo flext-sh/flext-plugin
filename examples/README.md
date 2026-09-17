@@ -1,6 +1,7 @@
 # FLEXT Plugin Examples
 
 <!-- TOC START -->
+
 - [Example Categories](#example-categories)
   - [🚀 Getting Started](#getting-started)
   - [🔌 Plugin Types](#plugin-types)
@@ -28,7 +29,7 @@
 - [Contributing Examples](#contributing-examples)
   - [Adding New Examples](#adding-new-examples)
   - [Example Quality Standards](#example-quality-standards)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
 
@@ -497,6 +498,6 @@ Comprehensive test coverage for all plugin functionality:
 - **Error Handling**: Proper r pattern usage
 - **Resource Management**: Clean initialization and cleanup
 
-______________________________________________________________________
+---
 
 **Next Steps**: Browse individual example directories for detailed implementations and run the examples to see FLEXT Plugin system in action.

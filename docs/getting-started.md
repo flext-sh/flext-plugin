@@ -1,6 +1,7 @@
 # Getting Started with FLEXT Plugin
 
 <!-- TOC START -->
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Development Installation (Recommended)](#development-installation-recommended)
@@ -10,12 +11,13 @@
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Version**: 0.12.0-dev
 **Last Updated**: 2026-04-14
 
-______________________________________________________________________
+---
 
 ## Prerequisites
 
@@ -23,7 +25,7 @@ ______________________________________________________________________
 - **FLEXT Workspace** - flext-plugin is part of the FLEXT ecosystem
 - Basic understanding of Clean Architecture and domain-driven design
 
-______________________________________________________________________
+---
 
 ## Installation
 
@@ -51,13 +53,13 @@ flext-core>=0.9.9        # Foundation patterns and r
 flext-observability>=0.9.9  # Monitoring and observability
 ```
 
-______________________________________________________________________
+---
 
 ## First Plugin
 
 ### Create a Basic Plugin
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
@@ -118,9 +120,9 @@ plugins/
 └── another_plugin/
     ├── __init__.py
     └── plugin.py
-```
+````
 
-______________________________________________________________________
+---
 
 ## Development Commands
 
@@ -139,7 +141,7 @@ make check                 # Validate plugin system and static contracts
 make plugin-watch          # Enable hot reload for development
 ```
 
-______________________________________________________________________
+---
 
 ## Next Steps
 
@@ -148,7 +150,7 @@ ______________________________________________________________________
 - **Examples** - Working code examples
 - **Development** - Contributing guidelines
 
-______________________________________________________________________
+---
 
 For advanced usage and integration patterns, see the complete documentation in the docs/ directory.
 

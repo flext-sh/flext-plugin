@@ -1,53 +1,54 @@
 # Python Module Organization & Semantic Patterns
 
 <!-- TOC START -->
-- [🏗️ Module Architecture Overview](#module-architecture-overview)
-  - [Core Design Principles](#core-design-principles)
-- [📁 Module Structure & Responsibilities](#module-structure-responsibilities)
-  - [Foundation Layer (src/flext_plugin/)](#foundation-layer-srcflext_plugin)
-  - [Core Layer (src/flext_plugin/core/)](#core-layer-srcflext_plugincore)
-  - [Domain Layer (src/flext_plugin/domain/)](#domain-layer-srcflext_plugindomain)
-  - [Application Layer (src/flext_plugin/application/)](#application-layer-srcflext_pluginapplication)
-  - [Configuration Layer (src/flext_plugin/settings/)](#configuration-layer-srcflext_pluginsettings)
-- [🎯 Semantic Naming Conventions](#semantic-naming-conventions)
-  - [Public API Naming (FlextPlugin prefix)](#public-api-naming-flextplugin-prefix)
-  - [Module-Level Naming](#module-level-naming)
-  - [Plugin Type Naming](#plugin-type-naming)
-- [📦 Import Patterns & Best Practices](#import-patterns-best-practices)
-  - [Recommended Import Styles](#recommended-import-styles)
-  - [Anti-Patterns (Forbidden)](#anti-patterns-forbidden)
-- [🏛️ Architectural Patterns](#architectural-patterns)
-  - [Clean Architecture Layer Separation](#clean-architecture-layer-separation)
-  - [Plugin Lifecycle Architecture](#plugin-lifecycle-architecture)
-  - [Hot-Reload Architecture](#hot-reload-architecture)
-- [🔄 Plugin-Oriented Programming Patterns](#plugin-oriented-programming-patterns)
-  - [Plugin Factory Patterns](#plugin-factory-patterns)
-  - [Plugin Lifecycle Management](#plugin-lifecycle-management)
-  - [Plugin Discovery Patterns](#plugin-discovery-patterns)
-- [🎯 Domain-Driven Design Patterns](#domain-driven-design-patterns)
-  - [Plugin Entity Patterns](#plugin-entity-patterns)
-  - [Plugin Aggregate Patterns](#plugin-aggregate-patterns)
-  - [Plugin Value Object Patterns](#plugin-value-object-patterns)
-- [🚀 Performance & Optimization Patterns](#performance-optimization-patterns)
-  - [Lazy Plugin Loading](#lazy-plugin-loading)
-  - [Plugin Caching Patterns](#plugin-caching-patterns)
-- [📏 Code Quality Standards](#code-quality-standards)
-  - [Type Annotation Requirements](#type-annotation-requirements)
-  - [Error Handling Standards](#error-handling-standards)
-  - [Plugin Documentation Standards](#plugin-documentation-standards)
-- [📋 Checklist for Plugin Module Creation](#checklist-for-plugin-module-creation)
-  - [Plugin Module Creation Checklist](#plugin-module-creation-checklist)
-  - [Plugin Quality Gate Checklist](#plugin-quality-gate-checklist)
-  - [Plugin-Specific Validation](#plugin-specific-validation)
-- [🌐 FLEXT Ecosystem Integration Guidelines](#flext-ecosystem-integration-guidelines)
-  - [Cross-Project Plugin Standards](#cross-project-plugin-standards)
-  - [Plugin Configuration Integration](#plugin-configuration-integration)
-  - [Plugin Registry Integration](#plugin-registry-integration)
-<!-- TOC END -->
+
+- [🏗️ **Module Architecture Overview**](#module-architecture-overview)
+  - [**Core Design Principles**](#core-design-principles)
+- [📁 **Module Structure & Responsibilities**](#module-structure-responsibilities)
+  - [**Foundation Layer** (`src/flext_plugin/`)](#foundation-layer-srcflextplugin)
+  - [**Core Layer** (`src/flext_plugin/core/`)](#core-layer-srcflextplugincore)
+  - [**Domain Layer** (`src/flext_plugin/domain/`)](#domain-layer-srcflextplugindomain)
+  - [**Application Layer** (`src/flext_plugin/application/`)](#application-layer-srcflextpluginapplication)
+  - [**Configuration Layer** (`src/flext_plugin/settings/`)](#configuration-layer-srcflextpluginsettings)
+- [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
+  - [**Public API Naming (FlextPlugin prefix)**](#public-api-naming-flextplugin-prefix)
+  - [**Module-Level Naming**](#module-level-naming)
+  - [**Plugin Type Naming**](#plugin-type-naming)
+- [📦 **Import Patterns & Best Practices**](#import-patterns-best-practices)
+  - [**Recommended Import Styles**](#recommended-import-styles)
+  - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
+- [🏛️ **Architectural Patterns**](#architectural-patterns)
+  - [**Clean Architecture Layer Separation**](#clean-architecture-layer-separation)
+  - [**Plugin Lifecycle Architecture**](#plugin-lifecycle-architecture)
+  - [**Hot-Reload Architecture**](#hot-reload-architecture)
+- [🔄 **Plugin-Oriented Programming Patterns**](#plugin-oriented-programming-patterns)
+  - [**Plugin Factory Patterns**](#plugin-factory-patterns)
+  - [**Plugin Lifecycle Management**](#plugin-lifecycle-management)
+  - [**Plugin Discovery Patterns**](#plugin-discovery-patterns)
+- [🎯 **Domain-Driven Design Patterns**](#domain-driven-design-patterns)
+  - [**Plugin Entity Patterns**](#plugin-entity-patterns)
+  - [**Plugin Aggregate Patterns**](#plugin-aggregate-patterns)
+  - [**Plugin Value Object Patterns**](#plugin-value-object-patterns)
+- [🚀 **Performance & Optimization Patterns**](#performance-optimization-patterns)
+  - [**Lazy Plugin Loading**](#lazy-plugin-loading)
+  - [**Plugin Caching Patterns**](#plugin-caching-patterns)
+- [📏 **Code Quality Standards**](#code-quality-standards)
+  - [**Type Annotation Requirements**](#type-annotation-requirements)
+  - [**Error Handling Standards**](#error-handling-standards)
+  - [**Plugin Documentation Standards**](#plugin-documentation-standards)
+- [📋 **Checklist for Plugin Module Creation**](#checklist-for-plugin-module-creation)
+  - [**Plugin Module Creation Checklist**](#plugin-module-creation-checklist)
+  - [**Plugin Quality Gate Checklist**](#plugin-quality-gate-checklist)
+  - [**Plugin-Specific Validation**](#plugin-specific-validation)
+- [🌐 **FLEXT Ecosystem Integration Guidelines**](#flext-ecosystem-integration-guidelines)
+  - [**Cross-Project Plugin Standards**](#cross-project-plugin-standards)
+  - [**Plugin Configuration Integration**](#plugin-configuration-integration)
+  - [**Plugin Registry Integration**](#plugin-registry-integration)
+  <!-- TOC END -->
 
 **FLEXT Plugin Module Architecture & Best Practices for Plugin System Development**
 
-______________________________________________________________________
+---
 
 ## 🏗️ **Module Architecture Overview**
 
@@ -61,13 +62,13 @@ FLEXT Plugin implements a **Clean Architecture layered module system** specifica
 1. **Type-Safe Plugin System**: Comprehensive type hints for plugin interfaces
 1. **Ecosystem Integration**: Seamless integration with 32 FLEXT projects
 
-______________________________________________________________________
+---
 
 ## 📁 **Module Structure & Responsibilities**
 
 ### **Foundation Layer** (`src/flext_plugin/`)
 
-```python
+`````python
 # Plugin system foundation
 from __future__ import annotations
 
@@ -1474,9 +1475,9 @@ class DataProcessorPlugin(FlextPlugin):
             ...     print(f"Processing time: {stats['processing_time']}s")
         """
         # Implementation follows...
-````
+`````
 
-______________________________________________________________________
+---
 
 ## 📋 **Checklist for Plugin Module Creation**
 
@@ -1496,10 +1497,11 @@ ______________________________________________________________________
 
 ### **Plugin Quality Gate Checklist**
 
-- [ ] **Formatting**: `make fmt` reaches a fixed point
-- [ ] **Static gates**: `make check` passes
-- [ ] **Tests**: `make test` passes through the shared Testmon cache
-- [ ] **Build**: `make build` produces the validated package candidate
+- [ ] **Linting**: `make lint` passes (Ruff with ALL rules enabled)
+- [ ] **Type Check**: `make type-check` passes (strict MyPy, 95%+ coverage)
+- [ ] **Tests**: `make test` passes (85% coverage minimum for plugins)
+- [ ] **Security**: `make security` passes (Bandit + pip-audit)
+- [ ] **Plugin Validation**: `make plugin-validate` passes
 - [ ] **Hot Reload**: Plugin supports hot-reload without state loss
 - [ ] **Integration**: Works with FlexCore and FLEXT Service integration
 - [ ] **Documentation**: Plugin-specific documentation added to docs/
@@ -1517,13 +1519,13 @@ ______________________________________________________________________
 - [ ] **Discovery**: Discoverable through plugin discovery system
 - [ ] **Platform**: Integrates with FlextPluginPlatform orchestration
 
-______________________________________________________________________
+---
 
 ## 🌐 **FLEXT Ecosystem Integration Guidelines**
 
 ### **Cross-Project Plugin Standards**
 
-```python
+````python
 # ✅ Standard plugin creation across ecosystem projects
 from __future__ import annotations
 
@@ -1641,3 +1643,4 @@ ______________________________________________________________________
 **Target Audience**: FLEXT Plugin developers and ecosystem contributors
 **Scope**: Python module organization for plugin system development
 **Version**: 0.12.0-dev → 0.9.9 development guidelines for plugin architecture
+````

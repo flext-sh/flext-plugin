@@ -1,6 +1,7 @@
 # Architecture Decision Log
 
 <!-- TOC START -->
+
 - [📊 Decision Log Overview](#decision-log-overview)
   - [Decision Log Structure](#decision-log-structure)
 - [📅 Detailed Decision Timeline](#detailed-decision-timeline)
@@ -27,11 +28,11 @@
   - [Decision-Making Framework](#decision-making-framework)
   - [Historical Context](#historical-context)
   - [Process Documentation](#process-documentation)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 📊 Decision Log Overview
 
@@ -39,15 +40,15 @@ This document provides a chronological record of all architectural decisions mad
 
 ### Decision Log Structure
 
-| Date       | ADR     | Decision                       | Category     | Status     | Impact |
-| ---------- | ------- | ------------------------------ | ------------ | ---------- | ------ |
+| Date       | ADR     | Decision                       | Category     | Status      | Impact |
+| ---------- | ------- | ------------------------------ | ------------ | ----------- | ------ |
 | 2025-01-15 | ADR-001 | Adopt Clean Architecture       | Architecture | ✅ Accepted | High   |
 | 2025-01-20 | ADR-002 | Implement Domain-Driven Design | Architecture | ✅ Accepted | High   |
 | 2025-02-01 | ADR-003 | Plugin Discovery Mechanism     | Discovery    | ✅ Accepted | Medium |
 | 2025-02-15 | ADR-004 | Plugin Security and Isolation  | Security     | ✅ Accepted | High   |
 | 2025-03-01 | ADR-005 | FLEXT Ecosystem Integration    | Integration  | ✅ Accepted | High   |
 
-______________________________________________________________________
+---
 
 ## 📅 Detailed Decision Timeline
 
@@ -191,7 +192,7 @@ ______________________________________________________________________
 - **Implementation**: Multi-framework documentation with automation
 - **Outcome**: Enterprise-grade documentation with maintenance processes
 
-______________________________________________________________________
+---
 
 ## 📈 Decision Impact Analysis
 
@@ -257,7 +258,7 @@ ______________________________________________________________________
 - **Risk Level**: Low (additive feature)
 - **Success Metrics**: Improved developer experience
 
-______________________________________________________________________
+---
 
 ## 🎯 Decision Quality Metrics
 
@@ -293,7 +294,7 @@ ______________________________________________________________________
 - **Implementation Tracking**: Linking decisions to implementation improves accountability
 - **Feedback Loops**: Post-implementation reviews improve future decision quality
 
-______________________________________________________________________
+---
 
 ## 🔄 Active and Pending Decisions
 
@@ -338,7 +339,7 @@ ______________________________________________________________________
 - **Alternative Chosen**: Click framework adoption
 - **Date Rejected**: 2025-05-01
 
-______________________________________________________________________
+---
 
 ## 📋 Decision Maintenance Procedures
 
@@ -376,7 +377,7 @@ ______________________________________________________________________
 1. **Implementation**: Plan and execute any required changes
 1. **Communication**: Notify all affected stakeholders
 
-______________________________________________________________________
+---
 
 ## 📚 Decision Reference Materials
 
@@ -393,6 +394,6 @@ ______________________________________________________________________
 
 - [ADR template](adr-template.md) - Decision, review, consequences, and implementation tracking
 
-______________________________________________________________________
+---
 
 **Architecture Decision Log** - Comprehensive chronological record of architectural decisions, rationale, and outcomes for FLEXT Plugin system.

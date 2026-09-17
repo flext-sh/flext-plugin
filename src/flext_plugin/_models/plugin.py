@@ -60,7 +60,10 @@ class FlextPluginModelsPlugin:
             ),
         ] = "1.0.0"
         description: Annotated[
-            str, cli_u.Field(max_length=1000, description="Plugin functionality description")
+            str,
+            cli_u.Field(
+                max_length=1000, description="Plugin functionality description"
+            ),
         ] = ""
         author: Annotated[
             str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
@@ -68,9 +71,12 @@ class FlextPluginModelsPlugin:
         plugin_type: Annotated[
             str, cli_u.Field(description="Plugin type classification")
         ] = "utility"
-        is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = True
+        is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
+            True
+        )
         metadata: Annotated[
-            types.MappingProxyType, cli_u.Field(description="Extensible plugin metadata")
+            types.MappingProxyType,
+            cli_u.Field(description="Extensible plugin metadata"),
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
         @cli_u.field_validator("plugin_version", mode="before")
@@ -122,10 +128,15 @@ class FlextPluginModelsPlugin:
             ),
         ]
         path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
-        discovery_type: Annotated[str, cli_u.Field(description="Type of discovered plugin")]
-        discovery_method: Annotated[str, cli_u.Field(description="Discovery method used")]
+        discovery_type: Annotated[
+            str, cli_u.Field(description="Type of discovered plugin")
+        ]
+        discovery_method: Annotated[
+            str, cli_u.Field(description="Discovery method used")
+        ]
         metadata: Annotated[
-            types.MappingProxyType, cli_u.Field(description="Extensible discovery metadata")
+            types.MappingProxyType,
+            cli_u.Field(description="Extensible discovery metadata"),
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
         @cli_u.field_validator("version", mode="before")
@@ -166,7 +177,9 @@ class FlextPluginModelsPlugin:
         version: Annotated[str, cli_u.Field(description="Plugin semantic version")]
         description: Annotated[str, cli_u.Field(description="Plugin description")] = ""
         author: Annotated[str, cli_u.Field(description="Plugin author")] = "Unknown"
-        plugin_type: Annotated[str, cli_u.Field(description="Type of plugin")] = "extension"
+        plugin_type: Annotated[str, cli_u.Field(description="Type of plugin")] = (
+            "extension"
+        )
         entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
         dependencies: Annotated[
             tuple[str, ...], cli_u.Field(description="List of plugin dependencies")

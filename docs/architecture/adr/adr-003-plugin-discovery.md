@@ -1,6 +1,7 @@
 # ADR-003: Plugin Discovery Mechanism
 
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -38,6 +39,7 @@
   - [Plugin Metadata Standard](#plugin-metadata-standard)
   - [Performance Considerations](#performance-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status

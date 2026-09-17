@@ -83,9 +83,7 @@ class FlextPluginUtilities(u):
                 plugins = cls._discover_metadata(search_path)
                 return r[Sequence[m.Plugin.Metadata]].ok(plugins)
             except c.EXC_BROAD_IO_TYPE as e:
-                return r[Sequence[m.Plugin.Metadata]].fail_op(
-                    "Plugin discovery", e
-                )
+                return r[Sequence[m.Plugin.Metadata]].fail_op("Plugin discovery", e)
 
         @classmethod
         def extract_plugin_metadata(
@@ -157,9 +155,7 @@ class FlextPluginUtilities(u):
             )
 
         @classmethod
-        def _discover_metadata(
-            cls, search_path: Path
-        ) -> Sequence[m.Plugin.Metadata]:
+        def _discover_metadata(cls, search_path: Path) -> Sequence[m.Plugin.Metadata]:
             """Discover plugin metadata under one search path."""
             plugins: MutableSequence[m.Plugin.Metadata] = []
             for plugin_file in search_path.rglob("*"):

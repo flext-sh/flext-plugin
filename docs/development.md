@@ -1,6 +1,7 @@
 # Development Guide
 
 <!-- TOC START -->
+
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Setup Commands](#setup-commands)
@@ -17,11 +18,12 @@
   - [Version Management](#version-management)
   - [Quality Requirements](#quality-requirements)
 - [Getting Help](#getting-help)
+
 <!-- TOC END -->
 
 **Contributing to FLEXT Plugin**
 
-______________________________________________________________________
+---
 
 ## Development Setup
 
@@ -46,7 +48,7 @@ make info                  # Project information
 python -c "import flext_plugin; u.Cli.print('Setup successful')"
 ```
 
-______________________________________________________________________
+---
 
 ## Code Standards
 
@@ -69,7 +71,7 @@ make test                  # Full test suite (85% coverage target)
 make coverage-html         # Detailed coverage report
 ```
 
-______________________________________________________________________
+---
 
 ## Architecture Compliance
 
@@ -83,7 +85,7 @@ ______________________________________________________________________
 
 All modules follow the FLEXT single-class-per-module pattern:
 
-```python
+````python
 # ✅ COMPLIANT - Current implementation
 from __future__ import annotations
 
@@ -119,7 +121,7 @@ Total: 24 test files targeting 90% coverage```
 make test              # All tests with coverage
 make test-unit         # Fast unit tests only
 pytest -m "not slow"   # Skip slow tests
-```
+````
 
 ### Test Guidelines
 
@@ -128,13 +130,13 @@ pytest -m "not slow"   # Skip slow tests
 - Test r success and failure paths
 - Maintain 85% minimum coverage
 
-______________________________________________________________________
+---
 
 ## Plugin Development
 
 ### Creating Plugins
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginType
@@ -209,7 +211,7 @@ make status --tree
 
 #### Plugin Loading Issues
 
-```python
+````python
 # Enable debug logging
 from __future__ import annotations
 
@@ -255,3 +257,4 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 For specific plugin development patterns and examples, see examples/ directory.
+````

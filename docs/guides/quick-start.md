@@ -1,6 +1,7 @@
 # Quick Start Guide
 
 <!-- TOC START -->
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Option 1: Install from PyPI (Recommended)](#option-1-install-from-pypi-recommended)
@@ -20,7 +21,7 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Getting Help](#getting-help)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0 compliance. Current implementation is non-compliant with FLEXT standards and modern Python practices.
 
@@ -70,7 +71,7 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin
@@ -95,13 +96,13 @@ Expected output:```
 Created plugin: hello-world v1.0.0
 Status: PluginStatus.INACTIVE
 Valid: True
-```
+````
 
 ### Step 2: Use the Plugin Platform
 
 Create `platform_example.py`:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin_platform, create_flext_plugin
@@ -158,13 +159,13 @@ Registering plugin...
 Activating plugin...
 ✅ Plugin activated successfully
 Active plugins: ['hello-world']
-```
+````
 
 ### Step 3: Create a Custom Plugin Class
 
 Create `custom_plugin.py`:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin
@@ -283,13 +284,13 @@ Initializing greeting-generator...
 ✅ Hallo, Hans! (Language: german)
 ✅ Olá, João! (Language: portuguese)
 Cleaning up greeting-generator...
-```
+````
 
 ## Plugin Discovery
 
 FLEXT Plugin can automatically discover plugins in directories:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService
@@ -500,3 +501,4 @@ ls -la ./```
 ______________________________________________________________________
 
 🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue with the Plugin Development Guide to learn advanced patterns and best practices.
+````

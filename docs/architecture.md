@@ -1,6 +1,7 @@
 # Architecture
 
 <!-- TOC START -->
+
 - [Clean Architecture Overview](#clean-architecture-overview)
 - [Domain Layer](#domain-layer)
   - [Core Entities](#core-entities)
@@ -21,11 +22,12 @@
   - [Version 1.0.0 Enterprise Features](#version-100-enterprise-features)
   - [Integration Points](#integration-points)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **FLEXT Plugin System Architecture**
 
-______________________________________________________________________
+---
 
 ## Clean Architecture Overview
 
@@ -62,7 +64,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-______________________________________________________________________
+---
 
 ## Domain Layer
 
@@ -70,7 +72,7 @@ ______________________________________________________________________
 
 #### FlextPlugin
 
-```python
+````python
 from __future__ import annotations
 
 
@@ -280,3 +282,4 @@ This architecture enables the plugin system to serve as reliable infrastructure 
 
 - [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
 - [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+````

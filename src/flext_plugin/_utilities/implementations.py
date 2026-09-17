@@ -76,6 +76,7 @@ class FlextPluginImplementations:
             self, plugin_data: m.Plugin.DiscoveryData
         ) -> p.Result[bool]:
             """Validate discovered plugin data."""
+            _ = plugin_data
             return r[bool].ok(value=True)
 
     class FilePluginLoader:

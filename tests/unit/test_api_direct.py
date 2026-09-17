@@ -49,7 +49,7 @@ class TestsFlextPluginApi:
     def api(self) -> FlextPluginApi:
         """Provide a fresh API instance with reset state."""
         instance = FlextPluginApi()
-        instance._platform = FlextPluginPlatform.PluginPlatformService()
+        instance.platform = FlextPluginPlatform.PluginPlatformService()
         return instance
 
     def test_discover_plugins_logs_count_and_returns_plugins(
@@ -59,7 +59,7 @@ class TestsFlextPluginApi:
         (tmp_path / "found.py").write_text(
             '"""Real plugin module."""\n', encoding="utf-8"
         )
-        api.platform._discovery = FlextPluginDiscovery()
+        api.platform.discovery = FlextPluginDiscovery()
 
         result = api.discover_plugins([str(tmp_path)])
 
@@ -70,7 +70,7 @@ class TestsFlextPluginApi:
         self, api: FlextPluginApi, tmp_path: Path
     ) -> None:
         """discover_plugins() propagates failures from the platform."""
-        api.platform._discovery = u.Plugin.Tests.FailingDiscovery()
+        api.platform.discovery = u.Plugin.Tests.FailingDiscovery()
 
         result = api.discover_plugins([str(tmp_path / "nonexistent")])
 
@@ -80,7 +80,7 @@ class TestsFlextPluginApi:
         """execute_plugin() returns a mapping containing the execution_id."""
         plugin = self._make_plugin()
         api.register_plugin(plugin)
-        api.platform._executor = u.Plugin.Tests.EchoExecutor()
+        api.platform.executor = u.Plugin.Tests.EchoExecutor()
 
         result = api.execute_plugin("demo-plugin", {"x": 1}, execution_id="e1")
 
@@ -91,7 +91,7 @@ class TestsFlextPluginApi:
         """execute_plugin() propagates execution failures."""
         plugin = self._make_plugin()
         api.register_plugin(plugin)
-        api.platform._executor = u.Plugin.Tests.FailingExecutor()
+        api.platform.executor = u.Plugin.Tests.FailingExecutor()
 
         result = api.execute_plugin("demo-plugin", {})
 
@@ -157,7 +157,7 @@ class TestsFlextPluginApi:
         """load_plugin() logs the loaded name and returns the plugin."""
         plugin_file = tmp_path / "loaded.py"
         plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
-        api.platform._loader = u.Plugin.Tests.FilePluginLoader()
+        api.platform.loader = u.Plugin.Tests.FilePluginLoader()
 
         result = api.load_plugin(str(plugin_file))
 

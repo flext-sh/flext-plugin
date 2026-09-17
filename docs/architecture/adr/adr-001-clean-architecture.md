@@ -1,6 +1,7 @@
 # ADR-001: Adopt Clean Architecture Pattern
 
 <!-- TOC START -->
+
 - [Status](#status)
 - [Context](#context)
   - [Problem Statement](#problem-statement)
@@ -37,6 +38,7 @@
   - [Architectural Principles Established](#architectural-principles-established)
   - [Implementation Considerations](#implementation-considerations)
 - [Decision Log](#decision-log)
+
 <!-- TOC END -->
 
 ## Status

@@ -1,6 +1,7 @@
 # Data Architecture
 
 <!-- TOC START -->
+
 - [💾 Data Architecture Overview](#data-architecture-overview)
   - [Data Architecture Principles](#data-architecture-principles)
 - [🗂️ Data Model Hierarchy](#data-model-hierarchy)
@@ -31,11 +32,11 @@
 - [📚 Data Architecture Documentation](#data-architecture-documentation)
   - [Data Dictionary](#data-dictionary)
   - [API Data Contracts](#api-data-contracts)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
-______________________________________________________________________
+---
 
 ## 💾 Data Architecture Overview
 
@@ -49,7 +50,7 @@ FLEXT Plugin system implements a comprehensive data architecture supporting plug
 - **Auditable Operations**: Complete audit trails for plugin operations and state changes
 - **Portable Storage**: File-based storage for deployment flexibility
 
-______________________________________________________________________
+---
 
 ## 🗂️ Data Model Hierarchy
 
@@ -121,7 +122,7 @@ Registry ||--o{ Plugin
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 📊 Data Storage Architecture
 
@@ -195,7 +196,7 @@ runtime --> memory_cache: Updates cache
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 🔄 Data Flow Patterns
 
@@ -248,7 +249,7 @@ Registry --> Plugin: Status updated
 @enduml
 ```
 
-______________________________________________________________________
+---
 
 ## 🔒 Data Security and Privacy
 
@@ -295,7 +296,7 @@ ______________________________________________________________________
 - **Type Safety**: Pydantic models ensure data structure integrity
 - **Business Rules**: Domain logic validates data consistency
 
-______________________________________________________________________
+---
 
 ## 📈 Data Governance and Lifecycle
 
@@ -352,7 +353,7 @@ Retired --> Archived: Retirement archival
 - **Automated Testing**: Data validation tests for all data operations
 - **Monitoring**: Data quality metrics and alerts
 
-______________________________________________________________________
+---
 
 ## 🚀 Data Architecture Evolution
 
@@ -378,7 +379,7 @@ ______________________________________________________________________
 - 📋 Data federation for multi-system deployments
 - 📋 GDPR compliance and data portability features
 
-______________________________________________________________________
+---
 
 ## 🛠️ Data Architecture Tools and Technologies
 
@@ -406,7 +407,7 @@ ______________________________________________________________________
 
 #### **Data Modeling**
 
-```python
+````python
 # Pydantic data models with validation
 from __future__ import annotations
 
@@ -571,3 +572,4 @@ interface PluginExecutionResponse {
 ______________________________________________________________________
 
 **Data Architecture** - Comprehensive data models, storage patterns, security controls, and governance for the FLEXT Plugin system.
+````
