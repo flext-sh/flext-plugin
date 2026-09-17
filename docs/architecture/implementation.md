@@ -857,7 +857,7 @@ WORKDIR /app
 # Install Python dependencies
 COPY pyproject.toml poetry.lock ./
 RUN pip install poetry && poetry settings virtualenvs.create false
-RUN poetry install --no-dev --no-interaction
+RUN uv sync --no-dev --no-interaction
 
 # Copy source code
 COPY src/ ./src/

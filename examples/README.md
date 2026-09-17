@@ -196,7 +196,7 @@ make setup
 cd docs/examples/basic-plugin
 
 # Install example dependencies (if any)
-poetry install
+uv sync
 
 # Run example
 python plugin.py
