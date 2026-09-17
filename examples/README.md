@@ -196,7 +196,7 @@ make setup
 cd docs/examples/basic-plugin
 
 # Install example dependencies (if any)
-uv sync
+make setup
 
 # Run example
 python plugin.py
