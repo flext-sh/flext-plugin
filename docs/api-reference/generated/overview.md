@@ -17,16 +17,16 @@
 - Project class: `domain`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`,
   `typed`
-- Main facades: `FlextPluginApi`, `FlextPluginConfig`, `FlextPluginConstants`,
-  `FlextPluginModels`, `FlextPluginProtocols`, `FlextPluginSettings`,
-  `FlextPluginTypes`, `FlextPluginUtilities`
+- Main facades: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
+  `FlextPluginConstantsFacade`, `FlextPluginModels`, `FlextPluginProtocols`,
+  `FlextPluginServiceBase`, `FlextPluginSettings` (+2 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextPluginApi`, `FlextPluginConfig`,
-  `FlextPluginConstants`, `FlextPluginModels`, `FlextPluginProtocols`,
-  `FlextPluginSettings`, `FlextPluginTypes`, `FlextPluginUtilities`, `config`,
-  `plugin` (+1 more)
-- Exported module shortcuts: _none_
-- Generated module pages: `6`
+- Public symbol exports: `FlextPluginApi`, `FlextPluginCli`,
+  `FlextPluginConfig`, `FlextPluginConstantsFacade`, `FlextPluginModels`,
+  `FlextPluginProtocols`, `FlextPluginServiceBase`, `FlextPluginSettings`,
+  `FlextPluginTypes`, `FlextPluginUtilities` (+3 more)
+- Exported module shortcuts: `services`
+- Generated module pages: `9`
 
 ## Next Pages
 
