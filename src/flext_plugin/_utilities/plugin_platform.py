@@ -228,9 +228,7 @@ class FlextPluginPlatform:
         _discovery: p.Plugin.Discovery | None = u.PrivateAttr(
             default_factory=lambda: None
         )
-        _loader: p.Plugin.Loader | None = u.PrivateAttr(
-            default_factory=lambda: None
-        )
+        _loader: p.Plugin.Loader | None = u.PrivateAttr(default_factory=lambda: None)
         _executor: p.Plugin.Execution | None = u.PrivateAttr(
             default_factory=lambda: None
         )
@@ -528,10 +526,7 @@ class FlextPluginPlatform:
 
         def _require_protocol(
             self,
-            protocol: p.Plugin.Discovery
-            | p.Plugin.Loader
-            | p.Plugin.Execution
-            | None,
+            protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
             name: str,
         ) -> p.Result[bool]:
             """Protocol validation helper."""

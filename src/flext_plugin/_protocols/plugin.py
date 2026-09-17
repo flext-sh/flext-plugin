@@ -81,7 +81,9 @@ class FlextPluginProtocolsPlugin:
     class Execution(Protocol):
         """Protocol for plugin execution operations."""
 
-        def execute_plugin(self, plugin_name: str, context: t.JsonMapping) -> t.JsonMapping:
+        def execute_plugin(
+            self, plugin_name: str, context: t.JsonMapping
+        ) -> t.JsonMapping:
             """Execute a plugin with the given context."""
             ...
 
@@ -101,7 +103,9 @@ class FlextPluginProtocolsPlugin:
     class Security(Protocol):
         """Protocol for plugin security operations."""
 
-        def check_permissions(self, plugin_name: str, permissions: t.StrSequence) -> bool:
+        def check_permissions(
+            self, plugin_name: str, permissions: t.StrSequence
+        ) -> bool:
             """Check if plugin has specified permissions."""
             ...
 
@@ -261,7 +265,9 @@ class FlextPluginProtocolsPlugin:
     class DiscoveryStrategy(Protocol):
         """Strategy protocol for plugin discovery."""
 
-        def discover(self, paths: t.StrSequence) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        def discover(
+            self, paths: t.StrSequence
+        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins using this strategy."""
             ...
 
