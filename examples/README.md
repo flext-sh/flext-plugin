@@ -447,6 +447,7 @@ def process_data(self, data: dict) -> p.Result[dict]:
     pass
 
 
+```
 ### 4. Testing Coverage
 
 Comprehensive test coverage for all plugin functionality:

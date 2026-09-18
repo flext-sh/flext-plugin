@@ -1220,6 +1220,7 @@ class FlextPluginExecutor:
         return {"status": "completed", "result": "mock result"}
 
 
+```
 ---
 
 ## 🎯 Implementation Best Practices
