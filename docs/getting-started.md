@@ -18,8 +18,7 @@
 
 <!-- TOC END -->
 
-**Version**: 0.12.0-dev
-**Last Updated**: 2026-04-14
+**Version**: 0.12.0-dev **Last Updated**: 2026-04-14
 
 ---
 
@@ -53,8 +52,8 @@ flext-plugin integrates with these FLEXT ecosystem components:
 
 ```bash
 # Core dependencies (automatically installed)
-flext-core>=0.9.9        # Foundation patterns and r
-flext-observability>=0.9.9  # Monitoring and observability
+flext-core > =0.9.9          # Foundation patterns and r
+flext-observability > =0.9.9 # Monitoring and observability
 ```
 
 ---
@@ -132,17 +131,17 @@ plugins/
 
 ```bash
 # Setup and validation
-make setup                 # Complete development setup
-make val              # Full validation pipeline
-make check                 # Quick lint and type check
+make setup # Complete development setup
+make val   # Full validation pipeline
+make check # Quick lint and type check
 
 # Testing
-make test                  # Run all tests
-make coverage-html         # Generate coverage report
+make test          # Run all tests
+make coverage-html # Generate coverage report
 
 # Plugin development
-make plugin-validate       # Validate plugin system
-make plugin-watch          # Enable hot reload for development
+make plugin-validate # Validate plugin system
+make plugin-watch    # Enable hot reload for development
 ```
 
 ---
@@ -156,7 +155,8 @@ make plugin-watch          # Enable hot reload for development
 
 ---
 
-For advanced usage and integration patterns, see the complete documentation in the docs/ directory.
+For advanced usage and integration patterns, see the complete documentation in the docs/
+directory.
 
 ## Related Documentation
 
@@ -169,9 +169,12 @@ For advanced usage and integration patterns, see the complete documentation in t
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) -
+  Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) -
+  Service patterns and dependency injection
+- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) -
+  Data integration and ELT orchestration
 
 **External Resources**:
 

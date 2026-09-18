@@ -39,13 +39,17 @@
 
 ## 🏗️ Container Architecture Overview
 
-FLEXT Plugin operates as a **Python library package** with **optional CLI components**, designed for deployment across multiple container environments. The system provides plugin management capabilities to FLEXT ecosystem applications while maintaining clean separation between core functionality and optional interfaces.
+FLEXT Plugin operates as a **Python library package** with **optional CLI components**,
+designed for deployment across multiple container environments. The system provides
+plugin management capabilities to FLEXT ecosystem applications while maintaining clean
+separation between core functionality and optional interfaces.
 
 ### Architecture Principles
 
 - **Library-First Design**: Core functionality as importable Python package
 - **Optional CLI**: Command-line interface as separate optional component
-- **Container Agnostic**: Deployable in any Python environment (Docker, Podman, Kubernetes, bare metal)
+- **Container Agnostic**: Deployable in any Python environment (Docker, Podman,
+  Kubernetes, bare metal)
 - **Dependency Injection**: Clean separation through FLEXT container patterns
 
 ---

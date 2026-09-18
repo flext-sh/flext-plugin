@@ -27,13 +27,16 @@
   - [Security Implementation](#security-implementation)
   <!-- TOC END -->
 
-**Development Patterns, Practices, and Workflow** | **Version**: 0.9.0 | **Last Updated**: October 2025
+**Development Patterns, Practices, and Workflow** | **Version**: 0.9.0 | **Last
+Updated**: October 2025
 
 ---
 
 ## 🛠️ Implementation Overview
 
-This guide provides practical implementation guidance for developing with the FLEXT Plugin system. It covers architectural patterns, development practices, and workflow recommendations based on the established Clean Architecture foundation.
+This guide provides practical implementation guidance for developing with the FLEXT
+Plugin system. It covers architectural patterns, development practices, and workflow
+recommendations based on the established Clean Architecture foundation.
 
 ### Implementation Philosophy
 

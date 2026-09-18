@@ -53,7 +53,8 @@
 
 ### Problem Statement
 
-[Describe the problem or situation that led to this decision. What issue are we trying to solve?]
+[Describe the problem or situation that led to this decision. What issue are we trying
+to solve?]
 
 ### Background
 
@@ -145,17 +146,15 @@
 
 ### Phase 1: [Name]
 
-**Objectives**: [What will be accomplished]
-**Timeline**: [Duration and key dates]
-**Deliverables**: [Specific outputs]
-**Dependencies**: [Prerequisites and blocking factors]
+**Objectives**: [What will be accomplished] **Timeline**: [Duration and key dates]
+**Deliverables**: [Specific outputs] **Dependencies**: [Prerequisites and blocking
+factors]
 
 ### Phase 2: [Name]
 
-**Objectives**: [What will be accomplished]
-**Timeline**: [Duration and key dates]
-**Deliverables**: [Specific outputs]
-**Dependencies**: [Prerequisites and blocking factors]
+**Objectives**: [What will be accomplished] **Timeline**: [Duration and key dates]
+**Deliverables**: [Specific outputs] **Dependencies**: [Prerequisites and blocking
+factors]
 
 ### Success Criteria
 
@@ -198,4 +197,5 @@
 
 ---
 
-**ADR Template** - Standardized template for documenting architecture decisions in FLEXT Plugin.
+**ADR Template** - Standardized template for documenting architecture decisions in FLEXT
+Plugin.

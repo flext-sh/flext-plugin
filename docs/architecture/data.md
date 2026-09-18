@@ -40,14 +40,18 @@
 
 ## 💾 Data Architecture Overview
 
-FLEXT Plugin system implements a comprehensive data architecture supporting plugin metadata, configuration, execution state, and audit trails. The system uses a hybrid approach combining file-based persistence for portability with structured data models for type safety and validation.
+FLEXT Plugin system implements a comprehensive data architecture supporting plugin
+metadata, configuration, execution state, and audit trails. The system uses a hybrid
+approach combining file-based persistence for portability with structured data models
+for type safety and validation.
 
 ### Data Architecture Principles
 
 - **Type Safety First**: All data validated through Pydantic models with strict typing
 - **Domain-Driven Design**: Data models reflect domain entities and business rules
 - **Immutable by Default**: Data structures prefer immutability for thread safety
-- **Auditable Operations**: Complete audit trails for plugin operations and state changes
+- **Auditable Operations**: Complete audit trails for plugin operations and state
+  changes
 - **Portable Storage**: File-based storage for deployment flexibility
 
 ---

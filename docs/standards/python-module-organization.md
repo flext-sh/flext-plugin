@@ -52,7 +52,10 @@
 
 ## 🏗️ **Module Architecture Overview**
 
-FLEXT Plugin implements a **Clean Architecture layered module system** specifically designed for dynamic plugin management within the FLEXT ecosystem. This structure follows the established patterns from flext-core while adding plugin-specific architectural layers for lifecycle management, discovery, and hot-reload capabilities.
+FLEXT Plugin implements a **Clean Architecture layered module system** specifically
+designed for dynamic plugin management within the FLEXT ecosystem. This structure
+follows the established patterns from flext-core while adding plugin-specific
+architectural layers for lifecycle management, discovery, and hot-reload capabilities.
 
 ### **Core Design Principles**
 

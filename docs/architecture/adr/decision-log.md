@@ -30,13 +30,16 @@
   - [Process Documentation](#process-documentation)
   <!-- TOC END -->
 
-**Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last Updated**: October 2025
+**Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last
+Updated**: October 2025
 
 ---
 
 ## 📊 Decision Log Overview
 
-This document provides a chronological record of all architectural decisions made during the development of FLEXT Plugin. Each entry links to the corresponding Architecture Decision Record (ADR) and provides context about the decision-making process.
+This document provides a chronological record of all architectural decisions made during
+the development of FLEXT Plugin. Each entry links to the corresponding Architecture
+Decision Record (ADR) and provides context about the decision-making process.
 
 ### Decision Log Structure
 
@@ -56,7 +59,8 @@ This document provides a chronological record of all architectural decisions mad
 
 #### **2025-01-15: Clean Architecture Adoption**
 
-- **Context**: Need for scalable, maintainable architecture supporting long-term evolution
+- **Context**: Need for scalable, maintainable architecture supporting long-term
+  evolution
 - **Decision**: Adopt Clean Architecture with domain/application/infrastructure layers
 - **Rationale**: Proven pattern for complex systems with clear separation of concerns
 - **Alternatives Considered**: Layered Architecture, Hexagonal Architecture
@@ -67,7 +71,8 @@ This document provides a chronological record of all architectural decisions mad
 #### **2025-01-20: Domain-Driven Design Implementation**
 
 - **Context**: Need for business logic organization and domain modeling
-- **Decision**: Implement Domain-Driven Design with entities, value objects, and domain services
+- **Decision**: Implement Domain-Driven Design with entities, value objects, and domain
+  services
 - **Rationale**: Aligns with Clean Architecture domain layer requirements
 - **Alternatives Considered**: Anemic domain models, transaction scripts
 - **Impact**: Medium - Enhanced domain modeling and business rule encapsulation
@@ -79,7 +84,8 @@ This document provides a chronological record of all architectural decisions mad
 #### **2025-02-01: Plugin Discovery Mechanism**
 
 - **Context**: Multiple plugin sources (file-based, entry points, registries)
-- **Decision**: Multi-tiered discovery with file-based primary and entry points secondary
+- **Decision**: Multi-tiered discovery with file-based primary and entry points
+  secondary
 - **Rationale**: Balances flexibility for development with standards compliance
 - **Alternatives Considered**: Entry points only, configuration file only
 - **Impact**: Medium - Affects plugin distribution and deployment flexibility
@@ -291,7 +297,8 @@ This document provides a chronological record of all architectural decisions mad
 
 - **Decision Templates**: Standardized decision documentation improves consistency
 - **Review Processes**: Architectural reviews prevent poor decisions
-- **Implementation Tracking**: Linking decisions to implementation improves accountability
+- **Implementation Tracking**: Linking decisions to implementation improves
+  accountability
 - **Feedback Loops**: Post-implementation reviews improve future decision quality
 
 ---
@@ -384,21 +391,27 @@ This document provides a chronological record of all architectural decisions mad
 ### Decision-Making Framework
 
 - **ADR Template**: Standardized decision documentation
-- **Decision Criteria** - Evaluation framework for decisions (_Documentation coming soon_)
+- **Decision Criteria** - Evaluation framework for decisions (_Documentation coming
+  soon_)
 - **Impact Assessment** - Impact analysis methodology (_Documentation coming soon_)
 
 ### Historical Context
 
-- **Architecture Evolution** - How architecture has evolved (_Documentation coming soon_)
-- **Technology Assessments** - Technology evaluation results (_Documentation coming soon_)
-- **Stakeholder Analysis** - Stakeholder requirements and priorities (_Documentation coming soon_)
+- **Architecture Evolution** - How architecture has evolved (_Documentation coming
+  soon_)
+- **Technology Assessments** - Technology evaluation results (_Documentation coming
+  soon_)
+- **Stakeholder Analysis** - Stakeholder requirements and priorities (_Documentation
+  coming soon_)
 
 ### Process Documentation
 
 - **Decision Process** - Step-by-step decision making (_Documentation coming soon_)
 - **Review Guidelines** - Architectural review procedures (_Documentation coming soon_)
-- **Implementation Tracking** - Linking decisions to implementation (_Documentation coming soon_)
+- **Implementation Tracking** - Linking decisions to implementation (_Documentation
+  coming soon_)
 
 ---
 
-**Architecture Decision Log** - Comprehensive chronological record of architectural decisions, rationale, and outcomes for FLEXT Plugin system.
+**Architecture Decision Log** - Comprehensive chronological record of architectural
+decisions, rationale, and outcomes for FLEXT Plugin system.

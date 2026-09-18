@@ -41,13 +41,17 @@
   - [Security Training and Awareness](#security-training-and-awareness)
   <!-- TOC END -->
 
-**Security Design, Controls, and Threat Model** | **Version**: 0.9.0 | **Last Updated**: October 2025
+**Security Design, Controls, and Threat Model** | **Version**: 0.9.0 | **Last Updated**:
+October 2025
 
 ---
 
 ## 🔒 Security Architecture Overview
 
-FLEXT Plugin system implements a comprehensive security architecture designed for enterprise environments. The system provides multiple layers of security controls, from plugin validation to execution isolation, ensuring safe plugin operations while maintaining performance and usability.
+FLEXT Plugin system implements a comprehensive security architecture designed for
+enterprise environments. The system provides multiple layers of security controls, from
+plugin validation to execution isolation, ensuring safe plugin operations while
+maintaining performance and usability.
 
 ### Security Principles
 
@@ -562,10 +566,10 @@ Lessons : Process improvement
 
 ```bash
 # Security testing pipeline
-make security-scan        # Automated vulnerability scanning
-make dependency-audit     # Dependency security analysis
-make container-scan       # Container image security
-make secrets-scan         # Secret detection and validation
+make security-scan    # Automated vulnerability scanning
+make dependency-audit # Dependency security analysis
+make container-scan   # Container image security
+make secrets-scan     # Secret detection and validation
 ```
 
 #### **Security Monitoring**

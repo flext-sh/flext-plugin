@@ -1,6 +1,8 @@
 # Basic Plugin Example
 
-This example demonstrates how to create a simple, functional plugin using the FLEXT Plugin system. The example covers plugin creation, registration, lifecycle management, and basic execution patterns.
+This example demonstrates how to create a simple, functional plugin using the FLEXT
+Plugin system. The example covers plugin creation, registration, lifecycle management,
+and basic execution patterns.
 
 ## Overview
 
@@ -866,4 +868,6 @@ Processed Data:
 - Resource management
 - Statistics and monitoring
 
-This basic plugin example provides a solid foundation for building more complex plugins in the FLEXT ecosystem. The patterns demonstrated here can be extended for Singer taps, service plugins, and other specialized plugin types.
+This basic plugin example provides a solid foundation for building more complex plugins
+in the FLEXT ecosystem. The patterns demonstrated here can be extended for Singer taps,
+service plugins, and other specialized plugin types.

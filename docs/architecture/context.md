@@ -31,17 +31,22 @@
   - [Version 1.0.0 (Future)](#version-100-future)
   <!-- TOC END -->
 
-**C4 Model Level 1**: System Context | **Version**: 0.9.0 | **Last Updated**: October 2025
+**C4 Model Level 1**: System Context | **Version**: 0.9.0 | **Last Updated**: October
+2025
 
 ---
 
 ## 🎯 System Context Overview
 
-FLEXT Plugin is a **production-ready enterprise plugin management system** that serves as the **extensibility foundation** for the entire FLEXT ecosystem. It provides comprehensive plugin lifecycle management with hot-reload capabilities, security validation, and Clean Architecture patterns.
+FLEXT Plugin is a **production-ready enterprise plugin management system** that serves
+as the **extensibility foundation** for the entire FLEXT ecosystem. It provides
+comprehensive plugin lifecycle management with hot-reload capabilities, security
+validation, and Clean Architecture patterns.
 
 ### System Mission
 
-> **Enable dynamic extensibility** for FLEXT ecosystem projects while maintaining **enterprise-grade quality**, **security**, and **architectural integrity**.
+> **Enable dynamic extensibility** for FLEXT ecosystem projects while maintaining
+> **enterprise-grade quality**, **security**, and **architectural integrity**.
 
 ---
 
@@ -110,21 +115,27 @@ Rel(flext_plugin, github, "Hosts repositories on", "CI/CD pipelines")
 - **Role**: Creates custom plugins and extends FLEXT applications
 - **Goals**: Easy plugin development, comprehensive APIs, good documentation
 - **Pain Points**: Complex plugin APIs, insufficient examples, steep learning curve
-- **Success Metrics**: Time to develop first plugin, plugin reliability, ecosystem integration
+- **Success Metrics**: Time to develop first plugin, plugin reliability, ecosystem
+  integration
 
 #### 2. **FLEXT Architect**
 
-- **Role**: Designs plugin architectures and integration patterns for enterprise applications
-- **Goals**: Architectural consistency, security compliance, maintainable plugin ecosystems
-- **Pain Points**: Inconsistent plugin patterns, security vulnerabilities, architectural drift
-- **Success Metrics**: Plugin system stability, architectural compliance, security posture
+- **Role**: Designs plugin architectures and integration patterns for enterprise
+  applications
+- **Goals**: Architectural consistency, security compliance, maintainable plugin
+  ecosystems
+- **Pain Points**: Inconsistent plugin patterns, security vulnerabilities, architectural
+  drift
+- **Success Metrics**: Plugin system stability, architectural compliance, security
+  posture
 
 #### 3. **System Operator**
 
 - **Role**: Deploys and manages FLEXT applications with plugin ecosystems
 - **Goals**: Reliable deployments, easy plugin management, operational visibility
 - **Pain Points**: Plugin conflicts, deployment complexity, troubleshooting difficulties
-- **Success Metrics**: Deployment success rate, mean time to recovery, operational efficiency
+- **Success Metrics**: Deployment success rate, mean time to recovery, operational
+  efficiency
 
 ### Secondary Stakeholders
 

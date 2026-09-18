@@ -33,13 +33,16 @@
   - [Review Process](#review-process)
   <!-- TOC END -->
 
-**Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October 2025
+**Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October
+2025
 
 ---
 
 ## 📋 Documentation Structure
 
-This architecture documentation follows a comprehensive framework combining **C4 Model**, **Arc42**, and **Architecture Decision Records (ADRs)** for complete system documentation.
+This architecture documentation follows a comprehensive framework combining **C4
+Model**, **Arc42**, and **Architecture Decision Records (ADRs)** for complete system
+documentation.
 
 ### 🎯 Documentation Levels
 
@@ -294,4 +297,5 @@ make architecture-audit
 
 ---
 
-**FLEXT Plugin Architecture Documentation** - Comprehensive system documentation using modern frameworks and best practices for enterprise-grade plugin management.
+**FLEXT Plugin Architecture Documentation** - Comprehensive system documentation using
+modern frameworks and best practices for enterprise-grade plugin management.

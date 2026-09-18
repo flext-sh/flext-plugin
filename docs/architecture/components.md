@@ -34,7 +34,10 @@
 
 ## 🏗️ Component Architecture Overview
 
-FLEXT Plugin system follows Clean Architecture principles with clear component boundaries and responsibilities. Components are organized in layers with strict dependency rules: outer layers depend on inner layers, but inner layers are independent of outer layers.
+FLEXT Plugin system follows Clean Architecture principles with clear component
+boundaries and responsibilities. Components are organized in layers with strict
+dependency rules: outer layers depend on inner layers, but inner layers are independent
+of outer layers.
 
 ### Architecture Layers
 

@@ -54,7 +54,9 @@
 
 ## 📋 ADR Overview
 
-Architecture Decision Records (ADRs) document the **architectural decisions** made during the development of FLEXT Plugin. Each ADR captures the context, decision, and consequences of significant architectural choices.
+Architecture Decision Records (ADRs) document the **architectural decisions** made
+during the development of FLEXT Plugin. Each ADR captures the context, decision, and
+consequences of significant architectural choices.
 
 ### ADR Purpose
 
@@ -375,4 +377,5 @@ make adr-export
 
 ---
 
-**Architecture Decision Records** - Comprehensive documentation of architectural decisions, rationale, and consequences for FLEXT Plugin system.
+**Architecture Decision Records** - Comprehensive documentation of architectural
+decisions, rationale, and consequences for FLEXT Plugin system.

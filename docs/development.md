@@ -52,8 +52,8 @@ git clone https://github.com/flext-sh/flext.git
 cd flext/flext-plugin
 
 # Development environment
-make setup                 # Complete setup
-make info                  # Project information
+make setup # Complete setup
+make info  # Project information
 
 # Verification
 python -c "import flext_plugin; u.Cli.print('Setup successful')"
@@ -74,12 +74,12 @@ python -c "import flext_plugin; u.Cli.print('Setup successful')"
 
 ```bash
 # Required before commits
-make val              # Complete validation pipeline
-make check                 # Quick lint and type check
+make val   # Complete validation pipeline
+make check # Quick lint and type check
 
 # Testing
-make test                  # Full test suite (85% coverage target)
-make coverage-html         # Detailed coverage report
+make test          # Full test suite (85% coverage target)
+make coverage-html # Detailed coverage report
 ```
 
 ---
@@ -88,8 +88,10 @@ make coverage-html         # Detailed coverage report
 
 ### Current Status ✅ COMPLIANT
 
-1. **FLEXT Compliance**: ✅ Single-class-per-module standard achieved (19 classes across 20 modules)
-1. **CLI Integration**: ⚠️ Implementation exists but disabled (dependency issues to resolve)
+1. **FLEXT Compliance**: ✅ Single-class-per-module standard achieved (19 classes across
+   20 modules)
+1. **CLI Integration**: ⚠️ Implementation exists but disabled (dependency issues to
+   resolve)
 1. **Test Coverage**: Target 90% with comprehensive test suite (24 test files)
 
 ### Compliance Achieved

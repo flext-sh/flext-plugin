@@ -6,8 +6,8 @@ Bead: `mro-2wjm.15`
 
 ## Resumo
 
-**12 issues** — BLOCKER 0, CRITICAL 1, MAJOR 5, MINOR 6
-Tipos: VULNERABILITY 5, BUG 0, CODE_SMELL 7 · **Debt total: 76min**
+**12 issues** — BLOCKER 0, CRITICAL 1, MAJOR 5, MINOR 6 Tipos: VULNERABILITY 5, BUG 0,
+CODE_SMELL 7 · **Debt total: 76min**
 
 | regra                 | issues |
 | --------------------- | ------ |
@@ -23,8 +23,11 @@ Tipos: VULNERABILITY 5, BUG 0, CODE_SMELL 7 · **Debt total: 76min**
 
 ## Como usar
 
-Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o **código real** (linha `>>>`), o tipo e o effort estimado.
-**Decisão**: `corrigir` / `falso-positivo` (marcar na plataforma com justificativa) / `risco-aceito`. Ordem: BLOCKER → CRITICAL → VULNERABILITY → MAJOR. CODE_SMELL em volume pede correção de padrão.
+Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
+**código real** (linha `>>>`), o tipo e o effort estimado. **Decisão**: `corrigir` /
+`falso-positivo` (marcar na plataforma com justificativa) / `risco-aceito`. Ordem:
+BLOCKER → CRITICAL → VULNERABILITY → MAJOR. CODE_SMELL em volume pede correção de
+padrão.
 
 ## Issues
 
@@ -132,7 +135,8 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 **Local**: `pyproject.toml:-` · **Effort**: 5min
 
-> Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
+> Dependency versions are not predictable if the lock file (uv.lock, poetry.lock,
+> pdm.lock or pylock.toml) is missing.
 
 **Decisão**: pendente
 
@@ -160,7 +164,8 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 **Local**: `src/flext_plugin/_utilities/discovery.py:43` · **Effort**: 1min
 
-> Remove this redundant Exception class; it derives from another which is already caught.
+> Remove this redundant Exception class; it derives from another which is already
+> caught.
 
 ```python
        39          """Discover Python plugins recursively in a directory."""

@@ -63,7 +63,10 @@ FLEXT Plugin system requires a robust architectural foundation that supports:
 
 ### Background
 
-The FLEXT ecosystem follows strict architectural patterns established in flext-core. Plugin system must integrate seamlessly while maintaining architectural purity. Clean Architecture provides proven patterns for complex systems with multiple stakeholders and long lifecycles.
+The FLEXT ecosystem follows strict architectural patterns established in flext-core.
+Plugin system must integrate seamlessly while maintaining architectural purity. Clean
+Architecture provides proven patterns for complex systems with multiple stakeholders and
+long lifecycles.
 
 ### Stakeholders
 
@@ -81,13 +84,15 @@ The FLEXT ecosystem follows strict architectural patterns established in flext-c
 
 ### Current State
 
-Basic plugin functionality exists but lacks architectural structure. Code is organized functionally rather than by architectural layers.
+Basic plugin functionality exists but lacks architectural structure. Code is organized
+functionally rather than by architectural layers.
 
 ## Decision
 
 ### Decision Statement
 
-Adopt Clean Architecture pattern for FLEXT Plugin system with the following layer structure:
+Adopt Clean Architecture pattern for FLEXT Plugin system with the following layer
+structure:
 
 ```
 Interface Layer (Controllers/CLI/API)
@@ -169,7 +174,8 @@ Infrastructure Layer (External Systems/Databases)
 - Technology dependencies leak into business layer
 - Less flexible for future changes
 
-**Why Rejected**: Doesn't provide sufficient separation for complex plugin ecosystem. FLEXT requires technology-agnostic business logic.
+**Why Rejected**: Doesn't provide sufficient separation for complex plugin ecosystem.
+FLEXT requires technology-agnostic business logic.
 
 ### Alternative 2: Hexagonal Architecture
 
@@ -187,7 +193,9 @@ Infrastructure Layer (External Systems/Databases)
 - Steeper learning curve for team
 - More boilerplate code for adapters
 
-**Why Rejected**: Clean Architecture provides similar benefits with clearer layer organization. Hexagonal Architecture would be overkill for current team size and complexity.
+**Why Rejected**: Clean Architecture provides similar benefits with clearer layer
+organization. Hexagonal Architecture would be overkill for current team size and
+complexity.
 
 ### Alternative 3: Functional Architecture
 
@@ -205,37 +213,34 @@ Infrastructure Layer (External Systems/Databases)
 - Ecosystem integration challenges
 - Performance concerns with large data structures
 
-**Why Rejected**: Team lacks functional programming experience. Python ecosystem is primarily t.JsonValue-oriented. Would require complete paradigm shift.
+**Why Rejected**: Team lacks functional programming experience. Python ecosystem is
+primarily t.JsonValue-oriented. Would require complete paradigm shift.
 
 ## Implementation Plan
 
 ### Phase 1: Architecture Definition
 
-**Objectives**: Define layer boundaries, interfaces, and contracts
-**Timeline**: 2 weeks
-**Deliverables**: Architecture documentation, interface definitions
-**Dependencies**: None
+**Objectives**: Define layer boundaries, interfaces, and contracts **Timeline**: 2 weeks
+**Deliverables**: Architecture documentation, interface definitions **Dependencies**:
+None
 
 ### Phase 2: Domain Layer Implementation
 
-**Objectives**: Implement domain entities and business rules
-**Timeline**: 3 weeks
-**Deliverables**: Domain layer classes, business rule validations
-**Dependencies**: Phase 1 completion
+**Objectives**: Implement domain entities and business rules **Timeline**: 3 weeks
+**Deliverables**: Domain layer classes, business rule validations **Dependencies**:
+Phase 1 completion
 
 ### Phase 3: Application Layer Implementation
 
-**Objectives**: Implement use cases and application services
-**Timeline**: 3 weeks
-**Deliverables**: Application services, use case orchestrators
-**Dependencies**: Phase 2 completion
+**Objectives**: Implement use cases and application services **Timeline**: 3 weeks
+**Deliverables**: Application services, use case orchestrators **Dependencies**: Phase 2
+completion
 
 ### Phase 4: Infrastructure Layer Implementation
 
-**Objectives**: Implement adapters and external system integrations
-**Timeline**: 2 weeks
-**Deliverables**: Database adapters, external API clients
-**Dependencies**: Phase 3 completion
+**Objectives**: Implement adapters and external system integrations **Timeline**: 2
+weeks **Deliverables**: Database adapters, external API clients **Dependencies**: Phase
+3 completion
 
 ### Success Criteria
 
@@ -270,7 +275,8 @@ Infrastructure Layer (External Systems/Databases)
 ### Architectural Principles Established
 
 1. **Dependency Rule**: Inner layers don't depend on outer layers
-1. **Abstraction Principle**: Interfaces in inner layers, implementations in outer layers
+1. **Abstraction Principle**: Interfaces in inner layers, implementations in outer
+   layers
 1. **Single Responsibility**: Each class has one reason to change
 1. **Open/Closed Principle**: Open for extension, closed for modification
 
