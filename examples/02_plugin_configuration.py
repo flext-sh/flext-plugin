@@ -13,6 +13,8 @@ Docker Usage:
 
 from __future__ import annotations
 
+import os
+
 from flext_plugin import FlextPluginApi, t
 
 
@@ -24,7 +26,7 @@ def create_database_plugin_config() -> t.JsonMapping:
             "port": 5432,
             "database": "flext_dev",
             "username": "flext",
-            "password": "flext_pass",
+            "password": os.environ.get("FLEXT_DEMO_DB_PASSWORD", "<demo>"),
             "pool_size": 5,
             "pool_recycle": 3600,
         },
@@ -50,7 +52,7 @@ def create_ldap_plugin_config() -> t.JsonMapping:
             "port": 389,
             "base_dn": "dc=flext,dc=dev",
             "bind_dn": "cn=readonly,dc=flext,dc=dev",
-            "bind_password": "readonly",
+            "bind_password": os.environ.get("FLEXT_DEMO_LDAP_PASSWORD", "<demo>"),
             "use_ssl": False,
             "timeout": 30,
         },

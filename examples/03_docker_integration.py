@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import os
 import socket
 import sys
 from typing import Annotated, override
@@ -46,7 +47,7 @@ def create_docker_postgres_plugin() -> tuple[
         "port": 5432,
         "database": "flext_db",
         "user": "flext",
-        "password": "flext_dev_password",
+        "password": os.environ.get("FLEXT_DEMO_POSTGRES_PASSWORD", "<demo>"),
         "ssl_mode": "prefer",
         "connection_timeout": 10,
         "max_connections": 20,
@@ -71,7 +72,7 @@ def create_docker_redis_plugin() -> tuple[
     redis_config: t.JsonMapping = {
         "host": "localhost",
         "port": 6379,
-        "password": "flext_redis_password",
+        "password": os.environ.get("FLEXT_DEMO_REDIS_PASSWORD", "<demo>"),
         "db": 0,
         "decode_responses": True,
         "socket_timeout": 5,
@@ -100,8 +101,8 @@ def create_docker_ldap_plugin() -> tuple[
         "host": "localhost",
         "port": 389,
         "use_ssl": False,
-        "user_dn": "cn=flext_ldap_REDACTED_LDAP_BIND_PASSWORD,dc=flext,dc=dev",
-        "password": "flext_ldap_password",
+        "user_dn": "cn=flext_ldap_reader,dc=flext,dc=dev",
+        "password": os.environ.get("FLEXT_DEMO_LDAP_PASSWORD", "<demo>"),
         "base_dn": "dc=flext,dc=dev",
         "search_timeout": 10,
         "connection_timeout": 5,

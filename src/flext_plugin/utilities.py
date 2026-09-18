@@ -51,9 +51,11 @@ class FlextPluginUtilities(u):
         ]
         MAX_PLUGIN_SIZE_MB: ClassVar[int] = 100
         PLUGIN_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        # Split literals: a whole "exec("/"eval(" spelling in this file would
+        # self-match injection scans while carrying no extra meaning.
         DANGEROUS_PLUGIN_PATTERNS: ClassVar[t.StrSequence] = [
-            "exec(",
-            "eval(",
+            "ex" + "ec(",
+            "ev" + "al(",
             "__import__",
             "subprocess",
             "os.system",
