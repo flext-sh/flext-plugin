@@ -646,12 +646,12 @@ monitor.alert_on_anomalies()
 
 ### Security Documentation Index
 
-| Document | Purpose | Audience | Update Frequency | Status |
-| -------- | ------- | -------- | ---------------- | ------ |
-| Threat Model | Current threat analysis | Security team | Quarterly | _Documentation coming soon_ |
-| Security Controls | Control implementation details | Developers | Monthly | _Documentation coming soon_ |
-| Incident Response | Response procedures | Operations | As needed | _Documentation coming soon_ |
-| Compliance Matrix | Regulatory compliance mapping | Compliance | Annually | _Documentation coming soon_ |
+| Document          | Purpose                        | Audience      | Update Frequency | Status                      |
+| ----------------- | ------------------------------ | ------------- | ---------------- | --------------------------- |
+| Threat Model      | Current threat analysis        | Security team | Quarterly        | _Documentation coming soon_ |
+| Security Controls | Control implementation details | Developers    | Monthly          | _Documentation coming soon_ |
+| Incident Response | Response procedures            | Operations    | As needed        | _Documentation coming soon_ |
+| Compliance Matrix | Regulatory compliance mapping  | Compliance    | Annually         | _Documentation coming soon_ |
 
 ### Security Training and Awareness
 

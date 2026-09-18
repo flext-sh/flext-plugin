@@ -19,7 +19,7 @@ The basic plugin example shows:
 
 ### 1. Basic Plugin Class
 
-```python
+````python
 # basic_plugin.py
 from __future__ import annotations
 
@@ -425,11 +425,11 @@ def main():
 
 if __name__ == "__main__":
     run(main())
-```
+````
 
 ### 3. Comprehensive Tests
 
-```python
+````python
 # test_basic_plugin.py
 from __future__ import annotations
 
@@ -768,7 +768,7 @@ if __name__ == "__main__":
     "repository": "https://github.com/flext-sh/flext/tree/main/flext-plugin"
   }
 }
-```
+````
 
 ## Running the Example
 

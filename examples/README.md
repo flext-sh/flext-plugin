@@ -70,7 +70,7 @@ the FLEXT Plugin system.
 
 ### Basic Plugin Creation
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -104,7 +104,7 @@ tap_plugin = create_flext_plugin(
         "singer_spec": "0.12.0-dev",
     },
 )
-```
+````
 
 ### Hot Reload Development
 
@@ -226,7 +226,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 
 ### Plugin Template
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
@@ -357,7 +357,7 @@ class TestExamplePlugin:
         # Deactivate plugin
         deactivate_result = platform.deactivate_plugin(plugin.name)
         assert deactivate_result.success
-```
+````
 
 ### Configuration Template
 
@@ -445,9 +445,8 @@ from __future__ import annotations
 def process_data(self, data: dict) -> p.Result[dict]:
     """Type-safe data processing."""
     pass
-
-
 ```
+
 ### 4. Testing Coverage
 
 Comprehensive test coverage for all plugin functionality:

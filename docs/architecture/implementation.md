@@ -289,7 +289,7 @@ class FlextPluginDiscovery:
 
 #### **Protocol Definitions**
 
-```python
+````python
 # flext_plugin/protocols.py - Structural typing protocols
 from __future__ import annotations
 
@@ -367,7 +367,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
         """File-based plugin discovery implementation."""
         # Implementation details...
         return r.ok([])
-```
+````
 
 ### Railway Pattern Implementation
 
@@ -486,7 +486,7 @@ class TestPluginEntity:
 
 #### **Application Service Testing**
 
-```python
+````python
 # tests/unit/test_services.py
 from __future__ import annotations
 
@@ -646,7 +646,7 @@ def create_plugin():
         # 6. Unregister plugin
         unregister_result = await platform.unregister_plugin("test-plugin")
         assert unregister_result.success
-```
+````
 
 ---
 
@@ -656,7 +656,7 @@ def create_plugin():
 
 #### **Module Structure Template**
 
-```python
+````python
 # Template for FLEXT single-class-per-module pattern
 """Module: flext_plugin/[module_name].py
 
@@ -785,7 +785,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
     if "processing" in error.lower():
         return f"Data processing failed: {error}"
     return f"Operation failed: {error}"
-```
+````
 
 ### Configuration Management
 
@@ -1218,9 +1218,8 @@ class FlextPluginExecutor:
         # Actual plugin execution logic
         # This would integrate with the plugin loading system
         return {"status": "completed", "result": "mock result"}
-
-
 ```
+
 ---
 
 ## 🎯 Implementation Best Practices

@@ -73,7 +73,7 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -95,7 +95,7 @@ Run it:
 
 ```bash
 python hello_plugin.py
-```
+````
 
 Expected output:
 
@@ -109,7 +109,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -160,7 +160,7 @@ Run it:
 
 ```bash
 python platform_example.py
-```
+````
 
 Expected output:
 
@@ -424,7 +424,7 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files
 change:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
@@ -473,7 +473,7 @@ ruff check .          # Linting
 mypy .
 pytest               # Testing
 bandit -r .          # Security scanning
-```
+````
 
 ## Next Steps
 

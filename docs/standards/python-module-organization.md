@@ -189,8 +189,7 @@ class PluginWorkflow:
     def deploy_plugin(self, plugin_config: dict) -> p.Result[FlextPlugin]:
         """Complete plugin deployment workflow"""
         return (
-            self.service
-            .validate_plugin_config(plugin_config)
+            self.service.validate_plugin_config(plugin_config)
             .flat_map(lambda settings: self.service.create_plugin(settings))
             .flat_map(lambda plugin: self.service.register_plugin(plugin))
             .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
@@ -215,7 +214,7 @@ management.
 
 **Configuration Pattern**:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_core import FlextSettings
@@ -270,7 +269,7 @@ FlextPlugins.Manager  # Plugin management interface
 FlextPluginLoader  # Dynamic plugin loading
 FlextPluginWatcher  # File system watching
 FlextPluginReloader  # Hot-reload management
-```
+````
 
 **Rationale**: Clear namespace separation prevents conflicts across FLEXT's 32 projects.
 
@@ -330,7 +329,7 @@ PluginType.PROCESSOR  # Data processing components
 
 #### **1. Primary Pattern (Recommended for Ecosystem)**
 
-```python
+````python
 # Import from main package - gets everything needed
 from __future__ import annotations
 
@@ -363,7 +362,7 @@ from flext_plugin import PluginStatus, PluginType
 # More explicit but verbose
 service = FlextPluginService(registry)
 plugin = FlextPlugin(name="custom", version="0.9.9")
-```
+````
 
 #### **3. Factory Function Pattern**
 
@@ -496,7 +495,7 @@ from __future__ import annotations
 
 ### **Plugin Factory Patterns**
 
-```python
+````python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -930,7 +929,7 @@ class FlextPluginModels.Registry(FlextModels.AggregateRoot):
             "last_discovery": self.last_discovery.isoformat() if self.last_discovery ...
             "registry_version": self.registry_version
         }
-```
+````
 
 ### **Plugin Value Object Patterns**
 
@@ -1113,7 +1112,7 @@ class LazyPluginLoader:
 
 ### **Plugin Caching Patterns**
 
-```python
+````python
 from __future__ import annotations
 
 import json
@@ -1281,7 +1280,7 @@ def process_plugin_data(
 # ❌ Avoid untyped plugin interfaces
 def execute_plugin(plugin, data):  # Missing types
     return plugin.execute(data)
-```
+````
 
 ### **Error Handling Standards**
 
@@ -1587,7 +1586,7 @@ class DataProcessorPlugin(FlextPlugin):
 
 ### **Cross-Project Plugin Standards**
 
-```python
+````python
 # ✅ Standard plugin creation across ecosystem projects
 from __future__ import annotations
 
@@ -1702,7 +1701,7 @@ class EcosystemPluginManager:
                         registered_plugins.append(plugin.name)
 
         return r[bool].ok(registered_plugins)
-```
+````
 
 ---
 
