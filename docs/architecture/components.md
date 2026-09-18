@@ -71,35 +71,35 @@ title Component Diagram - FLEXT Plugin System Components
 Container(flext_plugin_core, "FLEXT Plugin Core", "Python Library")
 
 Boundary(interface_layer, "Interface Layer") {
-    Component(flext_plugin_api, "FlextPluginApi", "Facade Class", "Unified API facade providing single entry point for all plugin operations")
-    Component(flext_plugin_platform, "FlextPluginPlatform", "Platform Class", "Main platform facade implementing protocol-based architecture")
-    Component(cli_interface, "CLI Interface", "CLI Module", "Command-line interface for plugin management (currently disabled)")
+    Component(flext_plugin_api, "FlextPluginApi", "Facade Class", "Unified API facad ...
+    Component(flext_plugin_platform, "FlextPluginPlatform", "Platform Class", "Main ...
+    Component(cli_interface, "CLI Interface", "CLI Module", "Command-line interface ...
 }
 
 Boundary(application_layer, "Application Layer") {
-    Component(plugin_services, "Plugin Services", "Service Classes", "Application services orchestrating plugin operations and business workflows")
-    Component(discovery_service, "Discovery Service", "Service Class", "Plugin discovery orchestration and coordination")
-    Component(event_handlers, "Event Handlers", "Handler Classes", "Event handling and notification system for plugin lifecycle events")
+    Component(plugin_services, "Plugin Services", "Service Classes", "Application se ...
+    Component(discovery_service, "Discovery Service", "Service Class", "Plugin disco ...
+    Component(event_handlers, "Event Handlers", "Handler Classes", "Event handling a ...
 }
 
 Boundary(domain_layer, "Domain Layer") {
-    Component(plugin_entities, "Plugin Entities", "Entity Classes", "Core domain entities: Plugin, Execution, Registry with business rules")
-    Component(domain_protocols, "Domain Protocols", "Protocol Classes", "Structural typing interfaces defining component contracts")
-    Component(domain_types, "Domain Types", "Type Definitions", "Type aliases and domain-specific type definitions")
-    Component(domain_constants, "Domain Constants", "Constant Definitions", "Domain constants, enumerations, and configuration values")
+    Component(plugin_entities, "Plugin Entities", "Entity Classes", "Core domain ent ...
+    Component(domain_protocols, "Domain Protocols", "Protocol Classes", "Structural ...
+    Component(domain_types, "Domain Types", "Type Definitions", "Type aliases and do ...
+    Component(domain_constants, "Domain Constants", "Constant Definitions", "Domain ...
 }
 
 Boundary(infrastructure_layer, "Infrastructure Layer") {
-    Component(file_discovery, "File Discovery", "Adapter Class", "File system-based plugin discovery implementation")
-    Component(plugin_loader, "Plugin Loader", "Adapter Class", "Dynamic plugin loading and initialization")
-    Component(hot_reload_manager, "Hot Reload Manager", "Adapter Class", "File system monitoring and hot reload functionality")
-    Component(external_adapters, "External Adapters", "Adapter Classes", "Adapters for external systems and integrations")
+    Component(file_discovery, "File Discovery", "Adapter Class", "File system-based ...
+    Component(plugin_loader, "Plugin Loader", "Adapter Class", "Dynamic plugin loadi ...
+    Component(hot_reload_manager, "Hot Reload Manager", "Adapter Class", "File syste ...
+    Component(external_adapters, "External Adapters", "Adapter Classes", "Adapters f ...
 }
 
 Boundary(data_layer, "Data Layer") {
-    Component(configuration_manager, "Configuration Manager", "Config Class", "Plugin configuration management and validation")
-    Component(data_models, "Data Models", "Pydantic Classes", "Data validation models and schemas")
-    Component(error_hierarchy, "Error Hierarchy", "Exception Classes", "Domain-specific exception hierarchy and error handling")
+    Component(configuration_manager, "Configuration Manager", "Config Class", "Plugi ...
+    Component(data_models, "Data Models", "Pydantic Classes", "Data validation model ...
+    Component(error_hierarchy, "Error Hierarchy", "Exception Classes", "Domain-speci ...
 }
 
 Rel(flext_plugin_api, flext_plugin_platform, "Uses", "Platform facade")
@@ -419,7 +419,7 @@ Data Layer
 
 #### **API → Platform → Services**
 
-````python
+```python
 # API facade delegates to platform
 from __future__ import annotations
 
@@ -430,7 +430,9 @@ platform = FlextPluginPlatform()      # Platform facade
 result = platform.discover_plugins(paths)  # Protocol-based
     ↓
 service = FlextPluginDiscoveryService()  # Application service
-result = service.discover_plugins(paths)  # Business logic```
+result = service.discover_plugins(paths)  # Business logic
+```
+
 #### **Services → Entities → Protocols**
 
 ```python
@@ -444,7 +446,9 @@ entity = FlextPluginModels.Plugin()   # Domain entity
 entity.validate_business_rules()        # Business rules
     ↓
 protocol = FlextPluginProtocols.Plugin  # Domain contract
-# Structural typing ensures compatibility```
+# Structural typing ensures compatibility
+```
+
 #### **Infrastructure → Adapters → External Systems**
 
 ```python
@@ -455,8 +459,10 @@ loader = FlextPluginLoader()
 module = loader.load_plugin(path)  # Infrastructure adapter
     ↓
 adapter = FilesystemAdapter()
-content = adapter.read_file(path)  # External system access```
-______________________________________________________________________
+content = adapter.read_file(path)  # External system access
+```
+
+---
 
 ## 📊 Component Quality Attributes
 
@@ -518,7 +524,7 @@ ______________________________________________________________________
 - **Integration Testable**: Clear component boundaries for integration testing
 - **Performance Testable**: Isolated components for performance benchmarking
 
-______________________________________________________________________
+---
 
 ## 🧪 Component Testing Strategy
 
@@ -540,7 +546,7 @@ ______________________________________________________________________
 - **Error Scenarios**: Failure handling and recovery
 - **Performance Testing**: Load testing and benchmarking
 
-______________________________________________________________________
+---
 
 ## 🔧 Component Evolution and Maintenance
 
@@ -586,7 +592,7 @@ ______________________________________________________________________
 1. Provide migration guides and examples
 1. Remove component after migration period
 
-______________________________________________________________________
+---
 
-**Component Architecture** - Detailed component structure, responsibilities, and interactions within the Clean Architecture framework.
-````
+**Component Architecture** - Detailed component structure, responsibilities, and
+interactions within the Clean Architecture framework.

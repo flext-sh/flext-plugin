@@ -38,7 +38,7 @@
 
 Main facade for all plugin operations.
 
-````python
+```python
 from __future__ import annotations
 
 
@@ -87,7 +87,9 @@ class FlextPluginPlatform:
     def update_plugin_config(
         self, plugin_name: str, settings: FlextPluginModels.Config
     ) -> p.Result[bool]:
-        """Update plugin configuration"""```
+        """Update plugin configuration"""
+```
+
 ### FlextPlugin (Entity)
 
 Core plugin domain entity.
@@ -114,7 +116,9 @@ class FlextPlugin(FlextModels.Entity):
         """Deactivate plugin"""
 
     def validate_business_rules(self) -> p.Result[bool]:
-        """Validate plugin business rules"""```
+        """Validate plugin business rules"""
+```
+
 ### FlextPluginModels.Config (Entity)
 
 Plugin configuration entity.
@@ -133,8 +137,10 @@ class FlextPluginModels.Config(FlextModels.Entity):
     metadata: FlextPluginModels.Metadata      # Additional metadata
 
     def validate_business_rules(self) -> p.Result[bool]:
-        """Validate configuration business rules"""```
-______________________________________________________________________
+        """Validate configuration business rules"""
+```
+
+---
 
 ## Enumerations
 
@@ -150,7 +156,9 @@ class PluginStatus(str, Enum):
     INACTIVE = "INACTIVE"  # Plugin created but not loaded
     LOADED = "LOADED"  # Plugin loaded but not active
     ACTIVE = "ACTIVE"  # Plugin active and running
-    ERROR = "ERROR"  # Plugin in error state```
+    ERROR = "ERROR"  # Plugin in error state
+```
+
 ### PluginType
 
 ```python
@@ -165,8 +173,10 @@ class PluginType(str, Enum):
     MIDDLEWARE = "MIDDLEWARE"  # Middleware plugin
     TAP = "TAP"  # Singer tap plugin
     TARGET = "TARGET"  # Singer target plugin
-    TRANSFORM = "TRANSFORM"  # DBT transform plugin```
-______________________________________________________________________
+    TRANSFORM = "TRANSFORM"  # DBT transform plugin
+```
+
+---
 
 ## Factory Functions
 
@@ -183,7 +193,9 @@ def create_flext_plugin(
     plugin_type: PluginType = PluginType.UTILITY,
     **kwargs,
 ) -> FlextPluginModels.Entity:
-    """Create a new plugin entity"""```
+    """Create a new plugin entity"""
+```
+
 ### create_flext_plugin_platform
 
 ```python
@@ -191,8 +203,10 @@ from __future__ import annotations
 
 
 def create_flext_plugin_platform(settings: dict | None = None) -> FlextPluginPlatform:
-    """Create configured plugin platform"""```
-______________________________________________________________________
+    """Create configured plugin platform"""
+```
+
+---
 
 ## Discovery Services
 
@@ -211,8 +225,10 @@ class FlextPluginDiscoveryService:
     def validate_plugin_integrity(
         self, plugin: FlextPluginModels.Entity
     ) -> p.Result[bool]:
-        """Validate plugin integrity"""```
-______________________________________________________________________
+        """Validate plugin integrity"""
+```
+
+---
 
 ## Hot Reload
 
@@ -223,8 +239,10 @@ ______________________________________________________________________
 from __future__ import annotations
 
 FLEXT_PLUGIN_HOT_RELOAD = true  # Enable hot reload
-FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds```
-______________________________________________________________________
+FLEXT_PLUGIN_WATCH_INTERVAL = 2  # Watch interval in seconds
+```
+
+---
 
 ## Error Handling
 
@@ -240,7 +258,9 @@ if result.success:
 else:
     # Handle error
     error_message = result.error
-    print(f"Failed to load plugin: {error_message}")```
+    print(f"Failed to load plugin: {error_message}")
+```
+
 ### Exception Types
 
 ```python
@@ -260,8 +280,10 @@ class FlextPluginLoadingError(FlextPluginError):
 
 
 class FlextPluginExecutionError(FlextPluginError):
-    """Plugin execution error"""```
-______________________________________________________________________
+    """Plugin execution error"""
+```
+
+---
 
 ## Integration Patterns
 
@@ -283,7 +305,9 @@ def plugin_operation() -> p.Result[bool]:
 # Use dependency injection
 
 container = FlextContainer()
-platform = FlextPluginPlatform(container)```
+platform = FlextPluginPlatform(container)
+```
+
 ### Singer Integration
 
 ```python
@@ -300,8 +324,10 @@ class MyTapPlugin(FlextPlugin):
             version="0.9.9",
             settings={"plugin_type": PluginType.TAP},
             **kwargs,
-        )```
-______________________________________________________________________
+        )
+```
+
+---
 
 ## Usage Examples
 
@@ -323,7 +349,9 @@ if result.success:
     # Enable plugin
     enable_result = platform.enable_plugin("my-plugin")
     if enable_result.success:
-        print("Plugin ready for use")```
+        print("Plugin ready for use")
+```
+
 ### Plugin Discovery
 
 ```python
@@ -340,8 +368,10 @@ if discovery_result.success:
         if validation.success:
             print("  ✓ Valid plugin")
         else:
-            print(f"  ✗ Invalid: {validation.error}")```
-______________________________________________________________________
+            print(f"  ✗ Invalid: {validation.error}")
+```
+
+---
 
 For complete examples and usage patterns, see the examples/ directory.
 
@@ -356,12 +386,14 @@ For complete examples and usage patterns, see the examples/ directory.
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
-- [flext-core Railway-Oriented Programming](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
-- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) - Data integration and ELT orchestration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/api-reference/foundation.md) -
+  Core APIs and patterns
+- [flext-core Railway-Oriented Programming](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/railway-oriented-programming.md) -
+  r patterns
+- [flext-meltano Pipelines](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-meltano/AGENTS.md) -
+  Data integration and ELT orchestration
 
 **External Resources**:
 
 - [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
 - [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
-````

@@ -73,11 +73,10 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-````python
+```python
 from __future__ import annotations
 
-from flext_plugin import create_flext_plugin
-from flext_plugin import PluginType
+from flext_plugin import PluginType, create_flext_plugin
 
 # Create a simple utility plugin
 hello_plugin = create_flext_plugin(
@@ -89,26 +88,31 @@ hello_plugin = create_flext_plugin(
 
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
 print(f"Status: {hello_plugin.status}")
-print(f"Valid: {hello_plugin.is_valid()}")```
+print(f"Valid: {hello_plugin.is_valid()}")
+
+
 Run it:
 
 ```bash
-python hello_plugin.py```
-Expected output:```
+python hello_plugin.py
+```
+
+Expected output:
+
+```
 Created plugin: hello-world v1.0.0
 Status: PluginStatus.INACTIVE
 Valid: True
-````
+```
 
 ### Step 2: Use the Plugin Platform
 
 Create `platform_example.py`:
 
-````python
+```python
 from __future__ import annotations
 
-from flext_plugin import create_flext_plugin_platform, create_flext_plugin
-from flext_plugin import PluginType
+from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
 
 def main():
@@ -149,24 +153,30 @@ def main():
 
 
 # Run the example
-run(main())```
+run(main())
+
+
 Run it:
 
 ```bash
-python platform_example.py```
-Expected output:```
+python platform_example.py
+```
+
+Expected output:
+
+```
 Registering plugin...
 ✅ Plugin registered successfully
 Activating plugin...
 ✅ Plugin activated successfully
 Active plugins: ['hello-world']
-````
+```
 
 ### Step 3: Create a Custom Plugin Class
 
 Create `custom_plugin.py`:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin
@@ -270,12 +280,18 @@ from flext_plugin import create_flext_plugin_platform
         platform.shutdown()
 
 if __name__ == "__main__":
-    run(demo_custom_plugin())```
+    run(demo_custom_plugin())
+```
+
 Run it:
 
 ```bash
-python custom_plugin.py```
-Expected output:```
+python custom_plugin.py
+```
+
+Expected output:
+
+```
 Initializing greeting-generator...
 
 --- Testing Greeting Plugin ---
@@ -285,13 +301,13 @@ Initializing greeting-generator...
 ✅ Hallo, Hans! (Language: german)
 ✅ Olá, João! (Language: portuguese)
 Cleaning up greeting-generator...
-````
+```
 
 ## Plugin Discovery
 
 FLEXT Plugin can automatically discover plugins in directories:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService
@@ -314,7 +330,9 @@ def discover_plugins():
 
 
 # Run discovery
-run(discover_plugins())```
+run(discover_plugins())
+```
+
 ## Testing Your Plugin
 
 Create `test_greeting_plugin.py`:
@@ -388,7 +406,9 @@ class TestGreetingPlugin:
 
 # Run tests
 if __name__ == "__main__":
-    pytest.main([__file__, "-v"])```
+    pytest.main([__file__, "-v"])
+```
+
 Run tests:
 
 ```bash
@@ -396,16 +416,18 @@ Run tests:
 pip install pytest
 
 # Run tests
-python test_greeting_plugin.py```
+python test_greeting_plugin.py
+```
+
 ## Development with Hot Reload
 
-For development, you can enable hot reload to automatically reload plugins when files change:
+For development, you can enable hot reload to automatically reload plugins when files
+change:
 
 ```python
 from __future__ import annotations
 
-from flext_plugin import enable_hot_reload
-from flext_plugin import create_flext_plugin_platform
+from flext_plugin import create_flext_plugin_platform, enable_hot_reload
 
 
 def development_server():
@@ -435,7 +457,9 @@ def development_server():
 
 
 # Run development server
-run(development_server())```
+run(development_server())
+
+
 ## Quality Gates
 
 FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
@@ -448,28 +472,34 @@ poetry add --group dev ruff mypy pytest pytest-cov bandit
 ruff check .          # Linting
 mypy .
 pytest               # Testing
-bandit -r .          # Security scanning```
+bandit -r .          # Security scanning
+```
+
 ## Next Steps
 
 Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 
 ### Immediate Next Steps
 
-1. **Plugin Development Guide** - Learn advanced plugin patterns (_Documentation coming soon_)
+1. **Plugin Development Guide** - Learn advanced plugin patterns (_Documentation coming
+   soon_)
 1. **Testing Guide** - Comprehensive testing strategies (_Documentation coming soon_)
 1. **Examples** - More detailed examples
 
 ### Plugin Types to Explore
 
-1. **Singer Integration** - Create data extraction/loading plugins (_Documentation coming soon_)
+1. **Singer Integration** - Create data extraction/loading plugins (_Documentation
+   coming soon_)
 1. **Service Plugins** - Build microservice integrations (_Documentation coming soon_)
-1. **Custom Plugin Types** - Define your own plugin categories (_Documentation coming soon_)
+1. **Custom Plugin Types** - Define your own plugin categories (_Documentation coming
+   soon_)
 
 ### Advanced Topics
 
 1. **Architecture Guide** - Understand the system design
 1. **Performance Optimization** - Scale your plugins (_Documentation coming soon_)
-1. **FLEXT Ecosystem Integration** - Integrate with other FLEXT services (_Documentation coming soon_)
+1. **FLEXT Ecosystem Integration** - Integrate with other FLEXT services (_Documentation
+   coming soon_)
 
 ## Troubleshooting
 
@@ -482,7 +512,9 @@ Now that you have a basic understanding of FLEXT Plugin, explore these topics:
 pip list | grep flext-plugin
 
 # Reinstall if necessary
-pip install --force-reinstall flext-plugin```
+pip install --force-reinstall flext-plugin
+```
+
 **Plugin Not Activating**
 
 ```python
@@ -494,7 +526,9 @@ print(f"Plugin status: {plugin.status}")
 
 # Ensure plugin is initialized before activation
 plugin.initialize()
-plugin.activate()```
+plugin.activate()
+```
+
 **Hot Reload Not Working**
 
 ```bash
@@ -502,7 +536,9 @@ plugin.activate()```
 pip install watchdog
 
 # Check file permissions in watch directory
-ls -la ./```
+ls -la ./
+```
+
 ### Getting Help
 
 - **Documentation**: Browse the complete documentation
@@ -510,7 +546,7 @@ ls -la ./```
 - **Issues**: [Report bugs](https://github.com/flext-sh/flext/issues)
 - **Discussions**: [Ask questions](https://github.com/flext-sh/flext/discussions)
 
-______________________________________________________________________
+---
 
-🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue with the Plugin Development Guide to learn advanced patterns and best practices.
-````
+🎉 **Congratulations!** You've successfully created your first FLEXT Plugin. Continue
+with the Plugin Development Guide to learn advanced patterns and best practices.

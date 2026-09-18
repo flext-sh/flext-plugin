@@ -62,10 +62,10 @@ Person(developer, "FLEXT Developer", "Creates plugins and extends FLEXT applicat
 Person(architect, "FLEXT Architect", "Designs plugin architectures and integration patterns")
 Person(operator, "System Operator", "Deploys and manages FLEXT applications with plugins")
 
-System(flext_plugin, "FLEXT Plugin System", "Enterprise plugin management and lifecycle system")
+System(flext_plugin, "FLEXT Plugin System", "Enterprise plugin management and lifecy ...
 
 System_Ext(flext_core, "FLEXT Core", "Foundation library with r, FlextContainer, FlextModels")
-System_Ext(flext_observability, "FLEXT Observability", "Monitoring, metrics, tracing, health checks")
+System_Ext(flext_observability, "FLEXT Observability", "Monitoring, metrics, tracing ...
 
 System_Ext(flext_cli, "FLEXT CLI", "Command-line interface (optional dependency)")
 
@@ -273,7 +273,7 @@ Rel(flext_plugin, github, "Hosts repositories on", "CI/CD pipelines")
 
 #### **Plugin Developer API**
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
@@ -281,7 +281,9 @@ from flext_plugin import FlextPluginPlatform
 # Plugin registration and management
 platform = FlextPluginPlatform()
 await platform.register_plugin(plugin_config)
-await platform.execute_plugin("plugin-name", context)```
+await platform.execute_plugin("plugin-name", context)
+```
+
 #### **Application Integration API**
 
 ```python
@@ -292,7 +294,9 @@ from flext_plugin import FlextPluginApi
 # Unified plugin management
 api = FlextPluginApi()
 plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)```
+result = await api.execute_plugin("plugin-name", context)
+```
+
 ### External System Contracts
 
 #### **FLEXT Core Integration Contract**
@@ -309,7 +313,7 @@ result = await api.execute_plugin("plugin-name", context)```
 - **Health Checks**: Plugin health monitoring
 - **Alerts**: Plugin failure notifications
 
-______________________________________________________________________
+---
 
 ## 🎯 System Goals and Success Criteria
 
@@ -317,10 +321,14 @@ ______________________________________________________________________
 
 #### **Primary Goals**
 
-1. **Enable FLEXT Extensibility**: Provide robust plugin infrastructure for all FLEXT projects
-1. **Maintain Enterprise Quality**: Ensure security, reliability, and performance for enterprise deployments
-1. **Foster Plugin Ecosystem**: Support diverse plugin types and use cases across FLEXT applications
-1. **Simplify Plugin Development**: Provide excellent developer experience for plugin creation
+1. **Enable FLEXT Extensibility**: Provide robust plugin infrastructure for all FLEXT
+   projects
+1. **Maintain Enterprise Quality**: Ensure security, reliability, and performance for
+   enterprise deployments
+1. **Foster Plugin Ecosystem**: Support diverse plugin types and use cases across FLEXT
+   applications
+1. **Simplify Plugin Development**: Provide excellent developer experience for plugin
+   creation
 
 #### **Success Metrics**
 
@@ -352,7 +360,7 @@ ______________________________________________________________________
 - **Vulnerability Response**: < 24 hours for critical security issues
 - **Audit Compliance**: Full audit trails for plugin operations
 
-______________________________________________________________________
+---
 
 ## 🚨 Constraints and Assumptions
 
@@ -400,7 +408,7 @@ ______________________________________________________________________
 - **Process Permissions**: Sufficient permissions for plugin execution
 - **Resource Availability**: Adequate system resources for plugin operations
 
-______________________________________________________________________
+---
 
 ## 📈 Evolution and Future Context
 
@@ -423,7 +431,7 @@ ______________________________________________________________________
 - 📋 Enterprise monitoring (comprehensive observability)
 - 📋 Multi-format discovery (hybrid discovery mechanisms)
 
-______________________________________________________________________
+---
 
-**System Context Documentation** - FLEXT Plugin positioned within the broader FLEXT ecosystem and enterprise landscape.
-````
+**System Context Documentation** - FLEXT Plugin positioned within the broader FLEXT
+ecosystem and enterprise landscape.

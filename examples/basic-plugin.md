@@ -23,13 +23,10 @@ The basic plugin example shows:
 # basic_plugin.py
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin
-from flext_plugin import PluginStatus, PluginType
-from flext_cli import u
-from flext_core import FlextSettings
-
 import json
 from datetime import datetime
+
+from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 logger = logging.getLogger(__name__)
 
@@ -299,7 +296,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             "last_execution": None,
         }
         logger.info("Statistics reset")
-```
+
 
 ### 2. Plugin Usage Example
 
@@ -369,7 +366,7 @@ def main():
             print("\n--- Execution Results ---")
             print(f"Success: {result_data.get('success')}")
             print(
-                f"Processing time: {result_data.get('metadata', {}).get('processing_time', 0):.3f}s"
+                f"Processing time: {result_data.get('metadata', {}).get('processing_ ...
             )
             print("\nProcessed Data:")
 
@@ -436,11 +433,11 @@ if __name__ == "__main__":
 # test_basic_plugin.py
 from __future__ import annotations
 
+from unittest.mock import mock_open, patch
+
 import pytest
-from unittest.mock import patch, mock_open
 from basic_plugin import BasicDataProcessorPlugin
-from flext_plugin import create_flext_plugin_platform
-from flext_plugin import PluginStatus, PluginType
+from flext_plugin import PluginStatus, create_flext_plugin_platform
 
 
 class TestBasicDataProcessorPlugin:
@@ -732,7 +729,7 @@ class TestPluginPerformance:
 if __name__ == "__main__":
     # Run tests
     pytest.main([__file__, "-v"])
-```
+
 
 ### 4. Configuration File
 
@@ -822,8 +819,8 @@ Success: True
 Processing time: 0.002s
 
 Processed Data:
-  original_payload: {'name': 'john doe', 'age': 30, 'scores': [85, 90, 78, 92], 'active': True, 'metadata': {'source': 'api', 'timestamp': '2025-01-01T12:00:00Z'}}
-  processed_payload: {'processed_name': 'JOHN DOE', 'processed_age': 60, 'processed_scores_count': 4, 'processed_active': True, 'processed_metadata': {'source': 'api', 'timestamp': '2025-01-01T12:00:00Z'}}
+  original_payload: {'name': 'john doe', 'age': 30, 'scores': [85, 90, 78, 92], 'act ...
+  processed_payload: {'processed_name': 'JOHN DOE', 'processed_age': 60, 'processed_ ...
   transformation_count: 5
 
 --- Plugin Statistics ---

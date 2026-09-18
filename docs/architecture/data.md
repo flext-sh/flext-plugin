@@ -411,7 +411,7 @@ Retired --> Archived: Retirement archival
 
 #### **Data Modeling**
 
-````python
+```python
 # Pydantic data models with validation
 from __future__ import annotations
 
@@ -426,7 +426,9 @@ class FlextPluginSettings(m.BaseModel):
     settings: dict[str, t.JsonValue] = u.Field(default_factory=dict)
 
     class Config:
-        frozen = True  # Immutable data model```
+        frozen = True  # Immutable data model
+```
+
 #### **Data Migration**
 
 ```python
@@ -437,7 +439,9 @@ from __future__ import annotations
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
-    pass```
+    pass
+```
+
 #### **Data Validation**
 
 ```python
@@ -451,8 +455,10 @@ def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:
         settings = FlextPluginSettings(**config_data)
         return r.ok(settings)
     except c.ValidationError as e:
-        return r.fail(f"Configuration validation failed: {e}")```
-______________________________________________________________________
+        return r.fail(f"Configuration validation failed: {e}")
+```
+
+---
 
 ## 📊 Data Architecture Metrics
 
@@ -488,7 +494,7 @@ ______________________________________________________________________
 - **Recovery Time**: < 1 minute for data restoration
 - **Backup Frequency**: Hourly automated backups
 
-______________________________________________________________________
+---
 
 ## 🔍 Data Architecture Monitoring
 
@@ -515,7 +521,7 @@ ______________________________________________________________________
 - Audit log integrity verification
 - Compliance monitoring and reporting
 
-______________________________________________________________________
+---
 
 ## 📚 Data Architecture Documentation
 
@@ -555,7 +561,9 @@ interface PluginRegistrationResponse {
   plugin_id: string;
   status: "registered" | "updated" | "rejected";
   validation_errors?: string[];
-}```
+}
+```
+
 #### **Plugin Execution API**
 
 ```typescript
@@ -572,8 +580,10 @@ interface PluginExecutionResponse {
   result?: any;
   error?: string;
   execution_time: number;
-}```
-______________________________________________________________________
+}
+```
 
-**Data Architecture** - Comprehensive data models, storage patterns, security controls, and governance for the FLEXT Plugin system.
-````
+---
+
+**Data Architecture** - Comprehensive data models, storage patterns, security controls,
+and governance for the FLEXT Plugin system.

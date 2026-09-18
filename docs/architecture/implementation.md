@@ -54,7 +54,7 @@ recommendations based on the established Clean Architecture foundation.
 
 #### **Domain Layer Implementation**
 
-````python
+```python
 # flext_plugin/entities.py - Domain entities with business rules
 from __future__ import annotations
 
@@ -115,7 +115,9 @@ class FlextPluginModels:
             """Mark execution as completed."""
             self._end_time = datetime.now(UTC)
             self._status = ExecutionStatus.COMPLETED
-            self.result = result```
+            self.result = result
+```
+
 #### **Application Layer Implementation**
 
 ```python
@@ -190,7 +192,9 @@ class FlextPluginServices:
             return r.ok(execution)
 
         except Exception as e:
-            return r.fail(f"Plugin execution failed: {e!s}")```
+            return r.fail(f"Plugin execution failed: {e!s}")
+```
+
 #### **Infrastructure Layer Implementation**
 
 ```python
@@ -278,7 +282,9 @@ class FlextPluginDiscovery:
         except Exception as e:
             self.logger.error(f"Failed to parse {file_path}: {e}")
 
-        return None```
+        return None
+```
+
 ### Protocol-Based Architecture Implementation
 
 #### **Protocol Definitions**
@@ -288,6 +294,7 @@ class FlextPluginDiscovery:
 from __future__ import annotations
 
 import typing
+
 from flext_plugin import FlextPluginModels
 
 
@@ -339,7 +346,9 @@ class FlextPluginProtocols:
 
         async def stop_watching(self) -> p.Result[bool]:
             """Stop watching for plugin changes."""
-            ...```
+            ...
+
+
 #### **Protocol Implementation**
 
 ```python
@@ -357,7 +366,9 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
     ) -> p.Result[list[dict[str, t.JsonValue]]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
-        return r.ok([])```
+        return r.ok([])
+```
+
 ### Railway Pattern Implementation
 
 #### **r[T] Error Handling**
@@ -405,8 +416,10 @@ async def _load_plugins(
             return plugin_result  # Early return on failure
         plugins.append(plugin_result.unwrap())
 
-    return r.ok(plugins)```
-______________________________________________________________________
+    return r.ok(plugins)
+```
+
+---
 
 ## 🧪 Testing Implementation Patterns
 
@@ -468,15 +481,18 @@ class TestPluginEntity:
 
         activation_result = plugin.activate()
         assert activation_result.success
-        assert plugin.status == PluginStatus.ACTIVE```
+        assert plugin.status == PluginStatus.ACTIVE
+```
+
 #### **Application Service Testing**
 
 ```python
 # tests/unit/test_services.py
 from __future__ import annotations
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 from flext_plugin import FlextPluginServices
 
 
@@ -536,7 +552,9 @@ class TestPluginServices:
         # Should succeed but with empty list (invalid plugin filtered out)
         assert result.success
         plugins = result.unwrap()
-        assert len(plugins) == 0```
+        assert len(plugins) == 0
+
+
 ### Integration Testing Patterns
 
 #### **End-to-End Plugin Lifecycle Testing**
@@ -627,8 +645,10 @@ def create_plugin():
 
         # 6. Unregister plugin
         unregister_result = await platform.unregister_plugin("test-plugin")
-        assert unregister_result.success```
-______________________________________________________________________
+        assert unregister_result.success
+```
+
+---
 
 ## 🔧 Development Workflow Implementation
 
@@ -650,14 +670,10 @@ from __future__ import annotations
 
 import typing
 
-from flext_core import FlextContainer
-from flext_core import p
-from flext_core import r
+from flext_core import FlextContainer, p, r
 
 # Standard imports
-
 # FLEXT ecosystem imports
-
 # Local imports (after FLEXT imports)
 from flext_plugin import FlextPluginTypes
 
@@ -732,7 +748,9 @@ DEFAULT_TIMEOUT: int = 30
 MAX_RETRIES: int = 3
 
 # Export main class
-__all__: list[str] = ["FlextPlugin[ModuleName]"]```
+__all__: list[str] = ["FlextPlugin[ModuleName]"]
+
+
 ### Error Handling Patterns
 
 #### **Railway Pattern Throughout**
@@ -766,7 +784,9 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
         return f"Input validation failed: {error}"
     if "processing" in error.lower():
         return f"Data processing failed: {error}"
-    return f"Operation failed: {error}"```
+    return f"Operation failed: {error}"
+```
+
 ### Configuration Management
 
 #### **Pydantic Configuration Pattern**
@@ -835,8 +855,10 @@ class FlextPluginSettings:
 
     def is_monitoring_enabled(self) -> bool:
         """Check if monitoring features are enabled."""
-        return self.enable_metrics or self.enable_tracing```
-______________________________________________________________________
+        return self.enable_metrics or self.enable_tracing
+```
+
+---
 
 ## 🚀 Deployment and Operations
 
@@ -879,7 +901,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "from flext_plugin import FlextPluginApi; u.Cli.print('OK')" || exit 1
 
 # Default command
-CMD ["python", "-m", "flext_plugin.cli", "--help"]```
+CMD ["python", "-m", "flext_plugin.cli", "--help"]
+```
+
 #### **Kubernetes Deployment**
 
 ```yaml
@@ -948,7 +972,9 @@ spec:
     - name: api
       port: 8000
       targetPort: 8000
-  type: ClusterIP```
+  type: ClusterIP
+```
+
 ### Monitoring and Observability
 
 #### **Health Checks Implementation**
@@ -1040,8 +1066,10 @@ class FlextPluginHealth:
 
             return {"status": "healthy", "details": registry_status}
         except Exception as e:
-            return {"status": "unhealthy", "error": str(e)}```
-______________________________________________________________________
+            return {"status": "unhealthy", "error": str(e)}
+```
+
+---
 
 ## 📊 Performance Optimization Implementation
 
@@ -1099,7 +1127,9 @@ class FlextPluginCache:
         """Evict least recently used items."""
         # Simple FIFO eviction for demonstration
         oldest_key = next(iter(self.memory_cache))
-        del self.memory_cache[oldest_key]```
+        del self.memory_cache[oldest_key]
+```
+
 ### Asynchronous Processing
 
 #### **Concurrent Plugin Operations**
@@ -1110,6 +1140,7 @@ from __future__ import annotations
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+
 from flext_plugin import FlextPluginModels
 
 
@@ -1186,8 +1217,10 @@ class FlextPluginExecutor:
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic
         # This would integrate with the plugin loading system
-        return {"status": "completed", "result": "mock result"}```
-______________________________________________________________________
+        return {"status": "completed", "result": "mock result"}
+
+
+---
 
 ## 🎯 Implementation Best Practices
 
@@ -1246,7 +1279,7 @@ ______________________________________________________________________
 - Cryptographic verification of plugin integrity
 - Safe file operations with path validation
 
-______________________________________________________________________
+---
 
-**Implementation Guide** - Comprehensive development patterns, architectural practices, and workflow guidance for FLEXT Plugin system implementation.
-````
+**Implementation Guide** - Comprehensive development patterns, architectural practices,
+and workflow guidance for FLEXT Plugin system implementation.

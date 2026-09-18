@@ -73,8 +73,7 @@ the FLEXT Plugin system.
 ```python
 from __future__ import annotations
 
-from flext_plugin import create_flext_plugin, create_flext_plugin_platform
-from flext_plugin import PluginType
+from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
 # Create simple plugin
 plugin = create_flext_plugin(
@@ -85,7 +84,7 @@ plugin = create_flext_plugin(
 platform = create_flext_plugin_platform()
 platform.register_plugin(plugin)
 platform.activate_plugin("hello-world")
-```
+
 
 ### Singer Plugin Creation
 
@@ -230,10 +229,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin
-from flext_plugin import PluginStatus, PluginType
-from flext_cli import u
-from flext_core import FlextSettings
+from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 
 class ExamplePlugin(FlextPlugin):
@@ -293,7 +289,7 @@ class ExamplePlugin(FlextPlugin):
     def _cleanup_resources(self):
         """Cleanup plugin-specific resources."""
         pass
-```
+
 
 ### Test Template
 
@@ -445,14 +441,11 @@ All examples use proper type hints:
 ```python
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 def process_data(self, data: dict) -> p.Result[dict]:
     """Type-safe data processing."""
     pass
-```
+
 
 ### 4. Testing Coverage
 
@@ -489,7 +482,7 @@ Comprehensive test coverage for all plugin functionality:
    # Ensure example works
    python plugin.py
    pytest test_plugin.py -v
-   
+
    # Validate against quality gates
    make lint
    make type-check

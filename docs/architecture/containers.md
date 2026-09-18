@@ -67,22 +67,22 @@ Person(operator, "System Operator", "Deploys FLEXT applications")
 
 System_Boundary(flext_plugin_system, "FLEXT Plugin System") {
 
-    Container(flext_plugin_core, "FLEXT Plugin Core", "Python Library", "Plugin lifecycle management, discovery, execution, security validation")
-    Container(flext_plugin_cli, "FLEXT Plugin CLI", "Python CLI Application", "Command-line interface for plugin management (optional)")
-    Container(flext_plugin_api, "FLEXT Plugin API", "Python REST API", "REST API for plugin operations (planned)")
+    Container(flext_plugin_core, "FLEXT Plugin Core", "Python Library", "Plugin life ...
+    Container(flext_plugin_cli, "FLEXT Plugin CLI", "Python CLI Application", "Comma ...
+    Container(flext_plugin_api, "FLEXT Plugin API", "Python REST API", "REST API for ...
 
-    ContainerDb(plugin_registry, "Plugin Registry", "File System / Database", "Plugin metadata, configurations, and state")
-    ContainerDb(plugin_cache, "Plugin Cache", "File System", "Compiled plugins and execution artifacts")
+    ContainerDb(plugin_registry, "Plugin Registry", "File System / Database", "Plugi ...
+    ContainerDb(plugin_cache, "Plugin Cache", "File System", "Compiled plugins and e ...
 }
 
-System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: r, FlextContainer, FlextModels")
-System_Ext(flext_observability, "FLEXT Observability", "Python Library", "Metrics, tracing, health checks")
+System_Ext(flext_core, "FLEXT Core", "Python Library", "Foundation patterns: r, Flex ...
+System_Ext(flext_observability, "FLEXT Observability", "Python Library", "Metrics, t ...
 
 System_Ext(pypi, "PyPI", "Package Repository", "Plugin package distribution")
 System_Ext(github, "GitHub", "Git Repository", "Source code and CI/CD")
 
 System_Ext(flexcore, "FlexCore", "Go Container", "Runtime container with plugin proxy")
-System_Ext(flext_service, "FLEXT Service", "Go/Python Service", "Data platform with Python bridge")
+System_Ext(flext_service, "FLEXT Service", "Go/Python Service", "Data platform with ...
 
 System_Ext(docker_registry, "Docker Registry", "Container Images", "FLEXT application containers")
 System_Ext(kubernetes, "Kubernetes", "Container Orchestrator", "Deployment and scaling platform")
@@ -210,14 +210,16 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 
 #### **Core ↔ CLI Communication**
 
-````python
+```python
 # CLI imports and uses Core APIs
 from __future__ import annotations
 
 from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
-result = api.discover_plugins(["./plugins"])```
+result = api.discover_plugins(["./plugins"])
+```
+
 #### **Core ↔ API Communication** (Planned)
 
 ```python
@@ -227,7 +229,9 @@ from __future__ import annotations
 from flext_plugin import FlextPluginPlatform
 
 platform = FlextPluginPlatform()
-# HTTP request → Core API call → Response```
+# HTTP request → Core API call → Response
+```
+
 ### External Communication
 
 #### **FLEXT Ecosystem Integration**
@@ -256,7 +260,7 @@ platform = FlextPluginPlatform()
 | All       | Kubernetes      | kubectl/API | Orchestration and deployment     |
 | Core      | File System     | POSIX       | Local plugin storage and caching |
 
-______________________________________________________________________
+---
 
 ## 🚀 Deployment and Technology Choices
 
@@ -292,14 +296,18 @@ FROM python:3.13-slim
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 # flext-plugin installed as dependency
-RUN pip install flext-plugin```
+RUN pip install flext-plugin
+```
+
 #### **CLI Deployment** (Optional)
 
 ```dockerfile
 # FLEXT Plugin CLI container
 FROM python:3.13-slim
 RUN pip install flext-plugin[cli]
-ENTRYPOINT ["flext-plugin"]```
+ENTRYPOINT ["flext-plugin"]
+```
+
 #### **API Deployment** (Planned)
 
 ```dockerfile
@@ -308,7 +316,7 @@ FROM python:3.13-slim
 RUN pip install flext-plugin[api]
 EXPOSE 8000
 CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
-````
+```
 
 ### Environment Configurations
 
@@ -477,7 +485,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ### FLEXT Plugin Core API
 
-````python
+```python
 # Primary interface for all plugin operations
 from __future__ import annotations
 
@@ -485,22 +493,28 @@ from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
 plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)```
+result = await api.execute_plugin("plugin-name", context)
+```
+
 ### FLEXT Plugin CLI Interface
 
 ```bash
 # Command-line interface (when enabled)
 flext-plugin discover ./plugins
 flext-plugin execute plugin-name --context=context.json
-flext-plugin list --format=json```
+flext-plugin list --format=json
+```
+
 ### FLEXT Plugin API Interface (Planned)
 
 ```bash
 # REST API endpoints (planned)
 GET /api/v1/plugins
 POST /api/v1/plugins/{name}/execute
-GET /api/v1/plugins/{name}/status```
-______________________________________________________________________
+GET /api/v1/plugins/{name}/status
+```
 
-**Container Architecture** - Technology stack, deployment patterns, and container interactions for FLEXT Plugin system.
-````
+---
+
+**Container Architecture** - Technology stack, deployment patterns, and container
+interactions for FLEXT Plugin system.
