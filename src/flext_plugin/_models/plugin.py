@@ -13,7 +13,9 @@ from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-_EMPTY_JSON_MAPPING: types.MappingProxyType = types.MappingProxyType({})
+from flext_plugin import t
+
+_EMPTY_JSON_MAPPING: t.JsonMapping = types.MappingProxyType[str, t.JsonValue]({})
 
 
 class FlextPluginModelsPlugin:
@@ -73,7 +75,7 @@ class FlextPluginModelsPlugin:
             True
         )
         metadata: Annotated[
-            types.MappingProxyType,
+            t.JsonMapping,
             cli_u.Field(description="Extensible plugin metadata"),
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
@@ -133,7 +135,7 @@ class FlextPluginModelsPlugin:
             str, cli_u.Field(description="Discovery method used")
         ]
         metadata: Annotated[
-            types.MappingProxyType,
+            t.JsonMapping,
             cli_u.Field(description="Extensible discovery metadata"),
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
@@ -183,7 +185,7 @@ class FlextPluginModelsPlugin:
             tuple[str, ...], cli_u.Field(description="List of plugin dependencies")
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
-            types.MappingProxyType, cli_u.Field(description="Additional metadata")
+            t.JsonMapping, cli_u.Field(description="Additional metadata")
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
     class Registry(cli_m.Value):
@@ -202,7 +204,7 @@ class FlextPluginModelsPlugin:
 
         version: Annotated[str, cli_u.Field(description="Registry schema version")]
         plugins: Annotated[
-            types.MappingProxyType,
+            t.JsonMapping,
             cli_u.Field(description="Dictionary of registered plugins"),
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
         last_updated: Annotated[

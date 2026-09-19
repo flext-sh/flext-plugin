@@ -37,13 +37,11 @@ class TestsFlextPluginDomainEntities:
         author: str = "Test Author",
     ) -> m.Plugin.Entity:
         """Construct a Plugin entity through the public factory."""
-        return m.Plugin.Entity.create(
-            name=name,
-            plugin_version=plugin_version,
-            entity_id=entity_id,
-            description=description,
-            author=author,
-        )
+        return m.Plugin.Entity(name=name,
+        plugin_version=plugin_version,
+        entity_id=entity_id,
+        description=description,
+        author=author,)
 
     # ------------------------------------------------------------------ #
     # Factory construction contract
@@ -68,7 +66,7 @@ class TestsFlextPluginDomainEntities:
 
     def test_create_applies_declared_field_defaults(self) -> None:
         """Optional fields fall back to their declared defaults."""
-        plugin = m.Plugin.Entity.create(name="minimal-plugin", entity_id="min-id")
+        plugin = m.Plugin.Entity(name="minimal-plugin", entity_id="min-id")
 
         tm.that(plugin.plugin_version, eq="1.0.0")
         tm.that(plugin.description, eq="")
@@ -79,15 +77,13 @@ class TestsFlextPluginDomainEntities:
     def test_create_rejects_names_violating_contract(self, bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
         with pytest.raises(ValueError, match=r".+"):
-            m.Plugin.Entity.create(name=bad_name, entity_id="id")
+            m.Plugin.Entity(name=bad_name, entity_id="id")
 
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
     def test_create_rejects_non_semantic_versions(self, bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
-            m.Plugin.Entity.create(
-                name="valid-plugin", plugin_version=bad_version, entity_id="id"
-            )
+            m.Plugin.Entity(name="valid-plugin", plugin_version=bad_version, entity_id="id")
 
     # ------------------------------------------------------------------ #
     # Enable / disable lifecycle

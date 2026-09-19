@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
     from flext_plugin import m, t
 
-    from ._utilities.plugin_platform import FlextPluginPlatform
+    from .._utilities.plugin_platform import FlextPluginPlatform
 
 
 @runtime_checkable

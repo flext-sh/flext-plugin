@@ -8,8 +8,7 @@ from pathlib import Path
 
 from flext_cli import u
 
-if False:  # TYPE_CHECKING
-    from flext_plugin import c, m, p, r, t
+from flext_plugin import c, m, p, r, t
 
 
 class FlextPluginDiscovery:

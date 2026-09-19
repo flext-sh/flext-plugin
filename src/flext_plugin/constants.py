@@ -8,13 +8,22 @@ from __future__ import annotations
 
 from flext_cli import c as cli_c
 
-from ._constants import FlextPluginConstants
+from ._constants import (
+    FlextPluginConstantsBase,
+    FlextPluginConstantsConfig,
+    FlextPluginConstantsPlugin,
+)
 
 
-class FlextPluginConstantsFacade(cli_c, FlextPluginConstants):
-    """Plugin constants facade composed via MRO over flext_cli and internal constants."""
+class FlextPluginConstants(cli_c):
+    """FlextPlugin domain constants extending FlextCliConstants via MRO."""
+
+    class Plugin(
+        FlextPluginConstantsBase, FlextPluginConstantsConfig, FlextPluginConstantsPlugin
+    ):
+        """Plugin domain constants namespace."""
 
 
-c = FlextPluginConstantsFacade
+c = FlextPluginConstants
 
-__all__: list[str] = ["FlextPluginConstantsFacade", "c"]
+__all__: list[str] = ["FlextPluginConstants", "c"]

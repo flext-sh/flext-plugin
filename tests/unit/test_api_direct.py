@@ -43,7 +43,7 @@ class TestsFlextPluginApi:
             "plugin_version": "1.0.0",
             "is_enabled": is_enabled,
         }
-        return FlextPluginPlatform.Plugin.create(**spec)
+        return FlextPluginPlatform.Plugin(**spec)
 
     @pytest.fixture
     def api(self) -> FlextPluginApi:

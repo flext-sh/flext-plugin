@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from .api import FlextPluginApi, plugin
     from .base import FlextPluginServiceBase, FlextPluginServiceBase as s
     from .cli import FlextPluginCli
-    from .constants import FlextPluginConstantsFacade, c
+    from .constants import FlextPluginConstants, FlextPluginConstants as c
     from .models import FlextPluginModels, FlextPluginModels as m
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
@@ -37,7 +37,7 @@ __all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginCli",
     "FlextPluginConfig",
-    "FlextPluginConstantsFacade",
+    "FlextPluginConstants",
     "FlextPluginModels",
     "FlextPluginProtocols",
     "FlextPluginServiceBase",
@@ -78,7 +78,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".api": ("FlextPluginApi", "plugin"),
             ".base": ("FlextPluginServiceBase", "s"),
             ".cli": ("FlextPluginCli",),
-            ".constants": ("FlextPluginConstantsFacade", "c"),
+            ".constants": ("FlextPluginConstants", "c"),
             ".models": ("FlextPluginModels", "m"),
             ".protocols": ("FlextPluginProtocols", "p"),
             ".services": ("services",),

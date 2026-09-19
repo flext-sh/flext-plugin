@@ -40,33 +40,31 @@ class TestsFlextPluginPlugin:
 
     def test_create_returns_entity_with_supplied_fields(self) -> None:
         """create() yields an entity exposing the given name and version."""
-        plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
+        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.0.0")
 
     def test_create_defaults_to_enabled(self) -> None:
         """A freshly created plugin defaults to the enabled state."""
-        plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
+        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         tm.that(plugin.is_enabled, eq=True)
 
     def test_create_honors_explicit_disabled_state(self) -> None:
         """create() respects an explicit is_enabled=False argument."""
-        plugin = m.Plugin.Entity.create(
-            name="test-plugin", plugin_version="1.0.0", is_enabled=False
-        )
+        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0", is_enabled=False)
         tm.that(plugin.is_enabled, eq=False)
 
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
     def test_create_rejects_non_semantic_version(self, bad_version: str) -> None:
         """create() raises when the version is not semantic X.Y[.Z]."""
         with pytest.raises(ValueError, match="semantic"):
-            m.Plugin.Entity.create(name="test-plugin", plugin_version=bad_version)
+            m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
 
     # ----- Plugin entity: enable/disable lifecycle ------------------------
 
     def test_validate_business_rules_accepts_valid_plugin(self) -> None:
         """A well-formed plugin passes business-rule validation."""
-        plugin = m.Plugin.Entity.create(name="test-plugin", plugin_version="1.0.0")
+        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
         tm.ok(result)
 
@@ -87,7 +85,7 @@ class TestsFlextPluginPlugin:
     @pytest.fixture
     def reset_registry(self) -> None:
         """Reset class-level registry storage before each test."""
-        registry = u.Plugin.Platform.PluginRegistry.create()
+        registry = u.Plugin.Platform.PluginRegistry()
         plugins_result = registry.list_plugins()
         if plugins_result.success:
             for plugin_name in plugins_result.value:
@@ -96,7 +94,7 @@ class TestsFlextPluginPlugin:
     @pytest.fixture
     def registry(self) -> u.Plugin.Platform.PluginRegistry:
         """Create a registry instance for testing."""
-        return u.Plugin.Platform.PluginRegistry.create()
+        return u.Plugin.Platform.PluginRegistry()
 
     @pytest.fixture
     def plugin(self) -> u.Plugin.Platform.Plugin:
