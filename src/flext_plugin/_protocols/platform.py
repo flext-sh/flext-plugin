@@ -23,8 +23,7 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     @discovery.setter
-    def discovery(self, value: FlextPluginProtocolsPlugin.Discovery | None) -> None:
-        ...
+    def discovery(self, value: FlextPluginProtocolsPlugin.Discovery | None) -> None: ...
 
     @property
     def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
@@ -32,8 +31,7 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     @loader.setter
-    def loader(self, value: FlextPluginProtocolsPlugin.Loader | None) -> None:
-        ...
+    def loader(self, value: FlextPluginProtocolsPlugin.Loader | None) -> None: ...
 
     @property
     def executor(self) -> FlextPluginProtocolsPlugin.Execution | None:
@@ -41,8 +39,7 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     @executor.setter
-    def executor(self, value: FlextPluginProtocolsPlugin.Execution | None) -> None:
-        ...
+    def executor(self, value: FlextPluginProtocolsPlugin.Execution | None) -> None: ...
 
     def discover_plugins(
         self, paths: t.StrSequence
@@ -72,9 +69,7 @@ class FlextPluginProtocolsPlatformService(Protocol):
         """List registered plugins."""
         ...
 
-    def load_plugin(
-        self, plugin_path: str
-    ) -> p.Result[FlextPluginPlatform.Plugin]:
+    def load_plugin(self, plugin_path: str) -> p.Result[FlextPluginPlatform.Plugin]:
         """Load a plugin from disk."""
         ...
 

@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import types
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated
@@ -14,8 +13,6 @@ from typing import Annotated
 from flext_cli import m as cli_m, u as cli_u
 
 from flext_plugin import t
-
-_EMPTY_JSON_MAPPING: t.JsonMapping = types.MappingProxyType[str, t.JsonValue]({})
 
 
 class FlextPluginModelsPlugin:
@@ -76,7 +73,7 @@ class FlextPluginModelsPlugin:
         )
         metadata: Annotated[
             t.JsonMapping, cli_u.Field(description="Extensible plugin metadata")
-        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        ] = cli_u.Field(default_factory=dict)
 
         @cli_u.field_validator("plugin_version", mode="before")
         @classmethod
@@ -135,7 +132,7 @@ class FlextPluginModelsPlugin:
         ]
         metadata: Annotated[
             t.JsonMapping, cli_u.Field(description="Extensible discovery metadata")
-        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        ] = cli_u.Field(default_factory=dict)
 
         @cli_u.field_validator("version", mode="before")
         @classmethod
@@ -184,7 +181,7 @@ class FlextPluginModelsPlugin:
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
             t.JsonMapping, cli_u.Field(description="Additional metadata")
-        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        ] = cli_u.Field(default_factory=dict)
 
     class Registry(cli_m.Value):
         """Plugin registry - central plugin registry storage.
@@ -203,7 +200,7 @@ class FlextPluginModelsPlugin:
         version: Annotated[str, cli_u.Field(description="Registry schema version")]
         plugins: Annotated[
             t.JsonMapping, cli_u.Field(description="Dictionary of registered plugins")
-        ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
+        ] = cli_u.Field(default_factory=dict)
         last_updated: Annotated[
             datetime, cli_u.Field(description="Last update timestamp")
         ] = cli_u.Field(default_factory=datetime.now)

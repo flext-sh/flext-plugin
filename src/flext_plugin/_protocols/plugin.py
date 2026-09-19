@@ -15,9 +15,7 @@ class FlextPluginProtocolsPlugin:
     class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
-        def discover_plugin(
-            self, plugin_path: str
-        ) -> p.Result[m.Plugin.DiscoveryData]:
+        def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
             """Discover a single plugin at the specified path."""
             ...
 
