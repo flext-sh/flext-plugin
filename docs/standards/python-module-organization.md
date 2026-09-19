@@ -189,7 +189,8 @@ class PluginWorkflow:
     def deploy_plugin(self, plugin_config: dict) -> p.Result[FlextPlugin]:
         """Complete plugin deployment workflow"""
         return (
-            self.service.validate_plugin_config(plugin_config)
+            self.service
+            .validate_plugin_config(plugin_config)
             .flat_map(lambda settings: self.service.create_plugin(settings))
             .flat_map(lambda plugin: self.service.register_plugin(plugin))
             .flat_map(lambda plugin: self.service.activate_plugin(plugin.id))
@@ -370,9 +371,7 @@ plugin = FlextPlugin(name="custom", version="0.9.9")
 # Use factory functions for common operations
 from __future__ import annotations
 
-from flext_plugin import (
-    create_flext_plugin,
-)
+from flext_plugin import create_flext_plugin
 
 # Simplified plugin creation
 plugin = create_flext_plugin(
