@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from flext_plugin import m, t
+    from flext_plugin import m, p, t
 
 
 class FlextPluginProtocolsPlugin:
@@ -15,17 +15,21 @@ class FlextPluginProtocolsPlugin:
     class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
-        def discover_plugin(self, plugin_path: str) -> m.Plugin.DiscoveryData:
+        def discover_plugin(
+            self, plugin_path: str
+        ) -> p.Result[m.Plugin.DiscoveryData]:
             """Discover a single plugin at the specified path."""
             ...
 
         def discover_plugins(
             self, paths: t.StrSequence
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins at the given paths."""
             ...
 
-        def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> bool:
+        def validate_plugin(
+            self, plugin_data: m.Plugin.DiscoveryData
+        ) -> p.Result[bool]:
             """Validate plugin discovery data."""
             ...
 
@@ -41,11 +45,11 @@ class FlextPluginProtocolsPlugin:
             """Check if a plugin is currently loaded."""
             ...
 
-        def load_plugin(self, plugin_path: str) -> t.JsonMapping:
+        def load_plugin(self, plugin_path: str) -> p.Result[t.JsonMapping]:
             """Load a plugin from the specified path."""
             ...
 
-        def unload_plugin(self, plugin_name: str) -> bool:
+        def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
             """Unload a previously loaded plugin."""
             ...
 
@@ -83,11 +87,11 @@ class FlextPluginProtocolsPlugin:
 
         def execute_plugin(
             self, plugin_name: str, context: t.JsonMapping
-        ) -> t.JsonMapping:
+        ) -> p.Result[t.JsonMapping]:
             """Execute a plugin with the given context."""
             ...
 
-        def get_execution_status(self, execution_id: str) -> str:
+        def get_execution_status(self, execution_id: str) -> p.Result[str]:
             """Get the status of an execution."""
             ...
 
@@ -95,7 +99,7 @@ class FlextPluginProtocolsPlugin:
             """List all currently running execution IDs."""
             ...
 
-        def stop_execution(self, execution_id: str) -> bool:
+        def stop_execution(self, execution_id: str) -> p.Result[bool]:
             """Stop a running execution."""
             ...
 
@@ -267,7 +271,7 @@ class FlextPluginProtocolsPlugin:
 
         def discover(
             self, paths: t.StrSequence
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins using this strategy."""
             ...
 

@@ -14,7 +14,7 @@ from . import FlextPluginSettings, m, p, t
 
 
 class FlextPluginServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload]
+    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = t.JsonPayload
 ](s[TDomainResult], ABC):
     """Base class for flext-plugin services with typed plugin settings access."""
 
