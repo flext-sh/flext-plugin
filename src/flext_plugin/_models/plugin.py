@@ -75,8 +75,7 @@ class FlextPluginModelsPlugin:
             True
         )
         metadata: Annotated[
-            t.JsonMapping,
-            cli_u.Field(description="Extensible plugin metadata"),
+            t.JsonMapping, cli_u.Field(description="Extensible plugin metadata")
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
         @cli_u.field_validator("plugin_version", mode="before")
@@ -135,8 +134,7 @@ class FlextPluginModelsPlugin:
             str, cli_u.Field(description="Discovery method used")
         ]
         metadata: Annotated[
-            t.JsonMapping,
-            cli_u.Field(description="Extensible discovery metadata"),
+            t.JsonMapping, cli_u.Field(description="Extensible discovery metadata")
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
 
         @cli_u.field_validator("version", mode="before")
@@ -204,8 +202,7 @@ class FlextPluginModelsPlugin:
 
         version: Annotated[str, cli_u.Field(description="Registry schema version")]
         plugins: Annotated[
-            t.JsonMapping,
-            cli_u.Field(description="Dictionary of registered plugins"),
+            t.JsonMapping, cli_u.Field(description="Dictionary of registered plugins")
         ] = cli_u.Field(default_factory=lambda: _EMPTY_JSON_MAPPING)
         last_updated: Annotated[
             datetime, cli_u.Field(description="Last update timestamp")

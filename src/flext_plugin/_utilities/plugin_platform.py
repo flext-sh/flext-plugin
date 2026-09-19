@@ -556,11 +556,13 @@ class FlextPluginPlatform:
             execution_id: str | None,
         ) -> p.Result[FlextPluginPlatform.PluginExecution]:
             """Create execution entity."""
-            execution = FlextPluginPlatform.PluginExecution(plugin_name=plugin.name,
-            execution_config=t.json_mapping_adapter().validate_python({
-                "input_data": context
-            }),
-            execution_id=execution_id,)
+            execution = FlextPluginPlatform.PluginExecution(
+                plugin_name=plugin.name,
+                execution_config=t.json_mapping_adapter().validate_python({
+                    "input_data": context
+                }),
+                execution_id=execution_id,
+            )
             return r[FlextPluginPlatform.PluginExecution].ok(execution)
 
         def _execute_with_executor(
@@ -634,10 +636,12 @@ class FlextPluginPlatform:
             self, plugin_data: t.JsonMapping
         ) -> p.Result[FlextPluginPlatform.Plugin]:
             """Create single validated plugin."""
-            plugin = FlextPluginPlatform.Plugin(name=str(plugin_data["name"]),
-            plugin_version=str(
-                plugin_data.get("version", c.Plugin.DEFAULT_PLUGIN_VERSION)
-            ),)
+            plugin = FlextPluginPlatform.Plugin(
+                name=str(plugin_data["name"]),
+                plugin_version=str(
+                    plugin_data.get("version", c.Plugin.DEFAULT_PLUGIN_VERSION)
+                ),
+            )
             validation_result = FlextPluginPlatform.Rules.validate_business_rules(
                 plugin
             )
@@ -653,7 +657,9 @@ class FlextPluginPlatform:
             """Create validated plugins from data."""
             plugins: MutableSequence[FlextPluginPlatform.Plugin] = []
             for data in plugin_data:
-                plugin = FlextPluginPlatform.Plugin(name=data.name, plugin_version=data.version)
+                plugin = FlextPluginPlatform.Plugin(
+                    name=data.name, plugin_version=data.version
+                )
                 validation_result = FlextPluginPlatform.Rules.validate_business_rules(
                     plugin
                 )
