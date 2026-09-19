@@ -149,9 +149,11 @@ class TestsFlextPluginModelsUnit:
 
     def test_create_factory_builds_validated_entity(self) -> None:
         """The create factory yields a fully validated entity."""
-        plugin = m.Plugin.Entity(name="factory-plugin",
-        plugin_version="2.0.0",
-        plugin_type=c.Plugin.Type.SERVICE,)
+        plugin = m.Plugin.Entity(
+            name="factory-plugin",
+            plugin_version="2.0.0",
+            plugin_type=c.Plugin.Type.SERVICE,
+        )
         tm.that(plugin.name, eq="factory-plugin")
         tm.that(plugin.plugin_version, eq="2.0.0")
         assert plugin.plugin_type is c.Plugin.Type.SERVICE

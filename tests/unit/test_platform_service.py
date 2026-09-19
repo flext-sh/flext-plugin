@@ -33,7 +33,9 @@ class TestsFlextPluginPlatformExecution:
 
     def test_execution_create_generates_uuid_when_id_omitted(self) -> None:
         """create() assigns a UUID execution_id when none is supplied."""
-        execution = FlextPluginPlatform.PluginExecution(plugin_name="demo", execution_config={"input_data": {"x": 1}})
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", execution_config={"input_data": {"x": 1}}
+        )
 
         tm.that(execution.plugin_name, eq="demo")
         assert execution.execution_id
@@ -43,7 +45,9 @@ class TestsFlextPluginPlatformExecution:
 
     def test_execution_create_honors_explicit_id(self) -> None:
         """create() uses the supplied execution_id verbatim."""
-        execution = FlextPluginPlatform.PluginExecution(plugin_name="demo", execution_config={}, execution_id="exec-123")
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", execution_config={}, execution_id="exec-123"
+        )
 
         tm.that(execution.execution_id, eq="exec-123")
 
@@ -134,7 +138,9 @@ class TestsFlextPluginPlatformService:
         *, name: str = "demo-plugin", is_enabled: bool = True
     ) -> FlextPluginPlatform.Plugin:
         """Build a platform plugin entity."""
-        plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(name=name, plugin_version="1.0.0", is_enabled=is_enabled)
+        plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled
+        )
         return plugin
 
     def test_service_execute_returns_ok(self) -> None:
