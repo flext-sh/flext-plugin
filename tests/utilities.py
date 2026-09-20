@@ -98,16 +98,19 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     })
                     return r[t.JsonMapping].ok(payload)
 
-                def get_execution_status(self, _execution_id: str) -> p.Result[str]:
+                def get_execution_status(self, execution_id: str) -> p.Result[str]:
                     """Every execution through this executor completes."""
+                    _ = execution_id
                     return r[str].ok("completed")
 
                 def list_running_executions(self) -> t.StrSequence:
                     """No execution stays running after execute_plugin returns."""
-                    return []
+                    running: t.StrSequence = []
+                    return running
 
-                def stop_execution(self, _execution_id: str) -> p.Result[bool]:
+                def stop_execution(self, execution_id: str) -> p.Result[bool]:
                     """Stop is always a no-op success for completed executions."""
+                    _ = execution_id
                     return r[bool].ok(value=True)
 
             class FailingExecutor:
@@ -121,16 +124,19 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     _ = context
                     return r[t.JsonMapping].fail("exec error")
 
-                def get_execution_status(self, _execution_id: str) -> p.Result[str]:
+                def get_execution_status(self, execution_id: str) -> p.Result[str]:
                     """Every execution through this executor fails."""
+                    _ = execution_id
                     return r[str].ok("failed")
 
                 def list_running_executions(self) -> t.StrSequence:
                     """No execution stays running after a failure."""
-                    return []
+                    running: t.StrSequence = []
+                    return running
 
-                def stop_execution(self, _execution_id: str) -> p.Result[bool]:
+                def stop_execution(self, execution_id: str) -> p.Result[bool]:
                     """Stop is always a no-op success for failed executions."""
+                    _ = execution_id
                     return r[bool].ok(value=True)
 
             class FailingDiscovery:

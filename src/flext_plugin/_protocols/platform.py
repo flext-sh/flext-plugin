@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from flext_plugin import m, t
+    from flext_plugin import m, p, t
 
+    from .._protocols.plugin import FlextPluginProtocolsPlugin
     from .._utilities.plugin_platform import FlextPluginPlatform
 
 
@@ -16,15 +17,39 @@ if TYPE_CHECKING:
 class FlextPluginProtocolsPlatformService(Protocol):
     """Protocol for the public plugin platform facade surface."""
 
+    @property
+    def discovery(self) -> FlextPluginProtocolsPlugin.Discovery | None:
+        """The configured discovery protocol implementation."""
+        ...
+
+    @discovery.setter
+    def discovery(self, value: FlextPluginProtocolsPlugin.Discovery | None) -> None: ...
+
+    @property
+    def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
+        """The configured loader protocol implementation."""
+        ...
+
+    @loader.setter
+    def loader(self, value: FlextPluginProtocolsPlugin.Loader | None) -> None: ...
+
+    @property
+    def executor(self) -> FlextPluginProtocolsPlugin.Execution | None:
+        """The configured executor protocol implementation."""
+        ...
+
+    @executor.setter
+    def executor(self, value: FlextPluginProtocolsPlugin.Execution | None) -> None: ...
+
     def discover_plugins(
         self, paths: t.StrSequence
-    ) -> Sequence[FlextPluginPlatform.Plugin]:
+    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins from the provided paths."""
         ...
 
     def execute_plugin(
         self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None
-    ) -> FlextPluginPlatform.PluginExecution:
+    ) -> p.Result[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the provided context."""
         ...
 
@@ -44,25 +69,25 @@ class FlextPluginProtocolsPlatformService(Protocol):
         """List registered plugins."""
         ...
 
-    def load_plugin(self, plugin_path: str) -> FlextPluginPlatform.Plugin:
+    def load_plugin(self, plugin_path: str) -> p.Result[FlextPluginPlatform.Plugin]:
         """Load a plugin from disk."""
         ...
 
     def register_plugin(
         self, plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity
-    ) -> bool:
+    ) -> p.Result[bool]:
         """Register a plugin instance."""
         ...
 
-    def start_hot_reload(self, paths: t.StrSequence) -> bool:
+    def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start plugin hot reload monitoring."""
         ...
 
-    def stop_hot_reload(self) -> bool:
+    def stop_hot_reload(self) -> p.Result[bool]:
         """Stop plugin hot reload monitoring."""
         ...
 
-    def unregister_plugin(self, plugin_name: str) -> bool:
+    def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unregister a plugin by name."""
         ...
 

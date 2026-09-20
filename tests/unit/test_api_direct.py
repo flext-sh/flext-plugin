@@ -38,12 +38,9 @@ class TestsFlextPluginApi:
         *, name: str = "demo-plugin", is_enabled: bool = True
     ) -> FlextPluginPlatform.Plugin:
         """Build a platform plugin entity."""
-        spec: dict[str, object] = {
-            "name": name,
-            "plugin_version": "1.0.0",
-            "is_enabled": is_enabled,
-        }
-        return FlextPluginPlatform.Plugin(**spec)
+        return FlextPluginPlatform.Plugin(
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled
+        )
 
     @pytest.fixture
     def api(self) -> FlextPluginApi:
