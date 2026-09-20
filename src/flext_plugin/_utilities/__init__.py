@@ -14,10 +14,7 @@ if TYPE_CHECKING:
     from .implementations import FlextPluginImplementations
     from .plugin_platform import FlextPluginPlatform
 __all__: tuple[str, ...] = (
-    "FlextPluginDiscovery",
-    "FlextPluginImplementations",
-    "FlextPluginPlatform",
-    "FlextPluginUtilitiesBase",
+    "FlextPluginDiscovery", "FlextPluginImplementations", "FlextPluginPlatform", "FlextPluginUtilitiesBase",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
