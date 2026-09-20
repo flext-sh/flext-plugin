@@ -152,7 +152,7 @@ class FlextPluginUtilities(u):
                 author="Unknown",
                 plugin_type="extension",
                 entry_point=str(plugin_path),
-                dependencies=[],
+                dependencies=(),
                 metadata={"discovered_at": u.now().isoformat()},
             )
 
