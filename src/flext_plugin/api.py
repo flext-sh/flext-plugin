@@ -25,7 +25,7 @@ from flext_plugin import e, p, r, s, t, u
 from ._utilities.plugin_platform import FlextPluginPlatform
 
 
-def _build_default_platform() -> p.Plugin.PlatformService:
+def _build_default_platform() -> FlextPluginPlatform.PluginPlatformService:
     """Construct the default platform service bound to a fresh container."""
     return FlextPluginPlatform.PluginPlatformService(container=FlextContainer())
 
@@ -40,17 +40,17 @@ class FlextPluginApi(s):
     _logger: p.Logger = u.PrivateAttr(
         default_factory=lambda: u.fetch_logger("flext_plugin.api")
     )
-    _platform: p.Plugin.PlatformService = u.PrivateAttr(
+    _platform: FlextPluginPlatform.PluginPlatformService = u.PrivateAttr(
         default_factory=_build_default_platform
     )
 
     @property
-    def platform(self) -> p.Plugin.PlatformService:
+    def platform(self) -> FlextPluginPlatform.PluginPlatformService:
         """The plugin platform service."""
         return self._platform
 
     @platform.setter
-    def platform(self, value: p.Plugin.PlatformService) -> None:
+    def platform(self, value: FlextPluginPlatform.PluginPlatformService) -> None:
         """Inject the plugin platform service (test hook)."""
         self._platform = value
 
@@ -60,9 +60,7 @@ class FlextPluginApi(s):
         """Discover plugins in the given paths; logs the count discovered."""
         result = self._platform.discover_plugins(paths)
         if result.success:
-            plugins = result.value
-            if plugins is not None:
-                self._logger.info(f"Discovered {len(plugins)} plugins")
+            self._logger.info(f"Discovered {len(result.value)} plugins")
         return result
 
     def execute_plugin(
@@ -101,9 +99,7 @@ class FlextPluginApi(s):
         """Load a plugin from the given path; logs the loaded plugin's name."""
         result = self._platform.load_plugin(plugin_path)
         if result.success:
-            plugin = result.value
-            if plugin is not None:
-                self._logger.info(f"Loaded plugin: {plugin.name}")
+            self._logger.info(f"Loaded plugin: {result.value.name}")
         return result
 
     def register_plugin(self, plugin: FlextPluginPlatform.Plugin) -> p.Result[bool]:
