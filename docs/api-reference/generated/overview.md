@@ -12,20 +12,20 @@
 - Version: `0.12.0`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 - Doc summary: Flext Plugin package.
-- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience :: Developers`,
-  `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`,
-  `Programming Language :: Python :: 3.13`,
-  `Topic :: Software Development :: Libraries :: Python Modules` (+1 more)
+- Classifiers: Development Status :: 3 - Alpha, Intended Audience :: Developers,
+  Operating System :: OS Independent, Programming Language :: Python :: 3 :: Only,
+  Programming Language :: Python :: 3.13, Topic :: Software Development :: Libraries ::
+  Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
 - Main facades: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
-  `FlextPluginConstantsFacade`, `FlextPluginModels`, `FlextPluginProtocols`,
-  `FlextPluginServiceBase`, `FlextPluginSettings` (+2 more)
+  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
+  `FlextPluginPlatform`, `FlextPluginProtocols` (+5 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
-  `FlextPluginConstantsFacade`, `FlextPluginModels`, `FlextPluginProtocols`,
-  `FlextPluginServiceBase`, `FlextPluginSettings`, `FlextPluginTypes`,
-  `FlextPluginUtilities` (+3 more)
+  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
+  `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginServiceBase`,
+  `FlextPluginSettings` (+6 more)
 - Exported module shortcuts: `services`
 - Generated module pages: `9`
 
