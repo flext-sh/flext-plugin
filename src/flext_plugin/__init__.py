@@ -20,7 +20,8 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import c as cli_c, d, e, h, r, x
+    from flext_cli import c as cli_c
+    from flext_core import d, e, h, r, x
 
     from . import services
     from .__version__ import FlextPluginVersion
@@ -40,15 +41,42 @@ if TYPE_CHECKING:
         FlextPluginUtilities as u,
     )
 __all__: tuple[str, ...] = (
-    "FlextPluginApi", "FlextPluginCli", "FlextPluginConfig", "FlextPluginConstants",
-    "FlextPluginDiscovery", "FlextPluginModels", "FlextPluginPlatform", "FlextPluginProtocols",
-    "FlextPluginServiceBase", "FlextPluginSettings", "FlextPluginTypes", "FlextPluginUtilities",
-    "FlextPluginVersion", "__author__", "__author_email__", "__description__",
-    "__license__", "__title__", "__url__", "__version__",
-    "__version_info__", "c", "cli_c", "config",
-    "d", "e", "h", "m",
-    "p", "plugin", "r", "s",
-    "services", "settings", "t", "u",
+    "FlextPluginApi",
+    "FlextPluginCli",
+    "FlextPluginConfig",
+    "FlextPluginConstants",
+    "FlextPluginDiscovery",
+    "FlextPluginModels",
+    "FlextPluginPlatform",
+    "FlextPluginProtocols",
+    "FlextPluginServiceBase",
+    "FlextPluginSettings",
+    "FlextPluginTypes",
+    "FlextPluginUtilities",
+    "FlextPluginVersion",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
+    "__version__",
+    "__version_info__",
+    "c",
+    "cli_c",
+    "config",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "plugin",
+    "r",
+    "s",
+    "services",
+    "settings",
+    "t",
+    "u",
     "x",
 )
 
@@ -67,10 +95,12 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services": ("services",),
             ".typings": ("FlextPluginTypes", "t"),
             ".utilities": (
-                "FlextPluginDiscovery", "FlextPluginPlatform", "FlextPluginUtilities",
+                "FlextPluginDiscovery",
+                "FlextPluginPlatform",
+                "FlextPluginUtilities",
                 "u",
             ),
-            "flext_cli": ("d", "e", "h", "r", "x"),
+            "flext_core": ("d", "e", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({"flext_cli": (("cli_c", "c"),)}),
         sort_keys=False,

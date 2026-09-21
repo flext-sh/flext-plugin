@@ -14,7 +14,10 @@ if TYPE_CHECKING:
     from .config import FlextPluginConstantsConfig
     from .plugin import FlextPluginConstantsPlugin
 __all__: tuple[str, ...] = (
-    "FlextPluginConstantsApi", "FlextPluginConstantsBase", "FlextPluginConstantsConfig", "FlextPluginConstantsPlugin",
+    "FlextPluginConstantsApi",
+    "FlextPluginConstantsBase",
+    "FlextPluginConstantsConfig",
+    "FlextPluginConstantsPlugin",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
