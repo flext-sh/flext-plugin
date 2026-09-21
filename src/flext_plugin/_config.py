@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Self
+from typing import Annotated, Self
 
 from flext_cli import FlextCliConfig, m
 
@@ -47,7 +47,10 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     __hash__ = object.__hash__
 
-    Plugin: _PluginNamespace = _PluginNamespace()
+    Plugin: Annotated[
+        _PluginNamespace,
+        m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Plugin``."),
+    ] = _PluginNamespace()
 
 
 config: FlextPluginConfig = FlextPluginConfig.fetch_global()
