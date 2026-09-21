@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from .test_api_direct import TestsFlextPluginApi
     from .test_config import TestsFlextPluginConfig
     from .test_constants import TestsFlextPluginConstantsUnit
-    from .test_core_types import TestsFlextPluginCoreTypes
     from .test_discovery import TestsFlextPluginDiscovery
     from .test_domain_entities import TestsFlextPluginDomainEntities
     from .test_domain_ports import TestsFlextPluginDomainPorts
@@ -33,7 +32,6 @@ __all__: tuple[str, ...] = (
     "TestsFlextPluginApi",
     "TestsFlextPluginConfig",
     "TestsFlextPluginConstantsUnit",
-    "TestsFlextPluginCoreTypes",
     "TestsFlextPluginDiscovery",
     "TestsFlextPluginDomainEntities",
     "TestsFlextPluginDomainPorts",
@@ -70,7 +68,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_api_direct": ("TestsFlextPluginApi",),
             ".test_config": ("TestsFlextPluginConfig",),
             ".test_constants": ("TestsFlextPluginConstantsUnit",),
-            ".test_core_types": ("TestsFlextPluginCoreTypes",),
             ".test_discovery": ("TestsFlextPluginDiscovery",),
             ".test_domain_entities": ("TestsFlextPluginDomainEntities",),
             ".test_domain_ports": ("TestsFlextPluginDomainPorts",),

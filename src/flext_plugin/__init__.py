@@ -20,7 +20,9 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import c as cli_c, d, e, h, r, x
+    from flext_cli import c as cli_c
+
+    from flext_core import d, e, h, r, x
 
     from . import services
     from .__version__ import FlextPluginVersion
@@ -99,7 +101,7 @@ _LAZY_IMPORTS = MappingProxyType(
                 "FlextPluginUtilities",
                 "u",
             ),
-            "flext_cli": ("d", "e", "h", "r", "x"),
+            "flext_core": ("d", "e", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({"flext_cli": (("cli_c", "c"),)}),
         sort_keys=False,
