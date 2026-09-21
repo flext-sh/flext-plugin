@@ -9,10 +9,15 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
+    from flext_core import d, e, h, r, x
     from flext_plugin import (
-        FlextPluginConstants, FlextPluginConstants as c, d, e,
-        h, m, p, r,
-        s, t, u, x,
+        FlextPluginConstants,
+        FlextPluginConstants as c,
+        m,
+        p,
+        s,
+        t,
+        u,
     )
 
     from .constants import ExamplesFlextPluginConstants
@@ -21,10 +26,22 @@ if TYPE_CHECKING:
     from .typings import ExamplesFlextPluginTypes
     from .utilities import ExamplesFlextPluginUtilities
 __all__: tuple[str, ...] = (
-    "ExamplesFlextPluginConstants", "ExamplesFlextPluginModels", "ExamplesFlextPluginProtocols", "ExamplesFlextPluginTypes",
-    "ExamplesFlextPluginUtilities", "FlextPluginConstants", "c", "d",
-    "e", "h", "m", "p",
-    "r", "s", "t", "u",
+    "ExamplesFlextPluginConstants",
+    "ExamplesFlextPluginModels",
+    "ExamplesFlextPluginProtocols",
+    "ExamplesFlextPluginTypes",
+    "ExamplesFlextPluginUtilities",
+    "FlextPluginConstants",
+    "c",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "u",
     "x",
 )
 
@@ -36,10 +53,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextPluginProtocols",),
             ".typings": ("ExamplesFlextPluginTypes",),
             ".utilities": ("ExamplesFlextPluginUtilities",),
-            "flext_plugin": (
-                "FlextPluginConstants", "c", "d", "e", "h", "m", "p", "r", "s", "t",
-                "u", "x",
-            ),
+            "flext_core": ("d", "e", "h", "r", "x"),
+            "flext_plugin": ("FlextPluginConstants", "c", "m", "p", "s", "t", "u"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
