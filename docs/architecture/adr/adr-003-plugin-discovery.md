@@ -258,9 +258,8 @@ optimizations **Dependencies**: Phase 2 and 3 completion
 
 ## Related ADRs
 
-- **ADR-004** - Security validation for discovered plugins (_Documentation coming soon_)
-- **ADR-008** - File watching for plugin changes (_Documentation coming soon_)
-- **ADR-011** - Entry points discovery enhancement (_Documentation coming soon_)
+- [ADR index](README.md)
+- [Decision log](decision-log.md)
 
 ## References
 
@@ -272,9 +271,8 @@ optimizations **Dependencies**: Phase 2 and 3 completion
 
 ### Internal References
 
-- **Plugin Requirements Specification** - (_Documentation coming soon_)
-- **Security Architecture Review** - (_Documentation coming soon_)
-- **Performance Benchmarks** - (_Documentation coming soon_)
+- [Security architecture](../security.md)
+- [Implementation architecture](../implementation.md)
 
 ## Notes
 

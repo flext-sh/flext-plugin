@@ -513,11 +513,8 @@ DeploymentFlexibility --> AbstractionLayers: Validates abstractions
 
 ```bash
 # Quality validation pipeline
-make quality-check    # Overall quality assessment
-make performance-test # Performance benchmarking
-make security-scan    # Security vulnerability scanning
-make reliability-test # Reliability and fault injection testing
-make usability-test   # User experience validation
+make check # Static quality gates
+make test  # Behavior and coverage
 ```
 
 #### **Quality Metrics Dashboard**

@@ -8,10 +8,6 @@
   - [Dependencies](#dependencies)
 - [First Plugin](#first-plugin)
   - [Create a Basic Plugin](#create-a-basic-plugin)
-  - [Plugin Discovery](#plugin-discovery)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [Plugin Directory Structure```](#plugin-directory-structure)
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
@@ -132,16 +128,14 @@ plugins/
 ```bash
 # Setup and validation
 make setup # Complete development setup
-make val   # Full validation pipeline
-make check # Quick lint and type check
+make check # Static quality gates
 
 # Testing
 make test          # Run all tests
 make coverage-html # Generate coverage report
 
 # Plugin development
-make plugin-validate # Validate plugin system
-make plugin-watch    # Enable hot reload for development
+make test # Exercise plugin behavior
 ```
 
 ---
