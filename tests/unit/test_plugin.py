@@ -51,7 +51,9 @@ class TestsFlextPluginPlugin:
 
     def test_create_honors_explicit_disabled_state(self) -> None:
         """create() respects an explicit is_enabled=False argument."""
-        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0", is_enabled=False)
+        plugin = m.Plugin.Entity(
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False
+        )
         tm.that(plugin.is_enabled, eq=False)
 
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
