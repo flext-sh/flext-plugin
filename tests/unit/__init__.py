@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from .test_api_direct import TestsFlextPluginApi
     from .test_config import TestsFlextPluginConfig
     from .test_constants import TestsFlextPluginConstantsUnit
-    from .test_core_types import TestsFlextPluginCoreTypes
     from .test_discovery import TestsFlextPluginDiscovery
     from .test_domain_entities import TestsFlextPluginDomainEntities
     from .test_domain_ports import TestsFlextPluginDomainPorts
@@ -30,38 +29,14 @@ if TYPE_CHECKING:
     from .test_types import TestsFlextPluginTypesUnit
     from .test_utilities_direct import TestsFlextPluginUtilities
 __all__: tuple[str, ...] = (
-    "TestsFlextPluginApi",
-    "TestsFlextPluginConfig",
-    "TestsFlextPluginConstantsUnit",
-    "TestsFlextPluginCoreTypes",
-    "TestsFlextPluginDiscovery",
-    "TestsFlextPluginDomainEntities",
-    "TestsFlextPluginDomainPorts",
-    "TestsFlextPluginExamples",
-    "TestsFlextPluginImports",
-    "TestsFlextPluginModelsUnit",
-    "TestsFlextPluginPlatformExecution",
-    "TestsFlextPluginPlatformRegistry",
-    "TestsFlextPluginPlatformService",
-    "TestsFlextPluginPlugin",
-    "TestsFlextPluginTypesUnit",
-    "TestsFlextPluginUtilities",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "td",
-    "tf",
-    "tk",
-    "tm",
-    "tv",
-    "u",
-    "x",
+    "TestsFlextPluginApi", "TestsFlextPluginConfig", "TestsFlextPluginConstantsUnit", "TestsFlextPluginDiscovery",
+    "TestsFlextPluginDomainEntities", "TestsFlextPluginDomainPorts", "TestsFlextPluginExamples", "TestsFlextPluginImports",
+    "TestsFlextPluginModelsUnit", "TestsFlextPluginPlatformExecution", "TestsFlextPluginPlatformRegistry", "TestsFlextPluginPlatformService",
+    "TestsFlextPluginPlugin", "TestsFlextPluginTypesUnit", "TestsFlextPluginUtilities", "c",
+    "d", "e", "h", "m",
+    "p", "r", "s", "t",
+    "td", "tf", "tk", "tm",
+    "tv", "u", "x",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
@@ -70,7 +45,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_api_direct": ("TestsFlextPluginApi",),
             ".test_config": ("TestsFlextPluginConfig",),
             ".test_constants": ("TestsFlextPluginConstantsUnit",),
-            ".test_core_types": ("TestsFlextPluginCoreTypes",),
             ".test_discovery": ("TestsFlextPluginDiscovery",),
             ".test_domain_entities": ("TestsFlextPluginDomainEntities",),
             ".test_domain_ports": ("TestsFlextPluginDomainPorts",),
@@ -78,30 +52,15 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_imports": ("TestsFlextPluginImports",),
             ".test_models": ("TestsFlextPluginModelsUnit",),
             ".test_platform_service": (
-                "TestsFlextPluginPlatformExecution",
-                "TestsFlextPluginPlatformRegistry",
+                "TestsFlextPluginPlatformExecution", "TestsFlextPluginPlatformRegistry",
                 "TestsFlextPluginPlatformService",
             ),
             ".test_plugin": ("TestsFlextPluginPlugin",),
             ".test_types": ("TestsFlextPluginTypesUnit",),
             ".test_utilities_direct": ("TestsFlextPluginUtilities",),
             "flext_tests": (
-                "c",
-                "d",
-                "e",
-                "h",
-                "m",
-                "p",
-                "r",
-                "s",
-                "t",
-                "td",
-                "tf",
-                "tk",
-                "tm",
-                "tv",
-                "u",
-                "x",
+                "c", "d", "e", "h", "m", "p", "r", "s", "t", "td", "tf", "tk", "tm",
+                "tv", "u", "x",
             ),
         }),
         alias_groups=MappingProxyType({}),

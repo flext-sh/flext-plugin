@@ -13,9 +13,7 @@ if TYPE_CHECKING:
     from .platform import FlextPluginProtocolsPlatformService
     from .plugin import FlextPluginProtocolsPlugin
 __all__: tuple[str, ...] = (
-    "FlextPluginProtocolsBase",
-    "FlextPluginProtocolsPlatformService",
-    "FlextPluginProtocolsPlugin",
+    "FlextPluginProtocolsBase", "FlextPluginProtocolsPlatformService", "FlextPluginProtocolsPlugin",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
