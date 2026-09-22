@@ -1,6 +1,7 @@
 # Triagem SonarCloud — flext-sh/flext-plugin
 
 <!-- TOC START -->
+
 - [Resumo](#resumo)
 - [Como usar](#como-usar)
 - [Issues](#issues)
@@ -16,7 +17,7 @@
   - [10 · ⚪ MINOR · CODE_SMELL · python:S7498](#10-minor-code_smell-pythons7498)
   - [11 · ⚪ MINOR · CODE_SMELL · python:S116](#11-minor-code_smell-pythons116)
   - [12 · ⚪ MINOR · CODE_SMELL · python:S116](#12-minor-code_smell-pythons116)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 Gerado do dump da plataforma SonarCloud (2026-08-06).
 

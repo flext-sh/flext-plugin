@@ -137,7 +137,7 @@ pytest -m "not slow"   # Skip slow tests
 
 ### Creating Plugins
 
-````python
+`````python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginType
@@ -258,4 +258,4 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 For specific plugin development patterns and examples, see examples/ directory.
-````
+`````

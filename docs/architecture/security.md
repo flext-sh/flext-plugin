@@ -644,8 +644,8 @@ monitor.alert_on_anomalies()
 
 ### Security Documentation Index
 
-| Document | Purpose | Audience | Update Frequency | Status |
-| --- | --- | --- | --- | --- |
+| Document              | Purpose                                | Audience   | Update Frequency        | Status        |
+| --------------------- | -------------------------------------- | ---------- | ----------------------- | ------------- |
 | Security Architecture | Current controls and threat boundaries | Developers | On architectural change | This document |
 
 ### Security Training and Awareness

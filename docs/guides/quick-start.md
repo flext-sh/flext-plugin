@@ -109,7 +109,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-````python
+`````python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -473,7 +473,7 @@ ruff check .          # Linting
 mypy .
 pytest               # Testing
 bandit -r .          # Security scanning
-````
+`````
 
 ## Next Steps
 
