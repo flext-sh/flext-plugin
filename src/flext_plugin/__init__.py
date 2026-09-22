@@ -20,19 +20,9 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import (
-        cli,
-        core,
-        d,
-        e,
-        from_json,
-        h,
-        lazy_attribute,
-        r,
-        to_json,
-        to_jsonable_python,
-        x,
-    )
+    from flext_cli import cli
+
+    from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
     from ._config import FlextPluginConfig, config
@@ -45,6 +35,8 @@ if TYPE_CHECKING:
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
     from .utilities import FlextPluginUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginCli",
@@ -70,7 +62,6 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
     "lazy_attribute",
     "m",
@@ -82,8 +73,6 @@ __all__: tuple[str, ...] = (
     "services",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "x",
 )
@@ -102,19 +91,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services": ("services",),
             ".typings": ("FlextPluginTypes", "t"),
             ".utilities": ("FlextPluginUtilities", "u"),
-            "flext_cli": (
-                "cli",
-                "core",
-                "d",
-                "e",
-                "from_json",
-                "h",
-                "lazy_attribute",
-                "r",
-                "to_json",
-                "to_jsonable_python",
-                "x",
-            ),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

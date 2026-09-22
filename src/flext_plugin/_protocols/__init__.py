@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from .base import FlextPluginProtocolsBase
     from .platform import FlextPluginProtocolsPlatformService
     from .plugin import FlextPluginProtocolsPlugin
+
+
 __all__: tuple[str, ...] = (
     "FlextPluginProtocolsBase",
     "FlextPluginProtocolsPlatformService",

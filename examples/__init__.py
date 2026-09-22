@@ -9,21 +9,19 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import (
-        cli,
+    from flext_cli import cli
+
+    from flext_core import (
         core,
         d,
         e,
-        from_json,
         h,
+        lazy,
         lazy_attribute,
+        normalize_lazy_imports,
         r,
-        services,
-        to_json,
-        to_jsonable_python,
         x,
     )
-
     from flext_plugin import c, config, m, main, p, plugin, s, settings, t, u
 
     from .constants import ExamplesFlextPluginConstants
@@ -31,6 +29,8 @@ if TYPE_CHECKING:
     from .protocols import ExamplesFlextPluginProtocols
     from .typings import ExamplesFlextPluginTypes
     from .utilities import ExamplesFlextPluginUtilities
+
+
 __all__: tuple[str, ...] = (
     "ExamplesFlextPluginConstants",
     "ExamplesFlextPluginModels",
@@ -43,20 +43,18 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
+    "lazy",
     "lazy_attribute",
     "m",
     "main",
+    "normalize_lazy_imports",
     "p",
     "plugin",
     "r",
     "s",
-    "services",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "x",
 )
@@ -69,18 +67,16 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextPluginProtocols",),
             ".typings": ("ExamplesFlextPluginTypes",),
             ".utilities": ("ExamplesFlextPluginUtilities",),
-            "flext_cli": (
-                "cli",
+            "flext_cli": ("cli",),
+            "flext_core": (
                 "core",
                 "d",
                 "e",
-                "from_json",
                 "h",
+                "lazy",
                 "lazy_attribute",
+                "normalize_lazy_imports",
                 "r",
-                "services",
-                "to_json",
-                "to_jsonable_python",
                 "x",
             ),
             "flext_plugin": (

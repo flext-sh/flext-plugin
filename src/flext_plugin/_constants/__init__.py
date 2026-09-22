@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from .base import FlextPluginConstantsBase
     from .config import FlextPluginConstantsConfig
     from .plugin import FlextPluginConstantsPlugin
+
+
 __all__: tuple[str, ...] = (
     "FlextPluginConstantsApi",
     "FlextPluginConstantsBase",
