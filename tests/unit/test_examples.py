@@ -19,9 +19,7 @@ from pathlib import Path
 import pytest
 from flext_tests import tm
 
-from tests import u
-
-__all__ = ["TestsFlextPluginExamples"]
+from tests import t, u
 
 
 def _examples_dir() -> Path:
@@ -42,7 +40,7 @@ class TestsFlextPluginExamples:
         ],
     )
     def test_example_script_runs_to_success(
-        self, script: str, args: tuple[str, ...]
+        self, script: str, args: t.VariadicTuple[str]
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
         example_path = _examples_dir() / script
@@ -79,3 +77,6 @@ class TestsFlextPluginExamples:
         tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output
         tm.that(output, lacks="Skipped")
+
+
+__all__ = ["TestsFlextPluginExamples"]
