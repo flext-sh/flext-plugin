@@ -16,7 +16,9 @@ from flext_plugin import t
 
 
 class FlextPluginModelsPlugin:
-    """Plugin domain models namespace.
+    """Canonical namespace owner.
+
+    Plugin domain models namespace.
 
     All plugin-specific Pydantic models are organized here for better
     namespace organization and to enable composition with other domain models.

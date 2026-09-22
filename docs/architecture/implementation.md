@@ -880,13 +880,9 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/src
 WORKDIR /app
 
-# Install Python dependencies
-COPY pyproject.toml poetry.lock ./
-RUN pip install poetry && poetry settings virtualenvs.create false
-RUN poetry install --no-dev --no-interaction
-
-# Copy source code
-COPY src/ ./src/
+# Copy the project-owned Make/config sources, then provision through Make
+COPY . .
+RUN make setup
 
 # Create plugin directories
 RUN mkdir -p /app/plugins /app/logs /app/cache

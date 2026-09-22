@@ -10,13 +10,6 @@
   - [Future Decisions (Proposed)](#future-decisions-proposed)
 - [📝 ADR Template](#adr-template)
   - [ADR Template Structure](#adr-template-structure)
-- [Status](#status)
-- [Context](#context)
-- [Decision](#decision)
-- [Consequences](#consequences)
-- [Alternatives Considered](#alternatives-considered)
-- [Related ADRs](#related-adrs)
-- [Notes](#notes)
 - [🔄 ADR Workflow](#adr-workflow)
   - [Creating a New ADR](#creating-a-new-adr)
   - [ADR Lifecycle](#adr-lifecycle)
@@ -340,14 +333,14 @@ make adr-export
 ### Implementation Documentation
 
 - **Implementation Guide** - Development patterns and practices
-- **API Reference** - Public API documentation (_Documentation coming soon_)
-- **Migration Guide** - Version migration strategies (_Documentation coming soon_)
+- [Generated API reference](../../api-reference/README.md)
+- [Development guide](../../development.md)
 
 ### Quality and Security
 
 - **Security Architecture** - Security design and controls
 - **Quality Attributes** - Performance, scalability, reliability
-- **Testing Strategy** - Testing approach and framework (_Documentation coming soon_)
+- [Security Architecture](../security.md)
 
 ---
 

@@ -775,8 +775,8 @@ if __name__ == "__main__":
 ### Prerequisites
 
 ```bash
-# Install FLEXT Plugin
-poetry add flext-plugin
+# Provision the workspace
+make setup
 
 # Or for development
 git clone https://github.com/flext-sh/flext.git

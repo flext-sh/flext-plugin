@@ -11,20 +11,9 @@
 - [Architecture Compliance](#architecture-compliance)
   - [Current Status ✅ COMPLIANT](#current-status-compliant)
   - [Compliance Achieved](#compliance-achieved)
-- [Testing](#testing)
-  - [Test Structure```](#test-structure)
-  - [Testing Commands](#testing-commands)
   - [Test Guidelines](#test-guidelines)
 - [Plugin Development](#plugin-development)
   - [Creating Plugins](#creating-plugins)
-  - [Hot Reload Development](#hot-reload-development)
-- [Contributing Process](#contributing-process)
-  - [1. Issue Discussion](#1-issue-discussion)
-  - [2. Development](#2-development)
-  - [3. Quality Validation](#3-quality-validation)
-  - [4. Pull Request](#4-pull-request)
-- [Debugging](#debugging)
-  - [Common Issues](#common-issues)
 - [Release Process](#release-process)
   - [Version Management](#version-management)
   - [Quality Requirements](#quality-requirements)
@@ -74,8 +63,7 @@ python -c "import flext_plugin; u.Cli.print('Setup successful')"
 
 ```bash
 # Required before commits
-make val   # Complete validation pipeline
-make check # Quick lint and type check
+make check # Static quality gates
 
 # Testing
 make test          # Full test suite (85% coverage target)
@@ -198,7 +186,7 @@ ______________________________________________________________________
 ### 3. Quality Validation
 
 ```bash
-make val          # All quality gates must pass
+make check          # All quality gates must pass
 make test             # 85% coverage required```
 ### 4. Pull Request
 
@@ -219,8 +207,8 @@ ______________________________________________________________________
 export PYTHONPATH="src:$PYTHONPATH"
 
 # Check dependencies
-poetry show --tree
-````
+make status --tree
+```
 
 #### Plugin Loading Issues
 
@@ -238,7 +226,7 @@ if result.failure:
 
 ```bash
 # Check watchdog integration
-make plugin-validate
+make check
 
 # Verify file permissions
 ls -la plugins/```

@@ -186,8 +186,8 @@ examples/
 ### Prerequisites
 
 ```bash
-# Install FLEXT Plugin system
-poetry add flext-plugin
+# Provision the workspace
+make setup
 
 # Or clone repository for development
 git clone https://github.com/flext-sh/flext.git
@@ -202,7 +202,7 @@ make setup
 cd docs/examples/basic-plugin
 
 # Install example dependencies (if any)
-poetry install
+make setup
 
 # Run example
 python plugin.py
