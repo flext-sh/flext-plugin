@@ -34,7 +34,7 @@ class FlextPluginDiscovery:
         discovered: MutableSequence[TDiscovery] = []
         try:
             items = tuple(path.iterdir())
-        except (OSError, PermissionError):
+        except OSError:
             logger.exception("Failed to discover directory %s", path)
             return discovered
         for item in items:

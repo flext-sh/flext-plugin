@@ -12,7 +12,7 @@ from __future__ import annotations
 import os
 import socket
 import sys
-from typing import Annotated, override
+from typing import Annotated, Final, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
 
@@ -21,10 +21,12 @@ from flext_plugin import (
     FlextPluginApi,
     FlextPluginConstants,
     FlextPluginModels,
+    FlextPluginPlatform,
     p,
     t,
-    u,
 )
+
+_AUTHOR: Final[str] = "FLEXT Team"
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -57,7 +59,7 @@ def create_docker_postgres_plugin() -> tuple[
         name="docker-postgres-connector",
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
@@ -85,7 +87,7 @@ def create_docker_redis_plugin() -> tuple[
         name="docker-redis-cache",
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
@@ -113,7 +115,7 @@ def create_docker_ldap_plugin() -> tuple[
         name="docker-ldap-directory",
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION.value,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
@@ -162,7 +164,9 @@ class _DockerIntegrationCommand(s[bool]):
         ldap_plugin, _ldap_config = create_docker_ldap_plugin()
         _ = FlextPluginApi.fetch_global()
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
-            validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+            validation_result = FlextPluginPlatform.Rules.validate_business_rules(
+                plugin
+            )
             if validation_result.failure:
                 return r[bool].from_failure(validation_result)
         return r[bool].ok(value=True)
