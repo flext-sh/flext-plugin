@@ -20,17 +20,26 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
-
-    from flext_core import core, d, e, h, lazy_attribute, r, x
+    from flext_cli import (
+        cli,
+        core,
+        d,
+        e,
+        from_json,
+        h,
+        lazy_attribute,
+        r,
+        to_json,
+        to_jsonable_python,
+        x,
+    )
 
     from . import services
     from ._config import FlextPluginConfig, config
     from ._settings import FlextPluginSettings, settings
     from .api import FlextPluginApi, plugin
     from .base import FlextPluginServiceBase, s
-    from .cli import FlextPluginCli
+    from .cli import FlextPluginCli, main
     from .constants import FlextPluginConstants, FlextPluginConstants as c
     from .models import FlextPluginModels, FlextPluginModels as m
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
@@ -65,6 +74,7 @@ __all__: tuple[str, ...] = (
     "h",
     "lazy_attribute",
     "m",
+    "main",
     "p",
     "plugin",
     "r",
@@ -85,16 +95,26 @@ _LAZY_IMPORTS = MappingProxyType(
             "._settings": ("FlextPluginSettings", "settings"),
             ".api": ("FlextPluginApi", "plugin"),
             ".base": ("FlextPluginServiceBase", "s"),
-            ".cli": ("FlextPluginCli",),
+            ".cli": ("FlextPluginCli", "main"),
             ".constants": ("FlextPluginConstants", "c"),
             ".models": ("FlextPluginModels", "m"),
             ".protocols": ("FlextPluginProtocols", "p"),
             ".services": ("services",),
             ".typings": ("FlextPluginTypes", "t"),
             ".utilities": ("FlextPluginUtilities", "u"),
-            "flext_cli": ("cli",),
-            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_cli": (
+                "cli",
+                "core",
+                "d",
+                "e",
+                "from_json",
+                "h",
+                "lazy_attribute",
+                "r",
+                "to_json",
+                "to_jsonable_python",
+                "x",
+            ),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

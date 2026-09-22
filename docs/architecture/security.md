@@ -39,7 +39,8 @@
 - [📚 Security Architecture Documentation](#security-architecture-documentation)
   - [Security Documentation Index](#security-documentation-index)
   - [Security Training and Awareness](#security-training-and-awareness)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Security Design, Controls, and Threat Model** | **Version**: 0.9.0 | **Last Updated**:
 October 2025

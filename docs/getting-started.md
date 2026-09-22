@@ -80,7 +80,8 @@ if load_result.success:
 
     activate_result = platform.enable_plugin("hello-world")
     if activate_result.success:
-        print("Plugin activated")```
+        print("Plugin activated")
+        ```
 ### Plugin Discovery
 
 ```python
@@ -96,7 +97,8 @@ if discovery_result.success:
     plugins = discovery_result.value
     print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
-        print(f"- {plugin.name} v{plugin.plugin_version}")```
+        print(f"- {plugin.name} v{plugin.plugin_version}")
+        ```
 ______________________________________________________________________
 
 ## Configuration
@@ -109,8 +111,10 @@ export FLEXT_PLUGIN_DISCOVERY_PATHS="plugins:~/.flext/plugins:/opt/flext/plugins
 
 # Hot reload settings
 export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2```
-### Plugin Directory Structure```
+export FLEXT_PLUGIN_WATCH_INTERVAL=2
+```
+### Plugin Directory Structure
+```
 plugins/
 ├── my_plugin/
 │   ├── __init__.py
