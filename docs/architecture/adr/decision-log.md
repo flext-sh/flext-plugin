@@ -399,7 +399,8 @@ Decision Record (ADR) and provides context about the decision-making process.
 
 ### Process Documentation
 
-- [ADR template](adr-template.md) - Decision, review, consequences, and implementation tracking
+- [ADR template](adr-template.md) - Decision, review, consequences, and implementation
+  tracking
 
 ---
 
