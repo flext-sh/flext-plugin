@@ -10,7 +10,6 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
 
     from flext_core import (
         core,
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
         r,
         x,
     )
-    from flext_plugin import c, config, m, p, plugin, s, settings, t, u
+    from flext_plugin import c, config, m, main, p, plugin, s, settings, t, u
 
     from .constants import ExamplesFlextPluginConstants
     from .models import ExamplesFlextPluginModels
@@ -42,11 +41,11 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
     "lazy",
     "lazy_attribute",
     "m",
+    "main",
     "normalize_lazy_imports",
     "p",
     "plugin",
@@ -54,8 +53,6 @@ __all__: tuple[str, ...] = (
     "s",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "x",
 )
@@ -84,6 +81,7 @@ _LAZY_IMPORTS = MappingProxyType(
                 "c",
                 "config",
                 "m",
+                "main",
                 "p",
                 "plugin",
                 "s",
@@ -91,7 +89,6 @@ _LAZY_IMPORTS = MappingProxyType(
                 "t",
                 "u",
             ),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
