@@ -20,40 +20,33 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import c as cli_c
-    from flext_core import d, e, h, r, x
+    from flext_cli import cli
+    from pydantic_core import from_json, to_json, to_jsonable_python
+
+    from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
-    from .__version__ import FlextPluginVersion
     from ._config import FlextPluginConfig, config
     from ._settings import FlextPluginSettings, settings
     from .api import FlextPluginApi, plugin
-    from .base import FlextPluginServiceBase, FlextPluginServiceBase as s
+    from .base import FlextPluginServiceBase, s
     from .cli import FlextPluginCli
     from .constants import FlextPluginConstants, FlextPluginConstants as c
     from .models import FlextPluginModels, FlextPluginModels as m
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
-    from .utilities import (
-        FlextPluginDiscovery,
-        FlextPluginPlatform,
-        FlextPluginUtilities,
-        FlextPluginUtilities as u,
-    )
+    from .utilities import FlextPluginUtilities, u
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginCli",
     "FlextPluginConfig",
     "FlextPluginConstants",
-    "FlextPluginDiscovery",
     "FlextPluginModels",
-    "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginServiceBase",
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
-    "FlextPluginVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -63,11 +56,14 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
-    "cli_c",
+    "cli",
     "config",
+    "core",
     "d",
     "e",
+    "from_json",
     "h",
+    "lazy_attribute",
     "m",
     "p",
     "plugin",
@@ -76,6 +72,8 @@ __all__: tuple[str, ...] = (
     "services",
     "settings",
     "t",
+    "to_json",
+    "to_jsonable_python",
     "u",
     "x",
 )
@@ -83,7 +81,6 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".__version__": ("FlextPluginVersion",),
             "._config": ("FlextPluginConfig", "config"),
             "._settings": ("FlextPluginSettings", "settings"),
             ".api": ("FlextPluginApi", "plugin"),
@@ -94,15 +91,12 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextPluginProtocols", "p"),
             ".services": ("services",),
             ".typings": ("FlextPluginTypes", "t"),
-            ".utilities": (
-                "FlextPluginDiscovery",
-                "FlextPluginPlatform",
-                "FlextPluginUtilities",
-                "u",
-            ),
-            "flext_core": ("d", "e", "h", "r", "x"),
+            ".utilities": ("FlextPluginUtilities", "u"),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
+            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
         }),
-        alias_groups=MappingProxyType({"flext_cli": (("cli_c", "c"),)}),
+        alias_groups=MappingProxyType({}),
         sort_keys=False,
     )
 )
