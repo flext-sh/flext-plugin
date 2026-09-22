@@ -179,7 +179,7 @@ class FlextPluginModelsPlugin:
         )
         entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
         dependencies: Annotated[
-            tuple[str, ...], cli_u.Field(description="List of plugin dependencies")
+            t.VariadicTuple[str], cli_u.Field(description="List of plugin dependencies")
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
             t.JsonMapping, cli_u.Field(description="Additional metadata")

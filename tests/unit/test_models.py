@@ -10,7 +10,8 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from tests import c, m, u
+from flext_plugin import FlextPluginPlatform
+from tests import c, m
 
 
 class TestsFlextPluginModelsUnit:
@@ -141,7 +142,7 @@ class TestsFlextPluginModelsUnit:
     def test_validate_business_rules_passes_for_well_formed_entity(self) -> None:
         """A valid entity passes business-rule validation."""
         plugin = m.Plugin.Entity(name="valid", plugin_version="1.0.0")
-        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+        result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 

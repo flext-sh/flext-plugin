@@ -10,11 +10,16 @@ collaborators, or line-coverage pokes are touched.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from flext_tests import tm
 
 from flext_core import FlextSettings
 from flext_plugin import FlextPluginSettings
+
+if TYPE_CHECKING:
+    from flext_plugin import t
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,
@@ -23,7 +28,7 @@ from flext_plugin import FlextPluginSettings
 # the runtime SSOT instead: FlextSettings.model_fields is the single source of
 # truth for the universal operational fields (debug/trace/log_level/timezone/
 # async_logging), and FlextPluginSettings must neither add nor drop fields.
-_UNIVERSAL_FIELDS: tuple[str, ...] = (
+_UNIVERSAL_FIELDS: t.VariadicTuple[str] = (
     "debug",
     "trace",
     "log_level",

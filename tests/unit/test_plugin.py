@@ -15,7 +15,8 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from tests import m, u
+from flext_plugin import FlextPluginPlatform
+from tests import m
 
 
 @pytest.mark.usefixtures("reset_registry")
@@ -25,9 +26,9 @@ class TestsFlextPluginPlugin:
     @staticmethod
     def _make_plugin(
         *, name: str = "test-plugin", is_enabled: bool = True
-    ) -> u.Plugin.Platform.Plugin:
+    ) -> FlextPluginPlatform.Plugin:
         """Build a Plugin platform entity for registry-facing tests."""
-        return u.Plugin.Platform.Plugin(
+        return FlextPluginPlatform.Plugin(
             name=name,
             plugin_version="1.0.0",
             description="",
@@ -67,7 +68,7 @@ class TestsFlextPluginPlugin:
     def test_validate_business_rules_accepts_valid_plugin(self) -> None:
         """A well-formed plugin passes business-rule validation."""
         plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
-        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+        result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
         tm.ok(result)
 
     @pytest.mark.parametrize(
@@ -87,26 +88,26 @@ class TestsFlextPluginPlugin:
     @pytest.fixture
     def reset_registry(self) -> None:
         """Reset class-level registry storage before each test."""
-        registry = u.Plugin.Platform.PluginRegistry()
+        registry = FlextPluginPlatform.PluginRegistry()
         plugins_result = registry.list_plugins()
         if plugins_result.success:
             for plugin_name in plugins_result.value:
                 _ = registry.unregister(plugin_name)
 
     @pytest.fixture
-    def registry(self) -> u.Plugin.Platform.PluginRegistry:
+    def registry(self) -> FlextPluginPlatform.PluginRegistry:
         """Create a registry instance for testing."""
-        return u.Plugin.Platform.PluginRegistry()
+        return FlextPluginPlatform.PluginRegistry()
 
     @pytest.fixture
-    def plugin(self) -> u.Plugin.Platform.Plugin:
+    def plugin(self) -> FlextPluginPlatform.Plugin:
         """Create a plugin for registry testing."""
         return self._make_plugin()
 
     # ----- Registry: lifecycle contract -----------------------------------
 
     def test_new_registry_lists_no_plugins(
-        self, registry: u.Plugin.Platform.PluginRegistry
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """A cleared registry reports an empty plugin listing."""
         plugins_result = registry.list_plugins()
@@ -115,8 +116,8 @@ class TestsFlextPluginPlugin:
 
     def test_register_then_get_returns_same_plugin(
         self,
-        registry: u.Plugin.Platform.PluginRegistry,
-        plugin: u.Plugin.Platform.Plugin,
+        registry: FlextPluginPlatform.PluginRegistry,
+        plugin: FlextPluginPlatform.Plugin,
     ) -> None:
         """A registered plugin is retrievable by name via get()."""
         register_result = registry.register(plugin.name, plugin)
@@ -129,8 +130,8 @@ class TestsFlextPluginPlugin:
 
     def test_registered_plugin_appears_in_listing(
         self,
-        registry: u.Plugin.Platform.PluginRegistry,
-        plugin: u.Plugin.Platform.Plugin,
+        registry: FlextPluginPlatform.PluginRegistry,
+        plugin: FlextPluginPlatform.Plugin,
     ) -> None:
         """A registered plugin's name is present in list_plugins()."""
         registry.register(plugin.name, plugin)
@@ -139,7 +140,7 @@ class TestsFlextPluginPlugin:
         tm.that(plugins_result.value, has=plugin.name)
 
     def test_get_unknown_plugin_fails(
-        self, registry: u.Plugin.Platform.PluginRegistry
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """get() for an unregistered name returns a failure result."""
         result = registry.get("nonexistent-plugin")
@@ -147,8 +148,8 @@ class TestsFlextPluginPlugin:
 
     def test_unregister_removes_plugin_from_listing(
         self,
-        registry: u.Plugin.Platform.PluginRegistry,
-        plugin: u.Plugin.Platform.Plugin,
+        registry: FlextPluginPlatform.PluginRegistry,
+        plugin: FlextPluginPlatform.Plugin,
     ) -> None:
         """unregister() drops a registered plugin from the listing."""
         registry.register(plugin.name, plugin)
@@ -160,14 +161,14 @@ class TestsFlextPluginPlugin:
         tm.that(registry.list_plugins().value, lacks=plugin.name)
 
     def test_unregister_unknown_plugin_fails(
-        self, registry: u.Plugin.Platform.PluginRegistry
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """unregister() for a name never registered returns a failure."""
         result = registry.unregister("nonexistent-plugin")
         tm.fail(result)
 
     def test_register_multiple_plugins_all_listed(
-        self, registry: u.Plugin.Platform.PluginRegistry
+        self, registry: FlextPluginPlatform.PluginRegistry
     ) -> None:
         """Every registered plugin is reflected in the listing."""
         plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]

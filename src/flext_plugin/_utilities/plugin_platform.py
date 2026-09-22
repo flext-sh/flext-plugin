@@ -274,8 +274,8 @@ class FlextPluginPlatform:
             super().__init__()
             if container is not None:
                 self._container = container
-            self._plugins = dict[str, FlextPluginPlatform.Plugin]()
-            self._executions = dict[str, FlextPluginPlatform.PluginExecution]()
+            self._plugins = {}
+            self._executions = {}
             self._registry = FlextPluginPlatform.PluginRegistry()
             self._discovery = None
             self._loader = None

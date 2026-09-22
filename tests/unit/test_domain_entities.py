@@ -16,7 +16,8 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from tests import c, m, u
+from flext_plugin import FlextPluginPlatform
+from tests import c, m
 
 
 class TestsFlextPluginDomainEntities:
@@ -97,7 +98,7 @@ class TestsFlextPluginDomainEntities:
         """A validly-constructed plugin passes its business-rule check."""
         plugin = self._make_plugin(name="valid-plugin", description="Valid plugin")
 
-        result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+        result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
