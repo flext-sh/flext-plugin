@@ -1,6 +1,6 @@
 """Behavioral tests for flext_plugin plugin discovery public contract.
 
-Exercises the observable contract of ``u.Plugin.Discovery`` (the
+Exercises the observable contract of ``FlextPluginDiscovery`` (the
 ``FlextPluginDiscovery`` facade): the ``r[T]`` outcomes of ``discover_plugin`` /
 ``discover_plugins``, the discovery-strategy contract, and the recursive
 directory-walk promised by ``discover_python_plugins_in_directory``.

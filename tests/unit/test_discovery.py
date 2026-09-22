@@ -1,6 +1,6 @@
 """Behavioral test suite for the plugin discovery public contract.
 
-Exercises the observable contract of ``u.Plugin.Discovery`` (return values,
+Exercises the observable contract of ``FlextPluginDiscovery`` (return values,
 ``r[T]`` outcomes, and public model state) without touching private
 attributes, internal collaborators, or line-coverage pokes.
 

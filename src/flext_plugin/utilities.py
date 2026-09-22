@@ -60,8 +60,6 @@ class FlextPluginUtilities(u):
             "subprocess",
             "os.system",
         ]
-        Discovery: ClassVar[type[FlextPluginDiscovery]]
-        Platform: ClassVar[type[FlextPluginPlatform]]
 
         @classmethod
         def discover_plugins(
@@ -228,9 +226,6 @@ class FlextPluginUtilities(u):
 
 
 u = FlextPluginUtilities
-
-FlextPluginUtilities.Plugin.Discovery = FlextPluginDiscovery
-FlextPluginUtilities.Plugin.Platform = FlextPluginPlatform
 
 __all__: list[str] = [
     "FlextPluginDiscovery",
