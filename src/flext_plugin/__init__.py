@@ -21,6 +21,7 @@ from .__version__ import (
 
 if TYPE_CHECKING:
     from flext_cli import c as cli_c
+
     from flext_core import d, e, h, r, x
 
     from . import services
