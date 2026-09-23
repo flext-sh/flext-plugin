@@ -37,6 +37,8 @@ if TYPE_CHECKING:
     from .settings import TestsFlextPluginSettings
     from .typings import TestsFlextPluginTypes, TestsFlextPluginTypes as t
     from .utilities import TestsFlextPluginUtilities, TestsFlextPluginUtilities as u
+
+
 __all__: tuple[str, ...] = (
     "TestsFlextPluginConstants",
     "TestsFlextPluginModels",

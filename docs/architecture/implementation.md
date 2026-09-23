@@ -10,10 +10,8 @@
   - [Railway Pattern Implementation](#railway-pattern-implementation)
 - [🧪 Testing Implementation Patterns](#testing-implementation-patterns)
   - [Unit Testing Patterns](#unit-testing-patterns)
-  - [Integration Testing Patterns](#integration-testing-patterns)
 - [🔧 Development Workflow Implementation](#development-workflow-implementation)
   - [Code Organization Patterns](#code-organization-patterns)
-  - [Error Handling Patterns](#error-handling-patterns)
   - [Configuration Management](#configuration-management)
 - [🚀 Deployment and Operations](#deployment-and-operations)
   - [Container Configuration](#container-configuration)
@@ -25,7 +23,8 @@
   - [Code Quality Standards](#code-quality-standards)
   - [Performance Optimization](#performance-optimization)
   - [Security Implementation](#security-implementation)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Development Patterns, Practices, and Workflow** | **Version**: 0.9.0 | **Last
 Updated**: October 2025

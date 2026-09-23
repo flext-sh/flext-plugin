@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from .discovery import FlextPluginDiscovery
     from .implementations import FlextPluginImplementations
     from .plugin_platform import FlextPluginPlatform
+
+
 __all__: tuple[str, ...] = (
     "FlextPluginDiscovery",
     "FlextPluginImplementations",

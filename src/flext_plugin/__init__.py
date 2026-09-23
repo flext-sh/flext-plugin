@@ -35,6 +35,8 @@ if TYPE_CHECKING:
     from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
     from .typings import FlextPluginTypes, FlextPluginTypes as t
     from .utilities import FlextPluginUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
     "FlextPluginCli",

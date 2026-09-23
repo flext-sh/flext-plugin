@@ -26,7 +26,8 @@
 - [🔧 Component Evolution and Maintenance](#component-evolution-and-maintenance)
   - [Component Lifecycle](#component-lifecycle)
   - [Component Refactoring Guidelines](#component-refactoring-guidelines)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **C4 Model Level 3**: Components | **Version**: 0.9.0 | **Last Updated**: October 2025
 

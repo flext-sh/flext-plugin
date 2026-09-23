@@ -35,7 +35,7 @@ class FlextPluginServiceBase[
         )
 
     @classmethod
-    def _runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
         """Return runtime bootstrap options for plugin services."""
         return m.RuntimeBootstrapOptions(settings_type=FlextPluginSettings)
 

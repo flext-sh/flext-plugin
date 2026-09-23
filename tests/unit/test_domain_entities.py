@@ -116,7 +116,7 @@ class TestsFlextPluginDomainEntities:
             plugin_type=c.Plugin.Type.TAP.value,
             description="Test extractor plugin",
             author="test-author",
-            dependencies=["requests", "pydantic"],
+            dependencies=("requests", "pydantic"),
         )
 
         tm.that(metadata.name, eq="test-plugin")
@@ -148,7 +148,7 @@ class TestsFlextPluginDomainEntities:
             description="A full plugin",
             author="Test Author",
             plugin_type="extension",
-            dependencies=["dep1", "dep2"],
+            dependencies=("dep1", "dep2"),
             metadata={"key": "value"},
         )
 

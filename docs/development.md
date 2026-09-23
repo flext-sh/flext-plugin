@@ -14,10 +14,6 @@
   - [Test Guidelines](#test-guidelines)
 - [Plugin Development](#plugin-development)
   - [Creating Plugins](#creating-plugins)
-- [Release Process](#release-process)
-  - [Version Management](#version-management)
-  - [Quality Requirements](#quality-requirements)
-- [Getting Help](#getting-help)
 
 <!-- TOC END -->
 
@@ -101,12 +97,14 @@ class FlextPluginModels:
         """Plugin configuration with validation"""
 
     class _ValidationHelper:
-        """Nested helper class for domain logic"""```
+        """Nested helper class for domain logic"""
+        ```
 ______________________________________________________________________
 
 ## Testing
 
-### Test Structure```
+### Test Structure
+```
 tests/
 ├── unit/                    # Unit tests for individual components (12 files)
 ├── integration/            # Integration tests (4 files)
@@ -115,7 +113,8 @@ tests/
 ├── conftest.py             # Test configuration and fixtures
 └── test_*.py              # Various component tests (6 files)
 
-Total: 24 test files targeting 90% coverage```
+Total: 24 test files targeting 90% coverage
+```
 ### Testing Commands
 
 ```bash
@@ -158,7 +157,8 @@ class MyPlugin(FlextPlugin):
             # Process data
             return r[dict].ok(processed_data)
         except Exception as e:
-            return r[dict].fail(str(e))```
+            return r[dict].fail(str(e))
+            ```
 ### Hot Reload Development
 
 ```bash
@@ -167,7 +167,8 @@ make plugin-watch
 
 # Environment variables
 export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2```
+export FLEXT_PLUGIN_WATCH_INTERVAL=2
+```
 ______________________________________________________________________
 
 ## Contributing Process
@@ -187,7 +188,8 @@ ______________________________________________________________________
 
 ```bash
 make check          # All quality gates must pass
-make test             # 85% coverage required```
+make test             # 85% coverage required
+```
 ### 4. Pull Request
 
 - Clear description of changes
@@ -221,7 +223,8 @@ logging.basicConfig(level=logging.DEBUG)
 # Use platform validation
 result = platform.validate_plugin(plugin)
 if result.failure:
-    print(f"Validation error: {result.error}")```
+    print(f"Validation error: {result.error}")
+    ```
 #### Hot Reload Problems
 
 ```bash
@@ -229,7 +232,8 @@ if result.failure:
 make check
 
 # Verify file permissions
-ls -la plugins/```
+ls -la plugins/
+```
 ______________________________________________________________________
 
 ## Release Process

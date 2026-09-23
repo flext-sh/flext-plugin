@@ -409,7 +409,7 @@ class FlextPluginPlatform:
             }
             registry = m.Plugin.Registry(
                 version=c.Plugin.DEFAULT_PLUGIN_VERSION,
-                plugins=self._to_general_mapping(plugin_entries),
+                plugins={name: dict(entry) for name, entry in plugin_entries.items()},
             )
             return r[m.Plugin.Registry].ok(registry)
 

@@ -39,7 +39,8 @@
   - [ADR Creation Guidelines](#adr-creation-guidelines)
   - [ADR Review Process](#adr-review-process)
   - [ADR Maintenance](#adr-maintenance)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Framework**: ADR | **Version**: 0.9.0 | **Last Updated**: October 2025
 

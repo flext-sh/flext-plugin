@@ -31,7 +31,8 @@
   - [Documentation Standards](#documentation-standards)
   - [Tools and Templates](#tools-and-templates)
   - [Review Process](#review-process)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Framework**: C4 Model + Arc42 + ADRs | **Version**: 0.9.0 | **Last Updated**: October
 2025

@@ -10,6 +10,10 @@
   - [Data Containers](#data-containers)
 - [🔗 Container Communication Patterns](#container-communication-patterns)
   - [Internal Communication](#internal-communication)
+  - [External Communication](#external-communication)
+- [🚀 Deployment and Technology Choices](#deployment-and-technology-choices)
+  - [Technology Stack](#technology-stack)
+  - [Deployment Patterns](#deployment-patterns)
   - [Environment Configurations](#environment-configurations)
 - [📊 Container Quality Attributes](#container-quality-attributes)
   - [Performance Characteristics](#performance-characteristics)
@@ -27,7 +31,8 @@
   - [FLEXT Plugin Core API](#flext-plugin-core-api)
   - [FLEXT Plugin CLI Interface](#flext-plugin-cli-interface)
   - [FLEXT Plugin API Interface (Planned)](#flext-plugin-api-interface-planned)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **C4 Model Level 2**: Containers | **Version**: 0.9.0 | **Last Updated**: October 2025
 

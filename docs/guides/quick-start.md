@@ -9,19 +9,13 @@
 - [Your First Plugin (5 minutes)](#your-first-plugin-5-minutes)
   - [Step 1: Create a Simple Plugin](#step-1-create-a-simple-plugin)
   - [Step 2: Use the Plugin Platform](#step-2-use-the-plugin-platform)
-  - [Step 3: Create a Custom Plugin Class](#step-3-create-a-custom-plugin-class)
-- [Plugin Discovery](#plugin-discovery)
-- [Testing Your Plugin](#testing-your-plugin)
-- [Development with Hot Reload](#development-with-hot-reload)
-- [Quality Gates](#quality-gates)
 - [Next Steps](#next-steps)
   - [Immediate Next Steps](#immediate-next-steps)
-  - [Plugin Types to Explore](#plugin-types-to-explore)
-  - [Advanced Topics](#advanced-topics)
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Getting Help](#getting-help)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **⚠️ DEVELOPMENT BLOCKED**: This guide describes the TARGET functionality after Phase 0
 compliance. Current implementation is non-compliant with FLEXT standards and modern
@@ -342,6 +336,7 @@ from __future__ import annotations
 
 import pytest
 from custom_plugin import GreetingPlugin
+
 from flext_plugin import create_flext_plugin_platform
 
 

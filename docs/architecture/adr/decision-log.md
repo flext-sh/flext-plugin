@@ -28,7 +28,8 @@
   - [Decision-Making Framework](#decision-making-framework)
   - [Historical Context](#historical-context)
   - [Process Documentation](#process-documentation)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Chronological Record of Architectural Decisions** | **Version**: 0.9.0 | **Last
 Updated**: October 2025

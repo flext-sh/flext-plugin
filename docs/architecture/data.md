@@ -32,7 +32,8 @@
 - [📚 Data Architecture Documentation](#data-architecture-documentation)
   - [Data Dictionary](#data-dictionary)
   - [API Data Contracts](#api-data-contracts)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Data Models, Storage, and Flow** | **Version**: 0.9.0 | **Last Updated**: October 2025
 
@@ -439,7 +440,6 @@ from __future__ import annotations
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
     # Schema migration logic
-    pass
 ```
 
 #### **Data Validation**
