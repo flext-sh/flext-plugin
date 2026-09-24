@@ -6,12 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t as cli_t
+from flext_cli import FlextCliTypes
 
 from ._typings import FlextPluginTypingsBase
 
 
-class FlextPluginTypes(cli_t, FlextPluginTypingsBase):
+class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
     """Plugin type system extending flext_cli via MRO with internal typings."""
 
     class Plugin:
@@ -19,7 +19,9 @@ class FlextPluginTypes(cli_t, FlextPluginTypingsBase):
 
         from collections.abc import Awaitable, Callable
 
-        type EventHandler = Callable[[cli_t.JsonMapping], Awaitable[cli_t.JsonMapping]]
+        type EventHandler = Callable[
+            [FlextCliTypes.JsonMapping], Awaitable[FlextCliTypes.JsonMapping]
+        ]
 
 
 t = FlextPluginTypes

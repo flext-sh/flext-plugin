@@ -9,24 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-<<<<<<< HEAD
-    from flext_cli import cli
-
-    from flext_core import (
-        core,
-        d,
-        e,
-        h,
-        lazy,
-        lazy_attribute,
-        normalize_lazy_imports,
-        r,
-        x,
-    )
-    from flext_plugin import c, config, m, main, p, plugin, s, settings, t, u
-=======
     from flext_plugin import c, d, e, h, m, p, r, s, t, u, x
->>>>>>> recovery/rope-automation-20260921
 
     from .constants import ExamplesFlextPluginConstants
     from .models import ExamplesFlextPluginModels
@@ -45,22 +28,10 @@ __all__: tuple[str, ...] = (
     "d",
     "e",
     "h",
-<<<<<<< HEAD
-    "lazy",
-    "lazy_attribute",
     "m",
-    "main",
-    "normalize_lazy_imports",
-=======
-    "m",
->>>>>>> recovery/rope-automation-20260921
     "p",
     "r",
     "s",
-<<<<<<< HEAD
-    "settings",
-=======
->>>>>>> recovery/rope-automation-20260921
     "t",
     "u",
     "x",
@@ -74,34 +45,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextPluginProtocols",),
             ".typings": ("ExamplesFlextPluginTypes",),
             ".utilities": ("ExamplesFlextPluginUtilities",),
-<<<<<<< HEAD
-            "flext_cli": ("cli",),
-            "flext_core": (
-                "core",
-                "d",
-                "e",
-                "h",
-                "lazy",
-                "lazy_attribute",
-                "normalize_lazy_imports",
-                "r",
-                "x",
-            ),
-            "flext_plugin": (
-                "c",
-                "config",
-                "m",
-                "main",
-                "p",
-                "plugin",
-                "s",
-                "settings",
-                "t",
-                "u",
-            ),
-=======
             "flext_plugin": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
->>>>>>> recovery/rope-automation-20260921
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
