@@ -258,7 +258,7 @@ class FlextPluginPlatform:
             if not getattr(probe, "name", None):
                 return r[t.JsonMapping].fail("Invalid load data format")
             plugin_dict: t.MutableMappingKV[str, t.JsonPayload | None] = {
-                "name": str(probe.name),
+                "name": str(getattr(probe, "name")),
                 "version": str(
                     getattr(probe, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
                 ),
