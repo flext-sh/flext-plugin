@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import MutableMapping, MutableSequence, Sequence
 from typing import override
 
 from flext_cli import u
@@ -243,32 +243,6 @@ class FlextPluginPlatform:
             normalized_value = u.normalize_to_metadata(value)
             return t.json_mapping_adapter().validate_python(normalized_value)
 
-        @classmethod
-        def _loader_payload_mapping(
-            cls, value: t.JsonMapping | p.AttributeProbe
-        ) -> p.Result[t.JsonMapping]:
-            """Normalize supported plugin loader payload shapes."""
-            if isinstance(value, Mapping):
-                return r[t.JsonMapping].ok(
-                    t.json_mapping_adapter().validate_python(value)
-                )
-            if not getattr(value, "name", None):
-                return r[t.JsonMapping].fail("Invalid load data format")
-            plugin_dict: t.MutableMappingKV[str, t.JsonPayload | None] = {
-                "name": str(value.name),
-                "version": str(
-                    getattr(value, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
-                ),
-                "path": str(getattr(value, "path", "")),
-                "load_type": str(getattr(value, "load_type", "file")),
-                "loaded_at": str(getattr(value, "loaded_at", "")),
-            }
-            entry_file = getattr(value, "entry_file", None)
-            plugin_dict["entry_file"] = str(entry_file) if entry_file else None
-            return r[t.JsonMapping].ok(
-                t.json_mapping_adapter().validate_python(plugin_dict)
-            )
-
         def __init__(self, container: p.Container | None = None) -> None:
             """Initialize plugin platforFlextPluginModels."""
             super().__init__()
@@ -479,10 +453,7 @@ class FlextPluginPlatform:
             def load_and_validate(_checked: t.JsonValue) -> p.Result[t.JsonMapping]:
                 if not self.loader:
                     return r[t.JsonMapping].fail("Loader protocol not configured")
-                load_result = self.loader.load_plugin(plugin_path)
-                if load_result.success:
-                    return self._loader_payload_mapping(load_result.value)
-                return r[t.JsonMapping].fail(load_result.error or "Load failed")
+                return self.loader.load_plugin(plugin_path)
 
             checked_l: p.Result[bool] = self._require_protocol(self.loader, "Loader")
             loaded: p.Result[t.JsonMapping] = checked_l.flat_map(load_and_validate)

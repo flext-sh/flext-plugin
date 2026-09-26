@@ -77,6 +77,3 @@ class TestsFlextPluginExamples:
         tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output
         tm.that(output, lacks="Skipped")
-
-
-__all__ = ["TestsFlextPluginExamples"]

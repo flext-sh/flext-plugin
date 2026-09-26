@@ -20,8 +20,6 @@ from flext_tests import tm
 from flext_plugin import p, t, u
 from flext_plugin.utilities import FlextPluginDiscovery
 
-__all__: list[str] = ["TestsFlextPluginDomainPorts"]
-
 
 class TestsFlextPluginDomainPorts:
     """Public-contract tests for the plugin discovery facade.

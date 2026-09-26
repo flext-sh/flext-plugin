@@ -30,8 +30,6 @@ from flext_plugin import (
     FlextPluginUtilities,
 )
 
-__all__: list[str] = ["TestsFlextPluginImports"]
-
 
 class TestsFlextPluginImports:
     """Contract for the flext_plugin package public export surface."""

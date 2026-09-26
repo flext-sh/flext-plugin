@@ -197,6 +197,3 @@ class TestsFlextPluginApi:
         api = FlextPluginApi()
 
         tm.that(api.platform, none=False)
-
-
-__all__: list[str] = ["TestsFlextPluginApi"]
