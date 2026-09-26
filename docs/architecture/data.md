@@ -416,8 +416,7 @@ Retired --> Archived: Retirement archival
 # Pydantic data models with validation
 from __future__ import annotations
 
-from pydantic import BaseModel, u.Field
-
+from flext_core import m, t, u
 
 
 class FlextPluginSettings(m.BaseModel):
@@ -426,8 +425,7 @@ class FlextPluginSettings(m.BaseModel):
     dependencies: t.StringList = u.Field(default_factory=list)
     settings: dict[str, t.JsonValue] = u.Field(default_factory=dict)
 
-    class Config:
-        frozen = True  # Immutable data model
+    model_config = m.ConfigDict(frozen=True)  # Immutable data model
 ```
 
 #### **Data Migration**

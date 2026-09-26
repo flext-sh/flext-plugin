@@ -58,7 +58,7 @@ flext-observability > =0.9.9 # Monitoring and observability
 
 ### Create a Basic Plugin
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
@@ -81,7 +81,8 @@ if load_result.success:
     activate_result = platform.enable_plugin("hello-world")
     if activate_result.success:
         print("Plugin activated")
-        ```
+```
+
 ### Plugin Discovery
 
 ```python
@@ -98,8 +99,9 @@ if discovery_result.success:
     print(f"Found {len(plugins)} plugins")
     for plugin in plugins:
         print(f"- {plugin.name} v{plugin.plugin_version}")
-        ```
-______________________________________________________________________
+```
+
+---
 
 ## Configuration
 
@@ -113,8 +115,10 @@ export FLEXT_PLUGIN_DISCOVERY_PATHS="plugins:~/.flext/plugins:/opt/flext/plugins
 export FLEXT_PLUGIN_HOT_RELOAD=true
 export FLEXT_PLUGIN_WATCH_INTERVAL=2
 ```
+
 ### Plugin Directory Structure
-```
+
+```text
 plugins/
 ├── my_plugin/
 │   ├── __init__.py
@@ -123,7 +127,7 @@ plugins/
 └── another_plugin/
     ├── __init__.py
     └── plugin.py
-````
+```
 
 ---
 

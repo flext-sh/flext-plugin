@@ -19,7 +19,7 @@ The basic plugin example shows:
 
 ### 1. Basic Plugin Class
 
-````python
+```python
 # basic_plugin.py
 from __future__ import annotations
 
@@ -296,7 +296,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             "last_execution": None,
         }
         logger.info("Statistics reset")
-
+```
 
 ### 2. Plugin Usage Example
 
@@ -366,7 +366,8 @@ def main():
             print("\n--- Execution Results ---")
             print(f"Success: {result_data.get('success')}")
             print(
-                f"Processing time: {result_data.get('metadata', {}).get('processing_ ...
+                "Processing time: "
+                f"{result_data.get('metadata', {}).get('processing_time')}"
             )
             print("\nProcessed Data:")
 
@@ -425,11 +426,11 @@ def main():
 
 if __name__ == "__main__":
     run(main())
-````
+```
 
 ### 3. Comprehensive Tests
 
-````python
+```python
 # test_basic_plugin.py
 from __future__ import annotations
 
@@ -729,7 +730,7 @@ class TestPluginPerformance:
 if __name__ == "__main__":
     # Run tests
     pytest.main([__file__, "-v"])
-
+```
 
 ### 4. Configuration File
 
@@ -768,7 +769,7 @@ if __name__ == "__main__":
     "repository": "https://github.com/flext-sh/flext/tree/main/flext-plugin"
   }
 }
-````
+```
 
 ## Running the Example
 
