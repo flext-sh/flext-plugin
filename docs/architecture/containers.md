@@ -492,9 +492,11 @@ from __future__ import annotations
 
 from flext_plugin import FlextPluginApi
 
-api = FlextPluginApi()
-plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)
+
+async def run() -> None:
+    api = FlextPluginApi()
+    plugins = await api.discover_plugins(["./plugins"])
+    result = await api.execute_plugin("plugin-name", context)
 ```
 
 ### FLEXT Plugin CLI Interface

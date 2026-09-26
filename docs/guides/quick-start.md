@@ -67,7 +67,7 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -83,17 +83,17 @@ hello_plugin = create_flext_plugin(
 print(f"Created plugin: {hello_plugin.name} v{hello_plugin.plugin_version}")
 print(f"Status: {hello_plugin.status}")
 print(f"Valid: {hello_plugin.is_valid()}")
-
+```
 
 Run it:
 
 ```bash
 python hello_plugin.py
-````
+```
 
 Expected output:
 
-```
+```text
 Created plugin: hello-world v1.0.0
 Status: PluginStatus.INACTIVE
 Valid: True
@@ -103,7 +103,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-`````python
+```python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -148,7 +148,7 @@ def main():
 
 # Run the example
 run(main())
-
+```
 
 Run it:
 
@@ -178,6 +178,7 @@ from flext_plugin import PluginStatus, PluginType
 from flext_cli import u
 from flext_core import FlextSettings
 
+
 class GreetingPlugin(FlextPlugin):
     """Custom plugin that generates personalized greetings."""
 
@@ -188,9 +189,9 @@ class GreetingPlugin(FlextPlugin):
             settings={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Generates personalized greetings",
-                "author": "Your Name"
+                "author": "Your Name",
             },
-            **kwargs
+            **kwargs,
         )
 
     def initialize(self) -> p.Result[bool]:
@@ -216,7 +217,7 @@ class GreetingPlugin(FlextPlugin):
                 "spanish": f"¡Hola, {name}!",
                 "french": f"Bonjour, {name}!",
                 "german": f"Hallo, {name}!",
-                "portuguese": f"Olá, {name}!"
+                "portuguese": f"Olá, {name}!",
             }
 
             greeting = greetings.get(language.lower(), f"Hello, {name}!")
@@ -226,7 +227,7 @@ class GreetingPlugin(FlextPlugin):
                 "name": name,
                 "language": language,
                 "plugin": self.name,
-                "version": self.plugin_version
+                "version": self.plugin_version,
             }
 
             return r[bool].ok(result)
@@ -239,9 +240,10 @@ class GreetingPlugin(FlextPlugin):
         print(f"Cleaning up {self.name}...")
         return r[bool].ok(True)
 
+
 # Usage example
 def demo_custom_plugin():
-from flext_plugin import create_flext_plugin_platform
+    from flext_plugin import create_flext_plugin_platform
 
     # Create platform and plugin
     platform = create_flext_plugin_platform()
@@ -273,6 +275,7 @@ from flext_plugin import create_flext_plugin_platform
     finally:
         platform.shutdown()
 
+
 if __name__ == "__main__":
     run(demo_custom_plugin())
 ```
@@ -285,7 +288,7 @@ python custom_plugin.py
 
 Expected output:
 
-```
+```text
 Initializing greeting-generator...
 
 --- Testing Greeting Plugin ---
@@ -419,7 +422,7 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files
 change:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
@@ -453,7 +456,7 @@ def development_server():
 
 # Run development server
 run(development_server())
-
+```
 
 ## Quality Gates
 
@@ -468,7 +471,7 @@ ruff check .          # Linting
 mypy .
 pytest               # Testing
 bandit -r .          # Security scanning
-`````
+```
 
 ## Next Steps
 

@@ -288,7 +288,7 @@ class FlextPluginDiscovery:
 
 #### **Protocol Definitions**
 
-````python
+```python
 # flext_plugin/protocols.py - Structural typing protocols
 from __future__ import annotations
 
@@ -346,7 +346,7 @@ class FlextPluginProtocols:
         async def stop_watching(self) -> p.Result[bool]:
             """Stop watching for plugin changes."""
             ...
-
+```
 
 #### **Protocol Implementation**
 
@@ -366,7 +366,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
         """File-based plugin discovery implementation."""
         # Implementation details...
         return r.ok([])
-````
+```
 
 ### Railway Pattern Implementation
 
@@ -485,7 +485,7 @@ class TestPluginEntity:
 
 #### **Application Service Testing**
 
-````python
+```python
 # tests/unit/test_services.py
 from __future__ import annotations
 
@@ -552,7 +552,7 @@ class TestPluginServices:
         assert result.success
         plugins = result.unwrap()
         assert len(plugins) == 0
-
+```
 
 ### Integration Testing Patterns
 
@@ -645,7 +645,7 @@ def create_plugin():
         # 6. Unregister plugin
         unregister_result = await platform.unregister_plugin("test-plugin")
         assert unregister_result.success
-````
+```
 
 ---
 
@@ -655,7 +655,7 @@ def create_plugin():
 
 #### **Module Structure Template**
 
-````python
+```python
 # Template for FLEXT single-class-per-module pattern
 """Module: flext_plugin/[module_name].py
 
@@ -748,7 +748,7 @@ MAX_RETRIES: int = 3
 
 # Export main class
 __all__: list[str] = ["FlextPlugin[ModuleName]"]
-
+```
 
 ### Error Handling Patterns
 
@@ -784,7 +784,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
     if "processing" in error.lower():
         return f"Data processing failed: {error}"
     return f"Operation failed: {error}"
-````
+```
 
 ### Configuration Management
 
@@ -794,11 +794,11 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 # flext_plugin/settings.py
 from __future__ import annotations
 
-from pydantic import BaseModel, u.Field, validator
+from flext_core import m, t, u
 from flext_plugin import FlextPluginConstants
 
 
-class FlextPluginSettings:
+class FlextPluginSettings(m.BaseModel):
     """Plugin system configuration using Pydantic."""
 
     # Plugin discovery settings
@@ -807,7 +807,7 @@ class FlextPluginSettings:
     )
 
     # Security settings
-    security_level: str = u.Field(default="HIGH", regex="^(LOW|MEDIUM|HIGH)$")
+    security_level: str = u.Field(default="HIGH", pattern="^(LOW|MEDIUM|HIGH)$")
 
     enable_plugin_validation: bool = u.Field(default=True)
     enable_sandboxing: bool = u.Field(default=True)
@@ -825,8 +825,9 @@ class FlextPluginSettings:
     enable_tracing: bool = u.Field(default=True)
     metrics_interval: int = u.Field(default=60, ge=10, le=3600)
 
-    @validator("plugin_paths")
-    def validate_plugin_paths(cls, paths):
+    @u.field_validator("plugin_paths")
+    @classmethod
+    def validate_plugin_paths(cls, paths: t.StringList) -> t.StringList:
         """Validate plugin paths exist or are valid."""
         for path in paths:
             if not (
