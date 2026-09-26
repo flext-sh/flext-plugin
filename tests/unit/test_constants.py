@@ -12,8 +12,6 @@ from flext_tests import tm
 
 from tests import c
 
-__all__: list[str] = ["TestsFlextPluginConstantsUnit"]
-
 
 class TestsFlextPluginConstantsUnit:
     """Behavioral contract tests for FlextPluginConstants."""

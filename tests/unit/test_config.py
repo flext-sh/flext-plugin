@@ -119,6 +119,3 @@ class TestsFlextPluginConfig:
         FlextPluginSettings.fetch_global(overrides={"debug": True})
         tm.that(FlextPluginSettings.fetch_global() is global_settings, eq=True)
         tm.that(global_settings.debug, eq=False)
-
-
-__all__: list[str] = ["TestsFlextPluginConfig"]

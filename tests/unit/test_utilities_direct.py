@@ -156,6 +156,3 @@ class TestsFlextPluginUtilities:
 
         tm.that(result.failure, eq=True)
         tm.that((result.error or "").lower(), has="too large")
-
-
-__all__: list[str] = ["TestsFlextPluginUtilities"]

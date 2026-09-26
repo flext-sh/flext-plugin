@@ -372,10 +372,3 @@ class TestsFlextPluginPlatformService:
         registry = service.registry
 
         tm.that(registry, none=False)
-
-
-__all__: list[str] = [
-    "TestsFlextPluginPlatformExecution",
-    "TestsFlextPluginPlatformRegistry",
-    "TestsFlextPluginPlatformService",
-]

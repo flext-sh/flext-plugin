@@ -19,8 +19,6 @@ from flext_tests import tm
 from flext_plugin import FlextPluginTypes, t as plugin_t
 from tests import t
 
-__all__: list[str] = ["TestsFlextPluginTypesUnit"]
-
 
 class TestsFlextPluginTypesUnit:
     """Behavioral contract for the FlextPluginTypes facade."""

@@ -252,18 +252,21 @@ class FlextPluginPlatform:
                 return r[t.JsonMapping].ok(
                     t.json_mapping_adapter().validate_python(value)
                 )
-            if not getattr(value, "name", None):
+            # AttributeProbe branch: bound via the isinstance narrowing above
+            # for mappings; this arm handles the typed attribute payload.
+            probe = value
+            if not getattr(probe, "name", None):
                 return r[t.JsonMapping].fail("Invalid load data format")
             plugin_dict: t.MutableMappingKV[str, t.JsonPayload | None] = {
-                "name": str(value.name),
+                "name": str(probe.name),
                 "version": str(
-                    getattr(value, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
+                    getattr(probe, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
                 ),
-                "path": str(getattr(value, "path", "")),
-                "load_type": str(getattr(value, "load_type", "file")),
-                "loaded_at": str(getattr(value, "loaded_at", "")),
+                "path": str(getattr(probe, "path", "")),
+                "load_type": str(getattr(probe, "load_type", "file")),
+                "loaded_at": str(getattr(probe, "loaded_at", "")),
             }
-            entry_file = getattr(value, "entry_file", None)
+            entry_file = getattr(probe, "entry_file", None)
             plugin_dict["entry_file"] = str(entry_file) if entry_file else None
             return r[t.JsonMapping].ok(
                 t.json_mapping_adapter().validate_python(plugin_dict)

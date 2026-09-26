@@ -156,6 +156,3 @@ class TestsFlextPluginDomainEntities:
         tm.that(metadata.plugin_type, eq="extension")
         tm.that(len(metadata.dependencies), eq=2)
         tm.that(metadata.metadata["key"], eq="value")
-
-
-__all__: list[str] = ["TestsFlextPluginDomainEntities"]
