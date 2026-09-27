@@ -279,10 +279,12 @@ from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
 
-# Plugin registration and management
-platform = FlextPluginPlatform()
-await platform.register_plugin(plugin_config)
-await platform.execute_plugin("plugin-name", context)
+
+async def run() -> None:
+    # Plugin registration and management
+    platform = FlextPluginPlatform()
+    await platform.register_plugin(plugin_config)
+    await platform.execute_plugin("plugin-name", context)
 ```
 
 #### **Application Integration API**
@@ -292,10 +294,12 @@ from __future__ import annotations
 
 from flext_plugin import FlextPluginApi
 
-# Unified plugin management
-api = FlextPluginApi()
-plugins = await api.discover_plugins(["./plugins"])
-result = await api.execute_plugin("plugin-name", context)
+
+async def run() -> None:
+    # Unified plugin management
+    api = FlextPluginApi()
+    plugins = await api.discover_plugins(["./plugins"])
+    result = await api.execute_plugin("plugin-name", context)
 ```
 
 ### External System Contracts

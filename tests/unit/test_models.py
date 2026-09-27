@@ -194,6 +194,3 @@ class TestsFlextPluginModelsUnit:
         tm.that(metadata.author, eq="Unknown")
         tm.that(metadata.plugin_type, eq="extension")
         tm.that(tuple(metadata.dependencies), eq=())
-
-
-__all__: list[str] = ["TestsFlextPluginModelsUnit"]

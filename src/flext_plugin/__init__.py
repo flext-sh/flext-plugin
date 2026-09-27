@@ -36,7 +36,7 @@ if TYPE_CHECKING:
         FlextPluginDiscovery,
         FlextPluginPlatform,
         FlextPluginUtilities,
-        u,
+        FlextPluginUtilities as u,
     )
 
 

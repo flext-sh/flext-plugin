@@ -181,6 +181,3 @@ class TestsFlextPluginPlugin:
         tm.that(len(listed), eq=3)
         for candidate in plugins:
             tm.that(listed, has=candidate.name)
-
-
-__all__: list[str] = ["TestsFlextPluginPlugin"]

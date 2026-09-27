@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_tests import s as tests_s
+from flext_tests import FlextTestsServiceBase
 
 from flext_plugin import m
 from tests.settings import TestsFlextPluginSettings
 
 
-class TestsFlextPluginServiceBase(tests_s):
+class TestsFlextPluginServiceBase(FlextTestsServiceBase):
     """Plugin test service base with source and test settings namespaces."""
 
     # NOTE (multi-agent): flext-tests owns fetch_settings; this project

@@ -70,7 +70,7 @@ the FLEXT Plugin system.
 
 ### Basic Plugin Creation
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -84,7 +84,7 @@ plugin = create_flext_plugin(
 platform = create_flext_plugin_platform()
 platform.register_plugin(plugin)
 platform.activate_plugin("hello-world")
-
+```
 
 ### Singer Plugin Creation
 
@@ -104,7 +104,7 @@ tap_plugin = create_flext_plugin(
         "singer_spec": "0.12.0-dev",
     },
 )
-````
+```
 
 ### Hot Reload Development
 
@@ -226,7 +226,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 
 ### Plugin Template
 
-````python
+```python
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
@@ -289,7 +289,7 @@ class ExamplePlugin(FlextPlugin):
     def _cleanup_resources(self):
         """Cleanup plugin-specific resources."""
         pass
-
+```
 
 ### Test Template
 
@@ -357,7 +357,7 @@ class TestExamplePlugin:
         # Deactivate plugin
         deactivate_result = platform.deactivate_plugin(plugin.name)
         assert deactivate_result.success
-````
+```
 
 ### Configuration Template
 
@@ -399,16 +399,17 @@ All examples demonstrate proper error handling using `r` pattern:
 ```python
 from __future__ import annotations
 
-try:
-    result = operation()
-    if result.success:
-        return result.value
-    else:
+
+def run_operation() -> p.Result[bool]:
+    try:
+        result = operation()
+        if result.success:
+            return result.value
         logger.error(f"Operation failed: {result.error}")
         return None
-except Exception as e:
-    logger.error(f"Unexpected error: {e}")
-    return r[bool].fail(f"Unexpected error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return r[bool].fail(f"Unexpected error: {e}")
 ```
 
 ### 2. Resource Management

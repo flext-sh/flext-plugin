@@ -11,7 +11,7 @@ from collections.abc import MutableSequence, Sequence
 from pathlib import Path
 from typing import ClassVar
 
-from flext_cli import u
+from flext_cli import FlextCliUtilities
 
 from flext_plugin import c, m, p, r, t
 
@@ -19,7 +19,7 @@ from ._utilities.discovery import FlextPluginDiscovery
 from ._utilities.plugin_platform import FlextPluginPlatform
 
 
-class FlextPluginUtilities(u):
+class FlextPluginUtilities(FlextCliUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin:

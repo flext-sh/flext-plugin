@@ -96,15 +96,16 @@ class FlextPlugin(FlextModels.Entity):
 ```python
 from __future__ import annotations
 
-class FlextPluginModels.Config(FlextModels.Entity):
+
+class FlextPluginConfig(FlextModels.Entity):
     """Plugin configuration with validation"""
+
     name: str
     version: str
     dependencies: t.StringList
     metadata: FlextPluginModels.Metadata
 
-    class Config:
-        frozen = True  # Immutable value object
+    model_config = m.ConfigDict(frozen=True)  # Immutable value object
 ```
 
 ### Services
