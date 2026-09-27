@@ -33,7 +33,7 @@ class TestsFlextPluginDomainEntities:
         *,
         name: str = "test-plugin",
         plugin_version: str = "1.0.0",
-        entity_id: str = "test-id",
+        unique_id: str = "test-id",
         description: str = "Test plugin",
         author: str = "Test Author",
     ) -> m.Plugin.Entity:
@@ -41,7 +41,7 @@ class TestsFlextPluginDomainEntities:
         return m.Plugin.Entity(
             name=name,
             plugin_version=plugin_version,
-            entity_id=entity_id,
+            unique_id=unique_id,
             description=description,
             author=author,
         )
@@ -50,8 +50,8 @@ class TestsFlextPluginDomainEntities:
     # Factory construction contract
     # ------------------------------------------------------------------ #
 
-    def test_create_maps_entity_id_to_unique_id_and_sets_fields(self) -> None:
-        """create() exposes the supplied identity and descriptive fields."""
+    def test_construction_exposes_supplied_identity_and_fields(self) -> None:
+        """Construction exposes the supplied identity and descriptive fields."""
         plugin = self._make_plugin()
 
         tm.that(plugin.unique_id, eq="test-id")
@@ -69,9 +69,9 @@ class TestsFlextPluginDomainEntities:
 
     def test_create_applies_declared_field_defaults(self) -> None:
         """Optional fields fall back to their declared defaults."""
-        plugin = m.Plugin.Entity(name="minimal-plugin", entity_id="min-id")
+        plugin = m.Plugin.Entity(name="minimal-plugin", unique_id="min-id")
 
-        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
         tm.that(plugin.description, eq="")
         tm.that(plugin.author, eq="")
         tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
@@ -80,14 +80,14 @@ class TestsFlextPluginDomainEntities:
     def test_create_rejects_names_violating_contract(self, bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
         with pytest.raises(ValueError, match=r".+"):
-            m.Plugin.Entity(name=bad_name, entity_id="id")
+            m.Plugin.Entity(name=bad_name, unique_id="id")
 
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
     def test_create_rejects_non_semantic_versions(self, bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity(
-                name="valid-plugin", plugin_version=bad_version, entity_id="id"
+                name="valid-plugin", plugin_version=bad_version, unique_id="id"
             )
 
     # ------------------------------------------------------------------ #

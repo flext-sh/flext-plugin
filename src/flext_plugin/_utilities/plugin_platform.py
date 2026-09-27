@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import MutableMapping, MutableSequence, Sequence
 from typing import override
 
@@ -44,36 +43,8 @@ class FlextPluginPlatform:
             # Plugin type validity is enforced by Pydantic via c.Plugin.Type StrEnum.
             return r[bool].ok(value=True)
 
-    class PluginExecution:
-        """Plugin execution entity with lifecycle management."""
-
-        def __init__(
-            self,
-            plugin_name: str,
-            execution_config: t.JsonMapping,
-            execution_id: str | None = None,
-        ) -> None:
-            """Initialize plugin execution."""
-            self.plugin_name = plugin_name
-            self.execution_id = execution_id or str(uuid.uuid4())
-            self.input_data = execution_config.get("input_data", {})
-            self.is_running = False
-            self.is_completed = False
-            self.success = False
-            self.error_message: str | None = None
-            self.result: t.JsonMapping | None = None
-            self.started_at: str | None = None
-            self.completed_at: str | None = None
-
-        @classmethod
-        def create(
-            cls,
-            plugin_name: str,
-            execution_config: t.JsonMapping,
-            execution_id: str | None = None,
-        ) -> FlextPluginPlatform.PluginExecution:
-            """Create new plugin execution."""
-            return cls(plugin_name, execution_config, execution_id)
+    class PluginExecution(m.Plugin.Execution):
+        """Plugin execution entity with lifecycle transitions."""
 
         def mark_completed(
             self, *, success: bool, error_message: str | None = None
@@ -528,12 +499,10 @@ class FlextPluginPlatform:
         ) -> p.Result[FlextPluginPlatform.PluginExecution]:
             """Create execution entity."""
             execution = FlextPluginPlatform.PluginExecution(
-                plugin_name=plugin.name,
-                execution_config=t.json_mapping_adapter().validate_python({
-                    "input_data": context
-                }),
-                execution_id=execution_id,
+                plugin_name=plugin.name, input_data=context
             )
+            if execution_id is not None:
+                execution.execution_id = execution_id
             return r[FlextPluginPlatform.PluginExecution].ok(execution)
 
         def _execute_with_executor(
@@ -547,10 +516,10 @@ class FlextPluginPlatform:
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     "Executor not configured"
                 )
-            exec_context = {
+            exec_context: t.JsonMapping = {
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
-                "input_data": execution.input_data,
+                "input_data": dict(execution.input_data),
             }
             result = self.executor.execute_plugin(execution.plugin_name, exec_context)
             execution.mark_completed(

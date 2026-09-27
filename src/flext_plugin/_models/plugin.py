@@ -12,7 +12,7 @@ from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-from flext_plugin import t
+from flext_plugin import c, t
 
 
 class FlextPluginModelsPlugin:
@@ -57,7 +57,7 @@ class FlextPluginModelsPlugin:
                 pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
                 description="Plugin semantic version (X.Y.Z)",
             ),
-        ] = "1.0.0"
+        ] = c.Plugin.DEFAULT_PLUGIN_VERSION
         description: Annotated[
             str,
             cli_u.Field(
@@ -68,8 +68,8 @@ class FlextPluginModelsPlugin:
             str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
         ] = ""
         plugin_type: Annotated[
-            str, cli_u.Field(description="Plugin type classification")
-        ] = "utility"
+            c.Plugin.Type, cli_u.Field(description="Plugin type classification")
+        ] = c.Plugin.Type.UTILITY
         is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
             True
         )
@@ -92,6 +92,46 @@ class FlextPluginModelsPlugin:
                 error_msg = f"Version must be semantic format X.Y.Z, got: {value}"
                 raise ValueError(error_msg)
             return value
+
+    class Execution(cli_m.ManagedModel):
+        """Plugin execution state - one tracked run of a registered plugin.
+
+        Attributes:
+        plugin_name: Name of the executed plugin
+        execution_id: Unique execution identifier
+        input_data: Input payload handed to the executor
+        is_running: Whether the execution is in progress
+        is_completed: Whether the execution has finished
+        success: Whether the finished execution succeeded
+        error_message: Failure reason of a finished execution
+        result: Executor output of a successful execution
+        started_at: ISO timestamp of the start transition
+        completed_at: ISO timestamp of the completion transition
+
+        """
+
+        plugin_name: Annotated[str, cli_u.Field(description="Executed plugin name")]
+        execution_id: Annotated[
+            str, cli_u.Field(description="Unique execution identifier")
+        ] = cli_u.Field(default_factory=cli_u.generate_id)
+        input_data: Annotated[
+            t.JsonMapping, cli_u.Field(description="Executor input payload")
+        ]
+        is_running: Annotated[bool, cli_u.Field(description="Run in progress")] = False
+        is_completed: Annotated[bool, cli_u.Field(description="Run finished")] = False
+        success: Annotated[bool, cli_u.Field(description="Run succeeded")] = False
+        error_message: Annotated[
+            str | None, cli_u.Field(description="Failure reason")
+        ] = None
+        result: Annotated[
+            t.JsonMapping | None, cli_u.Field(description="Executor output")
+        ] = None
+        started_at: Annotated[
+            str | None, cli_u.Field(description="Start ISO timestamp")
+        ] = None
+        completed_at: Annotated[
+            str | None, cli_u.Field(description="Completion ISO timestamp")
+        ] = None
 
     class DiscoveryData(cli_m.Value):
         """Plugin discovery data - immutable discovery result.

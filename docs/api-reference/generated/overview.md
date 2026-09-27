@@ -8,28 +8,14 @@
 
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
-- Package: `flext_plugin`
 - Version: `0.12.0`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
-- Doc summary: Flext Plugin package.
-- Classifiers: Development Status :: 3 - Alpha, Intended Audience :: Developers,
-  Operating System :: OS Independent, Programming Language :: Python :: 3 :: Only,
-  Programming Language :: Python :: 3.13, Topic :: Software Development :: Libraries ::
-  Python Modules, Typing :: Typed
-- Project class: `domain`
-- Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
-- Main facades: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
-  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginPlatform`, `FlextPluginProtocols` (+4 more)
-- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
-  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginServiceBase`,
-  `FlextPluginSettings` (+6 more)
-- Exported module shortcuts: `services`
-- Generated module pages: `9`
+- Governed projects: `0`
+- Project classes: _none_
+
+Generated from workspace discovery, `pyproject.toml`, public exports, and docstrings.
 
 ## Next Pages
 
-- [Public API](public-api.md)
-- [Module Index](modules/index.md)
+- [Workspace Module Pages](projects/index.md)
+- [Project Catalog](../../projects/generated/catalog.md)

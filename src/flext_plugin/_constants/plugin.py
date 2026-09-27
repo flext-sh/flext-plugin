@@ -88,23 +88,6 @@ class FlextPluginConstantsPlugin:
         *UTILITY_PLUGIN_TYPES,
     })
 
-    class Execution:
-        """Execution state constants."""
-
-    class Registry:
-        """Registry type constants."""
-
-    class Files:
-        """File extension constants."""
-
-        PYTHON_EXTENSION: Final[str] = ".py"
-        YAML_CONFIG_EXTENSION: Final[str] = ".yaml"
-        JSON_CONFIG_EXTENSION: Final[str] = ".json"
-        TOML_CONFIG_EXTENSION: Final[str] = ".toml"
-        DEFAULT_PLUGIN_DIR: Final[str] = "plugins"
-        DEFAULT_CACHE_DIR: Final[str] = ".plugin_cache"
-        DEFAULT_CONFIG_DIR: Final[str] = "config"
-
     class PluginValidation:
         """Plugin validation pattern constants."""
 
