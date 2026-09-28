@@ -45,9 +45,12 @@ src/flext_plugin/
 
 ## Commands
 
+Run from the workspace root (selector-free; the root dispatcher routes to every
+member — `PROJECT=` is not a root Make variable):
+
 ```bash
-make check PROJECT=flext-plugin
-make test PROJECT=flext-plugin # tests/unit
+make check
+make test
 ```
 
 <!-- AIHUB-AGENTS-SCOPE-LOCAL-END -->
