@@ -10,8 +10,10 @@
   - [Railway Pattern Implementation](#railway-pattern-implementation)
 - [🧪 Testing Implementation Patterns](#testing-implementation-patterns)
   - [Unit Testing Patterns](#unit-testing-patterns)
+  - [Integration Testing Patterns](#integration-testing-patterns)
 - [🔧 Development Workflow Implementation](#development-workflow-implementation)
   - [Code Organization Patterns](#code-organization-patterns)
+  - [Error Handling Patterns](#error-handling-patterns)
   - [Configuration Management](#configuration-management)
 - [🚀 Deployment and Operations](#deployment-and-operations)
   - [Container Configuration](#container-configuration)
@@ -492,6 +494,7 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+
 from flext_plugin import FlextPluginServices
 
 
@@ -563,6 +566,7 @@ class TestPluginServices:
 from __future__ import annotations
 
 import pytest
+
 from flext_plugin import FlextPluginPlatform
 
 
@@ -731,7 +735,6 @@ class FlextPlugin[ModuleName]:
     ) -> FlextPluginModels.SomeEntity:
         """Execute core business logic."""
         # Implementation details...
-        pass
 
     # Nested helper classes for complex structures
     class HelperClass:
@@ -795,7 +798,6 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 from __future__ import annotations
 
 from flext_core import m, t, u
-from flext_plugin import FlextPluginConstants
 
 
 class FlextPluginSettings(m.BaseModel):
