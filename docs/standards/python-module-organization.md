@@ -10,6 +10,8 @@
   - [Domain Layer (src/flext_plugin/domain/)](#domain-layer-srcflext_plugindomain)
   - [Application Layer (src/flext_plugin/application/)](#application-layer-srcflext_pluginapplication)
   - [Configuration Layer (src/flext_plugin/settings/)](#configuration-layer-srcflext_pluginsettings)
+- [🎯 Semantic Naming Conventions](#semantic-naming-conventions)
+  - [Public API Naming (FlextPlugin prefix)](#public-api-naming-flextplugin-prefix)
   - [Module-Level Naming](#module-level-naming)
   - [Plugin Type Naming](#plugin-type-naming)
 - [📦 Import Patterns & Best Practices](#import-patterns-best-practices)
@@ -21,12 +23,15 @@
   - [Hot-Reload Architecture](#hot-reload-architecture)
 - [🔄 Plugin-Oriented Programming Patterns](#plugin-oriented-programming-patterns)
   - [Plugin Factory Patterns](#plugin-factory-patterns)
+  - [Plugin Lifecycle Management](#plugin-lifecycle-management)
+  - [Plugin Discovery Patterns](#plugin-discovery-patterns)
+- [🎯 Domain-Driven Design Patterns](#domain-driven-design-patterns)
+  - [Plugin Entity Patterns](#plugin-entity-patterns)
+  - [Plugin Aggregate Patterns](#plugin-aggregate-patterns)
   - [Plugin Value Object Patterns](#plugin-value-object-patterns)
 - [🚀 Performance & Optimization Patterns](#performance-optimization-patterns)
   - [Lazy Plugin Loading](#lazy-plugin-loading)
   - [Plugin Caching Patterns](#plugin-caching-patterns)
-  - [Error Handling Standards](#error-handling-standards)
-  - [Plugin Documentation Standards](#plugin-documentation-standards)
 - [📋 Checklist for Plugin Module Creation](#checklist-for-plugin-module-creation)
   - [Plugin Module Creation Checklist](#plugin-module-creation-checklist)
   - [Plugin Quality Gate Checklist](#plugin-quality-gate-checklist)
@@ -127,8 +132,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin, FlextPluginModels
-from flext_plugin import FlextPlugins
+from flext_plugin import FlextPlugin
 
 
 class CustomPlugin(FlextPlugin):
@@ -333,9 +337,7 @@ def deploy_plugin():
 # Import from specific modules for clarity
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin, FlextPluginModels
-from flext_plugin import FlextPluginService
-from flext_plugin import PluginStatus, PluginType
+from flext_plugin import FlextPlugin, FlextPluginService
 
 # More explicit but verbose
 service = FlextPluginService(registry)
@@ -806,14 +808,9 @@ class FlextPlugin(FlextModels.Entity):
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPluginModels
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 class FlextPluginRegistry(FlextModels.AggregateRoot):
-    """
-    Plugin registry aggregate managing plugin collections.
+    """Plugin registry aggregate managing plugin collections.
 
     Serves as the consistency boundary for plugin operations,
     ensuring business rules and maintaining registry integrity.
@@ -920,14 +917,9 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPluginModels
-from flext_cli import u
-from flext_core import FlextSettings
-
 
 class FlextPluginMetadata(FlextModels.Value):
-    """
-    Immutable plugin metadata value object.
+    """Immutable plugin metadata value object.
 
     Contains descriptive information about the plugin that doesn't
     change frequently and doesn't affect plugin identity.
@@ -970,8 +962,7 @@ class FlextPluginMetadata(FlextModels.Value):
 
 
 class FlextPluginConfig(FlextModels.Value):
-    """
-    Immutable plugin configuration value object.
+    """Immutable plugin configuration value object.
 
     Contains plugin-specific configuration that affects plugin
     behavior but doesn't change plugin identity.
@@ -1000,7 +991,7 @@ class FlextPluginConfig(FlextModels.Value):
         """Check if configuration contains specific key."""
         return key in self.config_data
 
-    def with_override(self, overrides: dict) -> "FlextPluginConfig":
+    def with_override(self, overrides: dict) -> FlextPluginConfig:
         """Create new settings with overridden values."""
         new_config_data = {**self.config_data, **overrides}
         return FlextPluginConfig(
@@ -1015,8 +1006,7 @@ class FlextPluginConfig(FlextModels.Value):
 
         if self.environment == "production":
             return base_required + ["log_level", "metrics_enabled"]
-        else:
-            return base_required
+        return base_required
 ```
 
 ---
@@ -1318,25 +1308,17 @@ def safe_plugin_operation(plugin: FlextPlugin) -> p.Result[bool]:
 class PluginError(e.ProcessingError):
     """Base plugin error."""
 
-    pass
-
 
 class PluginConfigurationError(PluginError):
     """Plugin configuration error."""
-
-    pass
 
 
 class PluginDependencyError(PluginError):
     """Plugin dependency error."""
 
-    pass
-
 
 class PluginExecutionError(PluginError):
     """Plugin execution error."""
-
-    pass
 
 
 # ❌ Avoid raising exceptions in plugin business logic
