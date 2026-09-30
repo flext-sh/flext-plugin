@@ -9,6 +9,11 @@
 - [Your First Plugin (5 minutes)](#your-first-plugin-5-minutes)
   - [Step 1: Create a Simple Plugin](#step-1-create-a-simple-plugin)
   - [Step 2: Use the Plugin Platform](#step-2-use-the-plugin-platform)
+  - [Step 3: Create a Custom Plugin Class](#step-3-create-a-custom-plugin-class)
+- [Plugin Discovery](#plugin-discovery)
+- [Testing Your Plugin](#testing-your-plugin)
+- [Development with Hot Reload](#development-with-hot-reload)
+- [Quality Gates](#quality-gates)
 - [Next Steps](#next-steps)
   - [Immediate Next Steps](#immediate-next-steps)
 - [Troubleshooting](#troubleshooting)
@@ -173,10 +178,7 @@ Create `custom_plugin.py`:
 ```python
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin
-from flext_plugin import PluginStatus, PluginType
-from flext_cli import u
-from flext_core import FlextSettings
+from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 
 class GreetingPlugin(FlextPlugin):
