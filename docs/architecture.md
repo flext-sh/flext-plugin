@@ -275,7 +275,7 @@ classes:
 ### Integration Points
 
 - **flext-cli**: Command-line plugin management
-- **flext-web**: Web interface for plugin REDACTED_LDAP_BIND_PASSWORDistration
+- **flext-web**: Web interface for plugin administration
 - **flext-api**: REST API for plugin operations
 - **Singer Projects**: Plugin framework for data pipeline components
 
