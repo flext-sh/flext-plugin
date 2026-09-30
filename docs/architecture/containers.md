@@ -161,7 +161,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 - **Purpose**: REST API for plugin operations
 - **Responsibilities**:
   - HTTP endpoints for plugin management
-  - Web-based plugin REDACTED_LDAP_BIND_PASSWORDistration
+  - Web-based plugin administration
   - API-driven plugin operations
   - Integration with web interfaces
 - **Key Components**:
