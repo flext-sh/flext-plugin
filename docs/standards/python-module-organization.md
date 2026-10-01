@@ -303,7 +303,7 @@ PluginType.AUTHENTICATION  # Auth providers and strategies
 
 # Utility plugin types
 PluginType.UTILITY  # General-purpose utilities
-PluginType.TOOL  # Development and REDACTED_LDAP_BIND_PASSWORD tools
+PluginType.TOOL  # Development and admin tools
 PluginType.PROCESSOR  # Data processing components
 ```
 
@@ -823,7 +823,7 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
 
     # Registry-level business rules
     MAX_PLUGINS_PER_TYPE = 100
-    RESERVED_PLUGIN_NAMES = ["system", "core", "REDACTED_LDAP_BIND_PASSWORD", "flext"]
+    RESERVED_PLUGIN_NAMES = ["system", "core", "admin", "flext"]
 
     def register_plugin(self, plugin: FlextPlugin) -> p.Result[FlextPlugin]:
         """Register plugin with business rule validation."""

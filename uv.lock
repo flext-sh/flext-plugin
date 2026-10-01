@@ -448,7 +448,7 @@ dependencies = [
 [[package]]
 name = "flext-infra"
 version = "0.12.0"
-source = { git = "https://github.com/flext-sh/flext-infra.git?rev=0.12.0-dev#a84ea4963e9ab9bc9e8874764768d85988c568a2" }
+source = { git = "https://github.com/flext-sh/flext-infra.git?rev=0.12.0-dev#fe93793c31e1b85834d6b4d65652e27ae39239e0" }
 dependencies = [
     { name = "annotated-types" },
     { name = "beartype" },
@@ -513,6 +513,7 @@ dev = [
     { name = "mkdocstrings" },
     { name = "mkdocstrings-python" },
     { name = "mypy" },
+    { name = "platformdirs" },
     { name = "pymdown-extensions" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -563,7 +564,7 @@ requires-dist = [
     { name = "flext-core", git = "https://github.com/flext-sh/flext-core.git?rev=0.12.0-dev" },
     { name = "packaging", specifier = ">=26.3" },
     { name = "pydantic", specifier = ">=2.13.5" },
-    { name = "pydantic-settings", specifier = ">=2.14.2,<2.15" },
+    { name = "pydantic-settings", specifier = ">=2.14.2,<2.16" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "structlog", specifier = ">=25.5.0,<27" },
     { name = "typing-extensions", specifier = ">=4.16.0" },
@@ -590,6 +591,7 @@ dev = [
     { name = "mkdocstrings", specifier = ">=1.0.6" },
     { name = "mkdocstrings-python", specifier = ">=2.0.8" },
     { name = "mypy", specifier = ">=2.3.1" },
+    { name = "platformdirs", specifier = ">=4.12.0" },
     { name = "pymdown-extensions" },
     { name = "pyrefly", specifier = ">=1.2.0" },
     { name = "pyright", specifier = ">=1.1.411" },
