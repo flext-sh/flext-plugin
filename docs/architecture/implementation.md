@@ -55,7 +55,7 @@ recommendations based on the established Clean Architecture foundation.
 
 #### **Domain Layer Implementation**
 
-```python
+```text
 # flext_plugin/entities.py - Domain entities with business rules
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ class FlextPluginModels:
 
 #### **Application Layer Implementation**
 
-```python
+```text
 # flext_plugin/services.py - Application services
 from __future__ import annotations
 
@@ -198,7 +198,7 @@ class FlextPluginServices:
 
 #### **Infrastructure Layer Implementation**
 
-```python
+```text
 # flext_plugin/discovery.py - Infrastructure adapters
 from __future__ import annotations
 
@@ -290,7 +290,7 @@ class FlextPluginDiscovery:
 
 #### **Protocol Definitions**
 
-```python
+```text
 # flext_plugin/protocols.py - Structural typing protocols
 from __future__ import annotations
 
@@ -352,7 +352,7 @@ class FlextPluginProtocols:
 
 #### **Protocol Implementation**
 
-```python
+```text
 # Example protocol implementation
 from __future__ import annotations
 
@@ -374,7 +374,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
 #### **r[T] Error Handling**
 
-```python
+```text
 # Railway pattern throughout the system
 from __future__ import annotations
 
@@ -428,7 +428,7 @@ async def _load_plugins(
 
 #### **Domain Entity Testing**
 
-```python
+```text
 from __future__ import annotations
 
 # tests/unit/test_entities.py
@@ -487,7 +487,7 @@ class TestPluginEntity:
 
 #### **Application Service Testing**
 
-```python
+```text
 # tests/unit/test_services.py
 from __future__ import annotations
 
@@ -561,7 +561,7 @@ class TestPluginServices:
 
 #### **End-to-End Plugin Lifecycle Testing**
 
-```python
+```text
 # tests/integration/test_plugin_lifecycle.py
 from __future__ import annotations
 
@@ -659,7 +659,7 @@ def create_plugin():
 
 #### **Module Structure Template**
 
-```python
+```text
 # Template for FLEXT single-class-per-module pattern
 """Module: flext_plugin/[module_name].py
 
@@ -757,7 +757,7 @@ __all__: list[str] = ["FlextPlugin[ModuleName]"]
 
 #### **Railway Pattern Throughout**
 
-```python
+```text
 # Railway pattern for complex operations
 from __future__ import annotations
 
@@ -793,7 +793,7 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 
 #### **Pydantic Configuration Pattern**
 
-```python
+```text
 # flext_plugin/settings.py
 from __future__ import annotations
 
@@ -977,7 +977,7 @@ spec:
 
 #### **Health Checks Implementation**
 
-```python
+```text
 # flext_plugin/health.py
 from __future__ import annotations
 
@@ -1075,7 +1075,7 @@ class FlextPluginHealth:
 
 #### **Multi-Level Caching**
 
-```python
+```text
 # flext_plugin/cache.py
 from __future__ import annotations
 
@@ -1132,7 +1132,7 @@ class FlextPluginCache:
 
 #### **Concurrent Plugin Operations**
 
-```python
+```text
 # flext_plugin/executor.py
 from __future__ import annotations
 

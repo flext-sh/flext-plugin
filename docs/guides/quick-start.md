@@ -72,7 +72,7 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -108,7 +108,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -175,7 +175,7 @@ Active plugins: ['hello-world']
 
 Create `custom_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
@@ -306,7 +306,7 @@ Cleaning up greeting-generator...
 
 FLEXT Plugin can automatically discover plugins in directories:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService
@@ -336,7 +336,7 @@ run(discover_plugins())
 
 Create `test_greeting_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
 import pytest
@@ -424,7 +424,7 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files
 change:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
@@ -502,7 +502,7 @@ pip install --force-reinstall flext-plugin
 
 **Plugin Not Activating**
 
-```python
+```text
 # Check plugin status and validation
 from __future__ import annotations
 
