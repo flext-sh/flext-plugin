@@ -84,7 +84,7 @@ orchestration.
 
 **Import Pattern**:
 
-```python
+```text
 # Primary entry point for plugin system
 from __future__ import annotations
 ```
@@ -104,7 +104,7 @@ logic.
 
 **Usage Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginStatus, PluginType
@@ -129,7 +129,7 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 
 **Entity Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin
@@ -163,7 +163,7 @@ class CustomPlugin(FlextPlugin):
 
 **Service Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginService
@@ -200,7 +200,7 @@ management.
 
 **Configuration Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_core import FlextSettings
@@ -235,7 +235,7 @@ class PluginSystemSettings(FlextSettings):
 
 All plugin-related exports use consistent prefixing to avoid namespace conflicts:
 
-```python
+```text
 # Core plugin patterns
 from __future__ import annotations
 
@@ -261,7 +261,7 @@ FlextPluginReloader  # Hot-reload management
 
 ### **Module-Level Naming**
 
-```python
+```text
 # Core functionality modules
 from __future__ import annotations
 
@@ -283,7 +283,7 @@ loader.py  # Dynamic plugin loading mechanisms
 
 ### **Plugin Type Naming**
 
-```python
+```text
 # Singer ETL plugin types (Meltano integration)
 from __future__ import annotations
 
@@ -315,7 +315,7 @@ PluginType.PROCESSOR  # Data processing components
 
 #### **1. Primary Pattern (Recommended for Ecosystem)**
 
-```python
+```text
 # Import from main package - gets everything needed
 from __future__ import annotations
 
@@ -333,7 +333,7 @@ def deploy_plugin():
 
 #### **2. Specific Module Pattern (For Advanced Usage)**
 
-```python
+```text
 # Import from specific modules for clarity
 from __future__ import annotations
 
@@ -346,7 +346,7 @@ plugin = FlextPlugin(name="custom", version="0.9.9")
 
 #### **3. Factory Function Pattern**
 
-```python
+```text
 # Use factory functions for common operations
 from __future__ import annotations
 
@@ -367,7 +367,7 @@ plugin = create_flext_plugin(
 
 ### **Anti-Patterns (Forbidden)**
 
-```python
+```text
 # ❌ Don't import everything
 from __future__ import annotations
 
@@ -467,7 +467,7 @@ from flext_plugin import *
 
 ### **Plugin Factory Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -508,7 +508,7 @@ def deploy_tap_plugin(settings: dict) -> p.Result[FlextPlugin]:
 
 ### **Plugin Lifecycle Management**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginStatus
@@ -598,7 +598,7 @@ class PluginLifecycleManager:
 
 ### **Plugin Discovery Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService, PluginDiscovery
@@ -680,7 +680,7 @@ class AdvancedPluginDiscovery:
 
 ### **Plugin Entity Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 from datetime import datetime
@@ -805,7 +805,7 @@ class FlextPlugin(FlextModels.Entity):
 
 ### **Plugin Aggregate Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -914,7 +914,7 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
 
 ### **Plugin Value Object Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -1015,7 +1015,7 @@ class FlextPluginConfig(FlextModels.Value):
 
 ### **Lazy Plugin Loading**
 
-```python
+```text
 from __future__ import annotations
 
 from functools import cached_property
@@ -1205,7 +1205,7 @@ def execute_plugin_cached(plugin_id: str, settings: dict) -> p.Result[t.JsonValu
 
 ### **Type Annotation Requirements**
 
-```python
+```text
 # ✅ Complete type annotations for plugin interfaces
 from __future__ import annotations
 
@@ -1259,7 +1259,7 @@ def execute_plugin(plugin, data):  # Missing types
 
 ### **Error Handling Standards**
 
-```python
+```text
 # ✅ Plugin-specific error handling with r
 from __future__ import annotations
 
@@ -1601,7 +1601,7 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 
 ### **Plugin Configuration Integration**
 
-```python
+```text
 # ✅ Extend plugin configuration patterns consistently
 from __future__ import annotations
 
@@ -1633,7 +1633,7 @@ class ProjectPluginConfig(PluginSystemSettings):
 
 ### **Plugin Registry Integration**
 
-```python
+```text
 # ✅ Use centralized plugin registry across ecosystem
 from __future__ import annotations
 

@@ -573,7 +573,7 @@ make audit # Dependency and security audit
 
 #### **Security Monitoring**
 
-```python
+```text
 # Security event monitoring
 from __future__ import annotations
 
