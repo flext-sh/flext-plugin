@@ -1,18 +1,22 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Flext Plugin. Utilities package."""
+"""Flext Plugin. Utilities package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .base import FlextPluginUtilitiesBase
-    from .discovery import FlextPluginDiscovery
-    from .implementations import FlextPluginImplementations
-    from .plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.base import FlextPluginUtilitiesBase
+    from flext_plugin._utilities.discovery import FlextPluginDiscovery
+    from flext_plugin._utilities.implementations import FlextPluginImplementations
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 __all__: tuple[str, ...] = (
@@ -32,7 +36,7 @@ _LAZY_IMPORTS = MappingProxyType(
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
-    )
+    ),
 )
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
