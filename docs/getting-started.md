@@ -62,7 +62,7 @@ flext-observability > =0.9.9 # Monitoring and observability
 
 ### Create a Basic Plugin
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
@@ -89,7 +89,7 @@ if load_result.success:
 
 ### Plugin Discovery
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
