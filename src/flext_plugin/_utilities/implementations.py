@@ -52,7 +52,7 @@ class FlextPluginImplementations:
             return r[m.Plugin.DiscoveryData].ok(
                 m.Plugin.DiscoveryData(
                     name=path.stem,
-                    version="1.0.0",
+                    version=c.Plugin.DEFAULT_PLUGIN_VERSION,
                     path=path,
                     discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
                     discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
@@ -131,7 +131,7 @@ class FlextPluginImplementations:
             self._loaded.append(path.stem)
             return r[t.JsonMapping].ok({
                 "name": path.stem,
-                "version": "1.0.0",
+                "version": c.Plugin.DEFAULT_PLUGIN_VERSION,
                 "path": str(path),
                 "load_type": "file",
                 "loaded_at": "",

@@ -117,7 +117,7 @@ class TestsFlextPluginModelsUnit:
     def test_entity_applies_documented_field_defaults() -> None:
         """Optional fields fall back to their documented defaults."""
         plugin = m.Plugin.Entity(name="defaults-plugin")
-        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
         tm.that(plugin.description, eq="")
         tm.that(plugin.author, eq="")
         assert plugin.plugin_type is c.Plugin.Type.UTILITY
@@ -156,7 +156,7 @@ class TestsFlextPluginModelsUnit:
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    # ---- create() factory -----------------------------------------------
+    # ---- explicit-type construction -------------------------------------
 
     @staticmethod
     def test_create_factory_builds_validated_entity() -> None:
@@ -169,14 +169,6 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.name, eq="factory-plugin")
         tm.that(plugin.plugin_version, eq="2.0.0")
         assert plugin.plugin_type is c.Plugin.Type.SERVICE
-
-    # NOTE: m.Plugin.DiscoveryData is intentionally NOT tested here. Its `path`
-    # field annotation resolves to `Path`, which src/flext_plugin/models.py
-    # imports only under `TYPE_CHECKING`, so the model is never fully defined at
-    # runtime and every construction raises PydanticUserError
-    # ("DiscoveryData is not fully defined; you should define Path"). The public
-    # constructor contract is therefore unreachable through the model's public
-    # API until that src forward-ref defect is fixed. Not stubbed, not faked.
 
     # ---- PluginMetadata value object ------------------------------------
 

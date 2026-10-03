@@ -8,7 +8,6 @@
 
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
-- Package: `flext_plugin`
 - Version: `0.12.0`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
 - Doc summary: Flext Plugin package.
@@ -31,5 +30,5 @@
 
 ## Next Pages
 
-- [Public API](public-api.md)
-- [Module Index](modules/index.md)
+- [Workspace Module Pages](projects/index.md)
+- [Project Catalog](../../projects/generated/catalog.md)

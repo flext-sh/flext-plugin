@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import MutableMapping, MutableSequence, Sequence
 from typing import override
 
@@ -642,6 +641,8 @@ class FlextPluginPlatform:
                 }),
                 execution_id=execution_id,
             )
+            if execution_id is not None:
+                execution.execution_id = execution_id
             return r[FlextPluginPlatform.PluginExecution].ok(execution)
 
         def _execute_with_executor(
@@ -659,10 +660,10 @@ class FlextPluginPlatform:
                 return r[FlextPluginPlatform.PluginExecution].fail(
                     "Executor not configured",
                 )
-            exec_context = {
+            exec_context: t.JsonMapping = {
                 "plugin_id": execution.plugin_name,
                 "execution_id": execution.execution_id,
-                "input_data": execution.input_data,
+                "input_data": dict(execution.input_data),
             }
             result = self.executor.execute_plugin(execution.plugin_name, exec_context)
             execution.mark_completed(

@@ -60,7 +60,9 @@ class TestsFlextPluginPlatformExecution:
     @staticmethod
     def test_execution_mark_started_sets_running_and_timestamp() -> None:
         """mark_started() transitions the execution to running."""
-        execution = FlextPluginPlatform.PluginExecution("demo", {})
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", input_data={}
+        )
 
         execution.mark_started()
 
@@ -70,7 +72,9 @@ class TestsFlextPluginPlatformExecution:
     @staticmethod
     def test_execution_mark_completed_sets_success() -> None:
         """mark_completed(success=True) records success and timestamp."""
-        execution = FlextPluginPlatform.PluginExecution("demo", {})
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", input_data={}
+        )
 
         execution.mark_completed(success=True)
 
@@ -82,7 +86,9 @@ class TestsFlextPluginPlatformExecution:
     @staticmethod
     def test_execution_mark_completed_sets_failure_and_message() -> None:
         """mark_completed(success=False) records failure and message."""
-        execution = FlextPluginPlatform.PluginExecution("demo", {})
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", input_data={}
+        )
 
         execution.mark_completed(success=False, error_message="boom")
 
@@ -218,7 +224,9 @@ class TestsFlextPluginPlatformService:
         service = FlextPluginPlatform.PluginPlatformService()
         service.register_plugin(self._make_plugin(name="active"))
         service.register_plugin(self._make_plugin(name="inactive", is_enabled=False))
-        execution = FlextPluginPlatform.PluginExecution("active", {})
+        execution = FlextPluginPlatform.PluginExecution(
+            plugin_name="active", input_data={}
+        )
         execution.mark_started()
         service.inject_execution("e1", execution)
 
@@ -233,9 +241,11 @@ class TestsFlextPluginPlatformService:
     def test_service_cleanup_executions_removes_completed() -> None:
         """cleanup_executions() removes completed executions and returns count."""
         service = FlextPluginPlatform.PluginPlatformService()
-        completed = FlextPluginPlatform.PluginExecution("demo", {})
+        completed = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", input_data={}
+        )
         completed.mark_completed(success=True)
-        running = FlextPluginPlatform.PluginExecution("demo", {})
+        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", input_data={})
         running.mark_started()
         service.inject_execution("done", completed)
         service.inject_execution("run", running)
@@ -250,9 +260,11 @@ class TestsFlextPluginPlatformService:
     def test_service_list_executions_and_running() -> None:
         """list_executions() and list_running_executions() filter correctly."""
         service = FlextPluginPlatform.PluginPlatformService()
-        running = FlextPluginPlatform.PluginExecution("demo", {})
+        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", input_data={})
         running.mark_started()
-        completed = FlextPluginPlatform.PluginExecution("demo", {})
+        completed = FlextPluginPlatform.PluginExecution(
+            plugin_name="demo", input_data={}
+        )
         completed.mark_completed(success=True)
         service.inject_execution("r", running)
         service.inject_execution("c", completed)
