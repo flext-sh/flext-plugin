@@ -412,7 +412,7 @@ Retired --> Archived: Retirement archival
 
 #### **Data Modeling**
 
-```python
+```text
 # Pydantic data models with validation
 from __future__ import annotations
 
@@ -430,7 +430,7 @@ class FlextPluginSettings(m.BaseModel):
 
 #### **Data Migration**
 
-```python
+```text
 # Schema evolution and data migration
 from __future__ import annotations
 
@@ -442,7 +442,7 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
 
 #### **Data Validation**
 
-```python
+```text
 # Runtime data validation
 from __future__ import annotations
 

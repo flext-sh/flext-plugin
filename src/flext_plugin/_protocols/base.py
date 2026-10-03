@@ -1,4 +1,8 @@
-"""Base protocol facade for flext-plugin."""
+"""Base protocol facade for flext-plugin.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 

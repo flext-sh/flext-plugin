@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliProtocols
 
-from ._protocols.platform import FlextPluginProtocolsPlatformService
-from ._protocols.plugin import FlextPluginProtocolsPlugin
+from flext_plugin._protocols.platform import FlextPluginProtocolsPlatformService
+from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
 
 
 class FlextPluginProtocols(FlextCliProtocols):

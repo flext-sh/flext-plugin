@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from flext_tests import tm
@@ -21,20 +21,25 @@ from flext_plugin import c
 from flext_plugin.utilities import FlextPluginDiscovery, FlextPluginPlatform
 from tests import u
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 @pytest.mark.usefixtures("reset_platform_state")
 class TestsFlextPluginPlatformExecution:
     """Behavioral tests for plugin execution entity lifecycle."""
 
+    @staticmethod
     @pytest.fixture
-    def reset_platform_state(self) -> None:
+    def reset_platform_state() -> None:
         """Reset the platform service singleton state before each test."""
         FlextPluginPlatform.PluginPlatformService.fetch_global().reset_for_testing()
 
-    def test_execution_create_generates_uuid_when_id_omitted(self) -> None:
+    @staticmethod
+    def test_execution_create_generates_uuid_when_id_omitted() -> None:
         """create() assigns a UUID execution_id when none is supplied."""
         execution = FlextPluginPlatform.PluginExecution(
-            plugin_name="demo", execution_config={"input_data": {"x": 1}}
+            plugin_name="demo", execution_config={"input_data": {"x": 1}},
         )
 
         tm.that(execution.plugin_name, eq="demo")
@@ -43,15 +48,17 @@ class TestsFlextPluginPlatformExecution:
         tm.that(execution.is_running, eq=False)
         tm.that(execution.is_completed, eq=False)
 
-    def test_execution_create_honors_explicit_id(self) -> None:
+    @staticmethod
+    def test_execution_create_honors_explicit_id() -> None:
         """create() uses the supplied execution_id verbatim."""
         execution = FlextPluginPlatform.PluginExecution(
-            plugin_name="demo", execution_config={}, execution_id="exec-123"
+            plugin_name="demo", execution_config={}, execution_id="exec-123",
         )
 
         tm.that(execution.execution_id, eq="exec-123")
 
-    def test_execution_mark_started_sets_running_and_timestamp(self) -> None:
+    @staticmethod
+    def test_execution_mark_started_sets_running_and_timestamp() -> None:
         """mark_started() transitions the execution to running."""
         execution = FlextPluginPlatform.PluginExecution("demo", {})
 
@@ -60,7 +67,8 @@ class TestsFlextPluginPlatformExecution:
         tm.that(execution.is_running, eq=True)
         tm.that(execution.started_at, none=False)
 
-    def test_execution_mark_completed_sets_success(self) -> None:
+    @staticmethod
+    def test_execution_mark_completed_sets_success() -> None:
         """mark_completed(success=True) records success and timestamp."""
         execution = FlextPluginPlatform.PluginExecution("demo", {})
 
@@ -71,7 +79,8 @@ class TestsFlextPluginPlatformExecution:
         tm.that(execution.success, eq=True)
         tm.that(execution.completed_at, none=False)
 
-    def test_execution_mark_completed_sets_failure_and_message(self) -> None:
+    @staticmethod
+    def test_execution_mark_completed_sets_failure_and_message() -> None:
         """mark_completed(success=False) records failure and message."""
         execution = FlextPluginPlatform.PluginExecution("demo", {})
 
@@ -86,8 +95,9 @@ class TestsFlextPluginPlatformExecution:
 class TestsFlextPluginPlatformRegistry:
     """Behavioral tests for registry edge cases not covered elsewhere."""
 
+    @staticmethod
     @pytest.fixture
-    def reset_registry(self) -> None:
+    def reset_registry() -> None:
         """Clear class-level registry storage before each test."""
         registry = FlextPluginPlatform.PluginRegistry()
         listed = registry.list_plugins()
@@ -95,7 +105,8 @@ class TestsFlextPluginPlatformRegistry:
             for name in listed.value:
                 registry.unregister(name)
 
-    def test_registry_fetch_plugin_fails_for_unknown(self) -> None:
+    @staticmethod
+    def test_registry_fetch_plugin_fails_for_unknown() -> None:
         """fetch_plugin() fails when the name is not registered."""
         registry = FlextPluginPlatform.PluginRegistry()
 
@@ -104,7 +115,8 @@ class TestsFlextPluginPlatformRegistry:
         tm.that(result.failure, eq=True)
         tm.that((result.error or "").lower(), has="not found")
 
-    def test_registry_list_plugins_honors_scope(self) -> None:
+    @staticmethod
+    def test_registry_list_plugins_honors_scope() -> None:
         """list_plugins() succeeds with an empty class-level registry."""
         registry = FlextPluginPlatform.PluginRegistry()
 
@@ -113,7 +125,8 @@ class TestsFlextPluginPlatformRegistry:
         tm.that(result.success, eq=True)
         tm.that(result.value, eq=[])
 
-    def test_registry_get_invalid_payload_fails(self) -> None:
+    @staticmethod
+    def test_registry_get_invalid_payload_fails() -> None:
         """get() fails gracefully when registry payload is not a plugin."""
         registry = FlextPluginPlatform.PluginRegistry()
         registry.register("bad", "not a plugin")
@@ -128,22 +141,28 @@ class TestsFlextPluginPlatformRegistry:
 class TestsFlextPluginPlatformService:
     """Behavioral tests for the plugin platform service."""
 
+    @staticmethod
     @pytest.fixture
-    def reset_service(self) -> None:
+    def reset_service() -> None:
         """Reset platform service singleton state before each test."""
         FlextPluginPlatform.PluginPlatformService.fetch_global().reset_for_testing()
 
     @staticmethod
     def _make_plugin(
-        *, name: str = "demo-plugin", is_enabled: bool = True
+        *, name: str = "demo-plugin", is_enabled: bool = True,
     ) -> FlextPluginPlatform.Plugin:
-        """Build a platform plugin entity."""
+        """Build a platform plugin entity.
+
+        Returns:
+            The resulting ``FlextPluginPlatform.Plugin``.
+        """
         plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
-            name=name, plugin_version="1.0.0", is_enabled=is_enabled
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled,
         )
         return plugin
 
-    def test_service_execute_returns_ok(self) -> None:
+    @staticmethod
+    def test_service_execute_returns_ok() -> None:
         """execute() on the platform service succeeds."""
         service = FlextPluginPlatform.PluginPlatformService()
 
@@ -163,8 +182,9 @@ class TestsFlextPluginPlatformService:
         tm.that(service.fetch_plugin_status("demo-plugin"), eq="active")
         tm.that(service.resolve_plugin_active("demo-plugin"), eq=True)
 
-    def test_service_fetch_unknown_plugin_returns_none(self) -> None:
-        """fetch_plugin(), fetch_plugin_status() and resolve_plugin_active() handle unknowns."""
+    @staticmethod
+    def test_service_fetch_unknown_plugin_returns_none() -> None:
+        """fetch_plugin()/fetch_plugin_status()/resolve_plugin_active() on unknowns."""
         service = FlextPluginPlatform.PluginPlatformService()
 
         tm.that(service.fetch_plugin("missing"), none=True)
@@ -209,7 +229,8 @@ class TestsFlextPluginPlatformService:
         tm.that(status["total_executions"], eq=1)
         tm.that(status["running_executions"], eq=1)
 
-    def test_service_cleanup_executions_removes_completed(self) -> None:
+    @staticmethod
+    def test_service_cleanup_executions_removes_completed() -> None:
         """cleanup_executions() removes completed executions and returns count."""
         service = FlextPluginPlatform.PluginPlatformService()
         completed = FlextPluginPlatform.PluginExecution("demo", {})
@@ -225,7 +246,8 @@ class TestsFlextPluginPlatformService:
         tm.that(service.executions, lacks="done")
         tm.that(service.executions, has="run")
 
-    def test_service_list_executions_and_running(self) -> None:
+    @staticmethod
+    def test_service_list_executions_and_running() -> None:
         """list_executions() and list_running_executions() filter correctly."""
         service = FlextPluginPlatform.PluginPlatformService()
         running = FlextPluginPlatform.PluginExecution("demo", {})
@@ -240,8 +262,9 @@ class TestsFlextPluginPlatformService:
         assert service.fetch_execution("r") is running
         tm.that(service.fetch_execution("missing"), none=True)
 
+    @staticmethod
     def test_service_discover_plugins_without_discovery_fails(
-        self, tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """discover_plugins() fails when no discovery protocol is configured."""
         service = FlextPluginPlatform.PluginPlatformService()
@@ -251,7 +274,8 @@ class TestsFlextPluginPlatformService:
         tm.that(result.failure, eq=True)
         tm.that((result.error or ""), has="Discovery")
 
-    def test_service_load_plugin_without_loader_fails(self, tmp_path: Path) -> None:
+    @staticmethod
+    def test_service_load_plugin_without_loader_fails(tmp_path: Path) -> None:
         """load_plugin() fails when no loader protocol is configured."""
         service = FlextPluginPlatform.PluginPlatformService()
 
@@ -271,7 +295,8 @@ class TestsFlextPluginPlatformService:
         tm.that(result.failure, eq=True)
         tm.that((result.error or ""), has="Executor")
 
-    def test_service_execute_plugin_unknown_fails(self) -> None:
+    @staticmethod
+    def test_service_execute_plugin_unknown_fails() -> None:
         """execute_plugin() fails when plugin name is unknown."""
         service = FlextPluginPlatform.PluginPlatformService()
 
@@ -279,11 +304,12 @@ class TestsFlextPluginPlatformService:
 
         tm.that(result.failure, eq=True)
 
-    def test_service_discover_plugins_with_real_discovery(self, tmp_path: Path) -> None:
+    @staticmethod
+    def test_service_discover_plugins_with_real_discovery(tmp_path: Path) -> None:
         """discover_plugins() registers plugins found by real file-system discovery."""
         service = FlextPluginPlatform.PluginPlatformService()
         (tmp_path / "found.py").write_text(
-            '"""Real plugin module."""\n', encoding="utf-8"
+            '"""Real plugin module."""\n', encoding="utf-8",
         )
         service.discovery = FlextPluginDiscovery()
 
@@ -292,7 +318,8 @@ class TestsFlextPluginPlatformService:
         tm.that(result.success, eq=True)
         tm.that(service.fetch_plugin("found"), none=False)
 
-    def test_service_load_plugin_with_real_loader(self, tmp_path: Path) -> None:
+    @staticmethod
+    def test_service_load_plugin_with_real_loader(tmp_path: Path) -> None:
         """load_plugin() maps a real loader payload and registers the plugin."""
         service = FlextPluginPlatform.PluginPlatformService()
         plugin_file = tmp_path / "loaded.py"
@@ -306,8 +333,9 @@ class TestsFlextPluginPlatformService:
         tm.that(service.fetch_plugin("loaded"), none=False)
         assert loader.plugin_loaded("loaded")
 
+    @staticmethod
     def test_service_load_plugin_propagates_loader_failure(
-        self, tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """load_plugin() fails when the real loader cannot find the file."""
         service = FlextPluginPlatform.PluginPlatformService()
@@ -345,7 +373,8 @@ class TestsFlextPluginPlatformService:
 
         tm.that(result.failure, eq=True)
 
-    def test_plugin_with_invalid_version_is_rejected_at_construction(self) -> None:
+    @staticmethod
+    def test_plugin_with_invalid_version_is_rejected_at_construction() -> None:
         """Invalid semver is rejected by the real model validator at construction.
 
         NOTE (multi-agent): no-mock rewrite — the old test patched
@@ -357,14 +386,16 @@ class TestsFlextPluginPlatformService:
         with pytest.raises(c.ValidationError, match="semantic"):
             FlextPluginPlatform.Plugin(name="valid-plugin", plugin_version="not-semver")
 
-    def test_service_hot_reload_methods(self, tmp_path: Path) -> None:
+    @staticmethod
+    def test_service_hot_reload_methods(tmp_path: Path) -> None:
         """Hot reload methods return success without side effects."""
         service = FlextPluginPlatform.PluginPlatformService()
 
         tm.that(service.start_hot_reload([str(tmp_path)]).success, eq=True)
         tm.that(service.stop_hot_reload().success, eq=True)
 
-    def test_service_registry_property_creates_default(self) -> None:
+    @staticmethod
+    def test_service_registry_property_creates_default() -> None:
         """Registry property lazily creates a registry if unset."""
         service = FlextPluginPlatform.PluginPlatformService()
         service.reset_registry()

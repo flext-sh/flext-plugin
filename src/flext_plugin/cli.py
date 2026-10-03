@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from flext_cli.services.cli import FlextCliCli
 
 if TYPE_CHECKING:
-    from . import t
+    from flext_plugin import t
 
 
 class FlextPluginCli(FlextCliCli):
@@ -19,7 +19,11 @@ class FlextPluginCli(FlextCliCli):
 
 
 def main(args: t.StrSequence | None = None) -> int:
-    """Console-script entry point — commands are not implemented yet."""
+    """Console-script entry point — commands are not implemented yet.
+
+    Returns:
+        The resulting ``int``.
+    """
     _ = args
     return 0
 

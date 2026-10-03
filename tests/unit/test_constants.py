@@ -16,7 +16,8 @@ from tests import c
 class TestsFlextPluginConstantsUnit:
     """Behavioral contract tests for FlextPluginConstants."""
 
-    def test_category_types_are_nonempty_frozensets(self) -> None:
+    @staticmethod
+    def test_category_types_are_nonempty_frozensets() -> None:
         """Each plugin-type category exposes a non-empty immutable frozenset."""
         categories = (
             c.Plugin.SINGER_PLUGIN_TYPES,
@@ -29,6 +30,7 @@ class TestsFlextPluginConstantsUnit:
             tm.that(category, is_=frozenset)
             assert len(category) > 0
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("category", "expected_values"),
         [
@@ -56,12 +58,13 @@ class TestsFlextPluginConstantsUnit:
         ],
     )
     def test_category_exact_membership(
-        self, category: frozenset[c.Plugin.Type], expected_values: set[str]
+        category: frozenset[c.Plugin.Type], expected_values: set[str],
     ) -> None:
         """Each category contains exactly its documented plugin type values."""
         tm.that({member.value for member in category}, eq=frozenset(expected_values))
 
-    def test_all_types_is_disjoint_union_of_categories(self) -> None:
+    @staticmethod
+    def test_all_types_is_disjoint_union_of_categories() -> None:
         """ALL_PLUGIN_TYPES equals the exact union of the four disjoint categories."""
         singer = c.Plugin.SINGER_PLUGIN_TYPES
         arch = c.Plugin.ARCHITECTURE_PLUGIN_TYPES
@@ -72,9 +75,10 @@ class TestsFlextPluginConstantsUnit:
         tm.that(union, eq=c.Plugin.ALL_PLUGIN_TYPES)
         # A disjoint union preserves total cardinality (no overlap, no loss).
         tm.that(
-            len(union), eq=len(singer) + len(arch) + len(integration) + len(utility)
+            len(union), eq=len(singer) + len(arch) + len(integration) + len(utility),
         )
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("left", "right"),
         [
@@ -87,13 +91,14 @@ class TestsFlextPluginConstantsUnit:
         ],
     )
     def test_categories_are_pairwise_disjoint(
-        self, left: frozenset[c.Plugin.Type], right: frozenset[c.Plugin.Type]
+        left: frozenset[c.Plugin.Type], right: frozenset[c.Plugin.Type],
     ) -> None:
         """No plugin type belongs to more than one category."""
         assert left.isdisjoint(right)
         assert left.issubset(c.Plugin.ALL_PLUGIN_TYPES)
         assert right.issubset(c.Plugin.ALL_PLUGIN_TYPES)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("attribute", "expected"),
         [
@@ -106,11 +111,12 @@ class TestsFlextPluginConstantsUnit:
             ("DEFAULT_CONFIG_DIR", "settings"),
         ],
     )
-    def test_file_constants_exact_values(self, attribute: str, expected: str) -> None:
+    def test_file_constants_exact_values(attribute: str, expected: str) -> None:
         """File-related constants expose their exact documented string values."""
         tm.that(getattr(c.Plugin.Files, attribute), eq=expected)
 
-    def test_config_extensions_are_distinct(self) -> None:
+    @staticmethod
+    def test_config_extensions_are_distinct() -> None:
         """Each configuration format maps to a unique file extension."""
         extensions = {
             c.Plugin.Files.YAML_CONFIG_EXTENSION,
@@ -119,7 +125,8 @@ class TestsFlextPluginConstantsUnit:
         }
         tm.that(len(extensions), eq=3)
 
-    def test_extensions_start_with_dot(self) -> None:
+    @staticmethod
+    def test_extensions_start_with_dot() -> None:
         """Every declared file extension is dot-prefixed."""
         for extension in (
             c.Plugin.Files.PYTHON_EXTENSION,

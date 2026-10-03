@@ -211,7 +211,7 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 
 #### **Core ↔ CLI Communication**
 
-```python
+```text
 # CLI imports and uses Core APIs
 from __future__ import annotations
 
@@ -223,7 +223,7 @@ result = api.discover_plugins(["./plugins"])
 
 #### **Core ↔ API Communication** (Planned)
 
-```python
+```text
 # REST API delegates to Core
 from __future__ import annotations
 
@@ -486,7 +486,7 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ### FLEXT Plugin Core API
 
-```python
+```text
 # Primary interface for all plugin operations
 from __future__ import annotations
 
