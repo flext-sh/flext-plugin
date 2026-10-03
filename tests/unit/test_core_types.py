@@ -37,7 +37,8 @@ class TestsFlextPluginCoreTypes:
         ],
     )
     def test_plugin_type_member_carries_its_string_value(
-        member: c.Plugin.Type, value: str,
+        member: c.Plugin.Type,
+        value: str,
     ) -> None:
         """Each plugin-type member exposes its canonical lowercase string."""
         tm.that(member.value, eq=value)
@@ -45,7 +46,8 @@ class TestsFlextPluginCoreTypes:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "value", ["tap", "target", "transform", "utility", "service", "core"],
+        "value",
+        ["tap", "target", "transform", "utility", "service", "core"],
     )
     def test_plugin_type_round_trips_from_string(value: str) -> None:
         """Constructing from a valid string yields the matching member back."""
@@ -94,7 +96,8 @@ class TestsFlextPluginCoreTypes:
         ],
     )
     def test_plugin_status_member_carries_its_string_value(
-        member: c.Plugin.PluginStatus, value: str,
+        member: c.Plugin.PluginStatus,
+        value: str,
     ) -> None:
         """Each status member exposes its canonical lowercase string."""
         tm.that(member.value, eq=value)
@@ -102,7 +105,8 @@ class TestsFlextPluginCoreTypes:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "member", [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
+        "member",
+        [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
     )
     def test_error_states_report_as_error_and_not_operational(
         member: c.Plugin.PluginStatus,
@@ -114,7 +118,8 @@ class TestsFlextPluginCoreTypes:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "member", [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
+        "member",
+        [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
     )
     def test_operational_states_report_as_operational_and_not_error(
         member: c.Plugin.PluginStatus,
@@ -147,7 +152,8 @@ class TestsFlextPluginCoreTypes:
         ],
     )
     def test_discovery_type_literal_values(
-        member: c.Plugin.DiscoveryTypeLiteral, value: str,
+        member: c.Plugin.DiscoveryTypeLiteral,
+        value: str,
     ) -> None:
         """Discovery-type literals expose their canonical string values."""
         tm.that(member.value, eq=value)

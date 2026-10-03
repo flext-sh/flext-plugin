@@ -36,17 +36,21 @@ class TestsFlextPluginExamples:
             pytest.param("basic_plugin.py", (), id="basic-plugin"),
             pytest.param("plugin_configuration.py", (), id="plugin-configuration"),
             pytest.param(
-                "docker_integration.py", ("run",), id="docker-integration-run",
+                "docker_integration.py",
+                ("run",),
+                id="docker-integration-run",
             ),
         ],
     )
     def test_example_script_runs_to_success(
-        script: str, args: t.VariadicTuple[str],
+        script: str,
+        args: t.VariadicTuple[str],
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
         example_path = _examples_dir() / script
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), *args], cwd=_examples_dir().parent,
+            [sys.executable, str(example_path), *args],
+            cwd=_examples_dir().parent,
         )
 
         tm.ok(result)
@@ -59,7 +63,8 @@ class TestsFlextPluginExamples:
         """Running a non-existent example surfaces a failure, not silent success."""
         missing_path = _examples_dir() / "does_not_exist.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(missing_path)], cwd=_examples_dir().parent,
+            [sys.executable, str(missing_path)],
+            cwd=_examples_dir().parent,
         )
 
         tm.ok(result)

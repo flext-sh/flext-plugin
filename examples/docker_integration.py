@@ -48,7 +48,8 @@ def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bo
 
 
 def create_docker_postgres_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping,
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns.
 
@@ -79,7 +80,8 @@ def create_docker_postgres_plugin() -> tuple[
 
 
 def create_docker_redis_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping,
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible Redis plugin using domain library patterns.
 
@@ -111,7 +113,8 @@ def create_docker_redis_plugin() -> tuple[
 
 
 def create_docker_ldap_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping,
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
     """Create a Docker-compatible LDAP plugin using domain library patterns.
 

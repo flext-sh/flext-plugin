@@ -97,7 +97,9 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     self._executed: list[str] = []
 
                 def execute_plugin(
-                    self, plugin_name: str, context: t.JsonMapping,
+                    self,
+                    plugin_name: str,
+                    context: t.JsonMapping,
                 ) -> p.Result[t.JsonMapping]:
                     """Record the execution and echo the context as result.
 
@@ -149,7 +151,8 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                 @staticmethod
                 def execute_plugin(
-                    plugin_name: str, context: t.JsonMapping,
+                    plugin_name: str,
+                    context: t.JsonMapping,
                 ) -> p.Result[t.JsonMapping]:
                     """Report a real execution failure.
 

@@ -61,7 +61,8 @@ class FlextPluginImplementations:
             )
 
         def discover_plugins(
-            self, paths: t.StrSequence,
+            self,
+            paths: t.StrSequence,
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins from multiple paths.
 
@@ -159,7 +160,9 @@ class FlextPluginImplementations:
             self._executed: list[str] = []
 
         def execute_plugin(
-            self, plugin_name: str, context: t.JsonMapping,
+            self,
+            plugin_name: str,
+            context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
             """Record the execution and echo the context as result.
 
@@ -205,7 +208,8 @@ class FlextPluginImplementations:
 
         @staticmethod
         def execute_plugin(
-            plugin_name: str, context: t.JsonMapping,
+            plugin_name: str,
+            context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
             """Report a real execution failure.
 

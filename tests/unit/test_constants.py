@@ -58,7 +58,8 @@ class TestsFlextPluginConstantsUnit:
         ],
     )
     def test_category_exact_membership(
-        category: frozenset[c.Plugin.Type], expected_values: set[str],
+        category: frozenset[c.Plugin.Type],
+        expected_values: set[str],
     ) -> None:
         """Each category contains exactly its documented plugin type values."""
         tm.that({member.value for member in category}, eq=frozenset(expected_values))
@@ -75,7 +76,8 @@ class TestsFlextPluginConstantsUnit:
         tm.that(union, eq=c.Plugin.ALL_PLUGIN_TYPES)
         # A disjoint union preserves total cardinality (no overlap, no loss).
         tm.that(
-            len(union), eq=len(singer) + len(arch) + len(integration) + len(utility),
+            len(union),
+            eq=len(singer) + len(arch) + len(integration) + len(utility),
         )
 
     @staticmethod
@@ -91,7 +93,8 @@ class TestsFlextPluginConstantsUnit:
         ],
     )
     def test_categories_are_pairwise_disjoint(
-        left: frozenset[c.Plugin.Type], right: frozenset[c.Plugin.Type],
+        left: frozenset[c.Plugin.Type],
+        right: frozenset[c.Plugin.Type],
     ) -> None:
         """No plugin type belongs to more than one category."""
         assert left.isdisjoint(right)

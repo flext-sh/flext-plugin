@@ -20,7 +20,8 @@ class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
         """Plugin domain namespace (flat members per AGENTS.md)."""
 
         type EventHandler = Callable[
-            [FlextCliTypes.JsonMapping], Awaitable[FlextCliTypes.JsonMapping],
+            [FlextCliTypes.JsonMapping],
+            Awaitable[FlextCliTypes.JsonMapping],
         ]
 
 

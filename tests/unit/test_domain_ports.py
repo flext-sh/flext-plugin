@@ -71,7 +71,8 @@ class TestsFlextPluginDomainPorts:
         ],
     )
     def test_discover_plugin_fails_when_nothing_resolves(
-        discovery: FlextPluginDiscovery, missing_path: str,
+        discovery: FlextPluginDiscovery,
+        missing_path: str,
     ) -> None:
         """An unresolvable path yields a failure result, never a raised error."""
         result = discovery.discover_plugin(missing_path)
@@ -106,7 +107,9 @@ class TestsFlextPluginDomainPorts:
         tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_directory_returns_success_sequence(
-        self, discovery: FlextPluginDiscovery, tmp_path: Path,
+        self,
+        discovery: FlextPluginDiscovery,
+        tmp_path: Path,
     ) -> None:
         """A real directory yields a success whose value is a sequence."""
         self._make_tree(tmp_path)
@@ -135,13 +138,17 @@ class TestsFlextPluginDomainPorts:
     # ------------------------------------------------------------------ #
 
     def test_directory_walk_collects_non_underscore_python_files_recursively(
-        self, logger: p.Logger, tmp_path: Path,
+        self,
+        logger: p.Logger,
+        tmp_path: Path,
     ) -> None:
         """Walk recurses into plain packages and returns each discovered file."""
         self._make_tree(tmp_path)
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path, lambda item: item.stem, logger,
+            tmp_path,
+            lambda item: item.stem,
+            logger,
         )
 
         tm.that(sorted(discovered), eq=["alpha", "beta"])
@@ -157,20 +164,27 @@ class TestsFlextPluginDomainPorts:
         ],
     )
     def test_directory_walk_filters_files_by_name_and_suffix(
-        logger: p.Logger, tmp_path: Path, filename: str, *, expected_present: bool,
+        logger: p.Logger,
+        tmp_path: Path,
+        filename: str,
+        *,
+        expected_present: bool,
     ) -> None:
         """Only public ``*.py`` files reach the discover callback."""
         (tmp_path / filename).write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path, lambda item: item.name, logger,
+            tmp_path,
+            lambda item: item.name,
+            logger,
         )
 
         assert (filename in discovered) is expected_present
 
     @staticmethod
     def test_directory_walk_skips_dunder_directories(
-        logger: p.Logger, tmp_path: Path,
+        logger: p.Logger,
+        tmp_path: Path,
     ) -> None:
         """Files inside ``__dunder__`` directories are not descended into."""
         dunder = tmp_path / "__cache__"
@@ -178,32 +192,40 @@ class TestsFlextPluginDomainPorts:
         (dunder / "hidden.py").write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path, lambda item: item.stem, logger,
+            tmp_path,
+            lambda item: item.stem,
+            logger,
         )
 
         tm.that(list(discovered), eq=[])
 
     @staticmethod
     def test_directory_walk_returns_empty_for_missing_directory(
-        logger: p.Logger, tmp_path: Path,
+        logger: p.Logger,
+        tmp_path: Path,
     ) -> None:
         """An unreadable/missing directory yields an empty result, not a raise."""
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path / "does-not-exist", lambda item: item.stem, logger,
+            tmp_path / "does-not-exist",
+            lambda item: item.stem,
+            logger,
         )
 
         tm.that(list(discovered), eq=[])
 
     @staticmethod
     def test_directory_walk_drops_none_from_callback(
-        logger: p.Logger, tmp_path: Path,
+        logger: p.Logger,
+        tmp_path: Path,
     ) -> None:
         """A callback returning ``None`` contributes nothing to the result."""
         (tmp_path / "alpha.py").write_text("x = 1", encoding="utf-8")
         (tmp_path / "beta.py").write_text("x = 1", encoding="utf-8")
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            tmp_path, lambda item: item.stem if item.stem == "alpha" else None, logger,
+            tmp_path,
+            lambda item: item.stem if item.stem == "alpha" else None,
+            logger,
         )
 
         tm.that(list(discovered), eq=["alpha"])

@@ -24,13 +24,15 @@ class FlextPluginProtocolsPlugin:
             ...
 
         def discover_plugins(
-            self, paths: t.StrSequence,
+            self,
+            paths: t.StrSequence,
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins at the given paths."""
             ...
 
         def validate_plugin(
-            self, plugin_data: m.Plugin.DiscoveryData,
+            self,
+            plugin_data: m.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Validate plugin discovery data."""
             ...
@@ -88,7 +90,9 @@ class FlextPluginProtocolsPlugin:
         """Protocol for plugin execution operations."""
 
         def execute_plugin(
-            self, plugin_name: str, context: t.JsonMapping,
+            self,
+            plugin_name: str,
+            context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
             """Execute a plugin with the given context."""
             ...
@@ -110,7 +114,9 @@ class FlextPluginProtocolsPlugin:
         """Protocol for plugin security operations."""
 
         def check_permissions(
-            self, plugin_name: str, permissions: t.StrSequence,
+            self,
+            plugin_name: str,
+            permissions: t.StrSequence,
         ) -> bool:
             """Check if plugin has specified permissions."""
             ...
@@ -272,7 +278,8 @@ class FlextPluginProtocolsPlugin:
         """Strategy protocol for plugin discovery."""
 
         def discover(
-            self, paths: t.StrSequence,
+            self,
+            paths: t.StrSequence,
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins using this strategy."""
             ...
