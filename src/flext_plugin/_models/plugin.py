@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
+from flext_plugin.constants import c
+
 if TYPE_CHECKING:
     from pathlib import Path
 

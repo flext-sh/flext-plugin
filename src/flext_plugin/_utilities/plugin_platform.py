@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import MutableMapping, MutableSequence, Sequence
 from typing import override
 
@@ -52,7 +53,7 @@ class PluginLifecycleOperations:
             discover_and_validate,
         )
         plugins: p.Result[Sequence[FlextPluginPlatform.Plugin]] = discovered.flat_map(
-            self._validate_and_create_plugins
+            self._validate_and_create_plugins,
         )
         return plugins.map(self._register_all)
 
