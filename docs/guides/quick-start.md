@@ -9,6 +9,11 @@
 - [Your First Plugin (5 minutes)](#your-first-plugin-5-minutes)
   - [Step 1: Create a Simple Plugin](#step-1-create-a-simple-plugin)
   - [Step 2: Use the Plugin Platform](#step-2-use-the-plugin-platform)
+  - [Step 3: Create a Custom Plugin Class](#step-3-create-a-custom-plugin-class)
+- [Plugin Discovery](#plugin-discovery)
+- [Testing Your Plugin](#testing-your-plugin)
+- [Development with Hot Reload](#development-with-hot-reload)
+- [Quality Gates](#quality-gates)
 - [Next Steps](#next-steps)
   - [Immediate Next Steps](#immediate-next-steps)
 - [Troubleshooting](#troubleshooting)
@@ -67,7 +72,7 @@ python -c "import flext_plugin; u.Cli.print(f'FLEXT Plugin v{flext_plugin.__vers
 
 Create a file called `hello_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin
@@ -103,7 +108,7 @@ Valid: True
 
 Create `platform_example.py`:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
@@ -170,13 +175,10 @@ Active plugins: ['hello-world']
 
 Create `custom_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
-from flext_plugin import FlextPlugin
-from flext_plugin import PluginStatus, PluginType
-from flext_cli import u
-from flext_core import FlextSettings
+from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 
 class GreetingPlugin(FlextPlugin):
@@ -304,7 +306,7 @@ Cleaning up greeting-generator...
 
 FLEXT Plugin can automatically discover plugins in directories:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginDiscoveryService
@@ -334,7 +336,7 @@ run(discover_plugins())
 
 Create `test_greeting_plugin.py`:
 
-```python
+```text
 from __future__ import annotations
 
 import pytest
@@ -422,7 +424,7 @@ python test_greeting_plugin.py
 For development, you can enable hot reload to automatically reload plugins when files
 change:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
@@ -500,7 +502,7 @@ pip install --force-reinstall flext-plugin
 
 **Plugin Not Activating**
 
-```python
+```text
 # Check plugin status and validation
 from __future__ import annotations
 

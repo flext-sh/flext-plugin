@@ -37,7 +37,11 @@ class TestsFlextPluginDomainEntities:
         description: str = "Test plugin",
         author: str = "Test Author",
     ) -> m.Plugin.Entity:
-        """Construct a Plugin entity through the public factory."""
+        """Construct a Plugin entity through the public factory.
+
+        Returns:
+            The resulting ``m.Plugin.Entity``.
+        """
         return m.Plugin.Entity(
             name=name,
             plugin_version=plugin_version,
@@ -67,7 +71,8 @@ class TestsFlextPluginDomainEntities:
         tm.that(plugin.is_enabled, eq=True)
         tm.that(dict(plugin.metadata), eq={})
 
-    def test_create_applies_declared_field_defaults(self) -> None:
+    @staticmethod
+    def test_create_applies_declared_field_defaults() -> None:
         """Optional fields fall back to their declared defaults."""
         plugin = m.Plugin.Entity(name="minimal-plugin", unique_id="min-id")
 
@@ -76,18 +81,20 @@ class TestsFlextPluginDomainEntities:
         tm.that(plugin.author, eq="")
         tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
 
+    @staticmethod
     @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
-    def test_create_rejects_names_violating_contract(self, bad_name: str) -> None:
+    def test_create_rejects_names_violating_contract(bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
         with pytest.raises(ValueError, match=r".+"):
             m.Plugin.Entity(name=bad_name, unique_id="id")
 
+    @staticmethod
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
-    def test_create_rejects_non_semantic_versions(self, bad_version: str) -> None:
+    def test_create_rejects_non_semantic_versions(bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity(
-                name="valid-plugin", plugin_version=bad_version, unique_id="id"
+                name="valid-plugin", plugin_version=bad_version, entity_id="id",
             )
 
     # ------------------------------------------------------------------ #
@@ -107,7 +114,8 @@ class TestsFlextPluginDomainEntities:
     # PluginMetadata value object
     # ------------------------------------------------------------------ #
 
-    def test_metadata_value_object_preserves_all_supplied_fields(self) -> None:
+    @staticmethod
+    def test_metadata_value_object_preserves_all_supplied_fields() -> None:
         """PluginMetadata round-trips the fields it is constructed with."""
         metadata = m.Plugin.Metadata(
             name="test-plugin",
@@ -127,10 +135,11 @@ class TestsFlextPluginDomainEntities:
         tm.that(metadata.dependencies, has="requests")
         tm.that(metadata.dependencies, has="pydantic")
 
-    def test_metadata_value_object_applies_declared_defaults(self) -> None:
+    @staticmethod
+    def test_metadata_value_object_applies_declared_defaults() -> None:
         """Omitted optional PluginMetadata fields take their declared defaults."""
         metadata = m.Plugin.Metadata(
-            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main"
+            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main",
         )
 
         tm.that(metadata.description, eq="")
@@ -139,7 +148,8 @@ class TestsFlextPluginDomainEntities:
         tm.that(metadata.dependencies, eq=())
         tm.that(dict(metadata.metadata), eq={})
 
-    def test_metadata_value_object_carries_all_optional_fields(self) -> None:
+    @staticmethod
+    def test_metadata_value_object_carries_all_optional_fields() -> None:
         """PluginMetadata retains explicitly supplied optional fields."""
         metadata = m.Plugin.Metadata(
             name="full-plugin",

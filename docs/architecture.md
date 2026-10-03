@@ -72,7 +72,7 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 
 #### FlextPlugin
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -93,7 +93,7 @@ class FlextPlugin(FlextModels.Entity):
 
 #### FlextPluginModels.Config
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -120,7 +120,7 @@ Plugin-specific business logic that doesn't belong to a single entity.
 
 Coordinates all plugin operations:
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -154,7 +154,7 @@ class FlextPluginPlatform:
 
 #### File System Discovery
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -167,7 +167,7 @@ class FileSystemPluginDiscovery:
 
 #### Watchdog Integration
 
-```python
+```text
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -190,7 +190,7 @@ class WatchdogHotReload:
 
 All operations return `r[T]` for railway-oriented programming:
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -206,7 +206,7 @@ def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
 
 Uses FlextContainer for service management:
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -219,7 +219,7 @@ def _setup_services(self) -> None:
 
 Plugins can implement Singer tap/target patterns:
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -275,7 +275,7 @@ classes:
 ### Integration Points
 
 - **flext-cli**: Command-line plugin management
-- **flext-web**: Web interface for plugin REDACTED_LDAP_BIND_PASSWORDistration
+- **flext-web**: Web interface for plugin administration
 - **flext-api**: REST API for plugin operations
 - **Singer Projects**: Plugin framework for data pipeline components
 

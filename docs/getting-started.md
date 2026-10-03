@@ -8,6 +8,10 @@
   - [Dependencies](#dependencies)
 - [First Plugin](#first-plugin)
   - [Create a Basic Plugin](#create-a-basic-plugin)
+  - [Plugin Discovery](#plugin-discovery)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Plugin Directory Structure](#plugin-directory-structure)
 - [Development Commands](#development-commands)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
@@ -58,7 +62,7 @@ flext-observability > =0.9.9 # Monitoring and observability
 
 ### Create a Basic Plugin
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
@@ -85,7 +89,7 @@ if load_result.success:
 
 ### Plugin Discovery
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform

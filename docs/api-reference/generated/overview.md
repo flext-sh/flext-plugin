@@ -10,10 +10,23 @@
 
 - Version: `0.12.0`
 - Description: FLEXT Plugin - Plugin System for FLEXT Platform
-- Governed projects: `0`
-- Project classes: _none_
-
-Generated from workspace discovery, `pyproject.toml`, public exports, and docstrings.
+- Doc summary: Flext Plugin package.
+- Classifiers: Development Status :: 3 - Alpha, Intended Audience :: Developers,
+  Operating System :: OS Independent, Programming Language :: Python :: 3 :: Only,
+  Programming Language :: Python :: 3.13, Topic :: Software Development :: Libraries ::
+  Python Modules, Typing :: Typed
+- Project class: `domain`
+- Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
+- Main facades: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
+  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
+  `FlextPluginPlatform`, `FlextPluginProtocols` (+4 more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
+  `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
+  `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginServiceBase`,
+  `FlextPluginSettings` (+6 more)
+- Exported module shortcuts: `services`
+- Generated module pages: `8`
 
 ## Next Pages
 

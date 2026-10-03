@@ -41,9 +41,9 @@
 
 ## 📋 Documentation Structure
 
-This architecture documentation follows a comprehensive framework combining **C4
-Model**, **Arc42**, and **Architecture Decision Records (ADRs)** for complete system
-documentation.
+This architecture documentation follows a comprehensive framework combining
+**C4 Model**, **Arc42**, and **Architecture Decision Records (ADRs)** for complete
+system documentation.
 
 ### 🎯 Documentation Levels
 

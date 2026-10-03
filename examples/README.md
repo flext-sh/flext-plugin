@@ -39,14 +39,14 @@ the FLEXT Plugin system.
 ### 🚀 Getting Started
 
 - **Basic Plugin** - Simple plugin implementation
-- **Plugin Configuration** - Configuration management patterns (_Documentation coming
-  soon_)
+- **Plugin Configuration** - Configuration management patterns
+  (_Documentation coming soon_)
 - **Plugin Lifecycle** - Lifecycle management examples (_Documentation coming soon_)
 
 ### 🔌 Plugin Types
 
-- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano (_Documentation
-  coming soon_)
+- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano
+  (_Documentation coming soon_)
 - **Singer Target Plugin** - Data loading plugin (_Documentation coming soon_)
 - **Service Plugin** - Microservice integration (_Documentation coming soon_)
 - **Utility Plugin** - General-purpose utility plugin (_Documentation coming soon_)
@@ -59,12 +59,12 @@ the FLEXT Plugin system.
 
 ### 🏗️ Advanced Integration
 
-- **FLEXT Service Integration** - Python service integration (_Documentation coming
-  soon_)
-- **Multi-Plugin Orchestration** - Coordinating multiple plugins (_Documentation coming
-  soon_)
-- **Custom Plugin Types** - Creating custom plugin categories (_Documentation coming
-  soon_)
+- **FLEXT Service Integration** - Python service integration
+  (_Documentation coming soon_)
+- **Multi-Plugin Orchestration** - Coordinating multiple plugins
+  (_Documentation coming soon_)
+- **Custom Plugin Types** - Creating custom plugin categories
+  (_Documentation coming soon_)
 
 ## Quick Reference
 

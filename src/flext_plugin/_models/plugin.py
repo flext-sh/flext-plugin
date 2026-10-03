@@ -7,12 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-from flext_plugin import c, t
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from flext_plugin import t
 
 
 class FlextPluginModelsPlugin:
@@ -61,26 +63,33 @@ class FlextPluginModelsPlugin:
         description: Annotated[
             str,
             cli_u.Field(
-                max_length=1000, description="Plugin functionality description"
+                max_length=1000, description="Plugin functionality description",
             ),
         ] = ""
         author: Annotated[
-            str, cli_u.Field(max_length=200, description="Plugin author/maintainer")
+            str, cli_u.Field(max_length=200, description="Plugin author/maintainer"),
         ] = ""
         plugin_type: Annotated[
-            c.Plugin.Type, cli_u.Field(description="Plugin type classification")
-        ] = c.Plugin.Type.UTILITY
+            str, cli_u.Field(description="Plugin type classification"),
+        ] = "utility"
         is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
             True
         )
         metadata: Annotated[
-            t.MutableJsonMapping, cli_u.Field(description="Extensible plugin metadata")
+            t.MutableJsonMapping, cli_u.Field(description="Extensible plugin metadata"),
         ] = cli_u.Field(default_factory=dict)
 
         @cli_u.field_validator("plugin_version", mode="before")
         @classmethod
         def validate_semantic_version(cls, value: str) -> str:
-            """Validate semantic version format (X.Y.Z)."""
+            """Validate semantic version format (X.Y.Z).
+
+            Returns:
+                The resulting ``str``.
+
+            Raises:
+                ValueError: If Version must be semantic format X.Y.Z, got.
+            """
             min_version_parts = 2
             max_version_parts = 3
             parts = value.split(".")
@@ -167,10 +176,10 @@ class FlextPluginModelsPlugin:
         ]
         path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
         discovery_type: Annotated[
-            str, cli_u.Field(description="Type of discovered plugin")
+            str, cli_u.Field(description="Type of discovered plugin"),
         ]
         discovery_method: Annotated[
-            str, cli_u.Field(description="Discovery method used")
+            str, cli_u.Field(description="Discovery method used"),
         ]
         metadata: Annotated[
             t.MutableJsonMapping,
@@ -180,7 +189,14 @@ class FlextPluginModelsPlugin:
         @cli_u.field_validator("version", mode="before")
         @classmethod
         def validate_version(cls, value: str) -> str:
-            """Validate semantic version format."""
+            """Validate semantic version format.
+
+            Returns:
+                The resulting ``str``.
+
+            Raises:
+                ValueError: If Version must be semantic format X.Y.Z, got.
+            """
             min_parts = 2
             max_parts = 3
             parts = value.split(".")
@@ -220,10 +236,11 @@ class FlextPluginModelsPlugin:
         )
         entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
         dependencies: Annotated[
-            t.VariadicTuple[str], cli_u.Field(description="List of plugin dependencies")
+            t.VariadicTuple[str],
+            cli_u.Field(description="List of plugin dependencies"),
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
-            t.MutableJsonMapping, cli_u.Field(description="Additional metadata")
+            t.MutableJsonMapping, cli_u.Field(description="Additional metadata"),
         ] = cli_u.Field(default_factory=dict)
 
     class Registry(cli_m.Value):
@@ -246,10 +263,10 @@ class FlextPluginModelsPlugin:
             cli_u.Field(description="Dictionary of registered plugins"),
         ] = cli_u.Field(default_factory=dict)
         last_updated: Annotated[
-            datetime, cli_u.Field(description="Last update timestamp")
+            datetime, cli_u.Field(description="Last update timestamp"),
         ] = cli_u.Field(default_factory=datetime.now)
         created_at: Annotated[
-            datetime, cli_u.Field(description="Registry creation timestamp")
+            datetime, cli_u.Field(description="Registry creation timestamp"),
         ] = cli_u.Field(default_factory=datetime.now)
 
 

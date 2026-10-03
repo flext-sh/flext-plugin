@@ -274,7 +274,7 @@ Rel(flext_plugin, github, "Hosts repositories on", "CI/CD pipelines")
 
 #### **Plugin Developer API**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
@@ -289,7 +289,7 @@ async def run() -> None:
 
 #### **Application Integration API**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_plugin import FlextPluginApi

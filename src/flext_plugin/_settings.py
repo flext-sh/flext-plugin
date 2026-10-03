@@ -21,6 +21,6 @@ class FlextPluginSettings(FlextSettings):
 
 
 settings: FlextPluginSettings = FlextPluginSettings.fetch_global()
-"""Pre-instantiated project settings singleton — ``from flext_plugin import settings``."""
+"""Pre-instantiated settings singleton: ``from flext_plugin import settings``."""
 
 __all__: list[str] = ["FlextPluginSettings", "settings"]

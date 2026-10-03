@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_cli import FlextCliTypes
 
-from ._typings import FlextPluginTypingsBase
+from flext_plugin._typings import FlextPluginTypingsBase
 
 
 class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
@@ -20,7 +20,7 @@ class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
         from collections.abc import Awaitable, Callable
 
         type EventHandler = Callable[
-            [FlextCliTypes.JsonMapping], Awaitable[FlextCliTypes.JsonMapping]
+            [FlextCliTypes.JsonMapping], Awaitable[FlextCliTypes.JsonMapping],
         ]
 
 

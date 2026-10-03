@@ -321,7 +321,7 @@ Plugin --> Permission: requires
 - **Read**: View plugin information and status
 - **Execute**: Run plugins with approved permissions
 - **Manage**: Install, update, and configure plugins
-- **Admin**: Full system REDACTED_LDAP_BIND_PASSWORDistration privileges
+- **Admin**: Full system administration privileges
 
 ---
 
@@ -573,7 +573,7 @@ make audit # Dependency and security audit
 
 #### **Security Monitoring**
 
-```python
+```text
 # Security event monitoring
 from __future__ import annotations
 

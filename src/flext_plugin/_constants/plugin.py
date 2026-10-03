@@ -96,7 +96,7 @@ class FlextPluginConstantsPlugin:
         VERSION_PATTERN: Final[str] = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
         VERSION_RE: ClassVar[t.RegexPattern] = re.compile(VERSION_PATTERN)
         VERSION_DUNDER_RE: ClassVar[t.RegexPattern] = re.compile(
-            r'__version__\s*=\s*["\']([^"\']+)["\']'
+            r'__version__\s*=\s*["\']([^"\']+)["\']',
         )
         DOCSTRING_TRIPLE_RE: ClassVar[t.RegexPattern] = re.compile(r'"""([^"]+)"""')
         MAX_PLUGIN_NAME_LENGTH: Final[int] = 100
@@ -126,20 +126,36 @@ class FlextPluginConstantsPlugin:
 
         @classmethod
         def get_error_statuses(cls) -> frozenset[str]:
-            """Get error status values."""
+            """Get error status values.
+
+            Returns:
+                The resulting ``frozenset[str]``.
+            """
             return frozenset({cls.ERROR, cls.UNHEALTHY, cls.DISABLED})
 
         @classmethod
         def get_operational_statuses(cls) -> frozenset[str]:
-            """Get operational status values."""
+            """Get operational status values.
+
+            Returns:
+                The resulting ``frozenset[str]``.
+            """
             return frozenset({cls.ACTIVE, cls.HEALTHY, cls.LOADED})
 
         def is_error_state(self) -> bool:
-            """Check if status is an error state."""
+            """Check if status is an error state.
+
+            Returns:
+                The resulting ``bool``.
+            """
             return self in self.get_error_statuses()
 
         def is_operational(self) -> bool:
-            """Check if status is operational."""
+            """Check if status is operational.
+
+            Returns:
+                The resulting ``bool``.
+            """
             return self in self.get_operational_statuses()
 
     @unique
