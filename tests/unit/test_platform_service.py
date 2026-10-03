@@ -144,6 +144,20 @@ class TestsFlextPluginPlatformRegistry:
 
 
 @pytest.mark.usefixtures("reset_service")
+def _make_plugin(
+    *, name: str = "demo-plugin", is_enabled: bool = True,
+) -> FlextPluginPlatform.Plugin:
+    """Build a platform plugin entity.
+
+    Returns:
+        The resulting ``FlextPluginPlatform.Plugin``.
+    """
+    plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
+        name=name, plugin_version="1.0.0", is_enabled=is_enabled,
+    )
+    return plugin
+
+
 class TestsFlextPluginPlatformService:
     """Behavioral tests for the plugin platform service."""
 
@@ -154,20 +168,6 @@ class TestsFlextPluginPlatformService:
         FlextPluginPlatform.PluginPlatformService.fetch_global().reset_for_testing()
 
     @staticmethod
-    def _make_plugin(
-        *, name: str = "demo-plugin", is_enabled: bool = True,
-    ) -> FlextPluginPlatform.Plugin:
-        """Build a platform plugin entity.
-
-        Returns:
-            The resulting ``FlextPluginPlatform.Plugin``.
-        """
-        plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
-            name=name, plugin_version="1.0.0", is_enabled=is_enabled,
-        )
-        return plugin
-
-    @staticmethod
     def test_service_execute_returns_ok() -> None:
         """execute() on the platform service succeeds."""
         service = FlextPluginPlatform.PluginPlatformService()
@@ -176,10 +176,11 @@ class TestsFlextPluginPlatformService:
 
         tm.that(result.success, eq=True)
 
-    def test_service_register_and_fetch_plugin(self) -> None:
+    @staticmethod
+    def test_service_register_and_fetch_plugin() -> None:
         """register_plugin() then fetch_plugin() round-trips the plugin."""
         service = FlextPluginPlatform.PluginPlatformService()
-        plugin = self._make_plugin()
+        plugin = _make_plugin()
 
         result = service.register_plugin(plugin)
 
@@ -197,10 +198,11 @@ class TestsFlextPluginPlatformService:
         tm.that(service.fetch_plugin_status("missing"), none=True)
         tm.that(service.resolve_plugin_active("missing"), eq=False)
 
-    def test_service_unregister_plugin_removes_it(self) -> None:
+    @staticmethod
+    def test_service_unregister_plugin_removes_it() -> None:
         """unregister_plugin() drops the plugin from internal storage."""
         service = FlextPluginPlatform.PluginPlatformService()
-        plugin = self._make_plugin()
+        plugin = _make_plugin()
         service.register_plugin(plugin)
 
         result = service.unregister_plugin("demo-plugin")
@@ -296,10 +298,11 @@ class TestsFlextPluginPlatformService:
         tm.that(result.failure, eq=True)
         tm.that((result.error or ""), has="Loader")
 
-    def test_service_execute_plugin_without_executor_fails(self) -> None:
+    @staticmethod
+    def test_service_execute_plugin_without_executor_fails() -> None:
         """execute_plugin() fails when no executor protocol is configured."""
         service = FlextPluginPlatform.PluginPlatformService()
-        plugin = self._make_plugin()
+        plugin = _make_plugin()
         service.register_plugin(plugin)
 
         result = service.execute_plugin("demo-plugin", {})
@@ -315,6 +318,41 @@ class TestsFlextPluginPlatformService:
         result = service.execute_plugin("missing", {})
 
         tm.that(result.failure, eq=True)
+
+    @staticmethod
+    def test_plugin_with_invalid_version_is_rejected_at_construction() -> None:
+        """Invalid semver is rejected by the real model validator at construction.
+
+        NOTE (multi-agent): no-mock rewrite — the old test patched
+        ``Plugin.validate_business_rules`` because every rule it checks (name,
+        semver, type) is already enforced by Pydantic at construction; an
+        invalid plugin can never reach ``register_plugin``. The real guarantee
+        is that construction itself rejects the invalid version.
+        """
+        with pytest.raises(c.ValidationError, match="semantic"):
+            FlextPluginPlatform.Plugin(name="valid-plugin", plugin_version="not-semver")
+
+    @staticmethod
+    def test_service_hot_reload_methods(tmp_path: Path) -> None:
+        """Hot reload methods return success without side effects."""
+        service = FlextPluginPlatform.PluginPlatformService()
+
+        tm.that(service.start_hot_reload([str(tmp_path)]).success, eq=True)
+        tm.that(service.stop_hot_reload().success, eq=True)
+
+    @staticmethod
+    def test_service_registry_property_creates_default() -> None:
+        """Registry property lazily creates a registry if unset."""
+        service = FlextPluginPlatform.PluginPlatformService()
+        service.reset_registry()
+
+        registry = service.registry
+
+        tm.that(registry, none=False)
+
+
+class TestsFlextPluginPlatformServiceRealComponents:
+    """Service tests against real discovery, loader, and executor components."""
 
     @staticmethod
     def test_service_discover_plugins_with_real_discovery(tmp_path: Path) -> None:
@@ -384,34 +422,3 @@ class TestsFlextPluginPlatformService:
         result = service.execute_plugin("demo-plugin", {})
 
         tm.that(result.failure, eq=True)
-
-    @staticmethod
-    def test_plugin_with_invalid_version_is_rejected_at_construction() -> None:
-        """Invalid semver is rejected by the real model validator at construction.
-
-        NOTE (multi-agent): no-mock rewrite — the old test patched
-        ``Plugin.validate_business_rules`` because every rule it checks (name,
-        semver, type) is already enforced by Pydantic at construction; an
-        invalid plugin can never reach ``register_plugin``. The real guarantee
-        is that construction itself rejects the invalid version.
-        """
-        with pytest.raises(c.ValidationError, match="semantic"):
-            FlextPluginPlatform.Plugin(name="valid-plugin", plugin_version="not-semver")
-
-    @staticmethod
-    def test_service_hot_reload_methods(tmp_path: Path) -> None:
-        """Hot reload methods return success without side effects."""
-        service = FlextPluginPlatform.PluginPlatformService()
-
-        tm.that(service.start_hot_reload([str(tmp_path)]).success, eq=True)
-        tm.that(service.stop_hot_reload().success, eq=True)
-
-    @staticmethod
-    def test_service_registry_property_creates_default() -> None:
-        """Registry property lazily creates a registry if unset."""
-        service = FlextPluginPlatform.PluginPlatformService()
-        service.reset_registry()
-
-        registry = service.registry
-
-        tm.that(registry, none=False)

@@ -1,6 +1,7 @@
 """FLEXT Plugin Docker Integration Example.
 
-This example demonstrates real-world plugin configuration with Docker services integration.
+This example demonstrates real-world plugin configuration with Docker
+services integration.
 Shows how to create production-ready plugins that work with Docker Compose services.
 
 Copyright (c) 2025 FLEXT Contributors
