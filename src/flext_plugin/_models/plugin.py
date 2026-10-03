@@ -63,20 +63,24 @@ class FlextPluginModelsPlugin:
         description: Annotated[
             str,
             cli_u.Field(
-                max_length=1000, description="Plugin functionality description",
+                max_length=1000,
+                description="Plugin functionality description",
             ),
         ] = ""
         author: Annotated[
-            str, cli_u.Field(max_length=200, description="Plugin author/maintainer"),
+            str,
+            cli_u.Field(max_length=200, description="Plugin author/maintainer"),
         ] = ""
         plugin_type: Annotated[
-            str, cli_u.Field(description="Plugin type classification"),
+            str,
+            cli_u.Field(description="Plugin type classification"),
         ] = "utility"
         is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
             True
         )
         metadata: Annotated[
-            t.MutableJsonMapping, cli_u.Field(description="Extensible plugin metadata"),
+            t.MutableJsonMapping,
+            cli_u.Field(description="Extensible plugin metadata"),
         ] = cli_u.Field(default_factory=dict)
 
         @cli_u.field_validator("plugin_version", mode="before")
@@ -121,25 +125,31 @@ class FlextPluginModelsPlugin:
 
         plugin_name: Annotated[str, cli_u.Field(description="Executed plugin name")]
         execution_id: Annotated[
-            str, cli_u.Field(description="Unique execution identifier")
+            str,
+            cli_u.Field(description="Unique execution identifier"),
         ] = cli_u.Field(default_factory=cli_u.generate_id)
         input_data: Annotated[
-            t.JsonMapping, cli_u.Field(description="Executor input payload")
+            t.JsonMapping,
+            cli_u.Field(description="Executor input payload"),
         ]
         is_running: Annotated[bool, cli_u.Field(description="Run in progress")] = False
         is_completed: Annotated[bool, cli_u.Field(description="Run finished")] = False
         success: Annotated[bool, cli_u.Field(description="Run succeeded")] = False
         error_message: Annotated[
-            str | None, cli_u.Field(description="Failure reason")
+            str | None,
+            cli_u.Field(description="Failure reason"),
         ] = None
         result: Annotated[
-            t.JsonMapping | None, cli_u.Field(description="Executor output")
+            t.JsonMapping | None,
+            cli_u.Field(description="Executor output"),
         ] = None
         started_at: Annotated[
-            str | None, cli_u.Field(description="Start ISO timestamp")
+            str | None,
+            cli_u.Field(description="Start ISO timestamp"),
         ] = None
         completed_at: Annotated[
-            str | None, cli_u.Field(description="Completion ISO timestamp")
+            str | None,
+            cli_u.Field(description="Completion ISO timestamp"),
         ] = None
 
     class DiscoveryData(cli_m.Value):
@@ -176,10 +186,12 @@ class FlextPluginModelsPlugin:
         ]
         path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
         discovery_type: Annotated[
-            str, cli_u.Field(description="Type of discovered plugin"),
+            str,
+            cli_u.Field(description="Type of discovered plugin"),
         ]
         discovery_method: Annotated[
-            str, cli_u.Field(description="Discovery method used"),
+            str,
+            cli_u.Field(description="Discovery method used"),
         ]
         metadata: Annotated[
             t.MutableJsonMapping,
@@ -240,7 +252,8 @@ class FlextPluginModelsPlugin:
             cli_u.Field(description="List of plugin dependencies"),
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
-            t.MutableJsonMapping, cli_u.Field(description="Additional metadata"),
+            t.MutableJsonMapping,
+            cli_u.Field(description="Additional metadata"),
         ] = cli_u.Field(default_factory=dict)
 
     class Registry(cli_m.Value):
@@ -263,10 +276,12 @@ class FlextPluginModelsPlugin:
             cli_u.Field(description="Dictionary of registered plugins"),
         ] = cli_u.Field(default_factory=dict)
         last_updated: Annotated[
-            datetime, cli_u.Field(description="Last update timestamp"),
+            datetime,
+            cli_u.Field(description="Last update timestamp"),
         ] = cli_u.Field(default_factory=datetime.now)
         created_at: Annotated[
-            datetime, cli_u.Field(description="Registry creation timestamp"),
+            datetime,
+            cli_u.Field(description="Registry creation timestamp"),
         ] = cli_u.Field(default_factory=datetime.now)
 
 

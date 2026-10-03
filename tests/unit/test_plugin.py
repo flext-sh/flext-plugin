@@ -25,7 +25,9 @@ class TestsFlextPluginPlugin:
 
     @staticmethod
     def _make_plugin(
-        *, name: str = "test-plugin", is_enabled: bool = True,
+        *,
+        name: str = "test-plugin",
+        is_enabled: bool = True,
     ) -> FlextPluginPlatform.Plugin:
         """Build a Plugin platform entity for registry-facing tests.
 
@@ -60,7 +62,9 @@ class TestsFlextPluginPlugin:
     def test_create_honors_explicit_disabled_state() -> None:
         """create() respects an explicit is_enabled=False argument."""
         plugin = m.Plugin.Entity(
-            name="test-plugin", plugin_version="1.0.0", is_enabled=False,
+            name="test-plugin",
+            plugin_version="1.0.0",
+            is_enabled=False,
         )
         tm.that(plugin.is_enabled, eq=False)
 
@@ -85,7 +89,11 @@ class TestsFlextPluginPlugin:
         [(True, "active", True), (False, "inactive", False)],
     )
     def test_status_and_active_reflect_enabled_state(
-        self, *, is_enabled: bool, expected_status: str, expected_active: bool,
+        self,
+        *,
+        is_enabled: bool,
+        expected_status: str,
+        expected_active: bool,
     ) -> None:
         """Status and active() derive directly from the enabled state."""
         plugin = self._make_plugin(is_enabled=is_enabled)
@@ -190,7 +198,8 @@ class TestsFlextPluginPlugin:
         tm.fail(result)
 
     def test_register_multiple_plugins_all_listed(
-        self, registry: FlextPluginPlatform.PluginRegistry,
+        self,
+        registry: FlextPluginPlatform.PluginRegistry,
     ) -> None:
         """Every registered plugin is reflected in the listing."""
         plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]

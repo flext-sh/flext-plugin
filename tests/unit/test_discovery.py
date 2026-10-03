@@ -83,7 +83,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_discover_plugins_finds_python_files_in_directory(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """All public ``.py`` files under a directory are discovered."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -94,7 +95,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_discover_plugins_ignores_private_and_non_python_files(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """Underscore-prefixed and non-``.py`` entries are excluded."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -105,7 +107,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_discover_plugins_populates_public_model_state(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """Discovered filesystem plugins expose the documented field values."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -123,7 +126,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_discover_plugins_deduplicates_repeated_paths(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """Passing the same path twice does not yield duplicate plugin names."""
         result = discovery.discover_plugins(paths=[str(plugin_tree), str(plugin_tree)])
@@ -151,7 +155,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_discover_plugin_existing_file_returns_data(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """A real plugin file resolves to populated discovery data."""
         result = discovery.discover_plugin(
@@ -169,7 +174,8 @@ class TestsFlextPluginDiscovery:
 
     @staticmethod
     def test_validate_plugin_accepts_discovered_data(
-        discovery: FlextPluginDiscovery, plugin_tree: Path,
+        discovery: FlextPluginDiscovery,
+        plugin_tree: Path,
     ) -> None:
         """Validation of a genuinely discovered plugin succeeds with ``True``."""
         discovered = discovery.discover_plugin(
@@ -197,7 +203,9 @@ class TestsFlextPluginDiscovery:
             return path.stem
 
         results = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            plugin_tree, collect, u.fetch_logger(__name__),
+            plugin_tree,
+            collect,
+            u.fetch_logger(__name__),
         )
 
         tm.that(set(results), eq=frozenset({"alpha_plugin", "beta_plugin"}))

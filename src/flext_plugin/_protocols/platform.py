@@ -45,13 +45,17 @@ class FlextPluginProtocolsPlatformService(Protocol):
     def executor(self, value: FlextPluginProtocolsPlugin.Execution | None) -> None: ...
 
     def discover_plugins(
-        self, paths: t.StrSequence,
+        self,
+        paths: t.StrSequence,
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins from the provided paths."""
         ...
 
     def execute_plugin(
-        self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None,
+        self,
+        plugin_name: str,
+        context: t.JsonMapping,
+        execution_id: str | None = None,
     ) -> p.Result[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the provided context."""
         ...
@@ -77,7 +81,8 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def register_plugin(
-        self, plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
+        self,
+        plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
     ) -> p.Result[bool]:
         """Register a plugin instance."""
         ...

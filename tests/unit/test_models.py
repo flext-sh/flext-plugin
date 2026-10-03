@@ -36,7 +36,8 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_status_serialises_to_wire_value(
-        status: c.Plugin.PluginStatus, expected_value: str,
+        status: c.Plugin.PluginStatus,
+        expected_value: str,
     ) -> None:
         """Each status renders its documented lowercase wire string."""
         tm.that(status.value, eq=expected_value)
@@ -92,7 +93,8 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_type_serialises_to_wire_value(
-        plugin_type: c.Plugin.Type, expected_value: str,
+        plugin_type: c.Plugin.Type,
+        expected_value: str,
     ) -> None:
         """Plugin type members render their documented wire strings."""
         tm.that(plugin_type.value, eq=expected_value)
@@ -132,7 +134,8 @@ class TestsFlextPluginModelsUnit:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "bad_version", ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
+        "bad_version",
+        ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
     )
     def test_entity_rejects_non_semantic_version(bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
@@ -193,7 +196,9 @@ class TestsFlextPluginModelsUnit:
     def test_plugin_metadata_applies_documented_defaults() -> None:
         """Optional metadata fields fall back to documented defaults."""
         metadata = m.Plugin.Metadata(
-            name="meta-plugin", version="1.0.0", entry_point="meta_plugin:main",
+            name="meta-plugin",
+            version="1.0.0",
+            entry_point="meta_plugin:main",
         )
         tm.that(metadata.description, eq="")
         tm.that(metadata.author, eq="Unknown")

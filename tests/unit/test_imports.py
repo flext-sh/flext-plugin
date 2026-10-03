@@ -61,7 +61,8 @@ class TestsFlextPluginImports:
         ],
     )
     def test_facade_classes_are_classes_and_stable(
-        facade_name: str, expected: type,
+        facade_name: str,
+        expected: type,
     ) -> None:
         """Each ``FlextPlugin*`` facade is a class and a stable singleton."""
         resolved = getattr(flext_plugin, facade_name)
@@ -75,7 +76,8 @@ class TestsFlextPluginImports:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
+        "alias",
+        ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
     )
     def test_short_facade_aliases_are_exposed(alias: str) -> None:
         """Each short facade alias is published and resolves to an object."""

@@ -58,7 +58,8 @@ class FlextPluginApi(s):
         self._platform = value
 
     def discover_plugins(
-        self, paths: t.StrSequence,
+        self,
+        paths: t.StrSequence,
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths; logs the count discovered.
 
@@ -71,7 +72,10 @@ class FlextPluginApi(s):
         return result
 
     def execute_plugin(
-        self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None,
+        self,
+        plugin_name: str,
+        context: t.JsonMapping,
+        execution_id: str | None = None,
     ) -> p.Result[t.JsonMapping]:
         """Execute a plugin by name with the given context.
 
@@ -91,7 +95,9 @@ class FlextPluginApi(s):
         plugin = self._platform.fetch_plugin(plugin_name)
         if plugin is None:
             return e.fail_not_found(
-                "plugin", plugin_name, result_type=r[FlextPluginPlatform.Plugin],
+                "plugin",
+                plugin_name,
+                result_type=r[FlextPluginPlatform.Plugin],
             )
         return r[FlextPluginPlatform.Plugin].ok(plugin)
 

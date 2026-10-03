@@ -39,7 +39,9 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def _make_plugin(
-        *, name: str = "demo-plugin", is_enabled: bool = True,
+        *,
+        name: str = "demo-plugin",
+        is_enabled: bool = True,
     ) -> FlextPluginPlatform.Plugin:
         """Build a platform plugin entity.
 
@@ -47,7 +49,9 @@ class TestsFlextPluginApi:
             The resulting ``FlextPluginPlatform.Plugin``.
         """
         return FlextPluginPlatform.Plugin(
-            name=name, plugin_version="1.0.0", is_enabled=is_enabled,
+            name=name,
+            plugin_version="1.0.0",
+            is_enabled=is_enabled,
         )
 
     @staticmethod
@@ -64,11 +68,13 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def test_discover_plugins_logs_count_and_returns_plugins(
-        api: FlextPluginApi, tmp_path: Path,
+        api: FlextPluginApi,
+        tmp_path: Path,
     ) -> None:
         """discover_plugins() logs the count and returns discovered plugins."""
         (tmp_path / "found.py").write_text(
-            '"""Real plugin module."""\n', encoding="utf-8",
+            '"""Real plugin module."""\n',
+            encoding="utf-8",
         )
         api.platform.discovery = FlextPluginDiscovery()
 
@@ -79,7 +85,8 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def test_discover_plugins_failure_returned(
-        api: FlextPluginApi, tmp_path: Path,
+        api: FlextPluginApi,
+        tmp_path: Path,
     ) -> None:
         """discover_plugins() propagates failures from the platform."""
         api.platform.discovery = u.Plugin.Tests.FailingDiscovery()
@@ -168,7 +175,8 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def test_load_plugin_logs_and_returns(
-        api: FlextPluginApi, tmp_path: Path,
+        api: FlextPluginApi,
+        tmp_path: Path,
     ) -> None:
         """load_plugin() logs the loaded name and returns the plugin."""
         plugin_file = tmp_path / "loaded.py"

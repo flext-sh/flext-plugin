@@ -94,7 +94,9 @@ class TestsFlextPluginDomainEntities:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity(
-                name="valid-plugin", plugin_version=bad_version, entity_id="id",
+                name="valid-plugin",
+                plugin_version=bad_version,
+                entity_id="id",
             )
 
     # ------------------------------------------------------------------ #
@@ -139,7 +141,9 @@ class TestsFlextPluginDomainEntities:
     def test_metadata_value_object_applies_declared_defaults() -> None:
         """Omitted optional PluginMetadata fields take their declared defaults."""
         metadata = m.Plugin.Metadata(
-            name="minimal-plugin", version="1.0.0", entry_point="minimal.entry:main",
+            name="minimal-plugin",
+            version="1.0.0",
+            entry_point="minimal.entry:main",
         )
 
         tm.that(metadata.description, eq="")

@@ -62,7 +62,8 @@ class FlextPluginUtilities(FlextCliUtilities):
 
         @classmethod
         def discover_plugins(
-            cls, directory: Path | str,
+            cls,
+            directory: Path | str,
         ) -> p.Result[Sequence[m.Plugin.Metadata]]:
             """Discover plugins in the specified directory.
 
@@ -86,7 +87,8 @@ class FlextPluginUtilities(FlextCliUtilities):
 
         @classmethod
         def extract_plugin_metadata(
-            cls, plugin_path: Path,
+            cls,
+            plugin_path: Path,
         ) -> p.Result[m.Plugin.Metadata]:
             """Extract metadata from plugin file.
 
