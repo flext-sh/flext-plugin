@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m as cli_m, u as cli_u
@@ -81,9 +82,9 @@ class FlextPluginModelsPlugin:
             True
         )
         metadata: Annotated[
-            t.MutableJsonMapping,
+            t.JsonMapping,
             cli_u.Field(description="Extensible plugin metadata"),
-        ] = cli_u.Field(default_factory=dict)
+        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
 
         @cli_u.field_validator("plugin_version", mode="before")
         @classmethod
@@ -196,9 +197,9 @@ class FlextPluginModelsPlugin:
             cli_u.Field(description="Discovery method used"),
         ]
         metadata: Annotated[
-            t.MutableJsonMapping,
+            t.JsonMapping,
             cli_u.Field(description="Extensible discovery metadata"),
-        ] = cli_u.Field(default_factory=dict)
+        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
 
         @cli_u.field_validator("version", mode="before")
         @classmethod
@@ -254,9 +255,9 @@ class FlextPluginModelsPlugin:
             cli_u.Field(description="List of plugin dependencies"),
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
-            t.MutableJsonMapping,
+            t.JsonMapping,
             cli_u.Field(description="Additional metadata"),
-        ] = cli_u.Field(default_factory=dict)
+        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
 
     class Registry(cli_m.Value):
         """Plugin registry - central plugin registry storage.
@@ -274,9 +275,9 @@ class FlextPluginModelsPlugin:
 
         version: Annotated[str, cli_u.Field(description="Registry schema version")]
         plugins: Annotated[
-            t.MutableJsonMapping,
+            t.JsonMapping,
             cli_u.Field(description="Dictionary of registered plugins"),
-        ] = cli_u.Field(default_factory=dict)
+        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
         last_updated: Annotated[
             datetime,
             cli_u.Field(description="Last update timestamp"),
