@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Why: FlextPluginUtilities is owned by flext_plugin, not flext_core (pyrefly missing-module-attribute).
+# Why: FlextPluginUtilities is owned by flext_plugin, not flext_core (pyrefly).
 from flext_plugin import FlextPluginUtilities
 
 

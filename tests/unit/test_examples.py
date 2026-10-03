@@ -33,10 +33,10 @@ class TestsFlextPluginExamples:
     @pytest.mark.parametrize(
         ("script", "args"),
         [
-            pytest.param("01_basic_plugin.py", (), id="basic-plugin"),
-            pytest.param("02_plugin_configuration.py", (), id="plugin-configuration"),
+            pytest.param("basic_plugin.py", (), id="basic-plugin"),
+            pytest.param("plugin_configuration.py", (), id="plugin-configuration"),
             pytest.param(
-                "03_docker_integration.py", ("run",), id="docker-integration-run",
+                "docker_integration.py", ("run",), id="docker-integration-run",
             ),
         ],
     )
@@ -68,7 +68,7 @@ class TestsFlextPluginExamples:
     @staticmethod
     def test_docker_integration_reports_service_connectivity() -> None:
         """With connection testing, the docker example prints a connectivity report."""
-        example_path = _examples_dir() / "03_docker_integration.py"
+        example_path = _examples_dir() / "docker_integration.py"
         result = u.Cli.run_raw(
             [sys.executable, str(example_path), "run", "--test-connections"],
             cwd=_examples_dir().parent,

@@ -53,7 +53,7 @@ padrão.
 
 ### 1 · 🟠 CRITICAL · CODE_SMELL · `python:S1192`
 
-**Local**: `examples/03_docker_integration.py:59` · **Effort**: 6min
+**Local**: `examples/docker_integration.py:59` · **Effort**: 6min
 
 > Define a constant instead of duplicating this literal "FLEXT Team" 3 times.
 
@@ -133,7 +133,7 @@ padrão.
 
 ### 5 · 🟡 MAJOR · VULNERABILITY · `python:S2068`
 
-**Local**: `examples/02_plugin_configuration.py:53` · **Effort**: 30min
+**Local**: `examples/plugin_configuration.py:53` · **Effort**: 30min
 
 > "password" detected here, review this potentially hard-coded credential.
 
