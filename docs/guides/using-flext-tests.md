@@ -64,8 +64,9 @@ above are not declared with `autouse=True`.
 ```text
 from __future__ import annotations
 
-from flext_core import FlextSettings
 from flext_tests import FlextTestsSettings
+
+from flext_core import FlextSettings
 
 
 def test_settings_isolation(settings: FlextTestsSettings) -> None:
@@ -81,6 +82,8 @@ When a fixture is not enough:
 ```text
 from flext_core import FlextContainer, FlextSettings
 from flext_tests import FlextTestsSettings
+
+from flext_core import FlextContainer, FlextSettings
 
 FlextSettings.reset_for_testing()
 FlextTestsSettings.reset_for_testing()
