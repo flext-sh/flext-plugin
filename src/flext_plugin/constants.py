@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_cli import FlextCliConstants
 
-from ._constants import (
+from flext_plugin._constants import (
     FlextPluginConstantsBase,
     FlextPluginConstantsConfig,
     FlextPluginConstantsPlugin,
@@ -19,7 +19,7 @@ class FlextPluginConstants(FlextCliConstants):
     """FlextPlugin domain constants extending FlextCliConstants via MRO."""
 
     class Plugin(
-        FlextPluginConstantsBase, FlextPluginConstantsConfig, FlextPluginConstantsPlugin
+        FlextPluginConstantsBase, FlextPluginConstantsConfig, FlextPluginConstantsPlugin,
     ):
         """Plugin domain constants namespace."""
 

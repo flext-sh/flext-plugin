@@ -1,4 +1,8 @@
-"""Platform service protocol for flext-plugin."""
+"""Platform service protocol for flext-plugin.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -8,9 +12,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from flext_plugin import m, p, t
-
-    from .._protocols.plugin import FlextPluginProtocolsPlugin
-    from .._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
+    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 @runtime_checkable
@@ -42,13 +45,13 @@ class FlextPluginProtocolsPlatformService(Protocol):
     def executor(self, value: FlextPluginProtocolsPlugin.Execution | None) -> None: ...
 
     def discover_plugins(
-        self, paths: t.StrSequence
+        self, paths: t.StrSequence,
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins from the provided paths."""
         ...
 
     def execute_plugin(
-        self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None
+        self, plugin_name: str, context: t.JsonMapping, execution_id: str | None = None,
     ) -> p.Result[FlextPluginPlatform.PluginExecution]:
         """Execute a plugin with the provided context."""
         ...
@@ -74,7 +77,7 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def register_plugin(
-        self, plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity
+        self, plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
     ) -> p.Result[bool]:
         """Register a plugin instance."""
         ...
