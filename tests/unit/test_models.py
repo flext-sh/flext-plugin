@@ -19,6 +19,7 @@ class TestsFlextPluginModelsUnit:
 
     # ---- Enum public contract -------------------------------------------
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("status", "expected_value"),
         [
@@ -35,12 +36,13 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_status_serialises_to_wire_value(
-        self, status: c.Plugin.PluginStatus, expected_value: str
+        status: c.Plugin.PluginStatus, expected_value: str,
     ) -> None:
         """Each status renders its documented lowercase wire string."""
         tm.that(status.value, eq=expected_value)
         tm.that(str(status), eq=expected_value)
 
+    @staticmethod
     @pytest.mark.parametrize(
         "status",
         [
@@ -50,13 +52,14 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_operational_statuses_classify_as_operational(
-        self, status: c.Plugin.PluginStatus
+        status: c.Plugin.PluginStatus,
     ) -> None:
         """Operational statuses are reported operational and not error states."""
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=status)
         tm.that(status.is_operational(), eq=True)
         tm.that(status.is_error_state(), eq=False)
 
+    @staticmethod
     @pytest.mark.parametrize(
         "status",
         [
@@ -66,13 +69,14 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_error_statuses_classify_as_error_state(
-        self, status: c.Plugin.PluginStatus
+        status: c.Plugin.PluginStatus,
     ) -> None:
         """Error statuses report as error states and never as operational."""
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=status)
         tm.that(status.is_error_state(), eq=True)
         tm.that(status.is_operational(), eq=False)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("plugin_type", "expected_value"),
         [
@@ -88,14 +92,15 @@ class TestsFlextPluginModelsUnit:
         ],
     )
     def test_plugin_type_serialises_to_wire_value(
-        self, plugin_type: c.Plugin.Type, expected_value: str
+        plugin_type: c.Plugin.Type, expected_value: str,
     ) -> None:
         """Plugin type members render their documented wire strings."""
         tm.that(plugin_type.value, eq=expected_value)
 
     # ---- Entity construction & validation -------------------------------
 
-    def test_entity_exposes_constructor_state_via_public_fields(self) -> None:
+    @staticmethod
+    def test_entity_exposes_constructor_state_via_public_fields() -> None:
         """A constructed entity reflects supplied values through its public API."""
         plugin = m.Plugin.Entity(
             name="test-plugin",
@@ -108,7 +113,8 @@ class TestsFlextPluginModelsUnit:
         assert plugin.plugin_type is c.Plugin.Type.UTILITY
         tm.that(plugin.is_enabled, eq=True)
 
-    def test_entity_applies_documented_field_defaults(self) -> None:
+    @staticmethod
+    def test_entity_applies_documented_field_defaults() -> None:
         """Optional fields fall back to their documented defaults."""
         plugin = m.Plugin.Entity(name="defaults-plugin")
         tm.that(plugin.plugin_version, eq="1.0.0")
@@ -118,28 +124,32 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.is_enabled, eq=True)
         tm.that(dict(plugin.metadata), eq={})
 
-    def test_entity_rejects_empty_name(self) -> None:
+    @staticmethod
+    def test_entity_rejects_empty_name() -> None:
         """An empty name violates the name constraint and is refused."""
         with pytest.raises(ValueError, match=r".*"):
             m.Plugin.Entity(name="", plugin_version="1.0.0")
 
+    @staticmethod
     @pytest.mark.parametrize(
-        "bad_version", ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"]
+        "bad_version", ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
     )
-    def test_entity_rejects_non_semantic_version(self, bad_version: str) -> None:
+    def test_entity_rejects_non_semantic_version(bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
         with pytest.raises(ValueError, match=r"semantic"):
             m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
 
+    @staticmethod
     @pytest.mark.parametrize("good_version", ["1.0.0", "10.20.30", "2.3.4"])
-    def test_entity_accepts_valid_semantic_versions(self, good_version: str) -> None:
+    def test_entity_accepts_valid_semantic_versions(good_version: str) -> None:
         """Well-formed semantic versions are accepted verbatim."""
         plugin = m.Plugin.Entity(name="ok-plugin", plugin_version=good_version)
         tm.that(plugin.plugin_version, eq=good_version)
 
     # ---- Lifecycle behavior (r[T] contract) -----------------------------
 
-    def test_validate_business_rules_passes_for_well_formed_entity(self) -> None:
+    @staticmethod
+    def test_validate_business_rules_passes_for_well_formed_entity() -> None:
         """A valid entity passes business-rule validation."""
         plugin = m.Plugin.Entity(name="valid", plugin_version="1.0.0")
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
@@ -148,7 +158,8 @@ class TestsFlextPluginModelsUnit:
 
     # ---- create() factory -----------------------------------------------
 
-    def test_create_factory_builds_validated_entity(self) -> None:
+    @staticmethod
+    def test_create_factory_builds_validated_entity() -> None:
         """The create factory yields a fully validated entity."""
         plugin = m.Plugin.Entity(
             name="factory-plugin",
@@ -169,7 +180,8 @@ class TestsFlextPluginModelsUnit:
 
     # ---- PluginMetadata value object ------------------------------------
 
-    def test_plugin_metadata_exposes_public_state(self) -> None:
+    @staticmethod
+    def test_plugin_metadata_exposes_public_state() -> None:
         """Plugin metadata reflects supplied values through public fields."""
         metadata = m.Plugin.Metadata(
             name="meta-plugin",
@@ -185,10 +197,11 @@ class TestsFlextPluginModelsUnit:
         tm.that(metadata.author, eq="Test Author")
         tm.that(metadata.description, eq="Test plugin description")
 
-    def test_plugin_metadata_applies_documented_defaults(self) -> None:
+    @staticmethod
+    def test_plugin_metadata_applies_documented_defaults() -> None:
         """Optional metadata fields fall back to documented defaults."""
         metadata = m.Plugin.Metadata(
-            name="meta-plugin", version="1.0.0", entry_point="meta_plugin:main"
+            name="meta-plugin", version="1.0.0", entry_point="meta_plugin:main",
         )
         tm.that(metadata.description, eq="")
         tm.that(metadata.author, eq="Unknown")

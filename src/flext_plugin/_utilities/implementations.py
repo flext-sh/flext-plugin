@@ -6,6 +6,9 @@ FLEXT architectural standards.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -35,11 +38,15 @@ class FlextPluginImplementations:
             self._discovered: list[str] = []
 
         def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
-            """Discover a single plugin from a real file."""
+            """Discover a single plugin from a real file.
+
+            Returns:
+                The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+            """
             path = Path(plugin_path)
             if not path.is_file():
                 return r[m.Plugin.DiscoveryData].fail(
-                    f"Plugin file not found: {plugin_path}"
+                    f"Plugin file not found: {plugin_path}",
                 )
             self._discovered.append(path.stem)
             return r[m.Plugin.DiscoveryData].ok(
@@ -50,13 +57,17 @@ class FlextPluginImplementations:
                     discovery_type=c.Plugin.DiscoveryTypeLiteral.FILE,
                     discovery_method=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM,
                     metadata={},
-                )
+                ),
             )
 
         def discover_plugins(
-            self, paths: t.StrSequence
+            self, paths: t.StrSequence,
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
-            """Discover plugins from multiple paths."""
+            """Discover plugins from multiple paths.
+
+            Returns:
+                The resulting ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+            """
             results: list[m.Plugin.DiscoveryData] = []
             for path_str in paths:
                 path = Path(path_str)
@@ -72,10 +83,15 @@ class FlextPluginImplementations:
                                 results.append(result.value)
             return r[t.SequenceOf[m.Plugin.DiscoveryData]].ok(results)
 
+        @staticmethod
         def validate_plugin(
-            self, plugin_data: m.Plugin.DiscoveryData
+            plugin_data: m.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
-            """Validate discovered plugin data."""
+            """Validate discovered plugin data.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             _ = plugin_data
             return r[bool].ok(value=True)
 
@@ -96,11 +112,19 @@ class FlextPluginImplementations:
             return list(self._loaded)
 
         def plugin_loaded(self, plugin_name: str) -> bool:
-            """Check whether a plugin was loaded through this loader."""
+            """Check whether a plugin was loaded through this loader.
+
+            Returns:
+                The resulting ``bool``.
+            """
             return plugin_name in self._loaded
 
         def load_plugin(self, plugin_path: str) -> p.Result[t.JsonMapping]:
-            """Load a real plugin file, failing when it does not exist."""
+            """Load a real plugin file, failing when it does not exist.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             path = Path(plugin_path)
             if not path.is_file():
                 return r[t.JsonMapping].fail(f"Plugin file not found: {plugin_path}")
@@ -114,7 +138,11 @@ class FlextPluginImplementations:
             })
 
         def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
-            """Unload a previously loaded plugin."""
+            """Unload a previously loaded plugin.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             if plugin_name in self._loaded:
                 self._loaded.remove(plugin_name)
             return r[bool].ok(value=True)
@@ -131,9 +159,13 @@ class FlextPluginImplementations:
             self._executed: list[str] = []
 
         def execute_plugin(
-            self, plugin_name: str, context: t.JsonMapping
+            self, plugin_name: str, context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
-            """Record the execution and echo the context as result."""
+            """Record the execution and echo the context as result.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             self._executed.append(plugin_name)
             payload = t.json_mapping_adapter().validate_python({
                 "plugin": plugin_name,
@@ -141,60 +173,110 @@ class FlextPluginImplementations:
             })
             return r[t.JsonMapping].ok(payload)
 
-        def get_execution_status(self, _execution_id: str) -> p.Result[str]:
-            """Every execution through this executor completes."""
+        @staticmethod
+        def get_execution_status(_execution_id: str) -> p.Result[str]:
+            """Every execution through this executor completes.
+
+            Returns:
+                The resulting ``p.Result[str]``.
+            """
             return r[str].ok("completed")
 
-        def list_running_executions(self) -> t.StrSequence:
-            """No execution stays running after execute_plugin returns."""
+        @staticmethod
+        def list_running_executions() -> t.StrSequence:
+            """No execution stays running after execute_plugin returns.
+
+            Returns:
+                The resulting ``t.StrSequence``.
+            """
             return []
 
-        def stop_execution(self, _execution_id: str) -> p.Result[bool]:
-            """Stop is always a no-op success for completed executions."""
+        @staticmethod
+        def stop_execution(_execution_id: str) -> p.Result[bool]:
+            """Stop is always a no-op success for completed executions.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             return r[bool].ok(value=True)
 
     class FailingExecutor:
         """Real executor whose executions always fail deterministically."""
 
+        @staticmethod
         def execute_plugin(
-            self, plugin_name: str, context: t.JsonMapping
+            plugin_name: str, context: t.JsonMapping,
         ) -> p.Result[t.JsonMapping]:
-            """Report a real execution failure."""
+            """Report a real execution failure.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             _ = plugin_name
             _ = context
             return r[t.JsonMapping].fail("exec error")
 
-        def get_execution_status(self, _execution_id: str) -> p.Result[str]:
-            """Every execution through this executor fails."""
+        @staticmethod
+        def get_execution_status(_execution_id: str) -> p.Result[str]:
+            """Every execution through this executor fails.
+
+            Returns:
+                The resulting ``p.Result[str]``.
+            """
             return r[str].ok("failed")
 
-        def list_running_executions(self) -> t.StrSequence:
-            """No execution stays running after a failure."""
+        @staticmethod
+        def list_running_executions() -> t.StrSequence:
+            """No execution stays running after a failure.
+
+            Returns:
+                The resulting ``t.StrSequence``.
+            """
             return []
 
-        def stop_execution(self, _execution_id: str) -> p.Result[bool]:
-            """Stop is always a no-op success for failed executions."""
+        @staticmethod
+        def stop_execution(_execution_id: str) -> p.Result[bool]:
+            """Stop is always a no-op success for failed executions.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             return r[bool].ok(value=True)
 
     class FailingDiscovery:
         """Real discovery whose operations always fail deterministically."""
 
-        def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
-            """Report a real discovery failure for one plugin."""
+        @staticmethod
+        def discover_plugin(plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
+            """Report a real discovery failure for one plugin.
+
+            Returns:
+                The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+            """
             _ = plugin_path
             return r[m.Plugin.DiscoveryData].fail("discovery failed")
 
+        @staticmethod
         def discover_plugins(
-            self, paths: t.StrSequence
+            paths: t.StrSequence,
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
-            """Report a real discovery failure for the given paths."""
+            """Report a real discovery failure for the given paths.
+
+            Returns:
+                The resulting ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+            """
             _ = paths
             return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail("discovery failed")
 
+        @staticmethod
         def validate_plugin(
-            self, plugin_data: m.Plugin.DiscoveryData
+            plugin_data: m.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
-            """Report a real validation failure."""
+            """Report a real validation failure.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             _ = plugin_data
             return r[bool].fail("discovery failed")
 

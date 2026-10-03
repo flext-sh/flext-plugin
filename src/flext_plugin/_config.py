@@ -47,7 +47,7 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
     Plugin: Annotated[
         _PluginNamespace,
         m.Field(
-            description="Open namespace exposing ``config/*.yaml`` under ``Plugin``."
+            description="Open namespace exposing ``config/*.yaml`` under ``Plugin``.",
         ),
     ] = _PluginNamespace()
 

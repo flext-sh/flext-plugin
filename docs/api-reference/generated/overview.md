@@ -27,7 +27,7 @@
   `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginServiceBase`,
   `FlextPluginSettings` (+6 more)
 - Exported module shortcuts: `services`
-- Generated module pages: `9`
+- Generated module pages: `8`
 
 ## Next Pages
 

@@ -9,6 +9,9 @@ Usage:
 Docker Usage:
     # Start services: docker-compose up -d postgres
     # Run with database: python examples/02_plugin_configuration.py --with-db
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -19,7 +22,11 @@ from flext_plugin import FlextPluginApi, t
 
 
 def create_database_plugin_config() -> t.JsonMapping:
-    """Create configuration for a database plugin."""
+    """Create configuration for a database plugin.
+
+    Returns:
+        The resulting ``t.JsonMapping``.
+    """
     return {
         "database": {
             "host": "localhost",
@@ -45,7 +52,11 @@ def create_database_plugin_config() -> t.JsonMapping:
 
 
 def create_ldap_plugin_config() -> t.JsonMapping:
-    """Create configuration for an LDAP plugin."""
+    """Create configuration for an LDAP plugin.
+
+    Returns:
+        The resulting ``t.JsonMapping``.
+    """
     return {
         "ldap": {
             "server": "localhost",

@@ -5,6 +5,9 @@ Demonstrates core functionality without external dependencies.
 
 Usage:
     python examples/01_basic_plugin.py
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
