@@ -25,9 +25,13 @@ class TestsFlextPluginPlugin:
 
     @staticmethod
     def _make_plugin(
-        *, name: str = "test-plugin", is_enabled: bool = True
+        *, name: str = "test-plugin", is_enabled: bool = True,
     ) -> FlextPluginPlatform.Plugin:
-        """Build a Plugin platform entity for registry-facing tests."""
+        """Build a Plugin platform entity for registry-facing tests.
+
+        Returns:
+            The resulting ``FlextPluginPlatform.Plugin``.
+        """
         return FlextPluginPlatform.Plugin(
             name=name,
             plugin_version="1.0.0",
@@ -39,33 +43,38 @@ class TestsFlextPluginPlugin:
 
     # ----- Plugin entity: creation contract -------------------------------
 
-    def test_create_returns_entity_with_supplied_fields(self) -> None:
+    @staticmethod
+    def test_create_returns_entity_with_supplied_fields() -> None:
         """create() yields an entity exposing the given name and version."""
         plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.0.0")
 
-    def test_create_defaults_to_enabled(self) -> None:
+    @staticmethod
+    def test_create_defaults_to_enabled() -> None:
         """A freshly created plugin defaults to the enabled state."""
         plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         tm.that(plugin.is_enabled, eq=True)
 
-    def test_create_honors_explicit_disabled_state(self) -> None:
+    @staticmethod
+    def test_create_honors_explicit_disabled_state() -> None:
         """create() respects an explicit is_enabled=False argument."""
         plugin = m.Plugin.Entity(
-            name="test-plugin", plugin_version="1.0.0", is_enabled=False
+            name="test-plugin", plugin_version="1.0.0", is_enabled=False,
         )
         tm.that(plugin.is_enabled, eq=False)
 
+    @staticmethod
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
-    def test_create_rejects_non_semantic_version(self, bad_version: str) -> None:
+    def test_create_rejects_non_semantic_version(bad_version: str) -> None:
         """create() raises when the version is not semantic X.Y[.Z]."""
         with pytest.raises(ValueError, match="semantic"):
             m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
 
     # ----- Plugin entity: enable/disable lifecycle ------------------------
 
-    def test_validate_business_rules_accepts_valid_plugin(self) -> None:
+    @staticmethod
+    def test_validate_business_rules_accepts_valid_plugin() -> None:
         """A well-formed plugin passes business-rule validation."""
         plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
@@ -76,7 +85,7 @@ class TestsFlextPluginPlugin:
         [(True, "active", True), (False, "inactive", False)],
     )
     def test_status_and_active_reflect_enabled_state(
-        self, *, is_enabled: bool, expected_status: str, expected_active: bool
+        self, *, is_enabled: bool, expected_status: str, expected_active: bool,
     ) -> None:
         """Status and active() derive directly from the enabled state."""
         plugin = self._make_plugin(is_enabled=is_enabled)
@@ -85,8 +94,9 @@ class TestsFlextPluginPlugin:
 
     # ----- Registry fixtures ----------------------------------------------
 
+    @staticmethod
     @pytest.fixture
-    def reset_registry(self) -> None:
+    def reset_registry() -> None:
         """Reset class-level registry storage before each test."""
         registry = FlextPluginPlatform.PluginRegistry()
         plugins_result = registry.list_plugins()
@@ -94,28 +104,38 @@ class TestsFlextPluginPlugin:
             for plugin_name in plugins_result.value:
                 _ = registry.unregister(plugin_name)
 
+    @staticmethod
     @pytest.fixture
-    def registry(self) -> FlextPluginPlatform.PluginRegistry:
-        """Create a registry instance for testing."""
+    def registry() -> FlextPluginPlatform.PluginRegistry:
+        """Create a registry instance for testing.
+
+        Returns:
+            The resulting ``FlextPluginPlatform.PluginRegistry``.
+        """
         return FlextPluginPlatform.PluginRegistry()
 
     @pytest.fixture
     def plugin(self) -> FlextPluginPlatform.Plugin:
-        """Create a plugin for registry testing."""
+        """Create a plugin for registry testing.
+
+        Returns:
+            The resulting ``FlextPluginPlatform.Plugin``.
+        """
         return self._make_plugin()
 
     # ----- Registry: lifecycle contract -----------------------------------
 
+    @staticmethod
     def test_new_registry_lists_no_plugins(
-        self, registry: FlextPluginPlatform.PluginRegistry
+        registry: FlextPluginPlatform.PluginRegistry,
     ) -> None:
         """A cleared registry reports an empty plugin listing."""
         plugins_result = registry.list_plugins()
         tm.ok(plugins_result)
         assert not plugins_result.value
 
+    @staticmethod
     def test_register_then_get_returns_same_plugin(
-        self,
         registry: FlextPluginPlatform.PluginRegistry,
         plugin: FlextPluginPlatform.Plugin,
     ) -> None:
@@ -128,8 +148,8 @@ class TestsFlextPluginPlugin:
         tm.ok(get_result)
         tm.that(get_result.value.name, eq=plugin.name)
 
+    @staticmethod
     def test_registered_plugin_appears_in_listing(
-        self,
         registry: FlextPluginPlatform.PluginRegistry,
         plugin: FlextPluginPlatform.Plugin,
     ) -> None:
@@ -139,15 +159,16 @@ class TestsFlextPluginPlugin:
         tm.ok(plugins_result)
         tm.that(plugins_result.value, has=plugin.name)
 
+    @staticmethod
     def test_get_unknown_plugin_fails(
-        self, registry: FlextPluginPlatform.PluginRegistry
+        registry: FlextPluginPlatform.PluginRegistry,
     ) -> None:
         """get() for an unregistered name returns a failure result."""
         result = registry.get("nonexistent-plugin")
         tm.fail(result)
 
+    @staticmethod
     def test_unregister_removes_plugin_from_listing(
-        self,
         registry: FlextPluginPlatform.PluginRegistry,
         plugin: FlextPluginPlatform.Plugin,
     ) -> None:
@@ -160,15 +181,16 @@ class TestsFlextPluginPlugin:
         tm.that(result.value, eq=True)
         tm.that(registry.list_plugins().value, lacks=plugin.name)
 
+    @staticmethod
     def test_unregister_unknown_plugin_fails(
-        self, registry: FlextPluginPlatform.PluginRegistry
+        registry: FlextPluginPlatform.PluginRegistry,
     ) -> None:
         """unregister() for a name never registered returns a failure."""
         result = registry.unregister("nonexistent-plugin")
         tm.fail(result)
 
     def test_register_multiple_plugins_all_listed(
-        self, registry: FlextPluginPlatform.PluginRegistry
+        self, registry: FlextPluginPlatform.PluginRegistry,
     ) -> None:
         """Every registered plugin is reflected in the listing."""
         plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]

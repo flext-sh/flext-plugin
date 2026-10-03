@@ -26,8 +26,9 @@ from tests import u
 class TestsFlextPluginApi:
     """Behavioral tests for the plugin API facade."""
 
+    @staticmethod
     @pytest.fixture
-    def reset_api(self) -> None:
+    def reset_api() -> None:
         """Reset the API singleton state before each test (direct facade entry point)."""
         api_ref = FlextPluginApi.fetch_global()
         api_ref.reset_for_testing()
@@ -35,26 +36,36 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def _make_plugin(
-        *, name: str = "demo-plugin", is_enabled: bool = True
+        *, name: str = "demo-plugin", is_enabled: bool = True,
     ) -> FlextPluginPlatform.Plugin:
-        """Build a platform plugin entity."""
+        """Build a platform plugin entity.
+
+        Returns:
+            The resulting ``FlextPluginPlatform.Plugin``.
+        """
         return FlextPluginPlatform.Plugin(
-            name=name, plugin_version="1.0.0", is_enabled=is_enabled
+            name=name, plugin_version="1.0.0", is_enabled=is_enabled,
         )
 
+    @staticmethod
     @pytest.fixture
-    def api(self) -> FlextPluginApi:
-        """Provide a fresh API instance with reset state."""
+    def api() -> FlextPluginApi:
+        """Provide a fresh API instance with reset state.
+
+        Returns:
+            The resulting ``FlextPluginApi``.
+        """
         instance = FlextPluginApi()
         instance.platform = FlextPluginPlatform.PluginPlatformService()
         return instance
 
+    @staticmethod
     def test_discover_plugins_logs_count_and_returns_plugins(
-        self, api: FlextPluginApi, tmp_path: Path
+        api: FlextPluginApi, tmp_path: Path,
     ) -> None:
         """discover_plugins() logs the count and returns discovered plugins."""
         (tmp_path / "found.py").write_text(
-            '"""Real plugin module."""\n', encoding="utf-8"
+            '"""Real plugin module."""\n', encoding="utf-8",
         )
         api.platform.discovery = FlextPluginDiscovery()
 
@@ -63,8 +74,9 @@ class TestsFlextPluginApi:
         tm.that(result.success, eq=True)
         assert any(plugin.name == "found" for plugin in result.unwrap())
 
+    @staticmethod
     def test_discover_plugins_failure_returned(
-        self, api: FlextPluginApi, tmp_path: Path
+        api: FlextPluginApi, tmp_path: Path,
     ) -> None:
         """discover_plugins() propagates failures from the platform."""
         api.platform.discovery = u.Plugin.Tests.FailingDiscovery()
@@ -104,7 +116,8 @@ class TestsFlextPluginApi:
         tm.that(result.success, eq=True)
         tm.that(result.unwrap().name, eq="demo-plugin")
 
-    def test_fetch_plugin_missing_fails(self, api: FlextPluginApi) -> None:
+    @staticmethod
+    def test_fetch_plugin_missing_fails(api: FlextPluginApi) -> None:
         """fetch_plugin() fails when the plugin is absent."""
         result = api.fetch_plugin("missing")
 
@@ -120,7 +133,8 @@ class TestsFlextPluginApi:
         tm.that(result.success, eq=True)
         tm.that(result.unwrap(), eq="active")
 
-    def test_fetch_plugin_status_missing_fails(self, api: FlextPluginApi) -> None:
+    @staticmethod
+    def test_fetch_plugin_status_missing_fails(api: FlextPluginApi) -> None:
         """fetch_plugin_status() fails when the plugin is absent."""
         result = api.fetch_plugin_status("missing")
 
@@ -145,11 +159,12 @@ class TestsFlextPluginApi:
 
         tm.that(result.success, eq=True)
         tm.that(
-            {plugin.name for plugin in result.unwrap()}, eq=frozenset({"alpha", "beta"})
+            {plugin.name for plugin in result.unwrap()}, eq=frozenset({"alpha", "beta"}),
         )
 
+    @staticmethod
     def test_load_plugin_logs_and_returns(
-        self, api: FlextPluginApi, tmp_path: Path
+        api: FlextPluginApi, tmp_path: Path,
     ) -> None:
         """load_plugin() logs the loaded name and returns the plugin."""
         plugin_file = tmp_path / "loaded.py"
@@ -170,13 +185,15 @@ class TestsFlextPluginApi:
         tm.that(result.success, eq=True)
         tm.that(api.platform.fetch_plugin("demo-plugin"), none=False)
 
-    def test_start_hot_reload(self, api: FlextPluginApi, tmp_path: Path) -> None:
+    @staticmethod
+    def test_start_hot_reload(api: FlextPluginApi, tmp_path: Path) -> None:
         """start_hot_reload() succeeds."""
         result = api.start_hot_reload([str(tmp_path)])
 
         tm.that(result.success, eq=True)
 
-    def test_stop_hot_reload(self, api: FlextPluginApi) -> None:
+    @staticmethod
+    def test_stop_hot_reload(api: FlextPluginApi) -> None:
         """stop_hot_reload() succeeds."""
         result = api.stop_hot_reload()
 
@@ -192,7 +209,8 @@ class TestsFlextPluginApi:
         tm.that(result.success, eq=True)
         tm.that(api.fetch_plugin("demo-plugin").failure, eq=True)
 
-    def test_default_platform_is_created_lazily(self) -> None:
+    @staticmethod
+    def test_default_platform_is_created_lazily() -> None:
         """A fresh API instance builds a default platform automatically."""
         api = FlextPluginApi()
 

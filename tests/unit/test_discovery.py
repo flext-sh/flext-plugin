@@ -26,14 +26,24 @@ from tests import c
 class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
 
+    @staticmethod
     @pytest.fixture
-    def discovery(self) -> FlextPluginDiscovery:
-        """Provide a fresh discovery instance."""
+    def discovery() -> FlextPluginDiscovery:
+        """Provide a fresh discovery instance.
+
+        Returns:
+            The resulting ``FlextPluginDiscovery``.
+        """
         return FlextPluginDiscovery()
 
+    @staticmethod
     @pytest.fixture
-    def plugin_tree(self) -> Generator[Path]:
-        """Create a directory tree with two plugin files and ignored entries."""
+    def plugin_tree() -> Generator[Path]:
+        """Create a directory tree with two plugin files and ignored entries.
+
+        Yields:
+            Each ``Path``.
+        """
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
             (root / "alpha_plugin.py").write_text("PLUGIN = 'alpha'\n")
@@ -47,8 +57,9 @@ class TestsFlextPluginDiscovery:
     # discover_plugins                                                    #
     # ------------------------------------------------------------------ #
 
+    @staticmethod
     def test_discover_plugins_empty_paths_succeeds_with_empty_result(
-        self, discovery: FlextPluginDiscovery
+        discovery: FlextPluginDiscovery,
     ) -> None:
         """Empty path list yields a successful, empty discovery."""
         result = discovery.discover_plugins(paths=[])
@@ -56,8 +67,9 @@ class TestsFlextPluginDiscovery:
         tm.ok(result)
         tm.that(list(result.unwrap()), eq=[])
 
+    @staticmethod
     def test_discover_plugins_nonexistent_path_succeeds_without_files(
-        self, discovery: FlextPluginDiscovery
+        discovery: FlextPluginDiscovery,
     ) -> None:
         """A nonexistent path contributes no filesystem plugins."""
         result = discovery.discover_plugins(paths=["/nonexistent/path"])
@@ -66,8 +78,9 @@ class TestsFlextPluginDiscovery:
         names = {data.name for data in result.unwrap()}
         tm.that(names, lacks="path")
 
+    @staticmethod
     def test_discover_plugins_finds_python_files_in_directory(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """All public ``.py`` files under a directory are discovered."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -76,8 +89,9 @@ class TestsFlextPluginDiscovery:
         names = {data.name for data in result.unwrap()}
         assert {"alpha_plugin", "beta_plugin"} <= names
 
+    @staticmethod
     def test_discover_plugins_ignores_private_and_non_python_files(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """Underscore-prefixed and non-``.py`` entries are excluded."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -86,8 +100,9 @@ class TestsFlextPluginDiscovery:
         tm.that(names, lacks="_private")
         tm.that(names, lacks="readme")
 
+    @staticmethod
     def test_discover_plugins_populates_public_model_state(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """Discovered filesystem plugins expose the documented field values."""
         result = discovery.discover_plugins(paths=[str(plugin_tree)])
@@ -103,8 +118,9 @@ class TestsFlextPluginDiscovery:
         tm.that(alpha.discovery_method, eq=c.Plugin.DiscoveryMethodLiteral.FILE_SYSTEM)
         tm.that(alpha.path.name, eq="alpha_plugin.py")
 
+    @staticmethod
     def test_discover_plugins_deduplicates_repeated_paths(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """Passing the same path twice does not yield duplicate plugin names."""
         result = discovery.discover_plugins(paths=[str(plugin_tree), str(plugin_tree)])
@@ -120,8 +136,9 @@ class TestsFlextPluginDiscovery:
     # discover_plugin                                                     #
     # ------------------------------------------------------------------ #
 
+    @staticmethod
     def test_discover_plugin_nonexistent_returns_failure(
-        self, discovery: FlextPluginDiscovery
+        discovery: FlextPluginDiscovery,
     ) -> None:
         """Discovering an absent plugin fails with a descriptive error."""
         result = discovery.discover_plugin(plugin_path="/nonexistent/plugin")
@@ -129,12 +146,13 @@ class TestsFlextPluginDiscovery:
         tm.fail(result)
         tm.that(str(result.error), has="/nonexistent/plugin")
 
+    @staticmethod
     def test_discover_plugin_existing_file_returns_data(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """A real plugin file resolves to populated discovery data."""
         result = discovery.discover_plugin(
-            plugin_path=str(plugin_tree / "alpha_plugin.py")
+            plugin_path=str(plugin_tree / "alpha_plugin.py"),
         )
 
         tm.ok(result)
@@ -146,12 +164,13 @@ class TestsFlextPluginDiscovery:
     # validate_plugin                                                     #
     # ------------------------------------------------------------------ #
 
+    @staticmethod
     def test_validate_plugin_accepts_discovered_data(
-        self, discovery: FlextPluginDiscovery, plugin_tree: Path
+        discovery: FlextPluginDiscovery, plugin_tree: Path,
     ) -> None:
         """Validation of a genuinely discovered plugin succeeds with ``True``."""
         discovered = discovery.discover_plugin(
-            plugin_path=str(plugin_tree / "alpha_plugin.py")
+            plugin_path=str(plugin_tree / "alpha_plugin.py"),
         ).unwrap()
 
         result = discovery.validate_plugin(plugin_data=discovered)
@@ -163,8 +182,9 @@ class TestsFlextPluginDiscovery:
     # discover_python_plugins_in_directory                                #
     # ------------------------------------------------------------------ #
 
+    @staticmethod
     def test_directory_scan_collects_only_public_python_files(
-        self, plugin_tree: Path
+        plugin_tree: Path,
     ) -> None:
         """The recursive scanner returns one entry per public ``.py`` file."""
         seen: list[str] = []
@@ -174,7 +194,7 @@ class TestsFlextPluginDiscovery:
             return path.stem
 
         results = FlextPluginDiscovery.discover_python_plugins_in_directory(
-            plugin_tree, collect, u.fetch_logger(__name__)
+            plugin_tree, collect, u.fetch_logger(__name__),
         )
 
         tm.that(set(results), eq=frozenset({"alpha_plugin", "beta_plugin"}))
