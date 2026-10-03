@@ -105,7 +105,7 @@ class TestsFlextPluginUtilities:
 
     @staticmethod
     def test_validate_plugin_file_accepts_safe_python(tmp_path: Path) -> None:
-        """validate_plugin_file() succeeds for Python files without dangerous patterns."""
+        """validate_plugin_file() succeeds for safe Python files (no patterns)."""
         plugin_path = tmp_path / "safe.py"
         plugin_path.write_text("x = 1\n", encoding="utf-8")
 

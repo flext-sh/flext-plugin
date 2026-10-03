@@ -573,7 +573,7 @@ class FlextPluginPlatform:
                 The resulting ``p.Result[bool]``.
             """
             _ = paths
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @staticmethod
         def stop_hot_reload() -> p.Result[bool]:
@@ -582,7 +582,7 @@ class FlextPluginPlatform:
             Returns:
                 The resulting ``p.Result[bool]``.
             """
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
             """Unregister with cleanup chain.
@@ -619,7 +619,9 @@ class FlextPluginPlatform:
                 The resulting ``p.Result[bool]``.
             """
             return (
-                r[bool].ok(True) if protocol else r[bool].fail(f"{name} not configured")
+                r[bool].ok(value=True)
+                if protocol
+                else r[bool].fail(f"{name} not configured")
             )
 
         @staticmethod

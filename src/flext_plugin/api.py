@@ -67,7 +67,7 @@ class FlextPluginApi(s):
         """
         result = self._platform.discover_plugins(paths)
         if result.success:
-            self._logger.info(f"Discovered {len(result.value)} plugins")
+            self._logger.info("Discovered %s plugins", len(result.value))
         return result
 
     def execute_plugin(
@@ -130,7 +130,7 @@ class FlextPluginApi(s):
         """
         result = self._platform.load_plugin(plugin_path)
         if result.success:
-            self._logger.info(f"Loaded plugin: {result.value.name}")
+            self._logger.info("Loaded plugin: %s", result.value.name)
         return result
 
     def register_plugin(self, plugin: FlextPluginPlatform.Plugin) -> p.Result[bool]:

@@ -7,12 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-from flext_plugin import t
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from flext_plugin import t
 
 
 class FlextPluginModelsPlugin:
@@ -194,7 +196,8 @@ class FlextPluginModelsPlugin:
         )
         entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
         dependencies: Annotated[
-            t.VariadicTuple[str], cli_u.Field(description="List of plugin dependencies"),
+            t.VariadicTuple[str],
+            cli_u.Field(description="List of plugin dependencies"),
         ] = cli_u.Field(default_factory=tuple)
         metadata: Annotated[
             t.MutableJsonMapping, cli_u.Field(description="Additional metadata"),

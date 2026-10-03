@@ -32,7 +32,9 @@ class FlextPluginDiscovery:
 
     @staticmethod
     def discover_python_plugins_in_directory[TDiscovery](
-        path: Path, discover_file: Callable[[Path], TDiscovery | None], logger: p.Logger,
+        path: Path,
+        discover_file: Callable[[Path], TDiscovery | None],
+        logger: p.Logger,
     ) -> t.SequenceOf[TDiscovery]:
         """Discover Python plugins recursively in a directory.
 
@@ -98,7 +100,7 @@ class FlextPluginDiscovery:
         """
         try:
             discovered = self._discover_unique_plugins(paths)
-            self.logger.info(f"Discovered {len(discovered)} unique plugins")
+            self.logger.info("Discovered %s unique plugins", len(discovered))
             return r[Sequence[m.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
@@ -121,7 +123,7 @@ class FlextPluginDiscovery:
 
         """
         try:
-            self.logger.debug(f"Plugin validation passed: {plugin_data.name}")
+            self.logger.debug("Plugin validation passed: %s", plugin_data.name)
             return r[bool].ok(value=True)
         except c.EXC_BROAD_IO_TYPE as e:
             self.logger.exception("Plugin validation failed")
@@ -189,7 +191,7 @@ class FlextPluginDiscovery:
             try:
                 discovered = self._discover_paths(paths)
                 self.logger.info(
-                    f"File system discovery found {len(discovered)} plugins",
+                    "File system discovery found %s plugins", len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
             except c.EXC_BROAD_IO_TYPE as e:
@@ -283,7 +285,7 @@ class FlextPluginDiscovery:
             try:
                 discovered = self._discover_entry_points()
                 self.logger.info(
-                    f"Entry point discovery found {len(discovered)} plugins",
+                    "Entry point discovery found %s plugins", len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
             except c.EXC_BROAD_IO_TYPE as e:

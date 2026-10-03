@@ -19,7 +19,9 @@ class FlextPluginConstants(FlextCliConstants):
     """FlextPlugin domain constants extending FlextCliConstants via MRO."""
 
     class Plugin(
-        FlextPluginConstantsBase, FlextPluginConstantsConfig, FlextPluginConstantsPlugin,
+        FlextPluginConstantsBase,
+        FlextPluginConstantsConfig,
+        FlextPluginConstantsPlugin,
     ):
         """Plugin domain constants namespace."""
 

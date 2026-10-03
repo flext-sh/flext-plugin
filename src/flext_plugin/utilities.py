@@ -134,9 +134,10 @@ class FlextPluginUtilities(FlextCliUtilities):
             """
             if not c.Plugin.PluginValidation.PLUGIN_NAME_RE.match(name):
                 return r[bool].fail(
-                    f"Invalid plugin name '{name}'. Must start with letter and contain only letters, numbers, hyphens, and underscores.",
+                    f"Invalid plugin name '{name}'. Must start with letter and "
+                    "contain only letters, numbers, hyphens, and underscores.",
                 )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def _build_metadata(cls, plugin_path: Path) -> m.Plugin.Metadata:
@@ -224,9 +225,10 @@ class FlextPluginUtilities(FlextCliUtilities):
             file_size_mb = plugin_path.stat().st_size / (1024 * 1024)
             if file_size_mb > cls.MAX_PLUGIN_SIZE_MB:
                 return r[bool].fail(
-                    f"Plugin file too large: {file_size_mb:.1f}MB > {cls.MAX_PLUGIN_SIZE_MB}MB",
+                    f"Plugin file too large: {file_size_mb:.1f}MB > "
+                    f"{cls.MAX_PLUGIN_SIZE_MB}MB",
                 )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def _validate_python_plugin_file(cls, plugin_path: Path) -> p.Result[bool]:
@@ -244,7 +246,7 @@ class FlextPluginUtilities(FlextCliUtilities):
                     return r[bool].fail(
                         f"Plugin contains potentially dangerous code: {pattern}",
                     )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
 
 u = FlextPluginUtilities

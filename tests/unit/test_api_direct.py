@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from flext_tests import tm
@@ -20,6 +20,9 @@ from flext_tests import tm
 from flext_plugin.api import FlextPluginApi
 from flext_plugin.utilities import FlextPluginDiscovery, FlextPluginPlatform
 from tests import u
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.usefixtures("reset_api")
@@ -29,7 +32,7 @@ class TestsFlextPluginApi:
     @staticmethod
     @pytest.fixture
     def reset_api() -> None:
-        """Reset the API singleton state before each test (direct facade entry point)."""
+        """Reset the API singleton state before each test (direct entry point)."""
         api_ref = FlextPluginApi.fetch_global()
         api_ref.reset_for_testing()
         del api_ref
@@ -159,7 +162,8 @@ class TestsFlextPluginApi:
 
         tm.that(result.success, eq=True)
         tm.that(
-            {plugin.name for plugin in result.unwrap()}, eq=frozenset({"alpha", "beta"}),
+            {plugin.name for plugin in result.unwrap()},
+            eq=frozenset({"alpha", "beta"}),
         )
 
     @staticmethod

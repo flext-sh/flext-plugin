@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from flext_tests import tm
@@ -20,6 +20,9 @@ from flext_tests import tm
 from flext_plugin import c
 from flext_plugin.utilities import FlextPluginDiscovery, FlextPluginPlatform
 from tests import u
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.usefixtures("reset_platform_state")
@@ -181,7 +184,7 @@ class TestsFlextPluginPlatformService:
 
     @staticmethod
     def test_service_fetch_unknown_plugin_returns_none() -> None:
-        """fetch_plugin(), fetch_plugin_status() and resolve_plugin_active() handle unknowns."""
+        """fetch_plugin()/fetch_plugin_status()/resolve_plugin_active() on unknowns."""
         service = FlextPluginPlatform.PluginPlatformService()
 
         tm.that(service.fetch_plugin("missing"), none=True)
