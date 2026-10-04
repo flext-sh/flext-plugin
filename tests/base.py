@@ -1,22 +1,27 @@
-"""Service base for flext-plugin tests."""
+"""Service base for flext-plugin tests.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from typing import override
 
-from flext_plugin import m, p
-from flext_tests import s as tests_s
+from flext_tests import FlextTestsServiceBase
+
+from flext_plugin import m
 from tests.settings import TestsFlextPluginSettings
 
 
-class TestsFlextPluginServiceBase(tests_s):
+class TestsFlextPluginServiceBase(FlextTestsServiceBase):
     """Plugin test service base with source and test settings namespaces."""
 
     # NOTE (multi-agent): flext-tests owns fetch_settings; this project
     # declares only its more-specific bootstrap settings type.
     @classmethod
     @override
-    def _runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
         return m.RuntimeBootstrapOptions(settings_type=TestsFlextPluginSettings)
 
 

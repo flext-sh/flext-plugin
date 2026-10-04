@@ -1,0 +1,17 @@
+"""Protocol definitions for flextplugin.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+# Why: FlextPluginProtocols is owned by flext_plugin, not flext_core (pyrefly).
+from flext_plugin import FlextPluginProtocols
+
+
+class ExamplesFlextPluginProtocols(FlextPluginProtocols):
+    """Protocol definitions for flextplugin."""
+
+
+__all__: list[str] = ["ExamplesFlextPluginProtocols"]

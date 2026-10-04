@@ -4,7 +4,10 @@ This example shows how to create and use a basic plugin with the FLEXT Plugin sy
 Demonstrates core functionality without external dependencies.
 
 Usage:
-    python examples/01_basic_plugin.py
+    python examples/basic_plugin.py
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

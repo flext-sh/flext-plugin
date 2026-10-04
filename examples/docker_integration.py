@@ -1,52 +1,67 @@
 """FLEXT Plugin Docker Integration Example.
 
-This example demonstrates real-world plugin configuration with Docker services integration.
+This example demonstrates real-world plugin configuration with Docker
+services integration.
 Shows how to create production-ready plugins that work with Docker Compose services.
 
 Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
+import os
 import socket
 import sys
-from typing import Annotated, override
+from typing import Annotated, Final, override
 
-from flext_cli import cli, m as cli_m, p, u as cli_u
+from flext_cli import cli, m as cli_m, u as cli_u
+
 from flext_core import r, s
 from flext_plugin import (
     FlextPluginApi,
     FlextPluginConstants,
     FlextPluginModels,
+    FlextPluginPlatform,
     p,
     t,
-    u,
 )
+
+_AUTHOR: Final[str] = "FLEXT Team"
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
-    """Check if a network service is available."""
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    """Check if a network service is available.
+
+    connect_ex() reports connection failure via its return code, not an
+    exception, so no except-and-mask branch is needed here.
+
+    Returns:
+        The resulting ``bool``.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(timeout)
-        result = sock.connect_ex((host, port))
-        sock.close()
-        return result == 0
-    except OSError:
-        return False
+        return sock.connect_ex((host, port)) == 0
 
 
 def create_docker_postgres_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
-    """Create a Docker-compatible PostgreSQL plugin using domain library patterns."""
+    """Create a Docker-compatible PostgreSQL plugin using domain library patterns.
+
+    Returns:
+        The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+    """
     postgres_config: t.JsonMapping = {
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
         "user": "flext",
-        "password": "flext_dev_password",
+        "password": os.environ.get("FLEXT_DEMO_POSTGRES_PASSWORD", "<demo>"),
         "ssl_mode": "prefer",
         "connection_timeout": 10,
         "max_connections": 20,
@@ -56,7 +71,7 @@ def create_docker_postgres_plugin() -> tuple[
         name="docker-postgres-connector",
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
@@ -65,13 +80,18 @@ def create_docker_postgres_plugin() -> tuple[
 
 
 def create_docker_redis_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
-    """Create a Docker-compatible Redis plugin using domain library patterns."""
+    """Create a Docker-compatible Redis plugin using domain library patterns.
+
+    Returns:
+        The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+    """
     redis_config: t.JsonMapping = {
         "host": "localhost",
         "port": 6379,
-        "password": "flext_redis_password",
+        "password": os.environ.get("FLEXT_DEMO_REDIS_PASSWORD", "<demo>"),
         "db": 0,
         "decode_responses": True,
         "socket_timeout": 5,
@@ -84,7 +104,7 @@ def create_docker_redis_plugin() -> tuple[
         name="docker-redis-cache",
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
@@ -93,15 +113,20 @@ def create_docker_redis_plugin() -> tuple[
 
 
 def create_docker_ldap_plugin() -> tuple[
-    FlextPluginModels.Plugin.Entity, t.JsonMapping
+    FlextPluginModels.Plugin.Entity,
+    t.JsonMapping,
 ]:
-    """Create a Docker-compatible LDAP plugin using domain library patterns."""
+    """Create a Docker-compatible LDAP plugin using domain library patterns.
+
+    Returns:
+        The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+    """
     ldap_config: t.JsonMapping = {
         "host": "localhost",
         "port": 389,
         "use_ssl": False,
-        "user_dn": "cn=flext_ldap_REDACTED_LDAP_BIND_PASSWORD,dc=flext,dc=dev",
-        "password": "flext_ldap_password",
+        "user_dn": "cn=flext_ldap_reader,dc=flext,dc=dev",
+        "password": os.environ.get("FLEXT_DEMO_LDAP_PASSWORD", "<demo>"),
         "base_dn": "dc=flext,dc=dev",
         "search_timeout": 10,
         "connection_timeout": 5,
@@ -112,7 +137,7 @@ def create_docker_ldap_plugin() -> tuple[
         name="docker-ldap-directory",
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
-        author="FLEXT Team",
+        author=_AUTHOR,
         plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION.value,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
@@ -121,7 +146,11 @@ def create_docker_ldap_plugin() -> tuple[
 
 
 def test_connections() -> bool:
-    """Test connectivity to all Docker services and print a report."""
+    """Test connectivity to all Docker services and print a report.
+
+    Returns:
+        The resulting ``bool``.
+    """
     services = [
         ("PostgreSQL", "localhost", 5432),
         ("Redis", "localhost", 6379),
@@ -153,7 +182,11 @@ class _DockerIntegrationCommand(s[bool]):
 
     @override
     def execute(self) -> p.Result[bool]:
-        """Run the Docker integration smoke flow and return success/failure."""
+        """Run the Docker integration smoke flow and return success/failure.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         if self.test_connections:
             test_connections()
         postgres_plugin, _postgres_config = create_docker_postgres_plugin()
@@ -161,14 +194,35 @@ class _DockerIntegrationCommand(s[bool]):
         ldap_plugin, _ldap_config = create_docker_ldap_plugin()
         _ = FlextPluginApi.fetch_global()
         for plugin in (postgres_plugin, redis_plugin, ldap_plugin):
-            validation_result = u.Plugin.Platform.Rules.validate_business_rules(plugin)
+            validation_result = FlextPluginPlatform.Rules.validate_business_rules(
+                plugin,
+            )
             if validation_result.failure:
-                return r[bool].fail(validation_result.error or "validation failed")
+                return r[bool].from_failure(validation_result)
         return r[bool].ok(value=True)
 
 
+def _run_docker_integration_command(
+    params: _DockerIntegrationCommand,
+) -> p.Result[bool]:
+    """Invoke the command's own ``execute``.
+
+    Typed to satisfy the erased ``p.Cli.ResultRouteHandler`` callable
+    (``params: ...``, so pyrefly cannot infer a bare lambda's parameter type
+    from context).
+
+    Returns:
+        The resulting ``p.Result[bool]``.
+    """
+    return params.execute()
+
+
 def main(args: t.StrSequence | None = None) -> int:
-    """Main entry point for the Docker integration example."""
+    """Main entry point for the Docker integration example.
+
+    Returns:
+        The resulting ``int``.
+    """
     app = cli.create_app_with_common_params(
         name="flext-plugin-docker-integration",
         help_text="FLEXT Plugin Docker Integration Example",
@@ -180,8 +234,8 @@ def main(args: t.StrSequence | None = None) -> int:
                 name="run",
                 help_text="Create the example plugins and validate them.",
                 model_cls=_DockerIntegrationCommand,
-                handler=lambda params: params.execute(),
-            )
+                handler=_run_docker_integration_command,
+            ),
         ],
     )
     outcome = cli.execute_app(
@@ -189,7 +243,7 @@ def main(args: t.StrSequence | None = None) -> int:
         prog_name="flext-plugin-docker-integration",
         args=list(args) if args is not None else sys.argv[1:],
     )
-    return 0 if outcome.success else 1
+    return cli.finalize_result(outcome)
 
 
 if __name__ == "__main__":

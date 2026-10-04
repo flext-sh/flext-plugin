@@ -1,11 +1,16 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Flext Plugin package."""
+"""Flext Plugin package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 from flext_plugin.__version__ import (
     __author__,
     __author_email__,
@@ -18,101 +23,36 @@ from flext_plugin.__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, s, x
+    from flext_cli import d, e, h, r, x
 
-    from ._config import FlextPluginConfig, config
-    from ._settings import FlextPluginSettings, settings
-    from .api import FlextPluginApi, plugin
-    from .constants import FlextPluginConstants, FlextPluginConstants as c
-    from .models import FlextPluginModels, FlextPluginModels as m
-    from .protocols import FlextPluginProtocols, FlextPluginProtocols as p
-    from .typings import FlextPluginTypes, FlextPluginTypes as t
-    from .utilities import FlextPluginUtilities, FlextPluginUtilities as u
-
-    _ = (
-        c,
-        FlextPluginConstants,
-        t,
-        FlextPluginTypes,
-        p,
-        FlextPluginProtocols,
-        m,
-        FlextPluginModels,
-        u,
+    from flext_plugin import services
+    from flext_plugin._config import FlextPluginConfig, config
+    from flext_plugin._settings import FlextPluginSettings, settings
+    from flext_plugin.api import FlextPluginApi, plugin
+    from flext_plugin.base import FlextPluginServiceBase, s
+    from flext_plugin.cli import FlextPluginCli, main
+    from flext_plugin.constants import FlextPluginConstants, c
+    from flext_plugin.models import FlextPluginModels, m
+    from flext_plugin.protocols import FlextPluginProtocols, p
+    from flext_plugin.typings import FlextPluginTypes, t
+    from flext_plugin.utilities import (
+        FlextPluginDiscovery,
+        FlextPluginPlatform,
         FlextPluginUtilities,
-        d,
-        e,
-        h,
-        r,
-        s,
-        x,
-        FlextPluginSettings,
-        settings,
-        FlextPluginApi,
-        plugin,
+        u,
     )
 
 
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    "._config": ("FlextPluginConfig", "config"),
-    "._settings": ("FlextPluginSettings", "settings"),
-    ".api": ("FlextPluginApi", "plugin"),
-    ".constants": ("FlextPluginConstants", "c"),
-    ".models": ("FlextPluginModels", "m"),
-    ".protocols": ("FlextPluginProtocols", "p"),
-    ".typings": ("FlextPluginTypes", "t"),
-    ".utilities": ("FlextPluginUtilities", "u"),
-    "flext_cli": ("d", "e", "h", "r", "s", "x"),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_DIRECT_IMPORTS: tuple[str, ...] = (
-    "FlextPluginApi",
-    "FlextPluginConfig",
-    "FlextPluginConstants",
-    "FlextPluginModels",
-    "FlextPluginProtocols",
-    "FlextPluginSettings",
-    "FlextPluginTypes",
-    "FlextPluginUtilities",
-    "__author__",
-    "__author_email__",
-    "__description__",
-    "__license__",
-    "__title__",
-    "__url__",
-    "__version__",
-    "__version_info__",
-    "build_lazy_import_map",
-    "c",
-    "d",
-    "e",
-    "h",
-    "install_lazy_exports",
-    "m",
-    "p",
-    "plugin",
-    "r",
-    "s",
-    "settings",
-    "t",
-    "u",
-    "x",
-)
-
 __all__: tuple[str, ...] = (
     "FlextPluginApi",
+    "FlextPluginCli",
     "FlextPluginConfig",
     "FlextPluginConstants",
+    "FlextPluginDiscovery",
     "FlextPluginModels",
+    "FlextPluginPlatform",
     "FlextPluginProtocols",
+    "FlextPluginServiceBase",
     "FlextPluginSettings",
     "FlextPluginTypes",
     "FlextPluginUtilities",
@@ -130,15 +70,42 @@ __all__: tuple[str, ...] = (
     "e",
     "h",
     "m",
+    "main",
     "p",
     "plugin",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "u",
     "x",
 )
 
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            "._config": ("FlextPluginConfig", "config"),
+            "._settings": ("FlextPluginSettings", "settings"),
+            ".api": ("FlextPluginApi", "plugin"),
+            ".base": ("FlextPluginServiceBase", "s"),
+            ".cli": ("FlextPluginCli", "main"),
+            ".constants": ("FlextPluginConstants", "c"),
+            ".models": ("FlextPluginModels", "m"),
+            ".protocols": ("FlextPluginProtocols", "p"),
+            ".services": ("services",),
+            ".typings": ("FlextPluginTypes", "t"),
+            ".utilities": (
+                "FlextPluginDiscovery",
+                "FlextPluginPlatform",
+                "FlextPluginUtilities",
+                "u",
+            ),
+            "flext_cli": ("d", "e", "h", "r", "x"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    ),
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

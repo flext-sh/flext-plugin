@@ -1,6 +1,7 @@
 # FLEXT Plugin Examples
 
 <!-- TOC START -->
+
 - [Example Categories](#example-categories)
   - [🚀 Getting Started](#getting-started)
   - [🔌 Plugin Types](#plugin-types)
@@ -28,21 +29,24 @@
 - [Contributing Examples](#contributing-examples)
   - [Adding New Examples](#adding-new-examples)
   - [Example Quality Standards](#example-quality-standards)
-<!-- TOC END -->
+  <!-- TOC END -->
 
-Practical examples demonstrating how to create, configure, and integrate plugins with the FLEXT Plugin system.
+Practical examples demonstrating how to create, configure, and integrate plugins with
+the FLEXT Plugin system.
 
 ## Example Categories
 
 ### 🚀 Getting Started
 
 - **Basic Plugin** - Simple plugin implementation
-- **Plugin Configuration** - Configuration management patterns (_Documentation coming soon_)
+- **Plugin Configuration** - Configuration management patterns
+  (_Documentation coming soon_)
 - **Plugin Lifecycle** - Lifecycle management examples (_Documentation coming soon_)
 
 ### 🔌 Plugin Types
 
-- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano (_Documentation coming soon_)
+- **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano
+  (_Documentation coming soon_)
 - **Singer Target Plugin** - Data loading plugin (_Documentation coming soon_)
 - **Service Plugin** - Microservice integration (_Documentation coming soon_)
 - **Utility Plugin** - General-purpose utility plugin (_Documentation coming soon_)
@@ -55,21 +59,25 @@ Practical examples demonstrating how to create, configure, and integrate plugins
 
 ### 🏗️ Advanced Integration
 
-- **FLEXT Service Integration** - Python service integration (_Documentation coming soon_)
-- **Multi-Plugin Orchestration** - Coordinating multiple plugins (_Documentation coming soon_)
-- **Custom Plugin Types** - Creating custom plugin categories (_Documentation coming soon_)
+- **FLEXT Service Integration** - Python service integration
+  (_Documentation coming soon_)
+- **Multi-Plugin Orchestration** - Coordinating multiple plugins
+  (_Documentation coming soon_)
+- **Custom Plugin Types** - Creating custom plugin categories
+  (_Documentation coming soon_)
 
 ## Quick Reference
 
 ### Basic Plugin Creation
 
-```python notest
-from flext_plugin import create_flext_plugin, create_flext_plugin_platform
-from flext_plugin import PluginType
+```python
+from __future__ import annotations
+
+from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
 # Create simple plugin
 plugin = create_flext_plugin(
-    name="hello-world", version="0.20.0-dev", plugin_type=PluginType.UTILITY
+    name="hello-world", version="0.12.0-dev", plugin_type=PluginType.UTILITY
 )
 
 # Create platform and register plugin
@@ -80,25 +88,29 @@ platform.activate_plugin("hello-world")
 
 ### Singer Plugin Creation
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import PluginType
 
 # Create Singer tap plugin
 tap_plugin = create_flext_plugin(
     name="tap-example-api",
-    version="0.20.0-dev",
+    version="0.12.0-dev",
     plugin_type=PluginType.TAP,
     settings={
         "description": "Extract data from Example API",
         "schema_file": "tap_schema.json",
-        "singer_spec": "0.20.0-dev",
+        "singer_spec": "0.12.0-dev",
     },
 )
 ```
 
 ### Hot Reload Development
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
@@ -109,7 +121,9 @@ print("Hot reload enabled - modify plugin files to see changes")
 
 ### Testing Setup
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from flext_plugin import create_flext_plugin_platform
 
@@ -124,11 +138,11 @@ def platform():
 
 def test_plugin_activation(platform):
     """Test plugin activation."""
-    plugin = create_flext_plugin(name="test-plugin", version="0.20.0-dev")
+    plugin = create_flext_plugin(name="test-plugin", version="0.12.0-dev")
     platform.register_plugin(plugin)
 
     result = platform.activate_plugin("test-plugin")
-    assert result.success()
+    assert result.success
 ```
 
 ## Example Projects Structure
@@ -172,8 +186,8 @@ examples/
 ### Prerequisites
 
 ```bash
-# Install FLEXT Plugin system
-poetry add flext-plugin
+# Provision the workspace
+make setup
 
 # Or clone repository for development
 git clone https://github.com/flext-sh/flext.git
@@ -188,7 +202,7 @@ make setup
 cd docs/examples/basic-plugin
 
 # Install example dependencies (if any)
-poetry install
+make setup
 
 # Run example
 python plugin.py
@@ -212,29 +226,10 @@ echo "# Modified at $(date)" >> demo_plugin.py
 
 ### Plugin Template
 
-```python notest
-from flext_plugin import FlextPlugin
-from flext_plugin import PluginStatus, PluginType
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import p, t
-from flext_core import u
-from typing import Dict
+```python
+from __future__ import annotations
+
+from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 
 class ExamplePlugin(FlextPlugin):
@@ -243,7 +238,7 @@ class ExamplePlugin(FlextPlugin):
     def __init__(self, **kwargs):
         super().__init__(
             name="example-plugin",
-            version="0.20.0-dev",
+            version="0.12.0-dev",
             settings={
                 "plugin_type": PluginType.UTILITY,
                 "description": "Example plugin template",
@@ -257,11 +252,11 @@ class ExamplePlugin(FlextPlugin):
         try:
             # Setup plugin resources
             self._setup_resources()
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
         except Exception as e:
             return r[bool].fail(f"Initialization failed: {e}")
 
-    def execute(self, data: p.Dict) -> p.Result[p.Dict]:
+    def execute(self, data: dict) -> p.Result[dict]:
         """Execute plugin logic."""
         try:
             # Validate plugin is active
@@ -279,7 +274,7 @@ class ExamplePlugin(FlextPlugin):
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
-            return r[bool].ok(data=True)
+            return r[bool].ok(True)
         except Exception as e:
             return r[bool].fail(f"Cleanup failed: {e}")
 
@@ -287,7 +282,7 @@ class ExamplePlugin(FlextPlugin):
         """Setup plugin-specific resources."""
         pass
 
-    def _process_data(self, data: p.Dict) -> p.Dict:
+    def _process_data(self, data: dict) -> dict:
         """Core processing logic - implement in subclass."""
         return {"processed": True, "input": data}
 
@@ -298,7 +293,9 @@ class ExamplePlugin(FlextPlugin):
 
 ### Test Template
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from flext_plugin import create_flext_plugin_platform
 from your_plugin import ExamplePlugin
@@ -322,13 +319,13 @@ class TestExamplePlugin:
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
         assert plugin.name == "example-plugin"
-        assert plugin.plugin_version == "0.20.0-dev"
+        assert plugin.plugin_version == "0.12.0-dev"
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success()
+        assert result.success
 
     def test_plugin_execution(self, plugin):
         """Test plugin execution."""
@@ -340,26 +337,26 @@ class TestExamplePlugin:
         test_data = {"input": "test_value"}
         result = plugin.execute(test_data)
 
-        assert result.success()
+        assert result.success
         assert "processed" in result.value
 
     def test_plugin_lifecycle(self, platform, plugin):
         """Test complete plugin lifecycle."""
         # Register plugin
         register_result = platform.register_plugin(plugin)
-        assert register_result.success()
+        assert register_result.success
 
         # Activate plugin
         activate_result = platform.activate_plugin(plugin.name)
-        assert activate_result.success()
+        assert activate_result.success
 
         # Execute plugin
         execute_result = platform.execute_plugin(plugin.name, {"test": "data"})
-        assert execute_result.success()
+        assert execute_result.success
 
         # Deactivate plugin
         deactivate_result = platform.deactivate_plugin(plugin.name)
-        assert deactivate_result.success()
+        assert deactivate_result.success
 ```
 
 ### Configuration Template
@@ -368,7 +365,7 @@ class TestExamplePlugin:
 {
   "plugin": {
     "name": "example-plugin",
-    "version": "0.20.0-dev",
+    "version": "0.12.0-dev",
     "type": "utility",
     "description": "Example plugin for demonstration",
     "author": "Your Name",
@@ -381,8 +378,8 @@ class TestExamplePlugin:
     "batch_size": 100
   },
   "dependencies": {
-    "flext-core": ">=0.20.0-dev",
-    "flext-observability": ">=0.20.0-dev"
+    "flext-core": ">=0.12.0-dev",
+    "flext-observability": ">=0.12.0-dev"
   },
   "metadata": {
     "tags": ["example", "demo", "utility"],
@@ -399,24 +396,30 @@ class TestExamplePlugin:
 
 All examples demonstrate proper error handling using `r` pattern:
 
-```python notest
-try:
-    result = operation()
-    if result.success():
-        return result.value
-    else:
+```python
+from __future__ import annotations
+
+
+def run_operation() -> p.Result[bool]:
+    try:
+        result = operation()
+        if result.success:
+            return result.value
         logger.error(f"Operation failed: {result.error}")
         return None
-except Exception as e:
-    logger.error(f"Unexpected error: {e}")
-    return r[bool].fail(f"Unexpected error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return r[bool].fail(f"Unexpected error: {e}")
 ```
 
 ### 2. Resource Management
 
 Proper resource cleanup in plugin lifecycle:
 
-```python notest
+```python
+from __future__ import annotations
+
+
 def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
     try:
@@ -427,7 +430,7 @@ def cleanup(self) -> p.Result[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return r[bool].ok(data=True)
+        return r[bool].ok(True)
     except Exception as e:
         return r[bool].fail(f"Cleanup failed: {e}")
 ```
@@ -436,30 +439,11 @@ def cleanup(self) -> p.Result[bool]:
 
 All examples use proper type hints:
 
-```python notest
-from typing import Dict, List, Optional
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import p, t
-from flext_core import u
+```python
+from __future__ import annotations
 
 
-def process_data(self, data: p.Dict) -> p.Result[p.Dict]:
+def process_data(self, data: dict) -> p.Result[dict]:
     """Type-safe data processing."""
     pass
 ```
@@ -491,8 +475,7 @@ Comprehensive test coverage for all plugin functionality:
    - `settings.json` - Configuration example
    - `README.md` - Documentation and usage
 
-1. **Update Index**:
-   Add your example to this README.md file
+1. **Update Index**: Add your example to this README.md file
 
 1. **Test Example**:
 
@@ -514,6 +497,7 @@ Comprehensive test coverage for all plugin functionality:
 - **Error Handling**: Proper r pattern usage
 - **Resource Management**: Clean initialization and cleanup
 
-______________________________________________________________________
+---
 
-**Next Steps**: Browse individual example directories for detailed implementations and run the examples to see FLEXT Plugin system in action.
+**Next Steps**: Browse individual example directories for detailed implementations and
+run the examples to see FLEXT Plugin system in action.

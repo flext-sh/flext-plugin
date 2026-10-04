@@ -17,11 +17,9 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from flext_tests import tm
-from tests import u
 
-__all__ = ["TestsFlextPluginExamples"]
+from tests import t, u
 
 
 def _examples_dir() -> Path:
@@ -31,50 +29,58 @@ def _examples_dir() -> Path:
 class TestsFlextPluginExamples:
     """Observable contract of the example scripts run as processes."""
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("script", "args"),
         [
-            pytest.param("01_basic_plugin.py", (), id="basic-plugin"),
-            pytest.param("02_plugin_configuration.py", (), id="plugin-configuration"),
+            pytest.param("basic_plugin.py", (), id="basic-plugin"),
+            pytest.param("plugin_configuration.py", (), id="plugin-configuration"),
             pytest.param(
-                "03_docker_integration.py", ("run",), id="docker-integration-run"
+                "docker_integration.py",
+                ("run",),
+                id="docker-integration-run",
             ),
         ],
     )
     def test_example_script_runs_to_success(
-        self, script: str, args: tuple[str, ...]
+        script: str,
+        args: t.VariadicTuple[str],
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
         example_path = _examples_dir() / script
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), *args], cwd=_examples_dir().parent
+            [sys.executable, str(example_path), *args],
+            cwd=_examples_dir().parent,
         )
 
         tm.ok(result)
         output = result.value
-        tm.that(output.exit_code, eq=0)
+        tm.that(u.Cli.process_succeeded(output.outcome), eq=True)
         tm.that(output.stderr, lacks="Traceback (most recent call last)")
 
-    def test_unknown_example_path_fails_with_nonzero_exit(self) -> None:
+    @staticmethod
+    def test_unknown_example_path_fails_with_nonzero_exit() -> None:
         """Running a non-existent example surfaces a failure, not silent success."""
         missing_path = _examples_dir() / "does_not_exist.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(missing_path)], cwd=_examples_dir().parent
+            [sys.executable, str(missing_path)],
+            cwd=_examples_dir().parent,
         )
 
         tm.ok(result)
-        tm.that(result.value.exit_code, ne=0)
+        tm.that(result.value.outcome.raw_return_code, ne=0)
 
-    def test_docker_integration_reports_service_connectivity(self) -> None:
+    @staticmethod
+    def test_docker_integration_reports_service_connectivity() -> None:
         """With connection testing, the docker example prints a connectivity report."""
-        example_path = _examples_dir() / "03_docker_integration.py"
+        example_path = _examples_dir() / "docker_integration.py"
         result = u.Cli.run_raw(
             [sys.executable, str(example_path), "run", "--test-connections"],
             cwd=_examples_dir().parent,
         )
 
         tm.ok(result)
-        tm.that(result.value.exit_code, eq=0)
+        tm.that(u.Cli.process_succeeded(result.value.outcome), eq=True)
         output = result.value.stdout
         tm.that(output, has="Service Connectivity Check")
         assert "Available" in output or "Unavailable" in output

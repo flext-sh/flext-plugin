@@ -4,27 +4,36 @@ This example shows how to create plugins with complex configurations,
 including database connections, environment-specific settings, and validation.
 
 Usage:
-    python examples/02_plugin_configuration.py
+    python examples/plugin_configuration.py
 
 Docker Usage:
     # Start services: docker-compose up -d postgres
-    # Run with database: python examples/02_plugin_configuration.py --with-db
+    # Run with database: python examples/plugin_configuration.py --with-db
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+import os
 
 from flext_plugin import FlextPluginApi, t
 
 
 def create_database_plugin_config() -> t.JsonMapping:
-    """Create configuration for a database plugin."""
+    """Create configuration for a database plugin.
+
+    Returns:
+        The resulting ``t.JsonMapping``.
+    """
     return {
         "database": {
             "host": "localhost",
             "port": 5432,
             "database": "flext_dev",
             "username": "flext",
-            "password": "flext_pass",
+            "password": os.environ.get("FLEXT_DEMO_DB_PASSWORD", "<demo>"),
             "pool_size": 5,
             "pool_recycle": 3600,
         },
@@ -43,14 +52,18 @@ def create_database_plugin_config() -> t.JsonMapping:
 
 
 def create_ldap_plugin_config() -> t.JsonMapping:
-    """Create configuration for an LDAP plugin."""
+    """Create configuration for an LDAP plugin.
+
+    Returns:
+        The resulting ``t.JsonMapping``.
+    """
     return {
         "ldap": {
             "server": "localhost",
             "port": 389,
             "base_dn": "dc=flext,dc=dev",
             "bind_dn": "cn=readonly,dc=flext,dc=dev",
-            "bind_password": "readonly",
+            "bind_password": os.environ.get("FLEXT_DEMO_LDAP_PASSWORD", "<demo>"),
             "use_ssl": False,
             "timeout": 30,
         },
