@@ -14,15 +14,21 @@ from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_plugin._models.base import FlextPluginModelsBase
+    from flext_plugin._models.config import FlextPluginConfigModels
     from flext_plugin._models.plugin import FlextPluginModelsPlugin
 
 
-__all__: tuple[str, ...] = ("FlextPluginModelsBase", "FlextPluginModelsPlugin")
+__all__: tuple[str, ...] = (
+    "FlextPluginConfigModels",
+    "FlextPluginModelsBase",
+    "FlextPluginModelsPlugin",
+)
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
             ".base": ("FlextPluginModelsBase",),
+            ".config": ("FlextPluginConfigModels",),
             ".plugin": ("FlextPluginModelsPlugin",),
         }),
         alias_groups=MappingProxyType({}),
