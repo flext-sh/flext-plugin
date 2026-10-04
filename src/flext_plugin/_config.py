@@ -16,8 +16,8 @@ from functools import cached_property
 from typing import Self
 
 from flext_cli import FlextCliConfig
-from flext_core import FlextSettings
 
+from flext_core import FlextSettings
 from flext_plugin._models.config import FlextPluginConfigModels
 
 
