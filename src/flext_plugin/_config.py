@@ -1,8 +1,10 @@
-"""FlextPluginConfig — frozen config singleton for flext-plugin (ADR-005 §7).
+"""FlextPluginConfig — frozen, validated config singleton for flext-plugin.
 
-Model-less: business rules live in ``config/*.yaml`` under the ``Plugin:`` key and
-are exposed through the open ``config.Plugin`` namespace (``extra="allow"``), with
-no per-domain model. Access is ``config.Plugin.<domain>[<key>...]``.
+Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
+``fetch_global`` call (model-less, ``extra=allow`` at the FlextCliConfig base).
+The flat YAML is then validated into the pure-Pydantic ``_models.config``
+shapes and exposed as typed domain objects under ``config.Plugin`` — never a
+model-less dict subscript.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,21 +12,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, Self
+from functools import cached_property
+from typing import Self
 
-from flext_cli import FlextCliConfig, m
-
+from flext_cli import FlextCliConfig
 from flext_core import FlextSettings
 
-
-class _PluginNamespace(m.BaseModel):
-    """Open, frozen namespace exposing every ``config/*.yaml`` domain model-less."""
-
-    model_config = m.ConfigDict(extra="allow", frozen=True)
+from flext_plugin._models.config import FlextPluginConfigModels
 
 
 class FlextPluginConfig(FlextSettings, FlextCliConfig):
-    """Plugin config auto-loaded model-less from ``config/*.yaml``.
+    """Plugin config auto-loaded from ``config/*.yaml`` and validated via models.
 
     MRO carries ``FlextSettings`` FIRST (ENFORCE-042); the class stays a frozen,
     YAML-validated config singleton.
@@ -44,12 +42,11 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     __hash__ = object.__hash__
 
-    Plugin: Annotated[
-        _PluginNamespace,
-        m.Field(
-            description="Open namespace exposing ``config/*.yaml`` under ``Plugin``.",
-        ),
-    ] = _PluginNamespace()
+    @cached_property
+    def Plugin(self) -> FlextPluginConfigModels.Plugin:
+        """Validated ``Plugin`` business-rule config namespace."""
+        root = FlextPluginConfigModels.Root.model_validate(dict(self.model_extra or {}))
+        return root.Plugin
 
 
 config: FlextPluginConfig = FlextPluginConfig.fetch_global()
