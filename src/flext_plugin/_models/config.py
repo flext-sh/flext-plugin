@@ -101,5 +101,14 @@ class FlextPluginConfigModels:
             description="Plugin file and directory defaults.",
         )
 
+    class Root(BaseModel):
+        """Root flext-plugin config validated from ``config/*.yaml``."""
+
+        model_config = ConfigDict(frozen=True, extra="ignore")
+
+        Plugin: FlextPluginConfigModels.Plugin = Field(
+            description="Plugin business-rule config namespace.",
+        )
+
 
 __all__: list[str] = ["FlextPluginConfigModels"]
