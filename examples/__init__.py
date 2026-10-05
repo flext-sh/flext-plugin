@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 
 if TYPE_CHECKING:
     from examples.constants import ExamplesFlextPluginConstants
@@ -40,19 +40,26 @@ __all__: tuple[str, ...] = (
     "x",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            ".constants": ("ExamplesFlextPluginConstants",),
-            ".models": ("ExamplesFlextPluginModels",),
-            ".protocols": ("ExamplesFlextPluginProtocols",),
-            ".typings": ("ExamplesFlextPluginTypes",),
-            ".utilities": ("ExamplesFlextPluginUtilities",),
-            "flext_plugin": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "ExamplesFlextPluginConstants": ".constants",
+        "ExamplesFlextPluginModels": ".models",
+        "ExamplesFlextPluginProtocols": ".protocols",
+        "ExamplesFlextPluginTypes": ".typings",
+        "ExamplesFlextPluginUtilities": ".utilities",
+        "c": "flext_plugin",
+        "d": "flext_plugin",
+        "e": "flext_plugin",
+        "h": "flext_plugin",
+        "m": "flext_plugin",
+        "p": "flext_plugin",
+        "r": "flext_plugin",
+        "s": "flext_plugin",
+        "t": "flext_plugin",
+        "u": "flext_plugin",
+        "x": "flext_plugin",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
