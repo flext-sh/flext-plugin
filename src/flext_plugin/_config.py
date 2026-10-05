@@ -32,10 +32,7 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     Plugin: Annotated[
         FlextPluginConfigModels.Plugin,
-        Field(
-            default_factory=FlextPluginConfigModels.Plugin,
-            description="Plugin business-rule config namespace.",
-        ),
+        Field(description="Plugin business-rule config namespace."),
     ]
 
     # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
