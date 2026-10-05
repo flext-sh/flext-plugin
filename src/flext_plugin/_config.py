@@ -1,10 +1,8 @@
 """FlextPluginConfig — frozen, validated config singleton for flext-plugin.
 
-Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
-``fetch_global`` call (model-less, ``extra=allow`` at the FlextCliConfig base).
-The flat YAML is then validated into the pure-Pydantic ``_models.config``
-shapes and exposed as typed domain objects under ``config.Plugin`` — never a
-model-less dict subscript.
+The business rules in ``config/plugin.yaml`` are validated at construction
+and exposed under ``config.Plugin``. The distribution projects that same
+authored YAML into the installed package's config directory.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,10 +10,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from functools import cached_property
-from typing import Self
+from typing import ClassVar, Self
 
 from flext_cli import FlextCliConfig
+from pydantic import Field
 
 from flext_core import FlextSettings
 from flext_plugin._models.config import FlextPluginConfigModels
@@ -28,12 +26,14 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
     YAML-validated config singleton.
     """
 
-    # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
-    # namespacing only — instance machinery stays plain object semantics so the
-    # settings singleton ``__new__`` cannot leak into the config singleton.
-    # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
-    # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
-    # guard.
+    CONFIG_FILENAMES: ClassVar[tuple[str, ...]] = ("plugin.yaml",)
+
+    Plugin: FlextPluginConfigModels.Plugin = Field(
+        description="Validated plugin business-rule config namespace.",
+    )
+
+    # Preserve the canonical generated allocation contract while inherited
+    # Pydantic construction validates the declared namespace.
     def __new__(cls, *args: object, **kwargs: object) -> Self:
         _ = args, kwargs
         return object.__new__(cls)
@@ -41,12 +41,6 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
     __eq__ = object.__eq__
 
     __hash__ = object.__hash__
-
-    @cached_property
-    def Plugin(self) -> FlextPluginConfigModels.Plugin:
-        """Validated ``Plugin`` business-rule config namespace."""
-        root = FlextPluginConfigModels.Root.model_validate(dict(self.model_extra or {}))
-        return root.Plugin
 
 
 config: FlextPluginConfig = FlextPluginConfig.fetch_global()
