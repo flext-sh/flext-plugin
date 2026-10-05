@@ -164,12 +164,19 @@ include = ["/src/flext_plugin/**"]
 [tool.hatch.build.targets.wheel.sources]
 "src/flext_plugin" = "flext_plugin"
 
+[tool.hatch.build.targets.wheel.force-include]
+"config/plugin.yaml" = "flext_plugin/config/plugin.yaml"
+
 [tool.hatch.build.targets.sdist]
 include = ["/src/flext_plugin/**"]
+
+[tool.hatch.build.targets.sdist.force-include]
+"config/plugin.yaml" = "config/plugin.yaml"
 
 [tool.mypy]
 mypy_path = ["src"]
 plugins = ["pydantic.mypy"]
+disable_error_code = ["prop-decorator", "call-arg"]
 python_version = "3.13"
 allow_redefinition = true
 check_untyped_defs = true
@@ -406,9 +413,16 @@ quote-style = "double"
 skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
-extend-safe-fixes = ["camelcase-imported-as-lowercase", "relative-imports"]
+extend-safe-fixes = [
+  "camelcase-imported-as-lowercase",
+  "relative-imports",
+  "typing-only-first-party-import",
+]
 ignore = [
   "camelcase-imported-as-lowercase",
+  "implicit-namespace-package",
+  "missing-required-import",
+  "typing-only-first-party-import",
   "typing-only-standard-library-import",
   "typing-only-third-party-import",
 ]
@@ -427,6 +441,23 @@ unfixable = [
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = "Copyright \\(c\\) \\d{4} \\S[^\\n]*\\. All rights reserved\\."
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+  "flext_cli.FlextCliConfig",
+  "flext_cli.m.Entity",
+  "flext_cli.m.ManagedModel",
+  "flext_cli.m.Value",
+  "flext_cli.services.cli.FlextCliCli",
+  "flext_core.FlextSettings",
+  "flext_core.s",
+  "flext_plugin.FlextPluginSettings",
+  "flext_plugin.m.Plugin.Entity",
+  "flext_plugin.s",
+  "flext_tests.FlextTestsServiceBase",
+  "flext_tests.FlextTestsSettings",
+  "pydantic.BaseModel",
+]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -458,6 +489,12 @@ split-on-trailing-comma = false
   "runtime-import-in-type-checking-block",
   "typing-only-first-party-import",
   "unused-import",
+]
+"**/tests/python/**" = [
+  "raise-vanilla-args",
+  "start-process-with-partial-path",
+  "subprocess-without-shell-equals-true",
+  "suspicious-subprocess-import",
 ]
 "scripts/**" = [
   "any-type",
@@ -543,4 +580,5 @@ whitelines = 1
 
 [tool.uv]
 link-mode = "copy"
+constraint-dependencies = ["mypy<2.4.0"]
 environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
