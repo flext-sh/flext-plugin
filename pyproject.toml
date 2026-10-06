@@ -164,8 +164,14 @@ include = ["/src/flext_plugin/**"]
 [tool.hatch.build.targets.wheel.sources]
 "src/flext_plugin" = "flext_plugin"
 
+[tool.hatch.build.targets.wheel.force-include]
+"config/plugin.yaml" = "flext_plugin/config/plugin.yaml"
+
 [tool.hatch.build.targets.sdist]
 include = ["/src/flext_plugin/**"]
+
+[tool.hatch.build.targets.sdist.force-include]
+"config/plugin.yaml" = "config/plugin.yaml"
 
 [tool.mypy]
 mypy_path = ["src"]

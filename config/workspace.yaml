@@ -20,4 +20,23 @@ repository:
   package: true
   editable: true
   read_only: false
+project:
+  package_name: flext_plugin
+  class_stem: FlextPlugin
+  namespace: Plugin
+  constant_name: flext-plugin
+  namespace_attribute: plugin
+  alias: plugin
+  environment_prefix: FLEXT_PLUGIN_
+  description: FLEXT Plugin - Plugin System for FLEXT Platform
+  license: MIT
+  author_name: FLEXT Team
+  author_email: team@flext.sh
+  upstream: flext_cli
+  homepage: https://github.com/flext-sh/flext
+  documentation: https://github.com/flext-sh/flext/blob/main/README.md
+  repository_root_rel: "."
+  year: 2026
+  packaged_data_paths:
+    - config/plugin.yaml
 members: []

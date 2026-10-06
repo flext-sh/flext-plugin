@@ -1,8 +1,8 @@
 """flext-plugin config models — typed business-rule shapes.
 
 Frozen Pydantic shapes for the ``config/plugin.yaml`` business-rule SSOT.
-The ``_config.py`` facade validates the model-less YAML slice into these
-classes and exposes the ready objects under ``config.Plugin``.
+The config declaration validates these shapes at construction and exposes
+the ready objects under ``config.Plugin``.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -99,15 +99,6 @@ class FlextPluginConfigModels:
         )
         files: FlextPluginConfigModels.Files = Field(
             description="Plugin file and directory defaults.",
-        )
-
-    class Root(BaseModel):
-        """Root flext-plugin config validated from ``config/*.yaml``."""
-
-        model_config = ConfigDict(frozen=True, extra="ignore")
-
-        Plugin: FlextPluginConfigModels.Plugin = Field(
-            description="Plugin business-rule config namespace.",
         )
 
 

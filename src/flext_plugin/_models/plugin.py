@@ -7,17 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
+from flext_plugin import t
 from flext_plugin.constants import c
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from flext_plugin import t
 
 
 class FlextPluginModelsPlugin:
