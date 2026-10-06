@@ -1,3 +1,4 @@
+# Copyright (c) 2025 FLEXT Team. All rights reserved.
 """Pytest bootstrap for flext-plugin local package resolution."""
 
 from __future__ import annotations
