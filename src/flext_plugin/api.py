@@ -33,7 +33,7 @@ def _build_default_platform() -> (
         The resulting ``FlextPluginPlatform.PluginPlatformService``.
     """
     return FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService(
-        container=FlextContainer()
+        container=FlextContainer(),
     )
 
 
@@ -98,7 +98,8 @@ class FlextPluginApi(s):
         )
 
     def fetch_plugin(
-        self, plugin_name: str
+        self,
+        plugin_name: str,
     ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """Fetch a plugin by name; fails when missing (ENFORCE-056).
 
@@ -115,7 +116,7 @@ class FlextPluginApi(s):
                 ],
             )
         return r[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin].ok(
-            plugin
+            plugin,
         )
 
     def fetch_plugin_status(self, plugin_name: str) -> p.Result[str]:
@@ -152,7 +153,8 @@ class FlextPluginApi(s):
         ].ok(self._platform.list_plugins())
 
     def load_plugin(
-        self, plugin_path: str
+        self,
+        plugin_path: str,
     ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path; logs the loaded plugin's name.
 
@@ -165,7 +167,8 @@ class FlextPluginApi(s):
         return result
 
     def register_plugin(
-        self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        self,
+        plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
     ) -> p.Result[bool]:
         """Register a plugin in the platform.
 

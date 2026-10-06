@@ -164,7 +164,7 @@ class FlextPluginUtilitiesPluginPlatform:
 
             validated_biz: p.Result[bool] = (
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Rules.validate_business_rules(
-                    plugin
+                    plugin,
                 )
             )
             registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
@@ -317,7 +317,7 @@ class FlextPluginUtilitiesPluginPlatform:
                         return r[m.Plugin.Entity].ok(plugin)
                     except c.EXC_BROAD_IO_TYPE:
                         return r[m.Plugin.Entity].fail(
-                            "Plugin is not a valid Plugin type"
+                            "Plugin is not a valid Plugin type",
                         )
                 if result.failure:
                     return r[m.Plugin.Entity].fail(result.error)
@@ -425,7 +425,8 @@ class FlextPluginUtilitiesPluginPlatform:
             """railway-oriented plugin platform with functional composition."""
 
             _plugins: MutableMapping[
-                str, FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+                str,
+                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
             ] = u.PrivateAttr(
                 default_factory=dict,
             )
@@ -443,7 +444,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 default_factory=lambda: None,
             )
             _loader: p.Plugin.Loader | None = u.PrivateAttr(
-                default_factory=lambda: None
+                default_factory=lambda: None,
             )
             _executor: p.Plugin.Execution | None = u.PrivateAttr(
                 default_factory=lambda: None,
@@ -545,7 +546,8 @@ class FlextPluginUtilitiesPluginPlatform:
             def plugins(
                 self,
             ) -> t.MappingKV[
-                str, FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+                str,
+                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
             ]:
                 """Plugin storage."""
                 return self._plugins
@@ -761,7 +763,8 @@ class FlextPluginUtilitiesPluginPlatform:
                     "input_data": dict(execution.input_data),
                 }
                 result = self.executor.execute_plugin(
-                    execution.plugin_name, exec_context
+                    execution.plugin_name,
+                    exec_context,
                 )
                 execution.mark_completed(
                     success=result.success,
@@ -780,7 +783,8 @@ class FlextPluginUtilitiesPluginPlatform:
                 )
 
             def _get_plugin(
-                self, name: str
+                self,
+                name: str,
             ) -> p.Result[
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
             ]:

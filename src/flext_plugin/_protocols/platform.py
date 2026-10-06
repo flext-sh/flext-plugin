@@ -67,7 +67,8 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def fetch_plugin(
-        self, name: str
+        self,
+        name: str,
     ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
         """Fetch a plugin by name."""
         ...
@@ -87,7 +88,8 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def load_plugin(
-        self, plugin_path: str
+        self,
+        plugin_path: str,
     ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """Load a plugin from disk."""
         ...
