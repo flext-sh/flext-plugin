@@ -7,6 +7,8 @@ discovery/loading/execution delegation, and status reporting.
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 # mypy: warn-unused-ignores=False
 
