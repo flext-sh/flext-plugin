@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 from flext_plugin.__version__ import (
     __author__,
     __author_email__,
@@ -82,30 +82,38 @@ __all__: tuple[str, ...] = (
     "x",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            "._config": ("FlextPluginConfig", "config"),
-            "._settings": ("FlextPluginSettings", "settings"),
-            ".api": ("FlextPluginApi", "plugin"),
-            ".base": ("FlextPluginServiceBase", "s"),
-            ".cli": ("FlextPluginCli", "main"),
-            ".constants": ("FlextPluginConstants", "c"),
-            ".models": ("FlextPluginModels", "m"),
-            ".protocols": ("FlextPluginProtocols", "p"),
-            ".services": ("services",),
-            ".typings": ("FlextPluginTypes", "t"),
-            ".utilities": (
-                "FlextPluginDiscovery",
-                "FlextPluginPlatform",
-                "FlextPluginUtilities",
-                "u",
-            ),
-            "flext_cli": ("d", "e", "h", "r", "x"),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "FlextPluginApi": ".api",
+        "FlextPluginCli": ".cli",
+        "FlextPluginConfig": "._config",
+        "FlextPluginConstants": ".constants",
+        "FlextPluginDiscovery": ".utilities",
+        "FlextPluginModels": ".models",
+        "FlextPluginPlatform": ".utilities",
+        "FlextPluginProtocols": ".protocols",
+        "FlextPluginServiceBase": ".base",
+        "FlextPluginSettings": "._settings",
+        "FlextPluginTypes": ".typings",
+        "FlextPluginUtilities": ".utilities",
+        "c": ".constants",
+        "config": "._config",
+        "d": "flext_cli",
+        "e": "flext_cli",
+        "h": "flext_cli",
+        "m": ".models",
+        "main": ".cli",
+        "p": ".protocols",
+        "plugin": ".api",
+        "r": "flext_cli",
+        "s": ".base",
+        "services": ".services",
+        "settings": "._settings",
+        "t": ".typings",
+        "u": ".utilities",
+        "x": "flext_cli",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

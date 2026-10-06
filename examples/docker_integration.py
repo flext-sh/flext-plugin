@@ -20,13 +20,14 @@ from typing import Annotated, Final, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
 
-from flext_core import r, s
+from flext_core import r
 from flext_plugin import (
     FlextPluginApi,
     FlextPluginConstants,
     FlextPluginModels,
     FlextPluginPlatform,
     p,
+    s,
     t,
 )
 
