@@ -23,16 +23,16 @@ from flext_core import FlextContainer
 from flext_plugin import e, p, r, s, t, u
 from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
 
+_Platform = FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
 
-def _build_default_platform() -> (
-    FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService
-):
+
+def _build_default_platform() -> _Platform.PluginPlatformService:
     """Construct the default platform service bound to a fresh container.
 
     Returns:
         The resulting ``FlextPluginPlatform.PluginPlatformService``.
     """
-    return FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService(
+    return _Platform.PluginPlatformService(
         container=FlextContainer(),
     )
 
@@ -47,21 +47,21 @@ class FlextPluginApi(s):
     _logger: p.Logger = u.PrivateAttr(
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
-    _platform: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService = u.PrivateAttr(
+    _platform: _Platform.PluginPlatformService = u.PrivateAttr(
         default_factory=_build_default_platform,
     )
 
     @property
     def platform(
         self,
-    ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService:
+    ) -> _Platform.PluginPlatformService:
         """The plugin platform service."""
         return self._platform
 
     @platform.setter
     def platform(
         self,
-        value: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService,
+        value: _Platform.PluginPlatformService,
     ) -> None:
         """Inject the plugin platform service (test hook)."""
         self._platform = value
