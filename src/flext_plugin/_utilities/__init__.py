@@ -15,11 +15,15 @@ from flext_core import install_lazy_exports
 if TYPE_CHECKING:
     from flext_plugin._utilities.base import FlextPluginUtilitiesBase
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
+    from flext_plugin._utilities.examples_flext_plugin_utilities import (
+        ExamplesFlextPluginUtilities,
+    )
     from flext_plugin._utilities.implementations import FlextPluginImplementations
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 __all__: tuple[str, ...] = (
+    "ExamplesFlextPluginUtilities",
     "FlextPluginDiscovery",
     "FlextPluginImplementations",
     "FlextPluginPlatform",
@@ -30,6 +34,7 @@ install_lazy_exports(
     __name__,
     globals(),
     MappingProxyType({
+        "ExamplesFlextPluginUtilities": ".examples_flext_plugin_utilities",
         "FlextPluginDiscovery": ".discovery",
         "FlextPluginImplementations": ".implementations",
         "FlextPluginPlatform": ".plugin_platform",
