@@ -19,15 +19,17 @@ if TYPE_CHECKING:
         ExamplesFlextPluginUtilities,
     )
     from flext_plugin._utilities.implementations import FlextPluginImplementations
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.plugin_platform import (
+        FlextPluginUtilitiesPluginPlatform,
+    )
 
 
 __all__: tuple[str, ...] = (
     "ExamplesFlextPluginUtilities",
     "FlextPluginDiscovery",
     "FlextPluginImplementations",
-    "FlextPluginPlatform",
     "FlextPluginUtilitiesBase",
+    "FlextPluginUtilitiesPluginPlatform",
 )
 
 install_lazy_exports(
@@ -37,8 +39,8 @@ install_lazy_exports(
         "ExamplesFlextPluginUtilities": ".examples_flext_plugin_utilities",
         "FlextPluginDiscovery": ".discovery",
         "FlextPluginImplementations": ".implementations",
-        "FlextPluginPlatform": ".plugin_platform",
         "FlextPluginUtilitiesBase": ".base",
+        "FlextPluginUtilitiesPluginPlatform": ".plugin_platform",
     }),
     public_exports=__all__,
 )
