@@ -12,10 +12,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from flext_plugin import m, p, t
-    from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
-    from flext_plugin._utilities.plugin_platform import (
-        FlextPluginUtilitiesPluginPlatform,
-    )
+    from flext_plugin._protocols import FlextPluginProtocolsPlugin
+    from flext_plugin._utilities import FlextPluginUtilitiesPluginPlatform
 
 
 @runtime_checkable
@@ -67,7 +65,8 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def fetch_plugin(
-        self, name: str
+        self,
+        name: str,
     ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
         """Fetch a plugin by name."""
         ...
@@ -87,7 +86,8 @@ class FlextPluginProtocolsPlatformService(Protocol):
         ...
 
     def load_plugin(
-        self, plugin_path: str
+        self,
+        plugin_path: str,
     ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """Load a plugin from disk."""
         ...
