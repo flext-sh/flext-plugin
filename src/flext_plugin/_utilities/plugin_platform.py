@@ -179,13 +179,13 @@ class _PluginLifecycleOperations:
 
             return self._add_to_plugins(plugin_entity)
 
-            validated_biz: p.Result[bool] = (
-                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Rules.validate_business_rules(
-                    plugin,
-                )
+        validated_biz: p.Result[bool] = (
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Rules.validate_business_rules(
+                plugin,
             )
-            registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
-            return registered.map(add_to_plugins_result)
+        )
+        registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
+        return registered.map(add_to_plugins_result)
 
     def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unregister with cleanup chain.
