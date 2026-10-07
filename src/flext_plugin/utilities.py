@@ -3,18 +3,28 @@
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
+import importlib
 from collections.abc import MutableSequence, Sequence
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import FlextCliUtilities
 
 from flext_plugin import c, m, p, r, t
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
+
+if TYPE_CHECKING:
+    from flext_plugin._utilities.plugin_platform import (
+        FlextPluginUtilitiesPluginPlatform,
+    )
+
+    FlextPluginPlatform = FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
 
 
 class FlextPluginUtilities(FlextCliUtilities):
@@ -248,6 +258,26 @@ class FlextPluginUtilities(FlextCliUtilities):
                         f"Plugin contains potentially dangerous code: {pattern}",
                     )
             return r[bool].ok(value=True)
+
+
+def __getattr__(name: str) -> object:
+    """Lazily expose the plugin platform namespace on first attribute access.
+
+    Args:
+        name: Requested module attribute name.
+
+    Returns:
+        The requested exported object.
+
+    Raises:
+        AttributeError: If the name is not an exported object.
+
+    """
+    if name == "FlextPluginPlatform":
+        module = importlib.import_module("flext_plugin._utilities.plugin_platform")
+        return module.FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)
 
 
 u = FlextPluginUtilities
