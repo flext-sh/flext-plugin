@@ -92,7 +92,7 @@ print(f"Valid: {hello_plugin.is_valid()}")
 
 Run it:
 
-```bash
+```text
 python hello_plugin.py
 ```
 
@@ -157,7 +157,7 @@ run(main())
 
 Run it:
 
-```bash
+```text
 python platform_example.py
 ```
 
@@ -284,7 +284,7 @@ if __name__ == "__main__":
 
 Run it:
 
-```bash
+```text
 python custom_plugin.py
 ```
 
@@ -411,7 +411,7 @@ if __name__ == "__main__":
 
 Run tests:
 
-```bash
+```text
 # Install pytest if not already installed
 pip install pytest
 
@@ -469,10 +469,9 @@ FLEXT Plugin includes comprehensive quality gates. Set them up for your project:
 make setup
 
 # Run quality checks
-ruff check .          # Linting
-mypy .
-pytest               # Testing
-bandit -r .          # Security scanning
+make check            # Linting and type gates
+make test             # Testing
+bandit -r .           # Security scanning
 ```
 
 ## Next Steps

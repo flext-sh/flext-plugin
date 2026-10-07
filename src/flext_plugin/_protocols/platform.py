@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 
     from flext_plugin import m, p, t
     from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
-    from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+    from flext_plugin._utilities.plugin_platform import (
+        FlextPluginUtilitiesPluginPlatform,
+    )
 
 
 @runtime_checkable
@@ -47,7 +49,9 @@ class FlextPluginProtocolsPlatformService(Protocol):
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
+    ) -> p.Result[
+        Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
+    ]:
         """Discover plugins from the provided paths."""
         ...
 
@@ -56,11 +60,15 @@ class FlextPluginProtocolsPlatformService(Protocol):
         plugin_name: str,
         context: t.JsonMapping,
         execution_id: str | None = None,
-    ) -> p.Result[FlextPluginPlatform.PluginExecution]:
+    ) -> p.Result[
+        FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+    ]:
         """Execute a plugin with the provided context."""
         ...
 
-    def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
+    def fetch_plugin(
+        self, name: str
+    ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
         """Fetch a plugin by name."""
         ...
 
@@ -72,17 +80,22 @@ class FlextPluginProtocolsPlatformService(Protocol):
         """Resolve whether the named plugin is active."""
         ...
 
-    def list_plugins(self) -> Sequence[FlextPluginPlatform.Plugin]:
+    def list_plugins(
+        self,
+    ) -> Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """List registered plugins."""
         ...
 
-    def load_plugin(self, plugin_path: str) -> p.Result[FlextPluginPlatform.Plugin]:
+    def load_plugin(
+        self, plugin_path: str
+    ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
         """Load a plugin from disk."""
         ...
 
     def register_plugin(
         self,
-        plugin: FlextPluginPlatform.Plugin | m.Plugin.Entity,
+        plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        | m.Plugin.Entity,
     ) -> p.Result[bool]:
         """Register a plugin instance."""
         ...
