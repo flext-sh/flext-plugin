@@ -16,10 +16,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_tests import tm
 
 from flext_core import FlextSettings
-from flext_plugin import FlextPluginSettings
-from flext_tests import tm
+from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
 
 if TYPE_CHECKING:
     from flext_plugin import t
@@ -42,6 +42,19 @@ _UNIVERSAL_FIELDS: t.VariadicTuple[str] = (
 
 class TestsFlextPluginConfig:
     """Public settings contract of the isolated plugin settings facade."""
+
+    @staticmethod
+    def test_business_namespace_validates_and_round_trips() -> None:
+        """Typed YAML rules survive construction and JSON validation unchanged."""
+        original = config.Plugin
+        replacement_version = original.version.model_copy(
+            update={"default": f"{original.version.default}-candidate"},
+        )
+        replacement = original.model_copy(update={"version": replacement_version})
+        candidate = FlextPluginConfig(Plugin=replacement)
+        restored = FlextPluginConfig.model_validate_json(candidate.model_dump_json())
+        tm.that(restored.Plugin.model_dump(), eq=replacement.model_dump())
+        tm.that(config.Plugin.model_dump(), eq=original.model_dump())
 
     @staticmethod
     def setup_method() -> None:

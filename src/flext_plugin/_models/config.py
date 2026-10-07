@@ -1,8 +1,8 @@
 """flext-plugin config models — typed business-rule shapes.
 
 Frozen Pydantic shapes for the ``config/plugin.yaml`` business-rule SSOT.
-The ``_config.py`` facade validates the model-less YAML slice into these
-classes and exposes the ready objects under ``config.Plugin``.
+The config declaration validates these shapes at construction and exposes
+the ready objects under ``config.Plugin``.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -53,7 +53,7 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         pattern: str = Field(
-            description="Regex extracting the first triple-quoted docstring."
+            description="Regex extracting the first triple-quoted docstring.",
         )
 
     class Validation(BaseModel):
@@ -62,16 +62,16 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         name: FlextPluginConfigModels.NameValidation = Field(
-            description="Plugin name validation thresholds."
+            description="Plugin name validation thresholds.",
         )
         description: FlextPluginConfigModels.DescriptionValidation = Field(
-            description="Plugin description validation thresholds."
+            description="Plugin description validation thresholds.",
         )
         author: FlextPluginConfigModels.AuthorValidation = Field(
-            description="Plugin author validation thresholds."
+            description="Plugin author validation thresholds.",
         )
         docstring: FlextPluginConfigModels.DocstringValidation = Field(
-            description="Plugin docstring extraction rules."
+            description="Plugin docstring extraction rules.",
         )
 
     class Files(BaseModel):
@@ -92,22 +92,13 @@ class FlextPluginConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         version: FlextPluginConfigModels.Version = Field(
-            description="Plugin version defaults and validation."
+            description="Plugin version defaults and validation.",
         )
         validation: FlextPluginConfigModels.Validation = Field(
-            description="Plugin validation rule namespace."
+            description="Plugin validation rule namespace.",
         )
         files: FlextPluginConfigModels.Files = Field(
-            description="Plugin file and directory defaults."
-        )
-
-    class Root(BaseModel):
-        """Root flext-plugin config validated from ``config/*.yaml``."""
-
-        model_config = ConfigDict(frozen=True, extra="ignore")
-
-        Plugin: FlextPluginConfigModels.Plugin = Field(
-            description="Plugin business-rule config namespace."
+            description="Plugin file and directory defaults.",
         )
 
 
