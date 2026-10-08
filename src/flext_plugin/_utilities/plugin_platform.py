@@ -147,7 +147,10 @@ class PluginLifecycleOperations:
         )
         return prepared_r.flat_map(self._execute_with_executor)
 
-    def fetch_plugin(self: _LifecycleHost, name: str) -> FlextPluginPlatform.Plugin | None:
+    def fetch_plugin(
+        self: _LifecycleHost,
+        name: str,
+    ) -> FlextPluginPlatform.Plugin | None:
         """Fetch a plugin by name.
 
         Returns:
@@ -156,7 +159,7 @@ class PluginLifecycleOperations:
         plugin: FlextPluginPlatform.Plugin | None = self.plugins.get(name)
         return plugin
 
-    def fetch_plugin_status(self, name: str) -> str | None:
+    def fetch_plugin_status(self: _LifecycleHost, name: str) -> str | None:
         """Fetch a plugin status label.
 
         Returns:
@@ -165,7 +168,7 @@ class PluginLifecycleOperations:
         plugin = self.fetch_plugin(name)
         return plugin.status if plugin else None
 
-    def resolve_plugin_active(self, name: str) -> bool:
+    def resolve_plugin_active(self: _LifecycleHost, name: str) -> bool:
         """Resolve whether a plugin is active.
 
         Returns:
@@ -224,7 +227,10 @@ class PluginLifecycleOperations:
         registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
         return registered.map(add_to_plugins_result)
 
-    def unregister_plugin(self: _LifecycleHost, plugin_name: str) -> p.Result[bool]:
+    def unregister_plugin(
+        self: _LifecycleHost,
+        plugin_name: str,
+    ) -> p.Result[bool]:
         """Unregister with cleanup chain.
 
         Returns:
