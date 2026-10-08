@@ -104,39 +104,6 @@ class TestsFlextPluginConstantsUnit:
         assert right.issubset(c.Plugin.ALL_PLUGIN_TYPES)
 
     @staticmethod
-    @pytest.mark.parametrize(
-        ("attribute", "expected"),
-        [
-            ("PYTHON_EXTENSION", ".py"),
-            ("YAML_CONFIG_EXTENSION", ".yaml"),
-            ("JSON_CONFIG_EXTENSION", ".json"),
-            ("TOML_CONFIG_EXTENSION", ".toml"),
-            ("DEFAULT_PLUGIN_DIR", "plugins"),
-            ("DEFAULT_CACHE_DIR", ".plugin_cache"),
-            ("DEFAULT_CONFIG_DIR", "settings"),
-        ],
-    )
-    def test_file_constants_exact_values(attribute: str, expected: str) -> None:
-        """File-related constants expose their exact documented string values."""
-        tm.that(getattr(c.Plugin.Files, attribute), eq=expected)
-
-    @staticmethod
-    def test_config_extensions_are_distinct() -> None:
-        """Each configuration format maps to a unique file extension."""
-        extensions = {
-            c.Plugin.Files.YAML_CONFIG_EXTENSION,
-            c.Plugin.Files.JSON_CONFIG_EXTENSION,
-            c.Plugin.Files.TOML_CONFIG_EXTENSION,
-        }
-        tm.that(len(extensions), eq=3)
-
-    @staticmethod
-    def test_extensions_start_with_dot() -> None:
-        """Every declared file extension is dot-prefixed."""
-        for extension in (
-            c.Plugin.Files.PYTHON_EXTENSION,
-            c.Plugin.Files.YAML_CONFIG_EXTENSION,
-            c.Plugin.Files.JSON_CONFIG_EXTENSION,
-            c.Plugin.Files.TOML_CONFIG_EXTENSION,
-        ):
-            assert extension.startswith(".")
+    def test_file_constants_removed_from_contract() -> None:
+        """The legacy file-extension constant namespace is no longer exposed."""
+        tm.that(hasattr(c.Plugin, "Files"), eq=False)

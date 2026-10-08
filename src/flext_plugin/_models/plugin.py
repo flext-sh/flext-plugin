@@ -16,8 +16,7 @@ from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-from flext_plugin import t
-from flext_plugin.constants import c
+from flext_plugin import c, t
 
 
 class FlextPluginModelsPlugin:
@@ -75,16 +74,19 @@ class FlextPluginModelsPlugin:
             cli_u.Field(max_length=200, description="Plugin author/maintainer"),
         ] = ""
         plugin_type: Annotated[
-            str,
+            c.Plugin.Type,
             cli_u.Field(description="Plugin type classification"),
-        ] = "utility"
+        ] = c.Plugin.Type.UTILITY
         is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
             True
         )
         metadata: Annotated[
             t.JsonMapping,
             cli_u.Field(description="Extensible plugin metadata"),
-        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
+        ] = cli_u.Field(
+            default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
+            validate_default=True,
+        )
 
         @cli_u.field_validator("plugin_version", mode="before")
         @classmethod
@@ -199,7 +201,10 @@ class FlextPluginModelsPlugin:
         metadata: Annotated[
             t.JsonMapping,
             cli_u.Field(description="Extensible discovery metadata"),
-        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
+        ] = cli_u.Field(
+            default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
+            validate_default=True,
+        )
 
         @cli_u.field_validator("version", mode="before")
         @classmethod
@@ -257,7 +262,10 @@ class FlextPluginModelsPlugin:
         metadata: Annotated[
             t.JsonMapping,
             cli_u.Field(description="Additional metadata"),
-        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
+        ] = cli_u.Field(
+            default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
+            validate_default=True,
+        )
 
     class Registry(cli_m.Value):
         """Plugin registry - central plugin registry storage.
@@ -277,7 +285,10 @@ class FlextPluginModelsPlugin:
         plugins: Annotated[
             t.JsonMapping,
             cli_u.Field(description="Dictionary of registered plugins"),
-        ] = cli_u.Field(default_factory=lambda: MappingProxyType({}))
+        ] = cli_u.Field(
+            default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
+            validate_default=True,
+        )
         last_updated: Annotated[
             datetime,
             cli_u.Field(description="Last update timestamp"),

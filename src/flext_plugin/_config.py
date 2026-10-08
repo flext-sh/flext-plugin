@@ -15,8 +15,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Self
 
-from flext_cli import FlextCliConfig
-from pydantic import Field
+from flext_cli import FlextCliConfig, u
 
 from flext_core import FlextSettings
 from flext_plugin._models.config import FlextPluginConfigModels
@@ -31,7 +30,7 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     CONFIG_FILENAMES: ClassVar[tuple[str, ...]] = ("plugin.yaml",)
 
-    Plugin: FlextPluginConfigModels.Plugin = Field(
+    Plugin: FlextPluginConfigModels.Plugin = u.Field(
         description="Validated plugin business-rule config namespace.",
     )
 
