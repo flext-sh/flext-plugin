@@ -17,7 +17,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_plugin import FlextPluginPlatform
+from flext_plugin import FlextPluginConstants, FlextPluginPlatform
 from tests import m
 
 
@@ -41,7 +41,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type="utility",
+            plugin_type=FlextPluginConstants.Plugin.Type.UTILITY,
             is_enabled=is_enabled,
         )
 
