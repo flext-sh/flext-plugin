@@ -71,7 +71,7 @@ class TestsFlextPluginCoreTypes:
             p.INTEGRATION_PLUGIN_TYPES,
             p.UTILITY_PLUGIN_TYPES,
         ]
-        union: frozenset[str] = frozenset().union(*groups)
+        union: frozenset[str] = frozenset[str]().union(*groups)
         tm.that(union, eq=p.ALL_PLUGIN_TYPES)
         total = sum(len(g) for g in groups)
         tm.that(total, eq=len(union))  # disjoint: no type in two categories

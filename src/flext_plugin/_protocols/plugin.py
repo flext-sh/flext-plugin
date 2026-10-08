@@ -323,19 +323,19 @@ class FlextPluginProtocolsPlugin:
             """Fetch a plugin by name."""
             ...
 
-        def _require_protocol(
+        def require_protocol(
             self,
             protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
             name: str,
         ) -> p.Result[bool]: ...
 
-        def _get_plugin(
+        def get_plugin(
             self, name: str
         ) -> p.Result[
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
         ]: ...
 
-        def _create_execution(
+        def create_execution(
             self,
             plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
             context: t.JsonMapping,
@@ -344,7 +344,7 @@ class FlextPluginProtocolsPlugin:
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
         ]: ...
 
-        def _prepare_execution(
+        def prepare_execution(
             self,
             execution: (
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
@@ -353,7 +353,7 @@ class FlextPluginProtocolsPlugin:
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
         ]: ...
 
-        def _execute_with_executor(
+        def execute_with_executor(
             self,
             execution: (
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
@@ -362,21 +362,21 @@ class FlextPluginProtocolsPlugin:
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
         ]: ...
 
-        def _validate_and_create_plugin(
+        def validate_and_create_plugin(
             self,
             plugin_data: t.JsonMapping,
         ) -> p.Result[
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
         ]: ...
 
-        def _validate_and_create_plugins(
+        def validate_and_create_plugins(
             self,
             plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
         ) -> p.Result[
             Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
         ]: ...
 
-        def _register_all(
+        def register_all(
             self,
             plugins: t.SequenceOf[
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
@@ -385,15 +385,15 @@ class FlextPluginProtocolsPlugin:
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
         ]: ...
 
-        def _register_single(
+        def register_single(
             self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
         ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin: ...
 
-        def _add_to_plugins(
+        def add_to_plugins(
             self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
         ) -> bool: ...
 
-        def _remove_from_plugins(self, plugin_name: str) -> bool: ...
+        def remove_from_plugins(self, plugin_name: str) -> bool: ...
 
 
 __all__: list[str] = ["FlextPluginProtocolsPlugin"]

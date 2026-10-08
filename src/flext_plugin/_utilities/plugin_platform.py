@@ -58,7 +58,7 @@ class FlextPluginUtilitiesPluginPlatform:
                         discovery_result.error or "Discovery failed",
                     )
 
-                checked: p.Result[bool] = self._require_protocol(
+                checked: p.Result[bool] = self.require_protocol(
                     self.discovery,
                     "Discovery",
                 )
@@ -70,10 +70,10 @@ class FlextPluginUtilitiesPluginPlatform:
                 )
 
                 plugins: p.Result[Sequence[_Platform.Plugin]] = discovered.flat_map(
-                    self._validate_and_create_plugins,
+                    self.validate_and_create_plugins,
                 )
 
-                return plugins.map(self._register_all)
+                return plugins.map(self.register_all)
 
             def execute_plugin(
                 self: p.Plugin.LifecycleHost,
@@ -87,21 +87,21 @@ class FlextPluginUtilitiesPluginPlatform:
                     The resulting ``p.Result[_Platform.PluginExecution]``.
 
                 """
-                plugin_r: p.Result[_Platform.Plugin] = self._get_plugin(
+                plugin_r: p.Result[_Platform.Plugin] = self.get_plugin(
                     plugin_name,
                 )
 
                 exec_r: p.Result[_Platform.PluginExecution] = plugin_r.flat_map(
-                    lambda plugin: self._create_execution(
+                    lambda plugin: self.create_execution(
                         plugin, context, execution_id
                     ),
                 )
 
                 prepared_r: p.Result[_Platform.PluginExecution] = exec_r.flat_map(
-                    self._prepare_execution,
+                    self.prepare_execution,
                 )
 
-                return prepared_r.flat_map(self._execute_with_executor)
+                return prepared_r.flat_map(self.execute_with_executor)
 
             def fetch_plugin(
                 self: p.Plugin.LifecycleHost, name: str
@@ -158,17 +158,17 @@ class FlextPluginUtilitiesPluginPlatform:
 
                     return self.loader.load_plugin(plugin_path)
 
-                checked_l: p.Result[bool] = self._require_protocol(
+                checked_l: p.Result[bool] = self.require_protocol(
                     self.loader, "Loader"
                 )
 
                 loaded: p.Result[t.JsonMapping] = checked_l.flat_map(load_and_validate)
 
                 plugin_r2: p.Result[_Platform.Plugin] = loaded.flat_map(
-                    self._validate_and_create_plugin,
+                    self.validate_and_create_plugin,
                 )
 
-                return plugin_r2.map(self._register_single)
+                return plugin_r2.map(self.register_single)
 
             def register_plugin(
                 self: p.Plugin.LifecycleHost,
@@ -196,7 +196,7 @@ class FlextPluginUtilitiesPluginPlatform:
                         plugin.model_dump(mode="json"),
                     )
 
-                    return self._add_to_plugins(plugin_entity)
+                    return self.add_to_plugins(plugin_entity)
 
                 validated_biz: p.Result[bool] = _Platform.Rules.validate_business_rules(
                     plugin
@@ -223,7 +223,7 @@ class FlextPluginUtilitiesPluginPlatform:
 
                         raise ValueError(error_msg)
 
-                    return self._remove_from_plugins(plugin_name)
+                    return self.remove_from_plugins(plugin_name)
 
                 return self.registry.unregister(plugin_name).map(
                     unregister_from_registry
@@ -474,12 +474,15 @@ class FlextPluginUtilitiesPluginPlatform:
                 str,
                 FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
             ] = u.PrivateAttr(
-                default_factory=dict,
+                default_factory=dict[
+                    str,
+                    "FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin",
+                ],
             )
             _executions: MutableMapping[
                 str,
                 _Platform.PluginExecution,
-            ] = u.PrivateAttr(default_factory=dict)
+            ] = u.PrivateAttr(default_factory=dict[str, "_Platform.PluginExecution"])
             _registry: _Platform.PluginRegistry | None = u.PrivateAttr(
                 default_factory=lambda: None,
             )
@@ -710,7 +713,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 """
                 return r[bool].ok(value=True)
 
-            def _add_to_plugins(
+            def add_to_plugins(
                 self,
                 plugin: _Platform.Plugin,
             ) -> bool:
@@ -723,7 +726,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 return True
 
             @staticmethod
-            def _require_protocol(
+            def require_protocol(
                 protocol: p.Plugin.Discovery
                 | p.Plugin.Loader
                 | p.Plugin.Execution
@@ -742,7 +745,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 )
 
             @staticmethod
-            def _create_execution(
+            def create_execution(
                 plugin: _Platform.Plugin,
                 context: t.JsonMapping,
                 execution_id: str | None,
@@ -763,7 +766,7 @@ class FlextPluginUtilitiesPluginPlatform:
                     execution.execution_id = execution_id
                 return r[_Platform.PluginExecution].ok(execution)
 
-            def _execute_with_executor(
+            def execute_with_executor(
                 self,
                 execution: _Platform.PluginExecution,
             ) -> p.Result[_Platform.PluginExecution]:
@@ -801,7 +804,7 @@ class FlextPluginUtilitiesPluginPlatform:
                     result.error or "Execution failed",
                 )
 
-            def _get_plugin(
+            def get_plugin(
                 self,
                 name: str,
             ) -> p.Result[
@@ -820,7 +823,7 @@ class FlextPluginUtilitiesPluginPlatform:
                     result_type=r[_Platform.Plugin],
                 )
 
-            def _prepare_execution(
+            def prepare_execution(
                 self,
                 execution: _Platform.PluginExecution,
             ) -> p.Result[_Platform.PluginExecution]:
@@ -833,7 +836,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 self._executions[execution.execution_id] = execution
                 return r[_Platform.PluginExecution].ok(execution)
 
-            def _register_all(
+            def register_all(
                 self,
                 plugins: t.SequenceOf[_Platform.Plugin],
             ) -> t.SequenceOf[_Platform.Plugin]:
@@ -847,7 +850,7 @@ class FlextPluginUtilitiesPluginPlatform:
                     self.registry.register(plugin.name, plugin)
                 return plugins
 
-            def _register_single(
+            def register_single(
                 self,
                 plugin: _Platform.Plugin,
             ) -> _Platform.Plugin:
@@ -860,7 +863,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 self.registry.register(plugin.name, plugin)
                 return plugin
 
-            def _remove_from_plugins(self, plugin_name: str) -> bool:
+            def remove_from_plugins(self, plugin_name: str) -> bool:
                 """Remove plugin from internal registry.
 
                 Returns:
@@ -870,7 +873,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 return True
 
             @staticmethod
-            def _validate_and_create_plugin(
+            def validate_and_create_plugin(
                 plugin_data: t.JsonMapping,
             ) -> p.Result[_Platform.Plugin]:
                 """Create single validated plugin.
@@ -894,7 +897,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 )
 
             @staticmethod
-            def _validate_and_create_plugins(
+            def validate_and_create_plugins(
                 plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
             ) -> p.Result[Sequence[_Platform.Plugin]]:
                 """Create validated plugins from data.
