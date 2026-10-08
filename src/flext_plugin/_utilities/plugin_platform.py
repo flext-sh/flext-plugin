@@ -11,18 +11,82 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import MutableMapping, MutableSequence, Sequence
-from typing import override
+from typing import Protocol, override
 
 from flext_cli import u
 
 from flext_plugin import FlextPluginSettings, c, e, m, p, r, s, t
 
 
+class _LifecycleHost(Protocol):
+    """Structure required by plugin lifecycle operations."""
+
+    @property
+    def discovery(self) -> p.Plugin.Discovery | None: ...
+
+    @property
+    def loader(self) -> p.Plugin.Loader | None: ...
+
+    @property
+    def registry(self) -> _Platform.PluginRegistry: ...
+
+    @property
+    def plugins(self) -> t.MappingKV[str, _Platform.Plugin]: ...
+
+    def fetch_plugin(self: _LifecycleHost, name: str) -> _Platform.Plugin | None: ...
+
+    def _require_protocol(
+        self,
+        protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
+        name: str,
+    ) -> p.Result[bool]: ...
+
+    def _get_plugin(self, name: str) -> p.Result[_Platform.Plugin]: ...
+
+    def _create_execution(
+        self,
+        plugin: _Platform.Plugin,
+        context: t.JsonMapping,
+        execution_id: str | None,
+    ) -> p.Result[_Platform.PluginExecution]: ...
+
+    def _prepare_execution(
+        self,
+        execution: _Platform.PluginExecution,
+    ) -> p.Result[_Platform.PluginExecution]: ...
+
+    def _execute_with_executor(
+        self,
+        execution: _Platform.PluginExecution,
+    ) -> p.Result[_Platform.PluginExecution]: ...
+
+    def _validate_and_create_plugin(
+        self,
+        plugin_data: t.JsonMapping,
+    ) -> p.Result[_Platform.Plugin]: ...
+
+    def _validate_and_create_plugins(
+        self,
+        plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
+    ) -> p.Result[Sequence[_Platform.Plugin]]: ...
+
+    def _register_all(
+        self,
+        plugins: t.SequenceOf[_Platform.Plugin],
+    ) -> t.SequenceOf[_Platform.Plugin]: ...
+
+    def _register_single(self, plugin: _Platform.Plugin) -> _Platform.Plugin: ...
+
+    def _add_to_plugins(self, plugin: _Platform.Plugin) -> bool: ...
+
+    def _remove_from_plugins(self, plugin_name: str) -> bool: ...
+
+
 class _PluginLifecycleOperations:
     """Plugin discovery, registration, and execution lifecycle operations."""
 
     def discover_plugins(
-        self,
+        self: _LifecycleHost,
         paths: t.StrSequence,
     ) -> p.Result[Sequence[_Platform.Plugin]]:
         """Discover plugins with railway composition.
@@ -68,7 +132,7 @@ class _PluginLifecycleOperations:
         return plugins.map(self._register_all)
 
     def execute_plugin(
-        self,
+        self: _LifecycleHost,
         plugin_name: str,
         context: t.JsonMapping,
         execution_id: str | None = None,
@@ -93,7 +157,7 @@ class _PluginLifecycleOperations:
 
         return prepared_r.flat_map(self._execute_with_executor)
 
-    def fetch_plugin(self, name: str) -> _Platform.Plugin | None:
+    def fetch_plugin(self: _LifecycleHost, name: str) -> _Platform.Plugin | None:
         """Fetch a plugin by name.
 
         Returns:
@@ -104,7 +168,7 @@ class _PluginLifecycleOperations:
 
         return plugin
 
-    def fetch_plugin_status(self, name: str) -> str | None:
+    def fetch_plugin_status(self: _LifecycleHost, name: str) -> str | None:
         """Fetch a plugin status label.
 
         Returns:
@@ -115,7 +179,7 @@ class _PluginLifecycleOperations:
 
         return plugin.status if plugin else None
 
-    def resolve_plugin_active(self, name: str) -> bool:
+    def resolve_plugin_active(self: _LifecycleHost, name: str) -> bool:
         """Resolve whether a plugin is active.
 
         Returns:
@@ -126,7 +190,10 @@ class _PluginLifecycleOperations:
 
         return plugin.active() if plugin else False
 
-    def load_plugin(self, plugin_path: str) -> p.Result[_Platform.Plugin]:
+    def load_plugin(
+        self: _LifecycleHost,
+        plugin_path: str,
+    ) -> p.Result[_Platform.Plugin]:
         """Load single plugin with composition.
 
         Returns:
@@ -152,7 +219,7 @@ class _PluginLifecycleOperations:
         return plugin_r2.map(self._register_single)
 
     def register_plugin(
-        self,
+        self: _LifecycleHost,
         plugin: _Platform.Plugin | m.Plugin.Entity,
     ) -> p.Result[bool]:
         """Register plugin with validation chain.
@@ -187,7 +254,7 @@ class _PluginLifecycleOperations:
         registered: p.Result[bool] = validated_biz.flat_map(validate_plugin_result)
         return registered.map(add_to_plugins_result)
 
-    def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
+    def unregister_plugin(self: _LifecycleHost, plugin_name: str) -> p.Result[bool]:
         """Unregister with cleanup chain.
 
         Returns:
@@ -257,7 +324,11 @@ class FlextPluginUtilitiesPluginPlatform:
                 """Initialize plugin execution."""
                 self.plugin_name = plugin_name
                 self.execution_id = execution_id or str(uuid.uuid4())
-                self.input_data = execution_config.get("input_data", {})
+                self.input_data: t.JsonMapping = (
+                    t.json_mapping_adapter().validate_python(
+                        execution_config.get("input_data", {}),
+                    )
+                )
                 self.is_running = False
                 self.is_completed = False
                 self.success = False
