@@ -102,19 +102,6 @@ class TestsFlextPluginConstantsUnit:
         assert right.issubset(c.Plugin.ALL_PLUGIN_TYPES)
 
     @staticmethod
-    @pytest.mark.parametrize(
-        ("attribute", "expected"),
-        [
-            ("PYTHON_EXTENSION", ".py"),
-            ("YAML_CONFIG_EXTENSION", ".yaml"),
-            ("JSON_CONFIG_EXTENSION", ".json"),
-            ("TOML_CONFIG_EXTENSION", ".toml"),
-            ("DEFAULT_PLUGIN_DIR", "plugins"),
-            ("DEFAULT_CACHE_DIR", ".plugin_cache"),
-            ("DEFAULT_CONFIG_DIR", "settings"),
-        ],
-    )
-    @staticmethod
     def test_file_constants_removed_from_contract() -> None:
         """The legacy file-extension constant namespace is no longer exposed."""
         tm.that(hasattr(c.Plugin, "Files"), eq=False)

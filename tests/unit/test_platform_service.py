@@ -65,7 +65,7 @@ class TestsFlextPluginPlatformExecution:
         """mark_started() transitions the execution to running."""
         execution = FlextPluginPlatform.PluginExecution(
             plugin_name="demo",
-            input_data={},
+            execution_config={},
         )
 
         execution.mark_started()
@@ -78,7 +78,7 @@ class TestsFlextPluginPlatformExecution:
         """mark_completed(success=True) records success and timestamp."""
         execution = FlextPluginPlatform.PluginExecution(
             plugin_name="demo",
-            input_data={},
+            execution_config={},
         )
 
         execution.mark_completed(success=True)
@@ -93,7 +93,7 @@ class TestsFlextPluginPlatformExecution:
         """mark_completed(success=False) records failure and message."""
         execution = FlextPluginPlatform.PluginExecution(
             plugin_name="demo",
-            input_data={},
+            execution_config={},
         )
 
         execution.mark_completed(success=False, error_message="boom")
@@ -223,8 +223,8 @@ class TestsFlextPluginPlatformService:
     def test_service_list_plugins_after_registration(self) -> None:
         """list_plugins() returns registered plugins."""
         service = FlextPluginPlatform.PluginPlatformService()
-        service.register_plugin(self._make_plugin(name="alpha"))
-        service.register_plugin(self._make_plugin(name="beta"))
+        service.register_plugin(_make_plugin(name="alpha"))
+        service.register_plugin(_make_plugin(name="beta"))
 
         plugins = service.list_plugins()
 
@@ -234,11 +234,11 @@ class TestsFlextPluginPlatformService:
     def test_service_platform_status_reflects_state(self) -> None:
         """platform_status reports plugin and execution counts."""
         service = FlextPluginPlatform.PluginPlatformService()
-        service.register_plugin(self._make_plugin(name="active"))
-        service.register_plugin(self._make_plugin(name="inactive", is_enabled=False))
+        service.register_plugin(_make_plugin(name="active"))
+        service.register_plugin(_make_plugin(name="inactive", is_enabled=False))
         execution = FlextPluginPlatform.PluginExecution(
             plugin_name="active",
-            input_data={},
+            execution_config={},
         )
         execution.mark_started()
         service.inject_execution("e1", execution)
@@ -256,10 +256,10 @@ class TestsFlextPluginPlatformService:
         service = FlextPluginPlatform.PluginPlatformService()
         completed = FlextPluginPlatform.PluginExecution(
             plugin_name="demo",
-            input_data={},
+            execution_config={},
         )
         completed.mark_completed(success=True)
-        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", input_data={})
+        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", execution_config={})
         running.mark_started()
         service.inject_execution("done", completed)
         service.inject_execution("run", running)
@@ -274,11 +274,11 @@ class TestsFlextPluginPlatformService:
     def test_service_list_executions_and_running() -> None:
         """list_executions() and list_running_executions() filter correctly."""
         service = FlextPluginPlatform.PluginPlatformService()
-        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", input_data={})
+        running = FlextPluginPlatform.PluginExecution(plugin_name="demo", execution_config={})
         running.mark_started()
         completed = FlextPluginPlatform.PluginExecution(
             plugin_name="demo",
-            input_data={},
+            execution_config={},
         )
         completed.mark_completed(success=True)
         service.inject_execution("r", running)
@@ -412,7 +412,7 @@ class TestsFlextPluginPlatformServiceRealComponents:
     def test_service_execute_plugin_with_real_executor_success(self) -> None:
         """execute_plugin() records a real completed execution with the result."""
         service = FlextPluginPlatform.PluginPlatformService()
-        plugin = self._make_plugin()
+        plugin = _make_plugin()
         service.register_plugin(plugin)
         service.executor = u.Plugin.Tests.EchoExecutor()
 
@@ -429,7 +429,7 @@ class TestsFlextPluginPlatformServiceRealComponents:
     def test_service_execute_plugin_with_real_executor_failure(self) -> None:
         """execute_plugin() fails when the real executor reports a failure."""
         service = FlextPluginPlatform.PluginPlatformService()
-        plugin = self._make_plugin()
+        plugin = _make_plugin()
         service.register_plugin(plugin)
         service.executor = u.Plugin.Tests.FailingExecutor()
 
