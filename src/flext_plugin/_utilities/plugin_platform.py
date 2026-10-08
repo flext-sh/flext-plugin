@@ -31,6 +31,11 @@ class _LifecycleHost(Protocol):
     @property
     def plugins(self) -> t.MappingKV[str, FlextPluginPlatform.Plugin]: ...
 
+    def fetch_plugin(
+        self,
+        name: str,
+    ) -> FlextPluginPlatform.Plugin | None: ...
+
     def _require_protocol(
         self,
         protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
