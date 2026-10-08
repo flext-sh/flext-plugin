@@ -15,7 +15,7 @@ from flext_cli import FlextCliUtilities
 
 from flext_plugin import c, m, p, r, t
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginUtilities(FlextCliUtilities):
