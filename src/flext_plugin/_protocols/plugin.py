@@ -9,7 +9,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from flext_plugin import m, p, t
+    from flext_plugin._utilities import FlextPluginUtilitiesPluginPlatform
 
 
 class FlextPluginProtocolsPlugin:
@@ -283,6 +286,114 @@ class FlextPluginProtocolsPlugin:
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins using this strategy."""
             ...
+
+    @runtime_checkable
+    class LifecycleHost(Protocol):
+        """Structure required by the platform lifecycle operations."""
+
+        @property
+        def discovery(self) -> p.Plugin.Discovery | None:
+            """The configured discovery protocol implementation."""
+            ...
+
+        @property
+        def loader(self) -> p.Plugin.Loader | None:
+            """The configured loader protocol implementation."""
+            ...
+
+        @property
+        def registry(
+            self,
+        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginRegistry:
+            """The plugin registry."""
+            ...
+
+        @property
+        def plugins(
+            self,
+        ) -> t.MappingKV[
+            str, FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ]:
+            """The registered plugins by name."""
+            ...
+
+        def fetch_plugin(
+            self, name: str
+        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
+            """Fetch a plugin by name."""
+            ...
+
+        def _require_protocol(
+            self,
+            protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
+            name: str,
+        ) -> p.Result[bool]: ...
+
+        def _get_plugin(
+            self, name: str
+        ) -> p.Result[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ]: ...
+
+        def _create_execution(
+            self,
+            plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
+            context: t.JsonMapping,
+            execution_id: str | None,
+        ) -> p.Result[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+        ]: ...
+
+        def _prepare_execution(
+            self,
+            execution: (
+                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+            ),
+        ) -> p.Result[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+        ]: ...
+
+        def _execute_with_executor(
+            self,
+            execution: (
+                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+            ),
+        ) -> p.Result[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
+        ]: ...
+
+        def _validate_and_create_plugin(
+            self,
+            plugin_data: t.JsonMapping,
+        ) -> p.Result[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ]: ...
+
+        def _validate_and_create_plugins(
+            self,
+            plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
+        ) -> p.Result[
+            Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
+        ]: ...
+
+        def _register_all(
+            self,
+            plugins: t.SequenceOf[
+                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+            ],
+        ) -> t.SequenceOf[
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ]: ...
+
+        def _register_single(
+            self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin: ...
+
+        def _add_to_plugins(
+            self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
+        ) -> bool: ...
+
+        def _remove_from_plugins(self, plugin_name: str) -> bool: ...
 
 
 __all__: list[str] = ["FlextPluginProtocolsPlugin"]

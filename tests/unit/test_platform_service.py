@@ -274,8 +274,8 @@ class TestsFlextPluginPlatformService:
         removed = service.cleanup_executions()
 
         tm.that(removed, eq=1)
-        tm.that(service.executions, lacks="done")
-        tm.that(service.executions, has="run")
+        tm.that(tuple(service.executions), lacks="done")
+        tm.that(tuple(service.executions), has="run")
 
     @staticmethod
     def test_service_list_executions_and_running() -> None:
