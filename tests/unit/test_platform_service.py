@@ -222,7 +222,8 @@ class TestsFlextPluginPlatformService:
         tm.that(result.success, eq=True)
         tm.that(service.fetch_plugin("demo-plugin"), none=True)
 
-    def test_service_list_plugins_after_registration(self) -> None:
+    @staticmethod
+    def test_service_list_plugins_after_registration() -> None:
         """list_plugins() returns registered plugins."""
         service = FlextPluginPlatform.PluginPlatformService()
         service.register_plugin(_make_plugin(name="alpha"))
@@ -233,7 +234,8 @@ class TestsFlextPluginPlatformService:
         tm.that(len(plugins), eq=2)
         tm.that({plugin.name for plugin in plugins}, eq=frozenset({"alpha", "beta"}))
 
-    def test_service_platform_status_reflects_state(self) -> None:
+    @staticmethod
+    def test_service_platform_status_reflects_state() -> None:
         """platform_status reports plugin and execution counts."""
         service = FlextPluginPlatform.PluginPlatformService()
         service.register_plugin(_make_plugin(name="active"))
@@ -417,7 +419,8 @@ class TestsFlextPluginPlatformServiceRealComponents:
 
         tm.that(result.failure, eq=True)
 
-    def test_service_execute_plugin_with_real_executor_success(self) -> None:
+    @staticmethod
+    def test_service_execute_plugin_with_real_executor_success() -> None:
         """execute_plugin() records a real completed execution with the result."""
         service = FlextPluginPlatform.PluginPlatformService()
         plugin = _make_plugin()
@@ -434,7 +437,8 @@ class TestsFlextPluginPlatformServiceRealComponents:
         assert isinstance(execution_result, dict)
         tm.that(execution_result["plugin"], eq="demo-plugin")
 
-    def test_service_execute_plugin_with_real_executor_failure(self) -> None:
+    @staticmethod
+    def test_service_execute_plugin_with_real_executor_failure() -> None:
         """execute_plugin() fails when the real executor reports a failure."""
         service = FlextPluginPlatform.PluginPlatformService()
         plugin = _make_plugin()
