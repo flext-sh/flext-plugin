@@ -156,9 +156,7 @@ class FlextPluginUtilitiesPluginPlatform:
 
                     return self.loader.load_plugin(plugin_path)
 
-                checked_l: p.Result[bool] = _require_protocol(
-                    self.loader, "Loader"
-                )
+                checked_l: p.Result[bool] = _require_protocol(self.loader, "Loader")
 
                 loaded: p.Result[t.JsonMapping] = checked_l.flat_map(load_and_validate)
 
@@ -840,8 +838,8 @@ def _require_protocol(
     Returns:
         The resulting ``p.Result[bool]``.
     """
-    return r[bool].ok(value=True) if protocol else r[bool].fail(
-        f"{name} not configured"
+    return (
+        r[bool].ok(value=True) if protocol else r[bool].fail(f"{name} not configured")
     )
 
 

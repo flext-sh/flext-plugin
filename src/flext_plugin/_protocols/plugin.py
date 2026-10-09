@@ -9,8 +9,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from flext_plugin import m, p, t
     from flext_plugin._utilities import FlextPluginUtilitiesPluginPlatform
 
@@ -317,31 +315,26 @@ class FlextPluginProtocolsPlugin:
             """The registered plugins by name."""
             ...
 
+        @property
+        def executions(
+            self,
+        ) -> t.MappingKV[
+            str,
+            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution,
+        ]:
+            """The tracked executions by id."""
+            ...
+
         def fetch_plugin(
             self, name: str
         ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
             """Fetch a plugin by name."""
             ...
 
-        def require_protocol(
-            self,
-            protocol: p.Plugin.Discovery | p.Plugin.Loader | p.Plugin.Execution | None,
-            name: str,
-        ) -> p.Result[bool]: ...
-
         def get_plugin(
             self, name: str
         ) -> p.Result[
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ]: ...
-
-        def create_execution(
-            self,
-            plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
-            context: t.JsonMapping,
-            execution_id: str | None,
-        ) -> p.Result[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
         ]: ...
 
         def prepare_execution(
@@ -360,20 +353,6 @@ class FlextPluginProtocolsPlugin:
             ),
         ) -> p.Result[
             FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
-        ]: ...
-
-        def validate_and_create_plugin(
-            self,
-            plugin_data: t.JsonMapping,
-        ) -> p.Result[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ]: ...
-
-        def validate_and_create_plugins(
-            self,
-            plugin_data: t.SequenceOf[m.Plugin.DiscoveryData],
-        ) -> p.Result[
-            Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
         ]: ...
 
         def register_all(
