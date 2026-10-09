@@ -201,8 +201,8 @@ endif
 # === SECTION: verb dispatch (managed) ===
 # Source: config:make.verbs and the canonical gate vocabulary. A verb exists
 # only in the profiles it declares (make.verbs[].profiles).
-PUBLIC_VERBS := help setup pre-commit upg build check smells test test-full test-file file-gate profile-test profile-test-report fmt fix fix-namespace fix-accessors audit status verify-clean docs clean bootstrap-candidate release-plan release-version release-tag release-build publication gen initialize mod mod-text mod-text-candidate mod-snapshots waza duplication sonarcloud-sync sonarcloud-issues
-BUILTIN_VERBS := help setup pre-commit upg build check smells test test-full test-file file-gate profile-test profile-test-report fmt fix fix-namespace fix-accessors audit status verify-clean docs clean bootstrap-candidate release-plan release-version release-tag release-build publication gen initialize mod mod-text mod-text-candidate mod-snapshots waza duplication sonarcloud-sync sonarcloud-issues
+PUBLIC_VERBS := help setup pre-commit upg build check smells test test-full test-file file-gate profile-test profile-test-report fmt fix fix-namespace fix-accessors audit status verify-clean docs clean bootstrap-candidate release-plan release-version release-tag release-build publication gen gen-footprint initialize mod mod-text mod-text-candidate mod-snapshots waza duplication sonarcloud-sync sonarcloud-issues
+BUILTIN_VERBS := help setup pre-commit upg build check smells test test-full test-file file-gate profile-test profile-test-report fmt fix fix-namespace fix-accessors audit status verify-clean docs clean bootstrap-candidate release-plan release-version release-tag release-build publication gen gen-footprint initialize mod mod-text mod-text-candidate mod-snapshots waza duplication sonarcloud-sync sonarcloud-issues
 SCRIPT_VERBS :=
 
 CUSTOM_MAKEFILE := $(MAKEFILE_ROOT)/custom.mk
@@ -308,8 +308,19 @@ ifneq ($(RUNTIME_GIT_DIR),$(RUNTIME_GIT_COMMON_DIR))
 RUNTIME_LINKED_WORKTREE := Y
 endif
 endif
+# A linked worktree uses the environment its primary worktree uses: Git lists
+# the primary first wherever the lane lives, and the primary's runtime is its
+# superproject when attached, else the primary itself.
 ifeq ($(RUNTIME_LINKED_WORKTREE),Y)
-override RUNTIME_VENV := $(abspath $(RUNTIME_ROOT)/../.venv
+RUNTIME_PRIMARY_WORKTREE := $(word 2,$(shell git -C "$(RUNTIME_ROOT)" worktree list --porcelain))
+ifneq ($(.SHELLSTATUS),0)
+$(error Cannot resolve the primary worktree of $(RUNTIME_ROOT))
+endif
+RUNTIME_PRIMARY_RUNTIME := $(shell cd "$(RUNTIME_PRIMARY_WORKTREE)" && root=$$(git rev-parse --show-superproject-working-tree) && cd "$${root:-.}" && pwd -P)
+ifneq ($(.SHELLSTATUS),0)
+$(error Cannot resolve the runtime of the primary worktree $(RUNTIME_PRIMARY_WORKTREE))
+endif
+override RUNTIME_VENV := $(RUNTIME_PRIMARY_RUNTIME)/.venv
 else
 override RUNTIME_VENV := $(RUNTIME_ROOT)/.venv
 endif
@@ -416,12 +427,25 @@ _bootstrap_setup_tools:
 	if [ "$(TOOL_BOOTSTRAP_RESOLVE)" = "1" ]; then \
 		"$$mise_bootstrap_bin" -C "$(PROJECT_ROOT)" lock --upgrade --bump; \
 	fi; \
-	"$$mise_bootstrap_bin" -C "$(PROJECT_ROOT)" install --yes "python" "github:jdx/mise" "uv" "kubectl" "helm" "kind" "direnv" "taplo" "aqua:ast-grep/ast-grep" "gitleaks" "aqua:boyter/scc" "kubeconform" "node" "go" "make" "github:qltysh/qlty" "github:kucherenko/jscpd" "github:microsoft/waza"; \
+	"$$mise_bootstrap_bin" -C "$(PROJECT_ROOT)" install --yes "python" "github:jdx/mise" "uv" "kubectl" "helm" "kind" "direnv" "taplo" "aqua:ast-grep/ast-grep" "gitleaks" "aqua:boyter/scc" "kubeconform" "node" "go" "github:qltysh/qlty" "github:kucherenko/jscpd" "github:microsoft/waza"; \
 	"$$mise_bootstrap_bin" reshim; \
 	printf 'setup: mise %s provisioned from mise.lock\n' "$$mise_receipt"; \
 	printf 'setup: entering lifecycle (submodules, environment, hooks) make=%s\n' "$(SELF_MAKE_EXECUTABLE)"; \
 	"$$mise_bootstrap_bin" -C "$(PROJECT_ROOT)" exec -- env "PATH=$$(dirname "$$mise_bootstrap_bin"):$${PATH}" "CI=$(CI)" $(SELF_MAKE) $(TOOL_BOOTSTRAP_LIFECYCLE)
+_bootstrap_setup_tools: _builtin_require_upg_lock_owner
 _bootstrap_setup_tools: _builtin_require_network_auth
+
+# `upg` writes the lock of the runtime it resolves in. An attached member
+# resolves inside its workspace runtime, where `uv lock` rewrites the
+# workspace lock and never the member's own, so it stops before any effect.
+# The target-specific TOOL_BOOTSTRAP_RESOLVE reaches this prerequisite only
+# through `upg`; `setup` passes.
+.PHONY: _builtin_require_upg_lock_owner
+_builtin_require_upg_lock_owner:
+	@if [ "$(TOOL_BOOTSTRAP_RESOLVE)" = "1" ] && [ "$(PROJECT_ROOT)" != "$(RUNTIME_ROOT)" ]; then \
+		printf 'ERROR[upg] %s is attached to the workspace %s: `uv lock` here rewrites %s/uv.lock, never %s/uv.lock.\n  Right way: an attached member never resolves its own locks.\n  How: run `make upg` in a linked worktree of this member outside %s (a standalone checkout owns its locks), or `make upg` in %s for the workspace lock.\n' "$(PROJECT_ROOT)" "$(RUNTIME_ROOT)" "$(RUNTIME_ROOT)" "$(PROJECT_ROOT)" "$(RUNTIME_ROOT)" "$(RUNTIME_ROOT)" >&2; \
+		exit 2; \
+	fi
 
 .PHONY: _builtin_require_network_auth
 _builtin_require_network_auth:
@@ -459,10 +483,15 @@ SETUP_ENVIRONMENT_RECIPE = set -eu; \
 	fi; \
 	uv_lock_mode=--locked; \
 	if ! uv_lock_report=$$($(UV) lock --check --project "$(UV_PROJECT)" 2>&1); then \
+		if [ "$(strip $(CI))" = "Y" ]; then \
+			printf 'ERROR[setup] uv.lock does not match the manifests of %s:\n%s\n  Right way: CI installs only a lock that satisfies its manifests; a drifted lock is RED, never installed --frozen.\n  How: run `make upg` in %s, then commit uv.lock.\n' "$(UV_PROJECT)" "$$uv_lock_report" "$(PROJECT_ROOT)" >&2; \
+			exit 2; \
+		fi; \
 		printf 'WARNING[setup] uv.lock does not match the manifests of %s:\n%s\n  Right way: only `make upg` writes uv.lock; setup installs the committed lock as-is (--frozen) and never relocks.\n  How: run `make upg` in %s, then commit uv.lock.\n' "$(UV_PROJECT)" "$$uv_lock_report" "$(PROJECT_ROOT)" >&2; \
 		uv_lock_mode=--frozen; \
 	fi; \
-	$$credential_env $(UV) sync --project "$(UV_PROJECT)" --python "3.13" $(UV_SYNC_FLAGS) $$uv_lock_mode --link-mode "$(UV_LINK_MODE)"; \
+	locked_python="$$(mise -C "$(RUNTIME_ROOT)" which python)"; \
+	$$credential_env $(UV) sync --project "$(UV_PROJECT)" --python "$$locked_python" $(UV_SYNC_FLAGS) $$uv_lock_mode --link-mode "$(UV_LINK_MODE)"; \
 	$(PROJECT_FLEXT_INFRA) workspace sync-environment --repository-root "$(PROJECT_ROOT)"; \
 	if [ "$(strip $(CI))" != "Y" ]; then \
 		for member in $(WORKSPACE_SUBPROJECTS); do \
@@ -513,7 +542,8 @@ override PROJECT_FLEXT_INFRA := $(PROJECT_INFRA_RUN) -m flext_infra
 # Lock law (operator 2026-10-03): only `make upg` writes uv.lock. Setup installs
 # the committed lock and never deletes, creates, or relocks it: a matching lock
 # syncs `--locked`; a drifted lock is reported (cause, right way, how) and
-# synced `--frozen`; a missing lock fails naming `make upg`.
+# synced `--frozen` locally, and fails under CI (law 14: red means red); a
+# missing lock fails naming `make upg`.
 UV_SYNC_FLAGS := --all-extras --all-groups --all-packages
 ifeq ($(strip $(CI)),Y)
 override UV_SYNC_FLAGS := --all-extras --all-groups --all-packages --no-editable
@@ -861,14 +891,26 @@ _activated-publication: _builtin_require_environment
 
 
 
-# The pre hook and selected producer run once before activation. The producer
-# owns the complete generation transaction; activation adds no second writer.
-gen: _builtin_require_workspace _builtin_require_environment
-	$(call RUN_PUBLIC,gen,1)
+
+gen: _builtin_require_workspace
+
+	+@$(if $(filter Y,$(CI)),$(SELF_MAKE) _activated-gen,direnv exec "$(PROJECT_ROOT)" $(SELF_MAKE) _activated-gen)
 
 .PHONY: _activated-gen
 _activated-gen: _builtin_require_environment
-	$(call RUN_PUBLIC_POST,gen)
+
+	$(if $(filter Y,$(CI)),+@$(SELF_MAKE) _builtin-gen,$(call RUN_PUBLIC,gen))
+
+
+
+# The pre hook and selected producer run once before activation. The producer
+# owns the complete generation transaction; activation adds no second writer.
+gen-footprint: _builtin_require_workspace _builtin_require_environment
+	$(call RUN_PUBLIC,gen-footprint,1)
+
+.PHONY: _activated-gen-footprint
+_activated-gen-footprint: _builtin_require_environment
+	$(call RUN_PUBLIC_POST,gen-footprint)
 
 
 
@@ -1012,8 +1054,8 @@ _builtin-pre-commit:
 # must not require an existing environment, and as the only resolver it must
 # not require a satisfied committed mise.lock either. Its bootstrap half runs
 # `mise lock --bump` first (native resolution; no stage and no prior install),
-# then installs from the fresh lock. Native mise locks are workspace-local, so
-# an attached member relocks its own mise.lock exactly like the runtime root.
+# then installs from the fresh lock. Only a lock owner resolves: an attached
+# member stops in _builtin_require_upg_lock_owner before any lock is written.
 upg: TOOL_BOOTSTRAP_LIFECYCLE := _upg_lifecycle
 upg: TOOL_BOOTSTRAP_RESOLVE := 1
 upg: _bootstrap_setup_tools
@@ -1135,6 +1177,10 @@ gen:
 	@printf '  %-16s %s\n' 'gen' 'Regenerate every managed projection atomically.'
 	@printf '%s\n' 'OPTIONS=Y displays this contract without effects; run make gen to execute it.'
 
+gen-footprint:
+	@printf '  %-16s %s\n' 'gen-footprint' 'Inspect the pending generation journal and declared physical effect footprint without leases, recovery, or publication.'
+	@printf '%s\n' 'OPTIONS=Y displays this contract without effects; run make gen-footprint to execute it.'
+
 initialize:
 	@printf '  %-16s %s\n' 'initialize' 'Materialize the declared package initializer graph.'
 	@printf '%s\n' 'OPTIONS=Y displays this contract without effects; run make initialize to execute it.'
@@ -1189,7 +1235,7 @@ _setup_lifecycle:
 # mise.lock release, self-contained in its install root, reporting the locked
 # version (codegen mise-proof). The first defect fails setup; no fallback.
 _setup_activated:
-	@$(PROJECT_FLEXT_INFRA) codegen mise-proof --repository-root "$(PROJECT_ROOT)"
+	@$(PROJECT_FLEXT_INFRA) codegen mise-proof --repository-root "$(PROJECT_ROOT)" --uv-executable "$$(mise which uv)"
 	@set -eu; \
 	case "$(strip $(CI)): $(CUSTOM_DECLARED_TARGETS) " in \
 		Y:*) ;; \
@@ -1256,6 +1302,8 @@ _builtin-help:
 	@printf '  %-16s %s\n' 'publication' 'Publish only receipt-attested release artifacts.';
 
 	@printf '  %-16s %s\n' 'gen' 'Regenerate every managed projection atomically.';
+
+	@printf '  %-16s %s\n' 'gen-footprint' 'Inspect the pending generation journal and declared physical effect footprint without leases, recovery, or publication.';
 
 	@printf '  %-16s %s\n' 'initialize' 'Materialize the declared package initializer graph.';
 
@@ -1586,7 +1634,7 @@ _upg_lifecycle: _builtin_setup_submodules
 	@$(UV) lock --check --project "$(PROJECT_ROOT)"
 	@$(SELF_MAKE) _builtin_setup_environment
 	@mise -C "$(PROJECT_ROOT)" lock --bump
-	@mise -C "$(PROJECT_ROOT)" install --yes "python" "github:jdx/mise" "uv" "kubectl" "helm" "kind" "direnv" "taplo" "aqua:ast-grep/ast-grep" "gitleaks" "aqua:boyter/scc" "kubeconform" "node" "go" "make" "github:qltysh/qlty" "github:kucherenko/jscpd" "github:microsoft/waza"
+	@mise -C "$(PROJECT_ROOT)" install --yes "python" "github:jdx/mise" "uv" "kubectl" "helm" "kind" "direnv" "taplo" "aqua:ast-grep/ast-grep" "gitleaks" "aqua:boyter/scc" "kubeconform" "node" "go" "github:qltysh/qlty" "github:kucherenko/jscpd" "github:microsoft/waza"
 	@$(SELF_MAKE) _builtin_require_mise
 	$(call RUN_PUBLIC_ACTIVATE,gen)
 	@$(SELF_MAKE) gen
@@ -1888,6 +1936,9 @@ _builtin_gen_init:
 
 _builtin_gen_all:
 	@$(PROJECT_FLEXT_INFRA) codegen conform --root "$(PROJECT_ROOT)" --scope all --mode apply
+
+_builtin-gen-footprint:
+	@$(PROJECT_FLEXT_INFRA) codegen footprint --root "$(PROJECT_ROOT)" --scope all
 
 _builtin-bootstrap-candidate: _builtin_require_environment
 	@$(PROJECT_FLEXT_INFRA) codegen candidate-bootstrap --repository-root "$(PROJECT_ROOT)"
