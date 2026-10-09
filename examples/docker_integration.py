@@ -73,7 +73,7 @@ def create_docker_postgres_plugin() -> tuple[
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
     )
@@ -106,7 +106,7 @@ def create_docker_redis_plugin() -> tuple[
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
     )
@@ -139,7 +139,7 @@ def create_docker_ldap_plugin() -> tuple[
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION.value,
+        plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
     )
