@@ -16,7 +16,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_plugin import c, m, r, t
+from flext_plugin import c, m, r, t, u
 
 if TYPE_CHECKING:
     from flext_plugin import p
@@ -170,7 +170,7 @@ class FlextPluginImplementations:
                 The resulting ``p.Result[t.JsonMapping]``.
             """
             self._executed.append(plugin_name)
-            payload = t.json_mapping_adapter().validate_python({
+            payload = u.json_mapping_adapter().validate_python({
                 "plugin": plugin_name,
                 "echo": context,
             })
