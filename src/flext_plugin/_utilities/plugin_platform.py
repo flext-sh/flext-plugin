@@ -335,7 +335,7 @@ class FlextPluginUtilitiesPluginPlatform:
                 self.plugin_name = plugin_name
                 self.execution_id = execution_id or str(uuid.uuid4())
                 self.input_data: t.JsonMapping = (
-                    t.json_mapping_adapter().validate_python(
+                    u.json_mapping_adapter().validate_python(
                         execution_config.get("input_data", {}),
                     )
                 )
@@ -824,9 +824,9 @@ def _to_general_mapping(value: t.JsonPayload | m.BaseModel | None) -> t.JsonMapp
         The resulting ``t.JsonMapping``.
     """
     if value is None:
-        return t.json_mapping_adapter().validate_python({})
+        return u.json_mapping_adapter().validate_python({})
     normalized_value = u.normalize_to_metadata(value)
-    return t.json_mapping_adapter().validate_python(normalized_value)
+    return u.json_mapping_adapter().validate_python(normalized_value)
 
 
 def _require_protocol(
@@ -855,7 +855,7 @@ def _create_execution(
     """
     execution = _Platform.PluginExecution(
         plugin_name=plugin.name,
-        execution_config=t.json_mapping_adapter().validate_python({
+        execution_config=u.json_mapping_adapter().validate_python({
             "input_data": context,
         }),
         execution_id=execution_id,
