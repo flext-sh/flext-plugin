@@ -15,10 +15,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import FlextPluginConstants, FlextPluginPlatform
-from tests import m
+from tests import m, tm
 
 
 @pytest.mark.usefixtures("reset_registry")

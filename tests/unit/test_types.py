@@ -16,10 +16,9 @@ import asyncio
 
 import pytest
 from flext_cli import t as cli_t
-from flext_tests import tm
 
 from flext_plugin import FlextPluginTypes, t as plugin_t
-from tests import t
+from tests import t, tm
 
 
 class TestsFlextPluginTypesUnit:

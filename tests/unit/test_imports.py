@@ -19,7 +19,6 @@ from __future__ import annotations
 import importlib
 
 import pytest
-from flext_tests import tm
 
 import flext_plugin
 from flext_plugin import (
@@ -31,6 +30,7 @@ from flext_plugin import (
     FlextPluginTypes,
     FlextPluginUtilities,
 )
+from tests import tm
 
 
 class TestsFlextPluginImports:

@@ -17,10 +17,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import p, t, u
 from flext_plugin.utilities import FlextPluginDiscovery
+from tests import tm
 
 if TYPE_CHECKING:
     from pathlib import Path

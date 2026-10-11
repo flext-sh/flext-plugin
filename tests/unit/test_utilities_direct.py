@@ -15,9 +15,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import u
+from tests import tm
 
 
 class TestsFlextPluginUtilities:

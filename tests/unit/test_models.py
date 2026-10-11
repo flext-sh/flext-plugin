@@ -10,10 +10,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m
+from tests import c, m, tm
 
 
 class TestsFlextPluginModelsUnit:
