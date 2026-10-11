@@ -113,7 +113,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     # NOTE (multi-agent): pyrefly fix — heterogeneous literals go
                     # through the canonical json_mapping_adapter (same pattern as
                     # plugin_platform.py) so the r[t.JsonMapping] return type holds.
-                    payload = t.json_mapping_adapter().validate_python({
+                    payload = u.json_mapping_adapter().validate_python({
                         "plugin": plugin_name,
                         "echo": context,
                     })
