@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
+from flext_plugin._models.base import FlextPluginModelsBase
+from flext_plugin._models.config import FlextPluginConfigModels
 from flext_plugin._models.plugin import FlextPluginModelsPlugin
 
 
@@ -24,7 +26,9 @@ class FlextPluginModels(FlextCliModels):
     Railway-Oriented Programming with r[T] error handling.
     """
 
-    class Plugin(FlextPluginModelsPlugin):
+    class Plugin(
+        FlextPluginModelsPlugin, FlextPluginModelsBase, FlextPluginConfigModels
+    ):
         """Plugin domain namespace."""
 
 

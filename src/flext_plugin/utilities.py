@@ -17,7 +17,10 @@ from typing import TYPE_CHECKING, ClassVar
 from flext_cli import FlextCliUtilities
 
 from flext_plugin import c, m, p, r, t
+from flext_plugin._utilities.base import FlextPluginUtilitiesBase
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
+from flext_plugin._utilities.implementations import FlextPluginImplementations
+from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
 
 if TYPE_CHECKING:
     from flext_plugin._utilities.plugin_platform import (
@@ -30,7 +33,12 @@ if TYPE_CHECKING:
 class FlextPluginUtilities(FlextCliUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
-    class Plugin:
+    class Plugin(
+        FlextPluginUtilitiesBase,
+        FlextPluginDiscovery,
+        FlextPluginImplementations,
+        FlextPluginUtilitiesPluginPlatform,
+    ):
         """Plugin discovery and validation utilities."""
 
         DEFAULT_WATCH_INTERVAL: ClassVar[float] = 1.0
