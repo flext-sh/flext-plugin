@@ -23,10 +23,6 @@ from flext_plugin._utilities.implementations import FlextPluginImplementations
 from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
 
 if TYPE_CHECKING:
-    from flext_plugin._utilities.plugin_platform import (
-        FlextPluginUtilitiesPluginPlatform,
-    )
-
     FlextPluginPlatform = FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
 
 
