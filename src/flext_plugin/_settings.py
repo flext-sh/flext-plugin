@@ -9,8 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextSettings
-from flext_plugin import m
+from flext_core import FlextSettings, m
 
 
 class FlextPluginSettings(FlextSettings):
