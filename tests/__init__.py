@@ -15,7 +15,6 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
 
-    from tests import unit
     from tests.base import TestsFlextPluginServiceBase, s
     from tests.constants import TestsFlextPluginConstants, c
     from tests.models import TestsFlextPluginModels, m
@@ -48,7 +47,6 @@ __all__: tuple[str, ...] = (
     "tk",
     "tm",
     "u",
-    "unit",
     "x",
 )
 
