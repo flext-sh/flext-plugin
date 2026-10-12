@@ -16,14 +16,7 @@ from flext_plugin.__version__ import __version__
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
-    from flext_plugin import (
-        _constants,
-        _models,
-        _protocols,
-        _typings,
-        _utilities,
-        services,
-    )
+    from flext_plugin import _constants, _models, _protocols, _typings, _utilities
     from flext_plugin.__version__ import (
         FlextPluginVersion,
         __author__,
@@ -89,7 +82,6 @@ __all__: tuple[str, ...] = (
     "plugin",
     "r",
     "s",
-    "services",
     "settings",
     "t",
     "u",
@@ -136,7 +128,6 @@ install_lazy_exports(
         "plugin": ".api",
         "r": "flext_cli",
         "s": ".base",
-        "services": ".services",
         "settings": "._settings",
         "t": ".typings",
         "u": ".utilities",
