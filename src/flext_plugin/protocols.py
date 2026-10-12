@@ -1,8 +1,5 @@
 """FLEXT Plugin Protocols - public facade composing from _protocols.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -11,8 +8,11 @@ from __future__ import annotations
 
 from flext_cli import FlextCliProtocols
 
-from flext_plugin._protocols.platform import FlextPluginProtocolsPlatformService
-from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
+from flext_plugin._protocols import (
+    FlextPluginProtocolsBase,
+    FlextPluginProtocolsPlatform,
+    FlextPluginProtocolsPlugin,
+)
 
 
 class FlextPluginProtocols(FlextCliProtocols):
@@ -27,14 +27,17 @@ class FlextPluginProtocols(FlextCliProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
     """
 
-    class Plugin(FlextPluginProtocolsPlugin):
+    class Plugin(
+        FlextPluginProtocolsBase,
+        FlextPluginProtocolsPlugin,
+        FlextPluginProtocolsPlatform,
+    ):
         """Plugin domain-specific protocols.
 
-        PlatformService is re-exported here from its separate owner module
-        so consumers access it as ``p.Plugin.PlatformService``.
+        ``PlatformService`` is contributed through
+        ``FlextPluginProtocolsPlatform`` so consumers access it as
+        ``p.Plugin.PlatformService``.
         """
-
-        PlatformService = FlextPluginProtocolsPlatformService
 
 
 p = FlextPluginProtocols

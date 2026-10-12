@@ -4,9 +4,6 @@ Exercises every public method of ``FlextPluginApi`` through observable
 ``r[T]`` outcomes and real platform state, without relying on implementation
 internals.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -18,8 +15,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from flext_plugin.api import FlextPluginApi
-from flext_plugin.utilities import FlextPluginDiscovery, FlextPluginPlatform
+from flext_plugin import FlextPluginApi, FlextPluginDiscovery, FlextPluginPlatform
 from tests import tm, u
 
 if TYPE_CHECKING:

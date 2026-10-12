@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import os
 
-from flext_plugin import FlextPluginApi, t
+from examples import t
+from flext_plugin import FlextPluginApi
 
 
 def create_database_plugin_config() -> t.JsonMapping:

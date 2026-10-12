@@ -4,9 +4,6 @@ Frozen Pydantic shapes for the ``config/plugin.yaml`` business-rule SSOT.
 The config declaration validates these shapes at construction and exposes
 the ready objects under ``config.Plugin``.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

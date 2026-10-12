@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from flext_plugin import m, p, t
-    from flext_plugin._utilities import FlextPluginUtilitiesPluginPlatform
+    from flext_plugin._utilities import FlextPluginPlatform
 
 
 class FlextPluginProtocolsPlugin:
@@ -302,16 +302,14 @@ class FlextPluginProtocolsPlugin:
         @property
         def registry(
             self,
-        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginRegistry:
+        ) -> FlextPluginPlatform.PluginRegistry:
             """The plugin registry."""
             ...
 
         @property
         def plugins(
             self,
-        ) -> t.MappingKV[
-            str, FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ]:
+        ) -> t.MappingKV[str, FlextPluginPlatform.Plugin]:
             """The registered plugins by name."""
             ...
 
@@ -320,57 +318,37 @@ class FlextPluginProtocolsPlugin:
             self,
         ) -> t.MappingKV[
             str,
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution,
+            FlextPluginPlatform.PluginExecution,
         ]:
             """The tracked executions by id."""
             ...
 
-        def fetch_plugin(
-            self, name: str
-        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin | None:
+        def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
             """Fetch a plugin by name."""
             ...
 
-        def get_plugin(
-            self, name: str
-        ) -> p.Result[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ]: ...
+        def get_plugin(self, name: str) -> p.Result[FlextPluginPlatform.Plugin]: ...
 
         def prepare_execution(
             self,
-            execution: (
-                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
-            ),
-        ) -> p.Result[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
-        ]: ...
+            execution: (FlextPluginPlatform.PluginExecution),
+        ) -> p.Result[FlextPluginPlatform.PluginExecution]: ...
 
         def execute_with_executor(
             self,
-            execution: (
-                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
-            ),
-        ) -> p.Result[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginExecution
-        ]: ...
+            execution: (FlextPluginPlatform.PluginExecution),
+        ) -> p.Result[FlextPluginPlatform.PluginExecution]: ...
 
         def register_all(
             self,
-            plugins: t.SequenceOf[
-                FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-            ],
-        ) -> t.SequenceOf[
-            FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ]: ...
+            plugins: t.SequenceOf[FlextPluginPlatform.Plugin],
+        ) -> t.SequenceOf[FlextPluginPlatform.Plugin]: ...
 
         def register_single(
-            self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ) -> FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin: ...
+            self, plugin: FlextPluginPlatform.Plugin
+        ) -> FlextPluginPlatform.Plugin: ...
 
-        def add_to_plugins(
-            self, plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-        ) -> bool: ...
+        def add_to_plugins(self, plugin: FlextPluginPlatform.Plugin) -> bool: ...
 
         def remove_from_plugins(self, plugin_name: str) -> bool: ...
 

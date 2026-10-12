@@ -3,9 +3,6 @@
 Exercises the public contract of ``u.Plugin`` (``FlextPluginUtilities.Plugin``):
 discovery, metadata extraction, file validation, and name validation.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,8 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_plugin import u
-from tests import tm
+from tests import tm, u
 
 
 class TestsFlextPluginUtilities:
@@ -26,7 +22,7 @@ class TestsFlextPluginUtilities:
     @staticmethod
     def test_discover_plugins_fails_for_missing_directory() -> None:
         """discover_plugins() fails when the directory does not exist."""
-        result = u.Plugin.discover_plugins("/definitely/not/a/real/path")
+        result = u.Plugin.discover_plugin_metadata("/definitely/not/a/real/path")
 
         tm.that(result.failure, eq=True)
         tm.that((result.error or "").lower(), has="does not exist")
@@ -39,7 +35,7 @@ class TestsFlextPluginUtilities:
             encoding="utf-8",
         )
 
-        result = u.Plugin.discover_plugins(tmp_path)
+        result = u.Plugin.discover_plugin_metadata(tmp_path)
 
         tm.that(result.success, eq=True)
         metadata_list = list(result.unwrap())
@@ -53,7 +49,7 @@ class TestsFlextPluginUtilities:
         (tmp_path / "_private.py").write_text("x = 1", encoding="utf-8")
         (tmp_path / "public.py").write_text("x = 1", encoding="utf-8")
 
-        result = u.Plugin.discover_plugins(tmp_path)
+        result = u.Plugin.discover_plugin_metadata(tmp_path)
 
         tm.that(result.success, eq=True)
         names = {metadata.name for metadata in result.unwrap()}
@@ -65,7 +61,7 @@ class TestsFlextPluginUtilities:
         """discover_plugins() ignores files without the .py extension."""
         (tmp_path / "readme.txt").write_text("hello", encoding="utf-8")
 
-        result = u.Plugin.discover_plugins(tmp_path)
+        result = u.Plugin.discover_plugin_metadata(tmp_path)
 
         tm.that(result.success, eq=True)
         tm.that(list(result.unwrap()), eq=[])

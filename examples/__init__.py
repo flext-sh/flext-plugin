@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from examples.models import ExamplesFlextPluginModels
     from examples.protocols import ExamplesFlextPluginProtocols
     from examples.typings import ExamplesFlextPluginTypes
-    from examples.utilities import ExamplesFlextPluginUtilities
-    from flext_plugin import c, d, e, h, m, p, r, s, t, u, x
+    from examples.utilities import ExamplesFlextPluginUtilities, u
+    from flext_plugin import c, d, e, h, m, p, r, s, t, x
 
 
 __all__: tuple[str, ...] = (
@@ -58,7 +58,7 @@ install_lazy_exports(
         "r": "flext_plugin",
         "s": "flext_plugin",
         "t": "flext_plugin",
-        "u": "flext_plugin",
+        "u": ".utilities",
         "x": "flext_plugin",
     }),
     public_exports=__all__,

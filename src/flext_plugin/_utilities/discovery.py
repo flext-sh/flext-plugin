@@ -82,11 +82,11 @@ class FlextPluginDiscovery:
             if discovered is not None:
                 return r[m.Plugin.DiscoveryData].ok(value=discovered)
             return r[m.Plugin.DiscoveryData].fail(f"Plugin not found at: {plugin_path}")
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return r[m.Plugin.DiscoveryData].fail(
-                f"Discovery error: {e!s}",
-                exception=e,
+                f"Discovery error: {error!s}",
+                exception=error,
             )
 
     def discover_plugins(
@@ -108,11 +108,11 @@ class FlextPluginDiscovery:
             return r[Sequence[m.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Plugin discovery failed")
             return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                f"Discovery error: {e!s}",
-                exception=e,
+                f"Discovery error: {error!s}",
+                exception=error,
             )
 
     def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> p.Result[bool]:
@@ -130,9 +130,9 @@ class FlextPluginDiscovery:
         try:
             self.logger.debug("Plugin validation passed: %s", plugin_data.name)
             return r[bool].ok(value=True)
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Plugin validation failed")
-            return r[bool].fail(f"Validation error: {e!s}", exception=e)
+            return r[bool].fail(f"Validation error: {error!s}", exception=error)
 
     def _discover_existing_or_entry_point(
         self,
@@ -183,12 +183,15 @@ class FlextPluginDiscovery:
             return data
         return None
 
-    class FileSystemStrategy:
-        """File system-based plugin discovery strategy."""
+    class _DiscoveryStrategyBase:
+        """Shared base for plugin discovery strategies."""
 
         def __init__(self, logger: p.Logger) -> None:
             """Initialize strategy with logger."""
             self.logger = logger
+
+    class FileSystemStrategy(_DiscoveryStrategyBase):
+        """File system-based plugin discovery strategy."""
 
         def discover(
             self,
@@ -206,11 +209,11 @@ class FlextPluginDiscovery:
                     len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
-            except c.EXC_BROAD_IO_TYPE as e:
+            except c.EXC_BROAD_IO_TYPE as error:
                 self.logger.exception("File system discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"File discovery error: {e!s}",
-                    exception=e,
+                    f"File discovery error: {error!s}",
+                    exception=error,
                 )
 
         def _discover_directory(
@@ -283,12 +286,8 @@ class FlextPluginDiscovery:
                 discovered.extend(self._discover_path(path_str))
             return discovered
 
-    class EntryPointStrategy:
+    class EntryPointStrategy(_DiscoveryStrategyBase):
         """Entry point-based plugin discovery strategy."""
-
-        def __init__(self, logger: p.Logger) -> None:
-            """Initialize strategy with logger."""
-            self.logger = logger
 
         def discover(
             self,
@@ -307,11 +306,11 @@ class FlextPluginDiscovery:
                     len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
-            except c.EXC_BROAD_IO_TYPE as e:
+            except c.EXC_BROAD_IO_TYPE as error:
                 self.logger.exception("Entry point discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"Entry point discovery error: {e!s}",
-                    exception=e,
+                    f"Entry point discovery error: {error!s}",
+                    exception=error,
                 )
 
         @staticmethod
@@ -327,15 +326,17 @@ class FlextPluginDiscovery:
             Returns:
                 The resulting ``m.Plugin.DiscoveryData | None``.
             """
+            distribution = entry_point.dist
+            if distribution is None:
+                return None
+            version = (
+                getattr(distribution, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
+                or c.Plugin.DEFAULT_PLUGIN_VERSION
+            )
             return m.Plugin.DiscoveryData(
                 name=entry_point.name,
-                version=getattr(
-                    entry_point.dist,
-                    "version",
-                    c.Plugin.DEFAULT_PLUGIN_VERSION,
-                )
-                or c.Plugin.DEFAULT_PLUGIN_VERSION,
-                path=Path(getattr(entry_point.dist, "_path", "")),
+                version=version,
+                path=Path(str(distribution.locate_file(""))),
                 discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
                 discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,
                 metadata={"entry_point": f"{entry_point.module}:{entry_point.attr}"},

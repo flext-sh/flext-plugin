@@ -11,9 +11,6 @@ Returns expose the most-specific concrete type produced by the platform
 ENFORCE-074 chain inheritance), so callers get covariant access without
 losing typing precision.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -24,20 +21,7 @@ from collections.abc import Sequence
 
 from flext_core import FlextContainer
 from flext_plugin import e, p, r, s, t, u
-from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
-
-_Platform = FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
-
-
-def _build_default_platform() -> _Platform.PluginPlatformService:
-    """Construct the default platform service bound to a fresh container.
-
-    Returns:
-        The resulting ``FlextPluginPlatform.PluginPlatformService``.
-    """
-    return FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.PluginPlatformService(
-        container=FlextContainer(),
-    )
+from flext_plugin._utilities import FlextPluginPlatform
 
 
 class FlextPluginApi(s):
@@ -50,21 +34,23 @@ class FlextPluginApi(s):
     _logger: p.Logger = u.PrivateAttr(
         default_factory=lambda: u.fetch_logger("flext_plugin.api"),
     )
-    _platform: _Platform.PluginPlatformService = u.PrivateAttr(
-        default_factory=_build_default_platform,
+    _platform: FlextPluginPlatform.PluginPlatformService = u.PrivateAttr(
+        default_factory=lambda: FlextPluginPlatform.PluginPlatformService(
+            container=FlextContainer(),
+        ),
     )
 
     @property
     def platform(
         self,
-    ) -> _Platform.PluginPlatformService:
+    ) -> FlextPluginPlatform.PluginPlatformService:
         """The plugin platform service."""
         return self._platform
 
     @platform.setter
     def platform(
         self,
-        value: _Platform.PluginPlatformService,
+        value: (FlextPluginPlatform.PluginPlatformService),
     ) -> None:
         """Inject the plugin platform service (test hook)."""
         self._platform = value
@@ -72,9 +58,7 @@ class FlextPluginApi(s):
     def discover_plugins(
         self,
         paths: t.StrSequence,
-    ) -> p.Result[
-        Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
-    ]:
+    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths; logs the count discovered.
 
         Returns:
@@ -103,7 +87,7 @@ class FlextPluginApi(s):
     def fetch_plugin(
         self,
         plugin_name: str,
-    ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
+    ) -> p.Result[FlextPluginPlatform.Plugin]:
         """Fetch a plugin by name; fails when missing (ENFORCE-056).
 
         Returns:
@@ -114,11 +98,9 @@ class FlextPluginApi(s):
             return e.fail_not_found(
                 "plugin",
                 plugin_name,
-                result_type=r[
-                    FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin
-                ],
+                result_type=r[FlextPluginPlatform.Plugin],
             )
-        return r[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin].ok(
+        return r[FlextPluginPlatform.Plugin].ok(
             plugin,
         )
 
@@ -143,22 +125,18 @@ class FlextPluginApi(s):
 
     def list_plugins(
         self,
-    ) -> p.Result[
-        Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
-    ]:
+    ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """List all registered plugins.
 
         Returns:
             The resulting ``p.Result[Sequence[FlextPluginPlatform.Plugin]]``.
         """
-        return r[
-            Sequence[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]
-        ].ok(self._platform.list_plugins())
+        return r[Sequence[FlextPluginPlatform.Plugin]].ok(self._platform.list_plugins())
 
     def load_plugin(
         self,
         plugin_path: str,
-    ) -> p.Result[FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin]:
+    ) -> p.Result[FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path; logs the loaded plugin's name.
 
         Returns:
@@ -171,7 +149,7 @@ class FlextPluginApi(s):
 
     def register_plugin(
         self,
-        plugin: FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform.Plugin,
+        plugin: FlextPluginPlatform.Plugin,
     ) -> p.Result[bool]:
         """Register a plugin in the platform.
 

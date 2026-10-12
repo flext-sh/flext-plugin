@@ -11,13 +11,13 @@ from __future__ import annotations
 
 from abc import ABC
 
-from flext_core import s
+from flext_core import FlextService
 from flext_plugin import FlextPluginSettings, m, t
 
 
 class FlextPluginServiceBase[
     TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = t.JsonPayload,
-](s[TDomainResult], ABC):
+](FlextService[TDomainResult], ABC):
     """Base class for flext-plugin services with typed plugin settings access."""
 
     @classmethod

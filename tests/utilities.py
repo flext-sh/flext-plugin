@@ -3,9 +3,6 @@
 Provides TestsFlextPluginUtilities, combining TestsFlextUtilities with
 FlextPluginUtilities for test-specific utility definitions.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,7 +13,8 @@ from pathlib import Path
 
 from flext_tests import FlextTestsUtilities
 
-from flext_plugin import FlextPluginUtilities, m, p, r, t
+from flext_plugin import FlextPluginUtilities
+from tests import m, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):

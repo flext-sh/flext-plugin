@@ -22,7 +22,7 @@ from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
 from tests import tm
 
 if TYPE_CHECKING:
-    from flext_plugin import t
+    from tests import t
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,

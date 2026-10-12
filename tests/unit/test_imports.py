@@ -7,16 +7,13 @@ aliases), and version metadata. These tests assert that contract as observable
 behavior — every advertised name imports and resolves to a real object — rather
 than poking module internals.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-import importlib
+import sys
 
 import pytest
 
@@ -111,7 +108,6 @@ class TestsFlextPluginImports:
 
     @staticmethod
     def test_package_reimport_is_idempotent() -> None:
-        """Re-importing the package yields the same module object."""
-        reimported = importlib.import_module("flext_plugin")
-        tm.that(reimported is flext_plugin, eq=True)
-        tm.that(reimported.FlextPluginApi is FlextPluginApi, eq=True)
+        """The package resolves to one stable module object in the import system."""
+        tm.that(sys.modules["flext_plugin"] is flext_plugin, eq=True)
+        tm.that(flext_plugin.FlextPluginApi is FlextPluginApi, eq=True)

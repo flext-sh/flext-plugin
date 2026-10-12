@@ -3,9 +3,6 @@
 Provides TestsFlextPluginTypes, combining TestsFlextTypes with
 FlextPluginTypes for test-specific type definitions.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

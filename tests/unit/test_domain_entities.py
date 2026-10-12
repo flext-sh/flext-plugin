@@ -6,9 +6,6 @@ idempotence), execution/error metric accumulation via public state, business
 rule validation, and immutable value-object construction. No private attribute
 access, no internal-collaborator spying, no line-coverage pokes.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

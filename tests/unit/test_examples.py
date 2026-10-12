@@ -6,9 +6,6 @@ runtime error to stderr. These tests exercise that contract end-to-end through
 the process boundary, asserting only observable outcomes (exit code, stderr
 cleanliness, stdout content) — never internal implementation details.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -20,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from tests import t, tm, u
+from tests import m, t, tm, u
 
 
 def _examples_dir() -> Path:
@@ -32,26 +29,30 @@ class TestsFlextPluginExamples:
 
     @staticmethod
     @pytest.mark.parametrize(
-        ("script", "args"),
+        ("module", "args"),
         [
-            pytest.param("basic_plugin.py", (), id="basic-plugin"),
-            pytest.param("plugin_configuration.py", (), id="plugin-configuration"),
+            pytest.param("examples.basic_plugin", (), id="basic-plugin"),
             pytest.param(
-                "docker_integration.py",
+                "examples.plugin_configuration",
+                (),
+                id="plugin-configuration",
+            ),
+            pytest.param(
+                "examples.docker_integration",
                 ("run",),
                 id="docker-integration-run",
             ),
         ],
     )
     def test_example_script_runs_to_success(
-        script: str,
+        module: str,
         args: t.VariadicTuple[str],
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
-        example_path = _examples_dir() / script
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), *args],
+            [sys.executable, "-m", module, *args],
             cwd=_examples_dir().parent,
+            options=m.Cli.ProcessOptions(remove_env_keys=("PYTHONPATH",)),
         )
 
         tm.ok(result)
@@ -74,10 +75,16 @@ class TestsFlextPluginExamples:
     @staticmethod
     def test_docker_integration_reports_service_connectivity() -> None:
         """With connection testing, the docker example prints a connectivity report."""
-        example_path = _examples_dir() / "docker_integration.py"
         result = u.Cli.run_raw(
-            [sys.executable, str(example_path), "run", "--test-connections"],
+            [
+                sys.executable,
+                "-m",
+                "examples.docker_integration",
+                "run",
+                "--test-connections",
+            ],
             cwd=_examples_dir().parent,
+            options=m.Cli.ProcessOptions(remove_env_keys=("PYTHONPATH",)),
         )
 
         tm.ok(result)

@@ -5,9 +5,6 @@ factory creation, enable/disable lifecycle (r[T] outcomes), status/active
 projection, business-rule validation, and registry register/get/list/
 unregister semantics. Asserts observable behavior only — never internals.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import FlextPluginConstants, FlextPluginPlatform
-from tests import m, tm
+from flext_plugin import FlextPluginPlatform
+from tests import c, m, tm
 
 
 @pytest.mark.usefixtures("reset_registry")
@@ -40,7 +37,7 @@ class TestsFlextPluginPlugin:
             plugin_version="1.0.0",
             description="",
             author="",
-            plugin_type=FlextPluginConstants.Plugin.Type.UTILITY,
+            plugin_type=c.Plugin.Type.UTILITY,
             is_enabled=is_enabled,
         )
 

@@ -4,9 +4,6 @@ This example demonstrates real-world plugin configuration with Docker
 services integration.
 Shows how to create production-ready plugins that work with Docker Compose services.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -20,16 +17,8 @@ from typing import Annotated, Final, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
 
-from flext_core import r
-from flext_plugin import (
-    FlextPluginApi,
-    FlextPluginConstants,
-    FlextPluginModels,
-    FlextPluginPlatform,
-    p,
-    s,
-    t,
-)
+from examples import c, p, r, s, t
+from flext_plugin import FlextPluginApi, FlextPluginModels, FlextPluginPlatform
 
 _AUTHOR: Final[str] = "FLEXT Team"
 
@@ -73,7 +62,7 @@ def create_docker_postgres_plugin() -> tuple[
         plugin_version="1.0.0",
         description="PostgreSQL database connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE,
+        plugin_type=c.Plugin.Type.DATABASE,
         is_enabled=True,
         metadata={"dependencies": ["psycopg2-binary"]},
     )
@@ -106,7 +95,7 @@ def create_docker_redis_plugin() -> tuple[
         plugin_version="1.0.0",
         description="Redis cache connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.DATABASE,
+        plugin_type=c.Plugin.Type.DATABASE,
         is_enabled=True,
         metadata={"dependencies": ["redis"]},
     )
@@ -139,7 +128,7 @@ def create_docker_ldap_plugin() -> tuple[
         plugin_version="1.0.0",
         description="LDAP directory connector for Docker environment",
         author=_AUTHOR,
-        plugin_type=FlextPluginConstants.Plugin.Type.AUTHENTICATION,
+        plugin_type=c.Plugin.Type.AUTHENTICATION,
         is_enabled=True,
         metadata={"dependencies": ["ldap3"]},
     )
@@ -168,7 +157,7 @@ def test_connections() -> bool:
     return all_available
 
 
-class _DockerIntegrationCommand(s[bool]):
+class ExamplesFlextPluginDockerIntegrationCommand(s[bool]):
     """CLI command for the FLEXT Plugin Docker integration example."""
 
     test_connections: Annotated[
@@ -204,7 +193,7 @@ class _DockerIntegrationCommand(s[bool]):
 
 
 def _run_docker_integration_command(
-    params: _DockerIntegrationCommand,
+    params: ExamplesFlextPluginDockerIntegrationCommand,
 ) -> p.Result[bool]:
     """Invoke the command's own ``execute``.
 
@@ -234,7 +223,7 @@ def main(args: t.StrSequence | None = None) -> int:
             cli_m.Cli.ResultCommandRoute(
                 name="run",
                 help_text="Create the example plugins and validate them.",
-                model_cls=_DockerIntegrationCommand,
+                model_cls=ExamplesFlextPluginDockerIntegrationCommand,
                 handler=_run_docker_integration_command,
             ),
         ],

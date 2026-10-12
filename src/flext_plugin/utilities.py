@@ -1,18 +1,14 @@
 """FLEXT Plugin Utilities - Domain-specific utilities for plugin management.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-import importlib
 from collections.abc import MutableSequence, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 from flext_cli import FlextCliUtilities
 
@@ -20,10 +16,7 @@ from flext_plugin import c, m, p, r, t
 from flext_plugin._utilities.base import FlextPluginUtilitiesBase
 from flext_plugin._utilities.discovery import FlextPluginDiscovery
 from flext_plugin._utilities.implementations import FlextPluginImplementations
-from flext_plugin._utilities.plugin_platform import FlextPluginUtilitiesPluginPlatform
-
-if TYPE_CHECKING:
-    FlextPluginPlatform = FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
+from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
 class FlextPluginUtilities(FlextCliUtilities):
@@ -33,7 +26,7 @@ class FlextPluginUtilities(FlextCliUtilities):
         FlextPluginUtilitiesBase,
         FlextPluginDiscovery,
         FlextPluginImplementations,
-        FlextPluginUtilitiesPluginPlatform,
+        FlextPluginPlatform,
     ):
         """Plugin discovery and validation utilities."""
 
@@ -74,11 +67,11 @@ class FlextPluginUtilities(FlextCliUtilities):
         ]
 
         @classmethod
-        def discover_plugins(
+        def discover_plugin_metadata(
             cls,
             directory: Path | str,
         ) -> p.Result[Sequence[m.Plugin.Metadata]]:
-            """Discover plugins in the specified directory.
+            """Discover plugin metadata in the specified directory.
 
             Args:
             directory: Directory to search for plugins
@@ -95,8 +88,11 @@ class FlextPluginUtilities(FlextCliUtilities):
                     )
                 plugins = cls._discover_metadata(search_path)
                 return r[Sequence[m.Plugin.Metadata]].ok(plugins)
-            except c.EXC_BROAD_IO_TYPE as e:
-                return r[Sequence[m.Plugin.Metadata]].fail_op("Plugin discovery", e)
+            except c.EXC_BROAD_IO_TYPE as error:
+                return r[Sequence[m.Plugin.Metadata]].fail_op(
+                    "Plugin discovery",
+                    error,
+                )
 
         @classmethod
         def extract_plugin_metadata(
@@ -114,8 +110,8 @@ class FlextPluginUtilities(FlextCliUtilities):
             """
             try:
                 return r[m.Plugin.Metadata].ok(cls._build_metadata(plugin_path))
-            except c.EXC_BROAD_IO_TYPE as e:
-                return r[m.Plugin.Metadata].fail_op("Metadata extraction", e)
+            except c.EXC_BROAD_IO_TYPE as error:
+                return r[m.Plugin.Metadata].fail_op("Metadata extraction", error)
 
         @classmethod
         def validate_plugin_file(cls, plugin_path: Path) -> p.Result[bool]:
@@ -133,8 +129,8 @@ class FlextPluginUtilities(FlextCliUtilities):
                 if precheck.failure or plugin_path.suffix != ".py":
                     return precheck
                 return cls._validate_python_plugin_file(plugin_path)
-            except c.EXC_BROAD_IO_TYPE as e:
-                return r[bool].fail_op("Plugin file validation", e)
+            except c.EXC_BROAD_IO_TYPE as error:
+                return r[bool].fail_op("Plugin file validation", error)
 
         @staticmethod
         def validate_plugin_name(name: str) -> p.Result[bool]:
@@ -262,26 +258,6 @@ class FlextPluginUtilities(FlextCliUtilities):
                         f"Plugin contains potentially dangerous code: {pattern}",
                     )
             return r[bool].ok(value=True)
-
-
-def __getattr__(name: str) -> object:
-    """Lazily expose the plugin platform namespace on first attribute access.
-
-    Args:
-        name: Requested module attribute name.
-
-    Returns:
-        The requested exported object.
-
-    Raises:
-        AttributeError: If the name is not an exported object.
-
-    """
-    if name == "FlextPluginPlatform":
-        module = importlib.import_module("flext_plugin._utilities.plugin_platform")
-        return module.FlextPluginUtilitiesPluginPlatform.FlextPluginPlatform
-    msg = f"module {__name__!r} has no attribute {name!r}"
-    raise AttributeError(msg)
 
 
 u = FlextPluginUtilities

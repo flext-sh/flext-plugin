@@ -4,9 +4,6 @@ The business rules in ``config/plugin.yaml`` are validated at construction
 and exposed under ``config.Plugin``. The distribution projects that same
 authored YAML into the installed package's config directory.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -17,7 +14,7 @@ from typing import ClassVar, Self
 
 from flext_cli import FlextCliConfig, u
 
-from flext_core import FlextSettings
+from flext_core import FlextSettings, t
 from flext_plugin._models.config import FlextPluginConfigModels
 
 
@@ -36,25 +33,14 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     # Preserve the canonical generated allocation contract while inherited
     # Pydantic construction validates the declared namespace.
-    def __new__(cls, *args: object, **kwargs: object) -> Self:
-        _ = args, kwargs
+    def __new__(cls, **kwargs: t.JsonPayload) -> Self:
+        """Allocate a fresh frozen-config instance without singleton sharing.
+
+        Returns:
+            The resulting ``Self``.
+        """
+        _ = kwargs
         return object.__new__(cls)
-
-    def __eq__(self, other: object) -> bool:
-        """Identity equality per the frozen-config singleton contract.
-
-        Returns:
-            The resulting ``bool``.
-        """
-        return object.__eq__(self, other)
-
-    def __hash__(self) -> int:
-        """Identity hash per the frozen-config singleton contract.
-
-        Returns:
-            The resulting ``int``.
-        """
-        return object.__hash__(self)
 
 
 config: FlextPluginConfig = FlextPluginConfig.fetch_global()

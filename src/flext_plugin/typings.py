@@ -1,8 +1,5 @@
 """FLEXT Plugin Types - public facade re-exporting from _typings.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -19,7 +16,7 @@ from flext_plugin._typings import FlextPluginTypingsBase
 class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
     """Plugin type system extending flext_cli via MRO with internal typings."""
 
-    class Plugin:
+    class Plugin(FlextPluginTypingsBase):
         """Plugin domain namespace (flat members per AGENTS.md)."""
 
         type EventHandler = Callable[

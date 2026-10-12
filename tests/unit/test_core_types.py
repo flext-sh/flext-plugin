@@ -5,9 +5,6 @@ exception family: enum membership, string round-trips, membership frozensets,
 status-classification behavior, and error construction. All assertions target
 public behavior only.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -15,9 +12,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import e, tm
 
-from tests import c
+from tests import c, e, tm
 
 _Type = c.Plugin.Type
 _Status = c.Plugin.PluginStatus
