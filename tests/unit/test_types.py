@@ -27,7 +27,7 @@ class TestsFlextPluginTypesUnit:
     @staticmethod
     def test_facade_composes_cli_types_via_mro() -> None:
         """FlextPluginTypes extends the flext_cli type facade via MRO."""
-        tm.that(cli_t in FlextPluginTypes.__mro__, eq=True)
+        tm.that(issubclass(FlextPluginTypes, cli_t), eq=True)
 
     @staticmethod
     def test_module_alias_is_the_facade() -> None:
@@ -37,7 +37,7 @@ class TestsFlextPluginTypesUnit:
     @staticmethod
     def test_tests_facade_inherits_plugin_facade_via_mro() -> None:
         """The tests type facade composes FlextPluginTypes through its MRO."""
-        tm.that(FlextPluginTypes in t.__mro__, eq=True)
+        tm.that(issubclass(t, FlextPluginTypes), eq=True)
 
     @staticmethod
     @pytest.mark.parametrize("inherited_alias", ["JsonMapping"])
