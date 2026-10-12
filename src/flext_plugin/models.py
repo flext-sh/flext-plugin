@@ -27,7 +27,7 @@ class FlextPluginModels(FlextCliModels):
     """
 
     class Plugin(
-        FlextPluginModelsPlugin, FlextPluginModelsBase, FlextPluginConfigModels
+        FlextPluginModelsBase, FlextPluginConfigModels, FlextPluginModelsPlugin
     ):
         """Plugin domain namespace."""
 
