@@ -162,6 +162,7 @@ class TestsFlextPluginCoreTypes:
 
         Raises:
             BaseError: If plugin failed to load.
+
         """
         message = "plugin failed to load"
         with pytest.raises(e.BaseError, match=r"plugin failed to load") as excinfo:

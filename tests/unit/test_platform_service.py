@@ -156,6 +156,7 @@ def _make_plugin(
 
     Returns:
         The resulting ``FlextPluginPlatform.Plugin``.
+
     """
     plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
         name=name,

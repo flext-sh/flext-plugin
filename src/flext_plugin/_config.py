@@ -38,6 +38,7 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
         Returns:
             The resulting ``Self``.
+
         """
         _ = kwargs
         return object.__new__(cls)

@@ -156,6 +156,7 @@ class FlextPluginUtilities(FlextCliUtilities):
 
             Returns:
                 The resulting ``m.Plugin.Metadata``.
+
             """
             version, description = cls._metadata_fields(plugin_path)
             return m.Plugin.Metadata(
@@ -175,6 +176,7 @@ class FlextPluginUtilities(FlextCliUtilities):
 
             Returns:
                 The resulting ``Sequence[m.Plugin.Metadata]``.
+
             """
             plugins: MutableSequence[m.Plugin.Metadata] = []
             for plugin_file in search_path.rglob("*"):
@@ -206,6 +208,7 @@ class FlextPluginUtilities(FlextCliUtilities):
 
             Raises:
                 OSError: If ``read.failure``.
+
             """
             version = c.Plugin.DEFAULT_PLUGIN_VERSION
             description = f"Plugin from {plugin_path.name}"
@@ -230,6 +233,7 @@ class FlextPluginUtilities(FlextCliUtilities):
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             if not plugin_path.exists():
                 return r[bool].fail(f"Plugin file does not exist: {plugin_path}")
@@ -247,6 +251,7 @@ class FlextPluginUtilities(FlextCliUtilities):
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             read = u.Cli.files_read_text(plugin_path)
             if read.failure:

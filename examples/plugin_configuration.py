@@ -27,6 +27,7 @@ def create_database_plugin_config() -> t.JsonMapping:
 
     Returns:
         The resulting ``t.JsonMapping``.
+
     """
     return {
         "database": {
@@ -57,6 +58,7 @@ def create_ldap_plugin_config() -> t.JsonMapping:
 
     Returns:
         The resulting ``t.JsonMapping``.
+
     """
     return {
         "ldap": {

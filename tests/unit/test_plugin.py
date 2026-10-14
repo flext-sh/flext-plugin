@@ -31,6 +31,7 @@ class TestsFlextPluginPlugin:
 
         Returns:
             The resulting ``FlextPluginPlatform.Plugin``.
+
         """
         return FlextPluginPlatform.Plugin(
             name=name,
@@ -117,6 +118,7 @@ class TestsFlextPluginPlugin:
 
         Returns:
             The resulting ``FlextPluginPlatform.PluginRegistry``.
+
         """
         return FlextPluginPlatform.PluginRegistry()
 
@@ -126,6 +128,7 @@ class TestsFlextPluginPlugin:
 
         Returns:
             The resulting ``FlextPluginPlatform.Plugin``.
+
         """
         return self._make_plugin()
 

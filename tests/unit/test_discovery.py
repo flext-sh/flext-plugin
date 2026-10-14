@@ -33,6 +33,7 @@ class TestsFlextPluginDiscovery:
 
         Returns:
             The resulting ``FlextPluginDiscovery``.
+
         """
         return FlextPluginDiscovery()
 
@@ -43,6 +44,7 @@ class TestsFlextPluginDiscovery:
 
         Yields:
             Each ``Path``.
+
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

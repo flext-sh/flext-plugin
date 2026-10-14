@@ -38,6 +38,7 @@ class TestsFlextPluginDomainEntities:
 
         Returns:
             The resulting ``m.Plugin.Entity``.
+
         """
         return m.Plugin.Entity(
             name=name,

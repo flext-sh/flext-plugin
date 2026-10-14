@@ -44,6 +44,7 @@ class TestsFlextPluginApi:
 
         Returns:
             The resulting ``FlextPluginPlatform.Plugin``.
+
         """
         return FlextPluginPlatform.Plugin(
             name=name,
@@ -58,6 +59,7 @@ class TestsFlextPluginApi:
 
         Returns:
             The resulting ``FlextPluginApi``.
+
         """
         instance = FlextPluginApi()
         instance.platform = FlextPluginPlatform.PluginPlatformService()

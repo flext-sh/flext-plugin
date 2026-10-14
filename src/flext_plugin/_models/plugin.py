@@ -95,6 +95,7 @@ class FlextPluginModelsPlugin:
 
             Raises:
                 ValueError: If Version must be semantic format X.Y.Z, got.
+
             """
             min_version_parts = 2
             max_version_parts = 3
@@ -213,6 +214,7 @@ class FlextPluginModelsPlugin:
 
             Raises:
                 ValueError: If Version must be semantic format X.Y.Z, got.
+
             """
             min_parts = 2
             max_parts = 3
