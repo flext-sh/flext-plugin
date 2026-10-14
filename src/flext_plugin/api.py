@@ -13,6 +13,7 @@ losing typing precision.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -29,6 +30,7 @@ class FlextPluginApi(s):
 
     Per AGENTS.md §2.5 service facade pattern: state via u.PrivateAttr,
     no constructor, public surface returns `r[T]` uniformly.
+
     """
 
     _logger: p.Logger = u.PrivateAttr(
@@ -44,7 +46,7 @@ class FlextPluginApi(s):
     def platform(
         self,
     ) -> FlextPluginPlatform.PluginPlatformService:
-        """The plugin platform service."""
+        """The plugin platform service backing this facade."""
         return self._platform
 
     @platform.setter
@@ -52,7 +54,12 @@ class FlextPluginApi(s):
         self,
         value: (FlextPluginPlatform.PluginPlatformService),
     ) -> None:
-        """Inject the plugin platform service (test hook)."""
+        """Inject the plugin platform service (test hook).
+
+        Args:
+            value: Platform service to back this facade.
+
+        """
         self._platform = value
 
     def discover_plugins(
@@ -61,8 +68,12 @@ class FlextPluginApi(s):
     ) -> p.Result[Sequence[FlextPluginPlatform.Plugin]]:
         """Discover plugins in the given paths; logs the count discovered.
 
+        Args:
+            paths: Filesystem paths to scan for plugin modules.
+
         Returns:
-            The resulting ``p.Result[Sequence[FlextPluginPlatform.Plugin]]``.
+            Ok with the discovered plugins, or Fail with the discovery error.
+
         """
         result = self._platform.discover_plugins(paths)
         if result.success:
@@ -77,8 +88,14 @@ class FlextPluginApi(s):
     ) -> p.Result[t.JsonMapping]:
         """Execute a plugin by name with the given context.
 
+        Args:
+            plugin_name: Name of the registered plugin to run.
+            context: Input payload passed to the plugin entry point.
+            execution_id: Optional identifier to track this execution.
+
         Returns:
-            The resulting ``p.Result[t.JsonMapping]``.
+            Ok with the execution id, or Fail with the execution error.
+
         """
         return self._platform.execute_plugin(plugin_name, context, execution_id).map(
             lambda execution: {"execution_id": execution.execution_id},
@@ -90,8 +107,13 @@ class FlextPluginApi(s):
     ) -> p.Result[FlextPluginPlatform.Plugin]:
         """Fetch a plugin by name; fails when missing (ENFORCE-056).
 
+        Args:
+            plugin_name: Name of the plugin to fetch.
+
         Returns:
-            The resulting ``p.Result[FlextPluginPlatform.Plugin]``.
+            Ok with the plugin, or Fail when no plugin is registered
+            under the given name.
+
         """
         plugin = self._platform.fetch_plugin(plugin_name)
         if plugin is None:
@@ -107,8 +129,13 @@ class FlextPluginApi(s):
     def fetch_plugin_status(self, plugin_name: str) -> p.Result[str]:
         """Fetch the status of a plugin by name; fails when missing.
 
+        Args:
+            plugin_name: Name of the plugin whose status to fetch.
+
         Returns:
-            The resulting ``p.Result[str]``.
+            Ok with the status string, or Fail when the plugin has no
+            recorded status.
+
         """
         status = self._platform.fetch_plugin_status(plugin_name)
         if status is None:
@@ -118,8 +145,12 @@ class FlextPluginApi(s):
     def resolve_plugin_active(self, plugin_name: str) -> p.Result[bool]:
         """Resolve whether a plugin is active.
 
+        Args:
+            plugin_name: Name of the plugin to inspect.
+
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when the plugin is active, ``False`` otherwise.
+
         """
         return r[bool].ok(self._platform.resolve_plugin_active(plugin_name))
 
@@ -129,7 +160,8 @@ class FlextPluginApi(s):
         """List all registered plugins.
 
         Returns:
-            The resulting ``p.Result[Sequence[FlextPluginPlatform.Plugin]]``.
+            Ok with the registered plugins in registration order.
+
         """
         return r[Sequence[FlextPluginPlatform.Plugin]].ok(self._platform.list_plugins())
 
@@ -139,8 +171,12 @@ class FlextPluginApi(s):
     ) -> p.Result[FlextPluginPlatform.Plugin]:
         """Load a plugin from the given path; logs the loaded plugin's name.
 
+        Args:
+            plugin_path: Filesystem path of the plugin module to load.
+
         Returns:
-            The resulting ``p.Result[FlextPluginPlatform.Plugin]``.
+            Ok with the loaded plugin, or Fail with the load error.
+
         """
         result = self._platform.load_plugin(plugin_path)
         if result.success:
@@ -153,16 +189,26 @@ class FlextPluginApi(s):
     ) -> p.Result[bool]:
         """Register a plugin in the platform.
 
+        Args:
+            plugin: Plugin entity to register.
+
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when registration succeeds, or Fail with the
+            registration error.
+
         """
         return self._platform.register_plugin(plugin)
 
     def start_hot_reload(self, paths: t.StrSequence) -> p.Result[bool]:
         """Start hot reload monitoring for the given paths.
 
+        Args:
+            paths: Filesystem paths to watch for plugin changes.
+
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when monitoring starts, or Fail when the
+            watcher cannot be started.
+
         """
         return self._platform.start_hot_reload(paths)
 
@@ -170,15 +216,22 @@ class FlextPluginApi(s):
         """Stop hot reload monitoring.
 
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when monitoring stops, or Fail when the
+            watcher cannot be stopped.
+
         """
         return self._platform.stop_hot_reload()
 
     def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
         """Unregister a plugin by name.
 
+        Args:
+            plugin_name: Name of the plugin to remove from the registry.
+
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when the plugin is removed, or Fail when the
+            plugin is not registered.
+
         """
         return self._platform.unregister_plugin(plugin_name)
 

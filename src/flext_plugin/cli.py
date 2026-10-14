@@ -21,8 +21,12 @@ class FlextPluginCli(FlextCliCli):
 def main(args: t.StrSequence | None = None) -> int:
     """Console-script entry point — commands are not implemented yet.
 
+    Args:
+        args: Command-line arguments; accepted but currently ignored.
+
     Returns:
-        The resulting ``int``.
+        Process exit code; always ``0`` until commands are implemented.
+
     """
     _ = args
     return 0
